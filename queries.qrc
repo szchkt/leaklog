@@ -1,0 +1,8 @@
+<RCC>
+  <qresource>
+    <file>queries/all_customers.xq</file>
+    <file>queries/single_customer.xq</file>
+    <file>queries/single_circuit.xq</file>
+    <file>queries/single_inspection.xq</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,1197 @@
+<ui version="4.0" >
+ <author>Matus &amp; Michal Tomlein</author>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>982</width>
+    <height>751</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Leaklog</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="resources.qrc" >
+    <normaloff>:/images/images/leaklog128.png</normaloff>:/images/images/leaklog128.png</iconset>
+  </property>
+  <property name="dockOptions" >
+   <set>QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <property name="geometry" >
+    <rect>
+     <x>110</x>
+     <y>84</y>
+     <width>593</width>
+     <height>645</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5" >
+    <property name="margin" >
+     <number>0</number>
+    </property>
+    <item row="0" column="0" >
+     <widget class="QStackedWidget" name="stw_main" >
+      <property name="currentIndex" >
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="page_welcome" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>593</width>
+         <height>645</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2" >
+        <item row="1" column="0" >
+         <spacer name="horizontalSpacer_4" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>24</width>
+            <height>397</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2" >
+         <spacer name="horizontalSpacer_5" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>25</width>
+            <height>397</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1" >
+         <spacer name="verticalSpacer" >
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>477</width>
+            <height>92</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="1" >
+         <spacer name="verticalSpacer_2" >
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>477</width>
+            <height>91</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="1" >
+         <widget class="QFrame" name="frame_welcome" >
+          <property name="minimumSize" >
+           <size>
+            <width>480</width>
+            <height>360</height>
+           </size>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>520</width>
+            <height>400</height>
+           </size>
+          </property>
+          <property name="frameShape" >
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow" >
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2" >
+           <item>
+            <widget class="QLabel" name="lbl_icon" >
+             <property name="pixmap" >
+              <pixmap resource="resources.qrc" >:/images/images/leaklog128.png</pixmap>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_leaklog" >
+             <property name="font" >
+              <font>
+               <pointsize>20</pointsize>
+              </font>
+             </property>
+             <property name="text" >
+              <string>Leaklog</string>
+             </property>
+             <property name="alignment" >
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3" >
+             <property name="orientation" >
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_recent_docs" >
+             <property name="text" >
+              <string>Recent documents:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="lw_recent_docs" />
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+       <zorder>horizontalSpacer_4</zorder>
+       <zorder>horizontalSpacer_5</zorder>
+       <zorder>verticalSpacer</zorder>
+       <zorder>verticalSpacer_2</zorder>
+       <zorder>frame_welcome</zorder>
+      </widget>
+      <widget class="QWidget" name="page_main" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>593</width>
+         <height>645</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4" >
+        <item row="1" column="0" >
+         <spacer name="horizontalSpacer_6" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>177</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="1" >
+         <widget class="QLabel" name="lbl_view" >
+          <property name="text" >
+           <string>View:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2" >
+         <widget class="QComboBox" name="cb_view" >
+          <property name="minimumSize" >
+           <size>
+            <width>160</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3" >
+         <spacer name="horizontalSpacer_7" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>178</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0" colspan="4" >
+         <widget class="QWebView" name="wv_main" >
+          <property name="url" >
+           <url>
+            <string>about:blank</string>
+           </url>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="4" >
+         <widget class="QGroupBox" name="gb_customer" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title" >
+           <string>Customer</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4" >
+           <item>
+            <widget class="QLabel" name="lbl_circuit" >
+             <property name="text" >
+              <string>Cooling circuit:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cb_circuit" >
+             <property name="minimumSize" >
+              <size>
+               <width>160</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maxVisibleItems" >
+              <number>50</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_8" >
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType" >
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>20</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_inspection" >
+             <property name="text" >
+              <string>Inspection:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cb_inspection" >
+             <property name="minimumSize" >
+              <size>
+               <width>160</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer" >
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>38</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>982</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile" >
+    <property name="title" >
+     <string>File</string>
+    </property>
+    <addaction name="actionNew" />
+    <addaction name="actionOpen" />
+    <addaction name="actionSave" />
+    <addaction name="actionSave_as" />
+    <addaction name="actionClose" />
+    <addaction name="separator" />
+    <addaction name="actionPrint_preview" />
+    <addaction name="actionPrint" />
+    <addaction name="separator" />
+    <addaction name="actionQuit" />
+   </widget>
+   <widget class="QMenu" name="menuCustomer" >
+    <property name="title" >
+     <string>Customer</string>
+    </property>
+    <addaction name="actionAdd_customer" />
+    <addaction name="actionModify_customer" />
+    <addaction name="actionRemove_customer" />
+    <addaction name="separator" />
+    <addaction name="actionExport_customer_data" />
+    <addaction name="actionImport_customer_data" />
+    <addaction name="separator" />
+    <addaction name="actionShow_customers" />
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>Help</string>
+    </property>
+    <addaction name="actionCheck_for_updates" />
+    <addaction name="separator" />
+    <addaction name="actionAbout_Leaklog" />
+   </widget>
+   <widget class="QMenu" name="menuCooling_circuit" >
+    <property name="title" >
+     <string>Cooling circuit</string>
+    </property>
+    <addaction name="actionAdd_circuit" />
+    <addaction name="actionModify_circuit" />
+    <addaction name="actionRemove_circuit" />
+    <addaction name="separator" />
+    <addaction name="actionExport_circuit_data" />
+    <addaction name="actionImport_circuit_data" />
+   </widget>
+   <widget class="QMenu" name="menuInspection" >
+    <property name="title" >
+     <string>Inspection</string>
+    </property>
+    <addaction name="actionAdd_inspection" />
+    <addaction name="actionModify_inspection" />
+    <addaction name="actionRemove_inspection" />
+    <addaction name="separator" />
+    <addaction name="actionExport_inspection_data" />
+    <addaction name="actionImport_inspection_data" />
+   </widget>
+   <widget class="QMenu" name="menuVariable" >
+    <property name="title" >
+     <string>Variable</string>
+    </property>
+    <widget class="QMenu" name="menuAdd_variable" >
+     <property name="title" >
+      <string>Add variable</string>
+     </property>
+     <property name="icon" >
+      <iconset resource="resources.qrc" >
+       <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
+     </property>
+     <addaction name="actionNew_variable" />
+     <addaction name="actionNew_subvariable" />
+    </widget>
+    <addaction name="menuAdd_variable" />
+    <addaction name="actionModify_variable" />
+    <addaction name="actionRemove_variable" />
+    <addaction name="separator" />
+    <addaction name="actionAdd_table" />
+    <addaction name="actionRemove_table" />
+    <addaction name="separator" />
+    <addaction name="actionShow_variables" />
+   </widget>
+   <addaction name="menuFile" />
+   <addaction name="menuCustomer" />
+   <addaction name="menuCooling_circuit" />
+   <addaction name="menuInspection" />
+   <addaction name="menuVariable" />
+   <addaction name="menuHelp" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>729</y>
+     <width>982</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>22</y>
+     <width>982</width>
+     <height>62</height>
+    </rect>
+   </property>
+   <property name="windowTitle" >
+    <string>toolBar</string>
+   </property>
+   <property name="toolButtonStyle" >
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew" />
+   <addaction name="actionOpen" />
+   <addaction name="actionSave" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_customer" />
+   <addaction name="actionModify_customer" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_circuit" />
+   <addaction name="actionModify_circuit" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_inspection" />
+   <addaction name="actionModify_inspection" />
+   <addaction name="separator" />
+   <addaction name="actionPrint" />
+  </widget>
+  <widget class="QDockWidget" name="dw_customers" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>84</y>
+     <width>104</width>
+     <height>645</height>
+    </rect>
+   </property>
+   <property name="features" >
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Customers</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_customers" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>26</y>
+      <width>104</width>
+      <height>619</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout" >
+     <item row="0" column="0" >
+      <widget class="QLabel" name="lbl_search_customers" >
+       <property name="text" >
+        <string>Search:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="ExtendedLineEdit" name="le_search_customers" />
+     </item>
+     <item row="1" column="0" colspan="2" >
+      <widget class="MTListWidget" name="lw_customers" />
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_variables" >
+   <property name="geometry" >
+    <rect>
+     <x>709</x>
+     <y>84</y>
+     <width>273</width>
+     <height>645</height>
+    </rect>
+   </property>
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Variables</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_variables" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>26</y>
+      <width>273</width>
+      <height>619</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout" >
+     <item>
+      <widget class="QTreeWidget" name="trw_variables" >
+       <column>
+        <property name="text" >
+         <string>Variable name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Unit</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Type</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout" >
+       <item>
+        <widget class="QToolButton" name="tbtn_add_variable" >
+         <property name="text" >
+          <string>Add variable</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
+         </property>
+         <property name="popupMode" >
+          <enum>QToolButton::InstantPopup</enum>
+         </property>
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+         <property name="arrowType" >
+          <enum>Qt::DownArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>170</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_remove_variable" >
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" >
+       <item>
+        <widget class="QLabel" name="lbl_table_edit" >
+         <property name="text" >
+          <string>Table:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="cb_table_edit" />
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_add_table" />
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_remove_table" />
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="lw_table_variables" />
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3" >
+       <item>
+        <widget class="QToolButton" name="tbtn_table_add_variable" >
+         <property name="text" >
+          <string>Add existing variable</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
+         </property>
+         <property name="popupMode" >
+          <enum>QToolButton::InstantPopup</enum>
+         </property>
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_table_remove_variable" >
+         <property name="enabled" >
+          <bool>false</bool>
+         </property>
+         <property name="text" >
+          <string>Remove</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/variable_remove.png</normaloff>:/images/images/variable_remove.png</iconset>
+         </property>
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionAbout_Leaklog" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/help_about.png</normaloff>:/images/images/help_about.png</iconset>
+   </property>
+   <property name="text" >
+    <string>About Leaklog</string>
+   </property>
+  </action>
+  <action name="actionNew" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/filenew.png</normaloff>:/images/images/filenew.png</iconset>
+   </property>
+   <property name="text" >
+    <string>New</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionOpen" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/fileopen.png</normaloff>:/images/images/fileopen.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Open</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/filesave.png</normaloff>:/images/images/filesave.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Save</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionClose" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/fileclose.png</normaloff>:/images/images/fileclose.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Close</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionQuit" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/quit.png</normaloff>:/images/images/quit.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Quit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAdd_customer" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add customer</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+N</string>
+   </property>
+  </action>
+  <action name="actionRemove_customer" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove customer</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+R</string>
+   </property>
+  </action>
+  <action name="actionAdd_circuit" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/add.png</normaloff>:/images/images/add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add circuit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt++</string>
+   </property>
+  </action>
+  <action name="actionRemove_circuit" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/remove.png</normaloff>:/images/images/remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove circuit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+-</string>
+   </property>
+  </action>
+  <action name="actionAdd_inspection" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add inspection</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionRemove_inspection" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspection_remove.png</normaloff>:/images/images/inspection_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove inspection</string>
+   </property>
+  </action>
+  <action name="actionRemove_variable" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/variable_remove.png</normaloff>:/images/images/variable_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove variable</string>
+   </property>
+  </action>
+  <action name="actionAdd_table" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/table_add.png</normaloff>:/images/images/table_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add table</string>
+   </property>
+  </action>
+  <action name="actionRemove_table" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/table_remove.png</normaloff>:/images/images/table_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove table</string>
+   </property>
+  </action>
+  <action name="actionShow_customers" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show customers</string>
+   </property>
+  </action>
+  <action name="actionShow_variables" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show variables</string>
+   </property>
+  </action>
+  <action name="actionSave_as" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/filesaveas.png</normaloff>:/images/images/filesaveas.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Save as</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionModify_circuit" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/circuit_modify.png</normaloff>:/images/images/circuit_modify.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify circuit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+*</string>
+   </property>
+  </action>
+  <action name="actionModify_customer" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify customer</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+M</string>
+   </property>
+  </action>
+  <action name="actionModify_inspection" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify inspection</string>
+   </property>
+  </action>
+  <action name="actionPrint" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/print.png</normaloff>:/images/images/print.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Print</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionPrint_preview" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/print_preview.png</normaloff>:/images/images/print_preview.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Print preview</string>
+   </property>
+  </action>
+  <action name="actionModify_variable" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify variable</string>
+   </property>
+  </action>
+  <action name="actionExport_customer_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Export customer data</string>
+   </property>
+  </action>
+  <action name="actionExport_circuit_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Export circuit data</string>
+   </property>
+  </action>
+  <action name="actionExport_inspection_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Export inspection data</string>
+   </property>
+  </action>
+  <action name="actionImport_customer_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Import customer data</string>
+   </property>
+  </action>
+  <action name="actionImport_circuit_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Import circuit data</string>
+   </property>
+  </action>
+  <action name="actionImport_inspection_data" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Import inspection data</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/software_update.png</normaloff>:/images/images/software_update.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionNew_variable" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>New variable</string>
+   </property>
+  </action>
+  <action name="actionNew_subvariable" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>New subvariable</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="9" />
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>MTListWidget</class>
+   <extends>QListWidget</extends>
+   <header>mtlistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExtendedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>extendedlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resources.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_customers</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_customers</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>79</x>
+     <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_variables</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_variables</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>833</x>
+     <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dw_customers</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionShow_customers</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>79</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dw_variables</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionShow_variables</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>833</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

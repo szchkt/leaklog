@@ -1,0 +1,42 @@
+<xqlproj>
+    <file path="all_customers.xq" />
+    <output path="../i18n.h" />
+    <string>ID: </string>
+    <string>Company: </string>
+    <string>Address: </string>
+    <string>Phone: </string>
+    <string>Number of circuits: </string>
+    <string>Total number of inspections: </string>
+    <string>E-mail: </string>
+    <file path="single_customer.xq" />
+    <string>Circuit: </string>
+    <string>Manufacturer: </string>
+    <string>Type: </string>
+    <string>Serial number: </string>
+    <string>Year of purchase: </string>
+    <string>Refrigerant: </string>
+    <string>Oil: </string>
+    <file path="single_circuit.xq" />
+    <string>Contact person: </string>
+    <string>Date of commissioning: </string>
+    <string>Field of application: </string>
+    <string>Amount of refrigerant: </string>
+    <string>Amount of oil: </string>
+    <string>Service life: </string>
+    <string> years</string>
+    <string>Run-time per day: </string>
+    <string> hours</string>
+    <string>Rate of utilisation: </string>
+    <string>Amount of oil: </string>
+    <string> hours</string>
+    <string>Nominal: </string>
+    <file path="single_inspection.xq" />
+    <string>Contact person: </string>
+    <string>Nominal inspection: </string>
+    <string>Inspection: </string>
+    <string>: </string>
+    <string>: </string>
+    <string>Date of commissioning: </string>
+    <string>Date of commissioning: </string>
+    <string>Nominal inspection: </string>
+</xqlproj>

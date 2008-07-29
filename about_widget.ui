@@ -1,0 +1,182 @@
+<ui version="4.0" >
+ <class>AboutWidget</class>
+ <widget class="QWidget" name="AboutWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>602</width>
+    <height>303</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>About Leaklog</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="resources.qrc" >
+    <normaloff>:/images/images/help_about.png</normaloff>:/images/images/help_about.png</iconset>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="margin" >
+    <number>6</number>
+   </property>
+   <item row="0" column="0" >
+    <layout class="QVBoxLayout" >
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbl_icon" >
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="pixmap" >
+        <pixmap resource="resources.qrc" >:/images/images/leaklog128.png</pixmap>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbl_about" >
+       <property name="font" >
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text" >
+        <string>About Leaklog</string>
+       </property>
+       <property name="alignment" >
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1" >
+    <layout class="QVBoxLayout" >
+     <item>
+      <widget class="QTabWidget" name="tbw_main" >
+       <property name="currentIndex" >
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab_about" >
+        <property name="geometry" >
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>443</width>
+          <height>213</height>
+         </rect>
+        </property>
+        <attribute name="title" >
+         <string>About Leaklog</string>
+        </attribute>
+        <attribute name="icon" >
+         <iconset resource="resources.qrc" >
+          <normaloff>:/images/images/leaklog128.png</normaloff>:/images/images/leaklog128.png</iconset>
+        </attribute>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>6</number>
+         </property>
+         <item row="0" column="0" >
+          <widget class="QTextBrowser" name="txb_about" />
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_about_qt" >
+        <property name="geometry" >
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>443</width>
+          <height>213</height>
+         </rect>
+        </property>
+        <attribute name="title" >
+         <string>About Qt</string>
+        </attribute>
+        <attribute name="icon" >
+         <iconset resource="resources.qrc" >
+          <normaloff>:/images/images/qt4.png</normaloff>:/images/images/qt4.png</iconset>
+        </attribute>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>6</number>
+         </property>
+         <item row="0" column="0" >
+          <widget class="QTextBrowser" name="txb_about_qt" />
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" >
+       <item>
+        <spacer>
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_close" >
+         <property name="text" >
+          <string>Close</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/fileclose.png</normaloff>:/images/images/fileclose.png</iconset>
+         </property>
+         <property name="iconSize" >
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resources.qrc" />
+ </resources>
+ <connections/>
+</ui>

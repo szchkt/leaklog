@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file>i18n/Leaklog-i18n.qm</file>
+        <file>i18n/Leaklog-Slovak.qm</file>
+    </qresource>
+</RCC>
