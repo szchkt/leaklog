@@ -484,7 +484,7 @@ function showWarnings() {
 {
 let $d := doc($inputDocument)
 let $table := $d/leaklog/tables/table[@id="%1"]
-let $circuit := $d/leaklog/customers/customer[@name="%2"]/circuit[@id="%3"]
+let $circuit := $d/leaklog/customers/customer[@id="%2"]/circuit[@id="%3"]
 
 return (
 <table>
