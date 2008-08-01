@@ -151,6 +151,12 @@ QDialog(parent)
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
         md_dict_input.insert("compare_nom", "chb");
+    } else if (md_element.nodeName() == "table") {
+        md_dict.insert("table", tr("Table"));
+        md_dict.insert("id", tr("ID"));
+        md_dict_input.insert("id", "le");
+        md_dict.insert("highlight_nominal", tr("Highlight the nominal inspection"));
+        md_dict_input.insert("highlight_nominal", "chb");
     }
     // ------------
     if (!md_element.attribute("id").isEmpty()) {
@@ -158,7 +164,7 @@ QDialog(parent)
     } else if (!md_element.attribute("date").isEmpty()) {
         this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_element.nodeName())).arg(md_element.attribute("date")));
     } else {
-        this->setWindowTitle(tr("%1").arg(md_dict.value(md_element.nodeName())));
+        this->setWindowTitle(md_dict.value(md_element.nodeName()));
     }
     MTDictionary dict(md_dict);
     for (int i = 0; i < md_dict_vars.count(); ++i) {

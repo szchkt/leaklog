@@ -51,6 +51,10 @@ private slots:
     void executeLink(const QUrl &);
     void printPreview();
     void print();
+    void enableTools();
+    void find();
+    void findNext();
+    void findPrevious();
     // DOCUMENT
     void openRecent(QListWidgetItem *);
     void newDocument();
@@ -66,20 +70,25 @@ private slots:
     void addCircuit();
     void modifyCircuit();
     void removeCircuit();
-    void loadCircuit(const QString &);
+    void loadCircuit(QListWidgetItem *);
     void addInspection();
     void modifyInspection();
-    void loadInspection(const QString &);
+    void removeInspection();
+    void loadInspection(QListWidgetItem *);
     void addVariable();
     void addSubvariable();
     void modifyVariable();
+    void removeVariable();
+    void addTable();
+    void modifyTable();
+    void removeTable();
+    void loadTable(const QString &);
 
 private:
     // UI
     void addRecent(QString);
     void clearAll();
     void setAllEnabled(bool);
-    void enableTools();
     void closeEvent(QCloseEvent *);
     void loadSettings();
     void saveSettings();
@@ -90,19 +99,23 @@ private:
     void loadCustomer(QListWidgetItem *, bool);
     void loadCustomer(const QDomElement &, bool = true);
     QDomElement selectedCustomerElement(QStringList * = NULL);
-    void loadCircuit(const QString &, bool);
+    void loadCircuit(QListWidgetItem *, bool);
+    void loadCircuit(const QDomElement &, bool = true);
     QDomElement selectedCircuitElement(QStringList * = NULL);
-    void loadInspection(const QString &, bool);
-    QDomElement selectedInspectionElement(QStringList * = NULL, bool & = false);
+    void loadInspection(QListWidgetItem *, bool);
+    void loadInspection(const QDomElement &, bool = true);
+    QDomElement selectedInspectionElement();
+    QDomElement selectedInspectionElement(QStringList *, bool &);
     void addVariable(bool);
     QDomElement selectedVariableElement(QStringList * = NULL);
+    QDomElement selectedTableElement(QStringList * = NULL);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;
     i18n dict_i18n;
     QString dict_i18n_javascript;
     QMap<QString, int> view_indices;
-
+    QString last_search_keyword;
     QDomDocument document;
     bool document_open;
     QString document_path;

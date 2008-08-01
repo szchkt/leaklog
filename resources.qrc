@@ -1,11 +1,13 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/edit_find.png</file>
+    <file>images/edit_find_next.png</file>
+    <file>images/edit_find_previous.png</file>
     <file>images/export.png</file>
     <file>images/import.png</file>
     <file>images/print.png</file>
     <file>images/edit.png</file>
     <file>images/print_preview.png</file>
-    <file>images/circuit_modify.png</file>
     <file>images/customer_modify.png</file>
     <file>images/inspection_modify.png</file>
     <file>images/table_add.png</file>

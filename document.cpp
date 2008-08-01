@@ -137,6 +137,15 @@ void MainWindow::openDocument(QString path)
             variable = variable.nextSiblingElement();
         }
     }
+    QDomElement el_tables = document.documentElement().firstChildElement("tables");
+    if (!el_tables.isNull()) {
+        QDomNodeList tables = el_tables.elementsByTagName("table");
+        for (int i = 0; i < tables.count(); ++i) {
+            QDomElement table = tables.at(i).toElement();
+            cb_table_edit->addItem(table.attribute("id"));
+            cb_table->addItem(table.attribute("id"));
+        }
+    }
     document_open = true;
     document_path = path;
 #ifdef Q_WS_MAC
@@ -146,6 +155,7 @@ void MainWindow::openDocument(QString path)
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
+    loadTable(cb_table_edit->currentText());
     cb_view->setCurrentIndex(view_indices.value(tr("All customers")));
     viewChanged(cb_view->currentText());
 }
@@ -194,6 +204,10 @@ void MainWindow::closeDocument()
 void MainWindow::viewChanged(const QString & view)
 {
     if (!document_open) { wv_main->setHtml(QString()); return; }
+
+    lbl_table->setEnabled(view == tr("Table of inspections"));
+    cb_table->setEnabled(view == tr("Table of inspections"));
+
     QBuffer device;
     device.setData(document.toString(1).toUtf8());
     device.open(QIODevice::ReadOnly);
@@ -205,18 +219,28 @@ void MainWindow::viewChanged(const QString & view)
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript));
     } else if (view == tr("Customer information") && lw_customers->highlightedRow() >= 0) {
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()));
-    } else if (view == tr("Circuit information") && lw_customers->highlightedRow() >= 0 && cb_circuit->currentIndex() >= 0) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(cb_circuit->currentText()));
-    } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && cb_circuit->currentIndex() >= 0 && cb_inspection->currentIndex() >= 0) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(cb_circuit->currentText()).arg(cb_inspection->currentText()));
+    } else if (view == tr("Circuit information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0) {
+        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
+    } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
+        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_inspections->highlightedItem()->data(Qt::UserRole).toString()));
     }
 
-    if (!query.isValid()) { wv_main->setHtml(QString()); return; }
+    if (!query.isValid()) {
+        QString html("<p style=\"font-family: 'Lucida Grande', 'Lucida Sans Unicode', verdana, lucida, sans-serif;\" align=\"center\"><strong>");
+        if (view == tr("Customer information")) { html.append(tr("No customer selected.")); }
+        else if (view == tr("Circuit information")) { html.append(tr("No circuit selected.")); }
+        else if (view == tr("Inspection information")) { html.append(tr("No inspection selected.")); }
+        else { html.append(tr("Error: Invalid query.")); }
+        html.append("</strong></p>");
+        wv_main->setHtml(html);
+        return;
+    }
     QByteArray out;
     QBuffer buffer(&out);
     buffer.open(QIODevice::ReadWrite);
     QXmlFormatter formatter(query, &buffer);
-    if (!query.evaluateTo(&formatter)) { wv_main->setHtml(QString()); return; }
+    if (!query.evaluateTo(&formatter))
+        { wv_main->setHtml(QString("<p style=\"font-family: 'Lucida Grande', 'Lucida Sans Unicode', verdana, lucida, sans-serif;\" align=\"center\"><strong>%1</strong></p>").arg(tr("Error: Query execution failed."))); return; }
     buffer.close();
     wv_main->setHtml(QString::fromUtf8(out.constData()));
 }
@@ -258,7 +282,7 @@ void MainWindow::modifyCustomer()
         QListWidgetItem * item = lw_customers->highlightedItem();
         item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
         item->setData(Qt::UserRole, element.attribute("id"));
-        gb_customer->setTitle(item->text());
+        //gb_customer->setTitle(item->text());
         this->setWindowModified(true);
         viewChanged(cb_view->currentText());
     }
@@ -267,25 +291,20 @@ void MainWindow::modifyCustomer()
 
 void MainWindow::removeCustomer()
 {
-    if (!document_open) { return; }
-    if (lw_customers->highlightedRow() < 0) { return; }
+    QDomElement element = selectedCustomerElement();
+    if (element.isNull()) { return; }
     QListWidgetItem * item = lw_customers->highlightedItem();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     QDomElement el_customers = document.documentElement().firstChildElement("customers");
     if (el_customers.isNull()) { return; }
-    QDomNodeList customers = el_customers.elementsByTagName("customer");
-    for (int i = 0; i < customers.count(); ++i) {
-        if (customers.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) {
-            el_customers.removeChild(customers.at(i));
-            break;
-        }
-    }
-    delete item;
-    gb_customer->setEnabled(false);
-    actionRemove_customer->setEnabled(false);
+    el_customers.removeChild(element);
+    if (item != NULL) { delete item; }
+    lw_circuits->clear(); lw_inspections->clear();
+    enableTools();
     this->setWindowModified(true);
+    cb_view->setCurrentIndex(view_indices.value(tr("All customers")));
     viewChanged(cb_view->currentText());
 }
 
@@ -301,12 +320,13 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
 
 void MainWindow::loadCustomer(const QDomElement & element, bool refresh)
 {
-    gb_customer->setEnabled(true);
-    gb_customer->setTitle(lw_customers->highlightedItem()->text());
-    cb_circuit->clear(); cb_inspection->clear();
+    lw_circuits->clear(); lw_inspections->clear();
     QDomNodeList circuits = element.elementsByTagName("circuit");
     for (int i = 0; i < circuits.count(); ++i) {
-        cb_circuit->addItem(circuits.at(i).toElement().attribute("id"));
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(circuits.at(i).toElement().attribute("id"));
+        item->setData(Qt::UserRole, circuits.at(i).toElement().attribute("id"));
+        lw_circuits->addItem(item);
     }
     enableTools();
     if (refresh) {
@@ -347,7 +367,10 @@ void MainWindow::addCircuit()
     ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         customer.appendChild(element);
-        cb_circuit->addItem(element.attribute("id"));
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(element.attribute("id"));
+        item->setData(Qt::UserRole, element.attribute("id"));
+        lw_circuits->addItem(item);
         this->setWindowModified(true);
         viewChanged(cb_view->currentText());
     }
@@ -361,10 +384,9 @@ void MainWindow::modifyCircuit()
     if (element.isNull()) { return; }
     ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
-        int i = cb_circuit->currentIndex();
-        cb_circuit->removeItem(i);
-        cb_circuit->insertItem(i, element.attribute("id"));
-        cb_circuit->setCurrentIndex(i);
+        QListWidgetItem * item = lw_circuits->highlightedItem();
+        item->setText(element.attribute("id"));
+        item->setData(Qt::UserRole, element.attribute("id"));
         this->setWindowModified(true);
         viewChanged(cb_view->currentText());
     }
@@ -373,19 +395,42 @@ void MainWindow::modifyCircuit()
 
 void MainWindow::removeCircuit()
 {
-    
-}
-
-void MainWindow::loadCircuit(const QString & id) { loadCircuit(id, true); }
-
-void MainWindow::loadCircuit(const QString &, bool refresh)
-{
     QDomElement element = selectedCircuitElement();
     if (element.isNull()) { return; }
-    cb_inspection->clear();
+    QListWidgetItem * item = lw_circuits->highlightedItem();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    QDomElement customer = selectedCustomerElement();
+    if (customer.isNull()) { return; }
+    customer.removeChild(element);
+    if (item != NULL) { delete item; }
+    lw_inspections->clear();
+    enableTools();
+    this->setWindowModified(true);
+    cb_view->setCurrentIndex(view_indices.value(tr("Customer information")));
+    viewChanged(cb_view->currentText());
+}
+
+void MainWindow::loadCircuit(QListWidgetItem * item) { loadCircuit(item, true); }
+
+void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
+{
+    if (item == NULL) { return; }
+    lw_circuits->highlightItem(item);
+    QDomElement circuit = selectedCircuitElement();
+    if (!circuit.isNull()) { loadCircuit(circuit, refresh); }
+}
+
+void MainWindow::loadCircuit(const QDomElement & element, bool refresh)
+{
+    lw_inspections->clear();
     QDomNodeList inspections = element.elementsByTagName("inspection");
     for (int i = 0; i < inspections.count(); ++i) {
-        cb_inspection->addItem(inspections.at(i).toElement().attribute("date"));
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(inspections.at(i).toElement().attribute("date"));
+        item->setData(Qt::UserRole, inspections.at(i).toElement().attribute("date"));
+        lw_inspections->addItem(item);
     }
     enableTools();
     if (refresh) {
@@ -398,10 +443,11 @@ QDomElement MainWindow::selectedCircuitElement(QStringList * used_ids)
 {
     if (!document_open) { return QDomElement(); }
     if (lw_customers->highlightedRow() < 0) { return QDomElement(); }
-    if (cb_circuit->currentIndex() < 0) { return QDomElement(); }
+    if (lw_circuits->highlightedRow() < 0) { return QDomElement(); }
+    QListWidgetItem * item = lw_circuits->highlightedItem();
     QDomNodeList circuits = selectedCustomerElement().elementsByTagName("circuit"); int n = -1;
     for (int i = 0; i < circuits.count(); ++i) {
-        if (n == -1 && circuits.at(i).toElement().attribute("id") == cb_circuit->currentText()) {
+        if (n == -1 && circuits.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) {
             n = i;
         } else {
             if (used_ids) { *used_ids << circuits.at(i).toElement().attribute("id"); }
@@ -426,7 +472,10 @@ void MainWindow::addInspection()
     ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
     if (md->exec() == QDialog::Accepted) {
         circuit.appendChild(element);
-        cb_inspection->addItem(element.attribute("date"));
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(element.attribute("date"));
+        item->setData(Qt::UserRole, element.attribute("date"));
+        lw_inspections->addItem(item);
         this->setWindowModified(true);
         viewChanged(cb_view->currentText());
     }
@@ -440,23 +489,45 @@ void MainWindow::modifyInspection()
     if (element.isNull()) { return; }
     ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
     if (md->exec() == QDialog::Accepted) {
-        int i = cb_inspection->currentIndex();
-        cb_inspection->removeItem(i);
-        cb_inspection->insertItem(i, element.attribute("date"));
-        cb_inspection->setCurrentIndex(i);
+        QListWidgetItem * item = lw_inspections->highlightedItem();
+        item->setText(element.attribute("date"));
+        item->setData(Qt::UserRole, element.attribute("date"));
         this->setWindowModified(true);
         viewChanged(cb_view->currentText());
     }
     delete md;
 }
 
-void MainWindow::loadInspection(const QString & id) { loadInspection(id, true); }
-
-void MainWindow::loadInspection(const QString &, bool refresh)
+void MainWindow::removeInspection()
 {
-    //QDomElement element = selectedInspectionElement();
-    //if (element.isNull()) { return; }
-    if (cb_inspection->currentIndex() < 0) { return; }
+    QDomElement element = selectedInspectionElement();
+    if (element.isNull()) { return; }
+    QListWidgetItem * item = lw_inspections->highlightedItem();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    QDomElement circuit = selectedCircuitElement();
+    if (circuit.isNull()) { return; }
+    circuit.removeChild(element);
+    if (item != NULL) { delete item; }
+    enableTools();
+    this->setWindowModified(true);
+    cb_view->setCurrentIndex(view_indices.value(tr("Circuit information")));
+    viewChanged(cb_view->currentText());
+}
+
+void MainWindow::loadInspection(QListWidgetItem * item) { loadInspection(item, true); }
+
+void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
+{
+    if (item == NULL) { return; }
+    lw_inspections->highlightItem(item);
+    QDomElement inspection = selectedInspectionElement();
+    if (!inspection.isNull()) { loadInspection(inspection, refresh); }
+}
+
+void MainWindow::loadInspection(const QDomElement &, bool refresh)
+{
     enableTools();
     if (refresh) {
         cb_view->setCurrentIndex(view_indices.value(tr("Inspection information")));
@@ -464,16 +535,23 @@ void MainWindow::loadInspection(const QString &, bool refresh)
     }
 }
 
+QDomElement MainWindow::selectedInspectionElement()
+{
+    bool nominal_allowed;
+    return selectedInspectionElement(NULL, nominal_allowed);
+}
+
 QDomElement MainWindow::selectedInspectionElement(QStringList * used_ids, bool & nominal_allowed)
 {
     if (!document_open) { return QDomElement(); }
     if (lw_customers->highlightedRow() < 0) { return QDomElement(); }
-    if (cb_circuit->currentIndex() < 0) { return QDomElement(); }
-    if (cb_inspection->currentIndex() < 0) { return QDomElement(); }
+    if (lw_circuits->highlightedRow() < 0) { return QDomElement(); }
+    if (lw_inspections->highlightedRow() < 0) { return QDomElement(); }
+    QListWidgetItem * item = lw_inspections->highlightedItem();
     QDomNodeList inspections = selectedCircuitElement().elementsByTagName("inspection");
     int n = -1; nominal_allowed = true;
     for (int i = 0; i < inspections.count(); ++i) {
-        if (n == -1 && inspections.at(i).toElement().attribute("date") == cb_inspection->currentText()) {
+        if (n == -1 && inspections.at(i).toElement().attribute("date") == item->data(Qt::UserRole).toString()) {
             n = i;
         } else {
             if (used_ids) { *used_ids << inspections.at(i).toElement().attribute("date"); }
@@ -548,6 +626,21 @@ void MainWindow::modifyVariable()
     delete md;
 }
 
+void MainWindow::removeVariable()
+{
+    QDomElement element = selectedVariableElement();
+    QTreeWidgetItem * item = trw_variables->currentItem();
+    if (element.isNull()) { return; }
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(item->text(1)), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    element.parentNode().removeChild(element);
+    if (item != NULL) { delete item; }
+    enableTools();
+    this->setWindowModified(true);
+    viewChanged(cb_view->currentText());
+}
+
 QDomElement MainWindow::selectedVariableElement(QStringList * used_ids)
 {
     if (!document_open) { return QDomElement(); }
@@ -565,4 +658,122 @@ QDomElement MainWindow::selectedVariableElement(QStringList * used_ids)
     }
     if (n == -1) { return QDomElement(); }
     return variables.at(n).toElement();
+}
+
+void MainWindow::addTable()
+{
+    if (!document_open) { return; }
+    QStringList used_ids;
+    QDomElement el_tables = document.documentElement().firstChildElement("tables");
+    if (el_tables.isNull()) {
+        el_tables = document.createElement("tables");
+        document.documentElement().appendChild(el_tables);
+    }
+    QDomNodeList tables = el_tables.elementsByTagName("table");
+    for (int i = 0; i < tables.count(); ++i) {
+        used_ids << tables.at(i).toElement().attribute("id");
+    }
+    QDomElement element = document.createElement("table");
+    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    if (md->exec() == QDialog::Accepted) {
+        el_tables.appendChild(element);
+        cb_table->addItem(element.attribute("id"));
+        cb_table_edit->addItem(element.attribute("id"));
+        this->setWindowModified(true);
+        viewChanged(cb_view->currentText());
+    }
+    delete md;
+}
+
+void MainWindow::modifyTable()
+{
+    QStringList used_ids;
+    QDomElement element = selectedTableElement(&used_ids);
+    if (element.isNull()) { return; }
+    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    if (md->exec() == QDialog::Accepted) {
+        int i = cb_table_edit->currentIndex();
+        int j = cb_table->currentIndex();
+        cb_table_edit->removeItem(i);
+        cb_table->removeItem(i);
+        cb_table_edit->insertItem(i, element.attribute("id"));
+        cb_table->insertItem(i, element.attribute("id"));
+        cb_table_edit->setCurrentIndex(i);
+        cb_table->setCurrentIndex(j);
+        this->setWindowModified(true);
+        viewChanged(cb_view->currentText());
+    }
+    delete md;
+}
+
+void MainWindow::removeTable()
+{
+    QDomElement element = selectedTableElement();
+    if (element.isNull()) { return; }
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    element.parentNode().removeChild(element);
+    int i = cb_table_edit->currentIndex();
+    cb_table_edit->removeItem(i);
+    cb_table->removeItem(i);
+    enableTools();
+    this->setWindowModified(true);
+    viewChanged(cb_view->currentText());
+}
+
+void MainWindow::loadTable(const QString &)
+{
+    if (!document_open) { return; }
+    if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
+    lw_table_variables->clear();
+    QDomElement el_tables = document.documentElement().firstChildElement("tables");
+    if (el_tables.isNull()) { return; }
+    QDomNodeList tables = el_tables.elementsByTagName("table");
+    QDomElement table;
+    for (int i = 0; i < tables.count(); ++i) {
+        if (tables.at(i).toElement().attribute("id") == cb_table_edit->currentText())
+            { table = tables.at(i).toElement(); break; }
+    }
+    if (table.isNull()) { return; }
+    QDomNodeList variables = table.elementsByTagName("var");
+    for (int i = 0; i < variables.count(); ++i) {
+        QDomElement var = variables.at(i).toElement();
+        QListWidgetItem * item = new QListWidgetItem;
+        QDomElement el_variables = document.documentElement().firstChildElement("variables");
+        QDomElement variable;
+        if (!el_variables.isNull()) {
+            variable = el_variables.firstChildElement("var");
+            while (!variable.isNull()) {
+                if (variable.attribute("id") == var.attribute("id")) { break; }
+                variable = variable.nextSiblingElement();
+            }
+        }
+        if (!variable.isNull()) {
+            item->setText(tr("%1 (%2)").arg(var.attribute("id")).arg(variable.attribute("name")));
+        } else {
+            item->setText(var.attribute("id"));
+        }
+        item->setData(Qt::UserRole, var.attribute("id"));
+        lw_table_variables->addItem(item);
+    }
+    enableTools();
+}
+
+QDomElement MainWindow::selectedTableElement(QStringList * used_ids)
+{
+    if (!document_open) { return QDomElement(); }
+    if (cb_table_edit->currentIndex() < 0) { return QDomElement(); }
+    QDomElement el_tables = document.documentElement().firstChildElement("tables");
+    if (el_tables.isNull()) { return QDomElement(); }
+    QDomNodeList tables = el_tables.elementsByTagName("table"); int n = -1;
+    for (int i = 0; i < tables.count(); ++i) {
+        if (n == -1 && tables.at(i).toElement().attribute("id") == cb_table_edit->currentText()) {
+            n = i;
+        } else {
+            if (used_ids) { *used_ids << tables.at(i).toElement().attribute("id"); }
+        }
+    }
+    if (n == -1) { return QDomElement(); }
+    return tables.at(n).toElement();
 }

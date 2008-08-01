@@ -32,16 +32,13 @@ public:
         dictionary.insert("Run-time per day: ", tr("Run-time per day: "));
         dictionary.insert(" hours", tr(" hours"));
         dictionary.insert("Rate of utilisation: ", tr("Rate of utilisation: "));
-        dictionary.insert("Amount of oil: ", tr("Amount of oil: "));
         dictionary.insert(" hours", tr(" hours"));
         dictionary.insert("Nominal: ", tr("Nominal: "));
-        dictionary.insert("Contact person: ", tr("Contact person: "));
         dictionary.insert("Nominal inspection: ", tr("Nominal inspection: "));
         dictionary.insert("Inspection: ", tr("Inspection: "));
         dictionary.insert(": ", tr(": "));
-        dictionary.insert(": ", tr(": "));
         dictionary.insert("Date of commissioning: ", tr("Date of commissioning: "));
-        dictionary.insert("Date of commissioning: ", tr("Date of commissioning: "));
+        dictionary.insert("Nominal inspection: ", tr("Nominal inspection: "));
         dictionary.insert("Nominal inspection: ", tr("Nominal inspection: "));
     };
 };

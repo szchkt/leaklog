@@ -27,16 +27,13 @@
     <string>Run-time per day: </string>
     <string> hours</string>
     <string>Rate of utilisation: </string>
-    <string>Amount of oil: </string>
     <string> hours</string>
     <string>Nominal: </string>
     <file path="single_inspection.xq" />
-    <string>Contact person: </string>
     <string>Nominal inspection: </string>
     <string>Inspection: </string>
     <string>: </string>
-    <string>: </string>
     <string>Date of commissioning: </string>
-    <string>Date of commissioning: </string>
+    <string>Nominal inspection: </string>
     <string>Nominal inspection: </string>
 </xqlproj>

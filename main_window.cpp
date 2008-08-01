@@ -93,6 +93,7 @@ MainWindow::MainWindow()
     cb_view->addItem(tr("Customer information")); view_indices.insert(tr("Customer information"), 1);
     cb_view->addItem(tr("Circuit information")); view_indices.insert(tr("Circuit information"), 2);
     cb_view->addItem(tr("Inspection information")); view_indices.insert(tr("Inspection information"), 3);
+    cb_view->addItem(tr("Table of inspections")); view_indices.insert(tr("Table of inspections"), 4);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
@@ -106,23 +107,37 @@ MainWindow::MainWindow()
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDocument()));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
+    QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
+    QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
+    QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
     QObject::connect(actionAdd_circuit, SIGNAL(triggered()), this, SLOT(addCircuit()));
     QObject::connect(actionModify_circuit, SIGNAL(triggered()), this, SLOT(modifyCircuit()));
+    QObject::connect(actionRemove_circuit, SIGNAL(triggered()), this, SLOT(removeCircuit()));
     QObject::connect(actionAdd_inspection, SIGNAL(triggered()), this, SLOT(addInspection()));
     QObject::connect(actionModify_inspection, SIGNAL(triggered()), this, SLOT(modifyInspection()));
+    QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
     QObject::connect(actionNew_variable, SIGNAL(triggered()), this, SLOT(addVariable()));
     QObject::connect(actionNew_subvariable, SIGNAL(triggered()), this, SLOT(addSubvariable()));
     QObject::connect(actionModify_variable, SIGNAL(triggered()), this, SLOT(modifyVariable()));
+    QObject::connect(actionRemove_variable, SIGNAL(triggered()), this, SLOT(removeVariable()));
+    QObject::connect(actionAdd_table, SIGNAL(triggered()), this, SLOT(addTable()));
+    QObject::connect(actionModify_table, SIGNAL(triggered()), this, SLOT(modifyTable()));
+    QObject::connect(actionRemove_table, SIGNAL(triggered()), this, SLOT(removeTable()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
+    QObject::connect(le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
+    QObject::connect(le_search_inspections, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_inspections, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(lw_customers, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCustomer(QListWidgetItem *)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(modifyVariable()));
-    QObject::connect(cb_circuit, SIGNAL(activated(const QString &)), this, SLOT(loadCircuit(const QString &)));
-    QObject::connect(cb_inspection, SIGNAL(activated(const QString &)), this, SLOT(loadInspection(const QString &)));
+    QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
+    QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
+    QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
+    QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
+    QObject::connect(lw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     wv_main->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     loadSettings();
@@ -147,10 +162,9 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(1).startsWith("circuit:")) {
             id = path.at(1);
             id.remove(0, QString("circuit:").length());
-            for (int i = 0; i < cb_circuit->count(); ++i) {
-                if (cb_circuit->itemText(i) == id) {
-                    if (cb_circuit->currentIndex() != i) cb_circuit->setCurrentIndex(i);
-                    loadCircuit(cb_circuit->itemText(i), path.count() <= 2); break;
+            for (int i = 0; i < lw_circuits->count(); ++i) {
+                if (lw_circuits->item(i)->data(Qt::UserRole).toString() == id) {
+                    loadCircuit(lw_circuits->item(i), path.count() <= 2); break;
                 }
             }
         } else if (path.at(1).startsWith("modify")) { modifyCustomer(); }
@@ -159,10 +173,9 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(2).startsWith("inspection:")) {
             id = path.at(2);
             id.remove(0, QString("inspection:").length());
-            for (int i = 0; i < cb_inspection->count(); ++i) {
-                if (cb_inspection->itemText(i) == id) {
-                    if (cb_inspection->currentIndex() != i) cb_inspection->setCurrentIndex(i);
-                    loadInspection(cb_inspection->itemText(i), path.count() <= 3); break;
+            for (int i = 0; i < lw_inspections->count(); ++i) {
+                if (lw_inspections->item(i)->data(Qt::UserRole).toString() == id) {
+                    loadInspection(lw_inspections->item(i), path.count() <= 3); break;
                 }
             }
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
@@ -188,6 +201,31 @@ void MainWindow::print()
     wv_main->print(&printer);
 }
 
+void MainWindow::find()
+{
+    if (!document_open) { return; }
+    bool ok;
+    QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
+    if (ok && !keyword.isEmpty()) {
+        last_search_keyword = keyword;
+        wv_main->findText(last_search_keyword);
+    }
+}
+
+void MainWindow::findNext()
+{
+    if (!document_open) { return; }
+    if (last_search_keyword.isEmpty()) { return; }
+    wv_main->findText(last_search_keyword);
+}
+
+void MainWindow::findPrevious()
+{
+    if (!document_open) { return; }
+    if (last_search_keyword.isEmpty()) { return; }
+    wv_main->findText(last_search_keyword, QWebPage::FindBackward);
+}
+
 void MainWindow::addRecent(QString name)
 {
     for (int i = 0; i < lw_recent_docs->count();) {
@@ -202,7 +240,12 @@ void MainWindow::addRecent(QString name)
 void MainWindow::clearAll()
 {
     lw_customers->clear();
+    lw_circuits->clear();
+    lw_inspections->clear();
+    cb_table->clear();
+    cb_table_edit->clear();
     trw_variables->clear();
+    lw_table_variables->clear();
 }
 
 void MainWindow::setAllEnabled(bool enable)
@@ -232,14 +275,29 @@ void MainWindow::setAllEnabled(bool enable)
 
 void MainWindow::enableTools()
 {
-    actionModify_customer->setEnabled(lw_customers->highlightedRow() >= 0);
-    actionRemove_customer->setEnabled(lw_customers->highlightedRow() >= 0);
-    actionAdd_circuit->setEnabled(lw_customers->highlightedRow() >= 0);
-    actionModify_circuit->setEnabled(cb_circuit->currentIndex() >= 0);
-    actionRemove_circuit->setEnabled(cb_circuit->currentIndex() >= 0);
-    actionAdd_inspection->setEnabled(cb_circuit->currentIndex() >= 0);
-    actionModify_inspection->setEnabled(cb_inspection->currentIndex() >= 0);
-    actionRemove_inspection->setEnabled(cb_inspection->currentIndex() >= 0);
+    bool customer_selected = lw_customers->highlightedRow() >= 0;
+    bool circuit_selected = lw_circuits->highlightedRow() >= 0;
+    bool inspection_selected = lw_inspections->highlightedRow() >= 0;
+    lbl_selected_customer->setText(customer_selected ? lw_customers->highlightedItem()->text() : QString());
+    lbl_current_selection_arrow1->setVisible(circuit_selected);
+    lbl_selected_circuit->setVisible(circuit_selected);
+    lbl_selected_circuit->setText(circuit_selected ? lw_circuits->highlightedItem()->text() : QString());
+    lbl_current_selection_arrow2->setVisible(inspection_selected);
+    lbl_selected_inspection->setVisible(inspection_selected);
+    lbl_selected_inspection->setText(inspection_selected ? lw_inspections->highlightedItem()->text() : QString());
+    actionModify_customer->setEnabled(customer_selected);
+    actionRemove_customer->setEnabled(customer_selected);
+    actionAdd_circuit->setEnabled(customer_selected);
+    actionModify_circuit->setEnabled(circuit_selected);
+    actionRemove_circuit->setEnabled(circuit_selected);
+    actionAdd_inspection->setEnabled(circuit_selected);
+    actionModify_inspection->setEnabled(inspection_selected);
+    actionRemove_inspection->setEnabled(inspection_selected);
+    actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL);
+    actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid());
+    actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
+    tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
+    tbtn_table_remove_variable->setEnabled(lw_table_variables->currentIndex().isValid());
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

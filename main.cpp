@@ -24,10 +24,11 @@ int main(int argc, char *argv[])
 	QSettings settings("SZCHKT", "Leaklog");
 	QString lang = settings.value("lang").toString();
 	if (lang.isEmpty()) {
-		lang = QLocale::languageToString(QLocale::system().language());
+		//lang = QLocale::languageToString(QLocale::system().language());
+        lang = "Slovak";
 		settings.setValue("lang", lang);
 	}
-	if (lang == "C") { lang = "English"; settings.setValue("lang", lang); }
+	if (lang == "C") { lang = "Slovak"; settings.setValue("lang", lang); }
 	if (lang != "English") {
 		QTranslator * translator = new QTranslator;
 		translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
