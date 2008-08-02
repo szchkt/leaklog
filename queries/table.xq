@@ -121,9 +121,9 @@ for $x in $circuit/inspection
 								else if (empty($x/@nominal)) then (
 									if (data($vars/var[@id=$y/@id]/var[@id=$z/@id]/@compare_nom)="true") then (
 										if (xs:double($x/var[@id=$y/@id]/var[@id=$z/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id])) then (
-											string("↑")
+											<span style="font-size: large">↑</span>
 										) else if (xs:double($x/var[@id=$y/@id]/var[@id=$z/@id]) < xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id])) then (
-											string("↓")
+											<span style="font-size: large">↓</span>
 										) else ()
 									) else ()
 								) else(),
@@ -186,9 +186,9 @@ for $x in $circuit/inspection
 								else if (empty($x/@nominal)) then (
 									if (data($vars/var[@id=$y/@id]/@compare_nom="true")) then (
 										if (xs:double($x/var[@id=$y/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id])) then (
-											string("↑")
+											<span style="font-size: large">↑</span>
 										) else if (xs:double($x/var[@id=$y/@id]) < xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id])) then (
-											string("↓")
+											<span style="font-size: large">↓</span>
 										) else ()
 									) else ()
 								) else(),
@@ -317,9 +317,9 @@ function evaluateExpressions() {
 		}
 		if (value != "") {
 			if (Math.min(nominal, value) == nominal && nominal != value) {
-				value = "↑" + value.toLocaleString();
+				value = "<span style=\"font-size: large\">↑</span>" + value.toLocaleString();
 			} else if (nominal != value) {
-				value = "↓" + value.toLocaleString();
+				value = "<span style=\"font-size: large\">↓</span>" + value.toLocaleString();
 			} else {
 				value = value.toLocaleString();
 			}
