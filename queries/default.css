@@ -38,3 +38,19 @@ tr.nominal {
 	border: 1px solid #CACACA; // #990000
 	border-collapse: collapse;
 }
+a:link {
+	color: #333333;
+	text-decoration: none;
+}
+a:visited {
+	color: #333333;
+	text-decoration: none;
+}
+a:hover {
+	color: #660000;
+	text-decoration: underline;
+}
+a:active {
+	color: #333333;
+	text-decoration: none;
+}
