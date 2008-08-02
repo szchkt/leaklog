@@ -36,9 +36,9 @@ public:
         dictionary.insert("Nominal inspection: ", tr("Nominal inspection: "));
         dictionary.insert("Inspection: ", tr("Inspection: "));
         dictionary.insert(": ", tr(": "));
-        dictionary.insert("Nominal inspection: ", tr("Nominal inspection: "));
         dictionary.insert("Nominal: ", tr("Nominal: "));
-        dictionary.insert("Nominal: ", tr("Nominal: "));
+        dictionary.insert("Warnings", tr("Warnings"));
+        dictionary.insert("Inspections", tr("Inspections"));
         dictionary.insert("Warnings", tr("Warnings"));
     };
 };

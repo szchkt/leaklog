@@ -147,7 +147,7 @@
         <translation>&amp;Zahodiť</translation>
     </message>
     <message>
-        <location filename="../document.cpp" line="25"/>
+        <location filename="../document.cpp" line="845"/>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
     </message>
@@ -602,7 +602,7 @@ To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:<
 Na odstránenie všetkých údajov o inšpekcii &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../document.cpp" line="638"/>
+        <location filename="../document.cpp" line="845"/>
         <source>Remove variable - Leaklog</source>
         <translation>Odstrániť premennú - Leaklog</translation>
     </message>
@@ -699,6 +699,11 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <location filename="../main_window.ui" line="1195"/>
         <source>Modify table</source>
         <translation>Upraviť tabuľku</translation>
+    </message>
+    <message>
+        <location filename="../document.cpp" line="845"/>
+        <source>Are you sure you want to remove the variable &quot;%1&quot; from the selected table?</source>
+        <translation>Naozaj chcete odstrániť premennú &quot;%1&quot; z vybranej tabuľky?</translation>
     </message>
 </context>
 <context>
@@ -1062,12 +1067,12 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <translation>Stupeň zaťaženia: </translation>
     </message>
     <message>
-        <location filename="../i18n.h" line="41"/>
+        <location filename="../i18n.h" line="39"/>
         <source>Nominal: </source>
         <translation>Nominálna: </translation>
     </message>
     <message>
-        <location filename="../i18n.h" line="39"/>
+        <location filename="../i18n.h" line="36"/>
         <source>Nominal inspection: </source>
         <translation>Nominálna inšpekcia: </translation>
     </message>
@@ -1085,6 +1090,11 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <location filename="../i18n.h" line="42"/>
         <source>Warnings</source>
         <translation>Upozornenia</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="41"/>
+        <source>Inspections</source>
+        <translation>Inšpekcie</translation>
     </message>
 </context>
 </TS>

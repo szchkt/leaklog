@@ -838,5 +838,22 @@ void MainWindow::addTableVariable()
 void MainWindow::removeTableVariable()
 {
     if (!document_open) { return; }
-    
+    if (!lw_table_variables->currentIndex().isValid()) { return; }
+    QListWidgetItem * item = lw_table_variables->currentItem();
+    QDomElement table = selectedTableElement();
+    if (table.isNull()) { return; }
+    switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->data(Qt::UserRole).toString()), tr("Remove"), tr("Cancel"), 0, 1)) {
+        case 0: // Remove
+            break;
+        case 1: // Cancel
+            return; break;
+    }
+    QDomNodeList variables = table.elementsByTagName("var");
+    for (int i = 0; i < variables.count(); ++i) {
+        if (variables.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString())
+            { table.removeChild(variables.at(i)); }
+    }
+    loadTable(cb_table_edit->currentText());
+    this->setWindowModified(true);
+    viewChanged(cb_view->currentText());
 }
