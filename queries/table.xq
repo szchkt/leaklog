@@ -118,7 +118,7 @@ for $x in $circuit/inspection
 						}">{
 							if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
-								else if (empty($x/@nominal)) then (
+								else if (not(data($x/@nominal)="true")) then (
 									if (data($vars/var[@id=$y/@id]/var[@id=$z/@id]/@compare_nom)="true") then (
 										if (xs:double($x/var[@id=$y/@id]/var[@id=$z/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id])) then (
 											<span style="font-size: large">↑</span>
@@ -183,7 +183,7 @@ for $x in $circuit/inspection
 						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }">{
 							if (empty($vars/var[@id=$y/@id]/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
-								else if (empty($x/@nominal)) then (
+								else if (not(data($x/@nominal)="true")) then (
 									if (data($vars/var[@id=$y/@id]/@compare_nom="true")) then (
 										if (xs:double($x/var[@id=$y/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id])) then (
 											<span style="font-size: large">↑</span>
@@ -196,7 +196,7 @@ for $x in $circuit/inspection
 							) else (
 								<expression>{
 								if (data($table/@highlight_nominal)="false") then ()
-								else if (empty($x/@nominal)) then (
+								else if (not(data($x/@nominal)="true")) then (
 									if (data($vars/var[@id=$y/@id]/@compare_nom="true")) then (
 										for $ev in $vars/var[@id=$y/@id]/value/ec
 											return (
