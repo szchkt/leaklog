@@ -21,14 +21,6 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <property name="geometry" >
-    <rect>
-     <x>167</x>
-     <y>84</y>
-     <width>536</width>
-     <height>645</height>
-    </rect>
-   </property>
    <layout class="QGridLayout" name="gridLayout_5" >
     <property name="margin" >
      <number>0</number>
@@ -39,14 +31,6 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="page_welcome" >
-       <property name="geometry" >
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>536</width>
-         <height>645</height>
-        </rect>
-       </property>
        <layout class="QGridLayout" name="gridLayout_2" >
         <item row="1" column="0" >
          <spacer name="horizontalSpacer_4" >
@@ -118,7 +102,7 @@
            <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="frameShadow" >
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Plain</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2" >
            <item>
@@ -180,14 +164,6 @@
        <zorder>frame_welcome</zorder>
       </widget>
       <widget class="QWidget" name="page_main" >
-       <property name="geometry" >
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>536</width>
-         <height>645</height>
-        </rect>
-       </property>
        <layout class="QGridLayout" name="gridLayout_4" >
         <item row="1" column="0" >
          <spacer name="horizontalSpacer_6" >
@@ -292,7 +268,7 @@
            <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="frameShadow" >
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Plain</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_5" >
            <property name="margin" >
@@ -479,25 +455,8 @@
    <addaction name="menuVariable" />
    <addaction name="menuHelp" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>729</y>
-     <width>982</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusbar" />
   <widget class="QToolBar" name="toolBar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>22</y>
-     <width>982</width>
-     <height>62</height>
-    </rect>
-   </property>
    <property name="windowTitle" >
     <string>Tool bar</string>
    </property>
@@ -526,14 +485,6 @@
    <addaction name="actionPrint" />
   </widget>
   <widget class="QDockWidget" name="dw_customers" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>84</y>
-     <width>161</width>
-     <height>645</height>
-    </rect>
-   </property>
    <property name="features" >
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -547,14 +498,6 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dwc_customers" >
-    <property name="geometry" >
-     <rect>
-      <x>0</x>
-      <y>26</y>
-      <width>161</width>
-      <height>619</height>
-     </rect>
-    </property>
     <layout class="QGridLayout" name="gridLayout" >
      <item row="1" column="0" >
       <widget class="QLabel" name="lbl_search_customers" >
@@ -647,14 +590,6 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dw_variables" >
-   <property name="geometry" >
-    <rect>
-     <x>709</x>
-     <y>84</y>
-     <width>273</width>
-     <height>645</height>
-    </rect>
-   </property>
    <property name="allowedAreas" >
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -665,14 +600,6 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dwc_variables" >
-    <property name="geometry" >
-     <rect>
-      <x>0</x>
-      <y>26</y>
-      <width>273</width>
-      <height>619</height>
-     </rect>
-    </property>
     <layout class="QVBoxLayout" name="verticalLayout" >
      <item>
       <widget class="QTreeWidget" name="trw_variables" >
