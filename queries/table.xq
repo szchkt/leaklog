@@ -48,7 +48,7 @@ for $i in $table/var
 	return <th colspan="{$s}" rowspan="{
 			if ($s > 1) then xs:integer(1)
 			else 2+xs:integer(empty($vars/var[@id=$i/@id]/@unit))
-		}" style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($vars/var[@id=$i/@id]/@name)}</th>
+		}" class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($vars/var[@id=$i/@id]/@name)}</th>
 }
 </tr>,
 <tr>
@@ -61,7 +61,7 @@ for $i in $table/var
 							if (xs:integer(empty($z/@unit)) = 1) then (
 								2
 							) else (1)
-							}" style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($z/@name)}</th>
+							}" class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($z/@name)}</th>
 		)
 		else ()
 }
@@ -75,12 +75,12 @@ for $i in $table/var
 				return
 					if (empty($z/@unit)) then ()
 					else (
-						<th style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($z/@unit)}</th>
+						<th class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($z/@unit)}</th>
 					)
 		)
 		else (
 			if (empty($vars/var[@id=$i/@id]/@unit)) then ()
-			else <th style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($vars/var[@id=$i/@id]/@unit)}</th>
+			else <th class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($vars/var[@id=$i/@id]/@unit)}</th>
 		)
 }
 </tr>
@@ -89,7 +89,7 @@ for $i in $table/var
 declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element())  {
 
 for $x in $circuit/inspection
-	return <tr onClick="window.location.href='';" class="{
+	return <tr onClick="window.location.href='customer:{ data($circuit/../@id) }/circuit:{ data($circuit/@id) }/inspection:{ data($x/@date) }';" class="{
 			if (data($table/@highlight_nominal)="false") then ()
 			else if ($x/@nominal="true") then (xs:string("nominal"))
 			else ()
@@ -105,7 +105,7 @@ for $x in $circuit/inspection
 						}" remove="{
 								if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then ()
 								else ( substring-before($x/@date, '.') )
-							}" style="background-color: { data($vars/var[@id=$y/@id]/@col_bg) };" rowspan="{
+						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }" rowspan="{
 							if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then (
 								1
 							) else (
@@ -180,7 +180,7 @@ for $x in $circuit/inspection
 				)
 				else (<td id="{
 							data($y/@id)
-						}" style="background-color: { data($vars/var[@id=$y/@id]/@col_bg) };">{
+						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }">{
 							if (empty($vars/var[@id=$y/@id]/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
 								else if (empty($x/@nominal)) then (
@@ -202,11 +202,11 @@ for $x in $circuit/inspection
 											return (
 												if (empty($ev/@f)) then (
 													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-														string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
 													)
 													else (
-														if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (0)
-														else string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
+														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
 													)
 												) else (
 													data($ev/@f)
@@ -246,7 +246,7 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 							if (count($var/var)) then (
 								for $v in $vars/var[@id=$i/@id]/var
 									return
-										<td style="background-color: { data($var/@col_bg) };">{
+										<td class="{ data($var/@col_bg) }">{
 										if (data($f/@function)="sum") then (
 											if (count($v/value/ec/@sum)) then (
 												local:returnFootExpression($v, $circuit)
@@ -259,15 +259,15 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 							) else (
 								if (data($f/@function)="sum") then (
 									let $s := for $z in $circuit/inspection return $z/var[@id=$f/@id]
-									return <td style="background-color: { data($var/@col_bg) };">{sum($s)}</td>
+									return <td class="{ data($var/@col_bg) }">{sum($s)}</td>
 								) else <td></td>
 							)
 					) else (
 						if (count($var/var)) then (
 							for $v in $var/var
-								return <td style="background-color: { data($v/../@col_bg) };"></td>
+								return <td class="{ data($v/../@col_bg) }"></td>
 						) else (
-							<td style="background-color: { data($var/@col_bg) };"></td>
+							<td class="{ data($var/@col_bg) }"></td>
 						)
 					)
 		}
@@ -281,6 +281,7 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Table</title>
 <link href="default.css" rel="stylesheet" type="text/css" />
+<link href="colours.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 <!--
 function evaluateExpressions() {
