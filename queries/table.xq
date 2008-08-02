@@ -1,6 +1,5 @@
 declare variable $inputDocument external;
 declare function local:returnAnyVar ($var as element(), $i as element()) {
-
 	for $ev in $var/value/ec
 		return
 			if (count($ev/@f)) then (
@@ -49,13 +48,7 @@ for $i in $table/var
 	return <th colspan="{$s}" rowspan="{
 			if ($s > 1) then xs:integer(1)
 			else 2+xs:integer(empty($vars/var[@id=$i/@id]/@unit))
-		}" class="{
-			if (data($vars/var[@id=$i/@id]/@clmn_bgr)="green") then (
-				"green"
-			) else if (data($vars/var[@id=$i/@id]/@clmn_bgr)="yellow") then (
-				"yellow"
-			) else ()
-		}">{data($vars/var[@id=$i/@id]/@name)}</th>
+		}" style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($vars/var[@id=$i/@id]/@name)}</th>
 }
 </tr>,
 <tr>
@@ -68,13 +61,7 @@ for $i in $table/var
 							if (xs:integer(empty($z/@unit)) = 1) then (
 								2
 							) else (1)
-							}" class="{
-								if (data($vars/var[@id=$i/@id]/@clmn_bgr)="green") then (
-									"green"
-								) else if (data($vars/var[@id=$i/@id]/@clmn_bgr)="yellow") then (
-									"yellow"
-								) else ()
-							}">{data($z/@name)}</th>
+							}" style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($z/@name)}</th>
 		)
 		else ()
 }
@@ -88,12 +75,12 @@ for $i in $table/var
 				return
 					if (empty($z/@unit)) then ()
 					else (
-						<th>{data($z/@unit)}</th>
+						<th style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($z/@unit)}</th>
 					)
 		)
 		else (
 			if (empty($vars/var[@id=$i/@id]/@unit)) then ()
-			else <th>{data($vars/var[@id=$i/@id]/@unit)}</th>
+			else <th style="background-color: { data($vars/var[@id=$i/@id]/@col_bg) };">{data($vars/var[@id=$i/@id]/@unit)}</th>
 		)
 }
 </tr>
@@ -118,13 +105,7 @@ for $x in $circuit/inspection
 						}" remove="{
 								if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then ()
 								else ( substring-before($x/@date, '.') )
-							}" class="{
-							if (data($vars/var[@id=$y/@id]/@clmn_bgr)="green") then (
-								"green"
-							) else if (data($vars/var[@id=$y/@id]/@clmn_bgr)="yellow") then (
-								"yellow"
-							) else ()
-						}" rowspan="{
+							}" style="background-color: { data($vars/var[@id=$y/@id]/@col_bg) };" rowspan="{
 							if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then (
 								1
 							) else (
@@ -156,7 +137,8 @@ for $x in $circuit/inspection
 											return (
 												if (count($ev/@id)) then (
 													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-														string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
 													) else (
 														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
 													)
@@ -173,7 +155,8 @@ for $x in $circuit/inspection
 											data($ev/@f)
 										) else if (count($ev/@sum)) then (
 											for $sum in $x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')]
-											return ( string("+"), data($sum/var/var[@id=$ev/@sum]) )
+											return ( if (empty($sum/var/var[@id=$ev/@sum])) then ()
+													else string("+"), data($sum/var/var[@id=$ev/@sum]) )
 										) else if (count($ev/@cc_attr)) then (
 											for $att in $x/../@*
 											return (
@@ -184,7 +167,8 @@ for $x in $circuit/inspection
 											(:data(functx:dynamic-path($circuit, concat('@', data($ev/@cc_attr)))):)
 										) else (
 											if (empty($x/var[@id=$ev/@id])) then (
-												string($x/var/var[@id=$ev/@id])
+												if (empty($x/var/var[@id=$ev/@id])) then (0)
+												else string($x/var/var[@id=$ev/@id])
 											) else (
 												string($x/var[@id=$ev/@id])
 											)
@@ -196,13 +180,7 @@ for $x in $circuit/inspection
 				)
 				else (<td id="{
 							data($y/@id)
-						}" class="{
-							if (data($vars/var[@id=$y/@id]/@clmn_bgr)="green") then (
-								"green"
-							) else if (data($vars/var[@id=$y/@id]/@clmn_bgr)="yellow") then (
-								"yellow"
-							) else ()
-						}">{
+						}" style="background-color: { data($vars/var[@id=$y/@id]/@col_bg) };">{
 							if (empty($vars/var[@id=$y/@id]/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
 								else if (empty($x/@nominal)) then (
@@ -227,7 +205,8 @@ for $x in $circuit/inspection
 														string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
 													)
 													else (
-														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
+														if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (0)
+														else string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
 													)
 												) else (
 													data($ev/@f)
@@ -240,7 +219,8 @@ for $x in $circuit/inspection
 									return
 										if (empty($ev/@f)) then (
 											if (empty($x/var[@id=$ev/@id])) then (
-												string($x/var/var[@id=$ev/@id])
+												if (empty($x/var/var[@id=$ev/@id])) then (0)
+												else string($x/var/var[@id=$ev/@id])
 											) else (
 												string($x/var[@id=$ev/@id])
 											)
@@ -253,8 +233,7 @@ for $x in $circuit/inspection
 		}</tr>
 };
 
-declare function local:setTableFoot ($table as element(), $circuit as element(), $vars as element())  {
-
+declare function local:setTableFoot ($table as element(), $circuit as element(), $vars as element()) {
 	if ($table/foot) then (
 		<tr class="border_top border_bottom">{
 			<td>{data($table/foot/@name)}</td>,
@@ -267,13 +246,7 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 							if (count($var/var)) then (
 								for $v in $vars/var[@id=$i/@id]/var
 									return
-										<td class="{
-											if (data($var/@clmn_bgr)="green") then (
-												"green"
-										) else if (data($var/@clmn_bgr)="yellow") then (
-												"yellow"
-											) else ()
-										}">{
+										<td style="background-color: { data($var/@col_bg) };">{
 										if (data($f/@function)="sum") then (
 											if (count($v/value/ec/@sum)) then (
 												local:returnFootExpression($v, $circuit)
@@ -286,33 +259,15 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 							) else (
 								if (data($f/@function)="sum") then (
 									let $s := for $z in $circuit/inspection return $z/var[@id=$f/@id]
-									return <td class="{
-													if (data($var/@clmn_bgr)="green") then (
-														"green"
-													) else if (data($var/@clmn_bgr)="yellow") then (
-														"yellow"
-													) else ()
-													}">{sum($s)}</td>
+									return <td style="background-color: { data($var/@col_bg) };">{sum($s)}</td>
 								) else <td></td>
 							)
 					) else (
 						if (count($var/var)) then (
 							for $v in $var/var
-								return <td class="{
-											if (data($v/../@clmn_bgr)="green") then (
-												"green"
-											) else if (data($v/../@clmn_bgr)="yellow") then (
-												"yellow"
-											) else ()
-											}"></td>
+								return <td style="background-color: { data($v/../@col_bg) };"></td>
 						) else (
-							<td class="{
-									if (data($var/@clmn_bgr)="green") then (
-										"green"
-									) else if (data($var/@clmn_bgr)="yellow") then (
-										"yellow"
-									) else ()
-									}"></td>
+							<td style="background-color: { data($var/@col_bg) };"></td>
 						)
 					)
 		}
@@ -393,8 +348,8 @@ function evaluateFootExpressions() {
 		var array = new Array();
 		var expression = new Number;
 		for (var i = 0; i < exprs.length; i++) {
-			if (array.indexOf(exprs[i].getAttribute("date").split('.')[1]) < 0) {
-				array.push(exprs[i].getAttribute("date").split('.')[1]);
+			if (array.indexOf(exprs[i].getAttribute("date").split('.')[0]) < 0) {
+				array.push(exprs[i].getAttribute("date").split('.')[0]);
 				var expr = exprs[i].innerText;
 				if (expr.match(/^[0-9+\-*/(). ]*$/)) {
 					try {
@@ -477,10 +432,19 @@ function showWarnings() {
 	}
 }
 
+function fillInEmptyElements() {
+	var tds = document.getElementById('main_table_body').getElementsByTagName('td');
+	for (var i = 0; i < tds.length; i++) {
+		if (tds[i].innerText == "") {
+			tds[i].innerHTML = '0';
+		}
+	}
+}
+
 -->
 </script>
 </head>
-<body onLoad="removeRepeated(); evaluateFootExpressions(); evaluateExpressions(); showWarnings();">
+<body onLoad="removeRepeated(); fillInEmptyElements(); evaluateFootExpressions(); evaluateExpressions(); showWarnings();">
 {
 let $d := doc($inputDocument)
 let $table := $d/leaklog/tables/table[@id="%1"]
