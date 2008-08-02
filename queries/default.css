@@ -32,18 +32,6 @@ header_bottom {
 tr.nominal {
 	background-color: #FFFF33;
 }
-th.green {
-	background-color: #00CC00;
-}
-th.yellow {
-	background-color: #FFFF33;
-}
-td.green {
-	background-color: #00CC00;
-}
-td.yellow {
-	background-color: #FFFF33;
-}
 .default_table {
 	background-color: #eee;
 	border-spacing: 2px;
