@@ -27,13 +27,13 @@
     <string>Run-time per day: </string>
     <string> hours</string>
     <string>Rate of utilisation: </string>
-    <string> hours</string>
     <string>Nominal: </string>
     <file path="single_inspection.xq" />
     <string>Nominal inspection: </string>
     <string>Inspection: </string>
     <string>: </string>
-    <string>Date of commissioning: </string>
     <string>Nominal inspection: </string>
-    <string>Nominal inspection: </string>
+    <string>Nominal: </string>
+    <string>Nominal: </string>
+    <string>Warnings</string>
 </xqlproj>
