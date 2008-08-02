@@ -4,5 +4,8 @@
     <file>queries/single_customer.xq</file>
     <file>queries/single_circuit.xq</file>
     <file>queries/single_inspection.xq</file>
+    <file>queries/table.xq</file>
+    <file>queries/default.css</file>
+    <file>queries/colours.css</file>
   </qresource>
 </RCC>

@@ -9,7 +9,8 @@ HEADERS      += main_window.h \
                 mtlistwidget.h \
                 modify_dialogue.h \
                 mtdictionary.h \
-                i18n.h
+                i18n.h \
+                mtcolourcombobox.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 queries.qrc

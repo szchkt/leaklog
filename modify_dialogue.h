@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "mtdictionary.h"
+#include "mtcolourcombobox.h"
 
 #include <QDomDocument>
 #include <QTextDocument>
@@ -30,7 +31,6 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QCheckBox>
-#include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QSyntaxHighlighter>

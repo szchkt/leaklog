@@ -50,6 +50,9 @@ MainWindow::MainWindow()
     file.setFileName(":/queries/single_inspection.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_queries.insert(tr("Inspection information"), in.readAll());
     file.close();
+    file.setFileName(":/queries/table.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_queries.insert(tr("Table of inspections"), in.readAll());
+    file.close();
     // -------
     // i18n -> JavaScript
     dict_i18n_javascript.append("function Dictionary(startValues) {\n");
@@ -126,6 +129,8 @@ MainWindow::MainWindow()
     QObject::connect(actionAdd_table, SIGNAL(triggered()), this, SLOT(addTable()));
     QObject::connect(actionModify_table, SIGNAL(triggered()), this, SLOT(modifyTable()));
     QObject::connect(actionRemove_table, SIGNAL(triggered()), this, SLOT(removeTable()));
+    QObject::connect(tbtn_table_add_variable, SIGNAL(clicked()), this, SLOT(addTableVariable()));
+    QObject::connect(tbtn_table_remove_variable, SIGNAL(clicked()), this, SLOT(removeTableVariable()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
@@ -136,6 +141,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
+    QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(lw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
@@ -178,6 +184,9 @@ void MainWindow::executeLink(const QUrl & url)
                     loadInspection(lw_inspections->item(i), path.count() <= 3); break;
                 }
             }
+        } else if (path.at(2).startsWith("table")) {
+            cb_view->setCurrentIndex(view_indices.value(tr("Table of inspections")));
+            viewChanged(cb_view->currentText());
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
     }
     if (path.count() > 3) {

@@ -205,8 +205,8 @@ void MainWindow::viewChanged(const QString & view)
 {
     if (!document_open) { wv_main->setHtml(QString()); return; }
 
-    lbl_table->setEnabled(view == tr("Table of inspections"));
-    cb_table->setEnabled(view == tr("Table of inspections"));
+    lbl_table->setEnabled(view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections"));
+    cb_table->setEnabled(view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections"));
 
     QBuffer device;
     device.setData(document.toString(1).toUtf8());
@@ -223,6 +223,8 @@ void MainWindow::viewChanged(const QString & view)
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
     } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_inspections->highlightedItem()->data(Qt::UserRole).toString()));
+    } else if ((view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections")) && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
+        query.setQuery(dict_queries.value(cb_view->currentText()).arg(cb_table->currentText()).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
     }
 
     if (!query.isValid()) {
@@ -230,6 +232,7 @@ void MainWindow::viewChanged(const QString & view)
         if (view == tr("Customer information")) { html.append(tr("No customer selected.")); }
         else if (view == tr("Circuit information")) { html.append(tr("No circuit selected.")); }
         else if (view == tr("Inspection information")) { html.append(tr("No inspection selected.")); }
+        else if (view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections")) { html.append(tr("No circuit selected.")); }
         else { html.append(tr("Error: Invalid query.")); }
         html.append("</strong></p>");
         wv_main->setHtml(html);
@@ -242,7 +245,7 @@ void MainWindow::viewChanged(const QString & view)
     if (!query.evaluateTo(&formatter))
         { wv_main->setHtml(QString("<p style=\"font-family: 'Lucida Grande', 'Lucida Sans Unicode', verdana, lucida, sans-serif;\" align=\"center\"><strong>%1</strong></p>").arg(tr("Error: Query execution failed."))); return; }
     buffer.close();
-    wv_main->setHtml(QString::fromUtf8(out.constData()));
+    wv_main->setHtml(QString::fromUtf8(out.constData()), QUrl("qrc:/queries/"));
 }
 
 void MainWindow::addCustomer()
@@ -776,4 +779,64 @@ QDomElement MainWindow::selectedTableElement(QStringList * used_ids)
     }
     if (n == -1) { return QDomElement(); }
     return tables.at(n).toElement();
+}
+
+void MainWindow::addTableVariable()
+{
+    if (!document_open) { return; }
+    QDomElement table = selectedTableElement();
+    if (table.isNull()) { return; }
+    QDomElement el_variables = document.documentElement().firstChildElement("variables");
+    if (el_variables.isNull()) { return; }
+    QDomElement variable = el_variables.firstChildElement("var");
+    if (variable.isNull()) { return; }
+    QStringList used_ids;
+    for (int i = 0; i < lw_table_variables->count(); ++i) {
+        used_ids << lw_table_variables->item(i)->data(Qt::UserRole).toString();
+    }
+    QDialog * d = new QDialog(this);
+	d->setWindowTitle(tr("Add existing variable - Leaklog"));
+    d->setMinimumSize(QSize(300, 350));
+        QVBoxLayout * vl = new QVBoxLayout(d);
+        vl->setMargin(6); vl->setSpacing(6);
+            QHBoxLayout * hl = new QHBoxLayout(d);
+            hl->setMargin(0); hl->setSpacing(6);
+                QLabel * lbl = new QLabel(tr("Search:"), d);
+                ExtendedLineEdit * sle = new ExtendedLineEdit(d);
+            hl->addWidget(lbl);
+            hl->addWidget(sle);
+        vl->addLayout(hl);
+            MTListWidget * lw = new MTListWidget(d);
+            QObject::connect(lw, SIGNAL(itemDoubleClicked(QListWidgetItem *)), d, SLOT(accept()));
+            QObject::connect(sle, SIGNAL(textChanged(QLineEdit *, const QString &)), lw, SLOT(filterItems(QLineEdit *, const QString &)));
+        vl->addWidget(lw);
+            QDialogButtonBox * bb = new QDialogButtonBox(d);
+            bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+            QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+            QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+        vl->addWidget(bb);
+    while (!variable.isNull()) {
+        if (!used_ids.contains(variable.attribute("id"))) {
+            QListWidgetItem * item = new QListWidgetItem;
+            item->setText(variable.attribute("name").isEmpty() ? variable.attribute("id") : tr("%1 (%2)").arg(variable.attribute("id")).arg(variable.attribute("name")));
+            item->setData(Qt::UserRole, variable.attribute("id"));
+            lw->addItem(item);
+        }
+        variable = variable.nextSiblingElement();
+    }
+    if (d->exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
+        QDomElement var = document.createElement("var");
+        var.setAttribute("id", lw->currentItem()->data(Qt::UserRole).toString());
+        table.appendChild(var);
+        loadTable(cb_table_edit->currentText());
+        this->setWindowModified(true);
+        viewChanged(cb_view->currentText());
+    }
+    delete d;
+}
+
+void MainWindow::removeTableVariable()
+{
+    if (!document_open) { return; }
+    
 }

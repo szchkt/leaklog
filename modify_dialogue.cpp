@@ -19,7 +19,7 @@
 
 #include "main_window.h"
 
-Highlighter::Highlighter(QStringList used_ids, QTextDocument *parent):
+Highlighter::Highlighter(QStringList used_ids, QTextDocument * parent):
 QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
@@ -151,6 +151,8 @@ QDialog(parent)
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
         md_dict_input.insert("compare_nom", "chb");
+        md_dict.insert("col_bg", tr("Colour"));
+        md_dict_input.insert("col_bg", "ccb");
     } else if (md_element.nodeName() == "table") {
         md_dict.insert("table", tr("Table"));
         md_dict.insert("id", tr("ID"));
@@ -262,6 +264,12 @@ QDialog(parent)
                     }
                     md_cb_var->setCurrentIndex(n);
                     md_w_var = md_cb_var;
+                } else if (inputtype.at(0) == "ccb") {
+                    MTColourComboBox * md_ccb_var = new MTColourComboBox(this);
+                    for (int j = 0; j < md_ccb_var->count(); ++j) {
+                        if (md_ccb_var->itemText(j) == value) { md_ccb_var->setCurrentIndex(j); break; }
+                    }
+                    md_w_var = md_ccb_var;
                 } else if (inputtype.at(0) == "dte") {
                     QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
                     md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
@@ -321,7 +329,7 @@ void ModifyDialogue::save()
             value = QString("%1").arg(((QSpinBox *)i.value())->value());
         } else if (inputtype.at(0) == "dspb") {
             value = QString("%1").arg(((QDoubleSpinBox *)i.value())->value());
-        } else if (inputtype.at(0) == "cb") {
+        } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "ccb") {
             value = ((QComboBox *)i.value())->currentText();
             if (md_element.nodeName() == "var" && i.key() == "type") {
                 value = dict_vartypes.firstKey(value);
@@ -442,7 +450,11 @@ void ModifyDialogue::save()
         }
         if (!id_.isEmpty()) {
             QDomElement ec = md_parent->document.createElement("ec");
-            ec.setAttribute("id", id_);
+            if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
+                ec.setAttribute("cc_attr", id_);
+            } else {
+                ec.setAttribute(last_sum ? "sum" : "id", id_);
+            }
             el_value.appendChild(ec);
             id_.clear();
         }

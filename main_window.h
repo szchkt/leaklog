@@ -83,6 +83,8 @@ private slots:
     void modifyTable();
     void removeTable();
     void loadTable(const QString &);
+    void addTableVariable();
+    void removeTableVariable();
 
 private:
     // UI
