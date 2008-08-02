@@ -89,7 +89,7 @@ for $i in $table/var
 declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element())  {
 
 for $x in $circuit/inspection
-	return <tr onClick="window.location.href='customer:{ data($circuit/../@id) }/circuit:{ data($circuit/@id) }/inspection:{ data($x/@date) }';" class="{
+	return <tr onClick="location.href='customer:{ data($circuit/../@id) }/circuit:{ data($circuit/@id) }/inspection:{ data($x/@date) }';" class="{
 			if (data($table/@highlight_nominal)="false") then ()
 			else if ($x/@nominal="true") then (xs:string("nominal"))
 			else ()
