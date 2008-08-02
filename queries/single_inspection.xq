@@ -18,9 +18,9 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 							if (not(count($w/value))) then (
 								if (data($w/@compare_nom="true")) then (
 									if (xs:double($iw) > xs:double($i/../inspection[@nominal="true"]/var[@id=$v/@id]/var[@id=$w/@id])) then (
-										string("↑")
+										<span style="font-size: large">↑</span>
 									) else if (xs:double($iw) < xs:double($i/../inspection[@nominal="true"]/var[@id=$v/@id]/var[@id=$w/@id])) then (
-										string("↓")
+										<span style="font-size: large">↓</span>
 									) else ()
 								) else (),
 								data($iw)
@@ -86,9 +86,9 @@ declare function local:returnVar ($i as element(), $v as element())  {
 							if (not(count($v/value))) then (
 								if (data($v/@compare_nom)="true") then (
 									if (xs:double($iv) > xs:double($i/../inspection[@nominal="true"]/var[@id=$v/@id])) then (
-										string("↑")
+										<span style="font-size: large">↑</span>
 									) else if (xs:double($iv) < xs:double($i/../inspection[@nominal="true"]/var[@id=$v/@id])) then (
-										string("↓")
+										<span style="font-size: large">↓</span>
 									) else ()
 								) else (),
 								data($iv)
@@ -205,9 +205,9 @@ function evaluateExpressions() {
 		}
 		if (value != "") {
 			if (Math.min(nominal, value) == nominal && nominal != value) {
-				value = "↑" + value.toLocaleString();
+				value = "<span style=\"font-size: large\">↑</span>" + value.toLocaleString();
 			} else if (nominal != value) {
-				value = "↓" + value.toLocaleString();
+				value = "<span style=\"font-size: large\">↓</span>" + value.toLocaleString();
 			} else {
 				value = value.toLocaleString();
 			}
@@ -308,7 +308,8 @@ return (
 	<td style="width:50%;"><table id="table_r" cellspacing="0" cellpadding="4" style="width:100%;">
 	</table></td></tr>
 	</tbody>
-	</table></td></tr>,<tr><td>
+	</table></td></tr>,
+	<tr><td>
 	<table cellspacing="0" cellpadding="4" style="width:100%;" id="poruchy_element">
 	<tr><td colspan="2" style="font-size: larger; width:100%;">
 	<b><i18n>Warnings</i18n></b></td></tr>
