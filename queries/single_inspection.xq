@@ -31,7 +31,8 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 									return (
 										if (empty($ev/@f)) then (
 											if (empty($i/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-												string($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+												if (empty($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+												else string($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
 											)
 											else (
 												string($i/../inspection[@nominal="true"]/var[@id=$ev/@id])
@@ -39,16 +40,17 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 										) else (
 											data($ev/@f)
 										)
-									)
+									),
+									string("?")
 								) else (),
-								string("?"),
 								for $ev in $w/value/ec
 									return
 										if (count($ev/@f)) then (
 											data($ev/@f)
 										) else if (count($ev/@sum)) then (
 											for $sum in $i/../inspection[substring-before($i/@date, '.') = substring-before(@date, '.')]
-											return ( "+", data($sum/var/var[@id=$ev/@sum]) )
+											return ( if (empty($sum/var/var[@id=$ev/@sum])) then ()
+													else string("+"), data($sum/var/var[@id=$ev/@sum]) )
 										) else if (count($ev/@cc_attr)) then (
 											for $att in $i/../@*
 											return (
@@ -58,7 +60,8 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 											)
 										) else (
 											if (empty($i/var[@id=$ev/@id])) then (
-												string($i/var/var[@id=$ev/@id])
+												if (empty($i/var/var[@id=$ev/@id])) then (0)
+												else string($i/var/var[@id=$ev/@id])
 											) else (
 												string($i/var[@id=$ev/@id])
 											)
@@ -96,12 +99,13 @@ declare function local:returnVar ($i as element(), $v as element())  {
 									return (
 										if (empty($ev/@f)) then (
 											if (empty($i/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-												string($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+												if (empty($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+												else string($i/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
 											)
 											else (
 												string($i/../inspection[@nominal="true"]/var[@id=$ev/@id])
 											)
-										)else (
+										) else (
 											data($ev/@f)
 										)
 									)
@@ -111,7 +115,8 @@ declare function local:returnVar ($i as element(), $v as element())  {
 									return
 										if (empty($ev/@f)) then (
 											if (empty($i/var[@id=$ev/@id])) then (
-												string($i/var/var[@id=$ev/@id])
+												if (empty($i/var/var[@id=$ev/@id])) then (0)
+												else string($i/var/var[@id=$ev/@id])
 											) else (
 												string($i/var[@id=$ev/@id])
 											)
@@ -199,10 +204,12 @@ function evaluateExpressions() {
 			}
 		}
 		if (value != "") {
-			if (nominal < value) {
-				value = "↑ " + value + " ";
-			} else if (nominal > value) {
-				value = "↓ " + value + " ";
+			if (Math.min(nominal, value) == nominal && nominal != value) {
+				value = "↑" + value.toLocaleString();
+			} else if (nominal != value) {
+				value = "↓" + value.toLocaleString();
+			} else {
+				value = value.toLocaleString();
 			}
 		}
 		expressions[i].innerHTML = value;

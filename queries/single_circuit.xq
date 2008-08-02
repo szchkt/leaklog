@@ -103,7 +103,9 @@ return (
 				else if (count($t/inspection) mod 2 = 0) then count($t/inspection) div 2 + 1
 				else xs:integer(count($t/inspection) div 2 + 2)
 			}" style="width:10%;"/>
-	<td colspan="2" style="background-color: #eee; font-size: medium; text-align: center; width:80%;"><b>Inspections</b></td>
+	<td colspan="2" style="background-color: #eee; font-size: medium; text-align: center; width:80%;"><b>
+	<a href="customer:{ data($t/../@id) }/circuit:{ data($t/@id) }/table">
+	<i18n>Inspections</i18n></a></b></td>
 	<td rowspan="{
 				if (count($t/inspection) = 0) then 2
 				else if (count($t/inspection) mod 2 = 0) then count($t/inspection) div 2 + 1
