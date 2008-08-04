@@ -7,5 +7,6 @@
     <file>queries/table.xq</file>
     <file>queries/default.css</file>
     <file>queries/colours.css</file>
+    <file>queries/shared.js</file>
   </qresource>
 </RCC>

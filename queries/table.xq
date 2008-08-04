@@ -14,7 +14,6 @@ declare function local:returnAnyVar ($var as element(), $i as element()) {
 							data($att)
 					) else ()
 				)
-				(:data(functx:dynamic-path($circuit, concat('@', data($ev/@cc_attr)))):)
 			) else (
 				if (empty($i/var[@id=$ev/@id])) then (
 					string($i/var/var[@id=$ev/@id])
@@ -24,9 +23,9 @@ declare function local:returnAnyVar ($var as element(), $i as element()) {
 			)
 };
 
-declare function local:returnFootExpression ($var as element(), $circuit as element())  {
+declare function local:returnFootExpression ($var as element(), $circuit as element(), $begin as xs:integer)  {
 	<remove_expr>{
-	for $i in $circuit/inspection
+	for $i in $circuit/inspection[xs:integer(substring-before(@date, '.')) >= $begin]
 		return
 		<expr date="{
 				data($i/@date)
@@ -36,6 +35,53 @@ declare function local:returnFootExpression ($var as element(), $circuit as elem
 			string(")")
 		}</expr>
 	}</remove_expr>
+};
+
+declare function local:returnExpression ($table as element(), $v_vars as element(), $x as element())  {
+	<expression>{
+								if (data($table/@highlight_nominal)="false") then ()
+								else (
+									if (data($v_vars/@compare_nom)="true") then (
+											for $ev in $v_vars/value/ec
+											return (
+												if (count($ev/@id)) then (
+													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
+														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+													) else (
+														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
+													)
+												) else (
+													data($ev/@f)
+												)
+										),
+									string("?")
+									) else ()
+								),
+									for $ev in $v_vars/value/ec
+									return
+										if (count($ev/@f)) then (
+											data($ev/@f)
+										) else if (count($ev/@sum)) then (
+											for $sum in $x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')]
+											return ( if (empty($sum/var/var[@id=$ev/@sum])) then ()
+													else string("+"), data($sum/var/var[@id=$ev/@sum]) )
+										) else if (count($ev/@cc_attr)) then (
+											for $att in $x/../@*
+											return (
+												if (name($att) = data($ev/@cc_attr)) then (
+													data($att)
+												) else ()
+											)
+										) else (
+											if (empty($x/var[@id=$ev/@id])) then (
+												if (empty($x/var/var[@id=$ev/@id])) then (0)
+												else string($x/var/var[@id=$ev/@id])
+											) else (
+												string($x/var[@id=$ev/@id])
+											)
+										)
+		}</expression>
 };
 
 declare function local:setTableHead ($table as element(), $vars as element())  {
@@ -86,9 +132,9 @@ for $i in $table/var
 </tr>
 };
 
-declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element())  {
+declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element(), $begin as xs:integer)  {
 
-for $x in $circuit/inspection
+for $x in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
 	return <tr class="{
 			if (data($table/@highlight_nominal)="false") then ()
 			else if ($x/@nominal="true") then (xs:string("nominal"))
@@ -116,65 +162,18 @@ for $x in $circuit/inspection
 								)
 							)
 						}">{
-							if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value)) then (
+							if (empty($z/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
-								else if (not(data($x/@nominal)="true")) then (
-									if (data($vars/var[@id=$y/@id]/var[@id=$z/@id]/@compare_nom)="true") then (
-										if (xs:double($x/var[@id=$y/@id]/var[@id=$z/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id])) then (
-											<span style="font-size: large">↑</span>
-										) else if (xs:double($x/var[@id=$y/@id]/var[@id=$z/@id]) < xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id])) then (
-											<span style="font-size: large">↓</span>
-										) else ()
-									) else ()
-								) else(),
-								data($x/var[@id=$y/@id]/var[@id=$z/@id])
-							) else (
-								<expression>{
-								if (data($table/@highlight_nominal)="false") then ()
-								else (
-									if (data($vars/var[@id=$y/@id]/var[@id=$z/@id]/@compare_nom)="true") then (
-										for $ev in $vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec
-											return (
-												if (count($ev/@id)) then (
-													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
-														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
-													) else (
-														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
-													)
-												) else (
-													data($ev/@f)
-												)
-											),
-										string("?")
-									) else ()
-								),
-								for $ev in $vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec
-									return
-										if (count($ev/@f)) then (
-											data($ev/@f)
-										) else if (count($ev/@sum)) then (
-											for $sum in $x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')]
-											return ( if (empty($sum/var/var[@id=$ev/@sum])) then ()
-													else string("+"), data($sum/var/var[@id=$ev/@sum]) )
-										) else if (count($ev/@cc_attr)) then (
-											for $att in $x/../@*
-											return (
-												if (name($att) = data($ev/@cc_attr)) then (
-													data($att)
-												) else ()
-											)
-											(:data(functx:dynamic-path($circuit, concat('@', data($ev/@cc_attr)))):)
-										) else (
-											if (empty($x/var[@id=$ev/@id])) then (
-												if (empty($x/var/var[@id=$ev/@id])) then (0)
-												else string($x/var/var[@id=$ev/@id])
-											) else (
-												string($x/var[@id=$ev/@id])
-											)
-										)
-								}</expression>
+								else if (data($z/@compare_nom)="true") then (
+									<expression>{
+									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id]),
+									string("?"),
+									data($x/var[@id=$y/@id]/var[@id=$z/@id])
+									}</expression>
+								)
+								else data($x/var[@id=$y/@id]/var[@id=$z/@id])
 							)
+							else local:returnExpression ($table, $z, $x)
 						}</td>
 						)
 				)
@@ -183,57 +182,21 @@ for $x in $circuit/inspection
 						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }">{
 							if (empty($vars/var[@id=$y/@id]/value)) then (
 								if (data($table/@highlight_nominal)="false") then ()
-								else if (not(data($x/@nominal)="true")) then (
-									if (data($vars/var[@id=$y/@id]/@compare_nom="true")) then (
-										if (xs:double($x/var[@id=$y/@id]) > xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id])) then (
-											<span style="font-size: large">↑</span>
-										) else if (xs:double($x/var[@id=$y/@id]) < xs:double($x/../inspection[@nominal="true"]/var[@id=$y/@id])) then (
-											<span style="font-size: large">↓</span>
-										) else ()
-									) else ()
-								) else(),
-								data($x/var[@id=$y/@id])
-							) else (
-								<expression>{
-								if (data($table/@highlight_nominal)="false") then ()
-								else if (not(data($x/@nominal)="true")) then (
-									if (data($vars/var[@id=$y/@id]/@compare_nom="true")) then (
-										for $ev in $vars/var[@id=$y/@id]/value/ec
-											return (
-												if (empty($ev/@f)) then (
-													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
-														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
-														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
-													)
-													else (
-														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
-													)
-												) else (
-													data($ev/@f)
-												)
-											),
-										string("?")
-									) else ()
-								) else(),
-								for $ev in $vars/var[@id=$y/@id]/value/ec
-									return
-										if (empty($ev/@f)) then (
-											if (empty($x/var[@id=$ev/@id])) then (
-												if (empty($x/var/var[@id=$ev/@id])) then (0)
-												else string($x/var/var[@id=$ev/@id])
-											) else (
-												string($x/var[@id=$ev/@id])
-											)
-										) else (
-											data($ev/@f)
-										)
-								}</expression>
+								else if (data($vars/var[@id=$y/@id]/@compare_nom)="true") then (
+									<expression>{
+									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]),
+									string("?"),
+									data($x/var[@id=$y/@id])
+									}</expression>
+								)
+								else data($x/var[@id=$y/@id])
 							)
+							else local:returnExpression ($table, $vars/var[@id=$y/@id], $x)
 						}</td>)
 		}</tr>
 };
 
-declare function local:setTableFoot ($table as element(), $circuit as element(), $vars as element()) {
+declare function local:setTableFoot ($table as element(), $circuit as element(), $vars as element(), $begin as xs:integer) {
 	if ($table/foot) then (
 		<tr class="border_top border_bottom">{
 			<td>{data($table/foot/@name)}</td>,
@@ -249,16 +212,18 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 										<td class="{ data($var/@col_bg) }">{
 										if (data($f/@function)="sum") then (
 											if (count($v/value/ec/@sum)) then (
-												local:returnFootExpression($v, $circuit)
+												local:returnFootExpression($v, $circuit, $begin)
 											) else (
-												let $s := for $z in $circuit/inspection return $z/var[@id=$f/@id]/var[@id=$v/@id]
-														return sum($s)
+												let $s := for $z in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
+													return $z/var[@id=$f/@id]/var[@id=$v/@id]
+												return sum($s)
 											)
 										) else ()
 										}</td>
 							) else (
 								if (data($f/@function)="sum") then (
-									let $s := for $z in $circuit/inspection return $z/var[@id=$f/@id]
+									let $s := for $z in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
+										return $z/var[@id=$f/@id]
 									return <td class="{ data($var/@col_bg) }">{sum($s)}</td>
 								) else <td></td>
 							)
@@ -276,205 +241,97 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 	else ()
 };
 
+declare function local:setTopTable ($customer as element()) {
+	<table><tr>
+		<th>
+			<i18n>ID</i18n>
+		</th>
+		<th>
+			<i18n>Company</i18n>
+		</th>
+		<th>
+			<i18n>Contact person</i18n>
+		</th>
+		<th>
+			<i18n>Address</i18n>
+		</th>
+		<th>
+			<i18n>E-mail</i18n>
+		</th>
+		<th>
+			<i18n>Phone</i18n>
+		</th>
+	</tr><tr>
+		<td>{
+			data($customer/@id)
+		}</td>
+		<td>{
+			data($customer/@company)
+		}</td>
+		<td>{
+			data($customer/@name)
+		}</td>
+		<td>{
+			data($customer/@address)
+		}</td>
+		<td>{
+			data($customer/@mail)
+		}</td>
+		<td>{
+			data($customer/@phone)
+		}</td>
+	</tr></table>
+};
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Table</title>
 <link href="default.css" rel="stylesheet" type="text/css" />
 <link href="colours.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript">
+<script type="text/javascript" src="shared.js">
 <!--
-function evaluateExpressions() {
-	var expressions = document.getElementsByTagName("expression");
-	var value; var expression; var nominal;
-	var array = new Array();
-	for (var i = 0; i < expressions.length; i++) {
-		value = "";
-		expression = expressions[i].innerHTML;
-		array = expression.split('?');
-		if (array.length == 1) {
-			nominal = array[0];
-			expression = array[0];
-		} else {
-			nominal = array[0];
-			expression = array[1];
-		}
-		if (nominal.match(/^[0-9+\-*/(). ]*$/)) {
-			try {
-				nominal = new Number(nominal != '' ? eval(nominal) : '0').toFixed(2);
-			}
-			catch (e) {
-				nominal = "";
-			}
-		}
-		if (expression.match(/^[0-9+\-*/(). ]*$/)) {
-			try {
-				value = new Number(expression != '' ? eval(expression) : '0').toFixed(2);
-			}
-			catch (e) {
-				// Syntax error
-			}
-		}
-		if (value != "") {
-			if (Math.min(nominal, value) == nominal && nominal != value) {
-				value = "<span style=\"font-size: large\">↑</span>" + value.toLocaleString();
-			} else if (nominal != value) {
-				value = "<span style=\"font-size: large\">↓</span>" + value.toLocaleString();
-			} else {
-				value = value.toLocaleString();
-			}
-		}
-		expressions[i].innerHTML = value;
-	}
-}
-
-function removeRepeated() {
-	var tds = document.getElementsByTagName("td");
-	var array = new Array();
-	for (var i = 0; i < tds.length; i++) {
-		if (tds[i].hasAttribute("remove") && array.indexOf(tds[i].getAttribute("remove")) >= 0) {
-			tds[i].parentNode.removeChild(tds[i]);
-		} else {
-			if (tds[i].hasAttribute("remove") && tds[i].getAttribute("remove") != "") {
-				array.push(tds[i].getAttribute("remove"));
-			}
-		}
-	}
-}
-
-function evaluateFootExpressions() {
-	var remove_exprs = document.getElementsByTagName("remove_expr");
-	for (var r = 0; r < remove_exprs.length; r++) {
-		var exprs = remove_exprs[r].getElementsByTagName("expr");
-		var array = new Array();
-		var expression = new Number;
-		for (var i = 0; i < exprs.length; i++) {
-			if (array.indexOf(exprs[i].getAttribute("date").split('.')[0]) < 0) {
-				array.push(exprs[i].getAttribute("date").split('.')[0]);
-				var expr = exprs[i].innerText;
-				if (expr.match(/^[0-9+\-*/(). ]*$/)) {
-					try {
-						expression +=  "+" + (new Number(expr != '' ? eval(expr) : '0').toFixed(2).toLocaleString());
-					}
-					catch (e) {
-						// Syntax error
-					}
-				}
-				exprs[i].parentNode.removeChild(exprs[i]);
-			}
-		}
-		if (expression.match(/^[0-9+\-*/(). ]*$/)) {
-			try {
-				expression =  (new Number(expression != '' ? eval(expression) : '0').toFixed(2).toLocaleString());
-			}
-			catch (e) {
-				// Syntax error
-			}
-		}
-		remove_exprs[r].innerText = expression;
-	}
-}
-
-function showWarnings() {
-	var tbody = document.getElementById("main_table_body");
-	var trs = tbody.getElementsByTagName("tr");
-	var warnings = document.getElementsByTagName("warnings");
-	var poruchy_elem = document.getElementById("poruchy_element");
-	for (var i = 0; i < trs.length; i++) {
-		for (var w = 0; w < warnings.length; w++) {
-			var warning = warnings[w].getElementsByTagName("warning");
-			var poruchy = new Array();
-			for (var a = 0; a < warning.length; a++) {
-				var warn = true; var found = false;
-				var w_vars = warning[a].getElementsByTagName("var");
-				for (var v = 0; v < w_vars.length; v++) {
-					var tds = trs[i].getElementsByTagName("td");
-					for (var t = 0; t < tds.length; t++) {
-						if (tds[t].id == w_vars[v].id) {
-							found = true;
-							var td = tds[t].innerText;
-							if (td != "") {
-								if (td[0] == "↑") {
-									if (w_vars[v].innerText != "increase") {
-									}
-								} else if (td[0] == "↓") {
-									if (w_vars[v].innerText != "decrease") {
-										warn = false;
-									}
-								} else { warn = false; }
-							} else { warn = false; }
-						}
-					}
-				}
-				if (found == false) { warn = false; }
-				if (warn == true) {
-					poruchy.push(warning[a].getAttribute("name"));
-				}
-			}
-			if (poruchy.length > 0) {
-				var poruchy_html = poruchy_elem.innerHTML;
-				poruchy_html += "<tr><td>" + trs[i].getElementsByTagName("td")[0].innerText + "</td>";
-				poruchy_html += "<td colspan=\"" + (trs[i].getElementsByTagName("td").length) + "\">" + poruchy.join(", ") + "</td></tr>";
-				poruchy_elem.innerHTML = poruchy_html;
-			}
-		}
-	}
-	for (var w = 0; w < warnings.length; w++) {
-		warnings[w].parentNode.removeChild(warnings[w]);
-	}
-	if (poruchy_elem.getElementsByTagName("tr").length < 2) {
-		poruchy_elem.parentNode.removeChild(poruchy_elem);
-	} else {
-		var foot = document.getElementById("table_foot");
-		var move_trs = poruchy_elem.getElementsByTagName("tr");
-		for (var i = 0; i < move_trs.length;) {
-			foot.appendChild(move_trs[i]);
-		}
-	}
-}
-
-function fillInEmptyElements() {
-	var tds = document.getElementById('main_table_body').getElementsByTagName('td');
-	for (var i = 0; i < tds.length; i++) {
-		if (tds[i].innerText == "") {
-			tds[i].innerHTML = '0';
-		}
-	}
-}
-
+%1
 -->
 </script>
 </head>
-<body onLoad="removeRepeated(); fillInEmptyElements(); evaluateFootExpressions(); evaluateExpressions(); showWarnings();">
+<body onLoad="onTableLoad()">
 {
 let $d := doc($inputDocument)
-let $table := $d/leaklog/tables/table[@id="%1"]
 let $circuit := $d/leaklog/customers/customer[@id="%2"]/circuit[@id="%3"]
-
+let $table := $d/leaklog/tables/table[@id="%4"]
+let $begin := %5
+let $vars := $d/leaklog/variables
 return (
+
+local:setTopTable ($circuit/..),
+<br />,
+
+if (count($vars)) then (
 <table>
 <thead>
 {
-	local:setTableHead ($table, $d/leaklog/variables)
+	local:setTableHead ($table, $vars)
 }
 </thead>
 <tbody id="main_table_body">
 {
-	local:setTableBody ($table, $circuit, $d/leaklog/variables)
+	local:setTableBody ($table, $circuit, $vars, $begin)
 }
 </tbody>
 <tfoot id="table_foot">
 {
-	local:setTableFoot ($table, $circuit, $d/leaklog/variables)
+	local:setTableFoot ($table, $circuit, $vars, $begin)
 }
 </tfoot>
 <tfoot id="poruchy_element">
-<tr><td style="text-align: center;"><b>Poruchy</b></td></tr>
+<tr><td style="text-align: center;"><b><i18n>Warnings</i18n></b></td></tr>
 {
 	$d/leaklog/warnings
 }
 </tfoot>
 </table>
+) else ()
 )
 }
 </body>
