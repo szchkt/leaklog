@@ -55,6 +55,8 @@ private slots:
     void find();
     void findNext();
     void findPrevious();
+    void setView(QAction *);
+    void refreshView();
     // DOCUMENT
     void openRecent(QListWidgetItem *);
     void newDocument();
@@ -85,9 +87,14 @@ private slots:
     void loadTable(const QString &);
     void addTableVariable();
     void removeTableVariable();
+    void exportCustomerData();
+    void exportCircuitData();
+    void exportInspectionData();
+    void importData();
 
 private:
     // UI
+    void setView(const QString &);
     void addRecent(QString);
     void clearAll();
     void setAllEnabled(bool);

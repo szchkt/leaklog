@@ -92,11 +92,20 @@ MainWindow::MainWindow()
     tbtn_remove_variable->setDefaultAction(actionRemove_variable);
     tbtn_add_table->setDefaultAction(actionAdd_table);
     tbtn_remove_table->setDefaultAction(actionRemove_table);
-    cb_view->addItem(tr("All customers")); view_indices.insert(tr("All customers"), 0);
-    cb_view->addItem(tr("Customer information")); view_indices.insert(tr("Customer information"), 1);
-    cb_view->addItem(tr("Circuit information")); view_indices.insert(tr("Circuit information"), 2);
-    cb_view->addItem(tr("Inspection information")); view_indices.insert(tr("Inspection information"), 3);
-    cb_view->addItem(tr("Table of inspections")); view_indices.insert(tr("Table of inspections"), 4);
+    QStringList views;
+    views << tr("All customers");
+    views << tr("Customer information");
+    views << tr("Circuit information");
+    views << tr("Inspection information");
+    views << tr("Table of inspections");
+    QAction * action; QActionGroup * actgrp_view = new QActionGroup(this);
+    QAction * separator = menuView->actions().at(0);
+    QObject::connect(actgrp_view, SIGNAL(triggered(QAction *)), this, SLOT(setView(QAction *)));
+    for (int i = 0; i < views.count(); ++i) {
+        action = new QAction(actgrp_view); action->setText(views.at(i));
+        menuView->insertAction(separator, action);
+        cb_view->addItem(views.at(i)); view_indices.insert(views.at(i), i);
+    }
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
@@ -131,6 +140,10 @@ MainWindow::MainWindow()
     QObject::connect(actionRemove_table, SIGNAL(triggered()), this, SLOT(removeTable()));
     QObject::connect(tbtn_table_add_variable, SIGNAL(clicked()), this, SLOT(addTableVariable()));
     QObject::connect(tbtn_table_remove_variable, SIGNAL(clicked()), this, SLOT(removeTableVariable()));
+    QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
+    QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
+    QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
+    QObject::connect(actionImport_data, SIGNAL(triggered()), this, SLOT(importData()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
@@ -141,6 +154,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
+    QObject::connect(spb_since, SIGNAL(valueChanged(int)), this, SLOT(refreshView()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(lw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
@@ -185,8 +199,7 @@ void MainWindow::executeLink(const QUrl & url)
                 }
             }
         } else if (path.at(2).startsWith("table")) {
-            cb_view->setCurrentIndex(view_indices.value(tr("Table of inspections")));
-            viewChanged(cb_view->currentText());
+            setView(tr("Table of inspections"));
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
     }
     if (path.count() > 3) {
@@ -235,6 +248,22 @@ void MainWindow::findPrevious()
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
 }
 
+void MainWindow::setView(QAction * action)
+{
+    setView(action->text());
+}
+
+void MainWindow::setView(const QString & view)
+{
+    cb_view->setCurrentIndex(view_indices.value(view));
+    refreshView();
+}
+
+void MainWindow::refreshView()
+{
+    viewChanged(cb_view->currentText());
+}
+
 void MainWindow::addRecent(QString name)
 {
     for (int i = 0; i < lw_recent_docs->count();) {
@@ -262,6 +291,7 @@ void MainWindow::setAllEnabled(bool enable)
     actionSave->setEnabled(enable);
     actionSave_as->setEnabled(enable);
     actionClose->setEnabled(enable);
+    actionImport_data->setEnabled(enable);
     actionPrint_preview->setEnabled(enable);
     actionPrint->setEnabled(enable);
     menuCustomer->setEnabled(enable);
@@ -296,12 +326,15 @@ void MainWindow::enableTools()
     lbl_selected_inspection->setText(inspection_selected ? lw_inspections->highlightedItem()->text() : QString());
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
+    actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
     actionModify_circuit->setEnabled(circuit_selected);
     actionRemove_circuit->setEnabled(circuit_selected);
+    actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
     actionModify_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
+    actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL);
     actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid());
     actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);

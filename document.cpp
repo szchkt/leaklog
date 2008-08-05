@@ -156,8 +156,7 @@ void MainWindow::openDocument(QString path)
     this->setWindowModified(false);
     setAllEnabled(true);
     loadTable(cb_table_edit->currentText());
-    cb_view->setCurrentIndex(view_indices.value(tr("All customers")));
-    viewChanged(cb_view->currentText());
+    setView(tr("All customers"));
 }
 
 void MainWindow::save()
@@ -205,8 +204,11 @@ void MainWindow::viewChanged(const QString & view)
 {
     if (!document_open) { wv_main->setHtml(QString()); return; }
 
-    lbl_table->setEnabled(view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections"));
-    cb_table->setEnabled(view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections"));
+    bool table_view = cb_view->currentText() == tr("Table of inspections");
+    lbl_table->setEnabled(table_view);
+    cb_table->setEnabled(table_view);
+    lbl_since->setEnabled(table_view);
+    spb_since->setEnabled(table_view);
 
     QBuffer device;
     device.setData(document.toString(1).toUtf8());
@@ -223,8 +225,8 @@ void MainWindow::viewChanged(const QString & view)
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
     } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
         query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_inspections->highlightedItem()->data(Qt::UserRole).toString()));
-    } else if ((view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections")) && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
-        query.setQuery(dict_queries.value(cb_view->currentText()).arg(cb_table->currentText()).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
+    } else if (table_view && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
+        query.setQuery(dict_queries.value(cb_view->currentText()).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(cb_table->currentText()).arg(spb_since->value() == 1999 ? 0 : spb_since->value()));
     }
 
     if (!query.isValid()) {
@@ -232,8 +234,10 @@ void MainWindow::viewChanged(const QString & view)
         if (view == tr("Customer information")) { html.append(tr("No customer selected.")); }
         else if (view == tr("Circuit information")) { html.append(tr("No circuit selected.")); }
         else if (view == tr("Inspection information")) { html.append(tr("No inspection selected.")); }
-        else if (view == tr("Table of inspections") || cb_view->currentText() == tr("Table of inspections")) { html.append(tr("No circuit selected.")); }
-        else { html.append(tr("Error: Invalid query.")); }
+        else if (table_view) {
+            if (cb_table->count() <= 0) { html.append(tr("No tables found. You can create a new table by going to the <em>Variable</em> menu and selecting <em>Add table</em>.")); }
+            else { html.append(tr("No circuit selected.")); }
+        } else { html.append(tr("Error: Invalid query.")); }
         html.append("</strong></p>");
         wv_main->setHtml(html);
         return;
@@ -307,8 +311,7 @@ void MainWindow::removeCustomer()
     lw_circuits->clear(); lw_inspections->clear();
     enableTools();
     this->setWindowModified(true);
-    cb_view->setCurrentIndex(view_indices.value(tr("All customers")));
-    viewChanged(cb_view->currentText());
+    setView(tr("All customers"));
 }
 
 void MainWindow::loadCustomer(QListWidgetItem * item) { loadCustomer(item, true); }
@@ -333,8 +336,7 @@ void MainWindow::loadCustomer(const QDomElement & element, bool refresh)
     }
     enableTools();
     if (refresh) {
-        cb_view->setCurrentIndex(view_indices.value(tr("Customer information")));
-        viewChanged(cb_view->currentText());
+        setView(tr("Customer information"));
     }
 }
 
@@ -411,8 +413,7 @@ void MainWindow::removeCircuit()
     lw_inspections->clear();
     enableTools();
     this->setWindowModified(true);
-    cb_view->setCurrentIndex(view_indices.value(tr("Customer information")));
-    viewChanged(cb_view->currentText());
+    setView(tr("Customer information"));
 }
 
 void MainWindow::loadCircuit(QListWidgetItem * item) { loadCircuit(item, true); }
@@ -437,8 +438,7 @@ void MainWindow::loadCircuit(const QDomElement & element, bool refresh)
     }
     enableTools();
     if (refresh) {
-        cb_view->setCurrentIndex(view_indices.value(tr("Circuit information")));
-        viewChanged(cb_view->currentText());
+        setView(tr("Circuit information"));
     }
 }
 
@@ -515,8 +515,7 @@ void MainWindow::removeInspection()
     if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
-    cb_view->setCurrentIndex(view_indices.value(tr("Circuit information")));
-    viewChanged(cb_view->currentText());
+    setView(tr("Circuit information"));
 }
 
 void MainWindow::loadInspection(QListWidgetItem * item) { loadInspection(item, true); }
@@ -533,8 +532,7 @@ void MainWindow::loadInspection(const QDomElement &, bool refresh)
 {
     enableTools();
     if (refresh) {
-        cb_view->setCurrentIndex(view_indices.value(tr("Inspection information")));
-        viewChanged(cb_view->currentText());
+        setView(tr("Inspection information"));
     }
 }
 
@@ -856,4 +854,195 @@ void MainWindow::removeTableVariable()
     loadTable(cb_table_edit->currentText());
     this->setWindowModified(true);
     viewChanged(cb_view->currentText());
+}
+
+void MainWindow::exportCustomerData()
+{
+    if (!document_open) { return; }
+    QDomElement customer = selectedCustomerElement();
+    if (customer.isNull()) { return; }
+    QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), QString("%1.lklg").arg(customer.attribute("id")), tr("Leaklog Document (*.lklg)"));
+	if (path.isNull() || path.isEmpty()) { return; }
+    QFile file(path);
+    if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+		return;
+    }
+    QDomDocument data;
+    QDomElement root = data.createElement("leaklog");
+    data.appendChild(root);
+    QDomElement variables = document.documentElement().firstChildElement("variables");
+    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
+    QDomElement tables = document.documentElement().firstChildElement("tables");
+    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
+    QDomElement customers = document.createElement("customers");
+    root.appendChild(customers);
+    customers.appendChild(customer.cloneNode(true));
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << data.toString(4);
+    file.close();
+}
+
+void MainWindow::exportCircuitData()
+{
+    if (!document_open) { return; }
+    QDomElement customer = selectedCustomerElement();
+    if (customer.isNull()) { return; }
+    QDomElement circuit = selectedCircuitElement();
+    if (circuit.isNull()) { return; }
+    QString path = QFileDialog::getSaveFileName(this, tr("Export circuit data - Leaklog"), QString("%1_%2.lklg").arg(customer.attribute("id")).arg(circuit.attribute("id")), tr("Leaklog Document (*.lklg)"));
+	if (path.isNull() || path.isEmpty()) { return; }
+    QFile file(path);
+    if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::critical(this, tr("Export circuit data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+		return;
+    }
+    QDomDocument data;
+    QDomElement root = data.createElement("leaklog");
+    data.appendChild(root);
+    QDomElement variables = document.documentElement().firstChildElement("variables");
+    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
+    QDomElement tables = document.documentElement().firstChildElement("tables");
+    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
+    QDomElement customers = document.createElement("customers");
+    root.appendChild(customers);
+    QDomNode customer_clone = customer.cloneNode(false);
+    customers.appendChild(customer_clone);
+    customer_clone.appendChild(circuit.cloneNode(true));
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << data.toString(4);
+    file.close();
+}
+
+void MainWindow::exportInspectionData()
+{
+    if (!document_open) { return; }
+    QDomElement customer = selectedCustomerElement();
+    if (customer.isNull()) { return; }
+    QDomElement circuit = selectedCircuitElement();
+    if (circuit.isNull()) { return; }
+    QDomElement inspection = selectedInspectionElement();
+    if (inspection.isNull()) { return; }
+    QString path = QFileDialog::getSaveFileName(this, tr("Export inspection data - Leaklog"), QString("%1_%2_%3.lklg").arg(customer.attribute("id")).arg(circuit.attribute("id")).arg(inspection.attribute("date").replace(":", ".")), tr("Leaklog Document (*.lklg)"));
+	if (path.isNull() || path.isEmpty()) { return; }
+    QFile file(path);
+    if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::critical(this, tr("Export inspection data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+		return;
+    }
+    QDomDocument data;
+    QDomElement root = data.createElement("leaklog");
+    data.appendChild(root);
+    QDomElement variables = document.documentElement().firstChildElement("variables");
+    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
+    QDomElement tables = document.documentElement().firstChildElement("tables");
+    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
+    QDomElement customers = document.createElement("customers");
+    root.appendChild(customers);
+    QDomNode customer_clone = customer.cloneNode(false);
+    customers.appendChild(customer_clone);
+    QDomNode circuit_clone = circuit.cloneNode(false);
+    customer_clone.appendChild(circuit_clone);
+    circuit_clone.appendChild(inspection.cloneNode(true));
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << data.toString(4);
+    file.close();
+}
+
+void MainWindow::importData()
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Documents (*.lklg);;All files (*.*)"));
+	if (path.isNull() || path.isEmpty()) { return; }
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly)) {
+		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(file.errorString()));
+		return;
+    }
+    QDomDocument data;
+    data.setContent(&file);
+    file.close();
+    QDomElement el_customers = document.documentElement().firstChildElement("customers");
+    if (el_customers.isNull()) { return; }
+    QDomNodeList customers = el_customers.elementsByTagName("customer");
+    QDomElement data_el_customers = data.documentElement().firstChildElement("customers");
+    if (data_el_customers.isNull()) { return; }
+    QDomNodeList data_customers = data_el_customers.elementsByTagName("customer");
+    for (int dc = 0; dc < data_customers.count(); ++dc) {
+        bool customer_found = false;
+        for (int c = 0; c < customers.count(); ++c) {
+            if (data_customers.at(dc).toElement().attribute("id") != customers.at(c).toElement().attribute("id")) { continue; }
+            customer_found = true;
+            QDomElement data_customer = data_customers.at(dc).toElement();
+            QDomElement customer = customers.at(c).toElement();
+            QDomNamedNodeMap dc_attributes = data_customer.attributes();
+            for (int a = 0; a < dc_attributes.count(); ++a) {
+                customer.setAttribute(dc_attributes.item(a).nodeName(), dc_attributes.item(a).nodeValue());
+            }
+            QDomNodeList data_circuits = data_customer.elementsByTagName("circuit");
+            QDomNodeList circuits = customer.elementsByTagName("circuit");
+            for (int dcc = 0; dcc < data_circuits.count(); ++dcc) {
+                bool circuit_found = false;
+                for (int cc = 0; cc < circuits.count(); ++cc) {
+                    if (data_circuits.at(dcc).toElement().attribute("id") != circuits.at(cc).toElement().attribute("id")) { continue; }
+                    circuit_found = true;
+                    QDomElement data_circuit = data_circuits.at(dcc).toElement();
+                    QDomElement circuit = circuits.at(cc).toElement();
+                    QDomNamedNodeMap dcc_attributes = data_circuit.attributes();
+                    for (int a = 0; a < dcc_attributes.count(); ++a) {
+                        circuit.setAttribute(dcc_attributes.item(a).nodeName(), dcc_attributes.item(a).nodeValue());
+                    }
+                    QDomNodeList data_inspections = data_circuit.elementsByTagName("inspections");
+                    QDomNodeList inspections = circuit.elementsByTagName("inspections");
+                    for (int di = 0; di < data_inspections.count(); ++di) {
+                        bool inspection_found = false;
+                        for (int i = 0; i < inspections.count(); ++i) {
+                            if (data_inspections.at(di).toElement().attribute("date") != inspections.at(i).toElement().attribute("date")) { continue; }
+                            inspection_found = true;
+                            QDomElement data_inspection = data_inspections.at(di).toElement();
+                            QDomElement inspection = inspections.at(i).toElement();
+                            QDomNamedNodeMap di_attributes = data_inspection.attributes();
+                            for (int a = 0; a < di_attributes.count(); ++a) {
+                                inspection.setAttribute(di_attributes.item(a).nodeName(), di_attributes.item(a).nodeValue());
+                            }
+                            QDomNodeList data_variables = data_inspection.elementsByTagName("var");
+                            QDomNodeList variables = inspection.elementsByTagName("var");
+                            for (int dv = 0; dv < data_variables.count(); ++dv) {
+                                bool variable_found = false;
+                                for (int v = 0; v < variables.count(); ++v) {
+                                    if (data_variables.at(dv).toElement().attribute("id") != variables.at(v).toElement().attribute("id")) { continue; }
+                                    variable_found = true;
+                                    QDomElement data_variable = data_variables.at(dv).toElement();
+                                    QDomElement variable = variables.at(v).toElement();
+                                    QDomNamedNodeMap dv_attributes = data_variable.attributes();
+                                    for (int a = 0; a < dv_attributes.count(); ++a) {
+                                        variable.setAttribute(dv_attributes.item(a).nodeName(), dv_attributes.item(a).nodeValue());
+                                    }
+                                    while (variable.hasChildNodes()) { variable.removeChild(variable.firstChild()); }
+                                    QDomNodeList dv_content = data_variable.childNodes();
+                                    for (int dvc = 0; dvc < dv_content.count(); ++dvc) {
+                                        variable.appendChild(dv_content.at(dvc).cloneNode(true));
+                                    }
+                                }
+                                if (!variable_found) {
+                                    inspection.appendChild(data_variables.at(dv).cloneNode(true));
+                                }
+                            }
+                        }
+                        if (!inspection_found) {
+                            circuit.appendChild(data_inspections.at(di).cloneNode(true));
+                        }
+                    }
+                }
+                if (!circuit_found) {
+                    customer.appendChild(data_circuits.at(dcc).cloneNode(true));
+                }
+            }
+        }
+        if (!customer_found) {
+            el_customers.appendChild(data_customers.at(dc).cloneNode(true));
+        }
+    }
 }

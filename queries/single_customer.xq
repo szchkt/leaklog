@@ -28,13 +28,14 @@ a:active {
 }
 -->
 </style>
+<script type="text/javascript" src="shared.js"></script>
 <script type="text/javascript">
 <!--
 %1
 -->
 </script>
 </head>
-<body onLoad="translate();">
+<body onLoad="translateTextValues(); translate();">
 
 {
 let $d := doc($inputDocument)
@@ -93,9 +94,9 @@ return (
 			<tr><td style="text-align: right; width:50%;"><i18n>Date of commissioning: </i18n></td><td style="width:50%;"> {
 				data($t/@commissioning)
 			}</td></tr>
-			<tr><td style="text-align: right; width:50%;"><i18n>Field of application: </i18n></td><td style="width:50%;"> {
+			<tr><td style="text-align: right; width:50%;"><i18n>Field of application: </i18n></td><td style="width:50%;"><textvalue type="field"> {
 				data($t/@field)
-			}</td></tr>
+			}</textvalue></td></tr>
 			</table></td>
 			<td><table cellspacing="0" cellpadding="4" style="width:100%;">
 			<tr><td style="text-align: right; width:50%;"><i18n>Refrigerant: </i18n></td><td style="width:50%;"> {

@@ -32,8 +32,23 @@
     <string>Nominal inspection: </string>
     <string>Inspection: </string>
     <string>: </string>
-    <string>Nominal: </string>
     <string>Warnings</string>
     <string>Inspections</string>
-    <string>Warnings</string>
+    <file path="table.xq" />
+    <string>ID</string>
+    <string>Company</string>
+    <string>Contact person</string>
+    <string>Address</string>
+    <string>E-mail</string>
+    <string>Phone</string>
+    <file path="shared.js" />
+    <string>Car air conditioning</string>
+    <string>Low-rise residential buildings</string>
+    <string>High-rise residential buildings</string>
+    <string>Commercial buildings</string>
+    <string>Institutional buildings</string>
+    <string>Industrial spaces</string>
+    <string>Transportation</string>
+    <string>Air conditioning</string>
+    <string>Heat pumps</string>
 </xqlproj>

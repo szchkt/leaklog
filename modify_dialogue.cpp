@@ -72,6 +72,8 @@ QDialog(parent)
         md_dict.insert("circuit", tr("Cooling circuit"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
+        md_dict.insert("hermetic", tr("Hermetically sealed"));
+        md_dict_input.insert("hermetic", "chb");
         md_dict.insert("manufacturer", tr("Manufacturer"));
         md_dict_input.insert("manufacturer", "pte");
         md_dict.insert("type", tr("Type"));
@@ -83,7 +85,17 @@ QDialog(parent)
         md_dict.insert("commissioning", tr("Date of commissioning"));
         md_dict_input.insert("commissioning", "de");
         md_dict.insert("field", tr("Field of application"));
-        md_dict_input.insert("field", "le");
+        QStringList fields;
+        fields << tr("Car air conditioning") + "||car";
+        fields << tr("Low-rise residential buildings") + "||lowrise";
+        fields << tr("High-rise residential buildings") + "||highrise";
+        fields << tr("Commercial buildings") + "||commercial";
+        fields << tr("Institutional buildings") + "||institutional";
+        fields << tr("Industrial spaces") + "||industrial";
+        fields << tr("Transportation") + "||transportation";
+        fields << tr("Air conditioning") + "||airconditioning";
+        fields << tr("Heat pumps") + "||heatpumps";
+        md_dict_input.insert("field", QString("cb;%1").arg(fields.join(";")));
         md_dict.insert("refrigerant", tr("Refrigerant"));
         md_dict_input.insert("refrigerant", "cb;R134a;R404a");
         md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
@@ -135,9 +147,6 @@ QDialog(parent)
         }
     } else if (md_element.nodeName() == "var") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
-        dict_vartypes.insert("int", tr("Integer"));
-        dict_vartypes.insert("float", tr("Real number"));
-        dict_vartypes.insert("string", tr("String"));
         md_dict.insert("var", tr("Variable"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
@@ -146,7 +155,11 @@ QDialog(parent)
         md_dict.insert("unit", tr("Unit"));
         md_dict_input.insert("unit", "le");
         md_dict.insert("type", tr("Type"));
-        md_dict_input.insert("type", QString("cb;%1;%2;%3").arg(tr("Integer")).arg(tr("Real number")).arg(tr("String")));
+        QStringList types;
+        types << tr("Integer") + "||int";
+        types << tr("Real number") + "||float";
+        types << tr("String") + "||string";
+        md_dict_input.insert("type", QString("cb;%1").arg(types.join(";")));
         md_dict.insert("value", tr("Value"));
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
@@ -222,76 +235,71 @@ QDialog(parent)
                 value = md_element.attribute(dict.key(i));
             }
             inputtype = md_dict_input.value(dict.key(i)).split(";");
-            if (inputtype.at(0) == "chb") {
+            if (inputtype.at(0) != "chb") {
+                md_lbl_var = new QLabel(tr("%1:").arg(dict.value(i)), this);
+                md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                md_grid_main->addWidget(md_lbl_var, r, 2 * c);
+            }
+            if (inputtype.at(0) == "le") {
+                QLineEdit * md_le_var = new QLineEdit(this);
+                md_le_var->setText(value);
+                md_w_var = md_le_var;
+            } else if (inputtype.at(0) == "chb") {
                 QCheckBox * md_chb_var = new QCheckBox(dict.value(i), this);
                 md_chb_var->setChecked(value == "true");
                 if (dict.key(i) == "nominal") { md_chb_var->setEnabled(nominal_allowed); }
                 md_w_var = md_chb_var;
-                md_grid_main->addWidget(md_w_var, r, 2 * c, 1, 2);
-            } else {
-                md_lbl_var = new QLabel(tr("%1:").arg(dict.value(i)), this);
-                md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                md_grid_main->addWidget(md_lbl_var, r, 2 * c);
-                if (inputtype.at(0) == "le") {
-                    QLineEdit * md_le_var = new QLineEdit(this);
-                    md_le_var->setText(value);
-                    md_w_var = md_le_var;
-                } else if (inputtype.at(0) == "spb") {
-                    QSpinBox * md_spb_var = new QSpinBox(this);
-                    if (inputtype.count() > 1) { md_spb_var->setMinimum(inputtype.at(1).toInt()); }
-                    if (inputtype.count() > 3) { md_spb_var->setMaximum(inputtype.at(3).toInt()); }
-                    if (inputtype.count() > 2) { md_spb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toInt()); }
-                    else { md_spb_var->setValue(value.toInt()); }
-                    if (inputtype.count() > 4) { md_spb_var->setSuffix(inputtype.at(4)); }
-                    md_w_var = md_spb_var;
-                } else if (inputtype.at(0) == "dspb") {
-                    QDoubleSpinBox * md_dspb_var = new QDoubleSpinBox(this);
-                    if (inputtype.count() > 1) { md_dspb_var->setMinimum(inputtype.at(1).toDouble()); }
-                    if (inputtype.count() > 3) { md_dspb_var->setMaximum(inputtype.at(3).toDouble()); }
-                    if (inputtype.count() > 2) { md_dspb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toDouble()); }
-                    else { md_dspb_var->setValue(value.toDouble()); }
-                    if (inputtype.count() > 4) { md_dspb_var->setSuffix(inputtype.at(4)); }
-                    md_w_var = md_dspb_var;
-                } else if (inputtype.at(0) == "cb") {
-                    QComboBox * md_cb_var = new QComboBox(this); int n = -1;
-                    for (int j = 1; j < inputtype.count(); ++j) {
-                        md_cb_var->addItem(inputtype.at(j));
-                        if (md_element.nodeName() == "var" && dict.key(i) == "type") {
-                            if (inputtype.at(j) == dict_vartypes.value(value)) { n = j - 1; }
-                        } else {
-                            if (inputtype.at(j) == value) { n = j - 1; }
-                        }
-                    }
-                    md_cb_var->setCurrentIndex(n);
-                    md_w_var = md_cb_var;
-                } else if (inputtype.at(0) == "ccb") {
-                    MTColourComboBox * md_ccb_var = new MTColourComboBox(this);
-                    for (int j = 0; j < md_ccb_var->count(); ++j) {
-                        if (md_ccb_var->itemText(j) == value) { md_ccb_var->setCurrentIndex(j); break; }
-                    }
-                    md_w_var = md_ccb_var;
-                } else if (inputtype.at(0) == "dte") {
-                    QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
-                    md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
-                    md_w_var = md_dte_var;
-                } else if (inputtype.at(0) == "de") {
-                    QDateEdit * md_de_var = new QDateEdit(this);
-                    md_de_var->setDate(QDate::fromString(value, "yyyy.MM.dd"));
-                    md_w_var = md_de_var;
-                } else if (inputtype.at(0) == "pteh") {
-                    QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
-                    md_pte_var->setMinimumSize(200, 30);
-                    md_pte_var->setPlainText(value);
-                    new Highlighter(md_used_ids, md_pte_var->document());
-                    md_w_var = md_pte_var;
-                } else {
-                    QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
-                    md_pte_var->setMinimumSize(200, 30);
-                    md_pte_var->setPlainText(value);
-                    md_w_var = md_pte_var;
+            } else if (inputtype.at(0) == "spb") {
+                QSpinBox * md_spb_var = new QSpinBox(this);
+                if (inputtype.count() > 1) { md_spb_var->setMinimum(inputtype.at(1).toInt()); }
+                if (inputtype.count() > 3) { md_spb_var->setMaximum(inputtype.at(3).toInt()); }
+                if (inputtype.count() > 2) { md_spb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toInt()); }
+                else { md_spb_var->setValue(value.toInt()); }
+                if (inputtype.count() > 4) { md_spb_var->setSuffix(inputtype.at(4)); }
+                md_w_var = md_spb_var;
+            } else if (inputtype.at(0) == "dspb") {
+                QDoubleSpinBox * md_dspb_var = new QDoubleSpinBox(this);
+                if (inputtype.count() > 1) { md_dspb_var->setMinimum(inputtype.at(1).toDouble()); }
+                if (inputtype.count() > 3) { md_dspb_var->setMaximum(inputtype.at(3).toDouble()); }
+                if (inputtype.count() > 2) { md_dspb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toDouble()); }
+                else { md_dspb_var->setValue(value.toDouble()); }
+                if (inputtype.count() > 4) { md_dspb_var->setSuffix(inputtype.at(4)); }
+                md_w_var = md_dspb_var;
+            } else if (inputtype.at(0) == "cb") {
+                QComboBox * md_cb_var = new QComboBox(this); int n = -1;
+                for (int j = 1; j < inputtype.count(); ++j) {
+                    md_cb_var->addItem(inputtype.at(j).split("||").first());
+                    if (inputtype.at(j).split("||").last() == value) { n = j - 1; }
                 }
-                md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
+                md_cb_var->setCurrentIndex(n);
+                md_w_var = md_cb_var;
+            } else if (inputtype.at(0) == "ccb") {
+                MTColourComboBox * md_ccb_var = new MTColourComboBox(this);
+                for (int j = 0; j < md_ccb_var->count(); ++j) {
+                    if (md_ccb_var->itemText(j) == value) { md_ccb_var->setCurrentIndex(j); break; }
+                }
+                md_w_var = md_ccb_var;
+            } else if (inputtype.at(0) == "dte") {
+                QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
+                md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
+                md_w_var = md_dte_var;
+            } else if (inputtype.at(0) == "de") {
+                QDateEdit * md_de_var = new QDateEdit(this);
+                md_de_var->setDate(QDate::fromString(value, "yyyy.MM.dd"));
+                md_w_var = md_de_var;
+            } else if (inputtype.at(0) == "pteh") {
+                QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
+                md_pte_var->setMinimumSize(200, 30);
+                md_pte_var->setPlainText(value);
+                new Highlighter(md_used_ids, md_pte_var->document());
+                md_w_var = md_pte_var;
+            } else {
+                QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
+                md_pte_var->setMinimumSize(200, 30);
+                md_pte_var->setPlainText(value);
+                md_w_var = md_pte_var;
             }
+            md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
             md_vars.insert(dict.key(i), md_w_var);
             i++;
         }
@@ -330,10 +338,11 @@ void ModifyDialogue::save()
         } else if (inputtype.at(0) == "dspb") {
             value = QString("%1").arg(((QDoubleSpinBox *)i.value())->value());
         } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "ccb") {
-            value = ((QComboBox *)i.value())->currentText();
-            if (md_element.nodeName() == "var" && i.key() == "type") {
-                value = dict_vartypes.firstKey(value);
+            MTDictionary item_values;
+            for (int j = 1; j < inputtype.count(); ++j) {
+                item_values.insert(inputtype.at(j).split("||").first(), inputtype.at(j).split("||").last());
             }
+            value = item_values.value(((QComboBox *)i.value())->currentText());
         } else if (inputtype.at(0) == "dte") {
             value = ((QDateTimeEdit *)i.value())->dateTime().toString("yyyy.MM.dd-hh:mm");
             if (i.key() == "date") {

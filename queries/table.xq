@@ -289,13 +289,14 @@ declare function local:setTopTable ($customer as element()) {
 <title>Table</title>
 <link href="default.css" rel="stylesheet" type="text/css" />
 <link href="colours.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="shared.js">
+<script type="text/javascript" src="shared.js"></script>
+<script type="text/javascript">
 <!--
 %1
 -->
 </script>
 </head>
-<body onLoad="onTableLoad()">
+<body onLoad="onTableLoad(); translate();">
 {
 let $d := doc($inputDocument)
 let $circuit := $d/leaklog/customers/customer[@id="%2"]/circuit[@id="%3"]

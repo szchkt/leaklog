@@ -75,7 +75,6 @@ private:
     MTDictionary md_dict;
     MTDictionary md_dict_input;
     MTDictionary md_dict_vars;
-    MTDictionary dict_vartypes;
     QStringList md_used_ids;
     QMap<QString, QWidget *> md_vars;
 };

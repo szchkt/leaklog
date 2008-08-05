@@ -1,3 +1,40 @@
+function Dictionary(startValues) {
+    this.values = startValues || {};
+}
+Dictionary.prototype.add = function(name, value) {
+    this.values[name] = value;
+};
+Dictionary.prototype.value = function(name) {
+    return this.values[name];
+};
+Dictionary.prototype.contains = function(name) {
+    return Object.prototype.hasOwnProperty.call(this.values, name) &&
+        Object.prototype.propertyIsEnumerable.call(this.values, name);
+};
+Dictionary.prototype.each = function(action) {
+    forEachIn(this.values, action);
+};
+//---------------------------Dictionaries-----------------------------------
+var dict_field = new Dictionary();
+dict_field.add("car", "<i18n>Car air conditioning</i18n>");
+dict_field.add("lowrise", "<i18n>Low-rise residential buildings</i18n>");
+dict_field.add("highrise", "<i18n>High-rise residential buildings</i18n>");
+dict_field.add("commercial", "<i18n>Commercial buildings</i18n>");
+dict_field.add("institutional", "<i18n>Institutional buildings</i18n>");
+dict_field.add("industrial", "<i18n>Industrial spaces</i18n>");
+dict_field.add("transportation", "<i18n>Transportation</i18n>");
+dict_field.add("airconditioning", "<i18n>Air conditioning</i18n>");
+dict_field.add("heatpumps", "<i18n>Heat pumps</i18n>");
+
+var dictionaries = new Dictionary();
+dictionaries.add("field", dict_field);
+//-----------------------------Circuit--------------------------------------
+function translateTextValues() {
+	var elements = document.getElementsByTagName("textvalue");
+	for (var i = 0; i < elements.length; i++) {
+		elements[i].innerHTML = dictionaries.value(elements[i].getAttribute("type")).value(elements[i].innerText);
+	}
+}
 //------------------------------Table---------------------------------------
 function onTableLoad() {
 	removeRepeated();
