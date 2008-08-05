@@ -99,7 +99,7 @@ QDialog(parent)
         md_dict.insert("refrigerant", tr("Refrigerant"));
         md_dict_input.insert("refrigerant", "cb;R134a;R404a");
         md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
-        md_dict_input.insert("refrigerant_amount", QString("spb;0;0;999999; %1").arg(tr("l")));
+        md_dict_input.insert("refrigerant_amount", QString("spb;0;0;999999; %1").arg(tr("kg")));
         md_dict.insert("oil", tr("Oil"));
         md_dict_input.insert("oil", "cb;Synthetic;Mineral");
         md_dict.insert("oil_amount", tr("Amount of oil"));

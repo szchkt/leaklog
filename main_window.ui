@@ -559,13 +559,25 @@
       <widget class="ExtendedLineEdit" name="le_search_customers" />
      </item>
      <item row="2" column="0" colspan="2" >
-      <widget class="MTListWidget" name="lw_customers" />
+      <widget class="MTListWidget" name="lw_customers" >
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0" colspan="2" >
-      <widget class="MTListWidget" name="lw_circuits" />
+      <widget class="MTListWidget" name="lw_circuits" >
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="8" column="0" colspan="2" >
-      <widget class="MTListWidget" name="lw_inspections" />
+      <widget class="MTListWidget" name="lw_inspections" >
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="3" column="0" colspan="2" >
       <widget class="QLabel" name="lbl_circuits" >

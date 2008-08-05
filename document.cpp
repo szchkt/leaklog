@@ -188,7 +188,7 @@ void MainWindow::saveDocument(QString path)
     this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(document_path).baseName()));
 #endif
     this->setWindowModified(false);
-    viewChanged(cb_view->currentText());
+    refreshView();
 }
 
 void MainWindow::closeDocument()
@@ -274,7 +274,7 @@ void MainWindow::addCustomer()
         item->setData(Qt::UserRole, element.attribute("id"));
         lw_customers->addItem(item);
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -291,7 +291,7 @@ void MainWindow::modifyCustomer()
         item->setData(Qt::UserRole, element.attribute("id"));
         //gb_customer->setTitle(item->text());
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -377,7 +377,7 @@ void MainWindow::addCircuit()
         item->setData(Qt::UserRole, element.attribute("id"));
         lw_circuits->addItem(item);
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -393,7 +393,7 @@ void MainWindow::modifyCircuit()
         item->setText(element.attribute("id"));
         item->setData(Qt::UserRole, element.attribute("id"));
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -480,7 +480,7 @@ void MainWindow::addInspection()
         item->setData(Qt::UserRole, element.attribute("date"));
         lw_inspections->addItem(item);
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -496,7 +496,7 @@ void MainWindow::modifyInspection()
         item->setText(element.attribute("date"));
         item->setData(Qt::UserRole, element.attribute("date"));
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -604,7 +604,7 @@ void MainWindow::addVariable(bool subvar)
         item->setText(2, element.attribute("unit"));
         item->setText(3, dict_vartypes.value(element.attribute("type")));
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -622,7 +622,7 @@ void MainWindow::modifyVariable()
         item->setText(2, element.attribute("unit"));
         item->setText(3, dict_vartypes.value(element.attribute("type")));
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -639,7 +639,7 @@ void MainWindow::removeVariable()
     if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
-    viewChanged(cb_view->currentText());
+    refreshView();
 }
 
 QDomElement MainWindow::selectedVariableElement(QStringList * used_ids)
@@ -681,7 +681,7 @@ void MainWindow::addTable()
         cb_table->addItem(element.attribute("id"));
         cb_table_edit->addItem(element.attribute("id"));
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -702,7 +702,7 @@ void MainWindow::modifyTable()
         cb_table_edit->setCurrentIndex(i);
         cb_table->setCurrentIndex(j);
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete md;
 }
@@ -720,7 +720,7 @@ void MainWindow::removeTable()
     cb_table->removeItem(i);
     enableTools();
     this->setWindowModified(true);
-    viewChanged(cb_view->currentText());
+    refreshView();
 }
 
 void MainWindow::loadTable(const QString &)
@@ -828,7 +828,7 @@ void MainWindow::addTableVariable()
         table.appendChild(var);
         loadTable(cb_table_edit->currentText());
         this->setWindowModified(true);
-        viewChanged(cb_view->currentText());
+        refreshView();
     }
     delete d;
 }
@@ -853,7 +853,7 @@ void MainWindow::removeTableVariable()
     }
     loadTable(cb_table_edit->currentText());
     this->setWindowModified(true);
-    viewChanged(cb_view->currentText());
+    refreshView();
 }
 
 void MainWindow::exportCustomerData()
@@ -994,8 +994,8 @@ void MainWindow::importData()
                     for (int a = 0; a < dcc_attributes.count(); ++a) {
                         circuit.setAttribute(dcc_attributes.item(a).nodeName(), dcc_attributes.item(a).nodeValue());
                     }
-                    QDomNodeList data_inspections = data_circuit.elementsByTagName("inspections");
-                    QDomNodeList inspections = circuit.elementsByTagName("inspections");
+                    QDomNodeList data_inspections = data_circuit.elementsByTagName("inspection");
+                    QDomNodeList inspections = circuit.elementsByTagName("inspection");
                     for (int di = 0; di < data_inspections.count(); ++di) {
                         bool inspection_found = false;
                         for (int i = 0; i < inspections.count(); ++i) {
@@ -1032,17 +1032,40 @@ void MainWindow::importData()
                             }
                         }
                         if (!inspection_found) {
-                            circuit.appendChild(data_inspections.at(di).cloneNode(true));
+                            QDomElement element = data_inspections.at(di).cloneNode(true).toElement();
+                            circuit.appendChild(element);
+                            QDomElement selected_circuit = selectedCircuitElement();
+                            if (!selected_circuit.isNull() && selected_circuit.attribute("id") == circuit.attribute("id")) {
+                                QListWidgetItem * item = new QListWidgetItem;
+                                item->setText(element.attribute("date"));
+                                item->setData(Qt::UserRole, element.attribute("date"));
+                                lw_inspections->addItem(item);
+                            }
                         }
                     }
                 }
                 if (!circuit_found) {
-                    customer.appendChild(data_circuits.at(dcc).cloneNode(true));
+                    QDomElement element = data_circuits.at(dcc).cloneNode(true).toElement();
+                    customer.appendChild(element);
+                    QDomElement selected_customer = selectedCustomerElement();
+                    if (!selected_customer.isNull() && selected_customer.attribute("id") == customer.attribute("id")) {
+                        QListWidgetItem * item = new QListWidgetItem;
+                        item->setText(element.attribute("id"));
+                        item->setData(Qt::UserRole, element.attribute("id"));
+                        lw_circuits->addItem(item);
+                    }
                 }
             }
         }
         if (!customer_found) {
-            el_customers.appendChild(data_customers.at(dc).cloneNode(true));
+            QDomElement element = data_customers.at(dc).cloneNode(true).toElement();
+            el_customers.appendChild(element);
+            QListWidgetItem * item = new QListWidgetItem;
+            item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
+            item->setData(Qt::UserRole, element.attribute("id"));
+            lw_customers->addItem(item);
         }
     }
+    this->setWindowModified(true);
+    refreshView();
 }
