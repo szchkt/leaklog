@@ -48,12 +48,39 @@ void Highlighter::highlightBlock(const QString & text)
     }
 }
 
-ModifyDialogue::ModifyDialogue(const QDomElement & element, QStringList used_ids, bool nominal_allowed, MainWindow * parent):
-QDialog(parent)
+void ModifyDialogue::init(const QDomElement & element, const QStringList & used_ids, MainWindow * parent)
 {
     md_parent = parent;
     md_element = element;
     md_used_ids = used_ids;
+    QVBoxLayout * md_vlayout_main = new QVBoxLayout(this);
+    md_vlayout_main->setSpacing(9);
+    md_vlayout_main->setContentsMargins(6, 6, 6, 6);
+    md_grid_main = new QGridLayout;
+    md_grid_main->setHorizontalSpacing(9);
+    md_grid_main->setVerticalSpacing(6);
+    md_grid_main->setContentsMargins(0, 0, 0, 0);
+    md_vlayout_main->addLayout(md_grid_main);
+    QDialogButtonBox * md_bb = new QDialogButtonBox(this);
+    md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+    md_bb->button(QDialogButtonBox::Save)->setText(tr("Save"));
+    md_bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    QObject::connect(md_bb, SIGNAL(accepted()), this, SLOT(save()));
+    QObject::connect(md_bb, SIGNAL(rejected()), this, SLOT(reject()));
+    md_vlayout_main->addWidget(md_bb);
+    this->resize(20, 20);
+}
+
+ModifyDialogue::ModifyDialogue(const QDomElement & element, const QStringList & used_ids, MainWindow * parent):
+QDialog(parent)
+{
+    init(element, used_ids, parent);
+}
+
+ModifyDialogue::ModifyDialogue(const QDomElement & element, const QStringList & used_ids, bool nominal_allowed, MainWindow * parent):
+QDialog(parent)
+{
+    init(element, used_ids, parent);
     if (md_element.nodeName() == "customer") {
         md_dict.insert("customer", tr("Customer"));
         md_dict.insert("id", tr("ID"));
@@ -185,10 +212,6 @@ QDialog(parent)
     for (int i = 0; i < md_dict_vars.count(); ++i) {
         dict.insert(md_dict_vars.key(i), md_dict_vars.value(i));
     }
-    QGridLayout * md_grid_main = new QGridLayout(this);
-    md_grid_main->setHorizontalSpacing(9);
-    md_grid_main->setVerticalSpacing(6);
-    md_grid_main->setContentsMargins(6, 6, 6, 6);
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
     int i = 0; QStringList inputtype, var_id; QString value;
     int num_cols = (dict.count() - 1) / 20 + 1;
@@ -219,18 +242,7 @@ QDialog(parent)
                     }
                 }
             } else if (dict.key(i) == "value" && md_element.nodeName() == "var") {
-                value.clear(); int last_f_pos = 0;
-                QDomElement el_value = md_element.firstChildElement("value");
-                if (!el_value.isNull()) {
-                    QDomElement ec = el_value.firstChildElement("ec");
-                    while (!ec.isNull()) {
-                        value.append(ec.attribute("id"));
-                        if (ec.hasAttribute("f")) { last_f_pos = value.count(); value.append(ec.attribute("f")); }
-                        value.append(ec.attribute("cc_attr"));
-                        if (ec.hasAttribute("sum")) { value.insert(last_f_pos, "sum"); value.append(ec.attribute("sum")); }
-                        ec = ec.nextSiblingElement();
-                    }
-                }
+                value = loadExpression(md_element, "value");
             } else {
                 value = md_element.attribute(dict.key(i));
             }
@@ -240,126 +252,135 @@ QDialog(parent)
                 md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 md_grid_main->addWidget(md_lbl_var, r, 2 * c);
             }
-            if (inputtype.at(0) == "le") {
-                QLineEdit * md_le_var = new QLineEdit(this);
-                md_le_var->setText(value);
-                md_w_var = md_le_var;
-            } else if (inputtype.at(0) == "chb") {
-                QCheckBox * md_chb_var = new QCheckBox(dict.value(i), this);
-                md_chb_var->setChecked(value == "true");
-                if (dict.key(i) == "nominal") { md_chb_var->setEnabled(nominal_allowed); }
-                md_w_var = md_chb_var;
-            } else if (inputtype.at(0) == "spb") {
-                QSpinBox * md_spb_var = new QSpinBox(this);
-                if (inputtype.count() > 1) { md_spb_var->setMinimum(inputtype.at(1).toInt()); }
-                if (inputtype.count() > 3) { md_spb_var->setMaximum(inputtype.at(3).toInt()); }
-                if (inputtype.count() > 2) { md_spb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toInt()); }
-                else { md_spb_var->setValue(value.toInt()); }
-                if (inputtype.count() > 4) { md_spb_var->setSuffix(inputtype.at(4)); }
-                md_w_var = md_spb_var;
-            } else if (inputtype.at(0) == "dspb") {
-                QDoubleSpinBox * md_dspb_var = new QDoubleSpinBox(this);
-                if (inputtype.count() > 1) { md_dspb_var->setMinimum(inputtype.at(1).toDouble()); }
-                if (inputtype.count() > 3) { md_dspb_var->setMaximum(inputtype.at(3).toDouble()); }
-                if (inputtype.count() > 2) { md_dspb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toDouble()); }
-                else { md_dspb_var->setValue(value.toDouble()); }
-                if (inputtype.count() > 4) { md_dspb_var->setSuffix(inputtype.at(4)); }
-                md_w_var = md_dspb_var;
-            } else if (inputtype.at(0) == "cb") {
-                QComboBox * md_cb_var = new QComboBox(this); int n = -1;
-                for (int j = 1; j < inputtype.count(); ++j) {
-                    md_cb_var->addItem(inputtype.at(j).split("||").first());
-                    if (inputtype.at(j).split("||").last() == value) { n = j - 1; }
-                }
-                md_cb_var->setCurrentIndex(n);
-                md_w_var = md_cb_var;
-            } else if (inputtype.at(0) == "ccb") {
-                MTColourComboBox * md_ccb_var = new MTColourComboBox(this);
-                for (int j = 0; j < md_ccb_var->count(); ++j) {
-                    if (md_ccb_var->itemText(j) == value) { md_ccb_var->setCurrentIndex(j); break; }
-                }
-                md_w_var = md_ccb_var;
-            } else if (inputtype.at(0) == "dte") {
-                QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
-                md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
-                md_w_var = md_dte_var;
-            } else if (inputtype.at(0) == "de") {
-                QDateEdit * md_de_var = new QDateEdit(this);
-                md_de_var->setDate(QDate::fromString(value, "yyyy.MM.dd"));
-                md_w_var = md_de_var;
-            } else if (inputtype.at(0) == "pteh") {
-                QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
-                md_pte_var->setMinimumSize(200, 30);
-                md_pte_var->setPlainText(value);
-                new Highlighter(md_used_ids, md_pte_var->document());
-                md_w_var = md_pte_var;
-            } else {
-                QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
-                md_pte_var->setMinimumSize(200, 30);
-                md_pte_var->setPlainText(value);
-                md_w_var = md_pte_var;
-            }
+            md_w_var = createInputWidget(inputtype, dict.value(i), value);
+            if (dict.key(i) == "nominal") { md_w_var->setEnabled(nominal_allowed); }
             md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
             md_vars.insert(dict.key(i), md_w_var);
             i++;
         }
     }
-    QDialogButtonBox * md_bb = new QDialogButtonBox(this);
-    md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
-    QObject::connect(md_bb, SIGNAL(accepted()), this, SLOT(save()));
-    QObject::connect(md_bb, SIGNAL(rejected()), this, SLOT(reject()));
-    md_grid_main->addWidget(md_bb, num_rows, 0, 1, 2 * num_cols);
-    this->resize(20, 20);
+}
+
+QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const QString & name, const QString & value)
+{
+    if (inputtype.at(0) == "le") {
+        QLineEdit * md_le_var = new QLineEdit(this);
+        md_le_var->setText(value);
+        return md_le_var;
+    } else if (inputtype.at(0) == "chb") {
+        QCheckBox * md_chb_var = new QCheckBox(name, this);
+        md_chb_var->setChecked(value == "true");
+        return md_chb_var;
+    } else if (inputtype.at(0) == "spb") {
+        QSpinBox * md_spb_var = new QSpinBox(this);
+        if (inputtype.count() > 1) { md_spb_var->setMinimum(inputtype.at(1).toInt()); }
+        if (inputtype.count() > 3) { md_spb_var->setMaximum(inputtype.at(3).toInt()); }
+        if (inputtype.count() > 2) { md_spb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toInt()); }
+        else { md_spb_var->setValue(value.toInt()); }
+        if (inputtype.count() > 4) { md_spb_var->setSuffix(inputtype.at(4)); }
+        return md_spb_var;
+    } else if (inputtype.at(0) == "dspb") {
+        QDoubleSpinBox * md_dspb_var = new QDoubleSpinBox(this);
+        if (inputtype.count() > 1) { md_dspb_var->setMinimum(inputtype.at(1).toDouble()); }
+        if (inputtype.count() > 3) { md_dspb_var->setMaximum(inputtype.at(3).toDouble()); }
+        if (inputtype.count() > 2) { md_dspb_var->setValue((value.isEmpty() ? inputtype.at(2) : value).toDouble()); }
+        else { md_dspb_var->setValue(value.toDouble()); }
+        if (inputtype.count() > 4) { md_dspb_var->setSuffix(inputtype.at(4)); }
+        return md_dspb_var;
+    } else if (inputtype.at(0) == "cb") {
+        QComboBox * md_cb_var = new QComboBox(this); int n = -1;
+        for (int j = 1; j < inputtype.count(); ++j) {
+            md_cb_var->addItem(inputtype.at(j).split("||").first());
+            if (inputtype.at(j).split("||").last() == value) { n = j - 1; }
+        }
+        md_cb_var->setCurrentIndex(n);
+        return md_cb_var;
+    } else if (inputtype.at(0) == "ccb") {
+        MTColourComboBox * md_ccb_var = new MTColourComboBox(this);
+        for (int j = 0; j < md_ccb_var->count(); ++j) {
+            if (md_ccb_var->itemText(j) == value) { md_ccb_var->setCurrentIndex(j); break; }
+        }
+        return md_ccb_var;
+    } else if (inputtype.at(0) == "dte") {
+        QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
+        md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
+        return md_dte_var;
+    } else if (inputtype.at(0) == "de") {
+        QDateEdit * md_de_var = new QDateEdit(this);
+        md_de_var->setDate(QDate::fromString(value, "yyyy.MM.dd"));
+        return md_de_var;
+    } else if (inputtype.at(0) == "pteh") {
+        QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
+        md_pte_var->setMinimumSize(200, 30);
+        md_pte_var->setPlainText(value);
+        new Highlighter(md_used_ids, md_pte_var->document());
+        return md_pte_var;
+    } else {
+        QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
+        md_pte_var->setMinimumSize(200, 30);
+        md_pte_var->setPlainText(value);
+        return md_pte_var;
+    }
+    return new QWidget;
+}
+
+QString ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStringList & inputtype, const QString & key)
+{
+    QString value;
+    if (inputtype.at(0) == "chb") {
+        value = ((QCheckBox *)input_widget)->isChecked() ? "true" : "false";
+    } else if (inputtype.at(0) == "le") {
+        value = ((QLineEdit *)input_widget)->text();
+        if (key == "id") {
+            if (value.isEmpty()) {
+                QMessageBox::information(this, tr("Save changes"), tr("Invalid ID."));
+                return QString();
+            }
+            if (md_used_ids.contains(value)) {
+                QMessageBox::information(this, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
+                return QString();
+            }
+        }
+    } else if (inputtype.at(0) == "spb") {
+        value = QString("%1").arg(((QSpinBox *)input_widget)->value());
+    } else if (inputtype.at(0) == "dspb") {
+        value = QString("%1").arg(((QDoubleSpinBox *)input_widget)->value());
+    } else if (inputtype.at(0) == "cb") {
+        MTDictionary item_values;
+        for (int j = 1; j < inputtype.count(); ++j) {
+            item_values.insert(inputtype.at(j).split("||").first(), inputtype.at(j).split("||").last());
+        }
+        value = item_values.value(((QComboBox *)input_widget)->currentText());
+    } else if (inputtype.at(0) == "ccb") {
+        value = ((MTColourComboBox *)input_widget)->currentText();
+    } else if (inputtype.at(0) == "dte") {
+        value = ((QDateTimeEdit *)input_widget)->dateTime().toString("yyyy.MM.dd-hh:mm");
+        if (key == "date") {
+            if (md_used_ids.contains(value)) {
+                QMessageBox::information(this, tr("Save changes"), tr("This date is not available. Please choose a different date."));
+                return QString();
+            }
+        }
+    } else if (inputtype.at(0) == "de") {
+        value = ((QDateEdit *)input_widget)->date().toString("yyyy.MM.dd");
+    } else {
+        value = ((QPlainTextEdit *)input_widget)->toPlainText();
+    }
+    return value.isNull() ? QString("") : value;
 }
 
 void ModifyDialogue::save()
 {
-    MTDictionary values, var_values; QStringList inputtype; QString exp; bool exp_ = false;
+    MTDictionary values, var_values; QStringList inputtype; QString exp;
     QMapIterator<QString, QWidget *> i(md_vars);
     while (i.hasNext()) { i.next();
-        QString value;
         inputtype = md_dict_input.value(i.key()).split(";");
-        if (inputtype.at(0) == "chb") {
-            value = ((QCheckBox *)i.value())->isChecked() ? "true" : "false";
-        } else if (inputtype.at(0) == "le") {
-            value = ((QLineEdit *)i.value())->text();
-            if (i.key() == "id") {
-                if (value.isEmpty()) {
-                    QMessageBox::information(this, tr("Save changes"), tr("Invalid ID."));
-                    return;
-                }
-                if (md_used_ids.contains(value)) {
-                    QMessageBox::information(this, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
-                    return;
-                }
-            }
-        } else if (inputtype.at(0) == "spb") {
-            value = QString("%1").arg(((QSpinBox *)i.value())->value());
-        } else if (inputtype.at(0) == "dspb") {
-            value = QString("%1").arg(((QDoubleSpinBox *)i.value())->value());
-        } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "ccb") {
-            MTDictionary item_values;
-            for (int j = 1; j < inputtype.count(); ++j) {
-                item_values.insert(inputtype.at(j).split("||").first(), inputtype.at(j).split("||").last());
-            }
-            value = item_values.value(((QComboBox *)i.value())->currentText());
-        } else if (inputtype.at(0) == "dte") {
-            value = ((QDateTimeEdit *)i.value())->dateTime().toString("yyyy.MM.dd-hh:mm");
-            if (i.key() == "date") {
-                if (md_used_ids.contains(value)) {
-                    QMessageBox::information(this, tr("Save changes"), tr("This date is not available. Please choose a different date."));
-                    return;
-                }
-            }
-        } else if (inputtype.at(0) == "de") {
-            value = ((QDateEdit *)i.value())->date().toString("yyyy.MM.dd");
-        } else {
-            value = ((QPlainTextEdit *)i.value())->toPlainText();
-        }
+        QString value = getInputFromWidget(i.value(), inputtype, i.key());
+        if (value.isNull()) { return; }
         if (md_dict_vars.contains(i.key())) {
             var_values.insert(i.key(), value);
         } else if (i.key() == "value" && md_element.nodeName() == "var") {
-            exp = value; exp_ = true;
+            exp = value;
         } else {
             values.insert(i.key(), value);
         }
@@ -401,7 +422,30 @@ void ModifyDialogue::save()
         QDomText var_value = md_parent->document.createTextNode(var_values.value(i));
         subvar.appendChild(var_value);
     }
-    if (exp_ && !exp.isEmpty()) {
+    saveExpression(exp, md_element, "value");
+    accept();
+}
+
+QString ModifyDialogue::loadExpression(QDomElement & element, const QString & node_name)
+{
+    QString exp(""); int last_f_pos = 0;
+    QDomElement el_value = element.firstChildElement(node_name);
+    if (!el_value.isNull()) {
+        QDomElement ec = el_value.firstChildElement("ec");
+        while (!ec.isNull()) {
+            exp.append(ec.attribute("id"));
+            if (ec.hasAttribute("f")) { last_f_pos = exp.count(); exp.append(ec.attribute("f")); }
+            exp.append(ec.attribute("cc_attr"));
+            if (ec.hasAttribute("sum")) { exp.insert(last_f_pos, "sum"); exp.append(ec.attribute("sum")); }
+            ec = ec.nextSiblingElement();
+        }
+    }
+    return exp;
+}
+
+void ModifyDialogue::saveExpression(const QString & exp, QDomElement & element, const QString & node_name)
+{
+    if (!exp.isEmpty()) {
         QSet<int> matched;
         for (int i = 0; i < md_used_ids.count(); ++i) {
             QRegExp expression(QString("\\b%1\\b").arg(md_used_ids.at(i)));
@@ -414,10 +458,10 @@ void ModifyDialogue::save()
                 index = exp.indexOf(expression, index + length);
             }
         }
-        QDomElement el_value = md_element.firstChildElement("value");
+        QDomElement el_value = element.firstChildElement(node_name);
         if (el_value.isNull()) {
-            el_value = md_parent->document.createElement("value");
-            md_element.appendChild(el_value);
+            el_value = md_parent->document.createElement(node_name);
+            element.appendChild(el_value);
         }
         while (el_value.hasChildNodes()) { el_value.removeChild(el_value.firstChild()); }
         QString id_, f_; bool last_id = false; bool last_sum = false;
@@ -455,7 +499,6 @@ void ModifyDialogue::save()
             QDomElement ec = md_parent->document.createElement("ec");
             ec.setAttribute("f", f_);
             el_value.appendChild(ec);
-            f_.clear();
         }
         if (!id_.isEmpty()) {
             QDomElement ec = md_parent->document.createElement("ec");
@@ -465,10 +508,12 @@ void ModifyDialogue::save()
                 ec.setAttribute(last_sum ? "sum" : "id", id_);
             }
             el_value.appendChild(ec);
-            id_.clear();
         }
-    } else if (exp_) {
-        while (md_element.hasChildNodes()) { md_element.removeChild(md_element.firstChild()); }
+    } else if (!exp.isNull()) {
+        QDomElement el_value = element.firstChildElement(node_name);
+        while (!el_value.isNull()) {
+            element.removeChild(el_value);
+            el_value = element.firstChildElement(node_name);
+        }
     }
-    accept();
 }

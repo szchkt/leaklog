@@ -19,7 +19,7 @@
 
 #include "ui_main_window.h"
 #include "about_widget.h"
-#include "modify_dialogue.h"
+#include "modify_warning_dialogue.h"
 #include "i18n.h"
 
 #include <QCloseEvent>
@@ -87,6 +87,9 @@ private slots:
     void loadTable(const QString &);
     void addTableVariable();
     void removeTableVariable();
+    void addWarning();
+    void modifyWarning();
+    void removeWarning();
     void exportCustomerData();
     void exportCircuitData();
     void exportInspectionData();
@@ -118,12 +121,14 @@ private:
     void addVariable(bool);
     QDomElement selectedVariableElement(QStringList * = NULL);
     QDomElement selectedTableElement(QStringList * = NULL);
+    QDomElement selectedWarningElement();
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;
     i18n dict_i18n;
     QString dict_i18n_javascript;
     QMap<QString, int> view_indices;
+    QActionGroup * actgrp_view;
     QString last_search_keyword;
     QDomDocument document;
     bool document_open;
@@ -131,4 +136,5 @@ private:
     QString leaklog_version; float f_leaklog_version;
 
     friend class ModifyDialogue;
+    friend class ModifyWarningDialogue;
 };

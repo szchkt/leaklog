@@ -17,6 +17,9 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
+#ifndef MODIFY_DIALOGUE_H
+#define MODIFY_DIALOGUE_H
+
 #include "mtdictionary.h"
 #include "mtcolourcombobox.h"
 
@@ -59,15 +62,27 @@ private:
 
 class MainWindow;
 
+class ModifyWarningDialogue;
+
 class ModifyDialogue : public QDialog
 {
     Q_OBJECT
 
+protected:
+    void init(const QDomElement &, const QStringList &, MainWindow * = NULL);
+    ModifyDialogue(const QDomElement &, const QStringList &, MainWindow * = NULL);
+
 public:
-    ModifyDialogue(const QDomElement &, QStringList, bool, MainWindow * = NULL);
+    ModifyDialogue(const QDomElement &, const QStringList &, bool, MainWindow * = NULL);
+
+private:
+    QWidget * createInputWidget(const QStringList &, const QString &, const QString &);
+    QString getInputFromWidget(QWidget *, const QStringList &, const QString &);
+    QString loadExpression(QDomElement &, const QString &);
+    void saveExpression(const QString &, QDomElement &, const QString &);
 
 private slots:
-    void save();
+    virtual void save();
 
 private:
     MainWindow * md_parent;
@@ -77,4 +92,9 @@ private:
     MTDictionary md_dict_vars;
     QStringList md_used_ids;
     QMap<QString, QWidget *> md_vars;
+    QGridLayout * md_grid_main;
+
+    friend class ModifyWarningDialogue;
 };
+
+#endif // MODIFY_DIALOGUE_H

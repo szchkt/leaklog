@@ -86,19 +86,23 @@ MainWindow::MainWindow()
     // ------------------
     setupUi(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
-    dw_customers->setVisible(false);
+    dw_browser->setVisible(false);
     dw_variables->setVisible(false);
+    dw_tables->setVisible(false);
+    dw_warnings->setVisible(false);
     tbtn_add_variable->setMenu(menuAdd_variable);
     tbtn_remove_variable->setDefaultAction(actionRemove_variable);
     tbtn_add_table->setDefaultAction(actionAdd_table);
     tbtn_remove_table->setDefaultAction(actionRemove_table);
+    tbtn_add_warning->setDefaultAction(actionAdd_warning);
+    tbtn_remove_warning->setDefaultAction(actionRemove_warning);
     QStringList views;
     views << tr("All customers");
     views << tr("Customer information");
     views << tr("Circuit information");
     views << tr("Inspection information");
     views << tr("Table of inspections");
-    QAction * action; QActionGroup * actgrp_view = new QActionGroup(this);
+    QAction * action; actgrp_view = new QActionGroup(this);
     QAction * separator = menuView->actions().at(0);
     QObject::connect(actgrp_view, SIGNAL(triggered(QAction *)), this, SLOT(setView(QAction *)));
     for (int i = 0; i < views.count(); ++i) {
@@ -140,6 +144,9 @@ MainWindow::MainWindow()
     QObject::connect(actionRemove_table, SIGNAL(triggered()), this, SLOT(removeTable()));
     QObject::connect(tbtn_table_add_variable, SIGNAL(clicked()), this, SLOT(addTableVariable()));
     QObject::connect(tbtn_table_remove_variable, SIGNAL(clicked()), this, SLOT(removeTableVariable()));
+    QObject::connect(actionAdd_warning, SIGNAL(triggered()), this, SLOT(addWarning()));
+    QObject::connect(actionModify_warning, SIGNAL(triggered()), this, SLOT(modifyWarning()));
+    QObject::connect(actionRemove_warning, SIGNAL(triggered()), this, SLOT(removeWarning()));
     QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
     QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
     QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
@@ -158,6 +165,8 @@ MainWindow::MainWindow()
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(lw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
+    QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(modifyWarning()));
+    QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     wv_main->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     loadSettings();
@@ -284,6 +293,7 @@ void MainWindow::clearAll()
     cb_table_edit->clear();
     trw_variables->clear();
     lw_table_variables->clear();
+    lw_warnings->clear();
 }
 
 void MainWindow::setAllEnabled(bool enable)
@@ -294,6 +304,8 @@ void MainWindow::setAllEnabled(bool enable)
     actionImport_data->setEnabled(enable);
     actionPrint_preview->setEnabled(enable);
     actionPrint->setEnabled(enable);
+    actgrp_view->setEnabled(enable);
+    menuDocument->setEnabled(enable);
     menuCustomer->setEnabled(enable);
         actionAdd_customer->setEnabled(enable);
         if (!enable) actionModify_customer->setEnabled(enable);
@@ -306,9 +318,10 @@ void MainWindow::setAllEnabled(bool enable)
         if (!enable) actionAdd_inspection->setEnabled(enable);
         if (!enable) actionModify_inspection->setEnabled(enable);
         if (!enable) actionRemove_inspection->setEnabled(enable);
-    menuVariable->setEnabled(enable);
-    dw_customers->setEnabled(enable);
+    dw_browser->setEnabled(enable);
     dw_variables->setEnabled(enable);
+    dw_tables->setEnabled(enable);
+    dw_warnings->setEnabled(enable);
     stw_main->setCurrentIndex(enable ? 1 : 0);
 }
 
@@ -336,10 +349,14 @@ void MainWindow::enableTools()
     actionRemove_inspection->setEnabled(inspection_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL);
+    actionModify_variable->setEnabled(trw_variables->currentIndex().isValid());
     actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid());
+    actionModify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_remove_variable->setEnabled(lw_table_variables->currentIndex().isValid());
+    actionModify_warning->setEnabled(lw_warnings->currentIndex().isValid());
+    actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid());
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

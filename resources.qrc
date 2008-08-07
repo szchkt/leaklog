@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/add16.png</file>
+    <file>images/remove16.png</file>
+    <file>images/warning_add.png</file>
+    <file>images/warning_remove.png</file>
     <file>images/edit_find.png</file>
     <file>images/edit_find_next.png</file>
     <file>images/edit_find_previous.png</file>

@@ -146,6 +146,17 @@ void MainWindow::openDocument(QString path)
             cb_table->addItem(table.attribute("id"));
         }
     }
+    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
+    if (!el_warnings.isNull()) {
+        QDomNodeList warnings = el_warnings.elementsByTagName("warning");
+        for (int i = 0; i < warnings.count(); ++i) {
+            QDomElement element = warnings.at(i).toElement();
+            QListWidgetItem * item = new QListWidgetItem;
+            item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
+            item->setData(Qt::UserRole, element.attribute("id"));
+            lw_warnings->addItem(item);
+        }
+    }
     document_open = true;
     document_path = path;
 #ifdef Q_WS_MAC
@@ -289,7 +300,6 @@ void MainWindow::modifyCustomer()
         QListWidgetItem * item = lw_customers->highlightedItem();
         item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
         item->setData(Qt::UserRole, element.attribute("id"));
-        //gb_customer->setTitle(item->text());
         this->setWindowModified(true);
         refreshView();
     }
@@ -645,13 +655,13 @@ void MainWindow::removeVariable()
 QDomElement MainWindow::selectedVariableElement(QStringList * used_ids)
 {
     if (!document_open) { return QDomElement(); }
-    if (!trw_variables->currentIndex().isValid()) { return QDomElement(); }
-    QTreeWidgetItem * item = trw_variables->currentItem();
+    QTreeWidgetItem * item = NULL;
+    if (trw_variables->currentIndex().isValid()) { item = trw_variables->currentItem(); }
     QDomElement el_variables = document.documentElement().firstChildElement("variables");
     if (el_variables.isNull()) { return QDomElement(); }
     QDomNodeList variables = el_variables.elementsByTagName("var"); int n = -1;
     for (int i = 0; i < variables.count(); ++i) {
-        if (n == -1 && variables.at(i).toElement().attribute("id") == item->text(1)) {
+        if (item && n == -1 && variables.at(i).toElement().attribute("id") == item->text(1)) {
             n = i;
         } else {
             if (used_ids) { *used_ids << variables.at(i).toElement().attribute("id"); }
@@ -854,6 +864,74 @@ void MainWindow::removeTableVariable()
     loadTable(cb_table_edit->currentText());
     this->setWindowModified(true);
     refreshView();
+}
+
+void MainWindow::addWarning()
+{
+    if (!document_open) { return; }
+    QStringList used_ids; selectedVariableElement(&used_ids);
+    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
+    if (el_warnings.isNull()) {
+        el_warnings = document.createElement("warnings");
+        document.documentElement().appendChild(el_warnings);
+    }
+    QDomElement element = document.createElement("warning");
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    if (md->exec() == QDialog::Accepted) {
+        el_warnings.appendChild(element);
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
+        item->setData(Qt::UserRole, element.attribute("id"));
+        lw_inspections->addItem(item);
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::modifyWarning()
+{
+    QStringList used_ids; selectedVariableElement(&used_ids);
+    QDomElement element = selectedWarningElement();
+    if (element.isNull()) { return; }
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    if (md->exec() == QDialog::Accepted) {
+        QListWidgetItem * item = lw_warnings->currentItem();
+        item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
+        item->setData(Qt::UserRole, element.attribute("id"));
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::removeWarning()
+{
+    QDomElement element = selectedWarningElement();
+    if (element.isNull()) { return; }
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description"))), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    element.parentNode().removeChild(element);
+    delete lw_warnings->currentItem();
+    enableTools();
+    this->setWindowModified(true);
+    refreshView();
+}
+
+QDomElement MainWindow::selectedWarningElement()
+{
+    if (!document_open) { return QDomElement(); }
+    if (!lw_warnings->currentIndex().isValid()) { return QDomElement(); }
+    QListWidgetItem * item = lw_warnings->currentItem();
+    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
+    if (el_warnings.isNull()) { return QDomElement(); }
+    QDomNodeList warnings = el_warnings.elementsByTagName("warning"); int n = -1;
+    for (int i = 0; i < warnings.count(); ++i) {
+        if (warnings.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) { n = i; break; }
+    }
+    if (n == -1) { return QDomElement(); }
+    return warnings.at(n).toElement();
 }
 
 void MainWindow::exportCustomerData()

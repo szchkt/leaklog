@@ -10,6 +10,12 @@
     <height>751</height>
    </rect>
   </property>
+  <property name="minimumSize" >
+   <size>
+    <width>600</width>
+    <height>440</height>
+   </size>
+  </property>
   <property name="windowTitle" >
    <string>Leaklog</string>
   </property>
@@ -21,8 +27,11 @@
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <layout class="QGridLayout" name="gridLayout_5" >
+   <layout class="QGridLayout" name="gridLayout_3" >
     <property name="margin" >
+     <number>0</number>
+    </property>
+    <property name="spacing" >
      <number>0</number>
     </property>
     <item row="0" column="0" >
@@ -456,9 +465,9 @@
     <addaction name="separator" />
     <addaction name="actionExport_inspection_data" />
    </widget>
-   <widget class="QMenu" name="menuVariable" >
+   <widget class="QMenu" name="menuDocument" >
     <property name="title" >
-     <string>Variable</string>
+     <string>Document</string>
     </property>
     <widget class="QMenu" name="menuAdd_variable" >
      <property name="title" >
@@ -478,6 +487,10 @@
     <addaction name="actionAdd_table" />
     <addaction name="actionModify_table" />
     <addaction name="actionRemove_table" />
+    <addaction name="separator" />
+    <addaction name="actionAdd_warning" />
+    <addaction name="actionModify_warning" />
+    <addaction name="actionRemove_warning" />
    </widget>
    <widget class="QMenu" name="menuEdit" >
     <property name="title" >
@@ -492,16 +505,18 @@
      <string>View</string>
     </property>
     <addaction name="separator" />
-    <addaction name="actionShow_customers" />
+    <addaction name="actionShow_browser" />
     <addaction name="actionShow_variables" />
+    <addaction name="actionShow_tables" />
+    <addaction name="actionShow_warnings" />
    </widget>
    <addaction name="menuFile" />
    <addaction name="menuEdit" />
    <addaction name="menuView" />
+   <addaction name="menuDocument" />
    <addaction name="menuCustomer" />
    <addaction name="menuCooling_circuit" />
    <addaction name="menuInspection" />
-   <addaction name="menuVariable" />
    <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
@@ -533,7 +548,7 @@
    <addaction name="separator" />
    <addaction name="actionPrint" />
   </widget>
-  <widget class="QDockWidget" name="dw_customers" >
+  <widget class="QDockWidget" name="dw_browser" >
    <property name="features" >
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -541,12 +556,12 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle" >
-    <string>Customers</string>
+    <string>Browser</string>
    </property>
    <attribute name="dockWidgetArea" >
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dwc_customers" >
+   <widget class="QWidget" name="dwc_browser" >
     <layout class="QGridLayout" name="gridLayout" >
      <item row="1" column="0" >
       <widget class="QLabel" name="lbl_search_customers" >
@@ -651,9 +666,6 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dw_variables" >
-   <property name="allowedAreas" >
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
    <property name="windowTitle" >
     <string>Variables</string>
    </property>
@@ -730,13 +742,21 @@
        </item>
       </layout>
      </item>
-     <item>
-      <widget class="Line" name="line" >
-       <property name="orientation" >
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_tables" >
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Tables</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_tables" >
+    <layout class="QVBoxLayout" name="verticalLayout_3" >
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2" >
        <item>
@@ -810,6 +830,59 @@
           <iconset resource="resources.qrc" >
            <normaloff>:/images/images/variable_remove.png</normaloff>:/images/images/variable_remove.png</iconset>
          </property>
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_warnings" >
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Warnings</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_warnings" >
+    <layout class="QVBoxLayout" name="verticalLayout_4" >
+     <item>
+      <widget class="QListWidget" name="lw_warnings" >
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4" >
+       <item>
+        <widget class="QToolButton" name="tbtn_add_warning" >
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_8" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_remove_warning" >
          <property name="toolButtonStyle" >
           <enum>Qt::ToolButtonTextBesideIcon</enum>
          </property>
@@ -898,7 +971,7 @@
     <string>Add customer</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl+Alt+N</string>
+    <string>Ctrl++</string>
    </property>
   </action>
   <action name="actionRemove_customer" >
@@ -913,7 +986,7 @@
     <string>Remove customer</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl+Alt+R</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
   <action name="actionAdd_circuit" >
@@ -958,7 +1031,7 @@
     <string>Add inspection</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl+I</string>
+    <string>Ctrl+Shift++</string>
    </property>
   </action>
   <action name="actionRemove_inspection" >
@@ -971,6 +1044,9 @@
    </property>
    <property name="text" >
     <string>Remove inspection</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+-</string>
    </property>
   </action>
   <action name="actionRemove_variable" >
@@ -1006,12 +1082,15 @@
     <string>Remove table</string>
    </property>
   </action>
-  <action name="actionShow_customers" >
+  <action name="actionShow_browser" >
    <property name="checkable" >
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Show customers</string>
+    <string>Show browser</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+B</string>
    </property>
   </action>
   <action name="actionShow_variables" >
@@ -1019,7 +1098,10 @@
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Show variables and tables</string>
+    <string>Show variables</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+V</string>
    </property>
   </action>
   <action name="actionSave_as" >
@@ -1061,7 +1143,7 @@
     <string>Modify customer</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl+Alt+M</string>
+    <string>Ctrl+*</string>
    </property>
   </action>
   <action name="actionModify_inspection" >
@@ -1074,6 +1156,9 @@
    </property>
    <property name="text" >
     <string>Modify inspection</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+*</string>
    </property>
   </action>
   <action name="actionPrint" >
@@ -1120,6 +1205,9 @@
    <property name="text" >
     <string>Export customer data</string>
    </property>
+   <property name="shortcut" >
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionExport_circuit_data" >
    <property name="enabled" >
@@ -1131,6 +1219,9 @@
    </property>
    <property name="text" >
     <string>Export circuit data</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+E</string>
    </property>
   </action>
   <action name="actionExport_inspection_data" >
@@ -1144,6 +1235,9 @@
    <property name="text" >
     <string>Export inspection data</string>
    </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+E</string>
+   </property>
   </action>
   <action name="actionImport_data" >
    <property name="enabled" >
@@ -1155,6 +1249,9 @@
    </property>
    <property name="text" >
     <string>Import data</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actionCheck_for_updates" >
@@ -1224,12 +1321,70 @@
    </property>
   </action>
   <action name="actionModify_table" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
    <property name="icon" >
     <iconset resource="resources.qrc" >
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text" >
     <string>Modify table</string>
+   </property>
+  </action>
+  <action name="actionShow_tables" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show tables</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+T</string>
+   </property>
+  </action>
+  <action name="actionShow_warnings" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show warnings</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+W</string>
+   </property>
+  </action>
+  <action name="actionAdd_warning" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/warning_add.png</normaloff>:/images/images/warning_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add warning</string>
+   </property>
+  </action>
+  <action name="actionModify_warning" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify warning</string>
+   </property>
+  </action>
+  <action name="actionRemove_warning" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/warning_remove.png</normaloff>:/images/images/warning_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove warning</string>
    </property>
   </action>
  </widget>
@@ -1272,9 +1427,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShow_customers</sender>
+   <sender>actionShow_browser</sender>
    <signal>toggled(bool)</signal>
-   <receiver>dw_customers</receiver>
+   <receiver>dw_browser</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -1304,9 +1459,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>dw_customers</sender>
+   <sender>dw_browser</sender>
    <signal>visibilityChanged(bool)</signal>
-   <receiver>actionShow_customers</receiver>
+   <receiver>actionShow_browser</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -1328,6 +1483,70 @@
     <hint type="sourcelabel" >
      <x>833</x>
      <y>406</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_tables</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_tables</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>881</x>
+     <y>444</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dw_tables</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionShow_tables</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>881</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_warnings</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_warnings</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>881</x>
+     <y>650</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dw_warnings</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionShow_warnings</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>881</x>
+     <y>650</y>
     </hint>
     <hint type="destinationlabel" >
      <x>-1</x>

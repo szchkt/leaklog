@@ -41,6 +41,8 @@ public:
     QString firstKey(const QString & value) {
         return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));
     };
+    QStringList keys() { return dict_keys; };
+    int indexOfKey(const QString & key) { return dict_keys.indexOf(key); };
     bool contains(const QString & key) {
         return dict_keys.contains(key, Qt::CaseSensitive);
     };
@@ -48,6 +50,9 @@ public:
     QString value(const QString & key) {
         return dict_keys.indexOf(key) < 0 ? key : dict_values.at(dict_keys.indexOf(key));
     };
+    QStringList values() { return dict_values; };
+    int indexOfValue(const QString & value, int from = 0) { return dict_values.indexOf(value, from); };
+    int lastIndexOfValue(const QString & value, int from = -1) { return dict_values.lastIndexOf(value, from); };
     void removeAt(int i) { if (i >= 0 && i < count()) { dict_keys.removeAt(i); dict_values.removeAt(i); } };
     void remove(const QString & key) {
         while (dict_keys.contains(key)) {
@@ -56,6 +61,7 @@ public:
             dict_values.removeAt(i);
         }
     };
+    void clear() { dict_keys.clear(); dict_values.clear(); };
 
 private:
     QStringList dict_keys;

@@ -8,6 +8,7 @@ HEADERS      += main_window.h \
                 mtwidgetpalettes.h \
                 mtlistwidget.h \
                 modify_dialogue.h \
+                modify_warning_dialogue.h \
                 mtdictionary.h \
                 i18n.h \
                 mtcolourcombobox.h
@@ -18,7 +19,8 @@ SOURCES      += main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
                 document.cpp \
-                modify_dialogue.cpp
+                modify_dialogue.cpp \
+                modify_warning_dialogue.cpp
 QT           += network webkit xml xmlpatterns
 win32 {
 DESTDIR       = ./
