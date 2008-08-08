@@ -882,7 +882,7 @@ void MainWindow::addWarning()
         QListWidgetItem * item = new QListWidgetItem;
         item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
         item->setData(Qt::UserRole, element.attribute("id"));
-        lw_inspections->addItem(item);
+        lw_warnings->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
