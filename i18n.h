@@ -53,5 +53,16 @@ public:
         dictionary.insert("Transportation", tr("Transportation"));
         dictionary.insert("Air conditioning", tr("Air conditioning"));
         dictionary.insert("Heat pumps", tr("Heat pumps"));
+        dictionary.insert("Error: Failed to process warnings.", tr("Error: Failed to process warnings."));
+        dictionary.insert("Manufacturer", tr("Manufacturer"));
+        dictionary.insert("Type", tr("Type"));
+        dictionary.insert("Year of purchase", tr("Year of purchase"));
+        dictionary.insert("Date of commissioning", tr("Date of commissioning"));
+        dictionary.insert("Refrigerant", tr("Refrigerant"));
+        dictionary.insert("Amount of refrigerant", tr("Amount of refrigerant"));
+        dictionary.insert("Oil", tr("Oil"));
+        dictionary.insert("Amount of oil", tr("Amount of oil"));
+        dictionary.insert("Service life", tr("Service life"));
+        dictionary.insert("Error: Failed to process warnings.", tr("Error: Failed to process warnings."));
     };
 };

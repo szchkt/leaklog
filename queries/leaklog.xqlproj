@@ -51,4 +51,15 @@
     <string>Transportation</string>
     <string>Air conditioning</string>
     <string>Heat pumps</string>
+    <string>Error: Failed to process warnings.</string>
+    <string>Manufacturer</string>
+    <string>Type</string>
+    <string>Year of purchase</string>
+    <string>Date of commissioning</string>
+    <string>Refrigerant</string>
+    <string>Amount of refrigerant</string>
+    <string>Oil</string>
+    <string>Amount of oil</string>
+    <string>Service life</string>
+    <string>Error: Failed to process warnings.</string>
 </xqlproj>

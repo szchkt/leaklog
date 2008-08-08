@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="sk_SK">
+<defaultcodec></defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -300,7 +301,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <translation>Informácie o okruhu</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="362"/>
+        <location filename="../main_window.cpp" line="364"/>
         <source>Quit Leaklog</source>
         <translation>Ukončiť Leaklog</translation>
     </message>
@@ -1161,37 +1162,37 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
 <context>
     <name>ModifyWarningDialogue</name>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="187"/>
+        <location filename="../modify_warning_dialogue.cpp" line="189"/>
         <source>Warning</source>
         <translation>Upozornenie</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="188"/>
+        <location filename="../modify_warning_dialogue.cpp" line="190"/>
         <source>Name</source>
         <translation>Meno</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="190"/>
+        <location filename="../modify_warning_dialogue.cpp" line="192"/>
         <source>Description</source>
         <translation>Popis</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="194"/>
+        <location filename="../modify_warning_dialogue.cpp" line="196"/>
         <source>%1: %2</source>
         <translation>%1: %2</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="205"/>
+        <location filename="../modify_warning_dialogue.cpp" line="207"/>
         <source>%1:</source>
         <translation>%1:</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="214"/>
+        <location filename="../modify_warning_dialogue.cpp" line="216"/>
         <source>Circuit filter:</source>
         <translation>Filter okruhov:</translation>
     </message>
     <message>
-        <location filename="../modify_warning_dialogue.cpp" line="221"/>
+        <location filename="../modify_warning_dialogue.cpp" line="223"/>
         <source>Conditions:</source>
         <translation>Podmienky:</translation>
     </message>
@@ -1422,6 +1423,56 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <location filename="../i18n.h" line="55"/>
         <source>Heat pumps</source>
         <translation>Tepelné čerpadlá</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="66"/>
+        <source>Error: Failed to process warnings.</source>
+        <translation>Chyba: Spracovanie upozornení zlyhalo.</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="57"/>
+        <source>Manufacturer</source>
+        <translation>Výrobca</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="58"/>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="59"/>
+        <source>Year of purchase</source>
+        <translation>Rok zakúpenia</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="60"/>
+        <source>Date of commissioning</source>
+        <translation>Dátum uvedenia do prevádzky</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="61"/>
+        <source>Refrigerant</source>
+        <translation>Chladivo</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="62"/>
+        <source>Amount of refrigerant</source>
+        <translation>Množstvo chladiva</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="63"/>
+        <source>Oil</source>
+        <translation>Olej</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="64"/>
+        <source>Amount of oil</source>
+        <translation>Množstvo oleja</translation>
+    </message>
+    <message>
+        <location filename="../i18n.h" line="65"/>
+        <source>Service life</source>
+        <translation>Životnosť</translation>
     </message>
 </context>
 </TS>
