@@ -111,10 +111,12 @@ QWidget(parent)
     hlayout->setSpacing(6);
     hlayout->setContentsMargins(0, 0, 0, 0);
     expression_ins = new QPlainTextEdit(this);
+    expression_ins->setMinimumSize(200, 30);
     hlayout->addWidget(expression_ins);
     function = new QComboBox(this);
     hlayout->addWidget(function);
     expression_nom = new QPlainTextEdit(this);
+    expression_nom->setMinimumSize(200, 30);
     hlayout->addWidget(expression_nom);
     QToolButton * remove = new QToolButton(this);
     remove->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
