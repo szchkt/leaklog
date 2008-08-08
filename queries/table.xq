@@ -135,7 +135,7 @@ for $i in $table/var
 declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element(), $begin as xs:integer)  {
 
 for $x in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
-	return <tr class="{
+	return <tr id="main_table_row" class="{
 			if (data($table/@highlight_nominal)="false") then ()
 			else if ($x/@nominal="true") then (xs:string("nominal"))
 			else ()
@@ -161,38 +161,39 @@ for $x in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nom
 									count($x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')])
 								)
 							)
-						}">{
+						}"><var_value id="{ data($z/@id) }" date="{ data($x/@date) }">{
 							if (empty($z/value)) then (
-								if (data($table/@highlight_nominal)="false") then ()
-								else if (data($z/@compare_nom)="true") then (
+								if (data($table/@highlight_nominal)="false") then (
+									data($x/var[@id=$y/@id]/var[@id=$z/@id])
+								) else if (data($z/@compare_nom)="true") then (
 									<expression>{
 									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id]),
 									string("?"),
 									data($x/var[@id=$y/@id]/var[@id=$z/@id])
 									}</expression>
-								)
-								else data($x/var[@id=$y/@id]/var[@id=$z/@id])
+								) else data($x/var[@id=$y/@id]/var[@id=$z/@id])
 							)
 							else local:returnExpression ($table, $z, $x)
-						}</td>
+						}</var_value></td>
 						)
 				)
 				else (<td id="{
 							data($y/@id)
-						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }">{
+						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }"><var_value id="{ data($y/@id) }" date="{ data($x/@date) }">
+						{
 							if (empty($vars/var[@id=$y/@id]/value)) then (
-								if (data($table/@highlight_nominal)="false") then ()
-								else if (data($vars/var[@id=$y/@id]/@compare_nom)="true") then (
+								if (data($table/@highlight_nominal)="false") then (
+									data($x/var[@id=$y/@id])
+								) else if (data($vars/var[@id=$y/@id]/@compare_nom)="true") then (
 									<expression>{
 									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]),
 									string("?"),
 									data($x/var[@id=$y/@id])
 									}</expression>
-								)
-								else data($x/var[@id=$y/@id])
+								) else data($x/var[@id=$y/@id])
 							)
 							else local:returnExpression ($table, $vars/var[@id=$y/@id], $x)
-						}</td>)
+						}</var_value></td>)
 		}</tr>
 };
 
@@ -241,7 +242,9 @@ declare function local:setTableFoot ($table as element(), $circuit as element(),
 	else ()
 };
 
-declare function local:setTopTable ($customer as element()) {
+declare function local:setTopTables ($circuit as element()) {
+	let $customer := $circuit/..
+	return (
 	<table><tr>
 		<th>
 			<i18n>ID</i18n>
@@ -262,9 +265,9 @@ declare function local:setTopTable ($customer as element()) {
 			<i18n>Phone</i18n>
 		</th>
 	</tr><tr>
-		<td>{
+		<td><a href="customer:{ data($customer/@id) }">{
 			data($customer/@id)
-		}</td>
+		}</a></td>
 		<td>{
 			data($customer/@company)
 		}</td>
@@ -280,7 +283,147 @@ declare function local:setTopTable ($customer as element()) {
 		<td>{
 			data($customer/@phone)
 		}</td>
-	</tr></table>
+	</tr></table>,
+	<br />,
+	<table><tr>
+		<th>
+			<i18n>ID</i18n>
+		</th>
+		<th>
+			<i18n>Manufacturer</i18n>
+		</th>
+		<th>
+			<i18n>Type</i18n>
+		</th>
+		<th>
+			<i18n>Year of purchase</i18n>
+		</th>
+		<th>
+			<i18n>Date of commissioning</i18n>
+		</th>
+		<th>
+			<i18n>Refrigerant</i18n>
+		</th>
+		<th>
+			<i18n>Amount of refrigerant</i18n>
+		</th>
+		<th>
+			<i18n>Oil</i18n>
+		</th>
+		<th>
+			<i18n>Amount of oil</i18n>
+		</th>
+		<th>
+			<i18n>Service life</i18n>
+		</th>
+	</tr><tr>
+		<td><a href="customer:{ data($customer/@id) }/circuit:{ data($circuit/@id) }">{
+			data($circuit/@id)
+		}</a></td>
+		<td>{
+			data($circuit/@manufacturer)
+		}</td>
+		<td>{
+			data($circuit/@type)
+		}</td>
+		<td>{
+			data($circuit/@year)
+		}</td>
+		<td>{
+			data($circuit/@commissioning)
+		}</td>
+		<td>{
+			data($circuit/@refrigerant)
+		}</td>
+		<td>{
+			data($circuit/@refrigerant_amount)
+		}</td>
+		<td>{
+			data($circuit/@oil)
+		}</td>
+		<td>{
+			data($circuit/@oil_amount)
+		}</td>
+		<td>{
+			data($circuit/@life)
+		}</td>
+	</tr></table>,
+	<br />
+	)
+};
+
+declare function local:setWarnings ($warnings as element(), $circuit as element()) {
+	<warnings>{
+	<p align="center"><b><i18n>Error: Failed to process warnings.</i18n></b></p>,
+	for $w in $warnings/warning
+	return (
+		<warning id="{data($w/@id)}">{
+			for $c in $w/condition
+			return (
+				<condition>
+				<first_expression>{
+					if ($c/@cc_attr) then (
+						<cc_attr>{
+							for $att in $circuit/@*
+							return (
+								if (name($att) = data($c/@cc_attr)) then (
+									<rem_dots>{data($att)}</rem_dots>
+								) else ()
+							)
+						}</cc_attr>
+					) else (
+						if (count($c/value_ins)) then (
+							for $ev in $c/value_ins/ec
+							return (
+								if (count($ev/@f)) then (
+									data($ev/@f)
+								) else if (count($ev/@cc_attr)) then (
+									for $att in $circuit/@*
+									return (
+										if (name($att) = data($ev/@cc_attr)) then (
+											data($att)
+										) else ()
+									)
+								) else if (count($ev/@id)) then (
+									<replace_id>{
+										data($ev/@id)
+									}</replace_id>
+								) else ()
+							)
+						) else ()
+					)
+				}</first_expression>
+				<f>{
+					data($c/@f)
+				}</f>
+				<second_expression>{
+					if (count($c/value_nom)) then (
+						for $ev in $c/value_nom/ec
+						return (
+							if (count($ev/@f)) then (
+								data($ev/@f)
+							) else if (count($ev/@cc_attr)) then (
+								for $att in $circuit/@*
+								return (
+									if (name($att) = data($ev/@cc_attr)) then (
+										data($att)
+									) else ()
+								)
+							) else if (count($ev/@id)) then (
+								<replace_nom_id>{
+									data($ev/@id)
+								}</replace_nom_id>
+							) else ()
+						)
+					) else (
+						<rem_dots>{string($c)}</rem_dots>
+					)
+			}</second_expression>
+			</condition>
+			)
+		}</warning>
+	)
+	}</warnings>
 };
 
 <html>
@@ -289,6 +432,7 @@ declare function local:setTopTable ($customer as element()) {
 <title>Table</title>
 <link href="default.css" rel="stylesheet" type="text/css" />
 <link href="colours.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="prototype.js"></script>
 <script type="text/javascript" src="shared.js"></script>
 <script type="text/javascript">
 <!--
@@ -305,8 +449,7 @@ let $begin := %5
 let $vars := $d/leaklog/variables
 return (
 
-local:setTopTable ($circuit/..),
-<br />,
+local:setTopTables ($circuit),
 
 if (count($vars)) then (
 <table>
@@ -325,10 +468,10 @@ if (count($vars)) then (
 	local:setTableFoot ($table, $circuit, $vars, $begin)
 }
 </tfoot>
-<tfoot id="poruchy_element">
+<tfoot id="warnings_element">
 <tr><td style="text-align: center;"><b><i18n>Warnings</i18n></b></td></tr>
 {
-	$d/leaklog/warnings
+	local:setWarnings ($d/leaklog/warnings, $circuit)
 }
 </tfoot>
 </table>

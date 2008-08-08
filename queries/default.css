@@ -19,7 +19,11 @@ table,td,th {
 	border-width: thin;
 }
 table {
-	width:100%;
+	width: 100%;
+}
+.no_border {
+	border-collapse: collapse;
+	border-style: none;
 }
 header_top {
 	border-left-width: medium;
@@ -53,4 +57,8 @@ a:hover {
 a:active {
 	color: #333333;
 	text-decoration: none;
+}
+warning {
+	font-size: xx-small;
+	color: #FFFFFF;
 }

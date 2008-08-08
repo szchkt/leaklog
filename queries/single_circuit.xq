@@ -74,7 +74,7 @@ return (
 	}</td></tr>
 	<tr><td style="text-align: right;"><i18n>Amount of refrigerant: </i18n></td><td> {
 		data($t/@refrigerant_amount),
-		string("l")
+		string("kg")
 	}</td></tr>
 	<tr><td style="text-align: right;"><i18n>Oil: </i18n></td><td> {
 		data($t/@oil)

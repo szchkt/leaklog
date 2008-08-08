@@ -73,6 +73,7 @@ return (
 	</table></td></tr>
 	</table>,
 	for $t in $c/circuit
+	order by $t/@id ascending
 		return (
 			<table cellspacing="0" cellpadding="4" style="width:100%;"><tr><td rowspan="8" style="width:10%;"/>
 			<td colspan="2" style="background-color: #eee; font-size: medium; text-align: center; width:80%;"><b><i18n>Circuit: </i18n>
@@ -104,7 +105,7 @@ return (
 			}</td></tr>
 			<tr><td style="text-align: right;"><i18n>Amount of refrigerant: </i18n></td><td> {
 				data($t/@refrigerant_amount),
-				string("l")
+				string("kg")
 			}</td></tr>
 			<tr><td style="text-align: right;"><i18n>Oil: </i18n></td><td> {
 				data($t/@oil)

@@ -8,5 +8,6 @@
     <file>queries/default.css</file>
     <file>queries/colours.css</file>
     <file>queries/shared.js</file>
+    <file>queries/prototype.js</file>
   </qresource>
 </RCC>

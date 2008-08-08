@@ -51,14 +51,14 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 		if (empty($iv/var[@id=$w/@id]) and not(count($w/value))) then ()
 		else (
 			let $iw := $iv/var[@id=$w/@id]
-			return <tr><td style="text-align: right; width:50%;">{
+			return <tr move="true"><td style="text-align: right; width:50%;">{
 						data($v/@name),
 						<i18n>: </i18n>,
 						if (empty(data($w/@name))) then (
 							data($w/@id)
 						) else ( data($w/@name) ),
 						<i18n>: </i18n>
-					}</td><td id="{ data($w/@id) }">{
+					}</td><td><table cellpadding="0" cellspacing="0"><tr><td align="right" valign="center"><var_value id="{ data($w/@id) }" date="{ data($i/@date) }">{
 						if (empty($w/value)) then (
 								if (data($w/@compare_nom)="true") then (
 									<expression>{
@@ -69,11 +69,13 @@ declare function local:returnSubVar (  $i as element(), $v as element())  {
 								)
 								else data($iw)
 							)
-							else ( local:returnExpression ($w, $i) ),
+							else ( local:returnExpression ($w, $i) )
+						}</var_value></td><td valign="center">{
 							if (empty($w/@unit)) then ()
 							else data($w/@unit)
-						}</td></tr>
-				))
+						}</td></tr></table></td></tr>
+				)
+			)
  };
 
 declare function local:returnVar ($i as element(), $v as element())  {
@@ -81,10 +83,10 @@ declare function local:returnVar ($i as element(), $v as element())  {
 	let $iv := $i/var[@id=$v/@id]
 	return if (empty($iv) and not(count($v/value))) then ()
 	else (
-					<tr><td style="text-align: right; width:50%;">{
+					<tr move="true"><td style="text-align: right; width:50%;">{
 						data($v/@name),
 						<i18n>: </i18n>
-						}</td><td id="{ data($v/@id) }">{
+						}</td><td><table cellpadding="0" cellspacing="0"><tr><td align="right" valign="center"><var_value id="{ data($v/@id) }" date="{ data($i/@date) }">{
 							if (empty($v/value)) then (
 								if (data($v/@compare_nom)="true") then (
 									<expression>{
@@ -95,11 +97,11 @@ declare function local:returnVar ($i as element(), $v as element())  {
 								)
 								else data($iv)
 							)
-							else ( local:returnExpression ($v, $i) ),
+							else ( local:returnExpression ($v, $i) )
+						}</var_value></td><td valign="center">{
 							if (empty($v/@unit)) then ()
 							else data($v/@unit)
-
-				}</td></tr>
+						}</td></tr></table></td></tr>
 	)
 };
 
@@ -110,6 +112,80 @@ declare function local:returnAnyVar ($i as element(), $v as element())  {
 		) else (
 			local:returnVar($i, $v)
 		)
+};
+
+declare function local:setWarnings ($warnings as element(), $circuit as element()) {
+	<warnings>{
+	<p align="center"><b><i18n>Error: Failed to process warnings.</i18n></b></p>,
+	for $w in $warnings/warning
+	return (
+		<warning id="{data($w/@id)}">{
+			for $c in $w/condition
+			return (
+				<condition>
+				<first_expression>{
+					if ($c/@cc_attr) then (
+						<cc_attr>{
+							for $att in $circuit/@*
+							return (
+								if (name($att) = data($c/@cc_attr)) then (
+									<rem_dots>{data($att)}</rem_dots>
+								) else ()
+							)
+						}</cc_attr>
+					) else (
+						if (count($c/value_ins)) then (
+							for $ev in $c/value_ins/ec
+							return (
+								if (count($ev/@f)) then (
+									data($ev/@f)
+								) else if (count($ev/@cc_attr)) then (
+									for $att in $circuit/@*
+									return (
+										if (name($att) = data($ev/@cc_attr)) then (
+											data($att)
+										) else ()
+									)
+								) else if (count($ev/@id)) then (
+									<replace_id>{
+										data($ev/@id)
+									}</replace_id>
+								) else ()
+							)
+						) else ()
+					)
+				}</first_expression>
+				<f>{
+					data($c/@f)
+				}</f>
+				<second_expression>{
+					if (count($c/value_nom)) then (
+						for $ev in $c/value_nom/ec
+						return (
+							if (count($ev/@f)) then (
+								data($ev/@f)
+							) else if (count($ev/@cc_attr)) then (
+								for $att in $circuit/@*
+								return (
+									if (name($att) = data($ev/@cc_attr)) then (
+										data($att)
+									) else ()
+								)
+							) else if (count($ev/@id)) then (
+								<replace_nom_id>{
+									data($ev/@id)
+								}</replace_nom_id>
+							) else ()
+						)
+					) else (
+						<rem_dots>{string($c)}</rem_dots>
+					)
+			}</second_expression>
+			</condition>
+			)
+		}</warning>
+	)
+	}</warnings>
 };
 
 <html>
@@ -139,9 +215,15 @@ a:active {
 	color: #333333;
 	text-decoration: none;
 }
+warning {
+	font-size: xx-small;
+	color: #FFFFFF;
+}
 -->
 </style>
-<script type="text/javascript" src="shared.js">
+<script type="text/javascript" src="prototype.js"></script>
+<script type="text/javascript" src="shared.js"></script>
+<script type="text/javascript">
 <!--
 %1
 -->
@@ -153,8 +235,10 @@ a:active {
 {
 let $d := doc($inputDocument)
 
-let $i := $d/leaklog/customers/customer[@id="%2"]/circuit[@id="%3"]/inspection[@date="%4"]
+let $circuit := $d/leaklog/customers/customer[@id="%2"]/circuit[@id="%3"]
+let $i := $circuit/inspection[@date="%4"]
 let $vars := $d/leaklog/variables
+let $nom := $circuit/inspection[@nominal="true"]
 return (
 	<tr><td><table cellspacing="0" cellpadding="4" style="width:100%;">
 	<tbody id="main_table_body">
@@ -178,11 +262,23 @@ return (
 	</tbody>
 	</table></td></tr>,
 	<tr><td>
-	<table cellspacing="0" cellpadding="4" style="width:100%;" id="poruchy_element">
+	<table cellspacing="0" cellpadding="4" style="width:100%;" id="warnings_element">
 	<tr><td colspan="2" style="font-size: larger; width:100%;">
 	<b><i18n>Warnings</i18n></b></td></tr>
-	{$d/leaklog/warnings}
-	</table></td></tr>
+	{
+		local:setWarnings ($d/leaklog/warnings, $i/..)
+	}
+	</table></td></tr>,
+	<table id="nominal_inspection" date="{ data($nom/@date) }">{
+	if (exists($nom)) then (
+		if (count($vars/var)) then (
+			for $v in $vars/var
+			return (
+				local:returnAnyVar($nom, $v)
+			)
+		) else ()
+	) else ()
+	}</table>
 )
 }
 </table>
