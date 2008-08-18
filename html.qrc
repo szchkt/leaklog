@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
     <file>html/customers.html</file>
+    <file>html/customer.html</file>
   </qresource>
 </RCC>
