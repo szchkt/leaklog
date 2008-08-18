@@ -1084,3 +1084,75 @@ void MainWindow::importData()
     this->setWindowModified(true);
     refreshView();
 }
+
+QStringList MainWindow::listVariableIds(bool all)
+{
+    QStringList ids; bool sub_empty = false;
+    QSqlQuery query("SELECT variables.var_id, subvariables.var_id FROM variables LEFT JOIN subvariables ON variables.var_id = subvariables.parent");
+    while (query.next()) {
+        sub_empty = query.value(1).toString().isEmpty();
+        if (all || sub_empty) { ids << query.value(0).toString(); }
+        if (!sub_empty) { ids << query.value(1).toString(); }
+    }
+    return ids;
+}
+
+MTDictionary MainWindow::parseExpression(const QString & exp, QStringList * used_ids)
+{
+    MTDictionary dict_exp(true);
+    if (!exp.isEmpty()) {
+        if (!used_ids->contains("refrigerant_amount")) { *used_ids << "refrigerant_amount"; }
+        if (!used_ids->contains("oil_amount")) { *used_ids << "oil_amount"; }
+        if (!used_ids->contains("sum")) { *used_ids << "sum"; }
+        QSet<int> matched;
+        for (int i = 0; i < used_ids->count(); ++i) {
+            QRegExp expression(QString("\\b%1\\b").arg(used_ids->at(i)));
+            int index = exp.indexOf(expression);
+            while (index >= 0) {
+                int length = expression.matchedLength();
+                if (!matched.contains(index)) {
+                    for (int j = index; j < index + length; j++) { matched << j; }
+                }
+                index = exp.indexOf(expression, index + length);
+            }
+        }
+        QString id_, f_; bool last_id = false; bool last_sum = false;
+        for (int i = 0; i < exp.length(); ++i) {
+            if (matched.contains(i)) {
+                if (!f_.isEmpty()) {
+                    dict_exp.insert(f_, "f");
+                    f_.clear();
+                }
+                last_id = true;
+                id_.append(exp.at(i));
+            } else {
+                if (!id_.isEmpty()) {
+                    if (id_ == "sum") {
+                        last_sum = true;
+                    } else {
+                        if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
+                            dict_exp.insert(id_, "cc_attr");
+                        } else {
+                            dict_exp.insert(id_, last_sum ? "sum" : "id");
+                        }
+                        last_sum = false;
+                    }
+                    id_.clear();
+                }
+                last_id = false;
+                f_.append(exp.at(i));
+            }
+        }
+        if (!f_.isEmpty()) {
+            dict_exp.insert(f_, "f");
+        }
+        if (!id_.isEmpty()) {
+            if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
+                dict_exp.insert(id_, "cc_attr");
+            } else {
+                dict_exp.insert(id_, last_sum ? "sum" : "id");
+            }
+        }
+    }
+    return dict_exp;
+}

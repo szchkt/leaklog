@@ -22,15 +22,17 @@
 class MTDictionary
 {
 public:
-    MTDictionary() {};
+    MTDictionary() { allow_duplicate_keys = false; };
+    MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; };
     MTDictionary(const MTDictionary & other) {
+        allow_duplicate_keys = other.allow_duplicate_keys;
         dict_keys = other.dict_keys;
         dict_values = other.dict_values;
     };
 
     int count() { return dict_keys.count(); };
     void insert(const QString & key, const QString & value) {
-        while (dict_keys.contains(key)) {
+        while (dict_keys.contains(key) && !allow_duplicate_keys) {
             int i = dict_keys.indexOf(key);
             dict_keys.removeAt(i);
             dict_values.removeAt(i);
@@ -64,6 +66,7 @@ public:
     void clear() { dict_keys.clear(); dict_values.clear(); };
 
 private:
+    bool allow_duplicate_keys;
     QStringList dict_keys;
     QStringList dict_values;
 };
