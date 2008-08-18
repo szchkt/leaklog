@@ -378,18 +378,15 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
 {
     if (item == NULL) { return; }
     lw_circuits->highlightItem(item);
-    QDomElement circuit = selectedCircuitElement();
-    if (!circuit.isNull()) { loadCircuit(circuit, refresh); }
-}
-
-void MainWindow::loadCircuit(const QDomElement & element, bool refresh)
-{
     lw_inspections->clear();
-    QDomNodeList inspections = element.elementsByTagName("inspection");
-    for (int i = 0; i < inspections.count(); ++i) {
+    QSqlQuery inspections;
+    inspections.prepare("SELECT date FROM inspections WHERE parent = :parent");
+    inspections.bindValue(":parent", selectedCircuit());
+    inspections.exec();
+    while (inspections.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(inspections.at(i).toElement().attribute("date"));
-        item->setData(Qt::UserRole, inspections.at(i).toElement().attribute("date"));
+        item->setText(inspections.value(0).toString());
+        item->setData(Qt::UserRole, inspections.value(0).toString());
         lw_inspections->addItem(item);
     }
     enableTools();
@@ -480,12 +477,6 @@ void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
 {
     if (item == NULL) { return; }
     lw_inspections->highlightItem(item);
-    QDomElement inspection = selectedInspectionElement();
-    if (!inspection.isNull()) { loadInspection(inspection, refresh); }
-}
-
-void MainWindow::loadInspection(const QDomElement &, bool refresh)
-{
     enableTools();
     if (refresh) {
         setView(tr("Inspection information"));

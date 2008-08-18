@@ -115,10 +115,8 @@ private:
     void loadCustomer(QListWidgetItem *, bool);
     QDomElement selectedCustomerElement(QStringList * = NULL);
     void loadCircuit(QListWidgetItem *, bool);
-    void loadCircuit(const QDomElement &, bool = true);
     QDomElement selectedCircuitElement(QStringList * = NULL);
     void loadInspection(QListWidgetItem *, bool);
-    void loadInspection(const QDomElement &, bool = true);
     QDomElement selectedInspectionElement();
     QDomElement selectedInspectionElement(QStringList *, bool &);
     void addVariable(bool);
