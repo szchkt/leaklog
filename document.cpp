@@ -104,6 +104,7 @@ void MainWindow::openDocument(QString path)
 		return;
     }
     clearAll();
+    QSqlQuery begin("BEGIN TRANSACTION");
     QSqlQuery query("SELECT id, company FROM customers");
     while (query.next()) {
         QListWidgetItem * item = new QListWidgetItem;
@@ -298,18 +299,20 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
 {
     if (item == NULL) { return; }
     lw_customers->highlightItem(item);
-    QDomElement customer = selectedCustomerElement();
-    if (!customer.isNull()) { loadCustomer(customer, refresh); }
-}
-
-void MainWindow::loadCustomer(const QDomElement & element, bool refresh)
-{
+    QSqlQuery query;
+    query.prepare("SELECT company FROM customers WHERE id = :id");
+    query.bindValue(":id", selectedCustomer());
+    query.exec();
+    if (!query.next()) { return; }
     lw_circuits->clear(); lw_inspections->clear();
-    QDomNodeList circuits = element.elementsByTagName("circuit");
-    for (int i = 0; i < circuits.count(); ++i) {
+    QSqlQuery circuits;
+    circuits.prepare("SELECT id FROM circuits WHERE parent = :parent");
+    circuits.bindValue(":parent", selectedCustomer());
+    circuits.exec();
+    while (circuits.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(circuits.at(i).toElement().attribute("id"));
-        item->setData(Qt::UserRole, circuits.at(i).toElement().attribute("id"));
+        item->setText(circuits.value(0).toString());
+        item->setData(Qt::UserRole, circuits.value(0).toString());
         lw_circuits->addItem(item);
     }
     enableTools();

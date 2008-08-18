@@ -112,7 +112,6 @@ private:
     void openDocument(QString);
     void saveDocument(QString);
     void loadCustomer(QListWidgetItem *, bool);
-    void loadCustomer(const QDomElement &, bool = true);
     QDomElement selectedCustomerElement(QStringList * = NULL);
     void loadCircuit(QListWidgetItem *, bool);
     void loadCircuit(const QDomElement &, bool = true);
@@ -125,6 +124,9 @@ private:
     QDomElement selectedVariableElement(QStringList * = NULL);
     QDomElement selectedTableElement(QStringList * = NULL);
     QDomElement selectedWarningElement();
+    inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
+    inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
+    inline int selectedInspection() { return lw_inspections->highlightedRow() < 0 ? -1 : lw_inspections->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
     void viewAllCustomers();
     void viewCustomer(const QString &);
