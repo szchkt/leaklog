@@ -37,6 +37,9 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QHeaderView>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -122,9 +125,16 @@ private:
     QDomElement selectedVariableElement(QStringList * = NULL);
     QDomElement selectedTableElement(QStringList * = NULL);
     QDomElement selectedWarningElement();
+    // VIEW
+    void viewAllCustomers();
+    void viewCustomer(const QString &);
+    void viewCircuit(const QString &, const QString &);
+    void viewInspection(const QString &, const QString &, const QString &);
+    void viewTable(const QString &, const QString &, const QString &, int);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;
+    MTDictionary dict_html;
     i18n dict_i18n;
     QString dict_i18n_javascript;
     QMap<QString, int> view_indices;

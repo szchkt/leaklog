@@ -54,6 +54,11 @@ MainWindow::MainWindow()
     dict_queries.insert(tr("Table of inspections"), in.readAll());
     file.close();
     // -------
+    // HTML
+    file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("All customers"), in.readAll());
+    file.close();
+    // ----
     // i18n -> JavaScript
     dict_i18n_javascript.append("function Dictionary(startValues) {\n");
     dict_i18n_javascript.append("    this.values = startValues || {};\n");

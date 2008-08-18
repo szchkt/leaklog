@@ -96,27 +96,22 @@ void MainWindow::open()
 
 void MainWindow::openDocument(QString path)
 {
-    QFile file(path);
-    if (!file.open(QFile::ReadOnly)) {
-		QMessageBox::critical(this, tr("Open document - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(file.errorString()));
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path);
+    if (!db.open()) {
+		QMessageBox::critical(this, tr("Open document - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
 		this->setWindowTitle(tr("Leaklog"));
 		return;
     }
     clearAll();
-    document.setContent(&file);
-    file.close();
-    QDomElement el_customers = document.documentElement().firstChildElement("customers");
-    if (!el_customers.isNull()) {
-        QDomNodeList customers = el_customers.elementsByTagName("customer");
-        for (int i = 0; i < customers.count(); ++i) {
-            QDomElement element = customers.at(i).toElement();
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
-            item->setData(Qt::UserRole, element.attribute("id"));
-            lw_customers->addItem(item);
-        }
+    QSqlQuery query("SELECT id, company FROM customers");
+    while (query.next()) {
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(query.value(1).toString().isEmpty() ? query.value(0).toString() : tr("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()));
+        item->setData(Qt::UserRole, query.value(0).toString());
+        lw_customers->addItem(item);
     }
-    QDomElement el_variables = document.documentElement().firstChildElement("variables");
+    /*QDomElement el_variables = document.documentElement().firstChildElement("variables");
     if (!el_variables.isNull()) {
         QDomElement variable = el_variables.firstChildElement("var");
         while (!variable.isNull()) {
@@ -156,13 +151,13 @@ void MainWindow::openDocument(QString path)
             item->setData(Qt::UserRole, element.attribute("id"));
             lw_warnings->addItem(item);
         }
-    }
-    document_open = true;
+    }*/
+    //document_open = true;
     document_path = path;
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(file).baseName()));
+	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(file).baseName()));
+    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
@@ -213,7 +208,7 @@ void MainWindow::closeDocument()
 
 void MainWindow::viewChanged(const QString & view)
 {
-    if (!document_open) { wv_main->setHtml(QString()); return; }
+    if (!QSqlDatabase::isOpen()) { wv_main->setHtml(QString()); return; }
 
     bool table_view = cb_view->currentText() == tr("Table of inspections");
     lbl_table->setEnabled(table_view);
@@ -221,46 +216,19 @@ void MainWindow::viewChanged(const QString & view)
     lbl_since->setEnabled(table_view);
     spb_since->setEnabled(table_view);
 
-    QBuffer device;
-    device.setData(document.toString(1).toUtf8());
-    device.open(QIODevice::ReadOnly);
-
-    QXmlQuery query;
-    query.bindVariable("inputDocument", &device);
-
     if (view == tr("All customers")) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript));
+        viewAllCustomers();
     } else if (view == tr("Customer information") && lw_customers->highlightedRow() >= 0) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()));
+        viewCustomer(lw_customers->highlightedItem()->data(Qt::UserRole).toString());
     } else if (view == tr("Circuit information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()));
+        viewCircuit(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString());
     } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
-        query.setQuery(dict_queries.value(view).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_inspections->highlightedItem()->data(Qt::UserRole).toString()));
+        viewInspection(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), lw_inspections->highlightedItem()->data(Qt::UserRole).toString());
     } else if (table_view && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
-        query.setQuery(dict_queries.value(cb_view->currentText()).arg(dict_i18n_javascript).arg(lw_customers->highlightedItem()->data(Qt::UserRole).toString()).arg(lw_circuits->highlightedItem()->data(Qt::UserRole).toString()).arg(cb_table->currentText()).arg(spb_since->value() == 1999 ? 0 : spb_since->value()));
+        viewTable(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
+    } else {
+        wv_main->setHtml(QString());
     }
-
-    if (!query.isValid()) {
-        QString html("<p style=\"font-family: 'Lucida Grande', 'Lucida Sans Unicode', verdana, lucida, sans-serif;\" align=\"center\"><strong>");
-        if (view == tr("Customer information")) { html.append(tr("No customer selected.")); }
-        else if (view == tr("Circuit information")) { html.append(tr("No circuit selected.")); }
-        else if (view == tr("Inspection information")) { html.append(tr("No inspection selected.")); }
-        else if (table_view) {
-            if (cb_table->count() <= 0) { html.append(tr("No tables found. You can create a new table by going to the <em>Variable</em> menu and selecting <em>Add table</em>.")); }
-            else { html.append(tr("No circuit selected.")); }
-        } else { html.append(tr("Error: Invalid query.")); }
-        html.append("</strong></p>");
-        wv_main->setHtml(html);
-        return;
-    }
-    QByteArray out;
-    QBuffer buffer(&out);
-    buffer.open(QIODevice::ReadWrite);
-    QXmlFormatter formatter(query, &buffer);
-    if (!query.evaluateTo(&formatter))
-        { wv_main->setHtml(QString("<p style=\"font-family: 'Lucida Grande', 'Lucida Sans Unicode', verdana, lucida, sans-serif;\" align=\"center\"><strong>%1</strong></p>").arg(tr("Error: Query execution failed."))); return; }
-    buffer.close();
-    wv_main->setHtml(QString::fromUtf8(out.constData()), QUrl("qrc:/queries/"));
 }
 
 void MainWindow::addCustomer()

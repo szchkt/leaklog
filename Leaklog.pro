@@ -14,14 +14,16 @@ HEADERS      += main_window.h \
                 mtcolourcombobox.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
+                html.qrc \
                 queries.qrc
 SOURCES      += main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
                 document.cpp \
+                view.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp
-QT           += network webkit xml xmlpatterns
+QT           += network webkit sql xml xmlpatterns
 win32 {
 DESTDIR       = ./
 RC_FILE       = leaklog.rc
