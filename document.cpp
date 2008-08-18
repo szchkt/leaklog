@@ -207,31 +207,6 @@ void MainWindow::closeDocument()
 	this->setWindowModified(false);
 }
 
-void MainWindow::viewChanged(const QString & view)
-{
-    if (!db.isOpen()) { wv_main->setHtml(QString()); return; }
-
-    bool table_view = cb_view->currentText() == tr("Table of inspections");
-    lbl_table->setEnabled(table_view);
-    cb_table->setEnabled(table_view);
-    lbl_since->setEnabled(table_view);
-    spb_since->setEnabled(table_view);
-
-    if (view == tr("All customers")) {
-        viewAllCustomers();
-    } else if (view == tr("Customer information") && lw_customers->highlightedRow() >= 0) {
-        viewCustomer(lw_customers->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (view == tr("Circuit information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0) {
-        viewCircuit(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
-        viewInspection(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), lw_inspections->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (table_view && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
-        viewTable(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else {
-        wv_main->setHtml(QString());
-    }
-}
-
 void MainWindow::addCustomer()
 {
     if (!document_open) { return; }

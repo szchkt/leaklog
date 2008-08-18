@@ -58,6 +58,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("All customers"), in.readAll());
     file.close();
+    file.setFileName(":/html/customer.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Customer information"), in.readAll());
+    file.close();
     // ----
     // i18n -> JavaScript
     dict_i18n_javascript.append("function Dictionary(startValues) {\n");

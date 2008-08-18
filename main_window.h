@@ -67,7 +67,6 @@ private slots:
     void save();
     void saveAs();
     void closeDocument();
-    void viewChanged(const QString &);
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -97,6 +96,8 @@ private slots:
     void exportCircuitData();
     void exportInspectionData();
     void importData();
+    // VIEW
+    void viewChanged(const QString &);
 
 private:
     // UI
