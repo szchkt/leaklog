@@ -140,6 +140,7 @@ private:
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;
     QString last_search_keyword;
+    QSqlDatabase db;
     QDomDocument document;
     bool document_open;
     QString document_path;

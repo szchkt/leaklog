@@ -96,7 +96,7 @@ void MainWindow::open()
 
 void MainWindow::openDocument(QString path)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
     if (!db.open()) {
 		QMessageBox::critical(this, tr("Open document - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
@@ -208,7 +208,7 @@ void MainWindow::closeDocument()
 
 void MainWindow::viewChanged(const QString & view)
 {
-    if (!QSqlDatabase::isOpen()) { wv_main->setHtml(QString()); return; }
+    if (!db.isOpen()) { wv_main->setHtml(QString()); return; }
 
     bool table_view = cb_view->currentText() == tr("Table of inspections");
     lbl_table->setEnabled(table_view);

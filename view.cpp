@@ -19,28 +19,28 @@
 
 #include "main_window.h"
 
-void viewAllCustomers()
+void MainWindow::viewAllCustomers()
 {
     // dict_html.value(tr("All customers")).arg()
     // wv_main->setHtml(QString);
 }
 
-void viewCustomer(const QString &)
+void MainWindow::viewCustomer(const QString &)
 {
 
 }
 
-void viewCircuit(const QString &, const QString &)
+void MainWindow::viewCircuit(const QString &, const QString &)
 {
 
 }
 
-void viewInspection(const QString &, const QString &, const QString &)
+void MainWindow::viewInspection(const QString &, const QString &, const QString &)
 {
 
 }
 
-void viewTable(const QString &, const QString &, const QString &, int)
+void MainWindow::viewTable(const QString &, const QString &, const QString &, int)
 {
 
 }
