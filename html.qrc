@@ -2,5 +2,7 @@
   <qresource>
     <file>html/customers.html</file>
     <file>html/customer.html</file>
+    <file>html/circuit.html</file>
+    <file>html/inspection.html</file>
   </qresource>
 </RCC>

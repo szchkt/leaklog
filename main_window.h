@@ -40,6 +40,8 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlField>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
