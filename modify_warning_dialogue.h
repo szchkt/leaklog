@@ -125,7 +125,7 @@ class ModifyWarningDialogue : public ModifyDialogue
     Q_OBJECT
 
 public:
-    ModifyWarningDialogue(const QDomElement &, const QStringList &, MainWindow * = NULL);
+    ModifyWarningDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
 
 private slots:
     void save();

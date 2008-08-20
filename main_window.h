@@ -39,7 +39,6 @@
 #include <QHeaderView>
 #include <QSqlDatabase>
 #include <QSqlError>
-#include <QSqlQuery>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
