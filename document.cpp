@@ -1089,7 +1089,7 @@ void MainWindow::importData()
 QStringList MainWindow::listVariableIds(bool all)
 {
     QStringList ids; bool sub_empty = false;
-    QSqlQuery query("SELECT variables.var_id, subvariables.var_id FROM variables LEFT JOIN subvariables ON variables.var_id = subvariables.parent");
+    QSqlQuery query("SELECT variables.id, subvariables.id FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
     while (query.next()) {
         sub_empty = query.value(1).toString().isEmpty();
         if (all || sub_empty) { ids << query.value(0).toString(); }
