@@ -279,11 +279,11 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
 
 void MainWindow::viewInspection(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
 {
-    QString html; QTextStream out(&html
+    QString html; QTextStream out(&html);
 
-    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, subvariables.id, subvariables.name, subvariables.type, subvariables.unit FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
-    const int SUBVAR_ID = 4; const int SUBVAR_NAME = 5; const int SUBVAR_TYPE = 6; const int SUBVAR_UNIT = 7;
+    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5;
+    const int SUBVAR_ID = 6; const int SUBVAR_NAME = 7; const int SUBVAR_TYPE = 8; const int SUBVAR_UNIT = 9; const int SUBVAR_VALUE = 10; const int SUBVAR_COMPARE_NOM = 11;
 
     QSqlQuery inspection;
     inspection.setForwardOnly(true);
@@ -308,15 +308,97 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
 
     int num_shown_vars = 0;
+    QStringList used_ids = listVariableIds(); // all = false
     while (vars.next()) {
+        QString value;
+        if (!vars.value(VAR_VALUE).toString().isEmpty()) {
+            MTDictionary expression(parseExpression(vars.value(VAR_VALUE).toString(), &used_ids));
+            for (int i = 0; i < expression.count(); ++i) {
+                if (expression.value(i) == "id") {
+                    value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
+                } else if (expression.value(i) == "sum") {
+                } else if (expression.value(i) == "circuit_attribute") {
+                } else {
+                    value.append(expression.key(i));
+                }
+            }
+        } else {
+            //if (ins_rec.value(i).toString().isEmpty()) { continue; }
+            for (int i = 0; i < ins_rec.count(); ++i) {
+                if (ins_rec.value(i).toString().isEmpty()) continue;
+                if (vars.value(SUBVAR_ID).toString().isEmpty()) {
+                    if (ins_rec.fieldName(i) == vars.value(VAR_ID).toString()) {
+                        value = ins_rec.value(i).toString();
+                        /*if (!vars.value(VAR_VALUE).toString().isEmpty()) {
+                            MTDictionary expression(parseExpression(vars.value(VAR_VALUE).toString(), &used_ids));
+                            for (int i = 0; i < expression.count(); ++i) {
+                                if (expression.value(i) == "id") {
+                                    value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
+                                } else if (expression.value(i) == "sum") {
+                                } else if (expression.value(i) == "circuit_attribute") {
+                                } else {
+                                    value.append(expression.key(i));
+                                }
+                            }
+                        } else if (ins_rec.value(i).toString().isEmpty()) { continue; }
+                        else { value = ins_rec.value(i).toString(); }*/
+                        /*out << "<num_var>" << num_shown_vars << "</num_var>";
+                        out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;";
+                        out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
+                        out << value;
+                        out << "</td></tr></table></td></tr>";
+                        //QMessageBox::information(this, "", vars.value(VAR_ID).toString());
+                        num_shown_vars++;*/
+                    }
+                } else {
+                    if (ins_rec.fieldName(i) == vars.value(SUBVAR_ID).toString()) {
+                        value = ins_rec.value(i).toString();
+                        /*out << "<num_var>" << num_shown_vars << "</num_var>";
+                        out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
+                        out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
+                        out << ins_rec.value(i).toString();
+                        out << "</td></tr></table></td></tr>";
+                        //QMessageBox::information(this, "", vars.value(SUBVAR_ID).toString());
+                        num_shown_vars++;*/
+                    }
+                }
+            }
+        }
+        if (value.isEmpty()) continue;
+        out << "<num_var>" << num_shown_vars << "</num_var>";
+        if (vars.value(SUBVAR_ID).toString().isEmpty()) {
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;";
+        } else {
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
+        }
+        out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
+        out << value;
+        out << "</td></tr></table></td></tr>";
+        //QMessageBox::information(this, "", vars.value(SUBVAR_ID).toString());
+        num_shown_vars++;
+        /*else { value = ins_rec.value(i).toString(); }
         for (int i = 0; i < ins_rec.count(); ++i) {
-            if (ins_rec.value(i).toString().isEmpty()) continue;
+            //if (ins_rec.value(i).toString().isEmpty()) continue;
             if (vars.value(SUBVAR_ID).toString().isEmpty()) {
                 if (ins_rec.field(i).name() == vars.value(VAR_ID).toString()) {
+                    QString value;
+                    if (!vars.value(VAR_VALUE).toString().isEmpty()) {
+                        MTDictionary expression(parseExpression(vars.value(VAR_VALUE).toString(), &used_ids));
+                        for (int i = 0; i < expression.count(); ++i) {
+                            if (expression.value(i) == "id") {
+                                value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
+                            } else if (expression.value(i) == "sum") {
+                            } else if (expression.value(i) == "circuit_attribute") {
+                            } else {
+                                value.append(expression.key(i));
+                            }
+                        }
+                    } else if (ins_rec.value(i).toString().isEmpty()) { continue; }
+                    else { value = ins_rec.value(i).toString(); }
                     out << "<num_var>" << num_shown_vars << "</num_var>";
                     out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;";
                     out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
-                    out << ins_rec.value(i).toString();
+                    out << value;
                     out << "</td></tr></table></td></tr>";
                     //QMessageBox::information(this, "", vars.value(VAR_ID).toString());
                     num_shown_vars++;
@@ -333,7 +415,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
                 }
             }
             //QMessageBox::information(this, "d", ins_rec.field(i).name());
-        }
+        }*/
     }
     if (num_shown_vars != 0) {
         html.replace(QString("<num_var>%1</num_var>").arg(int(num_shown_vars / 2 + num_shown_vars % 2)), "</table></td><td style=\"width:50%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
