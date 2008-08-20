@@ -93,11 +93,11 @@ QString MTRecord::tableForRecordType(const QString & type)
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
-    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type);
-    if (has_id) { select.append(" WHERE id = :_id"); }
+    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type) + " WHERE ";
+    if (has_id) { select.append(QString(r_type == "inspection" ? "date" : "id") + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i != 0) { select.append(" AND "); }
-        select.append(r_parents.key(i) + " = :p" + i);
+        select.append(r_parents.key(i) + " = :p" + QString("%1").arg(i));
     }
     QSqlQuery query;
     query.prepare(select);
@@ -112,6 +112,7 @@ QMap<QString, QVariant> MTRecord::list(const QString & fields)
 {
     QMap<QString, QVariant> list;
     QSqlQuery query = select(fields);
+    query.setForwardOnly(true);
     query.exec();
     if (!query.next()) { return list; }
     for (int i = 0; i < query.record().count(); ++i) {
@@ -131,9 +132,9 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) { update.append(", "); }
         }
-        update.append(" WHERE id = :_id");
+        update.append(" WHERE " + QString(r_type == "inspection" ? "date" : "id") + " = :_id");
         for (int i = 0; i < r_parents.count(); ++i) {
-            update.append(" AND " + r_parents.key(i) + " = :p" + i);
+            update.append(" AND " + r_parents.key(i) + " = :p" + QString("%1").arg(i));
         }
     } else {
         update = "INSERT INTO " + tableForRecordType(r_type) + " (";
@@ -162,16 +163,16 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
         query.bindValue(":" + i.key(), i.value());
         if (r_parents.contains(i.key())) { r_parents.setValue(i.key(), i.value().toString()); }
     }
-    r_id = set.value("id", r_id).toString();
+    r_id = set.value(r_type == "inspection" ? "date" : "id", r_id).toString();
     return query.exec();
 }
 
 bool MTRecord::remove()
 {
     if (r_id.isEmpty()) { return false; }
-    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE id = :_id";
+    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE " + (r_type == "inspection" ? "date" : "id") + " = :_id";
     for (int i = 0; i < r_parents.count(); ++i) {
-        remove.append(" AND " + r_parents.key(i) + " = :p" + i);
+        remove.append(" AND " + r_parents.key(i) + " = :p" + QString("%1").arg(i));
     }
     QSqlQuery query;
     query.prepare(remove);

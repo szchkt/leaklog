@@ -222,12 +222,71 @@ warning {
 <!--
 <script type="text/javascript" src="prototype.js"></script>
 <script type="text/javascript" src="shared.js"></script>
-<script type="text/javascript">
-onLoad="onInspectionLoad(); translate();"
-</script>
 -->
+<script type="text/javascript">
+
+function evaluateExpressions() {
+	var expressions = document.getElementsByTagName("expression");
+	var value; var expression; var nominal;
+	var array = new Array();
+	for (var i = 0; i < expressions.length; i++) {
+		evaluateExpression(expressions[i]);
+	}
+}
+
+function evaluateExpression(expression_elem) {
+	expression_elem.innerHTML = evaluateString(expression_elem.innerText);
+}
+
+function evaluateString(expression) {
+	var value; var nominal;
+	var array = expression.split('?');
+	if (array.length == 1) {
+		nominal = array[0];
+		expression = array[0];
+	} else {
+		nominal = array[0];
+		expression = array[1];
+	}
+	if (nominal.match(/^[0-9+\-*/(). ]*$/)) {
+		try {
+			nominal = new Number(nominal != '' ? eval(nominal) : '0').toFixed(2);
+		}
+		catch (e) {
+			nominal = "";
+		}
+	}
+	if (expression.match(/^[0-9+\-*/(). ]*$/)) {
+		try {
+			value = new Number(expression != '' ? eval(expression) : '0').toFixed(2);
+		}
+		catch (e) {
+			value = "";
+			// Syntax error
+		}
+	}
+	if (value.length >= 3 && value.substr(value.length-3, 3) == '.00') {
+		value = value.substring(0, value.length-3);
+	}
+	if (nominal.length >= 3 && nominal.substr(nominal.length-3, 3) == '.00') {
+		nominal = nominal.substring(0, nominal.length-3);
+	}
+	if (value != "") {
+		if (Math.min(nominal, value) == nominal && nominal != value) {
+			value = "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">↑</td><td class=\"no_border\" valign=\"center\">" + value.toLocaleString() + "</td></tr></table>";
+		} else if (nominal != value) {
+			value = "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">↓</td><td class=\"no_border\" valign=\"center\">" + value.toLocaleString() + "</td></tr></table>";
+		} else {
+			value = value.toLocaleString();
+		}
+	}
+	//value += " ";
+	return value;
+}
+
+</script>
 </head>
-<body>
+<body onLoad="evaluateExpressions();">
 %1
 <!--
 <table cellspacing="0" style="width:100%;">

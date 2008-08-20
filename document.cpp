@@ -380,9 +380,10 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     if (item == NULL) { return; }
     lw_circuits->highlightItem(item);
     lw_inspections->clear();
-    QSqlQuery inspections;
-    inspections.prepare("SELECT date FROM inspections WHERE parent = :parent");
-    inspections.bindValue(":parent", selectedCircuit());
+    MTDictionary parents("circuit", QString("%1").arg(selectedCircuit()));
+    parents.insert("customer", QString("%1").arg(selectedCustomer()));
+    MTRecord record("inspection", "", parents);
+    QSqlQuery inspections = record.select("date");
     inspections.exec();
     while (inspections.next()) {
         QListWidgetItem * item = new QListWidgetItem;

@@ -23,6 +23,10 @@ class MTDictionary
 {
 public:
     MTDictionary() { allow_duplicate_keys = false; };
+    MTDictionary(const QString & key, const QString & value) {
+        allow_duplicate_keys = false;
+        dict_keys << key; dict_values << value;
+    };
     MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; };
     MTDictionary(const MTDictionary & other) {
         allow_duplicate_keys = other.allow_duplicate_keys;
@@ -68,6 +72,12 @@ public:
         }
     };
     void clear() { dict_keys.clear(); dict_values.clear(); };
+    MTDictionary & operator=(const MTDictionary & other) {
+        allow_duplicate_keys = other.allow_duplicate_keys;
+        dict_keys = other.dict_keys;
+        dict_values = other.dict_values;
+        return *this;
+    };
 
 private:
     bool allow_duplicate_keys;

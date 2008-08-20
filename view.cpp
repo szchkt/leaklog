@@ -79,12 +79,10 @@ void MainWindow::viewAllCustomers()
         int num_circuits = 0, num_inspections = 0;
         while (circuits.next()) {
             num_circuits++;
-            QSqlQuery inspections;
-            inspections.setForwardOnly(true);
-            inspections.prepare("SELECT COUNT(date) FROM inspections WHERE parent = :parent");
-            inspections.bindValue(":parent", circuits.value(0).toInt());
-            inspections.exec();
-            if (inspections.next()) { num_inspections += inspections.value(0).toInt(); }
+            MTDictionary inspection_parents("circuit", circuits.value(0).toString());
+            inspection_parents.insert("customer", query.value(0).toString());
+            MTRecord inspection_record("inspection", "", inspection_parents);
+            num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
         }
         out << num_circuits;
         out << "</td></tr>";
@@ -98,10 +96,9 @@ void MainWindow::viewAllCustomers()
 void MainWindow::viewCustomer(const QString & customer_id)
 {
     QString html; QTextStream out(&html);
-    QSqlQuery query;
+    MTRecord customer("customer", customer_id, MTDictionary());
+    QSqlQuery query = customer.select("company, contact_person, address, mail, phone");
     query.setForwardOnly(true);
-    query.prepare("SELECT company, contact_person, address, mail, phone FROM customers WHERE id = :customer_id");
-    query.bindValue(":customer_id", customer_id);
     query.exec();
     //query.setForwardOnly();
     //query.prepare("");
@@ -134,12 +131,10 @@ void MainWindow::viewCustomer(const QString & customer_id)
         int num_circuits = 0, num_inspections = 0;
         while (circuits.next()) {
             num_circuits++;
-            QSqlQuery inspections;
-            inspections.setForwardOnly(true);
-            inspections.prepare("SELECT COUNT(date) FROM inspections WHERE parent = :parent");
-            inspections.bindValue(":parent", circuits.value(0).toInt());
-            inspections.exec();
-            if (inspections.next()) { num_inspections += inspections.value(0).toInt(); }
+            MTDictionary inspection_parents("circuit", circuits.value(0).toString());
+            inspection_parents.insert("customer", query.value(0).toString());
+            MTRecord inspection_record("inspection", "", inspection_parents);
+            num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
         }
         out << num_circuits;
         out << "</td></tr>";
@@ -193,25 +188,20 @@ void MainWindow::viewCustomer(const QString & customer_id)
 void MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
 {
     QString html; QTextStream out(&html);
-    QSqlQuery query;
+    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    QSqlQuery query = circuit.select("manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation");
     query.setForwardOnly(true);
-    query.prepare("SELECT manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation FROM circuits WHERE parent = :customer_id AND id = :circuit_id");
-    query.bindValue(":customer_id", customer_id);
-    query.bindValue(":circuit_id", circuit_id);
     query.exec();
     //query.setForwardOnly();
     //query.prepare("");
     //query.bindVariable();
     //query.exec();
-    while (query.next()) {
+    if (!query.next()) { return; }
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
         out << "<a href=\"customer:" << customer_id << "\">";
-        QSqlQuery customer;
-        customer.prepare("SELECT company FROM customers WHERE id = :customer_id");
-        customer.bindValue(":customer_id", customer_id);
-        customer.exec();
-        if (customer.next()) { out << customer.value(0).toString(); }
+        MTRecord customer("customer", customer_id, MTDictionary());
+        out << customer.list("company").value("company").toString();
         out << "</a></b></td></tr>";
         out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << circuit_id << "</a></b></td></tr>";
@@ -233,9 +223,10 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         out << "<tr><td style=\"text-align: right;\">" << tr("Rate of utilisation:") << "&nbsp;</td><td>" << query.value(12).toString() << "&nbsp;%</td></tr>";
         out << "</table></td></tr>";
         out << "</table>";
-        QSqlQuery inspections;
-        inspections.prepare("SELECT date, nominal FROM inspections WHERE parent = :circuit_id");
-        inspections.bindValue(":circuit_id", circuit_id);
+        MTDictionary inspection_parents("circuit", circuit_id);
+        inspection_parents.insert("customer", customer_id);
+        MTRecord inspection_record("inspection", "", inspection_parents);
+        QSqlQuery inspections = inspection_record.select("date, nominal");
         inspections.exec();
         int num_inspections = 0;
         while (inspections.next()) {
@@ -273,7 +264,6 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
             out << "</table></td></tr>";
             out << "</table>";
         }
-    }
     wv_main->setHtml(dict_html.value(tr("Customer information")).arg(html));
 }
 
@@ -285,11 +275,11 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5;
     const int SUBVAR_ID = 6; const int SUBVAR_NAME = 7; const int SUBVAR_TYPE = 8; const int SUBVAR_UNIT = 9; const int SUBVAR_VALUE = 10; const int SUBVAR_COMPARE_NOM = 11;
 
-    QSqlQuery inspection;
+    MTDictionary inspection_parents("circuit", circuit_id);
+    inspection_parents.insert("customer", customer_id);
+    MTRecord inspection_record("inspection", inspection_date, inspection_parents);
+    QSqlQuery inspection = inspection_record.select();
     inspection.setForwardOnly(true);
-    inspection.prepare("SELECT * FROM inspections WHERE parent = :circuit_id AND date = :inspection_date");
-    inspection.bindValue(":circuit_id", circuit_id);
-    inspection.bindValue(":inspection_date", inspection_date);
     inspection.exec();
     if (!inspection.next()) return;
     QSqlRecord ins_rec = inspection.record();
@@ -311,8 +301,14 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     QStringList used_ids = listVariableIds(); // all = false
     while (vars.next()) {
         QString value;
+        MTDictionary expression;
         if (!vars.value(VAR_VALUE).toString().isEmpty()) {
-            MTDictionary expression(parseExpression(vars.value(VAR_VALUE).toString(), &used_ids));
+            expression = parseExpression(vars.value(VAR_VALUE).toString(), &used_ids);
+        } else if (!vars.value(SUBVAR_VALUE).toString().isEmpty()) {
+            expression = parseExpression(vars.value(SUBVAR_VALUE).toString(), &used_ids);
+        }
+        if (expression.count() != 0) {
+            value.append("<expression>");
             for (int i = 0; i < expression.count(); ++i) {
                 if (expression.value(i) == "id") {
                     value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
@@ -322,54 +318,21 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
                     value.append(expression.key(i));
                 }
             }
+            value.append("</expression>");
         } else {
-            //if (ins_rec.value(i).toString().isEmpty()) { continue; }
-            for (int i = 0; i < ins_rec.count(); ++i) {
-                if (ins_rec.value(i).toString().isEmpty()) continue;
-                if (vars.value(SUBVAR_ID).toString().isEmpty()) {
-                    if (ins_rec.fieldName(i) == vars.value(VAR_ID).toString()) {
-                        value = ins_rec.value(i).toString();
-                        /*if (!vars.value(VAR_VALUE).toString().isEmpty()) {
-                            MTDictionary expression(parseExpression(vars.value(VAR_VALUE).toString(), &used_ids));
-                            for (int i = 0; i < expression.count(); ++i) {
-                                if (expression.value(i) == "id") {
-                                    value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
-                                } else if (expression.value(i) == "sum") {
-                                } else if (expression.value(i) == "circuit_attribute") {
-                                } else {
-                                    value.append(expression.key(i));
-                                }
-                            }
-                        } else if (ins_rec.value(i).toString().isEmpty()) { continue; }
-                        else { value = ins_rec.value(i).toString(); }*/
-                        /*out << "<num_var>" << num_shown_vars << "</num_var>";
-                        out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;";
-                        out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
-                        out << value;
-                        out << "</td></tr></table></td></tr>";
-                        //QMessageBox::information(this, "", vars.value(VAR_ID).toString());
-                        num_shown_vars++;*/
-                    }
-                } else {
-                    if (ins_rec.fieldName(i) == vars.value(SUBVAR_ID).toString()) {
-                        value = ins_rec.value(i).toString();
-                        /*out << "<num_var>" << num_shown_vars << "</num_var>";
-                        out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
-                        out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
-                        out << ins_rec.value(i).toString();
-                        out << "</td></tr></table></td></tr>";
-                        //QMessageBox::information(this, "", vars.value(SUBVAR_ID).toString());
-                        num_shown_vars++;*/
-                    }
-                }
+            if (vars.value(SUBVAR_ID).toString().isEmpty()) {
+                value = inspection.value(ins_rec.indexOf(vars.value(VAR_ID).toString())).toString();
+            } else {
+                value = inspection.value(ins_rec.indexOf(vars.value(SUBVAR_ID).toString())).toString();
             }
         }
         if (value.isEmpty()) continue;
         out << "<num_var>" << num_shown_vars << "</num_var>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">";
         if (vars.value(SUBVAR_ID).toString().isEmpty()) {
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;";
+            out << vars.value(VAR_NAME).toString() << ":&nbsp;";
         } else {
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
+            out << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
         }
         out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
         out << value;
