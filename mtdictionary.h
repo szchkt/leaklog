@@ -39,6 +39,10 @@ public:
         }
         dict_keys << key; dict_values << value;
     };
+    void setValue(const QString & key, const QString & value) {
+        if (contains(key)) { dict_values.replace(indexOfKey(key), value); }
+        else { dict_keys << key; dict_values << value; }
+    };
     QString key(int i) { if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i); else return QString(); };
     QString firstKey(const QString & value) {
         return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));

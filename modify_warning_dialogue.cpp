@@ -182,25 +182,25 @@ void Conditions::remove(Condition * condition)
     if (i >= 0) { delete c_conditions.takeAt(i); }
 }
 
-ModifyWarningDialogue::ModifyWarningDialogue(const QDomElement & element, const QStringList & used_ids, MainWindow * parent):
-ModifyDialogue(element, used_ids, parent)
+ModifyWarningDialogue::ModifyWarningDialogue(const MTRecord & record, const QStringList & used_ids, QWidget * parent):
+ModifyDialogue(record, used_ids, parent)
 {
-    md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
+    /*md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
     md_dict.insert("warning", tr("Warning"));
     md_dict.insert("id", tr("Name"));
     md_dict_input.insert("id", "le");
     md_dict.insert("description", tr("Description"));
     md_dict_input.insert("description", "le");
     // ------------
-    if (!md_element.attribute("id").isEmpty()) {
-        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_element.nodeName())).arg(md_element.attribute("id")));
+    if (!md_record.id().isEmpty()) {
+        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_record.type())).arg(md_record.id()));
     } else {
-        this->setWindowTitle(md_dict.value(md_element.nodeName()));
+        this->setWindowTitle(md_dict.value(md_record.type()));
     }
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
     int r = 0; QStringList inputtype; QString value;
     for (int i = 0; i < md_dict.count(); ++i) {
-        if (md_dict.key(i) == md_element.nodeName()) { continue; }
+        if (md_dict.key(i) == md_record.type()) { continue; }
         value = md_element.attribute(md_dict.key(i));
         inputtype = md_dict_input.value(md_dict.key(i)).split(";");
         if (inputtype.at(0) != "chb") {
@@ -236,12 +236,12 @@ ModifyDialogue(element, used_ids, parent)
             md_conditions->add(loadExpression(condition, "value_ins"), condition.attribute("f"), loadExpression(condition, "value_nom"));
         }
     }
-    this->resize(450, 20);
+    this->resize(450, 20);*/
 }
 
 void ModifyWarningDialogue::save()
 {
-    QStringList used_ids = md_used_ids;
+    /*QStringList used_ids = md_used_ids;
     md_used_ids.clear();
     MTDictionary values; QStringList inputtype;
     QMapIterator<QString, QWidget *> i(md_vars);
@@ -269,6 +269,6 @@ void ModifyWarningDialogue::save()
         saveExpression(md_conditions->expressionIns(i), condition, "value_ins");
         saveExpression(md_conditions->expressionNom(i), condition, "value_nom");
         md_element.appendChild(condition);
-    }
+    }*/
     accept();
 }

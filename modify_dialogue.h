@@ -39,6 +39,8 @@
 #include <QSyntaxHighlighter>
 #include <QHash>
 #include <QTextCharFormat>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 class Highlighter : public QSyntaxHighlighter
 {
@@ -60,7 +62,32 @@ private:
     QTextCharFormat keywordFormat;
 };
 
-class MainWindow;
+class MTRecord : public QObject
+{
+    Q_OBJECT
+
+public:
+    MTRecord() {};
+    MTRecord(const QString &, const QString &, const MTDictionary &);
+    MTRecord(const MTRecord &);
+    MTRecord & operator=(const MTRecord &);
+    void setType(const QString & type) { r_type = type; };
+    inline QString type() { return r_type; };
+    inline QString id() { return r_id; };
+    inline MTDictionary * parents() { return &r_parents; };
+    QSqlQuery select(const QString & = "*");
+    QMap<QString, QVariant> list(const QString & = "*");
+    bool update(const QMap<QString, QVariant> &);
+    bool remove();
+
+protected:
+    QString tableForRecordType(const QString &);
+
+private:
+    QString r_type;
+    QString r_id;
+    MTDictionary r_parents;
+};
 
 class ModifyWarningDialogue;
 
@@ -69,27 +96,24 @@ class ModifyDialogue : public QDialog
     Q_OBJECT
 
 protected:
-    void init(const QDomElement &, const QStringList &, MainWindow * = NULL);
-    ModifyDialogue(const QDomElement &, const QStringList &, MainWindow * = NULL);
+    void init(const MTRecord &, const QStringList &);
+    ModifyDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
 
 public:
-    ModifyDialogue(const QDomElement &, const QStringList &, bool, MainWindow * = NULL);
+    ModifyDialogue(const MTRecord &, const QStringList &, bool, QWidget * = NULL);
+    inline MTRecord record() { return md_record; };
 
 private:
     QWidget * createInputWidget(const QStringList &, const QString &, const QString &);
-    QString getInputFromWidget(QWidget *, const QStringList &, const QString &);
-    QString loadExpression(QDomElement &, const QString &);
-    void saveExpression(const QString &, QDomElement &, const QString &);
+    QVariant getInputFromWidget(QWidget *, const QStringList &, const QString &);
 
 private slots:
     virtual void save();
 
 private:
-    MainWindow * md_parent;
-    QDomElement md_element;
+    MTRecord md_record;
     MTDictionary md_dict;
     MTDictionary md_dict_input;
-    MTDictionary md_dict_vars;
     QStringList md_used_ids;
     QMap<QString, QWidget *> md_vars;
     QGridLayout * md_grid_main;

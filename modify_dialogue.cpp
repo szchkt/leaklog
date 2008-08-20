@@ -48,10 +48,144 @@ void Highlighter::highlightBlock(const QString & text)
     }
 }
 
-void ModifyDialogue::init(const QDomElement & element, const QStringList & used_ids, MainWindow * parent)
+MTRecord::MTRecord(const QString & type, const QString & id, const MTDictionary & parents)
 {
-    md_parent = parent;
-    md_element = element;
+    r_type = type;
+    r_id = id;
+    r_parents = parents;
+}
+
+MTRecord::MTRecord(const MTRecord & other):
+QObject()
+{
+    r_type = other.r_type;
+    r_id = other.r_id;
+    r_parents = other.r_parents;
+}
+
+MTRecord & MTRecord::operator=(const MTRecord & other)
+{
+    r_type = other.r_type;
+    r_id = other.r_id;
+    r_parents = other.r_parents;
+    return *this;
+}
+
+QString MTRecord::tableForRecordType(const QString & type)
+{
+    if (type == "customer") {
+        return "customers";
+    } else if (type == "circuit") {
+        return "circuits";
+    } else if (type == "inspection") {
+        return "inspections";
+    } else if (type == "variable") {
+        return "variables";
+    } else if (type == "subvariable") {
+        return "subvariables";
+    } else if (type == "table") {
+        return "tables";
+    } else {
+        return type + "s";
+    }
+}
+
+QSqlQuery MTRecord::select(const QString & fields)
+{
+    bool has_id = !r_id.isEmpty();
+    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type);
+    if (has_id) { select.append(" WHERE id = :_id"); }
+    for (int i = 0; i < r_parents.count(); ++i) {
+        if (has_id || i != 0) { select.append(" AND "); }
+        select.append(r_parents.key(i) + " = :p" + i);
+    }
+    QSqlQuery query;
+    query.prepare(select);
+    if (has_id) { query.bindValue(":_id", r_id); }
+    for (int i = 0; i < r_parents.count(); ++i) {
+        query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
+    }
+    return query;
+}
+
+QMap<QString, QVariant> MTRecord::list(const QString & fields)
+{
+    QMap<QString, QVariant> list;
+    QSqlQuery query = select(fields);
+    query.exec();
+    if (!query.next()) { return list; }
+    for (int i = 0; i < query.record().count(); ++i) {
+        list.insert(query.record().fieldName(i), query.value(i));
+    }
+    return list;
+}
+
+bool MTRecord::update(const QMap<QString, QVariant> & set)
+{
+    bool has_id = !r_id.isEmpty();
+    QString update;
+    QMapIterator<QString, QVariant> i(set);
+    if (has_id) {
+        update = "UPDATE " + tableForRecordType(r_type) + " SET ";
+        while (i.hasNext()) { i.next();
+            update.append(i.key() + " = :" + i.key());
+            if (i.hasNext()) { update.append(", "); }
+        }
+        update.append(" WHERE id = :_id");
+        for (int i = 0; i < r_parents.count(); ++i) {
+            update.append(" AND " + r_parents.key(i) + " = :p" + i);
+        }
+    } else {
+        update = "INSERT INTO " + tableForRecordType(r_type) + " (";
+        while (i.hasNext()) { i.next();
+            update.append(i.key());
+            if (i.hasNext()) { update.append(", "); }
+        }
+        update.append(") VALUES (");
+        i.toFront();
+        while (i.hasNext()) { i.next();
+            update.append(":" + i.key());
+            if (i.hasNext()) { update.append(", "); }
+        }
+        update.append(")");
+    }
+    QSqlQuery query;
+    query.prepare(update);
+    if (has_id) {
+        query.bindValue(":_id", r_id);
+        for (int i = 0; i < r_parents.count(); ++i) {
+            query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
+        }
+    }
+    i.toFront();
+    while (i.hasNext()) { i.next();
+        query.bindValue(":" + i.key(), i.value());
+        if (r_parents.contains(i.key())) { r_parents.setValue(i.key(), i.value().toString()); }
+    }
+    r_id = set.value("id", r_id).toString();
+    return query.exec();
+}
+
+bool MTRecord::remove()
+{
+    if (r_id.isEmpty()) { return false; }
+    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE id = :_id";
+    for (int i = 0; i < r_parents.count(); ++i) {
+        remove.append(" AND " + r_parents.key(i) + " = :p" + i);
+    }
+    QSqlQuery query;
+    query.prepare(remove);
+    query.bindValue(":_id", r_id);
+    for (int i = 0; i < r_parents.count(); ++i) {
+        query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
+    }
+    r_id.clear();
+    return query.exec();
+}
+
+void ModifyDialogue::init(const MTRecord & record, const QStringList & used_ids)
+{
+    md_record = record;
     md_used_ids = used_ids;
     QVBoxLayout * md_vlayout_main = new QVBoxLayout(this);
     md_vlayout_main->setSpacing(9);
@@ -71,31 +205,31 @@ void ModifyDialogue::init(const QDomElement & element, const QStringList & used_
     this->resize(20, 20);
 }
 
-ModifyDialogue::ModifyDialogue(const QDomElement & element, const QStringList & used_ids, MainWindow * parent):
+ModifyDialogue::ModifyDialogue(const MTRecord & record, const QStringList & used_ids, QWidget * parent):
 QDialog(parent)
 {
-    init(element, used_ids, parent);
+    init(record, used_ids);
 }
 
-ModifyDialogue::ModifyDialogue(const QDomElement & element, const QStringList & used_ids, bool nominal_allowed, MainWindow * parent):
+ModifyDialogue::ModifyDialogue(const MTRecord & record, const QStringList & used_ids, bool nominal_allowed, QWidget * parent):
 QDialog(parent)
 {
-    init(element, used_ids, parent);
-    if (md_element.nodeName() == "customer") {
+    init(record, used_ids);
+    if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
         md_dict.insert("company", tr("Company"));
         md_dict_input.insert("company", "le");
-        md_dict.insert("name", tr("Contact person"));
-        md_dict_input.insert("name", "le");
+        md_dict.insert("contact_person", tr("Contact person"));
+        md_dict_input.insert("contact_person", "le");
         md_dict.insert("address", tr("Address"));
         md_dict_input.insert("address", "pte");
         md_dict.insert("mail", tr("E-mail"));
         md_dict_input.insert("mail", "le");
         md_dict.insert("phone", tr("Phone"));
         md_dict_input.insert("phone", "le");
-    } else if (md_element.nodeName() == "circuit") {
+    } else if (md_record.type() == "circuit") {
         md_dict.insert("circuit", tr("Cooling circuit"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
@@ -137,46 +271,41 @@ QDialog(parent)
         md_dict_input.insert("runtime", QString("dspb;0.0;0.0;24.0; %1").arg(tr("hours")));
         md_dict.insert("utilisation", tr("Rate of utilisation"));
         md_dict_input.insert("utilisation", QString("dspb;0.0;0.0;100.0; %1").arg(tr("%")));
-    } else if (md_element.nodeName() == "inspection") {
+    } else if (md_record.type() == "inspection") {
         md_dict.insert("inspection", tr("Inspection"));
         md_dict.insert("date", tr("Date"));
         md_dict_input.insert("date", "dte");
         md_dict.insert("nominal", tr("Nominal"));
         md_dict_input.insert("nominal", "chb");
-        QDomElement el_variables = md_parent->document.documentElement().firstChildElement("variables");
-        if (!el_variables.isNull()) {
-            QDomElement variable = el_variables.firstChildElement("var");
-            while (!variable.isNull()) {
-                QDomElement subvariable = variable.firstChildElement("var");
-                if (subvariable.isNull()) {
-                    md_dict_vars.insert(variable.attribute("id"), variable.attribute("name"));
-                    if (variable.attribute("type") == "int") {
-                        md_dict_input.insert(variable.attribute("id"), QString("spb;-999999999;0.0;999999999; %1").arg(variable.attribute("unit")));
-                    } else if (variable.attribute("type") == "float") {
-                        md_dict_input.insert(variable.attribute("id"), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(variable.attribute("unit")));
-                    } else if (variable.attribute("type") == "string") {
-                        md_dict_input.insert(variable.attribute("id"), "le");
-                    }
+        QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, subvariables.id, subvariables.name, subvariables.type, subvariables.unit FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+        const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
+        const int SUBVAR_ID = 4; const int SUBVAR_NAME = 5; const int SUBVAR_TYPE = 6; const int SUBVAR_UNIT = 7;
+        while (query.next()) {
+            if (query.value(SUBVAR_ID).toString().isEmpty()) {
+                md_dict.insert(query.value(VAR_ID).toString(), query.value(VAR_NAME).toString());
+                if (query.value(VAR_TYPE).toString() == "int") {
+                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(VAR_UNIT).toString()));
+                } else if (query.value(VAR_TYPE).toString() == "float") {
+                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value(VAR_UNIT).toString()));
+                } else if (query.value(VAR_TYPE).toString() == "string") {
+                    md_dict_input.insert(query.value(VAR_ID).toString(), "le");
                 }
-                while (!subvariable.isNull()) {
-                    md_dict_vars.insert(QString("%1/%2").arg(variable.attribute("id")).arg(subvariable.attribute("id")), tr("%1: %2").arg(variable.attribute("name")).arg(subvariable.attribute("name")));
-                    if (subvariable.attribute("type") == "int") {
-                        md_dict_input.insert(QString("%1/%2").arg(variable.attribute("id")).arg(subvariable.attribute("id")), QString("spb;-999999999;0.0;999999999; %1").arg(subvariable.attribute("unit")));
-                    } else if (subvariable.attribute("type") == "float") {
-                        md_dict_input.insert(QString("%1/%2").arg(variable.attribute("id")).arg(subvariable.attribute("id")), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(subvariable.attribute("unit")));
-                    } else if (subvariable.attribute("type") == "string") {
-                        md_dict_input.insert(QString("%1/%2").arg(variable.attribute("id")).arg(subvariable.attribute("id")), "le");
-                    }
-                    subvariable = subvariable.nextSiblingElement();
+            } else {
+                md_dict.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), tr("%1: %2").arg(query.value(VAR_NAME).toString()).arg(query.value(SUBVAR_NAME).toString()));
+                if (query.value(SUBVAR_TYPE).toString() == "int") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(SUBVAR_UNIT).toString()));
+                } else if (query.value(SUBVAR_TYPE).toString() == "float") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value(SUBVAR_UNIT).toString()));
+                } else if (query.value(SUBVAR_TYPE).toString() == "string") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), "le");
                 }
-                variable = variable.nextSiblingElement();
             }
         }
-    } else if (md_element.nodeName() == "var") {
+    } else if (md_record.type() == "var") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
         md_dict.insert("var", tr("Variable"));
-        md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le");
+        md_dict.insert("var_id", tr("ID"));
+        md_dict_input.insert("var_id", "le");
         md_dict.insert("name", tr("Name"));
         md_dict_input.insert("name", "le");
         md_dict.insert("unit", tr("Unit"));
@@ -193,69 +322,50 @@ QDialog(parent)
         md_dict_input.insert("compare_nom", "chb");
         md_dict.insert("col_bg", tr("Colour"));
         md_dict_input.insert("col_bg", "ccb");
-    } else if (md_element.nodeName() == "table") {
+    } else if (md_record.type() == "table") {
         md_dict.insert("table", tr("Table"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
         md_dict.insert("highlight_nominal", tr("Highlight the nominal inspection"));
         md_dict_input.insert("highlight_nominal", "chb");
     }
-    // ------------
-    if (!md_element.attribute("id").isEmpty()) {
-        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_element.nodeName())).arg(md_element.attribute("id")));
-    } else if (!md_element.attribute("date").isEmpty()) {
-        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_element.nodeName())).arg(md_element.attribute("date")));
-    } else {
-        this->setWindowTitle(md_dict.value(md_element.nodeName()));
+    MTDictionary md_dict_values;
+    if (!md_record.id().isEmpty()) {
+        QSqlQuery query = md_record.select();
+        query.exec();
+        if (query.next()) {
+            for (int i = 0; i < query.record().count(); ++i) {
+                md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+            }
+        }
     }
-    MTDictionary dict(md_dict);
-    for (int i = 0; i < md_dict_vars.count(); ++i) {
-        dict.insert(md_dict_vars.key(i), md_dict_vars.value(i));
+    // ------------
+    if (!md_record.id().isEmpty()) {
+        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_record.type())).arg(md_record.id()));
+    } else if (!md_record.id().isEmpty()) {
+        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_record.type())).arg(md_record.id()));
+    } else {
+        this->setWindowTitle(md_dict.value(md_record.type()));
     }
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
     int i = 0; QStringList inputtype, var_id; QString value;
-    int num_cols = (dict.count() - 1) / 20 + 1;
-    int num_rows = (dict.count() - 1) / num_cols + ((dict.count() - 1) % num_cols > 0 ? 1 : 0);
+    int num_cols = (md_dict.count() - 1) / 20 + 1;
+    int num_rows = (md_dict.count() - 1) / num_cols + ((md_dict.count() - 1) % num_cols > 0 ? 1 : 0);
     for (int c = 0; c < num_cols; ++c) {
         for (int r = 0; r < num_rows; ++r) {
-            if (i >= dict.count()) { break; }
-            if (dict.key(i) == md_element.nodeName()) { i++; r--; continue; }
-            if (md_dict_vars.contains(dict.key(i))) {
-                value.clear(); QDomElement var;
-                var_id = dict.key(i).split("/");
-                QDomElement variable = md_element.firstChildElement("var");
-                while (!variable.isNull()) {
-                    if (variable.attribute("id") == var_id.at(0)) {
-                        if (var_id.count() < 2) { value = variable.text(); }
-                        else { var = variable; }
-                        break;
-                    }
-                    variable = variable.nextSiblingElement();
-                }
-                if (!var.isNull()) {
-                    QDomElement subvariable = var.firstChildElement("var");
-                    while (!subvariable.isNull()) {
-                        if (subvariable.attribute("id") == var_id.at(1)) {
-                            value = subvariable.text(); break;
-                        }
-                        subvariable = subvariable.nextSiblingElement();
-                    }
-                }
-            } else if (dict.key(i) == "value" && md_element.nodeName() == "var") {
-                value = loadExpression(md_element, "value");
-            } else {
-                value = md_element.attribute(dict.key(i));
-            }
-            inputtype = md_dict_input.value(dict.key(i)).split(";");
+            if (i >= md_dict.count()) { break; }
+            if (md_dict.key(i) == md_record.type()) { i++; r--; continue; }
+            value = md_dict_values.contains(md_dict.key(i)) ? md_dict_values.value(md_dict.key(i)) : "";
+            inputtype = md_dict_input.value(md_dict.key(i)).split(";");
             if (inputtype.at(0) != "chb") {
-                md_lbl_var = new QLabel(tr("%1:").arg(dict.value(i)), this);
+                md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(i)), this);
                 md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 md_grid_main->addWidget(md_lbl_var, r, 2 * c);
             }
-            md_w_var = createInputWidget(inputtype, dict.value(i), value);
-            if (dict.key(i) == "nominal") { md_w_var->setEnabled(nominal_allowed); }
+            md_w_var = createInputWidget(inputtype, md_dict.value(i), value);
+            if (md_dict.key(i) == "nominal") { md_w_var->setEnabled(nominal_allowed); }
             md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
-            md_vars.insert(dict.key(i), md_w_var);
+            md_vars.insert(md_dict.key(i), md_w_var);
             i++;
         }
     }
@@ -324,27 +434,27 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
     return new QWidget;
 }
 
-QString ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStringList & inputtype, const QString & key)
+QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStringList & inputtype, const QString & key)
 {
-    QString value;
+    QVariant value(QVariant::String);
     if (inputtype.at(0) == "chb") {
         value = ((QCheckBox *)input_widget)->isChecked() ? "true" : "false";
     } else if (inputtype.at(0) == "le") {
         value = ((QLineEdit *)input_widget)->text();
         if (key == "id") {
-            if (value.isEmpty()) {
+            if (value.toString().isEmpty()) {
                 QMessageBox::information(this, tr("Save changes"), tr("Invalid ID."));
-                return QString();
+                return QVariant(QVariant::String);
             }
-            if (md_used_ids.contains(value)) {
+            if (md_used_ids.contains(value.toString())) {
                 QMessageBox::information(this, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
-                return QString();
+                return QVariant(QVariant::String);
             }
         }
     } else if (inputtype.at(0) == "spb") {
-        value = QString("%1").arg(((QSpinBox *)input_widget)->value());
+        value = ((QSpinBox *)input_widget)->value();
     } else if (inputtype.at(0) == "dspb") {
-        value = QString("%1").arg(((QDoubleSpinBox *)input_widget)->value());
+        value = ((QDoubleSpinBox *)input_widget)->value();
     } else if (inputtype.at(0) == "cb") {
         MTDictionary item_values;
         for (int j = 1; j < inputtype.count(); ++j) {
@@ -356,9 +466,9 @@ QString ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QString
     } else if (inputtype.at(0) == "dte") {
         value = ((QDateTimeEdit *)input_widget)->dateTime().toString("yyyy.MM.dd-hh:mm");
         if (key == "date") {
-            if (md_used_ids.contains(value)) {
+            if (md_used_ids.contains(value.toString())) {
                 QMessageBox::information(this, tr("Save changes"), tr("This date is not available. Please choose a different date."));
-                return QString();
+                return QVariant(QVariant::String);
             }
         }
     } else if (inputtype.at(0) == "de") {
@@ -366,154 +476,19 @@ QString ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QString
     } else {
         value = ((QPlainTextEdit *)input_widget)->toPlainText();
     }
-    return value.isNull() ? QString("") : value;
+    return value.isNull() ? QVariant(QString("")) : value;
 }
 
 void ModifyDialogue::save()
 {
-    MTDictionary values, var_values; QStringList inputtype; QString exp;
+    QMap<QString, QVariant> values; QStringList inputtype;
     QMapIterator<QString, QWidget *> i(md_vars);
     while (i.hasNext()) { i.next();
         inputtype = md_dict_input.value(i.key()).split(";");
-        QString value = getInputFromWidget(i.value(), inputtype, i.key());
+        QVariant value = getInputFromWidget(i.value(), inputtype, i.key());
         if (value.isNull()) { return; }
-        if (md_dict_vars.contains(i.key())) {
-            var_values.insert(i.key(), value);
-        } else if (i.key() == "value" && md_element.nodeName() == "var") {
-            exp = value;
-        } else {
-            values.insert(i.key(), value);
-        }
+        values.insert(i.key(), value);
     }
-    for (int i = 0; i < values.count(); ++i) {
-        md_element.setAttribute(values.key(i), values.value(i));
-    }
-    QStringList var_id;
-    for (int i = 0; i < var_values.count(); ++i) {
-        var_id = var_values.key(i).split("/");
-        QDomElement var, subvar;
-        QDomElement variable = md_element.firstChildElement("var");
-        while (!variable.isNull()) {
-            if (variable.attribute("id") == var_id.at(0)) {
-                var = variable; break;
-            }
-            variable = variable.nextSiblingElement();
-        }
-        if (var.isNull()) {
-            var = md_parent->document.createElement("var");
-            var.setAttribute("id", var_id.at(0));
-            md_element.appendChild(var);
-        }
-        if (var_id.count() > 1) {
-            QDomElement subvariable = var.firstChildElement("var");
-            while (!subvariable.isNull()) {
-                if (subvariable.attribute("id") == var_id.at(1)) {
-                    subvar = subvariable; break;
-                }
-                subvariable = subvariable.nextSiblingElement();
-            }
-            if (subvar.isNull()) {
-                subvar = md_parent->document.createElement("var");
-                subvar.setAttribute("id", var_id.at(1));
-                var.appendChild(subvar);
-            }
-        } else { subvar = var; }
-        while (subvar.hasChildNodes()) { subvar.removeChild(subvar.firstChild()); }
-        QDomText var_value = md_parent->document.createTextNode(var_values.value(i));
-        subvar.appendChild(var_value);
-    }
-    saveExpression(exp, md_element, "value");
+    md_record.update(values);
     accept();
-}
-
-QString ModifyDialogue::loadExpression(QDomElement & element, const QString & node_name)
-{
-    QString exp(""); int last_f_pos = 0;
-    QDomElement el_value = element.firstChildElement(node_name);
-    if (!el_value.isNull()) {
-        QDomElement ec = el_value.firstChildElement("ec");
-        while (!ec.isNull()) {
-            exp.append(ec.attribute("id"));
-            if (ec.hasAttribute("f")) { last_f_pos = exp.count(); exp.append(ec.attribute("f")); }
-            exp.append(ec.attribute("cc_attr"));
-            if (ec.hasAttribute("sum")) { exp.insert(last_f_pos, "sum"); exp.append(ec.attribute("sum")); }
-            ec = ec.nextSiblingElement();
-        }
-    }
-    return exp;
-}
-
-void ModifyDialogue::saveExpression(const QString & exp, QDomElement & element, const QString & node_name)
-{
-    if (!exp.isEmpty()) {
-        QSet<int> matched;
-        for (int i = 0; i < md_used_ids.count(); ++i) {
-            QRegExp expression(QString("\\b%1\\b").arg(md_used_ids.at(i)));
-            int index = exp.indexOf(expression);
-            while (index >= 0) {
-                int length = expression.matchedLength();
-                if (!matched.contains(index)) {
-                    for (int j = index; j < index + length; j++) { matched << j; }
-                }
-                index = exp.indexOf(expression, index + length);
-            }
-        }
-        QDomElement el_value = element.firstChildElement(node_name);
-        if (el_value.isNull()) {
-            el_value = md_parent->document.createElement(node_name);
-            element.appendChild(el_value);
-        }
-        while (el_value.hasChildNodes()) { el_value.removeChild(el_value.firstChild()); }
-        QString id_, f_; bool last_id = false; bool last_sum = false;
-        for (int i = 0; i < exp.length(); ++i) {
-            if (matched.contains(i)) {
-                if (!f_.isEmpty()) {
-                    QDomElement ec = md_parent->document.createElement("ec");
-                    ec.setAttribute("f", f_);
-                    el_value.appendChild(ec);
-                    f_.clear();
-                }
-                last_id = true;
-                id_.append(exp.at(i));
-            } else {
-                if (!id_.isEmpty()) {
-                    if (id_ == "sum") {
-                        last_sum = true;
-                    } else {
-                        QDomElement ec = md_parent->document.createElement("ec");
-                        if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                            ec.setAttribute("cc_attr", id_);
-                        } else {
-                            ec.setAttribute(last_sum ? "sum" : "id", id_);
-                        }
-                        last_sum = false;
-                        el_value.appendChild(ec);
-                    }
-                    id_.clear();
-                }
-                last_id = false;
-                f_.append(exp.at(i));
-            }
-        }
-        if (!f_.isEmpty()) {
-            QDomElement ec = md_parent->document.createElement("ec");
-            ec.setAttribute("f", f_);
-            el_value.appendChild(ec);
-        }
-        if (!id_.isEmpty()) {
-            QDomElement ec = md_parent->document.createElement("ec");
-            if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                ec.setAttribute("cc_attr", id_);
-            } else {
-                ec.setAttribute(last_sum ? "sum" : "id", id_);
-            }
-            el_value.appendChild(ec);
-        }
-    } else if (!exp.isNull()) {
-        QDomElement el_value = element.firstChildElement(node_name);
-        while (!el_value.isNull()) {
-            element.removeChild(el_value);
-            el_value = element.firstChildElement(node_name);
-        }
-    }
 }

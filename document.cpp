@@ -209,24 +209,18 @@ void MainWindow::closeDocument()
 
 void MainWindow::addCustomer()
 {
-    if (!document_open) { return; }
-    QDomElement el_customers = document.documentElement().firstChildElement("customers");
-    if (el_customers.isNull()) {
-        el_customers = document.createElement("customers");
-        document.documentElement().appendChild(el_customers);
-    }
-    QDomNodeList customers = el_customers.elementsByTagName("customer");
+    if (!db.isOpen()) { return; }
     QStringList used_ids;
-    for (int i = 0; i < customers.count(); ++i) {
-        used_ids << customers.at(i).toElement().attribute("id");
-    }
-    QDomElement element = document.createElement("customer");
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    QSqlQuery query("SELECT id FROM customers");
+    while (query.next()) { used_ids << query.value(0).toString(); }
+    MTRecord record("customer", "", MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
-        el_customers.appendChild(element);
+        record = md->record();
+        QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        item->setText(company.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(company));
+        item->setData(Qt::UserRole, record.id());
         lw_customers->addItem(item);
         this->setWindowModified(true);
         refreshView();
@@ -236,14 +230,21 @@ void MainWindow::addCustomer()
 
 void MainWindow::modifyCustomer()
 {
+    if (!db.isOpen()) { return; }
     QStringList used_ids;
-    QDomElement element = selectedCustomerElement(&used_ids);
-    if (element.isNull()) { return; }
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    QSqlQuery query;
+    query.prepare("SELECT id FROM customers WHERE id <> :id");
+    query.bindValue(":id", selectedCustomer());
+    query.exec();
+    while (query.next()) { used_ids << query.value(0).toString(); }
+    MTRecord record("customer", QString("%1").arg(selectedCustomer()), MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = lw_customers->highlightedItem();
-        item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        item->setText(company.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(company));
+        item->setData(Qt::UserRole, record.id());
         this->setWindowModified(true);
         refreshView();
     }
@@ -325,7 +326,7 @@ void MainWindow::addCircuit()
         used_ids << circuits.at(i).toElement().attribute("id");
     }
     QDomElement element = document.createElement("circuit");
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         customer.appendChild(element);
         QListWidgetItem * item = new QListWidgetItem;
@@ -335,7 +336,7 @@ void MainWindow::addCircuit()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::modifyCircuit()
@@ -343,7 +344,7 @@ void MainWindow::modifyCircuit()
     QStringList used_ids;
     QDomElement element = selectedCircuitElement(&used_ids);
     if (element.isNull()) { return; }
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         QListWidgetItem * item = lw_circuits->highlightedItem();
         item->setText(element.attribute("id"));
@@ -351,7 +352,7 @@ void MainWindow::modifyCircuit()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::removeCircuit()
@@ -425,7 +426,7 @@ void MainWindow::addInspection()
     }
     QDomElement element = document.createElement("inspection");
     element.setAttribute("date", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
     if (md->exec() == QDialog::Accepted) {
         circuit.appendChild(element);
         QListWidgetItem * item = new QListWidgetItem;
@@ -435,7 +436,7 @@ void MainWindow::addInspection()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::modifyInspection()
@@ -443,7 +444,7 @@ void MainWindow::modifyInspection()
     QStringList used_ids; bool nominal_allowed = true;
     QDomElement element = selectedInspectionElement(&used_ids, nominal_allowed);
     if (element.isNull()) { return; }
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, nominal_allowed, this);
     if (md->exec() == QDialog::Accepted) {
         QListWidgetItem * item = lw_inspections->highlightedItem();
         item->setText(element.attribute("date"));
@@ -451,7 +452,7 @@ void MainWindow::modifyInspection()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::removeInspection()
@@ -536,7 +537,7 @@ void MainWindow::addVariable(bool subvar)
         }
     }
     QDomElement element = document.createElement("var");
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         QTreeWidgetItem * item = NULL;
         if (subvar) {
@@ -553,7 +554,7 @@ void MainWindow::addVariable(bool subvar)
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::modifyVariable()
@@ -561,7 +562,7 @@ void MainWindow::modifyVariable()
     QStringList used_ids;
     QDomElement element = selectedVariableElement(&used_ids);
     if (element.isNull()) { return; }
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         QTreeWidgetItem * item = trw_variables->currentItem();
         item->setText(0, element.attribute("name"));
@@ -571,7 +572,7 @@ void MainWindow::modifyVariable()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::removeVariable()
@@ -622,7 +623,7 @@ void MainWindow::addTable()
         used_ids << tables.at(i).toElement().attribute("id");
     }
     QDomElement element = document.createElement("table");
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         el_tables.appendChild(element);
         cb_table->addItem(element.attribute("id"));
@@ -630,7 +631,7 @@ void MainWindow::addTable()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::modifyTable()
@@ -638,7 +639,7 @@ void MainWindow::modifyTable()
     QStringList used_ids;
     QDomElement element = selectedTableElement(&used_ids);
     if (element.isNull()) { return; }
-    ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
         int j = cb_table->currentIndex();
@@ -651,7 +652,7 @@ void MainWindow::modifyTable()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::removeTable()
@@ -813,7 +814,7 @@ void MainWindow::addWarning()
         document.documentElement().appendChild(el_warnings);
     }
     QDomElement element = document.createElement("warning");
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    /*ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
         el_warnings.appendChild(element);
         QListWidgetItem * item = new QListWidgetItem;
@@ -823,7 +824,7 @@ void MainWindow::addWarning()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::modifyWarning()
@@ -831,7 +832,7 @@ void MainWindow::modifyWarning()
     QStringList used_ids; selectedVariableElement(&used_ids);
     QDomElement element = selectedWarningElement();
     if (element.isNull()) { return; }
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    /*ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
         QListWidgetItem * item = lw_warnings->currentItem();
         item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
@@ -839,7 +840,7 @@ void MainWindow::modifyWarning()
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;
+    delete md;*/
 }
 
 void MainWindow::removeWarning()
@@ -1120,7 +1121,7 @@ MTDictionary MainWindow::parseExpression(const QString & exp, QStringList * used
         for (int i = 0; i < exp.length(); ++i) {
             if (matched.contains(i)) {
                 if (!f_.isEmpty()) {
-                    dict_exp.insert(f_, "f");
+                    dict_exp.insert(f_, "function");
                     f_.clear();
                 }
                 last_id = true;
@@ -1131,7 +1132,7 @@ MTDictionary MainWindow::parseExpression(const QString & exp, QStringList * used
                         last_sum = true;
                     } else {
                         if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                            dict_exp.insert(id_, "cc_attr");
+                            dict_exp.insert(id_, "circuit_attribute");
                         } else {
                             dict_exp.insert(id_, last_sum ? "sum" : "id");
                         }
@@ -1144,11 +1145,11 @@ MTDictionary MainWindow::parseExpression(const QString & exp, QStringList * used
             }
         }
         if (!f_.isEmpty()) {
-            dict_exp.insert(f_, "f");
+            dict_exp.insert(f_, "function");
         }
         if (!id_.isEmpty()) {
             if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                dict_exp.insert(id_, "cc_attr");
+                dict_exp.insert(id_, "circuit_attribute");
             } else {
                 dict_exp.insert(id_, last_sum ? "sum" : "id");
             }
