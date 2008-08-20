@@ -133,6 +133,7 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
+    QString expressionToHtml(QSqlQuery &, const MTDictionary &, const QString &, const QString &, const QString &);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;

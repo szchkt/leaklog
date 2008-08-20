@@ -284,6 +284,14 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     if (!inspection.next()) return;
     QSqlRecord ins_rec = inspection.record();
     int nominal = inspection.value(ins_rec.indexOf("nominal")).toInt();
+    QSqlQuery nominal_ins;
+    if (nominal == 0) {
+        nominal_ins.prepare("SELECT * FROM inspections WHERE nominal = 1 AND customer = :customer_id AND circuit = :circuit_id");
+        nominal_ins.bindValue(":customer_id", customer_id);
+        nominal_ins.bindValue(":circuit_id", circuit_id);
+        nominal_ins.exec();
+        nominal_ins.next();
+    }
 
     out << "<table cellspacing=\"0\" style=\"width:100%;\">";
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -300,31 +308,29 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     int num_shown_vars = 0;
     QStringList used_ids = listVariableIds(); // all = false
     while (vars.next()) {
-        QString value;
+        QString value; QString var_id; bool compare_nom = false;
         MTDictionary expression;
+        if (vars.value(SUBVAR_ID).toString().isEmpty()) {
+            var_id = vars.value(VAR_ID).toString();
+        } else {
+            var_id = vars.value(SUBVAR_ID).toString();
+        }
+        if (nominal == 0) {
+            if (vars.value(VAR_COMPARE_NOM).toInt() == 1) {
+                compare_nom = true;
+            } else if (vars.value(SUBVAR_COMPARE_NOM).toInt() == 1) {
+                compare_nom = true;
+            }
+        }
         if (!vars.value(VAR_VALUE).toString().isEmpty()) {
             expression = parseExpression(vars.value(VAR_VALUE).toString(), &used_ids);
         } else if (!vars.value(SUBVAR_VALUE).toString().isEmpty()) {
             expression = parseExpression(vars.value(SUBVAR_VALUE).toString(), &used_ids);
         }
         if (expression.count() != 0) {
-            value.append("<expression>");
-            for (int i = 0; i < expression.count(); ++i) {
-                if (expression.value(i) == "id") {
-                    value.append(inspection.value(ins_rec.indexOf(expression.key(i))).toString());
-                } else if (expression.value(i) == "sum") {
-                } else if (expression.value(i) == "circuit_attribute") {
-                } else {
-                    value.append(expression.key(i));
-                }
-            }
-            value.append("</expression>");
+            value.append(expressionToHtml(inspection, expression, customer_id, circuit_id, inspection_date));
         } else {
-            if (vars.value(SUBVAR_ID).toString().isEmpty()) {
-                value = inspection.value(ins_rec.indexOf(vars.value(VAR_ID).toString())).toString();
-            } else {
-                value = inspection.value(ins_rec.indexOf(vars.value(SUBVAR_ID).toString())).toString();
-            }
+            value = inspection.value(ins_rec.indexOf(var_id)).toString();
         }
         if (value.isEmpty()) continue;
         out << "<num_var>" << num_shown_vars << "</num_var>";
@@ -363,4 +369,29 @@ void MainWindow::viewTable(const QString &, const QString &, const QString &, in
         MTDictionary expression(parseExpression(exp, &used_ids));
     }
     */
+}
+
+QString MainWindow::expressionToHtml(QSqlQuery & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
+{
+    const QString sum_query("SELECT SUM(%1) FROM inspections WHERE date LIKE :year AND customer = :customer_id AND circuit = :circuit_id");
+    QString value("<expression>");
+    for (int i = 0; i < expression.count(); ++i) {
+        if (expression.value(i) == "id") {
+            value.append(inspection.value(inspection.record().indexOf(expression.key(i))).toString());
+        } else if (expression.value(i) == "sum") {
+            QSqlQuery sum_ins;
+            sum_ins.prepare(sum_query.arg(expression.key(i)));
+            sum_ins.bindValue(":customer_id", customer_id);
+            sum_ins.bindValue(":circuit_id", circuit_id);
+            sum_ins.bindValue(":year", QString("%1%").arg(inspection_date.left(4)));
+            if (sum_ins.exec() && sum_ins.next()) {
+                value.append(sum_ins.value(0).toString());
+            }
+        } else if (expression.value(i) == "circuit_attribute") {
+        } else {
+            value.append(expression.key(i));
+        }
+    }
+    value.append("</expression>");
+    return value;
 }
