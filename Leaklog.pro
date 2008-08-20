@@ -24,6 +24,10 @@ SOURCES      += main.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp
 QT           += network webkit sql xml xmlpatterns
+# fparser
+HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
+SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
+# *******
 win32 {
 DESTDIR       = ./
 RC_FILE       = leaklog.rc
