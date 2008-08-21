@@ -67,7 +67,7 @@ public slots:
 private:
     QList<AttributeFilter *> af_filters;
     MTDictionary af_attributes;
-    MTDictionary af_functions;
+    QStringList af_functions;
     QVBoxLayout * af_vlayout_main;
 };
 
@@ -115,7 +115,7 @@ public slots:
 private:
     QList<Condition *> c_conditions;
     QStringList c_used_ids;
-    MTDictionary c_functions;
+    QStringList c_functions;
     QVBoxLayout * c_vlayout_main;
     SearchLineEditPalettes searchLineEditPalettes;
 };

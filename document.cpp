@@ -21,22 +21,20 @@
 
 bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
 {
-	if (document_open && this->isWindowModified()) {
+	if (db.isOpen() && this->isWindowModified()) {
 		switch (QMessageBox::information(this, title, tr("Save changes before proceeding?"), tr("&Save"), tr("&Discard"), tr("Cancel"), 0, 2)) {
 			case 0: // Save
-				document_open = false;
-				save(); if (close_) { closeDocument(); }; return false;
+				save(); if (close_) { closeDocument(false); }; return false;
 				break;
 			case 1: // Discard
-				document_open = false;
-				if (close_) { closeDocument(); }; return false;
+				if (close_) { closeDocument(false); }; return false;
 				break;
 			case 2: // Cancel
 				return true;
 				break;
 		}
-	} else if (document_open && !this->isWindowModified()) {
-		if (close_) { closeDocument(); }; return false;
+	} else if (db.isOpen() && !this->isWindowModified()) {
+		if (close_) { closeDocument(false); }; return false;
 	}
 	return false;
 }
@@ -105,35 +103,35 @@ void MainWindow::openDocument(QString path)
     }
     clearAll();
     QSqlQuery begin("BEGIN TRANSACTION");
-    QSqlQuery query("SELECT id, company FROM customers");
-    while (query.next()) {
+    QSqlQuery customers("SELECT id, company FROM customers");
+    while (customers.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(query.value(1).toString().isEmpty() ? query.value(0).toString() : tr("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()));
-        item->setData(Qt::UserRole, query.value(0).toString());
+        item->setText(customers.value(1).toString().isEmpty() ? customers.value(0).toString() : tr("%1 (%2)").arg(customers.value(0).toString()).arg(customers.value(1).toString()));
+        item->setData(Qt::UserRole, customers.value(0).toString());
         lw_customers->addItem(item);
     }
-    /*QDomElement el_variables = document.documentElement().firstChildElement("variables");
-    if (!el_variables.isNull()) {
-        QDomElement variable = el_variables.firstChildElement("var");
-        while (!variable.isNull()) {
-            QTreeWidgetItem * item = new QTreeWidgetItem(trw_variables);
-            item->setText(0, variable.attribute("name"));
-            item->setText(1, variable.attribute("id"));
-            item->setText(2, variable.attribute("unit"));
-            item->setText(3, dict_vartypes.value(variable.attribute("type")));
-            QDomElement subvariable = variable.firstChildElement("var");
-            while (!subvariable.isNull()) {
-                QTreeWidgetItem * subitem = new QTreeWidgetItem(item);
-                subitem->setText(0, subvariable.attribute("name"));
-                subitem->setText(1, subvariable.attribute("id"));
-                subitem->setText(2, subvariable.attribute("unit"));
-                subitem->setText(3, dict_vartypes.value(subvariable.attribute("type")));
-                subvariable = subvariable.nextSiblingElement();
-            }
-            variable = variable.nextSiblingElement();
+    QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, subvariables.id, subvariables.name, subvariables.type, subvariables.unit FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
+    const int SUBVAR_ID = 4; const int SUBVAR_NAME = 5; const int SUBVAR_TYPE = 6; const int SUBVAR_UNIT = 7;
+    QString last_id; QTreeWidgetItem * last_item = NULL;
+    while (query.next()) {
+        if (query.value(VAR_ID).toString() != last_id) {
+            last_item = new QTreeWidgetItem(trw_variables);
+            last_item->setText(0, query.value(VAR_NAME).toString());
+            last_item->setText(1, query.value(VAR_ID).toString());
+            last_item->setText(2, query.value(VAR_UNIT).toString());
+            last_item->setText(3, dict_vartypes.value(query.value(VAR_TYPE).toString()));
+            last_id = query.value(VAR_ID).toString();
+        }
+        if (!query.value(SUBVAR_ID).toString().isEmpty() && last_item) {
+            QTreeWidgetItem * subitem = new QTreeWidgetItem(last_item);
+            subitem->setText(0, query.value(SUBVAR_NAME).toString());
+            subitem->setText(1, query.value(SUBVAR_ID).toString());
+            subitem->setText(2, query.value(SUBVAR_UNIT).toString());
+            subitem->setText(3, dict_vartypes.value(query.value(SUBVAR_TYPE).toString()));
         }
     }
-    QDomElement el_tables = document.documentElement().firstChildElement("tables");
+    /*QDomElement el_tables = document.documentElement().firstChildElement("tables");
     if (!el_tables.isNull()) {
         QDomNodeList tables = el_tables.elementsByTagName("table");
         for (int i = 0; i < tables.count(); ++i) {
@@ -141,24 +139,19 @@ void MainWindow::openDocument(QString path)
             cb_table_edit->addItem(table.attribute("id"));
             cb_table->addItem(table.attribute("id"));
         }
-    }
-    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
-    if (!el_warnings.isNull()) {
-        QDomNodeList warnings = el_warnings.elementsByTagName("warning");
-        for (int i = 0; i < warnings.count(); ++i) {
-            QDomElement element = warnings.at(i).toElement();
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
-            item->setData(Qt::UserRole, element.attribute("id"));
-            lw_warnings->addItem(item);
-        }
     }*/
-    //document_open = true;
+    QSqlQuery warnings("SELECT id, name, description FROM warnings");
+    while (warnings.next()) {
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(warnings.value(2).toString().isEmpty() ? warnings.value(1).toString() : tr("%1 (%2)").arg(warnings.value(1).toString()).arg(warnings.value(2).toString()));
+        item->setData(Qt::UserRole, warnings.value(0).toString());
+        lw_warnings->addItem(item);
+    }
     document_path = path;
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
+	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(document_path).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
+    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(document_path).baseName()));
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
@@ -177,18 +170,18 @@ void MainWindow::saveAs()
 	if (!path.isEmpty()) { addRecent(path); saveDocument(path); }
 }
 
-void MainWindow::saveDocument(QString path)
+void MainWindow::saveDocument(QString)
 {
-    QFile file(path);
-    if (!file.open(QFile::WriteOnly)) {
-		QMessageBox::critical(this, tr("Save document - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+    QString error;
+    QSqlQuery commit("COMMIT");
+    if (commit.lastError().type() != QSqlError::NoError) { error = commit.lastError().text(); }
+    QSqlQuery begin("BEGIN TRANSACTION");
+    if (begin.lastError().type() != QSqlError::NoError) { error = begin.lastError().text(); }
+    if (!error.isEmpty()) {
+		QMessageBox::critical(this, tr("Save document - Leaklog"), tr("Cannot write file %1:\n%2.").arg(document_path).arg(error));
 		return;
     }
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << document.toString(4);
-    file.close();
-    document_path = path;
+    //document_path = path;
 #ifdef Q_WS_MAC
 	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(document_path).baseName()));
 #else
@@ -198,10 +191,10 @@ void MainWindow::saveDocument(QString path)
     refreshView();
 }
 
-void MainWindow::closeDocument()
+void MainWindow::closeDocument(bool save)
 {
-	if (saveChangesBeforeProceeding(tr("Close document - Leaklog"), false)) { return; }
-    document_open = false;
+	if (save && saveChangesBeforeProceeding(tr("Close document - Leaklog"), false)) { return; }
+    db.close(); QSqlDatabase::removeDatabase(db.connectionName());
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
 	this->setWindowModified(false);
@@ -231,13 +224,14 @@ void MainWindow::addCustomer()
 void MainWindow::modifyCustomer()
 {
     if (!db.isOpen()) { return; }
+    if (selectedCustomer() < 0) { return; }
     QStringList used_ids;
     QSqlQuery query;
     query.prepare("SELECT id FROM customers WHERE id <> :id");
     query.bindValue(":id", selectedCustomer());
     query.exec();
     while (query.next()) { used_ids << query.value(0).toString(); }
-    MTRecord record("customer", QString("%1").arg(selectedCustomer()), MTDictionary());
+    MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
     ModifyDialogue * md = new ModifyDialogue(record, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
@@ -253,6 +247,8 @@ void MainWindow::modifyCustomer()
 
 void MainWindow::removeCustomer()
 {
+    if (!db.isOpen()) { return; }
+    if (selectedCustomer() < 0) { return; }
     QDomElement element = selectedCustomerElement();
     if (element.isNull()) { return; }
     QListWidgetItem * item = lw_customers->highlightedItem();
@@ -300,7 +296,7 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
 QDomElement MainWindow::selectedCustomerElement(QStringList * used_ids)
 {
     if (!document_open) { return QDomElement(); }
-    if (lw_customers->highlightedRow() < 0) { return QDomElement(); }
+    if (selectedCustomer() < 0) { return QDomElement(); }
     QListWidgetItem * item = lw_customers->highlightedItem();
     QDomElement el_customers = document.documentElement().firstChildElement("customers");
     if (el_customers.isNull()) { return QDomElement(); }
@@ -380,8 +376,8 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     if (item == NULL) { return; }
     lw_circuits->highlightItem(item);
     lw_inspections->clear();
-    MTDictionary parents("circuit", QString("%1").arg(selectedCircuit()));
-    parents.insert("customer", QString("%1").arg(selectedCustomer()));
+    MTDictionary parents("circuit", toString(selectedCircuit()));
+    parents.insert("customer", toString(selectedCustomer()));
     MTRecord record("inspection", "", parents);
     QSqlQuery inspections = record.select("date");
     inspections.exec();
@@ -400,8 +396,8 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
 QDomElement MainWindow::selectedCircuitElement(QStringList * used_ids)
 {
     if (!document_open) { return QDomElement(); }
-    if (lw_customers->highlightedRow() < 0) { return QDomElement(); }
-    if (lw_circuits->highlightedRow() < 0) { return QDomElement(); }
+    if (selectedCustomer() < 0) { return QDomElement(); }
+    if (selectedCircuit() < 0) { return QDomElement(); }
     QListWidgetItem * item = lw_circuits->highlightedItem();
     QDomNodeList circuits = selectedCustomerElement().elementsByTagName("circuit"); int n = -1;
     for (int i = 0; i < circuits.count(); ++i) {
@@ -494,9 +490,9 @@ QDomElement MainWindow::selectedInspectionElement()
 QDomElement MainWindow::selectedInspectionElement(QStringList * used_ids, bool & nominal_allowed)
 {
     if (!document_open) { return QDomElement(); }
-    if (lw_customers->highlightedRow() < 0) { return QDomElement(); }
-    if (lw_circuits->highlightedRow() < 0) { return QDomElement(); }
-    if (lw_inspections->highlightedRow() < 0) { return QDomElement(); }
+    if (selectedCustomer() < 0) { return QDomElement(); }
+    if (selectedCircuit() < 0) { return QDomElement(); }
+    if (selectedInspection().isNull()) { return QDomElement(); }
     QListWidgetItem * item = lw_inspections->highlightedItem();
     QDomNodeList inspections = selectedCircuitElement().elementsByTagName("inspection");
     int n = -1; nominal_allowed = true;
@@ -807,41 +803,44 @@ void MainWindow::removeTableVariable()
 
 void MainWindow::addWarning()
 {
-    if (!document_open) { return; }
-    QStringList used_ids; selectedVariableElement(&used_ids);
-    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
-    if (el_warnings.isNull()) {
-        el_warnings = document.createElement("warnings");
-        document.documentElement().appendChild(el_warnings);
-    }
-    QDomElement element = document.createElement("warning");
-    /*ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    if (!db.isOpen()) { return; }
+    QStringList used_ids = listVariableIds();
+    MTRecord record("warning", "", MTDictionary());
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
-        el_warnings.appendChild(element);
+        record = md->record();
+        QMap<QString, QVariant> attributes = record.list("name, description");
+        QString name = attributes.value("name").toString();
+        QString description = attributes.value("description").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
+        item->setData(Qt::UserRole, record.id());
         lw_warnings->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::modifyWarning()
 {
-    QStringList used_ids; selectedVariableElement(&used_ids);
-    QDomElement element = selectedWarningElement();
-    if (element.isNull()) { return; }
-    /*ModifyWarningDialogue * md = new ModifyWarningDialogue(element, used_ids, this);
+    if (!db.isOpen()) { return; }
+    if (!lw_warnings->currentIndex().isValid()) { return; }
+    QListWidgetItem * item = lw_warnings->currentItem();
+    QStringList used_ids = listVariableIds();
+    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
-        QListWidgetItem * item = lw_warnings->currentItem();
-        item->setText(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description")));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        record = md->record();
+        QMap<QString, QVariant> attributes = record.list("name, description");
+        QString name = attributes.value("name").toString();
+        QString description = attributes.value("description").toString();
+        item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
+        item->setData(Qt::UserRole, record.id());
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::removeWarning()
