@@ -121,4 +121,6 @@ private:
     friend class ModifyWarningDialogue;
 };
 
+QString toString(const QVariant &);
+
 #endif // MODIFY_DIALOGUE_H

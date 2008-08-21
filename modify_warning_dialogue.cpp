@@ -51,11 +51,11 @@ QWidget(parent)
     af_attributes.insert("life", tr("Service life"));
     af_attributes.insert("runtime", tr("Run-time per day"));
     af_attributes.insert("utilisation", tr("Rate of utilisation"));
-    af_functions.insert("less", "<");
-    af_functions.insert("lessorequal", "<=");
-    af_functions.insert("equal", "=");
-    af_functions.insert("moreorequal", ">=");
-    af_functions.insert("more", ">");
+    af_functions << "<";
+    af_functions << "<=";
+    af_functions << "=";
+    af_functions << ">=";
+    af_functions << ">";
     af_vlayout_main = new QVBoxLayout(this);
 #ifdef Q_WS_MAC
     af_vlayout_main->setSpacing(0);
@@ -69,7 +69,7 @@ int AttributeFilters::count() { return af_filters.count(); }
 
 QString AttributeFilters::attribute(int i) { return af_attributes.firstKey(af_filters.at(i)->attribute->currentText()); }
 
-QString AttributeFilters::function(int i) { return af_functions.firstKey(af_filters.at(i)->function->currentText()); }
+QString AttributeFilters::function(int i) { return af_filters.at(i)->function->currentText(); }
 
 QString AttributeFilters::value(int i) { return af_filters.at(i)->value->text(); }
 
@@ -80,7 +80,7 @@ void AttributeFilters::add(const QString & attribute, const QString & function, 
         if (af_attributes.firstKey(filter->attribute->itemText(i)) == attribute) { filter->attribute->setCurrentIndex(i); break; }
     }
     for (int i = 0; i < filter->function->count(); ++i) {
-        if (af_functions.firstKey(filter->function->itemText(i)) == function) { filter->function->setCurrentIndex(i); break; }
+        if (filter->function->itemText(i) == function) { filter->function->setCurrentIndex(i); break; }
     }
     filter->value->setText(value);
 }
@@ -89,8 +89,8 @@ AttributeFilter * AttributeFilters::add()
 {
     AttributeFilter * filter = new AttributeFilter(this);
     filter->attribute->addItems(af_attributes.values());
-    filter->function->addItems(af_functions.values());
-    filter->function->setCurrentIndex(af_functions.indexOfValue("="));
+    filter->function->addItems(af_functions);
+    filter->function->setCurrentIndex(af_functions.indexOf("="));
     af_vlayout_main->addWidget(filter);
     af_filters << filter;
     QObject::connect(filter, SIGNAL(removeFilter(AttributeFilter *)), this, SLOT(remove(AttributeFilter *)));
@@ -130,11 +130,11 @@ Conditions::Conditions(const QStringList & used_ids, QWidget * parent):
 QWidget(parent)
 {
     c_used_ids = used_ids;
-    c_functions.insert("less", "<");
-    c_functions.insert("lessorequal", "<=");
-    c_functions.insert("equal", "=");
-    c_functions.insert("moreorequal", ">=");
-    c_functions.insert("more", ">");
+    c_functions << "<";
+    c_functions << "<=";
+    c_functions << "=";
+    c_functions << ">=";
+    c_functions << ">";
     c_vlayout_main = new QVBoxLayout(this);
 #ifdef Q_WS_MAC
     c_vlayout_main->setSpacing(0);
@@ -148,7 +148,7 @@ int Conditions::count() { return c_conditions.count(); }
 
 QString Conditions::expressionIns(int i) { return c_conditions.at(i)->expression_ins->toPlainText(); }
 
-QString Conditions::function(int i) { return c_functions.firstKey(c_conditions.at(i)->function->currentText()); }
+QString Conditions::function(int i) { return c_conditions.at(i)->function->currentText(); }
 
 QString Conditions::expressionNom(int i) { return c_conditions.at(i)->expression_nom->toPlainText(); }
 
@@ -158,7 +158,7 @@ void Conditions::add(const QString & exp_ins, const QString & function, const QS
     condition->expression_ins->setPlainText(exp_ins);
     condition->expression_nom->setPlainText(exp_nom);
     for (int i = 0; i < condition->function->count(); ++i) {
-        if (c_functions.firstKey(condition->function->itemText(i)) == function) { condition->function->setCurrentIndex(i); break; }
+        if (condition->function->itemText(i) == function) { condition->function->setCurrentIndex(i); break; }
     }
 }
 
@@ -168,8 +168,8 @@ Condition * Conditions::add()
     condition->expression_nom->setPalette(searchLineEditPalettes.search_active_palette);
     new Highlighter(c_used_ids, condition->expression_ins->document());
     new Highlighter(c_used_ids, condition->expression_nom->document());
-    condition->function->addItems(c_functions.values());
-    condition->function->setCurrentIndex(c_functions.indexOfValue("="));
+    condition->function->addItems(c_functions);
+    condition->function->setCurrentIndex(c_functions.indexOf("="));
     c_vlayout_main->addWidget(condition);
     c_conditions << condition;
     QObject::connect(condition, SIGNAL(removeCondition(Condition *)), this, SLOT(remove(Condition *)));
@@ -185,15 +185,25 @@ void Conditions::remove(Condition * condition)
 ModifyWarningDialogue::ModifyWarningDialogue(const MTRecord & record, const QStringList & used_ids, QWidget * parent):
 ModifyDialogue(record, used_ids, parent)
 {
-    /*md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
+    md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
     md_dict.insert("warning", tr("Warning"));
-    md_dict.insert("id", tr("Name"));
-    md_dict_input.insert("id", "le");
+    md_dict.insert("name", tr("Name"));
+    md_dict_input.insert("name", "le");
     md_dict.insert("description", tr("Description"));
     md_dict_input.insert("description", "le");
-    // ------------
+    MTDictionary md_dict_values;
     if (!md_record.id().isEmpty()) {
-        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_record.type())).arg(md_record.id()));
+        QSqlQuery query = md_record.select();
+        query.exec();
+        if (query.next()) {
+            for (int i = 0; i < query.record().count(); ++i) {
+                md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+            }
+        }
+    }
+    // ------------
+    if (md_dict_values.contains("name") && !md_dict_values.value("name").isEmpty()) {
+        this->setWindowTitle(tr("%1: %2").arg(md_dict.value(md_record.type())).arg(md_dict_values.value("name")));
     } else {
         this->setWindowTitle(md_dict.value(md_record.type()));
     }
@@ -201,7 +211,7 @@ ModifyDialogue(record, used_ids, parent)
     int r = 0; QStringList inputtype; QString value;
     for (int i = 0; i < md_dict.count(); ++i) {
         if (md_dict.key(i) == md_record.type()) { continue; }
-        value = md_element.attribute(md_dict.key(i));
+        value = md_dict_values.contains(md_dict.key(i)) ? md_dict_values.value(md_dict.key(i)) : "";
         inputtype = md_dict_input.value(md_dict.key(i)).split(";");
         if (inputtype.at(0) != "chb") {
             md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(i)), this);
@@ -227,48 +237,61 @@ ModifyDialogue(record, used_ids, parent)
     md_conditions = new Conditions(md_used_ids, this);
     QObject::connect(md_tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_grid_main->addWidget(md_conditions, r + 3, 0, 1, 4);
-    QDomNodeList conditions = md_element.elementsByTagName("condition");
-    for (int i = 0; i < conditions.count(); ++i) {
-        QDomElement condition = conditions.at(i).toElement();
-        if (condition.hasAttribute("cc_attr")) {
-            md_filters->add(condition.attribute("cc_attr"), condition.attribute("f"), condition.text());
-        } else {
-            md_conditions->add(loadExpression(condition, "value_ins"), condition.attribute("f"), loadExpression(condition, "value_nom"));
+    if (!md_record.id().isEmpty()) {
+        QSqlQuery filters;
+        filters.prepare("SELECT circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
+        filters.bindValue(":parent", md_record.id());
+        filters.exec();
+        while (filters.next()) {
+            md_filters->add(filters.value(0).toString(), filters.value(1).toString(), filters.value(2).toString());
+        }
+        QSqlQuery conditions;
+        conditions.prepare("SELECT value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
+        conditions.bindValue(":parent", md_record.id());
+        conditions.exec();
+        while (conditions.next()) {
+            md_conditions->add(conditions.value(0).toString(), conditions.value(1).toString(), conditions.value(2).toString());
         }
     }
-    this->resize(450, 20);*/
+    this->resize(450, 20);
 }
 
 void ModifyWarningDialogue::save()
 {
-    /*QStringList used_ids = md_used_ids;
-    md_used_ids.clear();
-    MTDictionary values; QStringList inputtype;
+    QMap<QString, QVariant> values; QStringList inputtype;
     QMapIterator<QString, QWidget *> i(md_vars);
     while (i.hasNext()) { i.next();
         inputtype = md_dict_input.value(i.key()).split(";");
-        QString value = getInputFromWidget(i.value(), inputtype, i.key());
-        values.insert(i.key(), value);
+        values.insert(i.key(), getInputFromWidget(i.value(), inputtype, i.key()));
     }
-    for (int i = 0; i < values.count(); ++i) {
-        md_element.setAttribute(values.key(i), values.value(i));
+    if (!md_record.id().isEmpty()) {
+        QSqlQuery delete_filters;
+        delete_filters.prepare("DELETE FROM warnings_filters WHERE parent = :parent");
+        delete_filters.bindValue(":parent", md_record.id());
+        delete_filters.exec();
+        QSqlQuery delete_conditions;
+        delete_conditions.prepare("DELETE FROM warnings_conditions WHERE parent = :parent");
+        delete_conditions.bindValue(":parent", md_record.id());
+        delete_conditions.exec();
     }
-    md_used_ids = used_ids;
-    while (md_element.hasChildNodes()) { md_element.removeChild(md_element.firstChild()); }
+    md_record.update(values);
     for (int i = 0; i < md_filters->count(); ++i) {
-        QDomElement condition = md_parent->document.createElement("condition");
-        condition.setAttribute("cc_attr", md_filters->attribute(i));
-        condition.setAttribute("f", md_filters->function(i));
-        QDomText text = md_parent->document.createTextNode(md_filters->value(i));
-        condition.appendChild(text);
-        md_element.appendChild(condition);
+        QSqlQuery insert_filter;
+        insert_filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");
+        insert_filter.bindValue(":parent", md_record.id());
+        insert_filter.bindValue(":circuit_attribute", md_filters->attribute(i));
+        insert_filter.bindValue(":function", md_filters->function(i));
+        insert_filter.bindValue(":value", md_filters->value(i));
+        insert_filter.exec();
     }
     for (int i = 0; i < md_conditions->count(); ++i) {
-        QDomElement condition = md_parent->document.createElement("condition");
-        condition.setAttribute("f", md_conditions->function(i));
-        saveExpression(md_conditions->expressionIns(i), condition, "value_ins");
-        saveExpression(md_conditions->expressionNom(i), condition, "value_nom");
-        md_element.appendChild(condition);
-    }*/
+        QSqlQuery insert_condition;
+        insert_condition.prepare("INSERT INTO warnings_conditions (parent, value_ins, function, value_nom) VALUES (:parent, :value_ins, :function, :value_nom)");
+        insert_condition.bindValue(":parent", md_record.id());
+        insert_condition.bindValue(":value_ins", md_conditions->expressionIns(i));
+        insert_condition.bindValue(":function", md_conditions->function(i));
+        insert_condition.bindValue(":value_nom", md_conditions->expressionNom(i));
+        insert_condition.exec();
+    }
     accept();
 }

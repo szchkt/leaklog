@@ -31,14 +31,14 @@ void MainWindow::viewChanged(const QString & view)
 
     if (view == tr("All customers")) {
         viewAllCustomers();
-    } else if (view == tr("Customer information") && lw_customers->highlightedRow() >= 0) {
-        viewCustomer(lw_customers->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (view == tr("Circuit information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0) {
-        viewCircuit(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (view == tr("Inspection information") && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && lw_inspections->highlightedRow() >= 0) {
-        viewInspection(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), lw_inspections->highlightedItem()->data(Qt::UserRole).toString());
-    } else if (table_view && lw_customers->highlightedRow() >= 0 && lw_circuits->highlightedRow() >= 0 && cb_table->currentIndex() >= 0) {
-        viewTable(lw_customers->highlightedItem()->data(Qt::UserRole).toString(), lw_circuits->highlightedItem()->data(Qt::UserRole).toString(), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
+    } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
+        viewCustomer(toString(selectedCustomer()));
+    } else if (view == tr("Circuit information") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
+        viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
+    } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isNull()) {
+        viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+    } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
+        viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else {
         wv_main->setHtml(QString());
     }

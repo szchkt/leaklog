@@ -73,7 +73,7 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
 
 QString MTRecord::tableForRecordType(const QString & type)
 {
-    if (type == "customer") {
+    /*if (type == "customer") {
         return "customers";
     } else if (type == "circuit") {
         return "circuits";
@@ -85,20 +85,24 @@ QString MTRecord::tableForRecordType(const QString & type)
         return "subvariables";
     } else if (type == "table") {
         return "tables";
-    } else {
+    } else if (type == "warning") {
+        return "warnings";
+    } else {*/
         return type + "s";
-    }
+    //}
 }
 
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
+    QString id_field = r_type == "inspection" ? "date" : "id";
     QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type) + " WHERE ";
-    if (has_id) { select.append(QString(r_type == "inspection" ? "date" : "id") + " = :_id"); }
+    if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i != 0) { select.append(" AND "); }
-        select.append(r_parents.key(i) + " = :p" + QString("%1").arg(i));
+        select.append(r_parents.key(i) + " = :p" + toString(i));
     }
+    select.append(" ORDER BY " + id_field);
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
@@ -124,6 +128,7 @@ QMap<QString, QVariant> MTRecord::list(const QString & fields)
 bool MTRecord::update(const QMap<QString, QVariant> & set)
 {
     bool has_id = !r_id.isEmpty();
+    QString id_field = r_type == "inspection" ? "date" : "id";
     QString update;
     QMapIterator<QString, QVariant> i(set);
     if (has_id) {
@@ -132,9 +137,9 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) { update.append(", "); }
         }
-        update.append(" WHERE " + QString(r_type == "inspection" ? "date" : "id") + " = :_id");
+        update.append(" WHERE " + id_field + " = :_id");
         for (int i = 0; i < r_parents.count(); ++i) {
-            update.append(" AND " + r_parents.key(i) + " = :p" + QString("%1").arg(i));
+            update.append(" AND " + r_parents.key(i) + " = :p" + toString(i));
         }
     } else {
         update = "INSERT INTO " + tableForRecordType(r_type) + " (";
@@ -163,16 +168,22 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
         query.bindValue(":" + i.key(), i.value());
         if (r_parents.contains(i.key())) { r_parents.setValue(i.key(), i.value().toString()); }
     }
-    r_id = set.value(r_type == "inspection" ? "date" : "id", r_id).toString();
-    return query.exec();
+    bool result = query.exec();
+    if (has_id) {
+        r_id = set.value(id_field, r_id).toString();
+    } else {
+        r_id = query.lastInsertId().toString();
+    }
+    return result;
 }
 
 bool MTRecord::remove()
 {
     if (r_id.isEmpty()) { return false; }
-    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE " + (r_type == "inspection" ? "date" : "id") + " = :_id";
+    QString id_field = r_type == "inspection" ? "date" : "id";
+    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE " + id_field + " = :_id";
     for (int i = 0; i < r_parents.count(); ++i) {
-        remove.append(" AND " + r_parents.key(i) + " = :p" + QString("%1").arg(i));
+        remove.append(" AND " + r_parents.key(i) + " = :p" + toString(i));
     }
     QSqlQuery query;
     query.prepare(remove);
@@ -219,7 +230,7 @@ QDialog(parent)
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer"));
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le");
+        md_dict_input.insert("id", "le;000000000000");
         md_dict.insert("company", tr("Company"));
         md_dict_input.insert("company", "le");
         md_dict.insert("contact_person", tr("Contact person"));
@@ -233,7 +244,7 @@ QDialog(parent)
     } else if (md_record.type() == "circuit") {
         md_dict.insert("circuit", tr("Cooling circuit"));
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le");
+        md_dict_input.insert("id", "le;000000000000");
         md_dict.insert("hermetic", tr("Hermetically sealed"));
         md_dict_input.insert("hermetic", "chb");
         md_dict.insert("manufacturer", tr("Manufacturer"));
@@ -305,8 +316,8 @@ QDialog(parent)
     } else if (md_record.type() == "var") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
         md_dict.insert("var", tr("Variable"));
-        md_dict.insert("var_id", tr("ID"));
-        md_dict_input.insert("var_id", "le");
+        md_dict.insert("id", tr("ID"));
+        md_dict_input.insert("id", "le");
         md_dict.insert("name", tr("Name"));
         md_dict_input.insert("name", "le");
         md_dict.insert("unit", tr("Unit"));
@@ -349,7 +360,7 @@ QDialog(parent)
         this->setWindowTitle(md_dict.value(md_record.type()));
     }
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
-    int i = 0; QStringList inputtype, var_id; QString value;
+    int i = 0; QStringList inputtype; QString value;
     int num_cols = (md_dict.count() - 1) / 20 + 1;
     int num_rows = (md_dict.count() - 1) / num_cols + ((md_dict.count() - 1) % num_cols > 0 ? 1 : 0);
     for (int c = 0; c < num_cols; ++c) {
@@ -376,6 +387,7 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
 {
     if (inputtype.at(0) == "le") {
         QLineEdit * md_le_var = new QLineEdit(this);
+        if (inputtype.count() > 1) { md_le_var->setInputMask(inputtype.at(1)); }
         md_le_var->setText(value);
         return md_le_var;
     } else if (inputtype.at(0) == "chb") {
@@ -493,3 +505,5 @@ void ModifyDialogue::save()
     md_record.update(values);
     accept();
 }
+
+QString toString(const QVariant & v) { return v.toString(); }

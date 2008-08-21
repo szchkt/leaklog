@@ -65,7 +65,7 @@ private slots:
     void open();
     void save();
     void saveAs();
-    void closeDocument();
+    void closeDocument(bool = true);
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -126,7 +126,7 @@ private:
     MTDictionary parseExpression(const QString &, QStringList *);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
-    inline int selectedInspection() { return lw_inspections->highlightedRow() < 0 ? -1 : lw_inspections->highlightedItem()->data(Qt::UserRole).toInt(); };
+    inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
     // VIEW
     void viewAllCustomers();
     void viewCustomer(const QString &);
