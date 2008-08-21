@@ -27,6 +27,7 @@ QT           += network webkit sql xml xmlpatterns
 # fparser
 HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
+DEFINES      += NO_SUPPORT_OPTIMIZER
 # *******
 win32 {
 DESTDIR       = ./

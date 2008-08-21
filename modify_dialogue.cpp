@@ -138,30 +138,36 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
             if (i.hasNext()) { update.append(", "); }
         }
         update.append(" WHERE " + id_field + " = :_id");
-        for (int i = 0; i < r_parents.count(); ++i) {
-            update.append(" AND " + r_parents.key(i) + " = :p" + toString(i));
+        for (int p = 0; p < r_parents.count(); ++p) {
+            update.append(" AND " + r_parents.key(p) + " = :p" + toString(p));
         }
     } else {
         update = "INSERT INTO " + tableForRecordType(r_type) + " (";
         while (i.hasNext()) { i.next();
             update.append(i.key());
-            if (i.hasNext()) { update.append(", "); }
+            if (i.hasNext() || r_parents.count()) { update.append(", "); }
+        }
+        for (int p = 0; p < r_parents.count(); ++p) {
+            update.append(r_parents.key(p));
+            if (p < r_parents.count() - 1) { update.append(", "); }
         }
         update.append(") VALUES (");
         i.toFront();
         while (i.hasNext()) { i.next();
             update.append(":" + i.key());
-            if (i.hasNext()) { update.append(", "); }
+            if (i.hasNext() || r_parents.count()) { update.append(", "); }
+        }
+        for (int p = 0; p < r_parents.count(); ++p) {
+            update.append(":p" + toString(p));
+            if (p < r_parents.count() - 1) { update.append(", "); }
         }
         update.append(")");
     }
     QSqlQuery query;
     query.prepare(update);
-    if (has_id) {
-        query.bindValue(":_id", r_id);
-        for (int i = 0; i < r_parents.count(); ++i) {
-            query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
-        }
+    if (has_id) { query.bindValue(":_id", r_id); }
+    for (int p = 0; p < r_parents.count(); ++p) {
+        query.bindValue(QString(":p%1").arg(p), r_parents.value(p));
     }
     i.toFront();
     while (i.hasNext()) { i.next();
@@ -172,7 +178,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
     if (has_id) {
         r_id = set.value(id_field, r_id).toString();
     } else {
-        r_id = query.lastInsertId().toString();
+        r_id = set.value(id_field, query.lastInsertId()).toString();
     }
     return result;
 }
@@ -451,7 +457,7 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
 {
     QVariant value(QVariant::String);
     if (inputtype.at(0) == "chb") {
-        value = ((QCheckBox *)input_widget)->isChecked() ? "true" : "false";
+        value = ((QCheckBox *)input_widget)->isChecked() ? 1 : 0;
     } else if (inputtype.at(0) == "le") {
         value = ((QLineEdit *)input_widget)->text();
         if (key == "id") {

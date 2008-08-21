@@ -249,15 +249,12 @@ void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
-    QDomElement element = selectedCustomerElement();
-    if (element.isNull()) { return; }
     QListWidgetItem * item = lw_customers->highlightedItem();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    QDomElement el_customers = document.documentElement().firstChildElement("customers");
-    if (el_customers.isNull()) { return; }
-    el_customers.removeChild(element);
+    MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
+    record.remove();
     if (item != NULL) { delete item; }
     lw_circuits->clear(); lw_inspections->clear();
     enableTools();
@@ -314,41 +311,47 @@ QDomElement MainWindow::selectedCustomerElement(QStringList * used_ids)
 
 void MainWindow::addCircuit()
 {
-    QDomElement customer = selectedCustomerElement();
-    if (customer.isNull()) { return; }
-    QDomNodeList circuits = customer.elementsByTagName("circuit");
+    if (!db.isOpen()) { return; }
+    if (selectedCustomer() < 0) { return; }
     QStringList used_ids;
-    for (int i = 0; i < circuits.count(); ++i) {
-        used_ids << circuits.at(i).toElement().attribute("id");
-    }
-    QDomElement element = document.createElement("circuit");
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    QSqlQuery query("SELECT id FROM circuits");
+    while (query.next()) { used_ids << query.value(0).toString(); }
+    MTRecord record("circuit", "", MTDictionary("parent", toString(selectedCustomer())));
+    ModifyDialogue * md = new ModifyDialogue(record, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
-        customer.appendChild(element);
+        record = md->record();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(element.attribute("id"));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        item->setText(record.id());
+        item->setData(Qt::UserRole, record.id());
         lw_circuits->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::modifyCircuit()
 {
+    if (!db.isOpen()) { return; }
+    if (selectedCustomer() < 0) { return; }
     QStringList used_ids;
-    QDomElement element = selectedCircuitElement(&used_ids);
-    if (element.isNull()) { return; }
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    QSqlQuery query;
+    query.prepare("SELECT id FROM circuits WHERE parent = :parent AND id <> :id");
+    query.bindValue(":parent", selectedCustomer());
+    query.bindValue(":id", selectedCircuit());
+    query.exec();
+    while (query.next()) { used_ids << query.value(0).toString(); }
+    MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
+    ModifyDialogue * md = new ModifyDialogue(record, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
+        record = md->record();
         QListWidgetItem * item = lw_circuits->highlightedItem();
-        item->setText(element.attribute("id"));
-        item->setData(Qt::UserRole, element.attribute("id"));
+        item->setText(record.id());
+        item->setData(Qt::UserRole, record.id());
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::removeCircuit()
