@@ -21,6 +21,7 @@
 #include "about_widget.h"
 #include "modify_warning_dialogue.h"
 #include "i18n.h"
+#include "fparser/fparser.hh"
 
 #include <QCloseEvent>
 #include <QSettings>
@@ -100,6 +101,8 @@ private slots:
 
 private:
     // UI
+    inline QString upArrow() { return QApplication::translate("MainWindow", "\342\206\221", 0, QApplication::UnicodeUTF8); };
+    inline QString downArrow() { return QApplication::translate("MainWindow", "\342\206\223", 0, QApplication::UnicodeUTF8); };
     void setView(const QString &);
     void addRecent(QString);
     void clearAll();
@@ -133,7 +136,10 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
-    QString expressionToHtml(QSqlQuery &, const MTDictionary &, const QString &, const QString &, const QString &);
+    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, const QString &);
+    //void addVariablesToParser(FunctionParser &, const QMap<QString, QVariant> &, bool = false);
+    QString compareValues(int, int);
+    QString parseCircuit(const QString &, const QString &, const QString &);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;
