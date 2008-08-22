@@ -41,6 +41,8 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 
+#include <cmath>
+
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
     Q_OBJECT
@@ -137,9 +139,8 @@ private:
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
     double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, const QString &);
-    //void addVariablesToParser(FunctionParser &, const QMap<QString, QVariant> &, bool = false);
     QString compareValues(int, int);
-    QString parseCircuit(const QString &, const QString &, const QString &);
+    QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, const QString &, QStringList &);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_queries;
