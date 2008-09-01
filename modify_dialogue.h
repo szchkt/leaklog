@@ -101,7 +101,7 @@ protected:
     ModifyDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
 
 public:
-    ModifyDialogue(const MTRecord &, const QStringList &, bool, QWidget * = NULL);
+    ModifyDialogue(const MTRecord &, QWidget * = NULL);
     inline MTRecord record() { return md_record; };
 
 private:

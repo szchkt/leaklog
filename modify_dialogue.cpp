@@ -100,14 +100,14 @@ QSqlQuery MTRecord::select(const QString & fields)
     if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i != 0) { select.append(" AND "); }
-        select.append(r_parents.key(i) + " = :p" + toString(i));
+        select.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     select.append(" ORDER BY " + id_field);
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
-        query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
+        query.bindValue(":" + r_parents.key(i), r_parents.value(i));
     }
     return query;
 }
@@ -155,7 +155,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
         }
         update.append(" WHERE " + id_field + " = :_id");
         for (int p = 0; p < r_parents.count(); ++p) {
-            update.append(" AND " + r_parents.key(p) + " = :p" + toString(p));
+            update.append(" AND " + r_parents.key(p) + " = :" + r_parents.key(p));
         }
     } else {
         update = "INSERT INTO " + tableForRecordType(r_type) + " (";
@@ -174,7 +174,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
             if (i.hasNext() || r_parents.count()) { update.append(", "); }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
-            update.append(":p" + toString(p));
+            update.append(":" + r_parents.key(p));
             if (p < r_parents.count() - 1) { update.append(", "); }
         }
         update.append(")");
@@ -183,7 +183,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
     query.prepare(update);
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int p = 0; p < r_parents.count(); ++p) {
-        query.bindValue(QString(":p%1").arg(p), r_parents.value(p));
+        query.bindValue(":" + r_parents.key(p), r_parents.value(p));
     }
     i.toFront();
     while (i.hasNext()) { i.next();
@@ -205,16 +205,17 @@ bool MTRecord::remove()
     QString id_field = r_type == "inspection" ? "date" : "id";
     QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE " + id_field + " = :_id";
     for (int i = 0; i < r_parents.count(); ++i) {
-        remove.append(" AND " + r_parents.key(i) + " = :p" + toString(i));
+        remove.append(" AND " + r_parents.key(i) + " = :" + r_parents.key(i));
     }
     QSqlQuery query;
     query.prepare(remove);
     query.bindValue(":_id", r_id);
     for (int i = 0; i < r_parents.count(); ++i) {
-        query.bindValue(QString(":p%1").arg(i), r_parents.value(i));
+        query.bindValue(":" + r_parents.key(i), r_parents.value(i));
     }
-    r_id.clear();
-    return query.exec();
+    bool result = query.exec();
+    if (result) { r_id.clear(); }
+    return result;
 }
 
 void ModifyDialogue::init(const MTRecord & record, const QStringList & used_ids)
@@ -245,10 +246,13 @@ QDialog(parent)
     init(record, used_ids);
 }
 
-ModifyDialogue::ModifyDialogue(const MTRecord & record, const QStringList & used_ids, bool nominal_allowed, QWidget * parent):
+ModifyDialogue::ModifyDialogue(const MTRecord & record, QWidget * parent):
 QDialog(parent)
 {
-    init(record, used_ids);
+    init(record, QStringList());
+    bool md_nominal_allowed = true;
+    QSqlQuery query_used_ids;
+    query_used_ids.setForwardOnly(true);
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer"));
         md_dict.insert("id", tr("ID"));
@@ -263,6 +267,8 @@ QDialog(parent)
         md_dict_input.insert("mail", "le");
         md_dict.insert("phone", tr("Phone"));
         md_dict_input.insert("phone", "le");
+        query_used_ids.prepare("SELECT id FROM customers" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "circuit") {
         md_dict.insert("circuit", tr("Cooling circuit"));
         md_dict.insert("id", tr("ID"));
@@ -305,17 +311,21 @@ QDialog(parent)
         md_dict_input.insert("runtime", QString("dspb;0.0;0.0;24.0; %1").arg(tr("hours")));
         md_dict.insert("utilisation", tr("Rate of utilisation"));
         md_dict_input.insert("utilisation", QString("dspb;0.0;0.0;100.0; %1").arg(tr("%")));
+        query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(md_record.id().isEmpty() ? "" : " AND id <> :id"));
+        query_used_ids.bindValue(":parent", md_record.parents()->value("parent"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "inspection") {
         md_dict.insert("inspection", tr("Inspection"));
         md_dict.insert("date", tr("Date"));
         md_dict_input.insert("date", "dte");
         md_dict.insert("nominal", tr("Nominal"));
         md_dict_input.insert("nominal", "chb");
-        QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, subvariables.id, subvariables.name, subvariables.type, subvariables.unit FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-        const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
-        const int SUBVAR_ID = 4; const int SUBVAR_NAME = 5; const int SUBVAR_TYPE = 6; const int SUBVAR_UNIT = 7;
+        QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+        const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4;
+        const int SUBVAR_ID = 5; const int SUBVAR_NAME = 6; const int SUBVAR_TYPE = 7; const int SUBVAR_UNIT = 8; const int SUBVAR_VALUE = 9;
         while (query.next()) {
             if (query.value(SUBVAR_ID).toString().isEmpty()) {
+                if (!query.value(VAR_VALUE).toString().isEmpty()) { continue; }
                 md_dict.insert(query.value(VAR_ID).toString(), query.value(VAR_NAME).toString());
                 if (query.value(VAR_TYPE).toString() == "int") {
                     md_dict_input.insert(query.value(VAR_ID).toString(), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(VAR_UNIT).toString()));
@@ -325,6 +335,7 @@ QDialog(parent)
                     md_dict_input.insert(query.value(VAR_ID).toString(), "le");
                 }
             } else {
+                if (!query.value(SUBVAR_VALUE).toString().isEmpty()) { continue; }
                 md_dict.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), tr("%1: %2").arg(query.value(VAR_NAME).toString()).arg(query.value(SUBVAR_NAME).toString()));
                 if (query.value(SUBVAR_TYPE).toString() == "int") {
                     md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(SUBVAR_UNIT).toString()));
@@ -335,6 +346,10 @@ QDialog(parent)
                 }
             }
         }
+        query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE customer = :customer AND circuit = :circuit" + QString(md_record.id().isEmpty() ? "" : " AND date <> :date"));
+        query_used_ids.bindValue(":customer", md_record.parents()->value("customer"));
+        query_used_ids.bindValue(":circuit", md_record.parents()->value("circuit"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     } else if (md_record.type() == "var") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
         md_dict.insert("var", tr("Variable"));
@@ -356,12 +371,23 @@ QDialog(parent)
         md_dict_input.insert("compare_nom", "chb");
         md_dict.insert("col_bg", tr("Colour"));
         md_dict_input.insert("col_bg", "ccb");
+        query_used_ids.prepare(QString("SELECT id FROM variables%1 UNION SELECT id FROM subvariables%1").arg(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "table") {
         md_dict.insert("table", tr("Table"));
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
         md_dict.insert("highlight_nominal", tr("Highlight the nominal inspection"));
         md_dict_input.insert("highlight_nominal", "chb");
+        query_used_ids.prepare("SELECT id FROM tables" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
+    }
+    if (query_used_ids.exec()) {
+        bool _nominal = md_record.type() == "inspection";
+        while (query_used_ids.next()) {
+            md_used_ids << query_used_ids.value(0).toString();
+            if (_nominal && query_used_ids.value(1).toInt()) { md_nominal_allowed = false; }
+        }
     }
     MTDictionary md_dict_values;
     if (!md_record.id().isEmpty()) {
@@ -397,7 +423,7 @@ QDialog(parent)
                 md_grid_main->addWidget(md_lbl_var, r, 2 * c);
             }
             md_w_var = createInputWidget(inputtype, md_dict.value(i), value);
-            if (md_dict.key(i) == "nominal") { md_w_var->setEnabled(nominal_allowed); }
+            if (md_dict.key(i) == "nominal") { md_w_var->setEnabled(md_nominal_allowed); }
             md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
             md_vars.insert(md_dict.key(i), md_w_var);
             i++;
@@ -448,11 +474,11 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         return md_ccb_var;
     } else if (inputtype.at(0) == "dte") {
         QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
-        md_dte_var->setDateTime(QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
+        md_dte_var->setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
         return md_dte_var;
     } else if (inputtype.at(0) == "de") {
         QDateEdit * md_de_var = new QDateEdit(this);
-        md_de_var->setDate(QDate::fromString(value, "yyyy.MM.dd"));
+        md_de_var->setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
         return md_de_var;
     } else if (inputtype.at(0) == "pteh") {
         QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
@@ -522,7 +548,7 @@ void ModifyDialogue::save()
         inputtype = md_dict_input.value(i.key()).split(";");
         QVariant value = getInputFromWidget(i.value(), inputtype, i.key());
         if (value.isNull()) { return; }
-        values.insert(i.key(), value);
+        values.insert(i.key().split("/").last(), value);
     }
     md_record.update(values);
     accept();
