@@ -77,6 +77,7 @@ public:
     inline MTDictionary * parents() { return &r_parents; };
     QSqlQuery select(const QString & = "*");
     QMap<QString, QVariant> list(const QString & = "*");
+    QList<QMap<QString, QVariant> > listAll(const QString & = "*");
     bool update(const QMap<QString, QVariant> &);
     bool remove();
 

@@ -125,6 +125,22 @@ QMap<QString, QVariant> MTRecord::list(const QString & fields)
     return list;
 }
 
+QList<QMap<QString, QVariant> > MTRecord::listAll(const QString & fields)
+{
+    QList<QMap<QString, QVariant> > list;
+    QSqlQuery query = select(fields);
+    query.setForwardOnly(true);
+    query.exec();
+    while (query.next()) {
+        QMap<QString, QVariant> map;
+        for (int i = 0; i < query.record().count(); ++i) {
+            map.insert(query.record().fieldName(i), query.value(i));
+        }
+        list << map;
+    }
+    return list;
+}
+
 bool MTRecord::update(const QMap<QString, QVariant> & set)
 {
     bool has_id = !r_id.isEmpty();

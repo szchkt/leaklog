@@ -67,6 +67,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/inspection.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Inspection information"), in.readAll());
     file.close();
+    file.setFileName(":/html/table.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Table of inspections"), in.readAll());
+    file.close();
     // ----
     // i18n -> JavaScript
     dict_i18n_javascript.append("function Dictionary(startValues) {\n");
