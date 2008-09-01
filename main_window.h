@@ -138,7 +138,7 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
-    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, const QString &);
+    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, const QString &, bool * = NULL);
     QString compareValues(int, int);
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, const QString &, QStringList &);
 

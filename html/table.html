@@ -1,0 +1,832 @@
+<!--
+declare function local:returnAnyVar ($var as element(), $i as element()) {
+	for $ev in $var/value/ec
+		return
+			if (count($ev/@f)) then (
+				data($ev/@f)
+			) else if (count($ev/@sum)) then (
+				for $sum in $i/../inspection[substring-before($i/@date, '.') = substring-before(@date, '.')]
+					return ( string("+"), data($sum/var/var[@id=$ev/@sum]) )
+			) else if (count($ev/@cc_attr)) then (
+				for $att in $i/../@*
+					return (
+					if (name($att) = data($ev/@cc_attr)) then (
+							data($att)
+					) else ()
+				)
+			) else (
+				if (empty($i/var[@id=$ev/@id])) then (
+					string($i/var/var[@id=$ev/@id])
+				) else (
+					string($i/var[@id=$ev/@id])
+				)
+			)
+};
+
+declare function local:returnFootExpression ($var as element(), $circuit as element(), $begin as xs:integer)  {
+	<remove_expr>{
+	for $i in $circuit/inspection[xs:integer(substring-before(@date, '.')) >= $begin]
+		return
+		<expr date="{
+				data($i/@date)
+			}">{
+			string("+("),
+			local:returnAnyVar ($var, $i),
+			string(")")
+		}</expr>
+	}</remove_expr>
+};
+
+declare function local:returnExpression ($table as element(), $v_vars as element(), $x as element())  {
+	<expression>{
+								if (data($table/@highlight_nominal)="false") then ()
+								else (
+									if (data($v_vars/@compare_nom)="true") then (
+											for $ev in $v_vars/value/ec
+											return (
+												if (count($ev/@id)) then (
+													if (empty($x/../inspection[@nominal="true"]/var[@id=$ev/@id])) then (
+														if (empty($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])) then (0)
+														else string($x/../inspection[@nominal="true"]/var/var[@id=$ev/@id])
+													) else (
+														string($x/../inspection[@nominal="true"]/var[@id=$ev/@id])
+													)
+												) else (
+													data($ev/@f)
+												)
+										),
+									string("?")
+									) else ()
+								),
+									for $ev in $v_vars/value/ec
+									return
+										if (count($ev/@f)) then (
+											data($ev/@f)
+										) else if (count($ev/@sum)) then (
+											for $sum in $x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')]
+											return ( if (empty($sum/var/var[@id=$ev/@sum])) then ()
+													else string("+"), data($sum/var/var[@id=$ev/@sum]) )
+										) else if (count($ev/@cc_attr)) then (
+											for $att in $x/../@*
+											return (
+												if (name($att) = data($ev/@cc_attr)) then (
+													data($att)
+												) else ()
+											)
+										) else (
+											if (empty($x/var[@id=$ev/@id])) then (
+												if (empty($x/var/var[@id=$ev/@id])) then (0)
+												else string($x/var/var[@id=$ev/@id])
+											) else (
+												string($x/var[@id=$ev/@id])
+											)
+										)
+		}</expression>
+};
+
+declare function local:setTableHead ($table as element(), $vars as element())  {
+
+<tr class="border_top">
+<th rowspan="3">Dátum</th>
+{
+for $i in $table/var
+	let $s := count($vars/var[@id=$i/@id]/var)
+	return <th colspan="{$s}" rowspan="{
+			if ($s > 1) then xs:integer(1)
+			else 2+xs:integer(empty($vars/var[@id=$i/@id]/@unit))
+		}" class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($vars/var[@id=$i/@id]/@name)}</th>
+}
+</tr>,
+<tr>
+{
+for $i in $table/var
+	return
+		if (count($vars/var[@id=$i/@id]/var)) then (
+			for $z in $vars/var[@id=$i/@id]/var
+				return <th rowspan="{
+							if (xs:integer(empty($z/@unit)) = 1) then (
+								2
+							) else (1)
+							}" class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($z/@name)}</th>
+		)
+		else ()
+}
+</tr>,
+<tr class="border_bottom">
+{
+for $i in $table/var
+	return
+		if (count($vars/var[@id=$i/@id]/var)) then (
+			for $z in $vars/var[@id=$i/@id]/var
+				return
+					if (empty($z/@unit)) then ()
+					else (
+						<th class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($z/@unit)}</th>
+					)
+		)
+		else (
+			if (empty($vars/var[@id=$i/@id]/@unit)) then ()
+			else <th class="{ data($vars/var[@id=$i/@id]/@col_bg) }">{data($vars/var[@id=$i/@id]/@unit)}</th>
+		)
+}
+</tr>
+};
+
+declare function local:setTableBody ($table as element(), $circuit as element(), $vars as element(), $begin as xs:integer)  {
+
+for $x in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
+	return <tr id="main_table_row" class="{
+			if (data($table/@highlight_nominal)="false") then ()
+			else if ($x/@nominal="true") then (xs:string("nominal"))
+			else ()
+		}">{
+		<td id="date"><a href="customer:{ data($circuit/../@id) }/circuit:{ data($circuit/@id) }/inspection:{ data($x/@date) }">{data($x/@date)}</a></td>,
+		for $y in $table/var
+			return
+				if (count($vars/var[@id=$y/@id]/var)) then (
+					for $z in $vars/var[@id=$y/@id]/var
+						return (
+						<td id="{
+							data($z/@id)
+						}" remove="{
+								if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then ()
+								else ( substring-before($x/@date, '.') )
+						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }" rowspan="{
+							if (empty($vars/var[@id=$y/@id]/var[@id=$z/@id]/value/ec/@sum)) then (
+								1
+							) else (
+								if (substring-before($x/@date, '.') = substring-before($x/../inspection[position()=$x/position()-1]/@date, '.')) then (
+									1
+								) else (
+									count($x/../inspection[substring-before($x/@date, '.') = substring-before(@date, '.')])
+								)
+							)
+						}"><var_value id="{ data($z/@id) }" date="{ data($x/@date) }">{
+							if (empty($z/value)) then (
+								if (data($table/@highlight_nominal)="false") then (
+									data($x/var[@id=$y/@id]/var[@id=$z/@id])
+								) else if (data($z/@compare_nom)="true") then (
+									<expression>{
+									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]/var[@id=$z/@id]),
+									string("?"),
+									data($x/var[@id=$y/@id]/var[@id=$z/@id])
+									}</expression>
+								) else data($x/var[@id=$y/@id]/var[@id=$z/@id])
+							)
+							else local:returnExpression ($table, $z, $x)
+						}</var_value></td>
+						)
+				)
+				else (<td id="{
+							data($y/@id)
+						}" class="{ data($vars/var[@id=$y/@id]/@col_bg) }"><var_value id="{ data($y/@id) }" date="{ data($x/@date) }">
+						{
+							if (empty($vars/var[@id=$y/@id]/value)) then (
+								if (data($table/@highlight_nominal)="false") then (
+									data($x/var[@id=$y/@id])
+								) else if (data($vars/var[@id=$y/@id]/@compare_nom)="true") then (
+									<expression>{
+									data($x/../inspection[@nominal="true"]/var[@id=$y/@id]),
+									string("?"),
+									data($x/var[@id=$y/@id])
+									}</expression>
+								) else data($x/var[@id=$y/@id])
+							)
+							else local:returnExpression ($table, $vars/var[@id=$y/@id], $x)
+						}</var_value></td>)
+		}</tr>
+};
+
+declare function local:setTableFoot ($table as element(), $circuit as element(), $vars as element(), $begin as xs:integer) {
+	if ($table/foot) then (
+		<tr class="border_top border_bottom">{
+			<td>{data($table/foot/@name)}</td>,
+			for $i in $table/var
+				let $var := $vars/var[@id=$i/@id]
+				return
+					if ($table/foot/var[@id=$i/@id]) then (
+						let $f := $table/foot/var[@id=$i/@id]
+						return
+							if (count($var/var)) then (
+								for $v in $vars/var[@id=$i/@id]/var
+									return
+										<td class="{ data($var/@col_bg) }">{
+										if (data($f/@function)="sum") then (
+											if (count($v/value/ec/@sum)) then (
+												local:returnFootExpression($v, $circuit, $begin)
+											) else (
+												let $s := for $z in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
+													return $z/var[@id=$f/@id]/var[@id=$v/@id]
+												return sum($s)
+											)
+										) else ()
+										}</td>
+							) else (
+								if (data($f/@function)="sum") then (
+									let $s := for $z in $circuit/inspection[(not($table/@highlight_nominal = "false") and @nominal = "true") or xs:integer(substring-before(@date, '.')) >= $begin]
+										return $z/var[@id=$f/@id]
+									return <td class="{ data($var/@col_bg) }">{sum($s)}</td>
+								) else <td></td>
+							)
+					) else (
+						if (count($var/var)) then (
+							for $v in $var/var
+								return <td class="{ data($v/../@col_bg) }"></td>
+						) else (
+							<td class="{ data($var/@col_bg) }"></td>
+						)
+					)
+		}
+		</tr>
+	)
+	else ()
+};
+
+declare function local:setTopTables ($circuit as element()) {
+	let $customer := $circuit/..
+	return (
+	<table><tr>
+		<th>
+			<i18n>ID</i18n>
+		</th>
+		<th>
+			<i18n>Company</i18n>
+		</th>
+		<th>
+			<i18n>Contact person</i18n>
+		</th>
+		<th>
+			<i18n>Address</i18n>
+		</th>
+		<th>
+			<i18n>E-mail</i18n>
+		</th>
+		<th>
+			<i18n>Phone</i18n>
+		</th>
+	</tr><tr>
+		<td><a href="customer:{ data($customer/@id) }">{
+			data($customer/@id)
+		}</a></td>
+		<td>{
+			data($customer/@company)
+		}</td>
+		<td>{
+			data($customer/@name)
+		}</td>
+		<td>{
+			data($customer/@address)
+		}</td>
+		<td>{
+			data($customer/@mail)
+		}</td>
+		<td>{
+			data($customer/@phone)
+		}</td>
+	</tr></table>,
+	<br />,
+	<table><tr>
+		<th>
+			<i18n>ID</i18n>
+		</th>
+		<th>
+			<i18n>Manufacturer</i18n>
+		</th>
+		<th>
+			<i18n>Type</i18n>
+		</th>
+		<th>
+			<i18n>Year of purchase</i18n>
+		</th>
+		<th>
+			<i18n>Date of commissioning</i18n>
+		</th>
+		<th>
+			<i18n>Refrigerant</i18n>
+		</th>
+		<th>
+			<i18n>Amount of refrigerant</i18n>
+		</th>
+		<th>
+			<i18n>Oil</i18n>
+		</th>
+		<th>
+			<i18n>Amount of oil</i18n>
+		</th>
+		<th>
+			<i18n>Service life</i18n>
+		</th>
+	</tr><tr>
+		<td><a href="customer:{ data($customer/@id) }/circuit:{ data($circuit/@id) }">{
+			data($circuit/@id)
+		}</a></td>
+		<td>{
+			data($circuit/@manufacturer)
+		}</td>
+		<td>{
+			data($circuit/@type)
+		}</td>
+		<td>{
+			data($circuit/@year)
+		}</td>
+		<td>{
+			data($circuit/@commissioning)
+		}</td>
+		<td>{
+			data($circuit/@refrigerant)
+		}</td>
+		<td>{
+			data($circuit/@refrigerant_amount)
+		}</td>
+		<td>{
+			data($circuit/@oil)
+		}</td>
+		<td>{
+			data($circuit/@oil_amount)
+		}</td>
+		<td>{
+			data($circuit/@life)
+		}</td>
+	</tr></table>,
+	<br />
+	)
+};
+
+declare function local:setWarnings ($warnings as element(), $circuit as element()) {
+	<warnings>{
+	<p align="center"><b><i18n>Error: Failed to process warnings.</i18n></b></p>,
+	for $w in $warnings/warning
+	return (
+		<warning id="{data($w/@id)}">{
+			for $c in $w/condition
+			return (
+				<condition>
+				<first_expression>{
+					if ($c/@cc_attr) then (
+						<cc_attr>{
+							for $att in $circuit/@*
+							return (
+								if (name($att) = data($c/@cc_attr)) then (
+									<rem_dots>{data($att)}</rem_dots>
+								) else ()
+							)
+						}</cc_attr>
+					) else (
+						if (count($c/value_ins)) then (
+							for $ev in $c/value_ins/ec
+							return (
+								if (count($ev/@f)) then (
+									data($ev/@f)
+								) else if (count($ev/@cc_attr)) then (
+									for $att in $circuit/@*
+									return (
+										if (name($att) = data($ev/@cc_attr)) then (
+											data($att)
+										) else ()
+									)
+								) else if (count($ev/@id)) then (
+									<replace_id>{
+										data($ev/@id)
+									}</replace_id>
+								) else ()
+							)
+						) else ()
+					)
+				}</first_expression>
+				<f>{
+					data($c/@f)
+				}</f>
+				<second_expression>{
+					if (count($c/value_nom)) then (
+						for $ev in $c/value_nom/ec
+						return (
+							if (count($ev/@f)) then (
+								data($ev/@f)
+							) else if (count($ev/@cc_attr)) then (
+								for $att in $circuit/@*
+								return (
+									if (name($att) = data($ev/@cc_attr)) then (
+										data($att)
+									) else ()
+								)
+							) else if (count($ev/@id)) then (
+								<replace_nom_id>{
+									data($ev/@id)
+								}</replace_nom_id>
+							) else ()
+						)
+					) else (
+						<rem_dots>{string($c)}</rem_dots>
+					)
+			}</second_expression>
+			</condition>
+			)
+		}</warning>
+	)
+	}</warnings>
+};
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Table</title>
+<style type="text/css">
+body {
+	margin: 0px;
+}
+body,td,th {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;
+	font-size: small;
+	color: #333333;
+}
+tbody > tr:hover > td {
+	cursor: hand;
+	background-color: rgb(180, 215, 255);
+}
+/*th {
+	background-color: rgb(180, 215, 255);
+}*/
+table,td,th {
+	border-collapse: collapse;
+	border-style: solid;
+	border-width: thin;
+}
+table {
+	width: 100%;
+}
+.no_border {
+	border-collapse: collapse;
+	border-style: none;
+}
+header_top {
+	border-left-width: medium;
+	border-top-width: medium;
+	border-right-width: medium;
+}
+header_bottom {
+	border-bottom-width: medium;
+}
+tr.nominal {
+	background-color: #FFFF33;
+}
+.default_table {
+	background-color: #eee;
+	border-spacing: 2px;
+	border: 1px solid #CACACA; // #990000
+	border-collapse: collapse;
+}
+a:link {
+	color: #333333;
+	text-decoration: none;
+}
+a:visited {
+	color: #333333;
+	text-decoration: none;
+}
+a:hover {
+	color: #660000;
+	text-decoration: underline;
+}
+a:active {
+	color: #333333;
+	text-decoration: none;
+}
+warning {
+	font-size: xx-small;
+	color: #FFFFFF;
+}
+th.aliceblue { background-color: aliceblue; }
+td.aliceblue { background-color: aliceblue; }
+th.antiquewhite { background-color: antiquewhite; }
+td.antiquewhite { background-color: antiquewhite; }
+th.aqua { background-color: aqua; }
+td.aqua { background-color: aqua; }
+th.aquamarine { background-color: aquamarine; }
+td.aquamarine { background-color: aquamarine; }
+th.azure { background-color: azure; }
+td.azure { background-color: azure; }
+th.beige { background-color: beige; }
+td.beige { background-color: beige; }
+th.bisque { background-color: bisque; }
+td.bisque { background-color: bisque; }
+th.black { background-color: black; }
+td.black { background-color: black; }
+th.blanchedalmond { background-color: blanchedalmond; }
+td.blanchedalmond { background-color: blanchedalmond; }
+th.blue { background-color: blue; }
+td.blue { background-color: blue; }
+th.blueviolet { background-color: blueviolet; }
+td.blueviolet { background-color: blueviolet; }
+th.brown { background-color: brown; }
+td.brown { background-color: brown; }
+th.burlywood { background-color: burlywood; }
+td.burlywood { background-color: burlywood; }
+th.cadetblue { background-color: cadetblue; }
+td.cadetblue { background-color: cadetblue; }
+th.chartreuse { background-color: chartreuse; }
+td.chartreuse { background-color: chartreuse; }
+th.chocolate { background-color: chocolate; }
+td.chocolate { background-color: chocolate; }
+th.coral { background-color: coral; }
+td.coral { background-color: coral; }
+th.cornflowerblue { background-color: cornflowerblue; }
+td.cornflowerblue { background-color: cornflowerblue; }
+th.cornsilk { background-color: cornsilk; }
+td.cornsilk { background-color: cornsilk; }
+th.crimson { background-color: crimson; }
+td.crimson { background-color: crimson; }
+th.cyan { background-color: cyan; }
+td.cyan { background-color: cyan; }
+th.darkblue { background-color: darkblue; }
+td.darkblue { background-color: darkblue; }
+th.darkcyan { background-color: darkcyan; }
+td.darkcyan { background-color: darkcyan; }
+th.darkgoldenrod { background-color: darkgoldenrod; }
+td.darkgoldenrod { background-color: darkgoldenrod; }
+th.darkgreen { background-color: darkgreen; }
+td.darkgreen { background-color: darkgreen; }
+th.darkgrey { background-color: darkgrey; }
+td.darkgrey { background-color: darkgrey; }
+th.darkkhaki { background-color: darkkhaki; }
+td.darkkhaki { background-color: darkkhaki; }
+th.darkmagenta { background-color: darkmagenta; }
+td.darkmagenta { background-color: darkmagenta; }
+th.darkolivegreen { background-color: darkolivegreen; }
+td.darkolivegreen { background-color: darkolivegreen; }
+th.darkorange { background-color: darkorange; }
+td.darkorange { background-color: darkorange; }
+th.darkorchid { background-color: darkorchid; }
+td.darkorchid { background-color: darkorchid; }
+th.darkred { background-color: darkred; }
+td.darkred { background-color: darkred; }
+th.darksalmon { background-color: darksalmon; }
+td.darksalmon { background-color: darksalmon; }
+th.darkseagreen { background-color: darkseagreen; }
+td.darkseagreen { background-color: darkseagreen; }
+th.darkslateblue { background-color: darkslateblue; }
+td.darkslateblue { background-color: darkslateblue; }
+th.darkslategrey { background-color: darkslategrey; }
+td.darkslategrey { background-color: darkslategrey; }
+th.darkturquoise { background-color: darkturquoise; }
+td.darkturquoise { background-color: darkturquoise; }
+th.darkviolet { background-color: darkviolet; }
+td.darkviolet { background-color: darkviolet; }
+th.deeppink { background-color: deeppink; }
+td.deeppink { background-color: deeppink; }
+th.deepskyblue { background-color: deepskyblue; }
+td.deepskyblue { background-color: deepskyblue; }
+th.dimgrey { background-color: dimgrey; }
+td.dimgrey { background-color: dimgrey; }
+th.dodgerblue { background-color: dodgerblue; }
+td.dodgerblue { background-color: dodgerblue; }
+th.firebrick { background-color: firebrick; }
+td.firebrick { background-color: firebrick; }
+th.floralwhite { background-color: floralwhite; }
+td.floralwhite { background-color: floralwhite; }
+th.forestgreen { background-color: forestgreen; }
+td.forestgreen { background-color: forestgreen; }
+th.fuchsia { background-color: fuchsia; }
+td.fuchsia { background-color: fuchsia; }
+th.gainsboro { background-color: gainsboro; }
+td.gainsboro { background-color: gainsboro; }
+th.ghostwhite { background-color: ghostwhite; }
+td.ghostwhite { background-color: ghostwhite; }
+th.gold { background-color: gold; }
+td.gold { background-color: gold; }
+th.goldenrod { background-color: goldenrod; }
+td.goldenrod { background-color: goldenrod; }
+th.grey { background-color: grey; }
+td.grey { background-color: grey; }
+th.green { background-color: green; }
+td.green { background-color: green; }
+th.greenyellow { background-color: greenyellow; }
+td.greenyellow { background-color: greenyellow; }
+th.honeydew { background-color: honeydew; }
+td.honeydew { background-color: honeydew; }
+th.hotpink { background-color: hotpink; }
+td.hotpink { background-color: hotpink; }
+th.indianred { background-color: indianred; }
+td.indianred { background-color: indianred; }
+th.indigo { background-color: indigo; }
+td.indigo { background-color: indigo; }
+th.ivory { background-color: ivory; }
+td.ivory { background-color: ivory; }
+th.khaki { background-color: khaki; }
+td.khaki { background-color: khaki; }
+th.lavender { background-color: lavender; }
+td.lavender { background-color: lavender; }
+th.lavenderblush { background-color: lavenderblush; }
+td.lavenderblush { background-color: lavenderblush; }
+th.lawngreen { background-color: lawngreen; }
+td.lawngreen { background-color: lawngreen; }
+th.lemonchiffon { background-color: lemonchiffon; }
+td.lemonchiffon { background-color: lemonchiffon; }
+th.lightblue { background-color: lightblue; }
+td.lightblue { background-color: lightblue; }
+th.lightcoral { background-color: lightcoral; }
+td.lightcoral { background-color: lightcoral; }
+th.lightcyan { background-color: lightcyan; }
+td.lightcyan { background-color: lightcyan; }
+th.lightgoldenrodyellow { background-color: lightgoldenrodyellow; }
+td.lightgoldenrodyellow { background-color: lightgoldenrodyellow; }
+th.lightgreen { background-color: lightgreen; }
+td.lightgreen { background-color: lightgreen; }
+th.lightgrey { background-color: lightgrey; }
+td.lightgrey { background-color: lightgrey; }
+th.lightpink { background-color: lightpink; }
+td.lightpink { background-color: lightpink; }
+th.lightsalmon { background-color: lightsalmon; }
+td.lightsalmon { background-color: lightsalmon; }
+th.lightseagreen { background-color: lightseagreen; }
+td.lightseagreen { background-color: lightseagreen; }
+th.lightskyblue { background-color: lightskyblue; }
+td.lightskyblue { background-color: lightskyblue; }
+th.lightslategrey { background-color: lightslategrey; }
+td.lightslategrey { background-color: lightslategrey; }
+th.lightsteelblue { background-color: lightsteelblue; }
+td.lightsteelblue { background-color: lightsteelblue; }
+th.lightyellow { background-color: lightyellow; }
+td.lightyellow { background-color: lightyellow; }
+th.lime { background-color: lime; }
+td.lime { background-color: lime; }
+th.limegreen { background-color: limegreen; }
+td.limegreen { background-color: limegreen; }
+th.linen { background-color: linen; }
+td.linen { background-color: linen; }
+th.magenta { background-color: magenta; }
+td.magenta { background-color: magenta; }
+th.maroon { background-color: maroon; }
+td.maroon { background-color: maroon; }
+th.mediumaquamarine { background-color: mediumaquamarine; }
+td.mediumaquamarine { background-color: mediumaquamarine; }
+th.mediumblue { background-color: mediumblue; }
+td.mediumblue { background-color: mediumblue; }
+th.mediumorchid { background-color: mediumorchid; }
+td.mediumorchid { background-color: mediumorchid; }
+th.mediumpurple { background-color: mediumpurple; }
+td.mediumpurple { background-color: mediumpurple; }
+th.mediumseagreen { background-color: mediumseagreen; }
+td.mediumseagreen { background-color: mediumseagreen; }
+th.mediumslateblue { background-color: mediumslateblue; }
+td.mediumslateblue { background-color: mediumslateblue; }
+th.mediumspringgreen { background-color: mediumspringgreen; }
+td.mediumspringgreen { background-color: mediumspringgreen; }
+th.mediumturquoise { background-color: mediumturquoise; }
+td.mediumturquoise { background-color: mediumturquoise; }
+th.mediumvioletred { background-color: mediumvioletred; }
+td.mediumvioletred { background-color: mediumvioletred; }
+th.midnightblue { background-color: midnightblue; }
+td.midnightblue { background-color: midnightblue; }
+th.mintcream { background-color: mintcream; }
+td.mintcream { background-color: mintcream; }
+th.mistyrose { background-color: mistyrose; }
+td.mistyrose { background-color: mistyrose; }
+th.moccasin { background-color: moccasin; }
+td.moccasin { background-color: moccasin; }
+th.navajowhite { background-color: navajowhite; }
+td.navajowhite { background-color: navajowhite; }
+th.navy { background-color: navy; }
+td.navy { background-color: navy; }
+th.oldlace { background-color: oldlace; }
+td.oldlace { background-color: oldlace; }
+th.olive { background-color: olive; }
+td.olive { background-color: olive; }
+th.olivedrab { background-color: olivedrab; }
+td.olivedrab { background-color: olivedrab; }
+th.orange { background-color: orange; }
+td.orange { background-color: orange; }
+th.orangered { background-color: orangered; }
+td.orangered { background-color: orangered; }
+th.orchid { background-color: orchid; }
+td.orchid { background-color: orchid; }
+th.palegoldenrod { background-color: palegoldenrod; }
+td.palegoldenrod { background-color: palegoldenrod; }
+th.palegreen { background-color: palegreen; }
+td.palegreen { background-color: palegreen; }
+th.paleturquoise { background-color: paleturquoise; }
+td.paleturquoise { background-color: paleturquoise; }
+th.palevioletred { background-color: palevioletred; }
+td.palevioletred { background-color: palevioletred; }
+th.papayawhip { background-color: papayawhip; }
+td.papayawhip { background-color: papayawhip; }
+th.peachpuff { background-color: peachpuff; }
+td.peachpuff { background-color: peachpuff; }
+th.peru { background-color: peru; }
+td.peru { background-color: peru; }
+th.pink { background-color: pink; }
+td.pink { background-color: pink; }
+th.plum { background-color: plum; }
+td.plum { background-color: plum; }
+th.powderblue { background-color: powderblue; }
+td.powderblue { background-color: powderblue; }
+th.purple { background-color: purple; }
+td.purple { background-color: purple; }
+th.red { background-color: red; }
+td.red { background-color: red; }
+th.rosybrown { background-color: rosybrown; }
+td.rosybrown { background-color: rosybrown; }
+th.royalblue { background-color: royalblue; }
+td.royalblue { background-color: royalblue; }
+th.saddlebrown { background-color: saddlebrown; }
+td.saddlebrown { background-color: saddlebrown; }
+th.salmon { background-color: salmon; }
+td.salmon { background-color: salmon; }
+th.sandybrown { background-color: sandybrown; }
+td.sandybrown { background-color: sandybrown; }
+th.seagreen { background-color: seagreen; }
+td.seagreen { background-color: seagreen; }
+th.seashell { background-color: seashell; }
+td.seashell { background-color: seashell; }
+th.sienna { background-color: sienna; }
+td.sienna { background-color: sienna; }
+th.silver { background-color: silver; }
+td.silver { background-color: silver; }
+th.skyblue { background-color: skyblue; }
+td.skyblue { background-color: skyblue; }
+th.slateblue { background-color: slateblue; }
+td.slateblue { background-color: slateblue; }
+th.slategrey { background-color: slategrey; }
+td.slategrey { background-color: slategrey; }
+th.snow { background-color: snow; }
+td.snow { background-color: snow; }
+th.springgreen { background-color: springgreen; }
+td.springgreen { background-color: springgreen; }
+th.steelblue { background-color: steelblue; }
+td.steelblue { background-color: steelblue; }
+th.tan { background-color: tan; }
+td.tan { background-color: tan; }
+th.teal { background-color: teal; }
+td.teal { background-color: teal; }
+th.thistle { background-color: thistle; }
+td.thistle { background-color: thistle; }
+th.tomato { background-color: tomato; }
+td.tomato { background-color: tomato; }
+th.turquoise { background-color: turquoise; }
+td.turquoise { background-color: turquoise; }
+th.violet { background-color: violet; }
+td.violet { background-color: violet; }
+th.wheat { background-color: wheat; }
+td.wheat { background-color: wheat; }
+th.white { background-color: white; }
+td.white { background-color: white; }
+th.whitesmoke { background-color: whitesmoke; }
+td.whitesmoke { background-color: whitesmoke; }
+th.yellow { background-color: yellow; }
+td.yellow { background-color: yellow; }
+th.yellowgreen { background-color: yellowgreen; }
+td.yellowgreen { background-color: yellowgreen; }
+</style>
+<link href="default.css" rel="stylesheet" type="text/css" />
+<link href="colours.css" rel="stylesheet" type="text/css" />
+<!--
+<script type="text/javascript" src="prototype.js"></script>
+<script type="text/javascript" src="shared.js"></script>
+<script type="text/javascript">
+</script>
+onLoad="onTableLoad(); translate();"
+-->
+</head>
+<body>
+%1
+<!--
+{
+let $d := doc("xml.lklg")
+let $circuit := $d/leaklog/customers/customer[@id="jozko"]/circuit[@id="c1"]
+let $table := $d/leaklog/tables/table[@id="t1"]
+let $begin := 2005
+let $vars := $d/leaklog/variables
+return (
+
+local:setTopTables ($circuit),
+
+if (count($vars)) then (
+
+<table>
+<thead>
+{
+	local:setTableHead ($table, $vars)
+}
+</thead>
+<tbody id="main_table_body">
+{
+	local:setTableBody ($table, $circuit, $vars, $begin)
+}
+</tbody>
+<tfoot id="table_foot">
+{
+	local:setTableFoot ($table, $circuit, $vars, $begin)
+}
+</tfoot>
+<tfoot id="warnings_element">
+<tr><td style="text-align: center;"><b><i18n>Warnings</i18n></b></td></tr>
+{
+	local:setWarnings ($d/leaklog/warnings, $circuit)
+}
+</tfoot>
+</table>
+) else ()
+)
+}
+-->
+</body>
+</html>

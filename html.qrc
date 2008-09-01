@@ -4,5 +4,6 @@
     <file>html/customer.html</file>
     <file>html/circuit.html</file>
     <file>html/inspection.html</file>
+    <file>html/table.html</file>
   </qresource>
 </RCC>
