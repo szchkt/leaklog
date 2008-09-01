@@ -504,25 +504,13 @@ void MainWindow::addSubvariable() { addVariable(true); }
 void MainWindow::addVariable(bool subvar)
 {
     if (!document_open) { return; }
-    QDomElement selected; QStringList used_ids;
+    if (!db.isOpen()) { return; }
+    MTDictionary parents;
     if (subvar) {
         if (trw_variables->currentItem()->parent() != NULL) { return; }
-        selected = selectedVariableElement(&used_ids);
-        if (selected.isNull()) { return; }
-        used_ids << selected.attribute("id");
+        parents.insert("parent", trw_variables->currentItem()->text(1));
     }
-    QDomElement el_variables = document.documentElement().firstChildElement("variables");
-    if (!subvar) {
-        if (el_variables.isNull()) {
-            el_variables = document.createElement("variables");
-            document.documentElement().appendChild(el_variables);
-        }
-        QDomNodeList variables = el_variables.elementsByTagName("var");
-        for (int i = 0; i < variables.count(); ++i) {
-            used_ids << variables.at(i).toElement().attribute("id");
-        }
-    }
-    QDomElement element = document.createElement("var");
+    MTRecord record(subvar ? "subvariable" : "variable", "", parents);
     /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
     if (md->exec() == QDialog::Accepted) {
         QTreeWidgetItem * item = NULL;
