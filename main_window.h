@@ -138,12 +138,12 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
-    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, const QString &, bool * = NULL);
-    QString compareValues(int, int);
-    QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, const QString &, QStringList &);
+    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
+    QString compareValues(double, double);
+    QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
+    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
 
     MTDictionary dict_vartypes;
-    MTDictionary dict_queries;
     MTDictionary dict_html;
     i18n dict_i18n;
     QString dict_i18n_javascript;

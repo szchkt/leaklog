@@ -36,25 +36,8 @@ MainWindow::MainWindow()
     dict_vartypes.insert("float", tr("Real number"));
     dict_vartypes.insert("string", tr("String"));
     // ------------
-    // Queries
-    QFile file; QTextStream in(&file); in.setCodec("UTF-8");
-    file.setFileName(":/queries/all_customers.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_queries.insert(tr("All customers"), in.readAll());
-    file.close();
-    file.setFileName(":/queries/single_customer.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_queries.insert(tr("Customer information"), in.readAll());
-    file.close();
-    file.setFileName(":/queries/single_circuit.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_queries.insert(tr("Circuit information"), in.readAll());
-    file.close();
-    file.setFileName(":/queries/single_inspection.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_queries.insert(tr("Inspection information"), in.readAll());
-    file.close();
-    file.setFileName(":/queries/table.xq"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_queries.insert(tr("Table of inspections"), in.readAll());
-    file.close();
-    // -------
     // HTML
+    QFile file; QTextStream in(&file); in.setCodec("UTF-8");
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("All customers"), in.readAll());
     file.close();

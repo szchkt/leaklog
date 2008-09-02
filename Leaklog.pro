@@ -14,8 +14,7 @@ HEADERS      += main_window.h \
                 mtcolourcombobox.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
-                html.qrc \
-                queries.qrc
+                html.qrc
 SOURCES      += main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
