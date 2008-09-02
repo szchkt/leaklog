@@ -37,7 +37,7 @@ void MainWindow::viewChanged(const QString & view)
         viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
     } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isNull()) {
         viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
-    } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 /*&& cb_table->currentIndex() >= 0*/) {
+    } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else {
         wv_main->setHtml(QString());
@@ -430,7 +430,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         variables.insert(last_id, map);
     }
 
-    MTRecord table_record("table", "t1", MTDictionary());
+    MTRecord table_record("table", table_id, MTDictionary());
     QMap<QString, QVariant> table = table_record.list();
     QStringList table_vars = table.value("variables").toString().split(";");
 
