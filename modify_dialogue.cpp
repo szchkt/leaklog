@@ -253,8 +253,9 @@ QDialog(parent)
     bool md_nominal_allowed = true;
     QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
+    int _i = 1;
     if (md_record.type() == "customer") {
-        md_dict.insert("customer", tr("Customer"));
+        md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le;000000000000");
         md_dict.insert("company", tr("Company"));
@@ -270,7 +271,7 @@ QDialog(parent)
         query_used_ids.prepare("SELECT id FROM customers" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "circuit") {
-        md_dict.insert("circuit", tr("Cooling circuit"));
+        md_dict.insert("circuit", tr("Cooling circuit")); // _i = 1;
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le;000000000000");
         md_dict.insert("hermetic", tr("Hermetically sealed"));
@@ -315,7 +316,7 @@ QDialog(parent)
         query_used_ids.bindValue(":parent", md_record.parents()->value("parent"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "inspection") {
-        md_dict.insert("inspection", tr("Inspection"));
+        md_dict.insert("inspection", tr("Inspection")); // _i = 1;
         md_dict.insert("date", tr("Date"));
         md_dict_input.insert("date", "dte");
         md_dict.insert("nominal", tr("Nominal"));
@@ -350,9 +351,10 @@ QDialog(parent)
         query_used_ids.bindValue(":customer", md_record.parents()->value("customer"));
         query_used_ids.bindValue(":circuit", md_record.parents()->value("circuit"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
-    } else if (md_record.type() == "var") {
+    } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
-        md_dict.insert("var", tr("Variable"));
+        md_dict.insert("variable", tr("Variable"));
+        md_dict.insert("subvariable", tr("Subvariable")); _i = 2;
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
         md_dict.insert("name", tr("Name"));
@@ -369,12 +371,14 @@ QDialog(parent)
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
         md_dict_input.insert("compare_nom", "chb");
-        md_dict.insert("col_bg", tr("Colour"));
-        md_dict_input.insert("col_bg", "ccb");
+        if (md_record.type() == "variable") {
+            md_dict.insert("col_bg", tr("Colour"));
+            md_dict_input.insert("col_bg", "ccb");
+        }
         query_used_ids.prepare(QString("SELECT id FROM variables%1 UNION SELECT id FROM subvariables%1").arg(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "table") {
-        md_dict.insert("table", tr("Table"));
+        md_dict.insert("table", tr("Table")); // _i = 1;
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le");
         md_dict.insert("highlight_nominal", tr("Highlight the nominal inspection"));
@@ -408,25 +412,25 @@ QDialog(parent)
         this->setWindowTitle(md_dict.value(md_record.type()));
     }
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
-    int i = 0; QStringList inputtype; QString value;
-    int num_cols = (md_dict.count() - 1) / 20 + 1;
-    int num_rows = (md_dict.count() - 1) / num_cols + ((md_dict.count() - 1) % num_cols > 0 ? 1 : 0);
+    QStringList inputtype; QString value;
+    int num_cols = (md_dict.count() - _i) / 20 + 1;
+    int num_rows = (md_dict.count() - _i) / num_cols + ((md_dict.count() - _i) % num_cols > 0 ? 1 : 0);
     for (int c = 0; c < num_cols; ++c) {
         for (int r = 0; r < num_rows; ++r) {
-            if (i >= md_dict.count()) { break; }
-            if (md_dict.key(i) == md_record.type()) { i++; r--; continue; }
-            value = md_dict_values.contains(md_dict.key(i)) ? md_dict_values.value(md_dict.key(i)) : "";
-            inputtype = md_dict_input.value(md_dict.key(i)).split(";");
+            if (_i >= md_dict.count()) { break; }
+            //if (md_dict.key(_i) == md_record.type()) { _i++; r--; continue; }
+            value = md_dict_values.contains(md_dict.key(_i)) ? md_dict_values.value(md_dict.key(_i)) : "";
+            inputtype = md_dict_input.value(md_dict.key(_i)).split(";");
             if (inputtype.at(0) != "chb") {
-                md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(i)), this);
+                md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(_i)), this);
                 md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 md_grid_main->addWidget(md_lbl_var, r, 2 * c);
             }
-            md_w_var = createInputWidget(inputtype, md_dict.value(i), value);
-            if (md_dict.key(i) == "nominal") { md_w_var->setEnabled(md_nominal_allowed); }
+            md_w_var = createInputWidget(inputtype, md_dict.value(_i), value);
+            if (md_dict.key(_i) == "nominal") { md_w_var->setEnabled(md_nominal_allowed); }
             md_grid_main->addWidget(md_w_var, r, (2 * c) + 1);
-            md_vars.insert(md_dict.key(i), md_w_var);
-            i++;
+            md_vars.insert(md_dict.key(_i), md_w_var);
+            _i++;
         }
     }
 }

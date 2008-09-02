@@ -503,7 +503,6 @@ void MainWindow::addSubvariable() { addVariable(true); }
 
 void MainWindow::addVariable(bool subvar)
 {
-    if (!document_open) { return; }
     if (!db.isOpen()) { return; }
     MTDictionary parents;
     if (subvar) {
@@ -511,42 +510,47 @@ void MainWindow::addVariable(bool subvar)
         parents.insert("parent", trw_variables->currentItem()->text(1));
     }
     MTRecord record(subvar ? "subvariable" : "variable", "", parents);
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        QMap<QString, QVariant> attributes = record.list("name, unit, type");
         QTreeWidgetItem * item = NULL;
         if (subvar) {
-            selected.appendChild(element);
             item = new QTreeWidgetItem(trw_variables->currentItem());
         } else {
-            el_variables.appendChild(element);
             item = new QTreeWidgetItem(trw_variables);
         }
-        item->setText(0, element.attribute("name"));
-        item->setText(1, element.attribute("id"));
-        item->setText(2, element.attribute("unit"));
-        item->setText(3, dict_vartypes.value(element.attribute("type")));
+        item->setText(0, attributes.value("name").toString());
+        item->setText(1, record.id());
+        item->setText(2, attributes.value("unit").toString());
+        item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::modifyVariable()
 {
-    QStringList used_ids;
-    QDomElement element = selectedVariableElement(&used_ids);
-    if (element.isNull()) { return; }
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    if (!db.isOpen()) { return; }
+    if (!trw_variables->currentIndex().isValid()) { return; }
+    QTreeWidgetItem * item = trw_variables->currentItem();
+    bool subvar = item->parent() != NULL;
+    MTDictionary parents;
+    if (subvar) { parents.insert("parent", item->parent()->text(1)); }
+    MTRecord record(subvar ? "subvariable" : "variable", item->text(1), parents);
+    ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
-        QTreeWidgetItem * item = trw_variables->currentItem();
-        item->setText(0, element.attribute("name"));
-        item->setText(1, element.attribute("id"));
-        item->setText(2, element.attribute("unit"));
-        item->setText(3, dict_vartypes.value(element.attribute("type")));
+        record = md->record();
+        QMap<QString, QVariant> attributes = record.list("name, unit, type");
+        item->setText(0, attributes.value("name").toString());
+        item->setText(1, record.id());
+        item->setText(2, attributes.value("unit").toString());
+        item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::removeVariable()
