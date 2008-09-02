@@ -124,8 +124,6 @@ private:
     QDomElement selectedInspectionElement();
     QDomElement selectedInspectionElement(QStringList *, bool &);
     void addVariable(bool);
-    QDomElement selectedVariableElement(QStringList * = NULL);
-    QDomElement selectedTableElement(QStringList * = NULL);
     QDomElement selectedWarningElement();
     QStringList listVariableIds(bool = false);
     MTDictionary parseExpression(const QString &, QStringList *);

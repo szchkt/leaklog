@@ -201,15 +201,18 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
 
 bool MTRecord::remove()
 {
-    if (r_id.isEmpty()) { return false; }
+    if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
+    bool has_id = !r_id.isEmpty();
     QString id_field = r_type == "inspection" ? "date" : "id";
-    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE " + id_field + " = :_id";
+    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE ";
+    if (has_id) { remove.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
-        remove.append(" AND " + r_parents.key(i) + " = :" + r_parents.key(i));
+        if (has_id || i != 0) { remove.append(" AND "); }
+        remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     QSqlQuery query;
     query.prepare(remove);
-    query.bindValue(":_id", r_id);
+    if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
     }
@@ -444,7 +447,7 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         return md_le_var;
     } else if (inputtype.at(0) == "chb") {
         QCheckBox * md_chb_var = new QCheckBox(name, this);
-        md_chb_var->setChecked(value == "true");
+        md_chb_var->setChecked(value.toInt());
         return md_chb_var;
     } else if (inputtype.at(0) == "spb") {
         QSpinBox * md_spb_var = new QSpinBox(this);
