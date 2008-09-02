@@ -131,15 +131,11 @@ void MainWindow::openDocument(QString path)
             subitem->setText(3, dict_vartypes.value(query.value(SUBVAR_TYPE).toString()));
         }
     }
-    /*QDomElement el_tables = document.documentElement().firstChildElement("tables");
-    if (!el_tables.isNull()) {
-        QDomNodeList tables = el_tables.elementsByTagName("table");
-        for (int i = 0; i < tables.count(); ++i) {
-            QDomElement table = tables.at(i).toElement();
-            cb_table_edit->addItem(table.attribute("id"));
-            cb_table->addItem(table.attribute("id"));
-        }
-    }*/
+    QSqlQuery tables("SELECT id FROM tables");
+    while (tables.next()) {
+        cb_table_edit->addItem(tables.value(0).toString());
+        cb_table->addItem(tables.value(0).toString());
+    }
     QSqlQuery warnings("SELECT id, name, description FROM warnings");
     while (warnings.next()) {
         QListWidgetItem * item = new QListWidgetItem;
@@ -155,6 +151,7 @@ void MainWindow::openDocument(QString path)
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
+    enableTools();
     loadTable(cb_table_edit->currentText());
     setView(tr("All customers"));
 }
@@ -555,92 +552,73 @@ void MainWindow::modifyVariable()
 
 void MainWindow::removeVariable()
 {
-    QDomElement element = selectedVariableElement();
+    if (!db.isOpen()) { return; }
+    if (!trw_variables->currentIndex().isValid()) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
-    if (element.isNull()) { return; }
+    bool subvar = item->parent() != NULL;
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(item->text(1)), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(item->text(1)), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    element.parentNode().removeChild(element);
+    MTDictionary parents;
+    if (subvar) { parents.insert("parent", item->parent()->text(1)); }
+    else {
+        MTRecord subvars("subvariable", "", MTDictionary("parent", item->text(1)));
+        subvars.remove();
+    }
+    MTRecord record(subvar ? "subvariable" : "variable", item->text(1), parents);
+    record.remove();
     if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
     refreshView();
 }
 
-QDomElement MainWindow::selectedVariableElement(QStringList * used_ids)
-{
-    if (!document_open) { return QDomElement(); }
-    QTreeWidgetItem * item = NULL;
-    if (trw_variables->currentIndex().isValid()) { item = trw_variables->currentItem(); }
-    QDomElement el_variables = document.documentElement().firstChildElement("variables");
-    if (el_variables.isNull()) { return QDomElement(); }
-    QDomNodeList variables = el_variables.elementsByTagName("var"); int n = -1;
-    for (int i = 0; i < variables.count(); ++i) {
-        if (item && n == -1 && variables.at(i).toElement().attribute("id") == item->text(1)) {
-            n = i;
-        } else {
-            if (used_ids) { *used_ids << variables.at(i).toElement().attribute("id"); }
-        }
-    }
-    if (n == -1) { return QDomElement(); }
-    return variables.at(n).toElement();
-}
-
 void MainWindow::addTable()
 {
-    if (!document_open) { return; }
-    QStringList used_ids;
-    QDomElement el_tables = document.documentElement().firstChildElement("tables");
-    if (el_tables.isNull()) {
-        el_tables = document.createElement("tables");
-        document.documentElement().appendChild(el_tables);
-    }
-    QDomNodeList tables = el_tables.elementsByTagName("table");
-    for (int i = 0; i < tables.count(); ++i) {
-        used_ids << tables.at(i).toElement().attribute("id");
-    }
-    QDomElement element = document.createElement("table");
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    if (!db.isOpen()) { return; }
+    MTRecord record("table", "", MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
-        el_tables.appendChild(element);
-        cb_table->addItem(element.attribute("id"));
-        cb_table_edit->addItem(element.attribute("id"));
+        record = md->record();
+        cb_table->addItem(record.id());
+        cb_table_edit->addItem(record.id());
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::modifyTable()
 {
-    QStringList used_ids;
-    QDomElement element = selectedTableElement(&used_ids);
-    if (element.isNull()) { return; }
-    /*ModifyDialogue * md = new ModifyDialogue(element, used_ids, true, this);
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
+        record = md->record();
         int i = cb_table_edit->currentIndex();
         int j = cb_table->currentIndex();
         cb_table_edit->removeItem(i);
         cb_table->removeItem(i);
-        cb_table_edit->insertItem(i, element.attribute("id"));
-        cb_table->insertItem(i, element.attribute("id"));
+        cb_table_edit->insertItem(i, record.id());
+        cb_table->insertItem(i, record.id());
         cb_table_edit->setCurrentIndex(i);
         cb_table->setCurrentIndex(j);
         this->setWindowModified(true);
         refreshView();
     }
-    delete md;*/
+    delete md;
 }
 
 void MainWindow::removeTable()
 {
-    QDomElement element = selectedTableElement();
-    if (element.isNull()) { return; }
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    element.parentNode().removeChild(element);
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    record.remove();
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
     cb_table->removeItem(i);
@@ -651,69 +629,30 @@ void MainWindow::removeTable()
 
 void MainWindow::loadTable(const QString &)
 {
-    if (!document_open) { return; }
+    if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     lw_table_variables->clear();
-    QDomElement el_tables = document.documentElement().firstChildElement("tables");
-    if (el_tables.isNull()) { return; }
-    QDomNodeList tables = el_tables.elementsByTagName("table");
-    QDomElement table;
-    for (int i = 0; i < tables.count(); ++i) {
-        if (tables.at(i).toElement().attribute("id") == cb_table_edit->currentText())
-            { table = tables.at(i).toElement(); break; }
-    }
-    if (table.isNull()) { return; }
-    QDomNodeList variables = table.elementsByTagName("var");
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    QStringList variables = record.list("variables").value("variables").toString().split(";");
     for (int i = 0; i < variables.count(); ++i) {
-        QDomElement var = variables.at(i).toElement();
+        MTRecord variable("variable", variables.at(i), MTDictionary());
+        QString name = variable.list("name").value("name").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        QDomElement el_variables = document.documentElement().firstChildElement("variables");
-        QDomElement variable;
-        if (!el_variables.isNull()) {
-            variable = el_variables.firstChildElement("var");
-            while (!variable.isNull()) {
-                if (variable.attribute("id") == var.attribute("id")) { break; }
-                variable = variable.nextSiblingElement();
-            }
-        }
-        if (!variable.isNull()) {
-            item->setText(tr("%1 (%2)").arg(var.attribute("id")).arg(variable.attribute("name")));
+        if (!name.isEmpty()) {
+            item->setText(tr("%1 (%2)").arg(variable.id()).arg(name));
         } else {
-            item->setText(var.attribute("id"));
+            item->setText(variable.id());
         }
-        item->setData(Qt::UserRole, var.attribute("id"));
+        item->setData(Qt::UserRole, variable.id());
         lw_table_variables->addItem(item);
     }
     enableTools();
 }
 
-QDomElement MainWindow::selectedTableElement(QStringList * used_ids)
-{
-    if (!document_open) { return QDomElement(); }
-    if (cb_table_edit->currentIndex() < 0) { return QDomElement(); }
-    QDomElement el_tables = document.documentElement().firstChildElement("tables");
-    if (el_tables.isNull()) { return QDomElement(); }
-    QDomNodeList tables = el_tables.elementsByTagName("table"); int n = -1;
-    for (int i = 0; i < tables.count(); ++i) {
-        if (n == -1 && tables.at(i).toElement().attribute("id") == cb_table_edit->currentText()) {
-            n = i;
-        } else {
-            if (used_ids) { *used_ids << tables.at(i).toElement().attribute("id"); }
-        }
-    }
-    if (n == -1) { return QDomElement(); }
-    return tables.at(n).toElement();
-}
-
 void MainWindow::addTableVariable()
 {
-    if (!document_open) { return; }
-    QDomElement table = selectedTableElement();
-    if (table.isNull()) { return; }
-    QDomElement el_variables = document.documentElement().firstChildElement("variables");
-    if (el_variables.isNull()) { return; }
-    QDomElement variable = el_variables.firstChildElement("var");
-    if (variable.isNull()) { return; }
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
     QStringList used_ids;
     for (int i = 0; i < lw_table_variables->count(); ++i) {
         used_ids << lw_table_variables->item(i)->data(Qt::UserRole).toString();
@@ -739,19 +678,25 @@ void MainWindow::addTableVariable()
             QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         vl->addWidget(bb);
-    while (!variable.isNull()) {
-        if (!used_ids.contains(variable.attribute("id"))) {
+    QSqlQuery query("SELECT id, name FROM variables");
+    QString id, name;
+    while (query.next()) {
+        id = query.value(0).toString();
+        name = query.value(1).toString();
+        if (!used_ids.contains(id)) {
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(variable.attribute("name").isEmpty() ? variable.attribute("id") : tr("%1 (%2)").arg(variable.attribute("id")).arg(variable.attribute("name")));
-            item->setData(Qt::UserRole, variable.attribute("id"));
+            item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
+            item->setData(Qt::UserRole, id);
             lw->addItem(item);
         }
-        variable = variable.nextSiblingElement();
     }
     if (d->exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
-        QDomElement var = document.createElement("var");
-        var.setAttribute("id", lw->currentItem()->data(Qt::UserRole).toString());
-        table.appendChild(var);
+        MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+        QStringList variables = record.list("variables").value("variables").toString().split(";");
+        variables << lw->currentItem()->data(Qt::UserRole).toString();
+        QMap<QString, QVariant> set;
+        set.insert("variables", variables.join(";"));
+        record.update(set);
         loadTable(cb_table_edit->currentText());
         this->setWindowModified(true);
         refreshView();
@@ -761,22 +706,22 @@ void MainWindow::addTableVariable()
 
 void MainWindow::removeTableVariable()
 {
-    if (!document_open) { return; }
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
     if (!lw_table_variables->currentIndex().isValid()) { return; }
     QListWidgetItem * item = lw_table_variables->currentItem();
-    QDomElement table = selectedTableElement();
-    if (table.isNull()) { return; }
     switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->data(Qt::UserRole).toString()), tr("Remove"), tr("Cancel"), 0, 1)) {
         case 0: // Remove
             break;
         case 1: // Cancel
             return; break;
     }
-    QDomNodeList variables = table.elementsByTagName("var");
-    for (int i = 0; i < variables.count(); ++i) {
-        if (variables.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString())
-            { table.removeChild(variables.at(i)); }
-    }
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    QStringList variables = record.list("variables").value("variables").toString().split(";");
+    variables.removeAll(item->data(Qt::UserRole).toString());
+    QMap<QString, QVariant> set;
+    set.insert("variables", variables.join(";"));
+    record.update(set);
     loadTable(cb_table_edit->currentText());
     this->setWindowModified(true);
     refreshView();

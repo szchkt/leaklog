@@ -35,6 +35,7 @@ public:
     };
 
     int count() const { return dict_keys.count(); };
+    bool isEmpty() const { return dict_keys.isEmpty(); };
     void insert(const QString & key, const QString & value) {
         while (dict_keys.contains(key) && !allow_duplicate_keys) {
             int i = dict_keys.indexOf(key);
