@@ -114,6 +114,9 @@ MainWindow::MainWindow()
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+    trw_table_variables->header()->setResizeMode(0, QHeaderView::Stretch);
+    trw_table_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     setAllEnabled(false);
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDocument()));
@@ -144,6 +147,8 @@ MainWindow::MainWindow()
     QObject::connect(actionRemove_table, SIGNAL(triggered()), this, SLOT(removeTable()));
     QObject::connect(tbtn_table_add_variable, SIGNAL(clicked()), this, SLOT(addTableVariable()));
     QObject::connect(tbtn_table_remove_variable, SIGNAL(clicked()), this, SLOT(removeTableVariable()));
+    QObject::connect(tbtn_table_move_up, SIGNAL(clicked()), this, SLOT(moveTableVariableUp()));
+    QObject::connect(tbtn_table_move_down, SIGNAL(clicked()), this, SLOT(moveTableVariableDown()));
     QObject::connect(actionAdd_warning, SIGNAL(triggered()), this, SLOT(addWarning()));
     QObject::connect(actionModify_warning, SIGNAL(triggered()), this, SLOT(modifyWarning()));
     QObject::connect(actionRemove_warning, SIGNAL(triggered()), this, SLOT(removeWarning()));
@@ -164,7 +169,7 @@ MainWindow::MainWindow()
     QObject::connect(spb_since, SIGNAL(valueChanged(int)), this, SLOT(refreshView()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
-    QObject::connect(lw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
+    QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(modifyWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
@@ -292,7 +297,7 @@ void MainWindow::clearAll()
     cb_table->clear();
     cb_table_edit->clear();
     trw_variables->clear();
-    lw_table_variables->clear();
+    trw_table_variables->clear();
     lw_warnings->clear();
 }
 
@@ -354,7 +359,9 @@ void MainWindow::enableTools()
     actionModify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
-    tbtn_table_remove_variable->setEnabled(lw_table_variables->currentIndex().isValid());
+    tbtn_table_remove_variable->setEnabled(trw_table_variables->currentIndex().isValid());
+    tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
+    tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
     actionModify_warning->setEnabled(lw_warnings->currentIndex().isValid());
     actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid());
 }

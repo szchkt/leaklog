@@ -89,8 +89,11 @@ private slots:
     void modifyTable();
     void removeTable();
     void loadTable(const QString &);
+    void saveTable();
     void addTableVariable();
     void removeTableVariable();
+    void moveTableVariableUp();
+    void moveTableVariableDown();
     void addWarning();
     void modifyWarning();
     void removeWarning();
@@ -124,7 +127,7 @@ private:
     QDomElement selectedInspectionElement();
     QDomElement selectedInspectionElement(QStringList *, bool &);
     void addVariable(bool);
-    QDomElement selectedWarningElement();
+    void moveTableVariable(bool);
     QStringList listVariableIds(bool = false);
     MTDictionary parseExpression(const QString &, QStringList *);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };

@@ -631,22 +631,44 @@ void MainWindow::loadTable(const QString &)
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
-    lw_table_variables->clear();
+    trw_table_variables->clear();
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    QStringList variables = record.list("variables").value("variables").toString().split(";");
+    QMap<QString, QVariant> attributes = record.list("variables, sum");
+    QStringList variables = attributes.value("variables").toString().split(";");
+    QStringList sum = attributes.value("sum").toString().split(";");
     for (int i = 0; i < variables.count(); ++i) {
         MTRecord variable("variable", variables.at(i), MTDictionary());
-        QString name = variable.list("name").value("name").toString();
-        QListWidgetItem * item = new QListWidgetItem;
-        if (!name.isEmpty()) {
-            item->setText(tr("%1 (%2)").arg(variable.id()).arg(name));
-        } else {
-            item->setText(variable.id());
-        }
-        item->setData(Qt::UserRole, variable.id());
-        lw_table_variables->addItem(item);
+        QTreeWidgetItem * item = new QTreeWidgetItem(trw_table_variables);
+        item->setText(0, variable.list("name").value("name").toString());
+        item->setText(1, variable.id());
+        QComboBox * cb_foot = new QComboBox;
+        cb_foot->addItem(tr("None"));
+        cb_foot->addItem(tr("Sum"));
+        if (sum.contains(variable.id())) { cb_foot->setCurrentIndex(1); }
+        else { cb_foot->setCurrentIndex(0); }
+        QObject::connect(cb_foot, SIGNAL(currentIndexChanged(int)), this, SLOT(saveTable()));
+        trw_table_variables->setItemWidget(item, 2, cb_foot);
     }
     enableTools();
+}
+
+void MainWindow::saveTable()
+{
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    QStringList variables, sum; QString value;
+    for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
+        variables << trw_table_variables->topLevelItem(i)->text(1);
+        QString value = ((QComboBox *)trw_table_variables->itemWidget(trw_table_variables->topLevelItem(i), 2))->currentText();
+        if (value == tr("Sum")) { sum << trw_table_variables->topLevelItem(i)->text(1); }
+    }
+    QMap<QString, QVariant> set;
+    set.insert("variables", variables.join(";"));
+    set.insert("sum", sum.join(";"));
+    record.update(set);
+    this->setWindowModified(true);
+    refreshView();
 }
 
 void MainWindow::addTableVariable()
@@ -654,8 +676,8 @@ void MainWindow::addTableVariable()
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     QStringList used_ids;
-    for (int i = 0; i < lw_table_variables->count(); ++i) {
-        used_ids << lw_table_variables->item(i)->data(Qt::UserRole).toString();
+    for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
+        used_ids << trw_table_variables->topLevelItem(i)->text(1);
     }
     QDialog * d = new QDialog(this);
 	d->setWindowTitle(tr("Add existing variable - Leaklog"));
@@ -708,21 +730,60 @@ void MainWindow::removeTableVariable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
-    if (!lw_table_variables->currentIndex().isValid()) { return; }
-    QListWidgetItem * item = lw_table_variables->currentItem();
-    switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->data(Qt::UserRole).toString()), tr("Remove"), tr("Cancel"), 0, 1)) {
+    if (!trw_table_variables->currentIndex().isValid()) { return; }
+    QTreeWidgetItem * item = trw_table_variables->currentItem();
+    switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->text(1)), tr("Remove"), tr("Cancel"), 0, 1)) {
         case 0: // Remove
             break;
         case 1: // Cancel
             return; break;
     }
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    QMap<QString, QVariant> attributes = record.list("variables, sum");
+    QStringList variables = attributes.value("variables").toString().split(";");
+    QStringList sum = attributes.value("sum").toString().split(";");
+    variables.removeAll(item->text(1));
+    sum.removeAll(item->text(1));
+    QMap<QString, QVariant> set;
+    set.insert("variables", variables.join(";"));
+    set.insert("sum", sum.join(";"));
+    record.update(set);
+    loadTable(cb_table_edit->currentText());
+    this->setWindowModified(true);
+    refreshView();
+}
+
+void MainWindow::moveTableVariableUp()
+{
+    moveTableVariable(true);
+}
+
+void MainWindow::moveTableVariableDown()
+{
+    moveTableVariable(false);
+}
+
+void MainWindow::moveTableVariable(bool up)
+{
+    if (!db.isOpen()) { return; }
+    if (cb_table_edit->currentIndex() < 0) { return; }
+    if (!trw_table_variables->currentIndex().isValid()) { return; }
+    int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
+    if (i < 0) { return; }
+    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
     QStringList variables = record.list("variables").value("variables").toString().split(";");
-    variables.removeAll(item->data(Qt::UserRole).toString());
+    QString variable = variables.takeAt(i);
+    if (up) {
+        if (i != 0) { i--; } else { i = variables.count(); }
+    } else {
+        if (i != variables.count()) { i++; } else { i = 0; }
+    }
+    variables.insert(i, variable);
     QMap<QString, QVariant> set;
     set.insert("variables", variables.join(";"));
     record.update(set);
     loadTable(cb_table_edit->currentText());
+    trw_table_variables->setCurrentItem(trw_table_variables->topLevelItem(i));
     this->setWindowModified(true);
     refreshView();
 }
@@ -771,31 +832,21 @@ void MainWindow::modifyWarning()
 
 void MainWindow::removeWarning()
 {
-    QDomElement element = selectedWarningElement();
-    if (element.isNull()) { return; }
+    if (!db.isOpen()) { return; }
+    if (!lw_warnings->currentIndex().isValid()) { return; }
+    QListWidgetItem * item = lw_warnings->currentItem();
+    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
+    QMap<QString, QVariant> attributes = record.list("name, description");
+    QString name = attributes.value("name").toString();
+    QString description = attributes.value("description").toString();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(element.attribute("description").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("description"))), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description)), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    element.parentNode().removeChild(element);
-    delete lw_warnings->currentItem();
+    record.remove();
+    delete item;
     enableTools();
     this->setWindowModified(true);
     refreshView();
-}
-
-QDomElement MainWindow::selectedWarningElement()
-{
-    if (!document_open) { return QDomElement(); }
-    if (!lw_warnings->currentIndex().isValid()) { return QDomElement(); }
-    QListWidgetItem * item = lw_warnings->currentItem();
-    QDomElement el_warnings = document.documentElement().firstChildElement("warnings");
-    if (el_warnings.isNull()) { return QDomElement(); }
-    QDomNodeList warnings = el_warnings.elementsByTagName("warning"); int n = -1;
-    for (int i = 0; i < warnings.count(); ++i) {
-        if (warnings.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) { n = i; break; }
-    }
-    if (n == -1) { return QDomElement(); }
-    return warnings.at(n).toElement();
 }
 
 void MainWindow::exportCustomerData()

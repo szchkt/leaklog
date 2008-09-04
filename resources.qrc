@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/down16.png</file>
+    <file>images/up16.png</file>
     <file>images/add16.png</file>
     <file>images/remove16.png</file>
     <file>images/warning_add.png</file>

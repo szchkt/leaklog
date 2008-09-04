@@ -784,14 +784,30 @@
       </layout>
      </item>
      <item>
-      <widget class="QListWidget" name="lw_table_variables" />
+      <widget class="QTreeWidget" name="trw_table_variables" >
+       <column>
+        <property name="text" >
+         <string>Variable name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Foot</string>
+        </property>
+       </column>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3" >
        <item>
         <widget class="QToolButton" name="tbtn_table_add_variable" >
          <property name="text" >
-          <string>Add existing variable</string>
+          <string>Add</string>
          </property>
          <property name="icon" >
           <iconset resource="resources.qrc" >
@@ -807,6 +823,41 @@
        </item>
        <item>
         <spacer name="horizontalSpacer_3" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_table_move_up" >
+         <property name="enabled" >
+          <bool>false</bool>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/up16.png</normaloff>:/images/images/up16.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_table_move_down" >
+         <property name="enabled" >
+          <bool>false</bool>
+         </property>
+         <property name="icon" >
+          <iconset resource="resources.qrc" >
+           <normaloff>:/images/images/down16.png</normaloff>:/images/images/down16.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_11" >
          <property name="orientation" >
           <enum>Qt::Horizontal</enum>
          </property>
