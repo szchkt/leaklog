@@ -22,7 +22,7 @@ SOURCES      += main.cpp \
                 view.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp
-QT           += network webkit sql xml xmlpatterns
+QT           += network webkit sql
 # fparser
 HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc

@@ -31,8 +31,6 @@
 #include <QInputDialog>
 #include <QTextStream>
 #include <QBuffer>
-#include <QXmlQuery>
-#include <QXmlFormatter>
 #include <QUrl>
 #include <QPrintPreviewDialog>
 #include <QPrintDialog>
@@ -120,12 +118,8 @@ private:
     void openDocument(QString);
     void saveDocument(QString);
     void loadCustomer(QListWidgetItem *, bool);
-    QDomElement selectedCustomerElement(QStringList * = NULL);
     void loadCircuit(QListWidgetItem *, bool);
-    QDomElement selectedCircuitElement(QStringList * = NULL);
     void loadInspection(QListWidgetItem *, bool);
-    QDomElement selectedInspectionElement();
-    QDomElement selectedInspectionElement(QStringList *, bool &);
     void addVariable(bool);
     void moveTableVariable(bool);
     QStringList listVariableIds(bool = false);
@@ -152,7 +146,6 @@ private:
     QActionGroup * actgrp_view;
     QString last_search_keyword;
     QSqlDatabase db;
-    QDomDocument document;
     bool document_open;
     QString document_path;
     QString leaklog_version; float f_leaklog_version;

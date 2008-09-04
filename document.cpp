@@ -52,7 +52,7 @@ void MainWindow::newDocument()
     }
     addRecent(path);
     clearAll();
-    document.clear();
+    /*document.clear();
     QDomElement root = document.createElement("leaklog");
     document.appendChild(root);
     QDomElement variables = document.createElement("variables");
@@ -64,7 +64,7 @@ void MainWindow::newDocument()
     QTextStream out(&file);
     out.setCodec("UTF-8");
     out << document.toString(4);
-    file.close();
+    file.close();*/
     document_open = true;
     document_path = path;
 #ifdef Q_WS_MAC
@@ -278,25 +278,6 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
     }
 }
 
-QDomElement MainWindow::selectedCustomerElement(QStringList * used_ids)
-{
-    if (!document_open) { return QDomElement(); }
-    if (selectedCustomer() < 0) { return QDomElement(); }
-    QListWidgetItem * item = lw_customers->highlightedItem();
-    QDomElement el_customers = document.documentElement().firstChildElement("customers");
-    if (el_customers.isNull()) { return QDomElement(); }
-    QDomNodeList customers = el_customers.elementsByTagName("customer"); int n = -1;
-    for (int i = 0; i < customers.count(); ++i) {
-        if (n == -1 && customers.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) {
-            n = i;
-        } else {
-            if (used_ids) { *used_ids << customers.at(i).toElement().attribute("id"); }
-        }
-    }
-    if (n == -1) { return QDomElement(); }
-    return customers.at(n).toElement();
-}
-
 void MainWindow::addCircuit()
 {
     if (!db.isOpen()) { return; }
@@ -375,24 +356,6 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     }
 }
 
-QDomElement MainWindow::selectedCircuitElement(QStringList * used_ids)
-{
-    if (!document_open) { return QDomElement(); }
-    if (selectedCustomer() < 0) { return QDomElement(); }
-    if (selectedCircuit() < 0) { return QDomElement(); }
-    QListWidgetItem * item = lw_circuits->highlightedItem();
-    QDomNodeList circuits = selectedCustomerElement().elementsByTagName("circuit"); int n = -1;
-    for (int i = 0; i < circuits.count(); ++i) {
-        if (n == -1 && circuits.at(i).toElement().attribute("id") == item->data(Qt::UserRole).toString()) {
-            n = i;
-        } else {
-            if (used_ids) { *used_ids << circuits.at(i).toElement().attribute("id"); }
-        }
-    }
-    if (n == -1) { return QDomElement(); }
-    return circuits.at(n).toElement();
-}
-
 void MainWindow::addInspection()
 {
     if (!db.isOpen()) { return; }
@@ -465,33 +428,6 @@ void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
     if (refresh) {
         setView(tr("Inspection information"));
     }
-}
-
-QDomElement MainWindow::selectedInspectionElement()
-{
-    bool nominal_allowed;
-    return selectedInspectionElement(NULL, nominal_allowed);
-}
-
-QDomElement MainWindow::selectedInspectionElement(QStringList * used_ids, bool & nominal_allowed)
-{
-    if (!document_open) { return QDomElement(); }
-    if (selectedCustomer() < 0) { return QDomElement(); }
-    if (selectedCircuit() < 0) { return QDomElement(); }
-    if (selectedInspection().isNull()) { return QDomElement(); }
-    QListWidgetItem * item = lw_inspections->highlightedItem();
-    QDomNodeList inspections = selectedCircuitElement().elementsByTagName("inspection");
-    int n = -1; nominal_allowed = true;
-    for (int i = 0; i < inspections.count(); ++i) {
-        if (n == -1 && inspections.at(i).toElement().attribute("date") == item->data(Qt::UserRole).toString()) {
-            n = i;
-        } else {
-            if (used_ids) { *used_ids << inspections.at(i).toElement().attribute("date"); }
-            if (inspections.at(i).toElement().attribute("nominal", "false") == "true") { nominal_allowed = false; }
-        }
-    }
-    if (n == -1) { return QDomElement(); }
-    return inspections.at(n).toElement();
 }
 
 void MainWindow::addVariable() { addVariable(false); }
@@ -851,7 +787,7 @@ void MainWindow::removeWarning()
 
 void MainWindow::exportCustomerData()
 {
-    if (!document_open) { return; }
+    /*if (!document_open) { return; }
     QDomElement customer = selectedCustomerElement();
     if (customer.isNull()) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), QString("%1.lklg").arg(customer.attribute("id")), tr("Leaklog Document (*.lklg)"));
@@ -874,12 +810,12 @@ void MainWindow::exportCustomerData()
     QTextStream out(&file);
     out.setCodec("UTF-8");
     out << data.toString(4);
-    file.close();
+    file.close();*/
 }
 
 void MainWindow::exportCircuitData()
 {
-    if (!document_open) { return; }
+    /*if (!document_open) { return; }
     QDomElement customer = selectedCustomerElement();
     if (customer.isNull()) { return; }
     QDomElement circuit = selectedCircuitElement();
@@ -906,12 +842,12 @@ void MainWindow::exportCircuitData()
     QTextStream out(&file);
     out.setCodec("UTF-8");
     out << data.toString(4);
-    file.close();
+    file.close();*/
 }
 
 void MainWindow::exportInspectionData()
 {
-    if (!document_open) { return; }
+    /*if (!document_open) { return; }
     QDomElement customer = selectedCustomerElement();
     if (customer.isNull()) { return; }
     QDomElement circuit = selectedCircuitElement();
@@ -942,12 +878,12 @@ void MainWindow::exportInspectionData()
     QTextStream out(&file);
     out.setCodec("UTF-8");
     out << data.toString(4);
-    file.close();
+    file.close();*/
 }
 
 void MainWindow::importData()
 {
-    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Documents (*.lklg);;All files (*.*)"));
+    /*QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Documents (*.lklg);;All files (*.*)"));
 	if (path.isNull() || path.isEmpty()) { return; }
     QFile file(path);
     if (!file.open(QFile::ReadOnly)) {
@@ -1060,7 +996,7 @@ void MainWindow::importData()
         }
     }
     this->setWindowModified(true);
-    refreshView();
+    refreshView();*/
 }
 
 QStringList MainWindow::listVariableIds(bool all)

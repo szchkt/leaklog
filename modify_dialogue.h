@@ -23,7 +23,6 @@
 #include "mtdictionary.h"
 #include "mtcolourcombobox.h"
 
-#include <QDomDocument>
 #include <QTextDocument>
 #include <QDateTimeEdit>
 #include <QPlainTextEdit>
