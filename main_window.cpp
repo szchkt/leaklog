@@ -35,6 +35,13 @@ MainWindow::MainWindow()
     dict_vartypes.insert("int", tr("Integer"));
     dict_vartypes.insert("float", tr("Real number"));
     dict_vartypes.insert("string", tr("String"));
+    dict_varnames.insert("t", qApp->translate("VariableNames", "Temperature"));
+    dict_varnames.insert("t_out", qApp->translate("VariableNames", "out"));
+    dict_varnames.insert("t_in", qApp->translate("VariableNames", "in"));
+    dict_varnames.insert("t_sc", qApp->translate("VariableNames", "Subcooling"));
+    dict_varnames.insert("t_sh", qApp->translate("VariableNames", "Superheating"));
+    dict_varnames.insert("t_sh_evap", qApp->translate("VariableNames", "evap."));
+    dict_varnames.insert("t_sh_comp", qApp->translate("VariableNames", "comp."));
     // ------------
     // HTML
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");
@@ -54,36 +61,6 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Table of inspections"), in.readAll());
     file.close();
     // ----
-    // i18n -> JavaScript
-    dict_i18n_javascript.append("function Dictionary(startValues) {\n");
-    dict_i18n_javascript.append("    this.values = startValues || {};\n");
-    dict_i18n_javascript.append("}\n");
-    dict_i18n_javascript.append("Dictionary.prototype.add = function(name, value) {\n");
-    dict_i18n_javascript.append("    this.values[name] = value;\n");
-    dict_i18n_javascript.append("};\n");
-    dict_i18n_javascript.append("Dictionary.prototype.value = function(name) {\n");
-    dict_i18n_javascript.append("    return this.values[name];\n");
-    dict_i18n_javascript.append("};\n");
-    dict_i18n_javascript.append("Dictionary.prototype.contains = function(name) {\n");
-    dict_i18n_javascript.append("    return Object.prototype.hasOwnProperty.call(this.values, name) &&\n");
-    dict_i18n_javascript.append("        Object.prototype.propertyIsEnumerable.call(this.values, name);\n");
-    dict_i18n_javascript.append("};\n");
-    dict_i18n_javascript.append("Dictionary.prototype.each = function(action) {\n");
-    dict_i18n_javascript.append("    forEachIn(this.values, action);\n");
-    dict_i18n_javascript.append("};\n");
-    dict_i18n_javascript.append("function translate(lang) {\n");
-    dict_i18n_javascript.append("    var elements = document.getElementsByTagName(\"i18n\");\n");
-    dict_i18n_javascript.append("    for (var i = 0; i < elements.length; i++) {\n");
-    dict_i18n_javascript.append("        if (dict.contains(elements[i].innerHTML))\n");
-    dict_i18n_javascript.append("            elements[i].innerHTML = dict.value(elements[i].innerHTML);\n");
-    dict_i18n_javascript.append("    }\n");
-    dict_i18n_javascript.append("}\n");
-    dict_i18n_javascript.append("var dict = new Dictionary();");
-    QMapIterator<QString, QString> i(dict_i18n.dictionary);
-    while (i.hasNext()) { i.next();
-        dict_i18n_javascript.append(QString("\ndict.add(\"%1\", \"%2\");").arg(escapeDoubleQuotes(i.key())).arg(escapeDoubleQuotes(i.value())));
-    }
-    // ------------------
     setupUi(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
     dw_browser->setVisible(false);
@@ -119,11 +96,11 @@ MainWindow::MainWindow()
     trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     setAllEnabled(false);
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
-    QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDocument()));
+    QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
     QObject::connect(actionSave_as, SIGNAL(triggered()), this, SLOT(saveAs()));
-    QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDocument()));
+    QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
@@ -239,7 +216,7 @@ void MainWindow::print()
 
 void MainWindow::find()
 {
-    if (!document_open) { return; }
+    if (!db.isOpen()) { return; }
     bool ok;
     QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
     if (ok && !keyword.isEmpty()) {
@@ -250,14 +227,14 @@ void MainWindow::find()
 
 void MainWindow::findNext()
 {
-    if (!document_open) { return; }
+    if (!db.isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
     wv_main->findText(last_search_keyword);
 }
 
 void MainWindow::findPrevious()
 {
-    if (!document_open) { return; }
+    if (!db.isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
 }
@@ -310,7 +287,7 @@ void MainWindow::setAllEnabled(bool enable)
     actionPrint_preview->setEnabled(enable);
     actionPrint->setEnabled(enable);
     actgrp_view->setEnabled(enable);
-    menuDocument->setEnabled(enable);
+    menuDatabase->setEnabled(enable);
     menuCustomer->setEnabled(enable);
         actionAdd_customer->setEnabled(enable);
         if (!enable) actionModify_customer->setEnabled(enable);

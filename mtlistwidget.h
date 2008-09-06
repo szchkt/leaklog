@@ -44,9 +44,11 @@ public slots:
         }
         int n = 0;
         for (int i = 0; i < count(); ++i) {
-            if (this->item(i)->text().contains(keyword, Qt::CaseInsensitive)) {
-                this->item(i)->setHidden(false); n++;
-            } else { this->item(i)->setHidden(true); }
+            if (this->item(i)->flags().testFlag(Qt::ItemIsEnabled)) {
+                if (this->item(i)->text().contains(keyword, Qt::CaseInsensitive)) {
+                    this->item(i)->setHidden(false); n++;
+                } else { this->item(i)->setHidden(true); }
+            }
         }
         if ((!keyword.isEmpty()) && count() != 0 && n == 0) {
             le->setPalette(searchLineEditPalettes.search_noresults_palette);
