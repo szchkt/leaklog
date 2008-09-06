@@ -7,7 +7,6 @@ body,td,th {
 	color: #333333;
 }
 tbody > tr:hover > td {
-	cursor: hand;
 	background-color: rgb(180, 215, 255);
 }
 /*th {

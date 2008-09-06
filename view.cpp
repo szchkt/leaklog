@@ -447,6 +447,48 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         }
     }
 
+//*** Top tables ***
+    MTRecord customer("customer", customer_id, MTDictionary());
+    QMap<QString, QVariant> customer_info = customer.list("company, contact_person, address, mail, phone");
+    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    QMap<QString, QVariant> circuit_info = circuit.list("manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation");
+    out << "<table><tr><th>" << tr("ID");
+    out << "</th><th>" << tr("Company");
+    out << "</th><th>" << tr("Contact person");
+    out << "</th><th>" << tr("Address");
+    out << "</th><th>" << tr("E-mail");
+    out << "</th><th>" << tr("Phone");
+    out << "</th></tr><tr>";
+    out << "<td><a href=\"customer:" << customer_id << "\">" << customer_id << "</a></td>";
+    out << "<td>" << customer_info.value("company").toString() << "</td>";
+    out << "<td>" << customer_info.value("contact_person").toString() << "</td>";
+    out << "<td>" << customer_info.value("address").toString() << "</td>";
+    out << "<td>" << customer_info.value("mail").toString() << "</td>";
+    out << "<td>" << customer_info.value("phone").toString() << "</td>";
+    out << "</tr></table><br />";
+    out << "<table><tr><th>" << tr("ID");
+    out << "</th><th>" << tr("Manufacturer");
+    out << "</th><th>" << tr("Type");
+    out << "</th><th>" << tr("Year of purchase");
+    out << "</th><th>" << tr("Date of commissioning");
+    out << "</th><th>" << tr("Refrigerant");
+    out << "</th><th>" << tr("Amount of refrigerant");
+    out << "</th><th>" << tr("Oil");
+    out << "</th><th>" << tr("Amount of oil");
+    out << "</th><th>" << tr("Service life");
+    out << "</th></tr><tr>";
+    out << "<td><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id << "</a></td>";
+    out << "<td>" << circuit_info.value("manufacturer").toString() << "</td>";
+    out << "<td>" << circuit_info.value("type").toString() << "</td>";
+    out << "<td>" << circuit_info.value("year").toString() << "</td>";
+    out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
+    out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
+    out << "<td>" << circuit_info.value("refrigerant_amount").toString() << "</td>";
+    out << "<td>" << circuit_info.value("oil").toString() << "</td>";
+    out << "<td>" << circuit_info.value("oil_amount").toString() << "</td>";
+    out << "<td>" << circuit_info.value("life").toString() << "</td>";
+    out << "</td></tr></table><br />";
+
     out << "<table>";
 
 //*** Head ***
@@ -523,7 +565,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                             int in = i;
                             for (; in < inspections.count(); ++in) {
                                 if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
-                                    in--; break;
+                                    break;
                                 }
                             }
                             rowspan = in - i;
