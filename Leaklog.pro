@@ -1,7 +1,8 @@
 CONFIG       += qt
 TEMPLATE      = app
 FORMS        += main_window.ui \
-                about_widget.ui
+                about_widget.ui \
+                import_dialogue.ui
 HEADERS      += main_window.h \
                 about_widget.h \
                 extendedlineedit.h \
@@ -10,15 +11,15 @@ HEADERS      += main_window.h \
                 modify_dialogue.h \
                 modify_warning_dialogue.h \
                 mtdictionary.h \
-                i18n.h \
-                mtcolourcombobox.h
+                mtcolourcombobox.h \
+                import_dialogue.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
 SOURCES      += main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
-                document.cpp \
+                database.cpp \
                 view.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp

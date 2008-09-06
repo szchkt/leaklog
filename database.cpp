@@ -24,53 +24,66 @@ bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
 	if (db.isOpen() && this->isWindowModified()) {
 		switch (QMessageBox::information(this, title, tr("Save changes before proceeding?"), tr("&Save"), tr("&Discard"), tr("Cancel"), 0, 2)) {
 			case 0: // Save
-				save(); if (close_) { closeDocument(false); }; return false;
+				save(); if (close_) { closeDatabase(false); }; return false;
 				break;
 			case 1: // Discard
-				if (close_) { closeDocument(false); }; return false;
+				if (close_) { closeDatabase(false); }; return false;
 				break;
 			case 2: // Cancel
 				return true;
 				break;
 		}
 	} else if (db.isOpen() && !this->isWindowModified()) {
-		if (close_) { closeDocument(false); }; return false;
+		if (close_) { closeDatabase(false); }; return false;
 	}
 	return false;
 }
 
-void MainWindow::newDocument()
+void MainWindow::initDatabase(QSqlDatabase * database)
 {
-    if (saveChangesBeforeProceeding(tr("New document - Leaklog"), true)) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("New document - Leaklog"), tr("untitled.lklg"), tr("Leaklog Document (*.lklg)"));
+    QSqlQuery begin("BEGIN TRANSACTION", *database);
+    QSqlQuery create_customers("CREATE TABLE customers (id INTEGER PRIMARY KEY, company VARCHAR, contact_person VARCHAR, address VARCHAR, mail VARCHAR, phone VARCHAR)", *database);
+    QSqlQuery create_circuits("CREATE TABLE circuits (parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer VARCHAR, type VARCHAR, sn VARCHAR, year INTEGER, commissioning VARCHAR, field VARCHAR, refrigerant VARCHAR, refrigerant_amount NUMERIC, oil VARCHAR, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC)", *database);
+    QSqlQuery create_inspections("CREATE TABLE inspections (customer INTEGER, circuit INTEGER, date VARCHAR, nominal INTEGER)", *database);
+    QSqlQuery create_variables("CREATE TABLE variables (id VARCHAR, name VARCHAR, type VARCHAR, unit VARCHAR, value VARCHAR, compare_nom INTEGER, col_bg VARCHAR)", *database);
+    QSqlQuery create_subvariables("CREATE TABLE subvariables (parent VARCHAR, id VARCHAR, name VARCHAR, type VARCHAR, unit VARCHAR, value VARCHAR, compare_nom INTEGER)", *database);
+    QSqlQuery create_tables("CREATE TABLE tables (id VARCHAR, highlight_nominal INTEGER, variables VARCHAR, sum VARCHAR)", *database);
+    QSqlQuery create_warnings("CREATE TABLE warnings (id INTEGER PRIMARY KEY, name VARCHAR, description VARCHAR)", *database);
+    QSqlQuery create_warnings_filters("CREATE TABLE warnings_filters (parent INTEGER, circuit_attribute VARCHAR, function VARCHAR, value VARCHAR)", *database);
+    QSqlQuery create_warnings_conditions("CREATE TABLE warnings_conditions (parent INTEGER, value_ins VARCHAR, function VARCHAR, value_nom VARCHAR)", *database);
+    QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
+    QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
+    QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
+    QSqlQuery create_index_variables_id("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)", *database);
+    QSqlQuery create_index_subvariables_id("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)", *database);
+    QSqlQuery create_index_tables_id("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)", *database);
+    QSqlQuery create_index_warnings_id("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)", *database);
+    QSqlQuery create_index_warnings_filters_parent("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)", *database);
+    QSqlQuery create_index_warnings_conditions_parent("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)", *database);
+    QSqlQuery commit("COMMIT", *database);
+}
+
+void MainWindow::newDatabase()
+{
+    if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
+    QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isNull() || path.isEmpty()) { return; }
-    QFile file(path);
-    if (!file.open(QFile::WriteOnly)) {
-		QMessageBox::critical(this, tr("New document - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+    QFile file(path); if (file.exists()) { file.remove(); }
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path);
+    if (!db.open()) {
+		QMessageBox::critical(this, tr("New database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(db.lastError().text()));
 		this->setWindowTitle(tr("Leaklog"));
 		return;
     }
     addRecent(path);
     clearAll();
-    /*document.clear();
-    QDomElement root = document.createElement("leaklog");
-    document.appendChild(root);
-    QDomElement variables = document.createElement("variables");
-    root.appendChild(variables);
-    QDomElement tables = document.createElement("tables");
-    root.appendChild(tables);
-    QDomElement customers = document.createElement("customers");
-    root.appendChild(customers);
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << document.toString(4);
-    file.close();*/
-    document_open = true;
-    document_path = path;
+    initDatabase(&db);
+    QSqlQuery begin("BEGIN TRANSACTION");
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(file).baseName()));
+	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(file).baseName()));
+    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
@@ -80,24 +93,24 @@ void MainWindow::openRecent(QListWidgetItem * item)
 {
     QString s = item->text();
     addRecent(s);
-    openDocument(s);
+    openDatabase(s);
 }
 
 void MainWindow::open()
 {
-    if (saveChangesBeforeProceeding(tr("Open document - Leaklog"), true)) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Open document - Leaklog"), "", tr("Leaklog Documents (*.lklg);;All files (*.*)"));
+    if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
+    QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
 	if (path.isNull() || path.isEmpty()) { return; }
     addRecent(path);
-    openDocument(path);
+    openDatabase(path);
 }
 
-void MainWindow::openDocument(QString path)
+void MainWindow::openDatabase(QString path)
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
     if (!db.open()) {
-		QMessageBox::critical(this, tr("Open document - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
+		QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
 		this->setWindowTitle(tr("Leaklog"));
 		return;
     }
@@ -143,11 +156,10 @@ void MainWindow::openDocument(QString path)
         item->setData(Qt::UserRole, warnings.value(0).toString());
         lw_warnings->addItem(item);
     }
-    document_path = path;
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(document_path).baseName()));
+	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(document_path).baseName()));
+    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
 #endif
     this->setWindowModified(false);
     setAllEnabled(true);
@@ -158,16 +170,16 @@ void MainWindow::openDocument(QString path)
 
 void MainWindow::save()
 {
-    saveDocument(document_path);
+    saveDatabase(db.databaseName());
 }
 
 void MainWindow::saveAs()
 {
-	QString path = QFileDialog::getSaveFileName(this, tr("Save document - Leaklog"), QFileInfo(document_path).fileName(), tr("Leaklog Document (*.lklg)"));
-	if (!path.isEmpty()) { addRecent(path); saveDocument(path); }
+	QString path = QFileDialog::getSaveFileName(this, tr("Save database - Leaklog"), QFileInfo(db.databaseName()).fileName(), tr("Leaklog Database (*.lklg)"));
+	if (!path.isEmpty()) { addRecent(path); saveDatabase(path); }
 }
 
-void MainWindow::saveDocument(QString)
+void MainWindow::saveDatabase(QString)
 {
     QString error;
     QSqlQuery commit("COMMIT");
@@ -175,22 +187,21 @@ void MainWindow::saveDocument(QString)
     QSqlQuery begin("BEGIN TRANSACTION");
     if (begin.lastError().type() != QSqlError::NoError) { error = begin.lastError().text(); }
     if (!error.isEmpty()) {
-		QMessageBox::critical(this, tr("Save document - Leaklog"), tr("Cannot write file %1:\n%2.").arg(document_path).arg(error));
+		QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(error));
 		return;
     }
-    //document_path = path;
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(document_path).baseName()));
+	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(db.databaseName()).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(document_path).baseName()));
+    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(db.databaseName()).baseName()));
 #endif
     this->setWindowModified(false);
     refreshView();
 }
 
-void MainWindow::closeDocument(bool save)
+void MainWindow::closeDatabase(bool save)
 {
-	if (save && saveChangesBeforeProceeding(tr("Close document - Leaklog"), false)) { return; }
+	if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
     db.close(); QSqlDatabase::removeDatabase(db.connectionName());
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
@@ -620,7 +631,7 @@ void MainWindow::addTableVariable()
     d->setMinimumSize(QSize(300, 350));
         QVBoxLayout * vl = new QVBoxLayout(d);
         vl->setMargin(6); vl->setSpacing(6);
-            QHBoxLayout * hl = new QHBoxLayout(d);
+            QHBoxLayout * hl = new QHBoxLayout;
             hl->setMargin(0); hl->setSpacing(6);
                 QLabel * lbl = new QLabel(tr("Search:"), d);
                 ExtendedLineEdit * sle = new ExtendedLineEdit(d);
@@ -785,218 +796,134 @@ void MainWindow::removeWarning()
     refreshView();
 }
 
+void MainWindow::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
+{
+    QSqlQuery select("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)), *from);
+    if (select.next() && select.record().count()) {
+        QSqlRecord record;
+        {
+            QSqlQuery query("SELECT * FROM " + table, *to);
+            record = query.record();
+        }
+        QString copy("INSERT INTO " + table + " (");
+        QString field_name;
+        for (int i = 0; i < select.record().count(); ++i) {
+            field_name = select.record().fieldName(i);
+            copy.append(i == 0 ? "" : ", ");
+            copy.append(field_name);
+            if (record.indexOf(field_name) < 0) {
+                QSqlQuery add_column("ALTER TABLE " + table + " ADD COLUMN " + field_name + " VARCHAR", *to);
+            }
+        }
+        copy.append(") VALUES (");
+        for (int i = 0; i < select.record().count(); ++i) {
+            copy.append(i == 0 ? ":" : ", :");
+            copy.append(select.record().fieldName(i));
+        }
+        copy.append(")");
+        do {
+            QSqlQuery insert(*to);
+            insert.prepare(copy);
+            for (int i = 0; i < select.record().count(); ++i) {
+                insert.bindValue(":" + select.record().fieldName(i), select.value(i));
+            }
+            insert.exec();
+        } while (select.next());
+    }
+}
+
 void MainWindow::exportCustomerData()
 {
-    /*if (!document_open) { return; }
-    QDomElement customer = selectedCustomerElement();
-    if (customer.isNull()) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), QString("%1.lklg").arg(customer.attribute("id")), tr("Leaklog Document (*.lklg)"));
-	if (path.isNull() || path.isEmpty()) { return; }
-    QFile file(path);
-    if (!file.open(QFile::WriteOnly)) {
-		QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
-		return;
-    }
-    QDomDocument data;
-    QDomElement root = data.createElement("leaklog");
-    data.appendChild(root);
-    QDomElement variables = document.documentElement().firstChildElement("variables");
-    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
-    QDomElement tables = document.documentElement().firstChildElement("tables");
-    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
-    QDomElement customers = document.createElement("customers");
-    root.appendChild(customers);
-    customers.appendChild(customer.cloneNode(true));
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << data.toString(4);
-    file.close();*/
+    exportData("customer");
 }
 
 void MainWindow::exportCircuitData()
 {
-    /*if (!document_open) { return; }
-    QDomElement customer = selectedCustomerElement();
-    if (customer.isNull()) { return; }
-    QDomElement circuit = selectedCircuitElement();
-    if (circuit.isNull()) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("Export circuit data - Leaklog"), QString("%1_%2.lklg").arg(customer.attribute("id")).arg(circuit.attribute("id")), tr("Leaklog Document (*.lklg)"));
-	if (path.isNull() || path.isEmpty()) { return; }
-    QFile file(path);
-    if (!file.open(QFile::WriteOnly)) {
-		QMessageBox::critical(this, tr("Export circuit data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
-		return;
-    }
-    QDomDocument data;
-    QDomElement root = data.createElement("leaklog");
-    data.appendChild(root);
-    QDomElement variables = document.documentElement().firstChildElement("variables");
-    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
-    QDomElement tables = document.documentElement().firstChildElement("tables");
-    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
-    QDomElement customers = document.createElement("customers");
-    root.appendChild(customers);
-    QDomNode customer_clone = customer.cloneNode(false);
-    customers.appendChild(customer_clone);
-    customer_clone.appendChild(circuit.cloneNode(true));
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << data.toString(4);
-    file.close();*/
+    if (selectedCircuit() < 0) { return; }
+    exportData("circuit");
 }
 
 void MainWindow::exportInspectionData()
 {
-    /*if (!document_open) { return; }
-    QDomElement customer = selectedCustomerElement();
-    if (customer.isNull()) { return; }
-    QDomElement circuit = selectedCircuitElement();
-    if (circuit.isNull()) { return; }
-    QDomElement inspection = selectedInspectionElement();
-    if (inspection.isNull()) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("Export inspection data - Leaklog"), QString("%1_%2_%3.lklg").arg(customer.attribute("id")).arg(circuit.attribute("id")).arg(inspection.attribute("date").replace(":", ".")), tr("Leaklog Document (*.lklg)"));
+    if (selectedCircuit() < 0) { return; }
+    if (selectedInspection().isNull()) { return; }
+    exportData("inspection");
+}
+
+void MainWindow::exportData(const QString & type)
+{
+    if (!db.isOpen()) { return; }
+    if (selectedCustomer() < 0) { return; }
+    QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isNull() || path.isEmpty()) { return; }
-    QFile file(path);
-    if (!file.open(QFile::WriteOnly)) {
-		QMessageBox::critical(this, tr("Export inspection data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+    QFile file(path); if (file.exists()) { file.remove(); }
+    QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
+    data.setDatabaseName(path);
+    if (!data.open()) {
+		QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
-    QDomDocument data;
-    QDomElement root = data.createElement("leaklog");
-    data.appendChild(root);
-    QDomElement variables = document.documentElement().firstChildElement("variables");
-    if (!variables.isNull()) { root.appendChild(variables.cloneNode(true)); }
-    QDomElement tables = document.documentElement().firstChildElement("tables");
-    if (!tables.isNull()) { root.appendChild(tables.cloneNode(true)); }
-    QDomElement customers = document.createElement("customers");
-    root.appendChild(customers);
-    QDomNode customer_clone = customer.cloneNode(false);
-    customers.appendChild(customer_clone);
-    QDomNode circuit_clone = circuit.cloneNode(false);
-    customer_clone.appendChild(circuit_clone);
-    circuit_clone.appendChild(inspection.cloneNode(true));
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << data.toString(4);
-    file.close();*/
+    initDatabase(&data);
+    QSqlQuery begin("BEGIN TRANSACTION", data);
+    copyTable("variables", &db, &data);
+    copyTable("subvariables", &db, &data);
+    copyTable("tables", &db, &data);
+    copyTable("customers", &db, &data, QString("id = %1").arg(selectedCustomer()));
+    if (type == "customer") {
+        copyTable("circuits", &db, &data, QString("parent = %1").arg(selectedCustomer()));
+        copyTable("inspections", &db, &data, QString("customer = %1").arg(selectedCustomer()));
+    } else if (type == "circuit") {
+        copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+    } else if (type == "inspection") {
+        copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%2'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
+    }
+    QSqlQuery commit("COMMIT", data);
+    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
 }
 
 void MainWindow::importData()
 {
-    /*QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Documents (*.lklg);;All files (*.*)"));
+    if (!db.isOpen()) { return; }
+    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
 	if (path.isNull() || path.isEmpty()) { return; }
-    QFile file(path);
-    if (!file.open(QFile::ReadOnly)) {
-		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(file.errorString()));
+    QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
+    data.setDatabaseName(path);
+    if (!data.open()) {
+		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
-    QDomDocument data;
-    data.setContent(&file);
-    file.close();
-    QDomElement el_customers = document.documentElement().firstChildElement("customers");
-    if (el_customers.isNull()) { return; }
-    QDomNodeList customers = el_customers.elementsByTagName("customer");
-    QDomElement data_el_customers = data.documentElement().firstChildElement("customers");
-    if (data_el_customers.isNull()) { return; }
-    QDomNodeList data_customers = data_el_customers.elementsByTagName("customer");
-    for (int dc = 0; dc < data_customers.count(); ++dc) {
-        bool customer_found = false;
-        for (int c = 0; c < customers.count(); ++c) {
-            if (data_customers.at(dc).toElement().attribute("id") != customers.at(c).toElement().attribute("id")) { continue; }
-            customer_found = true;
-            QDomElement data_customer = data_customers.at(dc).toElement();
-            QDomElement customer = customers.at(c).toElement();
-            QDomNamedNodeMap dc_attributes = data_customer.attributes();
-            for (int a = 0; a < dc_attributes.count(); ++a) {
-                customer.setAttribute(dc_attributes.item(a).nodeName(), dc_attributes.item(a).nodeValue());
-            }
-            QDomNodeList data_circuits = data_customer.elementsByTagName("circuit");
-            QDomNodeList circuits = customer.elementsByTagName("circuit");
-            for (int dcc = 0; dcc < data_circuits.count(); ++dcc) {
-                bool circuit_found = false;
-                for (int cc = 0; cc < circuits.count(); ++cc) {
-                    if (data_circuits.at(dcc).toElement().attribute("id") != circuits.at(cc).toElement().attribute("id")) { continue; }
-                    circuit_found = true;
-                    QDomElement data_circuit = data_circuits.at(dcc).toElement();
-                    QDomElement circuit = circuits.at(cc).toElement();
-                    QDomNamedNodeMap dcc_attributes = data_circuit.attributes();
-                    for (int a = 0; a < dcc_attributes.count(); ++a) {
-                        circuit.setAttribute(dcc_attributes.item(a).nodeName(), dcc_attributes.item(a).nodeValue());
-                    }
-                    QDomNodeList data_inspections = data_circuit.elementsByTagName("inspection");
-                    QDomNodeList inspections = circuit.elementsByTagName("inspection");
-                    for (int di = 0; di < data_inspections.count(); ++di) {
-                        bool inspection_found = false;
-                        for (int i = 0; i < inspections.count(); ++i) {
-                            if (data_inspections.at(di).toElement().attribute("date") != inspections.at(i).toElement().attribute("date")) { continue; }
-                            inspection_found = true;
-                            QDomElement data_inspection = data_inspections.at(di).toElement();
-                            QDomElement inspection = inspections.at(i).toElement();
-                            QDomNamedNodeMap di_attributes = data_inspection.attributes();
-                            for (int a = 0; a < di_attributes.count(); ++a) {
-                                inspection.setAttribute(di_attributes.item(a).nodeName(), di_attributes.item(a).nodeValue());
-                            }
-                            QDomNodeList data_variables = data_inspection.elementsByTagName("var");
-                            QDomNodeList variables = inspection.elementsByTagName("var");
-                            for (int dv = 0; dv < data_variables.count(); ++dv) {
-                                bool variable_found = false;
-                                for (int v = 0; v < variables.count(); ++v) {
-                                    if (data_variables.at(dv).toElement().attribute("id") != variables.at(v).toElement().attribute("id")) { continue; }
-                                    variable_found = true;
-                                    QDomElement data_variable = data_variables.at(dv).toElement();
-                                    QDomElement variable = variables.at(v).toElement();
-                                    QDomNamedNodeMap dv_attributes = data_variable.attributes();
-                                    for (int a = 0; a < dv_attributes.count(); ++a) {
-                                        variable.setAttribute(dv_attributes.item(a).nodeName(), dv_attributes.item(a).nodeValue());
-                                    }
-                                    while (variable.hasChildNodes()) { variable.removeChild(variable.firstChild()); }
-                                    QDomNodeList dv_content = data_variable.childNodes();
-                                    for (int dvc = 0; dvc < dv_content.count(); ++dvc) {
-                                        variable.appendChild(dv_content.at(dvc).cloneNode(true));
-                                    }
-                                }
-                                if (!variable_found) {
-                                    inspection.appendChild(data_variables.at(dv).cloneNode(true));
-                                }
-                            }
-                        }
-                        if (!inspection_found) {
-                            QDomElement element = data_inspections.at(di).cloneNode(true).toElement();
-                            circuit.appendChild(element);
-                            QDomElement selected_circuit = selectedCircuitElement();
-                            if (!selected_circuit.isNull() && selected_circuit.attribute("id") == circuit.attribute("id")) {
-                                QListWidgetItem * item = new QListWidgetItem;
-                                item->setText(element.attribute("date"));
-                                item->setData(Qt::UserRole, element.attribute("date"));
-                                lw_inspections->addItem(item);
-                            }
-                        }
-                    }
-                }
-                if (!circuit_found) {
-                    QDomElement element = data_circuits.at(dcc).cloneNode(true).toElement();
-                    customer.appendChild(element);
-                    QDomElement selected_customer = selectedCustomerElement();
-                    if (!selected_customer.isNull() && selected_customer.attribute("id") == customer.attribute("id")) {
-                        QListWidgetItem * item = new QListWidgetItem;
-                        item->setText(element.attribute("id"));
-                        item->setData(Qt::UserRole, element.attribute("id"));
-                        lw_circuits->addItem(item);
-                    }
-                }
-            }
-        }
-        if (!customer_found) {
-            QDomElement element = data_customers.at(dc).cloneNode(true).toElement();
-            el_customers.appendChild(element);
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(element.attribute("company").isEmpty() ? element.attribute("id") : tr("%1 (%2)").arg(element.attribute("id")).arg(element.attribute("company")));
-            item->setData(Qt::UserRole, element.attribute("id"));
-            lw_customers->addItem(item);
-        }
+    ImportDialogue * id = new ImportDialogue(this);
+    QSqlQuery customers("SELECT id, company FROM customers", data);
+    while (customers.next()) {
+        QListWidgetItem * item = new QListWidgetItem(id->customers());
+        item->setCheckState(Qt::Unchecked);
+        item->setText(customers.value(1).toString().isEmpty() ? customers.value(0).toString() : tr("%1 (%2)").arg(customers.value(0).toString()).arg(customers.value(1).toString()));
+        item->setData(Qt::UserRole, customers.value(0).toString());
     }
+    QSqlQuery circuits("SELECT id, parent FROM circuits", data);
+    while (circuits.next()) {
+        QListWidgetItem * item = new QListWidgetItem(id->circuits());
+        item->setCheckState(Qt::Unchecked);
+        item->setHidden(true);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+        item->setText(QString("%1 (%2)").arg(circuits.value(0).toString()).arg(circuits.value(1).toString()));
+        item->setData(Qt::UserRole, QString("%1:%2").arg(circuits.value(1).toString()).arg(circuits.value(0).toString()));
+    }
+    QSqlQuery inspections("SELECT date, customer, circuit FROM inspections", data);
+    while (inspections.next()) {
+        QListWidgetItem * item = new QListWidgetItem(id->inspections());
+        item->setCheckState(Qt::Unchecked);
+        item->setHidden(true);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+        item->setText(QString("%1 (%2:%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString()).arg(inspections.value(2).toString()));
+        item->setData(Qt::UserRole, inspections.value(0).toString());
+    }
+    if (id->exec() != QDialog::Accepted) { return; }
+
     this->setWindowModified(true);
-    refreshView();*/
+    refreshView();
 }
 
 QStringList MainWindow::listVariableIds(bool all)

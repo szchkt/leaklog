@@ -20,7 +20,7 @@
 #include "ui_main_window.h"
 #include "about_widget.h"
 #include "modify_warning_dialogue.h"
-#include "i18n.h"
+#include "import_dialogue.h"
 #include "fparser/fparser.hh"
 
 #include <QCloseEvent>
@@ -60,13 +60,14 @@ private slots:
     void findPrevious();
     void setView(QAction *);
     void refreshView();
-    // DOCUMENT
+    // DATABASE
     void openRecent(QListWidgetItem *);
-    void newDocument();
+    void initDatabase(QSqlDatabase *);
+    void newDatabase();
     void open();
     void save();
     void saveAs();
-    void closeDocument(bool = true);
+    void closeDatabase(bool = true);
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -95,6 +96,7 @@ private slots:
     void addWarning();
     void modifyWarning();
     void removeWarning();
+    void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     void exportCustomerData();
     void exportCircuitData();
     void exportInspectionData();
@@ -113,15 +115,16 @@ private:
     void closeEvent(QCloseEvent *);
     void loadSettings();
     void saveSettings();
-    // DOCUMENT
+    // DATABASE
     bool saveChangesBeforeProceeding(QString, bool);
-    void openDocument(QString);
-    void saveDocument(QString);
+    void openDatabase(QString);
+    void saveDatabase(QString);
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);
     void addVariable(bool);
     void moveTableVariable(bool);
+    void exportData(const QString &);
     QStringList listVariableIds(bool = false);
     MTDictionary parseExpression(const QString &, QStringList *);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
@@ -139,15 +142,12 @@ private:
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
 
     MTDictionary dict_vartypes;
+    MTDictionary dict_varnames;
     MTDictionary dict_html;
-    i18n dict_i18n;
-    QString dict_i18n_javascript;
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;
     QString last_search_keyword;
     QSqlDatabase db;
-    bool document_open;
-    QString document_path;
     QString leaklog_version; float f_leaklog_version;
 
     friend class ModifyDialogue;

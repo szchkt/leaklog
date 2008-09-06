@@ -155,7 +155,7 @@
            <item>
             <widget class="QLabel" name="lbl_recent_docs" >
              <property name="text" >
-              <string>Recent documents:</string>
+              <string>Recent databases:</string>
              </property>
             </widget>
            </item>
@@ -465,9 +465,9 @@
     <addaction name="separator" />
     <addaction name="actionExport_inspection_data" />
    </widget>
-   <widget class="QMenu" name="menuDocument" >
+   <widget class="QMenu" name="menuDatabase" >
     <property name="title" >
-     <string>Document</string>
+     <string>Database</string>
     </property>
     <widget class="QMenu" name="menuAdd_variable" >
      <property name="title" >
@@ -513,7 +513,7 @@
    <addaction name="menuFile" />
    <addaction name="menuEdit" />
    <addaction name="menuView" />
-   <addaction name="menuDocument" />
+   <addaction name="menuDatabase" />
    <addaction name="menuCustomer" />
    <addaction name="menuCooling_circuit" />
    <addaction name="menuInspection" />

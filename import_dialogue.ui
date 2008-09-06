@@ -1,0 +1,278 @@
+<ui version="4.0" >
+ <author>Michal Tomlein</author>
+ <class>ImportDialogue</class>
+ <widget class="QDialog" name="ImportDialogue" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>640</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>Import data - Leaklog</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="resources.qrc" >
+    <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" colspan="3" >
+    <widget class="QLabel" name="id_lbl_customers" >
+     <property name="font" >
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Customers:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3" colspan="3" >
+    <widget class="QLabel" name="id_lbl_circuits" >
+     <property name="font" >
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Circuits:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6" colspan="3" >
+    <widget class="QLabel" name="id_lbl_inspections" >
+     <property name="font" >
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Inspections:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="9" colspan="3" >
+    <widget class="QLabel" name="id_lbl_variables" >
+     <property name="font" >
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Variables:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QLabel" name="id_lbl_search_customers" >
+     <property name="text" >
+      <string>Search:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2" >
+    <widget class="ExtendedLineEdit" name="id_le_search_customers" />
+   </item>
+   <item row="1" column="3" >
+    <widget class="QLabel" name="id_lbl_search_circuits" >
+     <property name="text" >
+      <string>Search:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4" colspan="2" >
+    <widget class="ExtendedLineEdit" name="id_le_search_circuits" />
+   </item>
+   <item row="1" column="6" >
+    <widget class="QLabel" name="id_lbl_search_inspections" >
+     <property name="text" >
+      <string>Search:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="7" colspan="2" >
+    <widget class="ExtendedLineEdit" name="id_le_search_inspections" />
+   </item>
+   <item row="1" column="9" >
+    <widget class="QLabel" name="id_lbl_search_variables" >
+     <property name="text" >
+      <string>Search:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="10" colspan="2" >
+    <widget class="ExtendedLineEdit" name="id_le_search_variables" />
+   </item>
+   <item row="2" column="0" colspan="3" >
+    <widget class="MTListWidget" name="id_lw_customers" >
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3" colspan="3" >
+    <widget class="MTListWidget" name="id_lw_circuits" >
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="6" colspan="3" >
+    <widget class="MTListWidget" name="id_lw_inspections" >
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="9" colspan="3" >
+    <widget class="MTListWidget" name="id_lw_variables" >
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2" >
+    <widget class="QToolButton" name="id_tbtn_customers_selectall" >
+     <property name="text" >
+      <string>Select all</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" >
+    <widget class="QToolButton" name="id_tbtn_customers_selectnone" >
+     <property name="text" >
+      <string>Select none</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="2" >
+    <widget class="QToolButton" name="id_tbtn_circuits_selectall" >
+     <property name="text" >
+      <string>Select all</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5" >
+    <widget class="QToolButton" name="id_tbtn_circuits_selectnone" >
+     <property name="text" >
+      <string>Select none</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="6" colspan="2" >
+    <widget class="QToolButton" name="id_tbtn_inspections_selectall" >
+     <property name="text" >
+      <string>Select all</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="8" >
+    <widget class="QToolButton" name="id_tbtn_inspections_selectnone" >
+     <property name="text" >
+      <string>Select none</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="9" colspan="2" >
+    <widget class="QToolButton" name="id_tbtn_variables_selectall" >
+     <property name="text" >
+      <string>Select all</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="11" >
+    <widget class="QToolButton" name="id_tbtn_variables_selectnone" >
+     <property name="text" >
+      <string>Select none</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="12" >
+    <widget class="QDialogButtonBox" name="id_bb" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons" >
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="6" />
+ <customwidgets>
+  <customwidget>
+   <class>MTListWidget</class>
+   <extends>QListWidget</extends>
+   <header>mtlistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExtendedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>extendedlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <includes/>
+ <resources>
+  <include location="resources.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>id_bb</sender>
+   <signal>accepted()</signal>
+   <receiver>ImportDialogue</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>id_bb</sender>
+   <signal>rejected()</signal>
+   <receiver>ImportDialogue</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
