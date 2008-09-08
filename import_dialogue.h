@@ -21,7 +21,6 @@
 #define IMPORT_DIALOGUE_H
 
 #include "ui_import_dialogue.h"
-#include <QMessageBox>
 
 class ImportDialogue : public QDialog, private Ui::ImportDialogue
 {
@@ -47,16 +46,16 @@ public:
         QObject::connect(id_lw_circuits, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(showInspections(QListWidgetItem *)));
         item_flags = Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
     };
-    MTListWidget * customers() { return id_lw_customers; };
-    MTListWidget * circuits() { return id_lw_circuits; };
-    MTListWidget * inspections() { return id_lw_inspections; };
-    MTListWidget * variables() { return id_lw_variables; };
+    inline MTListWidget * customers() { return id_lw_customers; };
+    inline MTListWidget * circuits() { return id_lw_circuits; };
+    inline MTListWidget * inspections() { return id_lw_inspections; };
+    inline MTListWidget * variables() { return id_lw_variables; };
 
 private slots:
     void showCircuits(QListWidgetItem * item) {
         bool hide = item->checkState() == Qt::Unchecked;
         for (int i = 0; i < id_lw_circuits->count(); ++i) {
-            if (id_lw_circuits->item(i)->text().contains(QString("(%1)").arg(item->data(Qt::UserRole).toString()))) {
+            if (id_lw_circuits->item(i)->data(Qt::UserRole).toString().startsWith(QString("%1::").arg(item->data(Qt::UserRole).toString()))) {
                 id_lw_circuits->item(i)->setHidden(hide);
                 id_lw_circuits->item(i)->setFlags(hide ? item_flags : (item_flags | Qt::ItemIsEnabled));
                 if (hide) { id_lw_circuits->item(i)->setCheckState(Qt::Unchecked); }
@@ -67,7 +66,7 @@ private slots:
     void showInspections(QListWidgetItem * item) {
         bool hide = item->checkState() == Qt::Unchecked;
         for (int i = 0; i < id_lw_inspections->count(); ++i) {
-            if (id_lw_inspections->item(i)->text().contains(QString("(%1)").arg(item->data(Qt::UserRole).toString()))) {
+            if (id_lw_inspections->item(i)->data(Qt::UserRole).toString().startsWith(QString("%1::").arg(item->data(Qt::UserRole).toString()))) {
                 id_lw_inspections->item(i)->setHidden(hide);
                 id_lw_inspections->item(i)->setFlags(hide ? item_flags : (item_flags | Qt::ItemIsEnabled));
             }

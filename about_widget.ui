@@ -1,4 +1,5 @@
 <ui version="4.0" >
+ <author>Matus &amp; Michal Tomlein</author>
  <class>AboutWidget</class>
  <widget class="QWidget" name="AboutWidget" >
   <property name="geometry" >
@@ -86,14 +87,6 @@
         <number>0</number>
        </property>
        <widget class="QWidget" name="tab_about" >
-        <property name="geometry" >
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>443</width>
-          <height>213</height>
-         </rect>
-        </property>
         <attribute name="title" >
          <string>About Leaklog</string>
         </attribute>
@@ -111,14 +104,6 @@
         </layout>
        </widget>
        <widget class="QWidget" name="tab_about_qt" >
-        <property name="geometry" >
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>443</width>
-          <height>213</height>
-         </rect>
-        </property>
         <attribute name="title" >
          <string>About Qt</string>
         </attribute>
@@ -175,6 +160,8 @@
    </item>
   </layout>
  </widget>
+ <layoutdefault spacing="6" margin="6" />
+ <includes/>
  <resources>
   <include location="resources.qrc" />
  </resources>

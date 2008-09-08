@@ -20,6 +20,7 @@
 #ifndef MODIFY_DIALOGUE_H
 #define MODIFY_DIALOGUE_H
 
+#include "global.h"
 #include "mtdictionary.h"
 #include "mtcolourcombobox.h"
 
@@ -38,8 +39,8 @@
 #include <QSyntaxHighlighter>
 #include <QHash>
 #include <QTextCharFormat>
-#include <QSqlQuery>
-#include <QSqlRecord>
+
+using namespace Global;
 
 class Highlighter : public QSyntaxHighlighter
 {
@@ -77,7 +78,7 @@ public:
     QSqlQuery select(const QString & = "*");
     QMap<QString, QVariant> list(const QString & = "*");
     QList<QMap<QString, QVariant> > listAll(const QString & = "*");
-    bool update(const QMap<QString, QVariant> &);
+    bool update(const QMap<QString, QVariant> &, bool = false);
     bool remove();
 
 protected:
@@ -120,7 +121,5 @@ private:
 
     friend class ModifyWarningDialogue;
 };
-
-QString toString(const QVariant &);
 
 #endif // MODIFY_DIALOGUE_H

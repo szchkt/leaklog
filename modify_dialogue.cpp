@@ -141,12 +141,27 @@ QList<QMap<QString, QVariant> > MTRecord::listAll(const QString & fields)
     return list;
 }
 
-bool MTRecord::update(const QMap<QString, QVariant> & set)
+bool MTRecord::update(const QMap<QString, QVariant> & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
     QString id_field = r_type == "inspection" ? "date" : "id";
     QString update;
     QMapIterator<QString, QVariant> i(set);
+    if (add_columns) {
+        QSqlDatabase db = QSqlDatabase::database();
+        QStringList field_names = getTableFieldNames(tableForRecordType(r_type), &db);
+        while (i.hasNext()) { i.next();
+            if (!field_names.contains(i.key())) {
+                QSqlQuery add_column("ALTER TABLE " + tableForRecordType(r_type) + " ADD COLUMN " + i.key() + " VARCHAR");
+            }
+        }
+        i.toFront();
+    }
+    if (has_id) {
+        QSqlQuery find_record = select(id_field);
+        find_record.exec();
+        if (!find_record.next()) { has_id = false; }
+    }
     if (has_id) {
         update = "UPDATE " + tableForRecordType(r_type) + " SET ";
         while (i.hasNext()) { i.next();
@@ -155,7 +170,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
         }
         update.append(" WHERE " + id_field + " = :_id");
         for (int p = 0; p < r_parents.count(); ++p) {
-            update.append(" AND " + r_parents.key(p) + " = :" + r_parents.key(p));
+            update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
         }
     } else {
         update = "INSERT INTO " + tableForRecordType(r_type) + " (";
@@ -174,7 +189,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
             if (i.hasNext() || r_parents.count()) { update.append(", "); }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
-            update.append(":" + r_parents.key(p));
+            update.append(":_" + r_parents.key(p));
             if (p < r_parents.count() - 1) { update.append(", "); }
         }
         update.append(")");
@@ -183,7 +198,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set)
     query.prepare(update);
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int p = 0; p < r_parents.count(); ++p) {
-        query.bindValue(":" + r_parents.key(p), r_parents.value(p));
+        query.bindValue(":_" + r_parents.key(p), r_parents.value(p));
     }
     i.toFront();
     while (i.hasNext()) { i.next();
@@ -560,5 +575,3 @@ void ModifyDialogue::save()
     md_record.update(values);
     accept();
 }
-
-QString toString(const QVariant & v) { return v.toString(); }

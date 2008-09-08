@@ -3,7 +3,8 @@ TEMPLATE      = app
 FORMS        += main_window.ui \
                 about_widget.ui \
                 import_dialogue.ui
-HEADERS      += main_window.h \
+HEADERS      += global.h \
+                main_window.h \
                 about_widget.h \
                 extendedlineedit.h \
                 mtwidgetpalettes.h \
@@ -16,7 +17,8 @@ HEADERS      += main_window.h \
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
-SOURCES      += main.cpp \
+SOURCES      += global.cpp \
+                main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
                 database.cpp \
