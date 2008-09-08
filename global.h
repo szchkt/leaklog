@@ -20,10 +20,12 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include "fparser/fparser.hh"
 #include "mtdictionary.h"
 
 #include <QApplication>
 #include <QVariant>
+#include <QSet>
 #include <QStringList>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -32,10 +34,22 @@
 
 namespace Global {
     QString toString(const QVariant &);
+    //QString escapeDoubleQuotes(const QString &);
     QString upArrow();
     QString downArrow();
+    QString degreeSign();
     void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     QStringList getTableFieldNames(const QString &, QSqlDatabase *);
+    void addColumn(const QString &, const QString &, QSqlDatabase *);
+    void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
+    void dropColumn(const QString &, const QString &, QSqlDatabase *);
+    MTDictionary parseExpression(const QString &, QStringList *);
+    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
+    QString compareValues(double, double);
+    // Dictionaries
+    MTDictionary get_dict_vartypes();
+    MTDictionary get_dict_varnames();
+    MTDictionary get_dict_attrvalues();
 }
 
 class MTRecord : public QObject

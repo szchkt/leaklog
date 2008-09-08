@@ -42,15 +42,15 @@ bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
 void MainWindow::initDatabase(QSqlDatabase * database)
 {
     QSqlQuery begin("BEGIN TRANSACTION", *database);
-    QSqlQuery create_customers("CREATE TABLE customers (id INTEGER PRIMARY KEY, company VARCHAR, contact_person VARCHAR, address VARCHAR, mail VARCHAR, phone VARCHAR)", *database);
-    QSqlQuery create_circuits("CREATE TABLE circuits (parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer VARCHAR, type VARCHAR, sn VARCHAR, year INTEGER, commissioning VARCHAR, field VARCHAR, refrigerant VARCHAR, refrigerant_amount NUMERIC, oil VARCHAR, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC)", *database);
-    QSqlQuery create_inspections("CREATE TABLE inspections (customer INTEGER, circuit INTEGER, date VARCHAR, nominal INTEGER)", *database);
-    QSqlQuery create_variables("CREATE TABLE variables (id VARCHAR, name VARCHAR, type VARCHAR, unit VARCHAR, value VARCHAR, compare_nom INTEGER, col_bg VARCHAR)", *database);
-    QSqlQuery create_subvariables("CREATE TABLE subvariables (parent VARCHAR, id VARCHAR, name VARCHAR, type VARCHAR, unit VARCHAR, value VARCHAR, compare_nom INTEGER)", *database);
-    QSqlQuery create_tables("CREATE TABLE tables (id VARCHAR, highlight_nominal INTEGER, variables VARCHAR, sum VARCHAR)", *database);
-    QSqlQuery create_warnings("CREATE TABLE warnings (id INTEGER PRIMARY KEY, name VARCHAR, description VARCHAR)", *database);
-    QSqlQuery create_warnings_filters("CREATE TABLE warnings_filters (parent INTEGER, circuit_attribute VARCHAR, function VARCHAR, value VARCHAR)", *database);
-    QSqlQuery create_warnings_conditions("CREATE TABLE warnings_conditions (parent INTEGER, value_ins VARCHAR, function VARCHAR, value_nom VARCHAR)", *database);
+    QSqlQuery create_customers("CREATE TABLE customers (id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT)", *database);
+    QSqlQuery create_circuits("CREATE TABLE circuits (parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC)", *database);
+    QSqlQuery create_inspections("CREATE TABLE inspections (customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER)", *database);
+    QSqlQuery create_variables("CREATE TABLE variables (id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, col_bg TEXT)", *database);
+    QSqlQuery create_subvariables("CREATE TABLE subvariables (parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER)", *database);
+    QSqlQuery create_tables("CREATE TABLE tables (id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT)", *database);
+    QSqlQuery create_warnings("CREATE TABLE warnings (id INTEGER PRIMARY KEY, name TEXT, description TEXT)", *database);
+    QSqlQuery create_warnings_filters("CREATE TABLE warnings_filters (parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT)", *database);
+    QSqlQuery create_warnings_conditions("CREATE TABLE warnings_conditions (parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT)", *database);
     QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
     QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
     QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
@@ -61,6 +61,110 @@ void MainWindow::initDatabase(QSqlDatabase * database)
     QSqlQuery create_index_warnings_filters_parent("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)", *database);
     QSqlQuery create_index_warnings_conditions_parent("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)", *database);
     QSqlQuery commit("COMMIT", *database);
+}
+
+void MainWindow::initVariables()
+{
+    QSqlQuery begin("BEGIN TRANSACTION");
+    initVariable("t", "", "", "", false, "");
+    initSubvariable("t", "t_out", "float", tr("%1C").arg(degreeSign()), "", true);
+    initSubvariable("t", "t_in", "float", tr("%1C").arg(degreeSign()), "", true);
+    initVariable("p_0", "float", tr("Bar"), "", true, "");
+    initVariable("p_c", "float", tr("Bar"), "", true, "");
+    initVariable("t_0", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("t_c", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("t_ev", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("t_sc", "float", tr("%1C").arg(degreeSign()), "t_c-t_ev", true, "");
+    initVariable("t_sh", "", "", "", false, "");
+    initSubvariable("t_sh", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-t_0", true);
+    initSubvariable("t_sh", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-t_0", true);
+    initVariable("t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("ep_comp", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("ec", "", "", "", false, "");
+    initSubvariable("ec", "ec_l1", "float", tr("A"), "", true);
+    initSubvariable("ec", "ec_l2", "float", tr("A"), "", true);
+    initSubvariable("ec", "ec_l3", "float", tr("A"), "", true);
+    initVariable("ev", "", "", "", false, "");
+    initSubvariable("ev", "ev_l1", "float", tr("V"), "", true);
+    initSubvariable("ev", "ev_l2", "float", tr("V"), "", true);
+    initSubvariable("ev", "ev_l3", "float", tr("V"), "", true);
+    initVariable("ppsw", "", "", "", false, "");
+    initSubvariable("ppsw", "ppsw_hip", "float", tr("Bar"), "", true);
+    initSubvariable("ppsw", "ppsw_lop", "float", tr("Bar"), "", true);
+    initSubvariable("ppsw", "ppsw_diff", "float", tr("Bar"), "", true);
+    initVariable("sftsw", "float", tr("Bar"), "", true, "");
+    initVariable("rmds", "string", "", "", false, "");
+    initVariable("arno", "string", "", "", false, "");
+    initVariable("vis_aur_chk", "", "", "", false, "");
+    initSubvariable("vis_aur_chk", "corr_def", "bool", "", "", false);
+    initSubvariable("vis_aur_chk", "noise_vibr", "bool", "", "", false);
+    initSubvariable("vis_aur_chk", "bbl_lvl", "bool", "", "", false);
+    initSubvariable("vis_aur_chk", "oil_leak", "bool", "", "", false);
+    initSubvariable("vis_aur_chk", "oil_leak_am", "float", tr("kg"), "", false);
+    initVariable("dir_leak_chk", "", "", "", false, "green");
+    initSubvariable("dir_leak_chk", "el_detect", "bool", "", "", false);
+    initSubvariable("dir_leak_chk", "uv_detect", "bool", "", "", false);
+    initSubvariable("dir_leak_chk", "bbl_detect", "bool", "", "", false);
+    initVariable("refr_add", "", "", "", false, "yellow");
+    initSubvariable("refr_add", "refr_add_am", "float", tr("kg"), "", false);
+    initSubvariable("refr_add", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am)/refrigerant_amount", false);
+    initVariable("refr_reco", "float", tr("kg"), "", false, "yellow");
+    initVariable("refr_recy", "float", tr("kg"), "", false, "yellow");
+    initVariable("refr_disp", "float", tr("kg"), "", false, "yellow");
+    initVariable("inspector", "string", "", "", false, "");
+    initVariable("operator", "string", "", "", false, "");
+    QSqlQuery commit("COMMIT");
+}
+
+void MainWindow::initVariable(const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, const QString & col_bg)
+{
+    QMap<QString, QVariant> set;
+    MTRecord variable("variable", "", MTDictionary());
+    set.insert("id", id);
+    set.insert("name", dict_varnames.value(id));
+    set.insert("type", type);
+    set.insert("unit", unit);
+    set.insert("value", value);
+    set.insert("compare_nom", compare_nom ? 1 : 0);
+    set.insert("col_bg", col_bg);
+    variable.update(set);
+    addColumn(id, "inspections", &db);
+}
+
+void MainWindow::initSubvariable(const QString & parent, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom)
+{
+    QMap<QString, QVariant> set;
+    MTRecord variable("subvariable", "", MTDictionary("parent", parent));
+    set.insert("id", id);
+    set.insert("name", dict_varnames.value(id));
+    set.insert("type", type);
+    set.insert("unit", unit);
+    set.insert("value", value);
+    set.insert("compare_nom", compare_nom ? 1 : 0);
+    variable.update(set);
+    addColumn(id, "inspections", &db);
+}
+
+void MainWindow::initTables()
+{
+    QSqlQuery begin("BEGIN TRANSACTION");
+    QMap<QString, QVariant> set;
+    MTRecord table_of_leakages("table", "", MTDictionary());
+    set.insert("id", tr("Table of leakages"));
+    set.insert("highlight_nominal", 0);
+    set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;refr_recy;refr_disp;inspector;operator;rmds;arno");
+    set.insert("sum", "vis_aur_chk;refr_add;refr_reco;refr_recy;refr_disp");
+    table_of_leakages.update(set);
+    set.clear();
+    MTRecord table_of_parameters("table", "", MTDictionary());
+    set.insert("id", tr("Table of parameters"));
+    set.insert("highlight_nominal", 1);
+    set.insert("variables", "t;p_0;p_c;t_0;t_c;t_ev;t_evap_out;t_comp_in;t_sc;t_sh;t_comp_out;ep_comp;ec;ev;ppsw;sftsw;rmds;arno");
+    set.insert("sum", "");
+    table_of_parameters.update(set);
+    QSqlQuery commit("COMMIT");
 }
 
 void MainWindow::newDatabase()
@@ -79,6 +183,8 @@ void MainWindow::newDatabase()
     addRecent(path);
     clearAll();
     initDatabase(&db);
+    initVariables();
+    initTables();
     QSqlQuery begin("BEGIN TRANSACTION");
 #ifdef Q_WS_MAC
 	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
@@ -468,6 +574,7 @@ void MainWindow::addVariable(bool subvar)
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
+        addColumn(record.id(), "inspections", &db);
         this->setWindowModified(true);
         refreshView();
     }
@@ -483,6 +590,7 @@ void MainWindow::modifyVariable()
     MTDictionary parents;
     if (subvar) { parents.insert("parent", item->parent()->text(1)); }
     MTRecord record(subvar ? "subvariable" : "variable", item->text(1), parents);
+    QString id = item->text(1);
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
@@ -491,6 +599,7 @@ void MainWindow::modifyVariable()
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
+        if (id != record.id()) { renameColumn(id, record.id(), "inspections", &db); }
         this->setWindowModified(true);
         refreshView();
     }
@@ -503,18 +612,20 @@ void MainWindow::removeVariable()
     if (!trw_variables->currentIndex().isValid()) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
     bool subvar = item->parent() != NULL;
+    QString id = item->text(1);
     bool ok;
-    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(item->text(1)), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(id), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     MTDictionary parents;
     if (subvar) { parents.insert("parent", item->parent()->text(1)); }
     else {
-        MTRecord subvars("subvariable", "", MTDictionary("parent", item->text(1)));
+        MTRecord subvars("subvariable", "", MTDictionary("parent", id));
         subvars.remove();
     }
-    MTRecord record(subvar ? "subvariable" : "variable", item->text(1), parents);
+    MTRecord record(subvar ? "subvariable" : "variable", id, parents);
     record.remove();
     if (item != NULL) { delete item; }
+    dropColumn(id, "inspections", &db);
     enableTools();
     this->setWindowModified(true);
     refreshView();
@@ -979,64 +1090,4 @@ QStringList MainWindow::listVariableIds(bool all)
         if (!sub_empty) { ids << query.value(1).toString(); }
     }
     return ids;
-}
-
-MTDictionary MainWindow::parseExpression(const QString & exp, QStringList * used_ids)
-{
-    MTDictionary dict_exp(true);
-    if (!exp.isEmpty()) {
-        if (!used_ids->contains("refrigerant_amount")) { *used_ids << "refrigerant_amount"; }
-        if (!used_ids->contains("oil_amount")) { *used_ids << "oil_amount"; }
-        if (!used_ids->contains("sum")) { *used_ids << "sum"; }
-        QSet<int> matched;
-        for (int i = 0; i < used_ids->count(); ++i) {
-            QRegExp expression(QString("\\b%1\\b").arg(used_ids->at(i)));
-            int index = exp.indexOf(expression);
-            while (index >= 0) {
-                int length = expression.matchedLength();
-                if (!matched.contains(index)) {
-                    for (int j = index; j < index + length; j++) { matched << j; }
-                }
-                index = exp.indexOf(expression, index + length);
-            }
-        }
-        QString id_, f_; bool last_id = false; bool last_sum = false;
-        for (int i = 0; i < exp.length(); ++i) {
-            if (matched.contains(i)) {
-                if (!f_.isEmpty()) {
-                    dict_exp.insert(f_, "function");
-                    f_.clear();
-                }
-                last_id = true;
-                id_.append(exp.at(i));
-            } else {
-                if (!id_.isEmpty()) {
-                    if (id_ == "sum") {
-                        last_sum = true;
-                    } else {
-                        if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                            dict_exp.insert(id_, "circuit_attribute");
-                        } else {
-                            dict_exp.insert(id_, last_sum ? "sum" : "id");
-                        }
-                        last_sum = false;
-                    }
-                    id_.clear();
-                }
-                last_id = false;
-                f_.append(exp.at(i));
-            }
-        }
-        if (!f_.isEmpty()) {
-            dict_exp.insert(f_, "function");
-        }
-        if (!id_.isEmpty()) {
-            if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
-                dict_exp.insert(id_, "circuit_attribute");
-            } else {
-                dict_exp.insert(id_, last_sum ? "sum" : "id");
-            }
-        }
-    }
-    return dict_exp;
 }

@@ -19,38 +19,14 @@
 
 #include "main_window.h"
 
-QString escapeDoubleQuotes(const QString & s)
-{
-    QString r = s;
-    r.replace("\\", "\\\\");
-    r.replace("\"", "\\\"");
-    return r;
-}
-
 MainWindow::MainWindow()
 {
     leaklog_version = "0.9.0";
     f_leaklog_version = 0.9;
     // Dictionaries
-    dict_vartypes.insert("int", tr("Integer"));
-    dict_vartypes.insert("float", tr("Real number"));
-    dict_vartypes.insert("string", tr("String"));
-    dict_varnames.insert("t", qApp->translate("VariableNames", "Temperature"));
-    dict_varnames.insert("t_out", qApp->translate("VariableNames", "out"));
-    dict_varnames.insert("t_in", qApp->translate("VariableNames", "in"));
-    dict_varnames.insert("t_sc", qApp->translate("VariableNames", "Subcooling"));
-    dict_varnames.insert("t_sh", qApp->translate("VariableNames", "Superheating"));
-    dict_varnames.insert("t_sh_evap", qApp->translate("VariableNames", "evap."));
-    dict_varnames.insert("t_sh_comp", qApp->translate("VariableNames", "comp."));
-    dict_attrvalues.insert("field::car", tr("Car air conditioning"));
-    dict_attrvalues.insert("field::lowrise", tr("Low-rise residential buildings"));
-    dict_attrvalues.insert("field::highrise", tr("High-rise residential buildings"));
-    dict_attrvalues.insert("field::commercial", tr("Commercial buildings"));
-    dict_attrvalues.insert("field::institutional", tr("Institutional buildings"));
-    dict_attrvalues.insert("field::industrial", tr("Industrial spaces"));
-    dict_attrvalues.insert("field::transportation", tr("Transportation"));
-    dict_attrvalues.insert("field::airconditioning", tr("Air conditioning"));
-    dict_attrvalues.insert("field::heatpumps", tr("Heat pumps"));
+    dict_vartypes = get_dict_vartypes();
+    dict_varnames = get_dict_varnames();
+    dict_attrvalues = get_dict_attrvalues();
     // ------------
     // HTML
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");
@@ -70,6 +46,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Table of inspections"), in.readAll());
     file.close();
     // ----
+    if (tr("LTR") == "RTL") { qApp->setLayoutDirection(Qt::RightToLeft); }
     setupUi(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
     dw_browser->setVisible(false);
@@ -163,6 +140,13 @@ MainWindow::MainWindow()
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     wv_main->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     loadSettings();
+    if (qApp->arguments().count() > 1) {
+        QFileInfo file_info(qApp->arguments().at(1));
+        if (file_info.exists()) {
+            addRecent(file_info.absoluteFilePath());
+            openDatabase(file_info.absoluteFilePath());
+        }
+    }
 }
 
 void MainWindow::executeLink(const QUrl & url)
