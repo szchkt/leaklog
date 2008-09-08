@@ -21,7 +21,6 @@
 #define MODIFY_DIALOGUE_H
 
 #include "global.h"
-#include "mtdictionary.h"
 #include "mtcolourcombobox.h"
 
 #include <QTextDocument>
@@ -60,34 +59,6 @@ private:
     };
     QVector<HighlightingRule> highlightingRules;
     QTextCharFormat keywordFormat;
-};
-
-class MTRecord : public QObject
-{
-    Q_OBJECT
-
-public:
-    MTRecord() {};
-    MTRecord(const QString &, const QString &, const MTDictionary &);
-    MTRecord(const MTRecord &);
-    MTRecord & operator=(const MTRecord &);
-    void setType(const QString & type) { r_type = type; };
-    inline QString type() { return r_type; };
-    inline QString id() { return r_id; };
-    inline MTDictionary * parents() { return &r_parents; };
-    QSqlQuery select(const QString & = "*");
-    QMap<QString, QVariant> list(const QString & = "*");
-    QList<QMap<QString, QVariant> > listAll(const QString & = "*");
-    bool update(const QMap<QString, QVariant> &, bool = false);
-    bool remove();
-
-protected:
-    QString tableForRecordType(const QString &);
-
-private:
-    QString r_type;
-    QString r_id;
-    MTDictionary r_parents;
 };
 
 class ModifyWarningDialogue;
