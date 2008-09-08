@@ -796,42 +796,6 @@ void MainWindow::removeWarning()
     refreshView();
 }
 
-void MainWindow::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
-{
-    QSqlQuery select("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)), *from);
-    if (select.next() && select.record().count()) {
-        QSqlRecord record;
-        {
-            QSqlQuery query("SELECT * FROM " + table, *to);
-            record = query.record();
-        }
-        QString copy("INSERT INTO " + table + " (");
-        QString field_name;
-        for (int i = 0; i < select.record().count(); ++i) {
-            field_name = select.record().fieldName(i);
-            copy.append(i == 0 ? "" : ", ");
-            copy.append(field_name);
-            if (record.indexOf(field_name) < 0) {
-                QSqlQuery add_column("ALTER TABLE " + table + " ADD COLUMN " + field_name + " VARCHAR", *to);
-            }
-        }
-        copy.append(") VALUES (");
-        for (int i = 0; i < select.record().count(); ++i) {
-            copy.append(i == 0 ? ":" : ", :");
-            copy.append(select.record().fieldName(i));
-        }
-        copy.append(")");
-        do {
-            QSqlQuery insert(*to);
-            insert.prepare(copy);
-            for (int i = 0; i < select.record().count(); ++i) {
-                insert.bindValue(":" + select.record().fieldName(i), select.value(i));
-            }
-            insert.exec();
-        } while (select.next());
-    }
-}
-
 void MainWindow::exportCustomerData()
 {
     exportData("customer");
@@ -877,7 +841,7 @@ void MainWindow::exportData(const QString & type)
         copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
     } else if (type == "inspection") {
         copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%2'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
+        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
     }
     QSqlQuery commit("COMMIT", data);
     data.close(); QSqlDatabase::removeDatabase(data.connectionName());
@@ -909,19 +873,98 @@ void MainWindow::importData()
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
         item->setText(QString("%1 (%2)").arg(circuits.value(0).toString()).arg(circuits.value(1).toString()));
-        item->setData(Qt::UserRole, QString("%1:%2").arg(circuits.value(1).toString()).arg(circuits.value(0).toString()));
+        item->setData(Qt::UserRole, QString("%1::%2").arg(circuits.value(1).toString()).arg(circuits.value(0).toString()));
     }
     QSqlQuery inspections("SELECT date, customer, circuit FROM inspections", data);
     while (inspections.next()) {
         QListWidgetItem * item = new QListWidgetItem(id->inspections());
-        item->setCheckState(Qt::Unchecked);
+        item->setCheckState(Qt::Checked);
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
-        item->setText(QString("%1 (%2:%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString()).arg(inspections.value(2).toString()));
-        item->setData(Qt::UserRole, inspections.value(0).toString());
+        item->setText(QString("%1 (%2::%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString()).arg(inspections.value(2).toString()));
+        item->setData(Qt::UserRole, QString("%1::%2::%3").arg(inspections.value(1).toString()).arg(inspections.value(2).toString()).arg(inspections.value(0).toString()));
+    }
+    QSqlQuery query("SELECT variables.id, variables.name, subvariables.id, subvariables.name FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent", data);
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int SUBVAR_ID = 2; const int SUBVAR_NAME = 3;
+    QString last_id; QString var_id, var_name;
+    while (query.next()) {
+        var_id = query.value(VAR_ID).toString();
+        if (!query.value(VAR_NAME).toString().isEmpty()) {
+            var_name = query.value(VAR_NAME).toString();
+        }
+        if (!query.value(SUBVAR_ID).toString().isEmpty()) {
+            var_id.append("/" + query.value(SUBVAR_ID).toString());
+        }
+        if (!query.value(SUBVAR_NAME).toString().isEmpty()) {
+            if (!var_name.isEmpty()) { var_name.append("/"); }
+            var_name.append(query.value(SUBVAR_NAME).toString());
+        }
+        QListWidgetItem * item = new QListWidgetItem(id->variables());
+        item->setCheckState(Qt::Checked);
+        item->setText(var_name.isEmpty() ? var_id : tr("%1 (%2)").arg(var_id).arg(var_name));
+        item->setData(Qt::UserRole, var_id);
     }
     if (id->exec() != QDialog::Accepted) { return; }
-
+    QMap<QString, QVariant> set;
+    for (int c = 0; c < id->customers()->count(); ++c) {
+        if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
+        set.clear();
+        QSqlQuery customer_data(data);
+        customer_data.prepare("SELECT * FROM customers WHERE id = :id");
+        customer_data.bindValue(":id", id->customers()->item(c)->data(Qt::UserRole));
+        customer_data.exec();
+        if (customer_data.next()) {
+            for (int f = 0; f < customer_data.record().count(); ++f) {
+                set.insert(customer_data.record().fieldName(f), customer_data.value(f));
+            }
+        }
+        MTRecord record("customer", id->customers()->item(c)->data(Qt::UserRole).toString(), MTDictionary());
+        record.update(set);
+    }
+    for (int cc = 0; cc < id->circuits()->count(); ++cc) {
+        if (id->circuits()->item(cc)->checkState() == Qt::Unchecked) { continue; }
+        set.clear();
+        QString cc_parent = id->circuits()->item(cc)->data(Qt::UserRole).toString().split("::").first();
+        QString cc_id = id->circuits()->item(cc)->data(Qt::UserRole).toString().split("::").last();
+        QSqlQuery circuit_data(data);
+        circuit_data.prepare("SELECT * FROM circuits WHERE parent = :parent AND id = :id");
+        circuit_data.bindValue(":parent", cc_parent);
+        circuit_data.bindValue(":id", cc_id);
+        circuit_data.exec();
+        if (circuit_data.next()) {
+            for (int f = 0; f < circuit_data.record().count(); ++f) {
+                set.insert(circuit_data.record().fieldName(f), circuit_data.value(f));
+            }
+            set.remove("parent");
+        }
+        MTRecord record("circuit", cc_id, MTDictionary("parent", cc_parent));
+        record.update(set);
+    }
+    for (int i = 0, j = 0; i < id->inspections()->count(); ++i) {
+        if (id->inspections()->item(i)->checkState() == Qt::Unchecked) { continue; }
+        set.clear();
+        QString i_customer = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(0);
+        QString i_circuit = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(1);
+        QString i_date = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(2);
+        QSqlQuery inspection_data(data);
+        inspection_data.prepare("SELECT * FROM inspections WHERE customer = :customer AND circuit = :circuit AND date = :date");
+        inspection_data.bindValue(":customer", i_customer);
+        inspection_data.bindValue(":circuit", i_circuit);
+        inspection_data.bindValue(":date", i_date);
+        inspection_data.exec();
+        if (inspection_data.next()) {
+            for (int f = 0; f < inspection_data.record().count(); ++f) {
+                set.insert(inspection_data.record().fieldName(f), inspection_data.value(f));
+            }
+            set.remove("customer");
+            set.remove("circuit");
+        }
+        MTDictionary parents("customer", i_customer);
+        parents.insert("circuit", i_circuit);
+        MTRecord record("inspection", i_date, parents);
+        record.update(set, j == 0);
+        j++;
+    }
     this->setWindowModified(true);
     refreshView();
 }

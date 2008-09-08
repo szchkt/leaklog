@@ -36,8 +36,6 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QHeaderView>
-#include <QSqlDatabase>
-#include <QSqlError>
 
 #include <cmath>
 
@@ -60,6 +58,8 @@ private slots:
     void findPrevious();
     void setView(QAction *);
     void refreshView();
+    void viewLevelUp();
+    void viewLevelDown();
     // DATABASE
     void openRecent(QListWidgetItem *);
     void initDatabase(QSqlDatabase *);
@@ -96,7 +96,6 @@ private slots:
     void addWarning();
     void modifyWarning();
     void removeWarning();
-    void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     void exportCustomerData();
     void exportCircuitData();
     void exportInspectionData();
@@ -106,8 +105,6 @@ private slots:
 
 private:
     // UI
-    inline QString upArrow() { return QApplication::translate("MainWindow", "\342\206\221", 0, QApplication::UnicodeUTF8); };
-    inline QString downArrow() { return QApplication::translate("MainWindow", "\342\206\223", 0, QApplication::UnicodeUTF8); };
     void setView(const QString &);
     void addRecent(QString);
     void clearAll();

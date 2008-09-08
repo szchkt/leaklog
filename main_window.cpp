@@ -143,6 +143,8 @@ MainWindow::MainWindow()
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
+    QObject::connect(tbtn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
+    QObject::connect(tbtn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
     QObject::connect(spb_since, SIGNAL(valueChanged(int)), this, SLOT(refreshView()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
@@ -253,6 +255,16 @@ void MainWindow::setView(const QString & view)
 void MainWindow::refreshView()
 {
     viewChanged(cb_view->currentText());
+}
+
+void MainWindow::viewLevelUp()
+{
+    if (cb_view->currentIndex() > 0) { cb_view->setCurrentIndex(cb_view->currentIndex() - 1); }
+}
+
+void MainWindow::viewLevelDown()
+{
+    if (cb_view->currentIndex() < cb_view->count() - 1) { cb_view->setCurrentIndex(cb_view->currentIndex() + 1); }
 }
 
 void MainWindow::addRecent(QString name)

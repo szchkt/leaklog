@@ -23,6 +23,8 @@ void MainWindow::viewChanged(const QString & view)
 {
     if (!db.isOpen()) { wv_main->setHtml(QString()); return; }
 
+    tbtn_view_level_up->setEnabled(cb_view->currentIndex() > 0);
+    tbtn_view_level_down->setEnabled(cb_view->currentIndex() < cb_view->count() - 1);
     bool table_view = cb_view->currentText() == tr("Table of inspections");
     lbl_table->setEnabled(table_view);
     cb_table->setEnabled(table_view);
