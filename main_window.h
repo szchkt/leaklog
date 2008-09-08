@@ -143,6 +143,7 @@ private:
 
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;
+    MTDictionary dict_attrvalues;
     MTDictionary dict_html;
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;

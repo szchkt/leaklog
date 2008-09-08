@@ -42,6 +42,15 @@ MainWindow::MainWindow()
     dict_varnames.insert("t_sh", qApp->translate("VariableNames", "Superheating"));
     dict_varnames.insert("t_sh_evap", qApp->translate("VariableNames", "evap."));
     dict_varnames.insert("t_sh_comp", qApp->translate("VariableNames", "comp."));
+    dict_attrvalues.insert("field::car", tr("Car air conditioning"));
+    dict_attrvalues.insert("field::lowrise", tr("Low-rise residential buildings"));
+    dict_attrvalues.insert("field::highrise", tr("High-rise residential buildings"));
+    dict_attrvalues.insert("field::commercial", tr("Commercial buildings"));
+    dict_attrvalues.insert("field::institutional", tr("Institutional buildings"));
+    dict_attrvalues.insert("field::industrial", tr("Industrial spaces"));
+    dict_attrvalues.insert("field::transportation", tr("Transportation"));
+    dict_attrvalues.insert("field::airconditioning", tr("Air conditioning"));
+    dict_attrvalues.insert("field::heatpumps", tr("Heat pumps"));
     // ------------
     // HTML
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");

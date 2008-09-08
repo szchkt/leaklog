@@ -160,7 +160,11 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Date of commissioning:") << "&nbsp;</td>";
                 out << "<td style=\"width:50%;\">" << circuits.value(5).toString() << "</td></tr>";
                 out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Field of application:") << "&nbsp;</td>";
-                out << "<td style=\"width:50%;\">" << circuits.value(6).toString() << "</td></tr>";
+                out << "<td style=\"width:50%;\">";
+                if (dict_attrvalues.contains("field::" + circuits.value(6).toString())) {
+                    out << dict_attrvalues.value("field::" + circuits.value(6).toString());
+                }
+                out << "</td></tr>";
                 out << "</table></td>";
                 out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
                 out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td>";
@@ -211,7 +215,11 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         out << "<tr><td style=\"text-align: right;\">" << tr("Serial number:") << "&nbsp;</td><td>" << query.value(2).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Year of purchase:") << "&nbsp;</td><td>" << query.value(3).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Date of commissioning:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Field of application:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(5).toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Field of application:") << "&nbsp;</td><td style=\"width:50%;\">";
+        if (dict_attrvalues.contains("field::" + query.value(5).toString())) {
+            out << dict_attrvalues.value("field::" + query.value(5).toString());
+        }
+        out << "</td></tr>";
         out << "</table></td>";
         out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(6).toString() << "</td></tr>";
@@ -560,10 +568,12 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     compare_nom = subvariables.at(s).toMap().value("cmopare_nom").toString() == "1";
                     if (subvariables.at(s).toMap().value("value").toString().contains("sum")) {
                         QString i_year = inspections.at(i).value("date").toString().split(".").first();
-                        if (i > 0 && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
+                        if (inspections.at(i).value("nominal").toInt()) rowspan = 1;
+                        else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
                         else {
                             int in = i;
                             for (; in < inspections.count(); ++in) {
+                                if (inspections.at(in).value("nominal").toInt()) in--;
                                 if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
                                     break;
                                 }
@@ -572,11 +582,13 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                         }
                     } else rowspan = 1;
                     if (subvariables.at(s).toMap().value("value").toString().isEmpty()) {
+                        //QMessageBox::information(this, "1", toString(rowspan));
                         ins_value = inspections.at(i).value(subvariables.at(s).toMap().value("id").toString()).toString();
                         if (compare_nom) {
                             nom_value = nominal_ins.value(subvariables.at(s).toMap().value("id").toString()).toString();
                             if (nom_value.isEmpty()) compare_nom = false;
                         }
+                        //QMessageBox::information(this, "1", "0000");
                     } else {
                         MTDictionary expression = parseExpression(subvariables.at(s).toMap().value("value").toString(), &used_ids);
                         ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
@@ -637,7 +649,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                             MTDictionary expression = parseExpression(subvariables.at(s).toMap().value("value").toString(), &used_ids);
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 if (subvariables.at(s).toMap().value("value").toString().contains("sum")) {
-                                    if (ins > 0 && inspections.at(ins-1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
+                                    if (ins > 0 && !inspections.at(ins-1).value("nominal").toInt() && inspections.at(ins-1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
                                 }
                                 value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
@@ -653,7 +665,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                 if (is_in_foot) {
                     if (variables.value(table_vars.at(i)).value("value").toString().isEmpty()) {
                         for (int ins = 0; ins < inspections.count(); ++ins) {
-                            value += inspections.at(ins).value(variables.value(table_vars.at(i)).value("id").toString()).toDouble();
+                            value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                         }
                         out << value;
                     } else {
@@ -709,7 +721,7 @@ double MainWindow::evaluateExpression(/*FunctionParser & fparser*/QMap<QString, 
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
-    const QString sum_query("SELECT SUM(%1) FROM inspections WHERE date LIKE :year AND customer = :customer_id AND circuit = :circuit_id");
+    const QString sum_query("SELECT SUM(%1) FROM inspections WHERE date LIKE :year AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
     QMap<QString, QVariant> circuit_attributes = circuit.list();
     QString value;
@@ -717,6 +729,10 @@ double MainWindow::evaluateExpression(/*FunctionParser & fparser*/QMap<QString, 
         if (expression.value(i) == "id") {
             value.append(inspection.value(expression.key(i)).toString());
         } else if (expression.value(i) == "sum") {
+            if (inspection.value("nominal").toInt()) {
+                value.append(inspection.value(expression.key(i)).toString());
+                continue;
+            }
             QSqlQuery sum_ins;
             sum_ins.prepare(sum_query.arg(expression.key(i)));
             sum_ins.bindValue(":customer_id", customer_id);
