@@ -726,54 +726,6 @@ void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value,
     out << "</td>";
 }
 
-double MainWindow::evaluateExpression(/*FunctionParser & fparser*/QMap<QString, QVariant> & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
-{
-    QString inspection_date = inspection.value("date").toString();
-    FunctionParser fparser;
-    const QString sum_query("SELECT SUM(%1) FROM inspections WHERE date LIKE :year AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
-    QMap<QString, QVariant> circuit_attributes = circuit.list();
-    QString value;
-    for (int i = 0; i < expression.count(); ++i) {
-        if (expression.value(i) == "id") {
-            value.append(inspection.value(expression.key(i)).toString());
-        } else if (expression.value(i) == "sum") {
-            if (inspection.value("nominal").toInt()) {
-                value.append(inspection.value(expression.key(i)).toString());
-                continue;
-            }
-            QSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(expression.key(i)));
-            sum_ins.bindValue(":customer_id", customer_id);
-            sum_ins.bindValue(":circuit_id", circuit_id);
-            sum_ins.bindValue(":year", QString("%1%").arg(inspection_date.left(4)));
-            if (sum_ins.exec() && sum_ins.next()) {
-                value.append(sum_ins.value(0).toString());
-            }
-        } else if (expression.value(i) == "circuit_attribute") {
-            value.append(circuit_attributes.value(expression.key(i)).toString());
-            /*QSqlQuery circuit;
-            circuit.prepare("SELECT :circuit_attribute FROM circuits WHERE parent = :customer_id AND id = :circuit_id");
-            circuit.bindValue(":circuit_attribute", expression.key(i));
-            circuit.bindValue(":customer_id", customer_id);
-            circuit.bindValue(":circuit_id", circuit_id);
-            if (circuit.exec() && circuit.next()) {
-                value.append(circuit.value(0).toString());
-            }*/
-        } else {
-            value.append(expression.key(i));
-        }
-    }
-    if (fparser.Parse(value.toStdString(), "") >= 0) {
-        if (ok) *ok = false;
-        return 0;
-    }
-    if (ok) *ok = true;
-    long double result = fparser.Eval(NULL);
-    if (round(result) == result) return (double)result;
-    return (double)(round(result * 100.0)/100.0);
-}
-
 /*void MainWindow::addVariablesToParser(FunctionParser & fparser, const QMap<QString, QVariant> & inspection, bool all)
 {
     QStringList ids; bool sub_empty = false;
@@ -792,17 +744,6 @@ double MainWindow::evaluateExpression(/*FunctionParser & fparser*/QMap<QString, 
         }
     }
 }*/
-
-QString MainWindow::compareValues(double value1, double value2)
-{
-    if (value1 < value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
-	} else if (value1 > value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
-	} else {
-		return "%1";
-	}
-}
 
 QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<QString, QVariant> & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids)
 {

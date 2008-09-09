@@ -21,7 +21,6 @@
 #include "about_widget.h"
 #include "modify_warning_dialogue.h"
 #include "import_dialogue.h"
-#include "fparser/fparser.hh"
 
 #include <QCloseEvent>
 #include <QSettings>
@@ -36,8 +35,6 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QHeaderView>
-
-#include <cmath>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -62,7 +59,6 @@ private slots:
     void viewLevelDown();
     // DATABASE
     void openRecent(QListWidgetItem *);
-    void initDatabase(QSqlDatabase *);
     void newDatabase();
     void open();
     void save();
@@ -114,6 +110,11 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(QString, bool);
+    void initDatabase(QSqlDatabase *);
+    void initVariables();
+    void initVariable(const QString &, const QString &, const QString &, const QString &, bool, const QString &);
+    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
+    void initTables();
     void openDatabase(QString);
     void saveDatabase(QString);
     void loadCustomer(QListWidgetItem *, bool);
@@ -123,7 +124,6 @@ private:
     void moveTableVariable(bool);
     void exportData(const QString &);
     QStringList listVariableIds(bool = false);
-    MTDictionary parseExpression(const QString &, QStringList *);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
@@ -133,8 +133,6 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
-    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
-    QString compareValues(double, double);
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
 
