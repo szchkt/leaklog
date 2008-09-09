@@ -241,8 +241,12 @@ void MainWindow::setView(QAction * action)
 
 void MainWindow::setView(const QString & view)
 {
-    cb_view->setCurrentIndex(view_indices.value(view));
-    refreshView();
+    int i = view_indices.value(view);
+    if (cb_view->currentIndex() == i) {
+        refreshView();
+    } else {
+        cb_view->setCurrentIndex(i);
+    }
 }
 
 void MainWindow::refreshView()

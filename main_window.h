@@ -140,6 +140,7 @@ private:
     MTDictionary dict_varnames;
     MTDictionary dict_attrvalues;
     MTDictionary dict_html;
+    QMap<QString, MTDictionary> parsed_expressions;
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;
     QString last_search_keyword;

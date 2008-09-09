@@ -81,6 +81,8 @@ void MainWindow::initVariables()
     initSubvariable("t_sh", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-t_0", true);
     initSubvariable("t_sh", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-t_0", true);
     initVariable("t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-t_0", true, "");
+    initVariable("delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-t_c", true, "");
     initVariable("ep_comp", "float", tr("%1C").arg(degreeSign()), "", true, "");
     initVariable("ec", "", "", "", false, "");
     initSubvariable("ec", "ec_l1", "float", tr("A"), "", true);
@@ -309,6 +311,7 @@ void MainWindow::closeDatabase(bool save)
 {
 	if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
     db.close(); QSqlDatabase::removeDatabase(db.connectionName());
+    parsed_expressions.clear();
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
 	this->setWindowModified(false);
