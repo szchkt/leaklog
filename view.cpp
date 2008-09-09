@@ -134,7 +134,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
         while (circuits.next()) {
             num_circuits++;
             MTDictionary inspection_parents("circuit", circuits.value(0).toString());
-            inspection_parents.insert("customer", query.value(0).toString());
+            inspection_parents.insert("customer", customer_id);
             MTRecord inspection_record("inspection", "", inspection_parents);
             num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
         }
@@ -448,6 +448,13 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
     QList<QMap<QString, QVariant> > inspections = inspection_record.listAll();
+    for (int i = 0; i < inspections.count(); ++i) {
+        if (table.value("highlight_nominal").toInt() && inspections.at(i).value("nominal").toInt()) {}
+        else if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
+            inspections.removeAt(i);
+            i--;
+        }
+    }
 
     QMap<QString, QVariant> nominal_ins;
     for (int i = 0; i < inspections.count(); ++i) {
@@ -556,7 +563,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "<tbody>";
     int cell_count = 0;
     for (int i = 0; i < inspections.count(); ++i) {
-        out << "<tr class=\"";
+     out << "<tr class=\"";
         if (inspections.at(i).value("nominal").toInt() == 1 && table.value("highlight_nominal").toInt() != 0) {
             out << "nominal";
         }
