@@ -34,7 +34,8 @@
 #include <QPrintPreviewDialog>
 #include <QPrintDialog>
 #include <QPrinter>
-#include <QHeaderView>
+#include <QHttp>
+#include <QBuffer>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -57,12 +58,16 @@ private slots:
     void refreshView();
     void viewLevelUp();
     void viewLevelDown();
+    void changeLanguage();
+    void languageChanged();
+    void checkForUpdates();
+    void httpRequestFinished(bool);
     // DATABASE
     void openRecent(QListWidgetItem *);
     void newDatabase();
     void open();
     void save();
-    void saveAs();
+    void saveAndCompact();
     void closeDatabase(bool = true);
     void addCustomer();
     void modifyCustomer();
@@ -116,7 +121,7 @@ private:
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
     void initTables();
     void openDatabase(QString);
-    void saveDatabase(QString);
+    void saveDatabase(bool = false);
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);
@@ -144,6 +149,9 @@ private:
     QActionGroup * actgrp_view;
     QString last_search_keyword;
     QSqlDatabase db;
+    QComboBox * cb_lang;
+    QMap<QString, QString> leaklog_i18n;
+    QHttp * http; QBuffer * http_buffer;
     QString leaklog_version; float f_leaklog_version;
 
     friend class ModifyDialogue;

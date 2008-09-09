@@ -65,6 +65,7 @@ public:
     inline QString type() { return r_type; };
     inline QString id() { return r_id; };
     inline MTDictionary * parents() { return &r_parents; };
+    bool exists();
     QSqlQuery select(const QString & = "*");
     QMap<QString, QVariant> list(const QString & = "*");
     QList<QMap<QString, QVariant> > listAll(const QString & = "*");

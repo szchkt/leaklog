@@ -22,6 +22,8 @@
 
 #include "ui_import_dialogue.h"
 
+#include <QHeaderView>
+
 class ImportDialogue : public QDialog, private Ui::ImportDialogue
 {
     Q_OBJECT
@@ -30,18 +32,23 @@ public:
     ImportDialogue(QWidget * parent = NULL):
     QDialog(parent) {
         setupUi(this);
+        id_trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
+        id_trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+        //id_trw_variables->header()->setResizeMode(4, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(5, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(6, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(7, QHeaderView::ResizeToContents);
         QObject::connect(id_le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
         QObject::connect(id_le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
         QObject::connect(id_le_search_inspections, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_inspections, SLOT(filterItems(QLineEdit *, const QString &)));
-        QObject::connect(id_le_search_variables, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_variables, SLOT(filterItems(QLineEdit *, const QString &)));
         QObject::connect(id_tbtn_customers_selectall, SIGNAL(clicked()), this, SLOT(selectAllCustomers()));
         QObject::connect(id_tbtn_circuits_selectall, SIGNAL(clicked()), this, SLOT(selectAllCircuits()));
         QObject::connect(id_tbtn_inspections_selectall, SIGNAL(clicked()), this, SLOT(selectAllInspections()));
-        QObject::connect(id_tbtn_variables_selectall, SIGNAL(clicked()), this, SLOT(selectAllVariables()));
         QObject::connect(id_tbtn_customers_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllCustomers()));
         QObject::connect(id_tbtn_circuits_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllCircuits()));
         QObject::connect(id_tbtn_inspections_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllInspections()));
-        QObject::connect(id_tbtn_variables_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllVariables()));
         QObject::connect(id_lw_customers, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(showCircuits(QListWidgetItem *)));
         QObject::connect(id_lw_circuits, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(showInspections(QListWidgetItem *)));
         item_flags = Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
@@ -49,7 +56,7 @@ public:
     inline MTListWidget * customers() { return id_lw_customers; };
     inline MTListWidget * circuits() { return id_lw_circuits; };
     inline MTListWidget * inspections() { return id_lw_inspections; };
-    inline MTListWidget * variables() { return id_lw_variables; };
+    inline QTreeWidget * variables() { return id_trw_variables; };
 
 private slots:
     void showCircuits(QListWidgetItem * item) {
@@ -75,11 +82,9 @@ private slots:
     void selectAllCustomers() { selectAll(customers()); };
     void selectAllCircuits() { selectAll(circuits()); };
     void selectAllInspections() { selectAll(inspections()); };
-    void selectAllVariables() { selectAll(variables()); };
     void deselectAllCustomers() { deselectAll(customers()); };
     void deselectAllCircuits() { deselectAll(circuits()); };
     void deselectAllInspections() { deselectAll(inspections()); };
-    void deselectAllVariables() { deselectAll(variables()); };
 
 private:
     void selectAll(MTListWidget * lw) {
