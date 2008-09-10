@@ -38,6 +38,7 @@ namespace Global {
     QString upArrow();
     QString downArrow();
     QString degreeSign();
+    QString delta();
     void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     QStringList getTableFieldNames(const QString &, QSqlDatabase *);
     void addColumn(const QString &, const QString &, QSqlDatabase *);

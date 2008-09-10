@@ -144,6 +144,7 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
+    void viewAllInspectors(const QString &);
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
 
@@ -151,6 +152,7 @@ private:
     MTDictionary dict_varnames;
     MTDictionary dict_attrvalues;
     MTDictionary dict_html;
+    QMap<QString, MTDictionary> parsed_expressions;
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;
     QString last_search_keyword;
