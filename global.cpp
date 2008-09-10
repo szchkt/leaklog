@@ -366,7 +366,8 @@ QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
     QString id_field = r_type == "inspection" ? "date" : "id";
-    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type) + " WHERE ";
+    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type);
+    if (has_id || r_parents.count()) { select.append(" WHERE "); }
     if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i != 0) { select.append(" AND "); }

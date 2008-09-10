@@ -42,7 +42,7 @@ void MainWindow::viewChanged(const QString & view)
     } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("Inspectors")) {
-        //viewAllInspectors(toString(selectedInspector()));
+        viewAllInspectors(toString(selectedInspector()));
     } else {
         wv_main->setHtml(QString());
     }
@@ -862,32 +862,36 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
 void MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; QTextStream out(&html);
-    QSqlQuery query;
+    MTRecord inspectors_rec("inspector", "", MTDictionary());
+    /*QSqlQuery query;
     query.setForwardOnly(true);
-    query.prepare("SELECT person, id, company, company_reg_num, person_reg_num FROM inspectors ORDER BY person");
-    query.exec();
+    query.prepare("SELECT person, id, company, company_reg_num, person_reg_num FROM inspectors ORDER BY id");
+    query.exec();*/
+    //QMap<QString, QVariant> inspectors_map = inspectors_rec.list();
+    QList<QMap<QString, QVariant> > inspectors = inspectors_rec.listAll();
 
-    while (query.next()) {
+    //while (query.next()) {
+    for (int i = 0; i < inspectors.count(); ++i) {
         QString link;
-        out << "<table style=\"";
-        if (highlighted_id == query.value(1).toString()) {
-            out << "background-color: #CCCCCC;";
-            link = "inspector:" + query.value(1).toString() + "/modify";
+        out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr style=\"background-color: ";
+        if (highlighted_id == inspectors.at(i).value("id").toString()) {
+            out << "#CCCCCC;";
+            link = "inspector:" + inspectors.at(i).value("id").toString() + "/modify";
         } else {
-            link = "inspector:" + query.value(1).toString();
+            out << "#eee;";
+            link = "inspector:" + inspectors.at(i).value("id").toString();
         }
-        out << "\">";
-        out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Inspector:") << "&nbsp;";
-        out << "<a href=\"" << link << "\">" << query.value(0).toString() << "</a></b></td></tr>";
+        out << "\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Inspector:") << "&nbsp;";
+        out << "<a href=\"" << link << "\">" << inspectors.at(i).value("person").toString() << "</a></b></td></tr>";
         out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td>" << query.value(1).toString() << "</td></tr>";
+        out << "<td>" << inspectors.at(i).value("id").toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Company:") << "&nbsp;</b></td>";
-        out << "<td><b>" << query.value(2).toString() << "</b></td></tr>";
+        out << "<td><b>" << inspectors.at(i).value("company").toString() << "</b></td></tr>";
         out << "</table></td><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Person registry number:") << "&nbsp;</td>";
-        out << "<td>" << query.value(3).toString() << "</td></tr>";
+        out << "<td>" << inspectors.at(i).value("company_reg_num").toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Company registry number:") << "&nbsp;</td>";
-        out << "<td>" << query.value(4).toString() << "</td></tr>";
+        out << "<td>" << inspectors.at(i).value("person_reg_num").toString() << "</td></tr>";
         out << "</table></td></tr>";
         out << "</table>";
     }
