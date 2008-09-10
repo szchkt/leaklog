@@ -354,12 +354,25 @@ void MainWindow::modifyCustomer()
     if (selectedCustomer() < 0) { return; }
     MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
     ModifyDialogue * md = new ModifyDialogue(record, this);
+    QString id = toString(selectedCustomer());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
         QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = lw_customers->highlightedItem();
         item->setText(company.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(company));
         item->setData(Qt::UserRole, record.id());
+        if (id != record.id()) {
+            QSqlQuery update_circuits;
+            update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
+            update_circuits.bindValue(":old_id", id);
+            update_circuits.bindValue(":new_id", record.id());
+            update_circuits.exec();
+            QSqlQuery update_inspections;
+            update_inspections.prepare("UPDATE inspections SET customer = :new_id WHERE customer = :old_id");
+            update_inspections.bindValue(":old_id", id);
+            update_inspections.bindValue(":new_id", record.id());
+            update_inspections.exec();
+        }
         this->setWindowModified(true);
         refreshView();
     }
@@ -376,6 +389,10 @@ void MainWindow::removeCustomer()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
     record.remove();
+    MTRecord circuits("circuit", "", MTDictionary("parent", toString(selectedCustomer())));
+    circuits.remove();
+    MTRecord inspections("inspection", "", MTDictionary("customer", toString(selectedCustomer())));
+    inspections.remove();
     if (item != NULL) { delete item; }
     lw_circuits->clear(); lw_inspections->clear();
     enableTools();
@@ -436,11 +453,20 @@ void MainWindow::modifyCircuit()
     if (selectedCircuit() < 0) { return; }
     MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
     ModifyDialogue * md = new ModifyDialogue(record, this);
+    QString id = toString(selectedCircuit());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
         QListWidgetItem * item = lw_circuits->highlightedItem();
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
+        if (id != record.id()) {
+            QSqlQuery update_inspections;
+            update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+            update_inspections.bindValue(":customer_id", selectedCustomer());
+            update_inspections.bindValue(":old_id", id);
+            update_inspections.bindValue(":new_id", record.id());
+            update_inspections.exec();
+        }
         this->setWindowModified(true);
         refreshView();
     }
@@ -458,6 +484,10 @@ void MainWindow::removeCircuit()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
     record.remove();
+    MTDictionary parents("customer", toString(selectedCustomer()));
+    parents.insert("circuit", toString(selectedCircuit()));
+    MTRecord inspections("inspection", "", parents);
+    inspections.remove();
     if (item != NULL) { delete item; }
     lw_inspections->clear();
     enableTools();
@@ -591,6 +621,7 @@ void MainWindow::addVariable(bool subvar)
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
         addColumn(record.id(), "inspections", &db);
+        parsed_expressions.clear();
         this->setWindowModified(true);
         refreshView();
     }
@@ -615,7 +646,17 @@ void MainWindow::modifyVariable()
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
-        if (id != record.id()) { renameColumn(id, record.id(), "inspections", &db); }
+        if (id != record.id()) {
+            renameColumn(id, record.id(), "inspections", &db);
+            parsed_expressions.clear();
+            if (record.type() == "variable") {
+                QSqlQuery update_subvariables;
+                update_subvariables.prepare("UPDATE subvariables SET parent = :new_id WHERE parent = :old_id");
+                update_subvariables.bindValue(":old_id", id);
+                update_subvariables.bindValue(":new_id", record.id());
+                update_subvariables.exec();
+            }
+        }
         this->setWindowModified(true);
         refreshView();
     }
@@ -642,6 +683,7 @@ void MainWindow::removeVariable()
     record.remove();
     if (item != NULL) { delete item; }
     dropColumn(id, "inspections", &db);
+    parsed_expressions.clear();
     enableTools();
     this->setWindowModified(true);
     refreshView();
