@@ -45,6 +45,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/table.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Table of inspections"), in.readAll());
     file.close();
+    file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Inspectors"), in.readAll());
+    file.close();
     // ----
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -66,12 +69,7 @@ MainWindow::MainWindow()
     tbtn_remove_table->setDefaultAction(actionRemove_table);
     tbtn_add_warning->setDefaultAction(actionAdd_warning);
     tbtn_remove_warning->setDefaultAction(actionRemove_warning);
-    QStringList views;
-    views << tr("All customers");
-    views << tr("Customer information");
-    views << tr("Circuit information");
-    views << tr("Inspection information");
-    views << tr("Table of inspections");
+    QStringList views = dict_html.keys();
     QAction * action; actgrp_view = new QActionGroup(this);
     QAction * separator = menuView->actions().at(0);
     QObject::connect(actgrp_view, SIGNAL(triggered(QAction *)), this, SLOT(setView(QAction *)));

@@ -856,3 +856,38 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
     }
     return warnings_list;
 }
+
+void MainWindow::viewAllInspectors(const QString & highlighted_id)
+{
+    QString html; QTextStream out(&html);
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare("SELECT person, id, company, company_reg_num, person_reg_num FROM inspectors ORDER BY person");
+    query.exec();
+
+    while (query.next()) {
+        QString link;
+        out << "<table style=\"";
+        if (highlighted_id == query.value(1).toString()) {
+            out << "background-color: #CCCCCC;";
+            link = "inspector:" + query.value(1).toString() + "/modify";
+        } else {
+            link = "inspector:" + query.value(1).toString();
+        }
+        out << "\">";
+        out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Inspector:") << "&nbsp;";
+        out << "<a href=\"" << link << "\">" << query.value(0).toString() << "</a></b></td></tr>";
+        out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
+        out << "<td>" << query.value(1).toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Company:") << "&nbsp;</b></td>";
+        out << "<td><b>" << query.value(2).toString() << "</b></td></tr>";
+        out << "</table></td><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Person registry number:") << "&nbsp;</td>";
+        out << "<td>" << query.value(3).toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Company registry number:") << "&nbsp;</td>";
+        out << "<td>" << query.value(4).toString() << "</td></tr>";
+        out << "</table></td></tr>";
+        out << "</table>";
+    }
+    wv_main->setHtml(dict_html.value(tr("Inspectors")).arg(html), QUrl("qrc:/html/"));
+}
