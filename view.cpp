@@ -220,8 +220,8 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(6).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td><td>" << query.value(7).toString() << "&nbsp;kg</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td><td>";
-        if (dict_attrvalues.contains("oil::" + circuits.value(8).toString())) {
-            out << dict_attrvalues.value("oil::" + circuits.value(8).toString());
+        if (dict_attrvalues.contains("oil::" + query.value(8).toString())) {
+            out << dict_attrvalues.value("oil::" + query.value(8).toString());
         }
         out << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td><td>" << query.value(9).toString() << "&nbsp;kg</td></tr>";
