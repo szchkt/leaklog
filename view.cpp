@@ -41,6 +41,8 @@ void MainWindow::viewChanged(const QString & view)
         viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
+    } else if (view == tr("Inspectors")) {
+        //viewAllInspectors(toString(selectedInspector()));
     } else {
         wv_main->setHtml(QString());
     }

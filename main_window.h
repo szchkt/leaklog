@@ -97,6 +97,10 @@ private slots:
     void addWarning();
     void modifyWarning();
     void removeWarning();
+    void addInspector();
+    void modifyInspector();
+    void removeInspector();
+    void loadInspector(QListWidgetItem *);
     void exportCustomerData();
     void exportCircuitData();
     void exportInspectionData();
@@ -127,11 +131,13 @@ private:
     void loadInspection(QListWidgetItem *, bool);
     void addVariable(bool);
     void moveTableVariable(bool);
+    void loadInspector(QListWidgetItem *, bool);
     void exportData(const QString &);
     QStringList listVariableIds(bool = false);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
+    inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
     void viewAllCustomers();
     void viewCustomer(const QString &);

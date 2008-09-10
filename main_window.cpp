@@ -57,6 +57,7 @@ MainWindow::MainWindow()
     http_buffer = new QBuffer(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
     dw_browser->setVisible(false);
+    dw_inspectors->setVisible(false);
     dw_variables->setVisible(false);
     dw_tables->setVisible(false);
     dw_warnings->setVisible(false);
@@ -123,6 +124,9 @@ MainWindow::MainWindow()
     QObject::connect(actionAdd_warning, SIGNAL(triggered()), this, SLOT(addWarning()));
     QObject::connect(actionModify_warning, SIGNAL(triggered()), this, SLOT(modifyWarning()));
     QObject::connect(actionRemove_warning, SIGNAL(triggered()), this, SLOT(removeWarning()));
+    QObject::connect(actionAdd_inspector, SIGNAL(triggered()), this, SLOT(addInspector()));
+    QObject::connect(actionModify_inspector, SIGNAL(triggered()), this, SLOT(modifyInspector()));
+    QObject::connect(actionRemove_inspector, SIGNAL(triggered()), this, SLOT(removeInspector()));
     QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
     QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
     QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
@@ -132,11 +136,13 @@ MainWindow::MainWindow()
     QObject::connect(le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(le_search_inspections, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_inspections, SLOT(filterItems(QLineEdit *, const QString &)));
+    QObject::connect(le_search_inspectors, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_inspectors, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(lw_customers, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCustomer(QListWidgetItem *)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(modifyVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
+    QObject::connect(lw_inspectors, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspector(QListWidgetItem *)));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(tbtn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
     QObject::connect(tbtn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
@@ -172,6 +178,14 @@ void MainWindow::executeLink(const QUrl & url)
                     loadCustomer(lw_customers->item(i), path.count() <= 1); break;
                 }
             }
+        } else if (path.at(0).startsWith("inspector:")) {
+            id = path.at(0);
+            id.remove(0, QString("inspector:").length());
+            for (int i = 0; i < lw_inspectors->count(); ++i) {
+                if (lw_inspectors->item(i)->data(Qt::UserRole).toString() == id) {
+                    loadInspector(lw_customers->item(i), path.count() <= 1); break;
+                }
+            }
         }
     }
     if (path.count() > 1) {
@@ -183,7 +197,10 @@ void MainWindow::executeLink(const QUrl & url)
                     loadCircuit(lw_circuits->item(i), path.count() <= 2); break;
                 }
             }
-        } else if (path.at(1).startsWith("modify")) { modifyCustomer(); }
+        } else if (path.at(1).startsWith("modify")) {
+            if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
+            else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
+        }
     }
     if (path.count() > 2) {
         if (path.at(2).startsWith("inspection:")) {
@@ -316,6 +333,7 @@ void MainWindow::setAllEnabled(bool enable)
         if (!enable) actionModify_inspection->setEnabled(enable);
         if (!enable) actionRemove_inspection->setEnabled(enable);
     dw_browser->setEnabled(enable);
+    dw_inspectors->setEnabled(enable);
     dw_variables->setEnabled(enable);
     dw_tables->setEnabled(enable);
     dw_warnings->setEnabled(enable);
@@ -327,6 +345,7 @@ void MainWindow::enableTools()
     bool customer_selected = lw_customers->highlightedRow() >= 0;
     bool circuit_selected = lw_circuits->highlightedRow() >= 0;
     bool inspection_selected = lw_inspections->highlightedRow() >= 0;
+    bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
     lbl_selected_customer->setText(customer_selected ? lw_customers->highlightedItem()->text() : QString());
     lbl_current_selection_arrow1->setVisible(circuit_selected);
     lbl_selected_circuit->setVisible(circuit_selected);
@@ -356,6 +375,8 @@ void MainWindow::enableTools()
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
     actionModify_warning->setEnabled(lw_warnings->currentIndex().isValid());
     actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid());
+    actionModify_inspector->setEnabled(inspector_selected);
+    actionRemove_inspector->setEnabled(inspector_selected);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

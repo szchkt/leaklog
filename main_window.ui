@@ -515,6 +515,8 @@
     <addaction name="actionFind" />
     <addaction name="actionFind_next" />
     <addaction name="actionFind_previous" />
+    <addaction name="separator" />
+    <addaction name="actionChange_language" />
    </widget>
    <widget class="QMenu" name="menuView" >
     <property name="title" >
@@ -522,11 +524,18 @@
     </property>
     <addaction name="separator" />
     <addaction name="actionShow_browser" />
+    <addaction name="actionShow_inspectors" />
     <addaction name="actionShow_variables" />
     <addaction name="actionShow_tables" />
     <addaction name="actionShow_warnings" />
-    <addaction name="separator" />
-    <addaction name="actionChange_language" />
+   </widget>
+   <widget class="QMenu" name="menuInspector" >
+    <property name="title" >
+     <string>Inspector</string>
+    </property>
+    <addaction name="actionAdd_inspector" />
+    <addaction name="actionModify_inspector" />
+    <addaction name="actionRemove_inspector" />
    </widget>
    <addaction name="menuFile" />
    <addaction name="menuEdit" />
@@ -535,6 +544,7 @@
    <addaction name="menuCustomer" />
    <addaction name="menuCooling_circuit" />
    <addaction name="menuInspection" />
+   <addaction name="menuInspector" />
    <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
@@ -962,6 +972,38 @@
         </widget>
        </item>
       </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_inspectors" >
+   <property name="allowedAreas" >
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Inspectors</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_inspectors" >
+    <layout class="QGridLayout" name="gridLayout_5" >
+     <item row="0" column="0" >
+      <widget class="QLabel" name="lbl_search_inspectors" >
+       <property name="text" >
+        <string>Search:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="ExtendedLineEdit" name="le_search_inspectors" />
+     </item>
+     <item row="1" column="0" colspan="2" >
+      <widget class="MTListWidget" name="lw_inspectors" >
+       <property name="sortingEnabled" >
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -1475,6 +1517,53 @@
     <string>Change language</string>
    </property>
   </action>
+  <action name="actionShow_inspectors" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show inspectors</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+I</string>
+   </property>
+  </action>
+  <action name="actionAdd_inspector" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspector_add16.png</normaloff>:/images/images/inspector_add16.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add inspector</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+Shift++</string>
+   </property>
+  </action>
+  <action name="actionModify_inspector" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify inspector</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+Shift+*</string>
+   </property>
+  </action>
+  <action name="actionRemove_inspector" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/inspector_remove16.png</normaloff>:/images/images/inspector_remove16.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove inspector</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Alt+Shift+-</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="9" />
  <customwidgets>
@@ -1635,6 +1724,38 @@
     <hint type="sourcelabel" >
      <x>881</x>
      <y>650</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_inspectors</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_inspectors</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>51</x>
+     <y>647</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dw_inspectors</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionShow_inspectors</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>51</x>
+     <y>647</y>
     </hint>
     <hint type="destinationlabel" >
      <x>-1</x>

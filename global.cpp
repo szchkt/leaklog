@@ -342,6 +342,8 @@ QString MTRecord::tableForRecordType(const QString & type)
         return "tables";
     } else if (type == "warning") {
         return "warnings";
+    } else if (type == "inspector") {
+        return "inspectors";
     } else {*/
         return type + "s";
     //}

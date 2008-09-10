@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/inspector_add16.png</file>
+    <file>images/inspector_modify22.png</file>
+    <file>images/inspector_remove16.png</file>
     <file>images/item_found16.png</file>
     <file>images/item_found_diff16.png</file>
     <file>images/item_new16.png</file>

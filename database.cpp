@@ -45,6 +45,7 @@ void MainWindow::initDatabase(QSqlDatabase * database)
     QSqlQuery create_customers("CREATE TABLE customers (id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT)", *database);
     QSqlQuery create_circuits("CREATE TABLE circuits (parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC)", *database);
     QSqlQuery create_inspections("CREATE TABLE inspections (customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER)", *database);
+    QSqlQuery create_inspectors("CREATE TABLE inspectors (id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT)", *database);
     QSqlQuery create_variables("CREATE TABLE variables (id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, col_bg TEXT)", *database);
     QSqlQuery create_subvariables("CREATE TABLE subvariables (parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER)", *database);
     QSqlQuery create_tables("CREATE TABLE tables (id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT)", *database);
@@ -54,6 +55,7 @@ void MainWindow::initDatabase(QSqlDatabase * database)
     QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
     QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
     QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
+    QSqlQuery create_index_inspectors_id("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)", *database);
     QSqlQuery create_index_variables_id("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)", *database);
     QSqlQuery create_index_subvariables_id("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)", *database);
     QSqlQuery create_index_tables_id("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)", *database);
@@ -229,6 +231,13 @@ void MainWindow::openDatabase(QString path)
         item->setText(customers.value(1).toString().isEmpty() ? customers.value(0).toString() : tr("%1 (%2)").arg(customers.value(0).toString()).arg(customers.value(1).toString()));
         item->setData(Qt::UserRole, customers.value(0).toString());
         lw_customers->addItem(item);
+    }
+    QSqlQuery inspectors("SELECT id, person FROM inspectors");
+    while (inspectors.next()) {
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : tr("%1 (%2)").arg(inspectors.value(0).toString()).arg(inspectors.value(1).toString()));
+        item->setData(Qt::UserRole, inspectors.value(0).toString());
+        lw_inspectors->addItem(item);
     }
     QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, subvariables.id, subvariables.name, subvariables.type, subvariables.unit FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
     const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
@@ -909,6 +918,70 @@ void MainWindow::removeWarning()
     enableTools();
     this->setWindowModified(true);
     refreshView();
+}
+
+void MainWindow::addInspector()
+{
+    if (!db.isOpen()) { return; }
+    MTRecord record("inspector", "", MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        QString person = record.list("person").value("person").toString();
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(person.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(person));
+        item->setData(Qt::UserRole, record.id());
+        lw_inspectors->addItem(item);
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::modifyInspector()
+{
+    if (!db.isOpen()) { return; }
+    if (selectedInspector() < 0) { return; }
+    MTRecord record("inspector", toString(selectedInspector()), MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        QString person = record.list("person").value("person").toString();
+        QListWidgetItem * item = lw_inspectors->highlightedItem();
+        item->setText(person.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(person));
+        item->setData(Qt::UserRole, record.id());
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::removeInspector()
+{
+    if (!db.isOpen()) { return; }
+    if (selectedInspector() < 0) { return; }
+    QListWidgetItem * item = lw_inspectors->highlightedItem();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    MTRecord record("inspector", toString(selectedInspector()), MTDictionary());
+    record.remove();
+    if (item != NULL) { delete item; }
+    enableTools();
+    this->setWindowModified(true);
+    setView(tr("Inspectors"));
+}
+
+void MainWindow::loadInspector(QListWidgetItem * item) { loadInspector(item, true); }
+
+void MainWindow::loadInspector(QListWidgetItem * item, bool refresh)
+{
+    if (item == NULL) { return; }
+    lw_inspections->highlightItem(item);
+    enableTools();
+    if (refresh) {
+        setView(tr("Inspectors"));
+    }
 }
 
 void MainWindow::exportCustomerData()

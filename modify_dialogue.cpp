@@ -220,6 +220,20 @@ QDialog(parent)
         md_dict_input.insert("highlight_nominal", "chb");
         query_used_ids.prepare("SELECT id FROM tables" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
+    } else if (md_record.type() == "inspector") {
+        md_dict.insert("inspector", tr("Inspector")); // _i = 1;
+        md_dict.insert("id", tr("ID"));
+        md_dict_input.insert("id", "le;0000");
+        md_dict.insert("person", tr("Certified person"));
+        md_dict_input.insert("person", "le");
+        md_dict.insert("company", tr("Certified company"));
+        md_dict_input.insert("company", "le");
+        md_dict.insert("person_reg_num", tr("Person registry number"));
+        md_dict_input.insert("person_reg_num", "le");
+        md_dict.insert("company_reg_num", tr("Company registry number"));
+        md_dict_input.insert("company_reg_num", "le");
+        query_used_ids.prepare("SELECT id FROM inspectors" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     }
     if (query_used_ids.exec()) {
         bool _nominal = md_record.type() == "inspection";
@@ -274,6 +288,7 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
 {
     if (inputtype.at(0) == "le") {
         QLineEdit * md_le_var = new QLineEdit(this);
+        md_le_var->setMinimumSize(150, md_le_var->sizeHint().height());
         if (inputtype.count() > 1) { md_le_var->setInputMask(inputtype.at(1)); }
         md_le_var->setText(value);
         return md_le_var;
