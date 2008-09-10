@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1018</width>
+    <width>1043</width>
     <height>751</height>
    </rect>
   </property>
@@ -422,7 +422,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1018</width>
+     <width>1043</width>
      <height>22</height>
     </rect>
    </property>
@@ -987,23 +987,58 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dwc_inspectors" >
-    <layout class="QGridLayout" name="gridLayout_5" >
-     <item row="0" column="0" >
-      <widget class="QLabel" name="lbl_search_inspectors" >
-       <property name="text" >
-        <string>Search:</string>
-       </property>
-      </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_5" >
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_7" >
+       <item>
+        <widget class="QLabel" name="lbl_search_inspectors" >
+         <property name="text" >
+          <string>Search:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ExtendedLineEdit" name="le_search_inspectors" />
+       </item>
+      </layout>
      </item>
-     <item row="0" column="1" >
-      <widget class="ExtendedLineEdit" name="le_search_inspectors" />
-     </item>
-     <item row="1" column="0" colspan="2" >
+     <item>
       <widget class="MTListWidget" name="lw_inspectors" >
        <property name="sortingEnabled" >
         <bool>true</bool>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6" >
+       <item>
+        <widget class="QToolButton" name="tbtn_add_inspector" >
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_12" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_remove_inspector" >
+         <property name="toolButtonStyle" >
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

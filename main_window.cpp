@@ -70,6 +70,8 @@ MainWindow::MainWindow()
     tbtn_remove_table->setDefaultAction(actionRemove_table);
     tbtn_add_warning->setDefaultAction(actionAdd_warning);
     tbtn_remove_warning->setDefaultAction(actionRemove_warning);
+    tbtn_add_inspector->setDefaultAction(actionAdd_inspector);
+    tbtn_remove_inspector->setDefaultAction(actionRemove_inspector);
     QStringList views = dict_html.keys();
     QAction * action; actgrp_view = new QActionGroup(this);
     QAction * separator = menuView->actions().at(0);
@@ -181,7 +183,7 @@ void MainWindow::executeLink(const QUrl & url)
             id.remove(0, QString("inspector:").length());
             for (int i = 0; i < lw_inspectors->count(); ++i) {
                 if (lw_inspectors->item(i)->data(Qt::UserRole).toString() == id) {
-                    loadInspector(lw_customers->item(i), path.count() <= 1); break;
+                    loadInspector(lw_inspectors->item(i), path.count() <= 1); break;
                 }
             }
         }
@@ -305,6 +307,7 @@ void MainWindow::clearAll()
     lw_customers->clear();
     lw_circuits->clear();
     lw_inspections->clear();
+    lw_inspectors->clear();
     cb_table->clear();
     cb_table_edit->clear();
     trw_variables->clear();
