@@ -55,10 +55,6 @@ void MainWindow::viewAllCustomers()
     query.setForwardOnly(true);
     query.prepare("SELECT id, company, contact_person, address, mail, phone FROM customers ORDER BY id");
     query.exec();
-    //query.setForwardOnly();
-    //query.prepare("");
-    //query.bindVariable();
-    //query.exec();
     while (query.next()) {
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
         out << "<a href=\"customer:" << query.value(0).toString() << "\">" << query.value(1).toString() << "</a></b></td></tr>";
@@ -104,10 +100,6 @@ void MainWindow::viewCustomer(const QString & customer_id)
     QSqlQuery query = customer.select("company, contact_person, address, mail, phone");
     query.setForwardOnly(true);
     query.exec();
-    //query.setForwardOnly();
-    //query.prepare("");
-    //query.bindVariable();
-    //query.exec();
     while (query.next()) {
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
@@ -128,7 +120,6 @@ void MainWindow::viewCustomer(const QString & customer_id)
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
         out << "<td>";
         QSqlQuery circuits;
-        //circuits.setForwardOnly(true);
         circuits.prepare("SELECT id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation FROM circuits WHERE parent = :parent ORDER BY id");
         circuits.bindValue(":parent", customer_id.toInt());
         circuits.exec();
@@ -200,10 +191,6 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
     QSqlQuery query = circuit.select("manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation");
     query.setForwardOnly(true);
     query.exec();
-    //query.setForwardOnly();
-    //query.prepare("");
-    //query.bindVariable();
-    //query.exec();
     if (!query.next()) { return; }
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
@@ -349,6 +336,10 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
             } else compare_nom = false;
         }
         if (ins_value.isEmpty()) continue;
+        if (var_id == "inspector") {
+            MTRecord inspector("inspector", ins_value, MTDictionary());
+            ins_value = inspector.list().value("person").toString();
+        }
         out << "<num_var>" << num_shown_vars << "</num_var>";
         out << "<tr><td style=\"text-align: right; width:50%;\">";
         if (vars.value(SUBVAR_ID).toString().isEmpty()) {
@@ -576,7 +567,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
             if (variables.value(table_vars.at(n)).value("subvariables").toList().count() > 0) {
                 subvariables = variables.value(table_vars.at(n)).value("subvariables").toList();
                 for (int s = 0; s < subvariables.count(); ++s) {
-                    compare_nom = subvariables.at(s).toMap().value("cmopare_nom").toString() == "1";
+                    compare_nom = subvariables.at(s).toMap().value("compare_nom").toInt() > 0;
                     if (subvariables.at(s).toMap().value("value").toString().contains("sum")) {
                         QString i_year = inspections.at(i).value("date").toString().split(".").first();
                         if (inspections.at(i).value("nominal").toInt()) rowspan = 1;
@@ -593,13 +584,11 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                         }
                     } else rowspan = 1;
                     if (subvariables.at(s).toMap().value("value").toString().isEmpty()) {
-                        //QMessageBox::information(this, "1", toString(rowspan));
                         ins_value = inspections.at(i).value(subvariables.at(s).toMap().value("id").toString()).toString();
                         if (compare_nom) {
                             nom_value = nominal_ins.value(subvariables.at(s).toMap().value("id").toString()).toString();
                             if (nom_value.isEmpty()) compare_nom = false;
                         }
-                        //QMessageBox::information(this, "1", "0000");
                     } else {
                         MTDictionary expression = parseExpression(subvariables.at(s).toMap().value("value").toString(), &used_ids);
                         ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
@@ -616,7 +605,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     cell_count++;
                 }
             } else {
-                compare_nom = variables.value(table_vars.at(n)).value("compare_nom").toString() == "1";
+                compare_nom = variables.value(table_vars.at(n)).value("compare_nom").toInt() > 0;
                 if (variables.value(table_vars.at(n)).value("value").toString().isEmpty()) {
                     ins_value = inspections.at(i).value(table_vars.at(n)).toString();
                     if (compare_nom) {
@@ -634,6 +623,10 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                 }
                 if (variables.value(table_vars.at(n)).value("type").toString() == "bool") {
                     ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
+                }
+                if (table_vars.at(n) == "inspector") {
+                    MTRecord inspector("inspector", ins_value, MTDictionary());
+                    ins_value = inspector.list().value("person").toString();
                 }
                 writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan);
                 cell_count++;
@@ -707,6 +700,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     QStringList last_warnings_list;
     for (int i = 0; i < inspections.count(); ++i) {
         QStringList warnings_list = listWarnings(inspections[i], nominal_ins, customer_id, circuit_id, used_ids);
+        QStringList backup_warnings = warnings_list;
         for (int n = 0; n < warnings_list.count(); ++n) {
             if (last_warnings_list.contains(warnings_list.at(n))) {
                 warnings_list[n].prepend("<span style=\"color: red;\"><b>");
@@ -722,7 +716,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
             warnings_html.append(warnings_list.join(", "));
             warnings_html.append("</td></tr>");
         }
-        last_warnings_list = warnings_list;
+        last_warnings_list = backup_warnings;
     }
     if (!warnings_html.isEmpty()) {
         out << "<tr><th>" << tr("Warnings") << "</th></tr>";
@@ -745,25 +739,6 @@ void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value,
     }
     out << "</td>";
 }
-
-/*void MainWindow::addVariablesToParser(FunctionParser & fparser, const QMap<QString, QVariant> & inspection, bool all)
-{
-    QStringList ids; bool sub_empty = false;
-    QSqlQuery query("SELECT variables.id, subvariables.id FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    while (query.next()) {
-        sub_empty = query.value(1).toString().isEmpty();
-        if (all || sub_empty) {
-            if (!inspection.value(query.value(0).toString()).toString().isEmpty()) {
-                fparser.AddConstant(query.value(0).toString().toStdString(), inspection.value(query.value(0).toString()).toInt());
-            }
-        }
-        if (!sub_empty) {
-            if (!inspection.value(query.value(1).toString()).toString().isEmpty()) {
-                fparser.AddConstant(query.value(1).toString().toStdString(), inspection.value(query.value(1).toString()).toInt());
-            }
-        }
-    }
-}*/
 
 QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<QString, QVariant> & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids)
 {
@@ -805,7 +780,6 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
                 if (!ok_eval) show_warning = false;
             }
             QString function = warnings_conditions.value(1).toString();
-            //QMessageBox::information(this, "", QString("%1 %2 %3").arg(ins_value).arg(function).arg(nom_value));
             if (function == "=" && ins_value == nom_value) {}
             else if (function == "!=" && ins_value != nom_value) {}
             else if (function == ">" && ins_value > nom_value) {}
@@ -813,7 +787,6 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
             else if (function == "<" && ins_value < nom_value) {}
             else if (function == "<=" && ins_value <= nom_value) {}
             else {
-                //QMessageBox::information(this, "", QString("%1 %2 %3").arg(ins_value).arg(function).arg(nom_value));
                 show_warning = false;
             }
         }
@@ -837,7 +810,6 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
                 else if (function == "<" && int_circuit_attribute < int_value) {}
                 else if (function == "<=" && int_circuit_attribute <= int_value) {}
                 else {
-                    //QMessageBox::information(this, "", QString("%1 %2 %3").arg(int_circuit_attribute).arg(function).arg(int_value));
                     show_warning = false;
                 }
             } else if (!ok1 && !ok2) {
@@ -846,7 +818,6 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
                 else if (function == ">" && circuit_attribute > value) {}
                 else if (function == "<" && circuit_attribute < value) {}
                 else {
-                    //QMessageBox::information(this, "", QString("%1 %2 %3").arg(circuit_attribute).arg(function).arg(value));
                     show_warning = false;
                 }
             }
@@ -863,14 +834,8 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; QTextStream out(&html);
     MTRecord inspectors_rec("inspector", "", MTDictionary());
-    /*QSqlQuery query;
-    query.setForwardOnly(true);
-    query.prepare("SELECT person, id, company, company_reg_num, person_reg_num FROM inspectors ORDER BY id");
-    query.exec();*/
-    //QMap<QString, QVariant> inspectors_map = inspectors_rec.list();
     QList<QMap<QString, QVariant> > inspectors = inspectors_rec.listAll();
 
-    //while (query.next()) {
     for (int i = 0; i < inspectors.count(); ++i) {
         QString link;
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr style=\"background-color: ";
