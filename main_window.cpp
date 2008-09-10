@@ -46,8 +46,15 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Table of inspections"), in.readAll());
     file.close();
     // ----
+    // i18n
+    QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
+    leaklog_i18n.insert("English", "English");
+    leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
+    // ----
     if (tr("LTR") == "RTL") { qApp->setLayoutDirection(Qt::RightToLeft); }
     setupUi(this);
+    http = new QHttp(this);
+    http_buffer = new QBuffer(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
     dw_browser->setVisible(false);
     dw_variables->setVisible(false);
@@ -85,13 +92,14 @@ MainWindow::MainWindow()
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
-    QObject::connect(actionSave_as, SIGNAL(triggered()), this, SLOT(saveAs()));
+    QObject::connect(actionSave_and_compact, SIGNAL(triggered()), this, SLOT(saveAndCompact()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
+    QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
@@ -119,6 +127,7 @@ MainWindow::MainWindow()
     QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
     QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
     QObject::connect(actionImport_data, SIGNAL(triggered()), this, SLOT(importData()));
+    QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
     QObject::connect(le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
@@ -138,6 +147,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(modifyWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
+    QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
     wv_main->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     loadSettings();
     if (qApp->arguments().count() > 1) {
@@ -290,7 +300,7 @@ void MainWindow::clearAll()
 void MainWindow::setAllEnabled(bool enable)
 {
     actionSave->setEnabled(enable);
-    actionSave_as->setEnabled(enable);
+    actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
     actionImport_data->setEnabled(enable);
     actionPrint_preview->setEnabled(enable);
@@ -379,6 +389,109 @@ void MainWindow::saveSettings()
     settings.setValue("pos", this->pos());
     settings.setValue("size", this->size());
     settings.setValue("window_state", this->saveState(0));
+}
+
+void MainWindow::changeLanguage()
+{
+	QWidget * w_lang = new QWidget(this, Qt::Dialog);
+	w_lang->setWindowModality(Qt::WindowModal);
+	w_lang->setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_WS_MAC
+	w_lang->setWindowTitle(tr("Change language"));
+#else
+    w_lang->setWindowTitle(tr("Change language - Leaklog"));
+#endif
+	QGridLayout * glayout_lang = new QGridLayout(w_lang);
+	glayout_lang->setMargin(6); glayout_lang->setSpacing(6);
+	QLabel * lbl_lang = new QLabel(w_lang);
+	lbl_lang->setText(tr("Select your preferred language"));
+	glayout_lang->addWidget(lbl_lang, 0, 0);
+	cb_lang = new QComboBox(w_lang);
+	QStringList langs(leaklog_i18n.keys()); langs.sort();
+	for (int i = 0; i < langs.count(); ++i) {
+		cb_lang->addItem(langs.at(i));
+		if (langs.at(i) == "English") { cb_lang->setCurrentIndex(i); }
+	}
+	glayout_lang->addWidget(cb_lang, 1, 0);
+	QDialogButtonBox * bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
+	QObject::connect(bb_lang, SIGNAL(accepted()), this, SLOT(languageChanged()));
+	QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(close()));
+	glayout_lang->addWidget(bb_lang, 2, 0);
+	w_lang->show();
+}
+
+void MainWindow::languageChanged()
+{
+	if (cb_lang == NULL) { return; }
+	QString lang = leaklog_i18n.value(cb_lang->currentText(), cb_lang->currentText());
+	QSettings settings("SZCHKT", "Leaklog");
+	QString current_lang = settings.value("lang", "Slovak").toString();
+	if (current_lang != lang) {
+		settings.setValue("lang", lang);
+		QMessageBox::information(this, tr("Leaklog"), tr("You need to restart Leaklog for the changes to apply."));
+	}
+	if (cb_lang->parent() == NULL) { return; }
+	QWidget * w_lang = (QWidget *)cb_lang->parent();
+	w_lang->close();
+    cb_lang = NULL;
+}
+
+void MainWindow::checkForUpdates()
+{
+	delete http_buffer; http_buffer = new QBuffer(this);
+    http->setHost("leaklog.sourceforge.net");
+	http->get("/current-version", http_buffer);
+}
+
+void MainWindow::httpRequestFinished(bool error)
+{
+	httpRequestFinished_start:
+	if (error) {
+		switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
+			case 0: // Try again
+				checkForUpdates(); return; break;
+			case 1: // Cancel
+				return; break;
+		}
+	}
+	QString str(http_buffer->data()); QTextStream in(&str);
+	if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
+	QString current_ver = in.readLine();
+	if (in.readLine() != "[Leaklog.current-version.float]") { error = true; goto httpRequestFinished_start; }
+	float f_current_ver = in.readLine().toFloat();
+    if (in.readLine() != "[Leaklog.download-url.src]") { error = true; goto httpRequestFinished_start; }
+	QString src_url = in.readLine();
+    if (in.readLine() != "[Leaklog.download-url.macx]") { error = true; goto httpRequestFinished_start; }
+#ifdef Q_WS_MAC
+	QString macx_url = in.readLine();
+#else
+    in.readLine();
+#endif
+    if (in.readLine() != "[Leaklog.download-url.win32]") { error = true; goto httpRequestFinished_start; }
+#ifdef Q_WS_WIN
+	QString win32_url = in.readLine();
+#else
+    in.readLine();
+#endif
+	if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
+	QString release_notes;
+	while (!in.atEnd()) { release_notes.append(in.readLine()); }
+	if (f_current_ver <= f_leaklog_version) {
+		QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
+	} else {
+		QString info; QTextStream out(&info);
+		out << "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body><p>" << endl;
+		out << "<b>" << tr("Leaklog %1 is available now.").arg(current_ver) << "</b><br><br>" << endl;
+		out << release_notes << endl << "<br><br>" << endl;
+#ifdef Q_WS_MAC
+        out << "<a href=\"" << macx_url << "\">" << tr("Download Leaklog %1 for Mac OS X").arg(current_ver) << "</a><br>" << endl;
+#elif defined Q_WS_WIN
+        out << "<a href=\"" << win32_url << "\">" << tr("Download Leaklog %1 for Windows").arg(current_ver) << "</a><br>" << endl;
+#endif
+        out << "<a href=\"" << src_url << "\">" << tr("Download source code") << "</a>" << endl;
+        out << "</p></body></html>";
+		QMessageBox::information(this, tr("Leaklog"), info);
+	}
 }
 
 void MainWindow::about()

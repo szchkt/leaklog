@@ -254,7 +254,7 @@ QDialog(parent)
         for (int r = 0; r < num_rows; ++r) {
             if (_i >= md_dict.count()) { break; }
             //if (md_dict.key(_i) == md_record.type()) { _i++; r--; continue; }
-            value = md_dict_values.contains(md_dict.key(_i)) ? md_dict_values.value(md_dict.key(_i)) : "";
+            value = md_dict_values.contains(md_dict.key(_i).split("/").last()) ? md_dict_values.value(md_dict.key(_i).split("/").last()) : "";
             inputtype = md_dict_input.value(md_dict.key(_i)).split(";");
             if (inputtype.at(0) != "chb") {
                 md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(_i)), this);
@@ -313,10 +313,12 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         return md_ccb_var;
     } else if (inputtype.at(0) == "dte") {
         QDateTimeEdit * md_dte_var = new QDateTimeEdit(this);
+        md_dte_var->setDisplayFormat("yyyy.MM.dd-hh:mm");
         md_dte_var->setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
         return md_dte_var;
     } else if (inputtype.at(0) == "de") {
         QDateEdit * md_de_var = new QDateEdit(this);
+        md_de_var->setDisplayFormat("yyyy.MM.dd");
         md_de_var->setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
         return md_de_var;
     } else if (inputtype.at(0) == "pteh") {
@@ -389,6 +391,6 @@ void ModifyDialogue::save()
         if (value.isNull()) { return; }
         values.insert(i.key().split("/").last(), value);
     }
-    md_record.update(values);
+    md_record.update(values, true);
     accept();
 }

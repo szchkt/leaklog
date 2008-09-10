@@ -351,6 +351,15 @@ QString MTRecord::tableForRecordType(const QString & type)
     //}
 }
 
+bool MTRecord::exists()
+{
+    if (r_id.isEmpty()) { return false; }
+    QString id_field = r_type == "inspection" ? "date" : "id";
+    QSqlQuery find_record = select(id_field);
+    find_record.exec();
+    return find_record.next();
+}
+
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
@@ -416,11 +425,7 @@ bool MTRecord::update(const QMap<QString, QVariant> & set, bool add_columns)
         }
         i.toFront();
     }
-    if (has_id) {
-        QSqlQuery find_record = select(id_field);
-        find_record.exec();
-        if (!find_record.next()) { has_id = false; }
-    }
+    if (has_id && !exists()) { has_id = false; }
     if (has_id) {
         update = "UPDATE " + tableForRecordType(r_type) + " SET ";
         while (i.hasNext()) { i.next();

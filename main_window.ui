@@ -433,7 +433,7 @@
     <addaction name="actionNew" />
     <addaction name="actionOpen" />
     <addaction name="actionSave" />
-    <addaction name="actionSave_as" />
+    <addaction name="actionSave_and_compact" />
     <addaction name="actionClose" />
     <addaction name="separator" />
     <addaction name="actionImport_data" />
@@ -525,6 +525,8 @@
     <addaction name="actionShow_variables" />
     <addaction name="actionShow_tables" />
     <addaction name="actionShow_warnings" />
+    <addaction name="separator" />
+    <addaction name="actionChange_language" />
    </widget>
    <addaction name="menuFile" />
    <addaction name="menuEdit" />
@@ -552,6 +554,7 @@
    <addaction name="actionNew" />
    <addaction name="actionOpen" />
    <addaction name="actionSave" />
+   <addaction name="actionSave_and_compact" />
    <addaction name="separator" />
    <addaction name="actionAdd_customer" />
    <addaction name="actionModify_customer" />
@@ -801,6 +804,9 @@
      </item>
      <item>
       <widget class="QTreeWidget" name="trw_table_variables" >
+       <property name="indentation" >
+        <number>0</number>
+       </property>
        <column>
         <property name="text" >
          <string>Variable name</string>
@@ -994,6 +1000,9 @@
    </property>
   </action>
   <action name="actionSave" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
    <property name="icon" >
     <iconset resource="resources.qrc" >
      <normaloff>:/images/images/filesave.png</normaloff>:/images/images/filesave.png</iconset>
@@ -1171,13 +1180,16 @@
     <string>Ctrl+Alt+V</string>
    </property>
   </action>
-  <action name="actionSave_as" >
+  <action name="actionSave_and_compact" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
    <property name="icon" >
     <iconset resource="resources.qrc" >
-     <normaloff>:/images/images/filesaveas.png</normaloff>:/images/images/filesaveas.png</iconset>
+     <normaloff>:/images/images/save_and_compact.png</normaloff>:/images/images/save_and_compact.png</iconset>
    </property>
    <property name="text" >
-    <string>Save as</string>
+    <string>Compact</string>
    </property>
    <property name="shortcut" >
     <string>Ctrl+Shift+S</string>
@@ -1452,6 +1464,15 @@
    </property>
    <property name="text" >
     <string>Remove warning</string>
+   </property>
+  </action>
+  <action name="actionChange_language" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/language16.png</normaloff>:/images/images/language16.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Change language</string>
    </property>
   </action>
  </widget>

@@ -1,6 +1,10 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/item_found16.png</file>
+    <file>images/item_found_diff16.png</file>
+    <file>images/item_new16.png</file>
     <file>images/down16.png</file>
+    <file>images/language16.png</file>
     <file>images/up16.png</file>
     <file>images/add16.png</file>
     <file>images/remove16.png</file>
@@ -18,8 +22,8 @@
     <file>images/inspection_modify.png</file>
     <file>images/table_add.png</file>
     <file>images/table_remove.png</file>
-    <file>images/filesaveas.png</file>
     <file>images/add.png</file>
+    <file>images/save_and_compact.png</file>
     <file>images/remove.png</file>
     <file>images/inspection_add.png</file>
     <file>images/inspection_remove.png</file>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>300</height>
+    <height>527</height>
    </rect>
   </property>
   <property name="minimumSize" >
@@ -200,63 +200,69 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget" >
-      <layout class="QGridLayout" name="gridLayout_4" >
-       <item row="0" column="0" colspan="3" >
-        <widget class="QLabel" name="id_lbl_variables" >
-         <property name="font" >
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text" >
-          <string>Variables:</string>
-         </property>
-         <property name="alignment" >
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" >
-        <widget class="QLabel" name="id_lbl_search_variables" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text" >
-          <string>Search:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="2" >
-        <widget class="ExtendedLineEdit" name="id_le_search_variables" />
-       </item>
-       <item row="2" column="0" colspan="3" >
-        <widget class="MTListWidget" name="id_lw_variables" >
-         <property name="sortingEnabled" >
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2" >
-        <widget class="QToolButton" name="id_tbtn_variables_selectall" >
-         <property name="text" >
-          <string>Select all</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2" >
-        <widget class="QToolButton" name="id_tbtn_variables_selectnone" >
-         <property name="text" >
-          <string>Select none</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="id_lbl_variables" >
+     <property name="font" >
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text" >
+      <string>Variables:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTreeWidget" name="id_trw_variables" >
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Variable name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Unit</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Value</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Compare</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Colour</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Action</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item>
@@ -284,7 +290,6 @@
    <header>extendedlineedit.h</header>
   </customwidget>
  </customwidgets>
- <includes/>
  <resources>
   <include location="resources.qrc" />
  </resources>
