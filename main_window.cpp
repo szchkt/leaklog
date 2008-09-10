@@ -307,7 +307,7 @@ void MainWindow::printLabel()
     painter.setRenderHint(QPainter::Antialiasing);
     painter.begin(printer);
     QRect rect = printer->pageRect();
-    int margin = rect.width() / 66;
+    int margin = rect.width() / 50;
     int w = (rect.width() - 4 * margin) / 2;
     int h = (rect.height() - 8 * margin) / 4;
     painter.translate(- margin, - margin);
