@@ -168,8 +168,8 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 out << "<td>" << circuits.value(8).toString() << "&nbsp;kg</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td>";
                 out << "<td>";
-                if (dict_attrvalues.contains("oil::" + circuits.value(6).toString())) {
-                    out << dict_attrvalues.value("oil::" + circuits.value(6).toString());
+                if (dict_attrvalues.contains("oil::" + circuits.value(9).toString())) {
+                    out << dict_attrvalues.value("oil::" + circuits.value(9).toString());
                 }
                 out << "</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td>";
@@ -219,7 +219,11 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(6).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td><td>" << query.value(7).toString() << "&nbsp;kg</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td><td>" << query.value(8).toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td><td>";
+        if (dict_attrvalues.contains("oil::" + circuits.value(8).toString())) {
+            out << dict_attrvalues.value("oil::" + circuits.value(8).toString());
+        }
+        out << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td><td>" << query.value(9).toString() << "&nbsp;kg</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Service life:") << "&nbsp;</td><td>" << query.value(10).toString() << "&nbsp;years</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Run-time per day:") << "&nbsp;</td><td>" << query.value(11).toString() << "&nbsp;hours</td></tr>";
