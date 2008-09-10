@@ -171,6 +171,19 @@ void MainWindow::initTables()
     QSqlQuery commit("COMMIT");
 }
 
+void MainWindow::initWarnings()
+{
+    QSqlQuery begin("BEGIN TRANSACTION");
+    QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importWarnings");
+    data.setDatabaseName(QFileInfo(qApp->arguments().at(0)).dir().absoluteFilePath("warnings.lklg"));
+    data.open();
+    copyTable("warnings", &data, &db);
+    copyTable("warnings_filters", &data, &db);
+    copyTable("warnings_conditions", &data, &db);
+    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+    QSqlQuery commit("COMMIT");
+}
+
 void MainWindow::newDatabase()
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
@@ -188,6 +201,7 @@ void MainWindow::newDatabase()
     initDatabase(&db);
     initVariables();
     initTables();
+    initWarnings();
     openDatabase(QString());
 }
 
@@ -1205,7 +1219,7 @@ void MainWindow::importData()
             last_item->setExpanded(true);
         }
     }
-    if (id->exec() != QDialog::Accepted) { return; }
+    if (id->exec() != QDialog::Accepted) { data.close(); QSqlDatabase::removeDatabase(data.connectionName()); return; }
     QMap<QString, QVariant> set;
     for (int c = 0; c < id->customers()->count(); ++c) {
         if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
@@ -1340,6 +1354,7 @@ void MainWindow::importData()
         record.update(set, j == 0);
         j++;
     }
+    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
     this->setWindowModified(true);
     refreshView();
 }

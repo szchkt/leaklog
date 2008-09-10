@@ -127,6 +127,7 @@ private:
     void initVariable(const QString &, const QString &, const QString &, const QString &, bool, const QString &);
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
     void initTables();
+    void initWarnings();
     void openDatabase(QString);
     void saveDatabase(bool = false);
     void loadCustomer(QListWidgetItem *, bool);
