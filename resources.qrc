@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/print_label.png</file>
     <file>images/inspector_add16.png</file>
     <file>images/inspector_modify22.png</file>
     <file>images/inspector_remove16.png</file>

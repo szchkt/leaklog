@@ -36,6 +36,7 @@
 #include <QPrinter>
 #include <QHttp>
 #include <QBuffer>
+#include <QPainter>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -50,6 +51,7 @@ private slots:
     void executeLink(const QUrl &);
     void printPreview();
     void print();
+    void printLabel();
     void enableTools();
     void find();
     void findNext();
@@ -110,6 +112,7 @@ private slots:
 
 private:
     // UI
+    void paintLabel(const QMap<QString, QVariant> &, QPainter &, int, int, int, int);
     void setView(const QString &);
     void addRecent(QString);
     void clearAll();

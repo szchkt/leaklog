@@ -479,6 +479,8 @@
     <addaction name="actionModify_inspection" />
     <addaction name="actionRemove_inspection" />
     <addaction name="separator" />
+    <addaction name="actionPrint_label" />
+    <addaction name="separator" />
     <addaction name="actionExport_inspection_data" />
    </widget>
    <widget class="QMenu" name="menuDatabase" >
@@ -1597,6 +1599,21 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+Alt+Shift+-</string>
+   </property>
+  </action>
+  <action name="actionPrint_label" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Print label</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
