@@ -167,7 +167,11 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td>";
                 out << "<td>" << circuits.value(8).toString() << "&nbsp;kg</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(9).toString() << "</td></tr>";
+                out << "<td>";
+                if (dict_attrvalues.contains("oil::" + circuits.value(6).toString())) {
+                    out << dict_attrvalues.value("oil::" + circuits.value(6).toString());
+                }
+                out << "</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td>";
                 out << "<td>" << circuits.value(10).toString() << "&nbsp;kg</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Service life:") << "&nbsp;</td>";
