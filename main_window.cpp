@@ -21,9 +21,10 @@
 
 MainWindow::MainWindow()
 {
-    leaklog_version = "0.9.0";
-    f_leaklog_version = 0.9;
+    leaklog_version = "0.9.1"; f_leaklog_version = 0.901;
+    db_version = "0.9.1"; f_db_version = 0.901;
     // Dictionaries
+    dict_dbtables = get_dict_dbtables();
     dict_vartypes = get_dict_vartypes();
     dict_varnames = get_dict_varnames();
     dict_attrvalues = get_dict_attrvalues();

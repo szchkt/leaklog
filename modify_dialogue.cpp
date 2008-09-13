@@ -224,6 +224,8 @@ QDialog(parent)
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
         md_dict_input.insert("compare_nom", "chb");
+        md_dict.insert("tolerance", tr("Tolerance"));
+        md_dict_input.insert("tolerance", "dspb;0.0;0.0;999999.9");
         if (md_record.type() == "variable") {
             md_dict.insert("col_bg", tr("Colour"));
             md_dict_input.insert("col_bg", "ccb");
@@ -250,6 +252,8 @@ QDialog(parent)
         md_dict_input.insert("person_reg_num", "le");
         md_dict.insert("company_reg_num", tr("Company registry number"));
         md_dict_input.insert("company_reg_num", "le");
+        md_dict.insert("phone", tr("Phone"));
+        md_dict_input.insert("phone", "le");
         query_used_ids.prepare("SELECT id FROM inspectors" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     }

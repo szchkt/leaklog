@@ -122,7 +122,7 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(QString, bool);
-    void initDatabase(QSqlDatabase *);
+    void initDatabase(QSqlDatabase *, bool = true);
     void initVariables();
     void initVariable(const QString &, const QString &, const QString &, const QString &, bool, const QString &);
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
@@ -155,6 +155,7 @@ private:
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
 
+    MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;
     MTDictionary dict_attrvalues;
@@ -167,7 +168,8 @@ private:
     QComboBox * cb_lang;
     QMap<QString, QString> leaklog_i18n;
     QHttp * http; QBuffer * http_buffer;
-    QString leaklog_version; float f_leaklog_version;
+    QString leaklog_version; double f_leaklog_version;
+    QString db_version; double f_db_version;
 
     friend class ModifyDialogue;
     friend class ModifyWarningDialogue;

@@ -39,30 +39,57 @@ bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
 	return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase * database)
+void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 {
-    QSqlQuery begin("BEGIN TRANSACTION", *database);
-    QSqlQuery create_customers("CREATE TABLE customers (id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT)", *database);
-    QSqlQuery create_circuits("CREATE TABLE circuits (parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC)", *database);
-    QSqlQuery create_inspections("CREATE TABLE inspections (customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER)", *database);
-    QSqlQuery create_inspectors("CREATE TABLE inspectors (id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT)", *database);
-    QSqlQuery create_variables("CREATE TABLE variables (id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, col_bg TEXT)", *database);
-    QSqlQuery create_subvariables("CREATE TABLE subvariables (parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER)", *database);
-    QSqlQuery create_tables("CREATE TABLE tables (id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT)", *database);
-    QSqlQuery create_warnings("CREATE TABLE warnings (id INTEGER PRIMARY KEY, name TEXT, description TEXT)", *database);
-    QSqlQuery create_warnings_filters("CREATE TABLE warnings_filters (parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT)", *database);
-    QSqlQuery create_warnings_conditions("CREATE TABLE warnings_conditions (parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT)", *database);
-    QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
-    QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
-    QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
-    QSqlQuery create_index_inspectors_id("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)", *database);
-    QSqlQuery create_index_variables_id("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)", *database);
-    QSqlQuery create_index_subvariables_id("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)", *database);
-    QSqlQuery create_index_tables_id("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)", *database);
-    QSqlQuery create_index_warnings_id("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)", *database);
-    QSqlQuery create_index_warnings_filters_parent("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)", *database);
-    QSqlQuery create_index_warnings_conditions_parent("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)", *database);
-    QSqlQuery commit("COMMIT", *database);
+    if (transaction) { QSqlQuery begin("BEGIN TRANSACTION", *database); }
+    QStringList tables = db.tables();
+    for (int i = 0; i < dict_dbtables.count(); ++i) {
+        if (!tables.contains(dict_dbtables.key(i))) {
+            QSqlQuery create_table("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")", *database);
+        } else {
+            QStringList field_names = getTableFieldNames(dict_dbtables.key(i), database);
+            QStringList all_field_names = dict_dbtables.value(i).split(", ");
+            for (int f = 0; f < all_field_names.count(); ++f) {
+                if (!field_names.contains(all_field_names.at(f).split(" ").first())) {
+                    addColumn(all_field_names.at(f), dict_dbtables.key(i), database);
+                }
+            }
+        }
+    }
+    QStringList db_info_ids;
+    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version";
+    for (int i = 0; i < db_info_ids.count(); ++i) {
+        QSqlQuery id_exists("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'", *database);
+        if (!id_exists.next()) {
+            QSqlQuery insert_db_info_id("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')", *database);
+        }
+    }
+    double db_ver = 0.0;
+    QSqlQuery get_db_version("SELECT value FROM db_info WHERE id = 'db_version'");
+    if (get_db_version.next()) { db_ver = get_db_version.value(0).toDouble(); }
+    if (db_ver < f_db_version) {
+        QSqlQuery drop_index_customers_id("DROP INDEX IF EXISTS index_customers_id", *database);
+        QSqlQuery drop_index_circuits_id("DROP INDEX IF EXISTS index_circuits_id", *database);
+        QSqlQuery drop_index_inspections_id("DROP INDEX IF EXISTS index_inspections_id", *database);
+        QSqlQuery drop_index_inspectors_id("DROP INDEX IF EXISTS index_inspectors_id", *database);
+        QSqlQuery drop_index_variables_id("DROP INDEX IF EXISTS index_variables_id", *database);
+        QSqlQuery drop_index_subvariables_id("DROP INDEX IF EXISTS index_subvariables_id", *database);
+        QSqlQuery drop_index_tables_id("DROP INDEX IF EXISTS index_tables_id", *database);
+        QSqlQuery drop_index_warnings_id("DROP INDEX IF EXISTS index_warnings_id", *database);
+        QSqlQuery drop_index_warnings_filters_parent("DROP INDEX IF EXISTS index_warnings_filters_parent", *database);
+        QSqlQuery drop_index_warnings_conditions_parent("DROP INDEX IF EXISTS index_warnings_conditions_parent", *database);
+        QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
+        QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
+        QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
+        QSqlQuery create_index_inspectors_id("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)", *database);
+        QSqlQuery create_index_variables_id("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)", *database);
+        QSqlQuery create_index_subvariables_id("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)", *database);
+        QSqlQuery create_index_tables_id("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)", *database);
+        QSqlQuery create_index_warnings_id("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)", *database);
+        QSqlQuery create_index_warnings_filters_parent("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)", *database);
+        QSqlQuery create_index_warnings_conditions_parent("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)", *database);
+    }
+    if (transaction) { QSqlQuery commit("COMMIT", *database); }
 }
 
 void MainWindow::initVariables()
@@ -256,6 +283,9 @@ void MainWindow::newDatabase()
     initVariables();
     initTables();
     initWarnings();
+    QSqlQuery begin("BEGIN TRANSACTION");
+    QSqlQuery save_leaklog_version("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'created_with'");
+    QSqlQuery save_date_created("UPDATE db_info SET value = '" + QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm") + "' WHERE id = 'date_created'");
     openDatabase(QString());
 }
 
@@ -277,6 +307,7 @@ void MainWindow::open()
 
 void MainWindow::openDatabase(QString path)
 {
+    clearAll();
     if (path.isEmpty()) {
         path = db.databaseName();
         if (!db.isOpen()) {
@@ -292,10 +323,10 @@ void MainWindow::openDatabase(QString path)
             this->setWindowTitle(tr("Leaklog"));
             return;
         }
+        QSqlQuery begin("BEGIN TRANSACTION");
+        initDatabase(&db, false);
     }
-    clearAll();
     QString id;
-    QSqlQuery begin("BEGIN TRANSACTION");
     QSqlQuery customers("SELECT id, company FROM customers");
     while (customers.next()) {
         id = customers.value(0).toString().rightJustified(8, '0');
@@ -369,6 +400,8 @@ void MainWindow::saveAndCompact()
 
 void MainWindow::saveDatabase(bool compact)
 {
+    QSqlQuery save_leaklog_version("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'saved_with'");
+    QSqlQuery save_db_version("UPDATE db_info SET value = '" + toString(f_db_version) + "' WHERE id = 'db_version'");
     QString error;
     QSqlQuery commit("COMMIT");
     if (commit.lastError().type() != QSqlError::NoError) { error = commit.lastError().text(); }
