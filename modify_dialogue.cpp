@@ -87,7 +87,7 @@ QDialog(parent)
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le;000000000000");
+        md_dict_input.insert("id", "le;00000000");
         md_dict.insert("company", tr("Company"));
         md_dict_input.insert("company", "le");
         md_dict.insert("contact_person", tr("Contact person"));
@@ -103,7 +103,7 @@ QDialog(parent)
     } else if (md_record.type() == "circuit") {
         md_dict.insert("circuit", tr("Cooling circuit")); // _i = 1;
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le;000000000000");
+        md_dict_input.insert("id", "le;0000");
         md_dict.insert("hermetic", tr("Hermetically sealed"));
         md_dict_input.insert("hermetic", "chb");
         md_dict.insert("manufacturer", tr("Manufacturer"));
@@ -269,6 +269,11 @@ QDialog(parent)
                 md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
             }
         }
+        if (md_record.type() == "variable" || md_record.type() == "subvariable") {
+            if (get_dict_varnames().contains(md_record.id())) {
+                md_dict_input.setValue("id", "led");
+            }
+        }
     }
     // ------------
     if (!md_record.id().isEmpty()) {
@@ -304,9 +309,10 @@ QDialog(parent)
 
 QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const QString & name, const QString & value)
 {
-    if (inputtype.at(0) == "le") {
+    if (inputtype.at(0) == "le" || inputtype.at(0) == "led") {
         QLineEdit * md_le_var = new QLineEdit(this);
         md_le_var->setMinimumSize(150, md_le_var->sizeHint().height());
+        if (inputtype.at(0) == "led") { md_le_var->setEnabled(false); }
         if (inputtype.count() > 1) { md_le_var->setInputMask(inputtype.at(1)); }
         md_le_var->setText(value);
         return md_le_var;
@@ -374,7 +380,7 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
     QVariant value(QVariant::String);
     if (inputtype.at(0) == "chb") {
         value = ((QCheckBox *)input_widget)->isChecked() ? 1 : 0;
-    } else if (inputtype.at(0) == "le") {
+    } else if (inputtype.at(0) == "le" || inputtype.at(0) == "led") {
         value = ((QLineEdit *)input_widget)->text();
         if (key == "id") {
             if (value.toString().isEmpty()) {

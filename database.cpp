@@ -85,7 +85,7 @@ void MainWindow::initVariables()
     initVariable("t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, "");
     initVariable("delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-t_0", true, "");
     initVariable("delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-t_c", true, "");
-    initVariable("ep_comp", "float", tr("%1C").arg(degreeSign()), "", true, "");
+    initVariable("ep_comp", "float", tr("kW"), "", true, "");
     initVariable("ec", "", "", "", false, "");
     initSubvariable("ec", "ec_l1", "float", tr("A"), "", true);
     initSubvariable("ec", "ec_l2", "float", tr("A"), "", true);
@@ -174,14 +174,68 @@ void MainWindow::initTables()
 void MainWindow::initWarnings()
 {
     QSqlQuery begin("BEGIN TRANSACTION");
-    QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importWarnings");
-    data.setDatabaseName(QFileInfo(qApp->arguments().at(0)).dir().absoluteFilePath("warnings.lklg"));
-    data.open();
-    copyTable("warnings", &data, &db);
-    copyTable("warnings_filters", &data, &db);
-    copyTable("warnings_conditions", &data, &db);
-    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+    QString w;
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"));
+    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "3");
+    initWarningAddFilter(w, "refrigerant_amount", "<", "10");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "6");
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"));
+    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "3");
+    initWarningAddFilter(w, "refrigerant_amount", "<", "10");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "8");
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"));
+    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "10");
+    initWarningAddFilter(w, "refrigerant_amount", "<", "100");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "4");
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"));
+    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "10");
+    initWarningAddFilter(w, "refrigerant_amount", "<", "100");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "6");
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"));
+    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "100");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "2");
+    w = initWarning(tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"));
+    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
+    initWarningAddFilter(w, "refrigerant_amount", ">=", "100");
+    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "4");
     QSqlQuery commit("COMMIT");
+}
+
+QString MainWindow::initWarning(const QString & name, const QString & description)
+{
+    MTRecord warning("warning", "", MTDictionary());
+    QMap<QString, QVariant> set;
+    set.insert("name", name);
+    set.insert("description", description);
+    warning.update(set);
+    return warning.id();
+}
+
+void MainWindow::initWarningAddFilter(const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
+{
+    QSqlQuery filter;
+    filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");
+    filter.bindValue(":parent", parent);
+    filter.bindValue(":circuit_attribute", circuit_attribute);
+    filter.bindValue(":function", function);
+    filter.bindValue(":value", value);
+    filter.exec();
+}
+
+void MainWindow::initWarningAddCondition(const QString & parent, const QString & ins_value, const QString & function, const QString & nom_value)
+{
+    QSqlQuery condition;
+    condition.prepare("INSERT INTO warnings_conditions (parent, ins_value, function, nom_value) VALUES (:parent, :ins_value, :function, :nom_value)");
+    condition.bindValue(":parent", parent);
+    condition.bindValue(":ins_value", ins_value);
+    condition.bindValue(":function", function);
+    condition.bindValue(":nom_value", nom_value);
+    condition.exec();
 }
 
 void MainWindow::newDatabase()
@@ -240,18 +294,21 @@ void MainWindow::openDatabase(QString path)
         }
     }
     clearAll();
+    QString id;
     QSqlQuery begin("BEGIN TRANSACTION");
     QSqlQuery customers("SELECT id, company FROM customers");
     while (customers.next()) {
+        id = customers.value(0).toString().rightJustified(8, '0');
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(customers.value(1).toString().isEmpty() ? customers.value(0).toString() : tr("%1 (%2)").arg(customers.value(0).toString()).arg(customers.value(1).toString()));
+        item->setText(customers.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(customers.value(1).toString()));
         item->setData(Qt::UserRole, customers.value(0).toString());
         lw_customers->addItem(item);
     }
     QSqlQuery inspectors("SELECT id, person FROM inspectors");
     while (inspectors.next()) {
+        id = inspectors.value(0).toString().rightJustified(4, '0');
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : tr("%1 (%2)").arg(inspectors.value(0).toString()).arg(inspectors.value(1).toString()));
+        item->setText(inspectors.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(inspectors.value(1).toString()));
         item->setData(Qt::UserRole, inspectors.value(0).toString());
         lw_inspectors->addItem(item);
     }
@@ -351,9 +408,10 @@ void MainWindow::addCustomer()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(8, '0');
         QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(company.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(company));
+        item->setText(company.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(company));
         item->setData(Qt::UserRole, record.id());
         lw_customers->addItem(item);
         this->setWindowModified(true);
@@ -368,22 +426,23 @@ void MainWindow::modifyCustomer()
     if (selectedCustomer() < 0) { return; }
     MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
     ModifyDialogue * md = new ModifyDialogue(record, this);
-    QString id = toString(selectedCustomer());
+    QString old_id = toString(selectedCustomer());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(8, '0');
         QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = lw_customers->highlightedItem();
-        item->setText(company.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(company));
+        item->setText(company.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(company));
         item->setData(Qt::UserRole, record.id());
-        if (id != record.id()) {
+        if (old_id != record.id()) {
             QSqlQuery update_circuits;
             update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
-            update_circuits.bindValue(":old_id", id);
+            update_circuits.bindValue(":old_id", old_id);
             update_circuits.bindValue(":new_id", record.id());
             update_circuits.exec();
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET customer = :new_id WHERE customer = :old_id");
-            update_inspections.bindValue(":old_id", id);
+            update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
         }
@@ -432,7 +491,7 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
     circuits.exec();
     while (circuits.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(circuits.value(0).toString());
+        item->setText(circuits.value(0).toString().rightJustified(4, '0'));
         item->setData(Qt::UserRole, circuits.value(0).toString());
         lw_circuits->addItem(item);
     }
@@ -451,7 +510,7 @@ void MainWindow::addCircuit()
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(record.id());
+        item->setText(record.id().rightJustified(4, '0'));
         item->setData(Qt::UserRole, record.id());
         lw_circuits->addItem(item);
         this->setWindowModified(true);
@@ -467,17 +526,17 @@ void MainWindow::modifyCircuit()
     if (selectedCircuit() < 0) { return; }
     MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
     ModifyDialogue * md = new ModifyDialogue(record, this);
-    QString id = toString(selectedCircuit());
+    QString old_id = toString(selectedCircuit());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
         QListWidgetItem * item = lw_circuits->highlightedItem();
-        item->setText(record.id());
+        item->setText(record.id().rightJustified(4, '0'));
         item->setData(Qt::UserRole, record.id());
-        if (id != record.id()) {
+        if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
             update_inspections.bindValue(":customer_id", selectedCustomer());
-            update_inspections.bindValue(":old_id", id);
+            update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
         }
@@ -682,6 +741,7 @@ void MainWindow::removeVariable()
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
+    if (dict_varnames.contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
     bool ok;
@@ -965,14 +1025,15 @@ void MainWindow::removeWarning()
     if (!db.isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
-    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
-    QMap<QString, QVariant> attributes = record.list("name, description");
-    QString name = attributes.value("name").toString();
-    QString description = attributes.value("description").toString();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description)), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
     record.remove();
+    MTRecord filters("warnings_filter", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    filters.remove();
+    MTRecord conditions("warnings_condition", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    conditions.remove();
     delete item;
     enableTools();
     this->setWindowModified(true);
@@ -986,9 +1047,10 @@ void MainWindow::addInspector()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(4, '0');
         QString person = record.list("person").value("person").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(person.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(person));
+        item->setText(person.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(person));
         item->setData(Qt::UserRole, record.id());
         lw_inspectors->addItem(item);
         this->setWindowModified(true);
@@ -1003,12 +1065,21 @@ void MainWindow::modifyInspector()
     if (selectedInspector() < 0) { return; }
     MTRecord record("inspector", toString(selectedInspector()), MTDictionary());
     ModifyDialogue * md = new ModifyDialogue(record, this);
+    QString old_id = toString(selectedInspector());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(4, '0');
         QString person = record.list("person").value("person").toString();
         QListWidgetItem * item = lw_inspectors->highlightedItem();
-        item->setText(person.isEmpty() ? record.id() : tr("%1 (%2)").arg(record.id()).arg(person));
+        item->setText(person.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(person));
         item->setData(Qt::UserRole, record.id());
+        if (old_id != record.id()) {
+            QSqlQuery update_inspections;
+            update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
+            update_inspections.bindValue(":old_id", old_id);
+            update_inspections.bindValue(":new_id", record.id());
+            update_inspections.exec();
+        }
         this->setWindowModified(true);
         refreshView();
     }
@@ -1106,11 +1177,13 @@ void MainWindow::importData()
 		return;
     }
     ImportDialogue * id = new ImportDialogue(this);
+    QString id_justified;
     QSqlQuery customers("SELECT id, company FROM customers", data);
     while (customers.next()) {
+        id_justified = customers.value(0).toString().rightJustified(8, '0');
         QListWidgetItem * item = new QListWidgetItem(id->customers());
         item->setCheckState(Qt::Unchecked);
-        item->setText(customers.value(1).toString().isEmpty() ? customers.value(0).toString() : tr("%1 (%2)").arg(customers.value(0).toString()).arg(customers.value(1).toString()));
+        item->setText(customers.value(1).toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(customers.value(1).toString()));
         item->setData(Qt::UserRole, customers.value(0).toString());
     }
     QSqlQuery circuits("SELECT id, parent FROM circuits", data);
@@ -1119,7 +1192,7 @@ void MainWindow::importData()
         item->setCheckState(Qt::Unchecked);
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
-        item->setText(QString("%1 (%2)").arg(circuits.value(0).toString()).arg(circuits.value(1).toString()));
+        item->setText(QString("%1 (%2)").arg(circuits.value(0).toString().rightJustified(4, '0')).arg(circuits.value(1).toString().rightJustified(8, '0')));
         item->setData(Qt::UserRole, QString("%1::%2").arg(circuits.value(1).toString()).arg(circuits.value(0).toString()));
     }
     QSqlQuery inspections("SELECT date, customer, circuit FROM inspections", data);
@@ -1128,7 +1201,7 @@ void MainWindow::importData()
         item->setCheckState(Qt::Checked);
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
-        item->setText(QString("%1 (%2::%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString()).arg(inspections.value(2).toString()));
+        item->setText(QString("%1 (%2::%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString().rightJustified(8, '0')).arg(inspections.value(2).toString().rightJustified(4, '0')));
         item->setData(Qt::UserRole, QString("%1::%2::%3").arg(inspections.value(1).toString()).arg(inspections.value(2).toString()).arg(inspections.value(0).toString()));
     }
     QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent", data);
@@ -1160,7 +1233,6 @@ void MainWindow::importData()
                 if (variable.value(VAR_COL_BG).toString() != query.value(VAR_COL_BG).toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
-            cb_action->addItem(tr("Do not import"));
             if (!found) {
                 cb_action->addItem(tr("Import"));
                 last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
@@ -1173,7 +1245,12 @@ void MainWindow::importData()
                     last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            cb_action->setCurrentIndex(1);
+            if (!dict_varnames.contains(query.value(VAR_ID).toString())) {
+                cb_action->insertItem(0, tr("Do not import"));
+                cb_action->setCurrentIndex(1);
+            } else {
+                cb_action->setCurrentIndex(0);
+            }
             id->variables()->setItemWidget(last_item, 7, cb_action);
             last_id = query.value(VAR_ID).toString();
         }
@@ -1201,7 +1278,6 @@ void MainWindow::importData()
                 if (variable.value(VAR_COL_BG).toString() != query.value(VAR_ID).toString()) { overwrite = true; last_item->setBackground(1, QBrush(Qt::darkMagenta)); subitem->setForeground(1, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
-            cb_action->addItem(tr("Do not import"));
             if (!found) {
                 cb_action->addItem(tr("Import"));
                 subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
@@ -1214,7 +1290,12 @@ void MainWindow::importData()
                     subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            cb_action->setCurrentIndex(1);
+            if (!dict_varnames.contains(query.value(SUBVAR_ID).toString())) {
+                cb_action->insertItem(0, tr("Do not import"));
+                cb_action->setCurrentIndex(1);
+            } else {
+                cb_action->setCurrentIndex(0);
+            }
             id->variables()->setItemWidget(subitem, 7, cb_action);
             last_item->setExpanded(true);
         }
@@ -1236,8 +1317,9 @@ void MainWindow::importData()
         }
         MTRecord record("customer", c_id, MTDictionary());
         if (!record.exists()) {
+            id_justified = c_id.rightJustified(8, '0');
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(set.value("name", QString()).toString().isEmpty() ? c_id : tr("%1 (%2)").arg(c_id).arg(set.value("name").toString()));
+            item->setText(set.value("name", QString()).toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(set.value("name").toString()));
             item->setData(Qt::UserRole, c_id);
             lw_customers->addItem(item);
         }
@@ -1262,7 +1344,7 @@ void MainWindow::importData()
         MTRecord record("circuit", cc_id, MTDictionary("parent", cc_parent));
         if (toString(selectedCustomer()) == cc_parent && !record.exists()) {
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(cc_id);
+            item->setText(cc_id.rightJustified(4, '0'));
             item->setData(Qt::UserRole, cc_id);
             lw_circuits->addItem(item);
         }

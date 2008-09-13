@@ -527,7 +527,7 @@ void MainWindow::enableTools()
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL);
     actionModify_variable->setEnabled(trw_variables->currentIndex().isValid());
-    actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid());
+    actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid() && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
     actionModify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);

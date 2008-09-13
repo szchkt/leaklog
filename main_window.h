@@ -128,6 +128,9 @@ private:
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
     void initTables();
     void initWarnings();
+    QString initWarning(const QString &, const QString &);
+    void initWarningAddFilter(const QString &, const QString &, const QString &, const QString &);
+    void initWarningAddCondition(const QString &, const QString &, const QString &, const QString &);
     void openDatabase(QString);
     void saveDatabase(bool = false);
     void loadCustomer(QListWidgetItem *, bool);
