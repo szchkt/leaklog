@@ -329,7 +329,7 @@ MTDictionary Global::get_dict_attrvalues()
     dict_attrvalues.insert("oil::pag", QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"));
     return dict_attrvalues;
 }
-/*id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation*/
+
 MTDictionary Global::get_dict_attrnames()
 {
     MTDictionary dict_attrnames;
