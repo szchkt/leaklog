@@ -58,15 +58,15 @@ void MainWindow::viewAllCustomers()
     while (query.next()) {
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
         out << "<a href=\"customer:" << query.value(0).toString() << "\">" << query.value(1).toString() << "</a></b></td></tr>";
-        out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td>" << query.value(0).toString() << "</td></tr>";
+        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
+        out << "<td>" << query.value(0).toString().rightJustified(8, '0') << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
         out << "<td><b>" << query.value(2).toString() << "</b></td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Address:") << "&nbsp;</td>";
         out << "<td>" << query.value(3).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("E-mail:") << "&nbsp;</td>";
         out << "<td>" << query.value(4).toString() << "</td></tr>";
-        out << "</table></td><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
         out << "<td>" << query.value(5).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
@@ -104,9 +104,9 @@ void MainWindow::viewCustomer(const QString & customer_id)
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
         out << "<a href=\"customer:" << customer_id << "/modify\">" << query.value(0).toString() << "</a></b></td></tr>";
-        out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td style=\"width:50%;\">" << customer_id << "</td></tr>";
+        out << "<td style=\"width:50%;\">" << customer_id.rightJustified(8, '0') << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
         out << "<td><b>" << query.value(1).toString() << "</b></td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Address:") << "&nbsp;</td>";
@@ -114,7 +114,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
         out << "<tr><td style=\"text-align: right;\">" << tr("E-mail:") << "&nbsp;</td>";
         out << "<td>" << query.value(3).toString() << "</td></tr>";
         out << "</table></td>";
-        out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
         out << "<td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
@@ -141,9 +141,9 @@ void MainWindow::viewCustomer(const QString & customer_id)
             do {
                 out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
                 out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>" << tr("Circuit:") << "&nbsp;";
-                out << "<a href=\"customer:" << customer_id << "/circuit:" << circuits.value(0).toString() << "\">" << circuits.value(0).toString() << "</a></b></td>";
+                out << "<a href=\"customer:" << customer_id << "/circuit:" << circuits.value(0).toString() << "\">" << circuits.value(0).toString().rightJustified(4, '0') << "</a></b></td>";
                 out << "<td rowspan=\"8\" style=\"width:10%;\"/></tr>";
-                out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+                out << "<tr><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
                 out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Manufacturer:") << "&nbsp;</b></td>";
                 out << "<td style=\"width:50%;\"><b>" << circuits.value(1).toString() << "</b></td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Type:") << "&nbsp;</td>";
@@ -161,7 +161,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 }
                 out << "</td></tr>";
                 out << "</table></td>";
-                out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+                out << "<td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
                 out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td>";
                 out << "<td style=\"width:50%;\">" << circuits.value(7).toString() << "</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td>";
@@ -203,8 +203,8 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         out << customer.list("company").value("company").toString();
         out << "</a></b></td></tr>";
         out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << circuit_id << "</a></b></td></tr>";
-        out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << circuit_id.rightJustified(4, '0') << "</a></b></td></tr>";
+        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Manufacturer:") << "&nbsp;</b></td><td style=\"width:50%;\"><b>" << query.value(0).toString() << "</b></td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Type:") << "&nbsp;</td><td>" << query.value(1).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Serial number:") << "&nbsp;</td><td>" << query.value(2).toString() << "</td></tr>";
@@ -216,7 +216,7 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         }
         out << "</td></tr>";
         out << "</table></td>";
-        out << "<td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(6).toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td><td>" << query.value(7).toString() << "&nbsp;kg</td></tr>";
         out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td><td>";
@@ -297,7 +297,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tbody>";
     out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
-    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id << "</a></b></td></tr>";
+    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id.rightJustified(4, '0') << "</a></b></td></tr>";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
     if (nominal == 1) out << tr("Nominal inspection:") << "&nbsp;";
     else out << tr("Inspection:") << "&nbsp;";
@@ -502,7 +502,11 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
     out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
     out << "<td>" << circuit_info.value("refrigerant_amount").toString() << "</td>";
-    out << "<td>" << circuit_info.value("oil").toString() << "</td>";
+    out << "<td>";
+    if (dict_attrvalues.contains("oil::" + circuit_info.value("oil").toString())) {
+        out << dict_attrvalues.value("oil::" + circuit_info.value("oil").toString());
+    }
+    out << "</td>";
     out << "<td>" << circuit_info.value("oil_amount").toString() << "</td>";
     out << "<td>" << circuit_info.value("life").toString() << "</td>";
     out << "</td></tr></table><br />";
@@ -856,8 +860,8 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
         }
         out << "\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Inspector:") << "&nbsp;";
         out << "<a href=\"" << link << "\">" << inspectors.at(i).value("person").toString() << "</a></b></td></tr>";
-        out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td>" << inspectors.at(i).value("id").toString() << "</td></tr>";
+        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
+        out << "<td>" << inspectors.at(i).value("id").toString().rightJustified(4, '0') << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Company:") << "&nbsp;</b></td>";
         out << "<td><b>" << inspectors.at(i).value("company").toString() << "</b></td></tr>";
         out << "</table></td><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -866,7 +870,6 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Company registry number:") << "&nbsp;</td>";
         out << "<td>" << inspectors.at(i).value("person_reg_num").toString() << "</td></tr>";
         out << "</table></td></tr>";
-        out << "</table>";
     }
     wv_main->setHtml(dict_html.value(tr("Inspectors")).arg(html), QUrl("qrc:/html/"));
 }

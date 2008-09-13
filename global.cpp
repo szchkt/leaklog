@@ -215,9 +215,9 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
 QString Global::compareValues(double value1, double value2)
 {
     if (value1 < value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; color: #FF0000; font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
 	} else if (value1 > value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; color: #FF0000; font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
 	} else {
 		return "%1";
 	}
