@@ -51,44 +51,73 @@ void MainWindow::viewChanged(const QString & view)
 void MainWindow::viewAllCustomers()
 {
     QString html; QTextStream out(&html);
-    QSqlQuery query;
+    MTRecord all_customers("customer", "", MTDictionary());
+    QList<QMap<QString, QVariant> > list = all_customers.listAll();
+    /*QSqlQuery query;
     query.setForwardOnly(true);
-    query.prepare("SELECT id, company, contact_person, address, mail, phone FROM customers ORDER BY id");
-    query.exec();
-    while (query.next()) {
+    query.prepare("SELECT id, company, contact_person, address, mail, phone, operation, building, device FROM customers ORDER BY id");
+    query.exec();*/
+    //while (query.next()) {
+        // for (int i = dict_attrnames.indexOf("circuit::id"); i < dict_attrnames.count() && dict_attrnames.key(i).startsWith("circuit::"); ++i)
+    int cu_length = QString("customer::").length();
+    for (int i = 0; i < list.count(); ++i) {
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
-        out << "<a href=\"customer:" << query.value(0).toString() << "\">" << query.value(1).toString() << "</a></b></td></tr>";
-        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td>" << query.value(0).toString().rightJustified(8, '0') << "</td></tr>";
+        out << "<a href=\"customer:" << list.at(i).value("id").toString() << "\">" << list.at(i).value("company").toString() << "</a></b></td></tr>";
+        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        QString attr_value;
+        int n;
+        for (n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
+            out << "<num_attr>" << n << "</num_attr>";
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
+            attr_value = dict_attrnames.key(n).mid(cu_length);
+            attr_value = QString(attr_value == "id" ? list.at(i).value(attr_value).toString().rightJustified(8, '0') : list.at(i).value(attr_value).toString());
+            out << "<td>" << attr_value << "</td></tr>";
+        }
+        /*out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
+        out << "<td>" << list.at(i).value("id").toString().rightJustified(8, '0') << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
-        out << "<td><b>" << query.value(2).toString() << "</b></td></tr>";
+        out << "<td><b>" << list.at(i).value("contact_person").toString() << "</b></td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Address:") << "&nbsp;</td>";
-        out << "<td>" << query.value(3).toString() << "</td></tr>";
+        out << "<td>" << list.at(i).value("address").toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("E-mail:") << "&nbsp;</td>";
-        out << "<td>" << query.value(4).toString() << "</td></tr>";
-        out << "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<td>" << list.at(i).value("mail").toString() << "</td></tr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
-        out << "<td>" << query.value(5).toString() << "</td></tr>";
+        out << "<td>" << list.at(i).value("phone").toString() << "</td></tr>";
+        out << "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Place of operation:") << "&nbsp;</td>";
+        out << "<td>" << list.at(i).value("operation").toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Building:") << "&nbsp;</td>";
+        out << "<td>" << list.at(i).value("building").toString() << "</td></tr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Device:") << "&nbsp;</td>";
+        out << "<td>" << list.at(i).value("device").toString() << "</td></tr>";*/
+        out << "<num_attr>" << n << "</num_attr>"; n++;
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
         out << "<td>";
         QSqlQuery circuits;
         circuits.setForwardOnly(true);
         circuits.prepare("SELECT id FROM circuits WHERE parent = :parent");
-        circuits.bindValue(":parent", query.value(0).toInt());
+        circuits.bindValue(":parent", list.at(i).value("id").toInt());
         circuits.exec();
         int num_circuits = 0, num_inspections = 0;
         while (circuits.next()) {
             num_circuits++;
             MTDictionary inspection_parents("circuit", circuits.value(0).toString());
-            inspection_parents.insert("customer", query.value(0).toString());
+            inspection_parents.insert("customer", list.at(i).value("id").toString());
             MTRecord inspection_record("inspection", "", inspection_parents);
             num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
         }
         out << num_circuits;
         out << "</td></tr>";
+        out << "<num_attr>" << n << "</num_attr>"; n++;
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
         out << "<td>" << num_inspections << "</td></tr>";
         out << "</table></td></tr>";
+        if (n != 0) {
+            html.replace(QString("<num_attr>%1</num_attr>").arg(int(n / 2 + n % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+        }
+        for (int k = 0; k < n; ++k) {
+            html.remove(QString("<num_attr>%1</num_attr>").arg(k));
+        }
     }
     wv_main->setHtml(dict_html.value(tr("All customers")).arg(html));
 }
@@ -96,16 +125,27 @@ void MainWindow::viewAllCustomers()
 void MainWindow::viewCustomer(const QString & customer_id)
 {
     QString html; QTextStream out(&html);
-    MTRecord customer("customer", customer_id, MTDictionary());
-    QSqlQuery query = customer.select("company, contact_person, address, mail, phone");
+    MTRecord customer_rec("customer", customer_id, MTDictionary());
+    QMap<QString, QVariant> customer = customer_rec.list();
+    /*QSqlQuery query = customer.select("company, contact_person, address, mail, phone");
     query.setForwardOnly(true);
     query.exec();
-    while (query.next()) {
-        out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
-        out << "<a href=\"customer:" << customer_id << "/modify\">" << query.value(0).toString() << "</a></b></td></tr>";
-        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
+    while (query.next()) {*/
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
+    out << "<a href=\"customer:" << customer_id << "/modify\">" << customer.value("company").toString() << "</a></b></td></tr>";
+    out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    int n;
+    QString attr_value;
+    int cu_length = QString("customer::").length();
+    for (n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
+        out << "<num_attr>" << n << "</num_attr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
+        attr_value = dict_attrnames.key(n).mid(cu_length);
+        attr_value = QString(attr_value == "id" ? customer.value(attr_value).toString().rightJustified(8, '0') : customer.value(attr_value).toString());
+        out << "<td>" << attr_value << "</td></tr>";
+    }
+        /*out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
         out << "<td style=\"width:50%;\">" << customer_id.rightJustified(8, '0') << "</td></tr>";
         out << "<tr><td style=\"text-align: right;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
         out << "<td><b>" << query.value(1).toString() << "</b></td></tr>";
@@ -116,34 +156,76 @@ void MainWindow::viewCustomer(const QString & customer_id)
         out << "</table></td>";
         out << "<td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
-        out << "<td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
-        out << "<td>";
-        QSqlQuery circuits;
-        circuits.prepare("SELECT id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation FROM circuits WHERE parent = :parent ORDER BY id");
-        circuits.bindValue(":parent", customer_id.toInt());
-        circuits.exec();
-        int num_circuits = 0, num_inspections = 0;
-        while (circuits.next()) {
-            num_circuits++;
-            MTDictionary inspection_parents("circuit", circuits.value(0).toString());
-            inspection_parents.insert("customer", customer_id);
-            MTRecord inspection_record("inspection", "", inspection_parents);
-            num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
+        out << "<td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";*/
+    out << "<num_attr>" << n << "</num_attr>"; n++;
+    out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
+    out << "<td>";
+    MTRecord circuits_rec("circuit", "", MTDictionary("parent", customer_id));
+    QList<QMap<QString, QVariant> > circuits = circuits_rec.listAll();
+    /*QSqlQuery circuits;
+    circuits.prepare("SELECT id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation FROM circuits WHERE parent = :parent ORDER BY id");
+    circuits.bindValue(":parent", customer_id.toInt());
+    circuits.exec();*/
+    int num_circuits = 0, num_inspections = 0;
+    //while (circuits.next()) {
+    for (int i = 0; i < circuits.count(); ++i) {
+        num_circuits++;
+        MTDictionary inspection_parents("circuit", circuits.at(i).value("id").toString());
+        inspection_parents.insert("customer", customer_id);
+        MTRecord inspection_record("inspection", "", inspection_parents);
+        num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
+    }
+    out << num_circuits;
+    out << "</td></tr>";
+    out << "<num_attr>" << n << "</num_attr>"; n++;
+    out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
+    out << "<td>" << num_inspections << "</td></tr>";
+    out << "</table></td></tr>";
+    out << "</table>";
+    if (n != 0) {
+        html.replace(QString("<num_attr>%1</num_attr>").arg(int(n / 2 + n % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+    }
+    for (int k = 0; k < n; ++k) {
+        html.remove(QString("<num_attr>%1</num_attr>").arg(k));
+    }
+    cu_length = QString("circuit::").length();
+    int start = dict_attrnames.indexOfKey("circuit::id");
+    for (int i = 0; i < circuits.count(); ++i) {
+        out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
+        out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>" << tr("Circuit:") << "&nbsp;";
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuits.at(i).value("id").toString() << "\">" << circuits.at(i).value("id").toString().rightJustified(4, '0') << "</a></b></td>";
+        out << "<td rowspan=\"8\" style=\"width:10%;\"/></tr>";
+        out << "<tr><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        for (n = start; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
+            out << "<num_attr>" << n - start << "</num_attr>";
+            QStringList dict_value = dict_attrnames.value(n).split("||");
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
+            attr_value = dict_attrnames.key(n).mid(cu_length);
+            attr_value = circuits.at(i).value(attr_value).toString();
+            if (dict_attrnames.key(n) == "circuit::field") {
+                if (dict_attrvalues.contains("field::" + attr_value)) {
+                    attr_value = dict_attrvalues.value("field::" + attr_value);
+                }
+            } else if (dict_attrnames.key(n) == "circuit::oil") {
+                if (dict_attrvalues.contains("oil::" + attr_value)) {
+                    attr_value = dict_attrvalues.value("oil::" + attr_value);
+                }
+            }
+            out << "<td>" << attr_value << "&nbsp;";
+            if (dict_value.count() > 1) {
+                out << dict_value.last();
+            }
+            out << "</td></tr>";
         }
-        out << num_circuits;
-        out << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
-        out << "<td>" << num_inspections << "</td></tr>";
-        out << "</table></td></tr>";
-        out << "</table>";
-        if (circuits.first()) {
+        int ns = n - start;
+        if (ns != 0) {
+            html.replace(QString("<num_attr>%1</num_attr>").arg(int(ns / 2 + ns % 2)), "</table></td><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+        }
+        for (int k = 0; k < n; ++k) {
+            html.remove(QString("<num_attr>%1</num_attr>").arg(k));
+        }
+        /*if (circuits.first()) {
             do {
-                out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
-                out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>" << tr("Circuit:") << "&nbsp;";
-                out << "<a href=\"customer:" << customer_id << "/circuit:" << circuits.value(0).toString() << "\">" << circuits.value(0).toString().rightJustified(4, '0') << "</a></b></td>";
-                out << "<td rowspan=\"8\" style=\"width:10%;\"/></tr>";
-                out << "<tr><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
                 out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Manufacturer:") << "&nbsp;</b></td>";
                 out << "<td style=\"width:50%;\"><b>" << circuits.value(1).toString() << "</b></td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Type:") << "&nbsp;</td>";
@@ -179,11 +261,11 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 out << "<tr><td style=\"text-align: right;\">" << tr("Run-time per day:") << "&nbsp;</td>";
                 out << "<td>" << circuits.value(12).toString() << "</td></tr>";
                 out << "<tr><td style=\"text-align: right;\">" << tr("Rate of utilisation:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(13).toString() << "&nbsp;%</td></tr>";
-                out << "</table></td></tr>";
-                out << "</table>";
-            } while (circuits.next());
-        }
+                out << "<td>" << circuits.value(13).toString() << "&nbsp;%</td></tr>";*/
+            //} while (circuits.next());
+        //}
+        out << "</table></td></tr>";
+        out << "</table>";
     }
     wv_main->setHtml(dict_html.value(tr("Customer information")).arg(html));
 }
@@ -278,9 +360,9 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
 {
     QString html; QTextStream out(&html);
 
-    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5;
-    const int SUBVAR_ID = 6; const int SUBVAR_NAME = 7; const int SUBVAR_TYPE = 8; const int SUBVAR_UNIT = 9; const int SUBVAR_VALUE = 10; const int SUBVAR_COMPARE_NOM = 11;
+    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6;
+    const int SUBVAR_ID = 7; const int SUBVAR_NAME = 8; const int SUBVAR_TYPE = 9; const int SUBVAR_UNIT = 10; const int SUBVAR_VALUE = 11; const int SUBVAR_COMPARE_NOM = 12; const int SUBVAR_TOLERANCE = 13;
 
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
@@ -309,11 +391,13 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     QStringList used_ids = listVariableIds(); // all = false
     while (vars.next()) {
         QString var_id; bool compare_nom = false; bool ok_eval = true;
-        MTDictionary expression;
+        MTDictionary expression; double tolerance = 0;
         if (vars.value(SUBVAR_ID).toString().isEmpty()) {
             var_id = vars.value(VAR_ID).toString();
+            tolerance = vars.value(VAR_TOLERANCE).toDouble();
         } else {
             var_id = vars.value(SUBVAR_ID).toString();
+            tolerance = vars.value(SUBVAR_TOLERANCE).toDouble();
         }
         if (nominal == 0) {
             if (vars.value(VAR_COMPARE_NOM).toInt() == 1) {
@@ -357,7 +441,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
         }
         out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
         if (compare_nom) {
-            out << compareValues(nom_value.toDouble(), ins_value.toDouble()).arg(ins_value);
+            out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value);
         } else {
             out << ins_value;
         }
@@ -401,10 +485,9 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 {
     QString html; QTextStream out(&html);
 
-    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_COL_BG = 6;
-    const int SUBVAR_ID = 7; const int SUBVAR_NAME = 8; const int SUBVAR_TYPE = 9; const int SUBVAR_UNIT = 10; const int SUBVAR_VALUE = 11; const int SUBVAR_COMPARE_NOM = 12;
-
+    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
+    const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;
     QStringList used_ids = listVariableIds();
 
 //*** Mapping variables ***
@@ -423,6 +506,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
             map.insert("value", vars.value(VAR_VALUE).toString());
             map.insert("compare_nom", vars.value(VAR_COMPARE_NOM).toString());
             map.insert("col_bg", vars.value(VAR_COL_BG).toString());
+            map.insert("tolerance", vars.value(VAR_TOLERANCE).toString());
             last_id = vars.value(VAR_ID).toString();
         }
         if (!vars.value(SUBVAR_ID).toString().isEmpty()) {
@@ -433,6 +517,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
             subvariable.insert("unit", vars.value(SUBVAR_UNIT).toString());
             subvariable.insert("value", vars.value(SUBVAR_VALUE).toString());
             subvariable.insert("compare_nom", vars.value(SUBVAR_COMPARE_NOM).toString());
+            subvariable.insert("tolerance", vars.value(SUBVAR_TOLERANCE).toString());
             subvariables << QVariant(subvariable);
         }
     }
@@ -566,7 +651,6 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 
 //*** Body ***
     out << "<tbody>";
-    int cell_count = 0;
     for (int i = 0; i < inspections.count(); ++i) {
      out << "<tr class=\"";
         if (inspections.at(i).value("nominal").toInt() == 1 && table.value("highlight_nominal").toInt() != 0) {
@@ -613,8 +697,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     if (subvariables.at(s).toMap().value("type").toString() == "bool") {
                         ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
                     }
-                    writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan);
-                    cell_count++;
+                    writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, subvariables.at(s).toMap().value("tolerance").toDouble());
                 }
             } else {
                 compare_nom = variables.value(table_vars.at(n)).value("compare_nom").toInt() > 0;
@@ -640,8 +723,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     MTRecord inspector("inspector", ins_value, MTDictionary());
                     ins_value = inspector.list().value("person").toString();
                 }
-                writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan);
-                cell_count++;
+                writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, variables.value(table_vars.at(n)).value("tolerance").toDouble());
             }
         }
         out << "</tr>";
@@ -706,6 +788,8 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         }
         out << "</tr>";
     }
+    out << "</tfoot>";
+    out << "</table>";
 
 //*** Warnings ***
     QString warnings_html;
@@ -722,30 +806,28 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         if (warnings_list.count() > 0) {
             warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id + "/inspection:" + inspections.at(i).value("date").toString() + "\">");
             warnings_html.append(inspections.at(i).value("date").toString() + "</a>");
-            warnings_html.append("</td><td colspan=\"");
-            warnings_html.append(toString(cell_count));
-            warnings_html.append("\">");
+            warnings_html.append("</td><td>");
             warnings_html.append(warnings_list.join(", "));
             warnings_html.append("</td></tr>");
         }
         last_warnings_list = backup_warnings;
     }
     if (!warnings_html.isEmpty()) {
-        out << "<tr><th>" << tr("Warnings") << "</th></tr>";
+        out << "<br /><table>";
+        out << "<tr><th width=\"20%\">" << tr("Date") << "</th><th>" << tr("Warnings") << "</th></tr>";
         out << warnings_html;
+        out << "</table>";
     }
-    out << "</tfoot>";
-    out << "</table>";
     wv_main->setHtml(dict_html.value(tr("Table of inspections")).arg(html), QUrl("qrc:/html/"));
 }
 
-void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan)
+void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
 {
     out << "<td class=\"" << bg_class;
     out << "\" rowspan=\"" << rowspan;
     out << "\">";
     if (compare_nom) {
-        out << compareValues(nom_value.toDouble(), ins_value.toDouble()).arg(ins_value);
+        out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value);
     } else {
         out << ins_value;
     }

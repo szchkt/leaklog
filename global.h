@@ -46,11 +46,12 @@ namespace Global {
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
     MTDictionary parseExpression(const QString &, QStringList *);
     double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
-    QString compareValues(double, double);
+    QString compareValues(double, double, double = 0.0);
     // Dictionaries
     MTDictionary get_dict_vartypes();
     MTDictionary get_dict_varnames();
     MTDictionary get_dict_attrvalues();
+    MTDictionary get_dict_attrnames();
 }
 
 class MTRecord : public QObject

@@ -27,6 +27,7 @@ MainWindow::MainWindow()
     dict_vartypes = get_dict_vartypes();
     dict_varnames = get_dict_varnames();
     dict_attrvalues = get_dict_attrvalues();
+    dict_attrnames = get_dict_attrnames();
     // ------------
     // HTML
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");

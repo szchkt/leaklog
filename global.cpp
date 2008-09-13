@@ -212,12 +212,12 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
     return (double)(round(result * 100.0)/100.0);
 }
 
-QString Global::compareValues(double value1, double value2)
+QString Global::compareValues(double value1, double value2, double tolerance)
 {
     if (value1 < value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; color: #FF0000; font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
 	} else if (value1 > value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; color: #FF0000; font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
 	} else {
 		return "%1";
 	}
@@ -309,6 +309,36 @@ MTDictionary Global::get_dict_attrvalues()
     dict_attrvalues.insert("oil::pve", QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"));
     dict_attrvalues.insert("oil::pag", QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"));
     return dict_attrvalues;
+}
+/*id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation*/
+MTDictionary Global::get_dict_attrnames()
+{
+    MTDictionary dict_attrnames;
+    dict_attrnames.insert("customer::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("customer::company", QApplication::translate("AttributeNames", "Company:"));
+    dict_attrnames.insert("customer::contact_person", QApplication::translate("AttributeNames", "Contact person:"));
+    dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address:"));
+    dict_attrnames.insert("customer::mail", QApplication::translate("AttributeNames", "E-mail:"));
+    dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone:"));
+    dict_attrnames.insert("customer::operation", QApplication::translate("AttributeNames", "Place of operation:"));
+    dict_attrnames.insert("customer::building", QApplication::translate("AttributeNames", "Building:"));
+    dict_attrnames.insert("customer::device", QApplication::translate("AttributeNames", "Device:"));
+
+    dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("circuit::manufacturer", QApplication::translate("AttributeNames", "Manufacturer:"));
+    dict_attrnames.insert("circuit::type", QApplication::translate("AttributeNames", "Type:"));
+    dict_attrnames.insert("circuit::sn", QApplication::translate("AttributeNames", "Serial number:"));
+    dict_attrnames.insert("circuit::year", QApplication::translate("AttributeNames", "Year of purchase:"));
+    dict_attrnames.insert("circuit::commissioning", QApplication::translate("AttributeNames", "Date of commissioning:"));
+    dict_attrnames.insert("circuit::field", QApplication::translate("AttributeNames", "Field of application:"));
+    dict_attrnames.insert("circuit::refrigerant", QApplication::translate("AttributeNames", "Refrigerant:"));
+    dict_attrnames.insert("circuit::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant:") + "||" + QApplication::translate("AttributeNames", "kg"));
+    dict_attrnames.insert("circuit::oil", QApplication::translate("AttributeNames", "Oil:"));
+    dict_attrnames.insert("circuit::oil_amount", QApplication::translate("AttributeNames", "Amount of oil:") + "||" + QApplication::translate("AttributeNames", "kg"));
+    dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life:") + "||" + QApplication::translate("AttributeNames", "years"));
+    dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day:"));
+    dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation:") + "||" + "%");
+    return dict_attrnames;
 }
 
 using namespace Global;

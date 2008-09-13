@@ -150,11 +150,12 @@ private:
     void viewTable(const QString &, const QString &, const QString &, int);
     void viewAllInspectors(const QString &);
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
-    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int);
+    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
 
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;
     MTDictionary dict_attrvalues;
+    MTDictionary dict_attrnames;
     MTDictionary dict_html;
     QMap<QString, MTDictionary> parsed_expressions;
     QMap<QString, int> view_indices;
