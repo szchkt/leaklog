@@ -87,7 +87,7 @@ QDialog(parent)
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le;000000000000");
+        md_dict_input.insert("id", "le;00000000");
         md_dict.insert("company", tr("Company"));
         md_dict_input.insert("company", "le");
         md_dict.insert("contact_person", tr("Contact person"));
@@ -103,7 +103,7 @@ QDialog(parent)
     } else if (md_record.type() == "circuit") {
         md_dict.insert("circuit", tr("Cooling circuit")); // _i = 1;
         md_dict.insert("id", tr("ID"));
-        md_dict_input.insert("id", "le;000000000000");
+        md_dict_input.insert("id", "le;0000");
         md_dict.insert("hermetic", tr("Hermetically sealed"));
         md_dict_input.insert("hermetic", "chb");
         md_dict.insert("manufacturer", tr("Manufacturer"));
@@ -224,6 +224,8 @@ QDialog(parent)
         md_dict_input.insert("value", "pteh");
         md_dict.insert("compare_nom", tr("Compare value with the nominal one"));
         md_dict_input.insert("compare_nom", "chb");
+        md_dict.insert("tolerance", tr("Tolerance"));
+        md_dict_input.insert("tolerance", "dspb;0.0;0.0;999999.9");
         if (md_record.type() == "variable") {
             md_dict.insert("col_bg", tr("Colour"));
             md_dict_input.insert("col_bg", "ccb");
@@ -250,6 +252,8 @@ QDialog(parent)
         md_dict_input.insert("person_reg_num", "le");
         md_dict.insert("company_reg_num", tr("Company registry number"));
         md_dict_input.insert("company_reg_num", "le");
+        md_dict.insert("phone", tr("Phone"));
+        md_dict_input.insert("phone", "le");
         query_used_ids.prepare("SELECT id FROM inspectors" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     }
@@ -267,6 +271,11 @@ QDialog(parent)
         if (query.next()) {
             for (int i = 0; i < query.record().count(); ++i) {
                 md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+            }
+        }
+        if (md_record.type() == "variable" || md_record.type() == "subvariable") {
+            if (get_dict_varnames().contains(md_record.id())) {
+                md_dict_input.setValue("id", "led");
             }
         }
     }
@@ -304,9 +313,10 @@ QDialog(parent)
 
 QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const QString & name, const QString & value)
 {
-    if (inputtype.at(0) == "le") {
+    if (inputtype.at(0) == "le" || inputtype.at(0) == "led") {
         QLineEdit * md_le_var = new QLineEdit(this);
         md_le_var->setMinimumSize(150, md_le_var->sizeHint().height());
+        if (inputtype.at(0) == "led") { md_le_var->setEnabled(false); }
         if (inputtype.count() > 1) { md_le_var->setInputMask(inputtype.at(1)); }
         md_le_var->setText(value);
         return md_le_var;
@@ -374,7 +384,7 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
     QVariant value(QVariant::String);
     if (inputtype.at(0) == "chb") {
         value = ((QCheckBox *)input_widget)->isChecked() ? 1 : 0;
-    } else if (inputtype.at(0) == "le") {
+    } else if (inputtype.at(0) == "le" || inputtype.at(0) == "led") {
         value = ((QLineEdit *)input_widget)->text();
         if (key == "id") {
             if (value.toString().isEmpty()) {

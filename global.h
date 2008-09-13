@@ -48,6 +48,7 @@ namespace Global {
     double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
     QString compareValues(double, double, double = 0.0);
     // Dictionaries
+    MTDictionary get_dict_dbtables();
     MTDictionary get_dict_vartypes();
     MTDictionary get_dict_varnames();
     MTDictionary get_dict_attrvalues();

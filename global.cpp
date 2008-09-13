@@ -83,7 +83,9 @@ QStringList Global::getTableFieldNames(const QString & table, QSqlDatabase * dat
 
 void Global::addColumn(const QString & column, const QString & table, QSqlDatabase * database)
 {
-    QSqlQuery add_column("ALTER TABLE " + table + " ADD COLUMN " + column + " TEXT", *database);
+    QString col = column;
+    if (column.split(" ").count() < 2) { col.append(" TEXT"); }
+    QSqlQuery add_column("ALTER TABLE " + table + " ADD COLUMN " + col, *database);
 }
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
@@ -221,6 +223,23 @@ QString Global::compareValues(double value1, double value2, double tolerance)
 	} else {
 		return "%1";
 	}
+}
+
+MTDictionary Global::get_dict_dbtables()
+{
+    MTDictionary dict_dbtables;
+    dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
+    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, life NUMERIC, runtime NUMERIC, utilisation NUMERIC");
+    dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER");
+    dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
+    dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
+    dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
+    dict_dbtables.insert("tables", "id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT");
+    dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, name TEXT, description TEXT");
+    dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
+    dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
+    dict_dbtables.insert("db_info", "id TEXT, value TEXT");
+    return dict_dbtables;
 }
 
 MTDictionary Global::get_dict_vartypes()

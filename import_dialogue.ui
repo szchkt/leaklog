@@ -40,7 +40,7 @@
           </font>
          </property>
          <property name="text" >
-          <string>Customers:</string>
+          <string>Customers</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignCenter</set>
@@ -97,7 +97,7 @@
           </font>
          </property>
          <property name="text" >
-          <string>Circuits:</string>
+          <string>Circuits</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignCenter</set>
@@ -154,7 +154,7 @@
           </font>
          </property>
          <property name="text" >
-          <string>Inspections:</string>
+          <string>Inspections</string>
          </property>
          <property name="alignment" >
           <set>Qt::AlignCenter</set>
@@ -211,7 +211,7 @@
       </font>
      </property>
      <property name="text" >
-      <string>Variables:</string>
+      <string>Variables</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignCenter</set>
