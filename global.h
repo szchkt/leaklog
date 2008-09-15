@@ -53,6 +53,8 @@ namespace Global {
     MTDictionary get_dict_varnames();
     MTDictionary get_dict_attrvalues();
     MTDictionary get_dict_attrnames();
+    // Variables
+    QStringList listVariableIds(bool = false);
 }
 
 class MTRecord : public QObject
@@ -82,6 +84,84 @@ private:
     QString r_type;
     QString r_id;
     MTDictionary r_parents;
+};
+
+class MTSqlQueryResult : public QObject
+{
+    Q_OBJECT
+
+public:
+    MTSqlQueryResult(const QString &, QSqlDatabase = QSqlDatabase());
+    MTSqlQueryResult(QSqlDatabase = QSqlDatabase());
+    ~MTSqlQueryResult();
+
+    void bindValue(const QString &, const QVariant &, QSql::ParamType = QSql::In);
+    QVariant boundValue(const QString &) const;
+    bool exec(const QString &);
+    bool exec();
+    bool next();
+    bool prepare(const QString &);
+    QSqlQuery * query();
+    QSqlRecord record() const;
+    QVariant value(int) const;
+    QVariant value(const QString &) const;
+
+protected:
+    int * pos();
+    QList<QMap<QString, QVariant> > * result();
+    virtual void saveResult();
+
+private:
+    QSqlQuery * _query;
+    QList<QMap<QString, QVariant> > _result;
+    int _pos;
+};
+
+class Variables : public MTSqlQueryResult
+{
+    Q_OBJECT
+
+public:
+    Variables(QSqlDatabase = QSqlDatabase(), bool = true);
+
+protected:
+    virtual void saveResult();
+
+    void initVariables(const QString & = QString());
+    void initVariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool, double, const QString &);
+    void initVariable(const QString &, const QString &, const QString &);
+    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
+
+    MTDictionary dict_varnames;
+    QMap<QString, int> var_indices;
+};
+
+class Variable : public Variables
+{
+    Q_OBJECT
+
+public:
+    Variable(const QString & = QString(), QSqlDatabase = QSqlDatabase());
+
+protected:
+    void saveResult();
+
+private:
+    QString var_id;
+};
+
+class Subvariable : public Variables
+{
+    Q_OBJECT
+
+public:
+    Subvariable(const QString &, const QString & = QString(), QSqlDatabase = QSqlDatabase());
+
+protected:
+    void saveResult();
+
+private:
+    QString var_id;
 };
 
 #endif // GLOBAL_H

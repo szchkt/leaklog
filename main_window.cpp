@@ -66,6 +66,7 @@ MainWindow::MainWindow()
     dw_variables->setVisible(false);
     dw_tables->setVisible(false);
     dw_warnings->setVisible(false);
+    actionOpen->setMenu(menuOpen);
     tbtn_add_variable->setMenu(menuAdd_variable);
     tbtn_remove_variable->setDefaultAction(actionRemove_variable);
     tbtn_add_table->setDefaultAction(actionAdd_table);
@@ -93,7 +94,8 @@ MainWindow::MainWindow()
     setAllEnabled(false);
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
-    QObject::connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
+    QObject::connect(actionLocal_database, SIGNAL(triggered()), this, SLOT(open()));
+    QObject::connect(actionRemote_database, SIGNAL(triggered()), this, SLOT(openRemote()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
     QObject::connect(actionSave_and_compact, SIGNAL(triggered()), this, SLOT(saveAndCompact()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
@@ -494,6 +496,9 @@ void MainWindow::setAllEnabled(bool enable)
         if (!enable) actionModify_inspection->setEnabled(enable);
         if (!enable) actionRemove_inspection->setEnabled(enable);
         if (!enable) actionPrint_label->setEnabled(enable);
+    menuInspector->setEnabled(enable);
+        if (!enable) actionModify_inspector->setEnabled(enable);
+        if (!enable) actionRemove_inspector->setEnabled(enable);
     dw_browser->setEnabled(enable);
     dw_inspectors->setEnabled(enable);
     dw_variables->setEnabled(enable);
@@ -527,7 +532,7 @@ void MainWindow::enableTools()
     actionRemove_inspection->setEnabled(inspection_selected);
     actionPrint_label->setEnabled(inspection_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
-    actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL);
+    actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
     actionModify_variable->setEnabled(trw_variables->currentIndex().isValid());
     actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid() && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
     actionModify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
