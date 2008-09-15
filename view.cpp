@@ -149,7 +149,6 @@ void MainWindow::viewCustomer(const QString & customer_id)
         html.remove(QString("<num_attr>%1</num_attr>").arg(k));
     }
     cu_length = QString("circuit::").length();
-    int start = dict_attrnames.indexOfKey("circuit::id");
     for (int i = 0; i < circuits.count(); ++i) {
         num_valid = 0;
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
@@ -281,9 +280,10 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
 {
     QString html; QTextStream out(&html);
 
-    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    Variables vars;
+    /*QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
     const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6;
-    const int SUBVAR_ID = 7; const int SUBVAR_NAME = 8; const int SUBVAR_TYPE = 9; const int SUBVAR_UNIT = 10; const int SUBVAR_VALUE = 11; const int SUBVAR_COMPARE_NOM = 12; const int SUBVAR_TOLERANCE = 13;
+    const int SUBVAR_ID = 7; const int SUBVAR_NAME = 8; const int SUBVAR_TYPE = 9; const int SUBVAR_UNIT = 10; const int SUBVAR_VALUE = 11; const int SUBVAR_COMPARE_NOM = 12; const int SUBVAR_TOLERANCE = 13;*/
 
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
@@ -313,25 +313,25 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     while (vars.next()) {
         QString var_id; bool compare_nom = false; bool ok_eval = true;
         MTDictionary expression; double tolerance = 0;
-        if (vars.value(SUBVAR_ID).toString().isEmpty()) {
-            var_id = vars.value(VAR_ID).toString();
-            tolerance = vars.value(VAR_TOLERANCE).toDouble();
+        if (vars.value("SUBVAR_ID").toString().isEmpty()) {
+            var_id = vars.value("VAR_ID").toString();
+            tolerance = vars.value("VAR_TOLERANCE").toDouble();
         } else {
-            var_id = vars.value(SUBVAR_ID).toString();
-            tolerance = vars.value(SUBVAR_TOLERANCE).toDouble();
+            var_id = vars.value("SUBVAR_ID").toString();
+            tolerance = vars.value("SUBVAR_TOLERANCE").toDouble();
         }
         if (nominal == 0) {
-            if (vars.value(VAR_COMPARE_NOM).toInt() == 1) {
+            if (vars.value("VAR_COMPARE_NOM").toInt() == 1) {
                 compare_nom = true;
-            } else if (vars.value(SUBVAR_COMPARE_NOM).toInt() == 1) {
+            } else if (vars.value("SUBVAR_COMPARE_NOM").toInt() == 1) {
                 compare_nom = true;
             }
         }
 //*** Expressions and values ***
-        if (!vars.value(VAR_VALUE).toString().isEmpty()) {
-            expression = parseExpression(vars.value(VAR_VALUE).toString(), &used_ids);
-        } else if (!vars.value(SUBVAR_VALUE).toString().isEmpty()) {
-            expression = parseExpression(vars.value(SUBVAR_VALUE).toString(), &used_ids);
+        if (!vars.value("VAR_VALUE").toString().isEmpty()) {
+            expression = parseExpression(vars.value("VAR_VALUE").toString(), &used_ids);
+        } else if (!vars.value("SUBVAR_VALUE").toString().isEmpty()) {
+            expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), &used_ids);
         }
         QString ins_value; QString nom_value;
         if (expression.count() != 0) {
@@ -355,10 +355,10 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
         }
         out << "<num_var>" << num_shown_vars << "</num_var>";
         out << "<tr><td style=\"text-align: right; width:50%;\">";
-        if (vars.value(SUBVAR_ID).toString().isEmpty()) {
-            out << vars.value(VAR_NAME).toString() << ":&nbsp;";
+        if (vars.value("SUBVAR_ID").toString().isEmpty()) {
+            out << vars.value("VAR_NAME").toString() << ":&nbsp;";
         } else {
-            out << vars.value(VAR_NAME).toString() << ":&nbsp;" << vars.value(SUBVAR_NAME).toString() << ":&nbsp;";
+            out << vars.value("VAR_NAME").toString() << ":&nbsp;" << vars.value("SUBVAR_NAME").toString() << ":&nbsp;";
         }
         out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
         if (compare_nom) {
@@ -367,13 +367,13 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
             out << ins_value;
         }
         out << "</td>";
-        if (!vars.value(VAR_UNIT).toString().isEmpty()) {
+        if (!vars.value("VAR_UNIT").toString().isEmpty()) {
             out << "<td valign=\"center\">&nbsp;";
-            out << vars.value(VAR_UNIT).toString();
+            out << vars.value("VAR_UNIT").toString();
             out << "</td>";
-        } else if (!vars.value(SUBVAR_UNIT).toString().isEmpty()) {
+        } else if (!vars.value("SUBVAR_UNIT").toString().isEmpty()) {
             out << "<td valign=\"center\">&nbsp;";
-            out << vars.value(SUBVAR_UNIT).toString();
+            out << vars.value("SUBVAR_UNIT").toString();
             out << "</td>";
         }
         out << "</tr></table></td>";
@@ -406,39 +406,40 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 {
     QString html; QTextStream out(&html);
 
-    QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+    Variables vars;
+    /*QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
     const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
-    const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;
+    const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;*/
     QStringList used_ids = listVariableIds();
 
 //*** Mapping variables ***
     QMap<QString, QMap<QString, QVariant> > variables;
     QString last_id; QMap<QString, QVariant> map; QList<QVariant> subvariables;
     while (vars.next()) {
-        if (vars.value(VAR_ID).toString() != last_id) {
+        if (vars.value("VAR_ID").toString() != last_id) {
             if (!last_id.isEmpty()) {
                 map.insert("subvariables", subvariables);
                 variables.insert(last_id, map);
             }
             map.clear(); subvariables.clear();
-            map.insert("name", vars.value(VAR_NAME).toString());
-            map.insert("type", vars.value(VAR_TYPE).toString());
-            map.insert("unit", vars.value(VAR_UNIT).toString());
-            map.insert("value", vars.value(VAR_VALUE).toString());
-            map.insert("compare_nom", vars.value(VAR_COMPARE_NOM).toString());
-            map.insert("col_bg", vars.value(VAR_COL_BG).toString());
-            map.insert("tolerance", vars.value(VAR_TOLERANCE).toString());
-            last_id = vars.value(VAR_ID).toString();
+            map.insert("name", vars.value("VAR_NAME").toString());
+            map.insert("type", vars.value("VAR_TYPE").toString());
+            map.insert("unit", vars.value("VAR_UNIT").toString());
+            map.insert("value", vars.value("VAR_VALUE").toString());
+            map.insert("compare_nom", vars.value("VAR_COMPARE_NOM").toString());
+            map.insert("col_bg", vars.value("VAR_COL_BG").toString());
+            map.insert("tolerance", vars.value("VAR_TOLERANCE").toString());
+            last_id = vars.value("VAR_ID").toString();
         }
-        if (!vars.value(SUBVAR_ID).toString().isEmpty()) {
+        if (!vars.value("SUBVAR_ID").toString().isEmpty()) {
             QMap<QString, QVariant> subvariable;
-            subvariable.insert("id", vars.value(SUBVAR_ID).toString());
-            subvariable.insert("name", vars.value(SUBVAR_NAME).toString());
-            subvariable.insert("type", vars.value(SUBVAR_TYPE).toString());
-            subvariable.insert("unit", vars.value(SUBVAR_UNIT).toString());
-            subvariable.insert("value", vars.value(SUBVAR_VALUE).toString());
-            subvariable.insert("compare_nom", vars.value(SUBVAR_COMPARE_NOM).toString());
-            subvariable.insert("tolerance", vars.value(SUBVAR_TOLERANCE).toString());
+            subvariable.insert("id", vars.value("SUBVAR_ID").toString());
+            subvariable.insert("name", vars.value("SUBVAR_NAME").toString());
+            subvariable.insert("type", vars.value("SUBVAR_TYPE").toString());
+            subvariable.insert("unit", vars.value("SUBVAR_UNIT").toString());
+            subvariable.insert("value", vars.value("SUBVAR_VALUE").toString());
+            subvariable.insert("compare_nom", vars.value("SUBVAR_COMPARE_NOM").toString());
+            subvariable.insert("tolerance", vars.value("SUBVAR_TOLERANCE").toString());
             subvariables << QVariant(subvariable);
         }
     }
