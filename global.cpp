@@ -339,9 +339,6 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address:"));
     dict_attrnames.insert("customer::mail", QApplication::translate("AttributeNames", "E-mail:"));
     dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone:"));
-    dict_attrnames.insert("customer::operation", QApplication::translate("AttributeNames", "Place of operation:"));
-    dict_attrnames.insert("customer::building", QApplication::translate("AttributeNames", "Building:"));
-    dict_attrnames.insert("customer::device", QApplication::translate("AttributeNames", "Device:"));
 
     dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID:"));
     dict_attrnames.insert("circuit::manufacturer", QApplication::translate("AttributeNames", "Manufacturer:"));
@@ -357,6 +354,9 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life:") + "||" + QApplication::translate("AttributeNames", "years"));
     dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day:"));
     dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation:") + "||" + "%");
+    dict_attrnames.insert("circuit::operation", QApplication::translate("AttributeNames", "Place of operation:"));
+    dict_attrnames.insert("circuit::building", QApplication::translate("AttributeNames", "Building:"));
+    dict_attrnames.insert("circuit::device", QApplication::translate("AttributeNames", "Device:"));
     return dict_attrnames;
 }
 

@@ -53,44 +53,23 @@ void MainWindow::viewAllCustomers()
     QString html; QTextStream out(&html);
     MTRecord all_customers("customer", "", MTDictionary());
     QList<QMap<QString, QVariant> > list = all_customers.listAll();
-    /*QSqlQuery query;
-    query.setForwardOnly(true);
-    query.prepare("SELECT id, company, contact_person, address, mail, phone, operation, building, device FROM customers ORDER BY id");
-    query.exec();*/
-    //while (query.next()) {
-        // for (int i = dict_attrnames.indexOf("circuit::id"); i < dict_attrnames.count() && dict_attrnames.key(i).startsWith("circuit::"); ++i)
     int cu_length = QString("customer::").length();
     for (int i = 0; i < list.count(); ++i) {
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
         out << "<a href=\"customer:" << list.at(i).value("id").toString() << "\">" << list.at(i).value("company").toString() << "</a></b></td></tr>";
         out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         QString attr_value;
-        int n;
-        for (n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
-            out << "<num_attr>" << n << "</num_attr>";
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
+        int num_valid = 0;
+        for (int n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
             attr_value = dict_attrnames.key(n).mid(cu_length);
+            if (list.at(i).value(attr_value).toString().isEmpty()) continue;
+            out << "<num_attr>" << num_valid << "</num_attr>";
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
             attr_value = QString(attr_value == "id" ? list.at(i).value(attr_value).toString().rightJustified(8, '0') : list.at(i).value(attr_value).toString());
             out << "<td>" << attr_value << "</td></tr>";
+            num_valid++;
         }
-        /*out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("id").toString().rightJustified(8, '0') << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
-        out << "<td><b>" << list.at(i).value("contact_person").toString() << "</b></td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Address:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("address").toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("E-mail:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("mail").toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("phone").toString() << "</td></tr>";
-        out << "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Place of operation:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("operation").toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Building:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("building").toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Device:") << "&nbsp;</td>";
-        out << "<td>" << list.at(i).value("device").toString() << "</td></tr>";*/
-        out << "<num_attr>" << n << "</num_attr>"; n++;
+        out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
         out << "<td>";
         QSqlQuery circuits;
@@ -108,14 +87,14 @@ void MainWindow::viewAllCustomers()
         }
         out << num_circuits;
         out << "</td></tr>";
-        out << "<num_attr>" << n << "</num_attr>"; n++;
+        out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
         out << "<td>" << num_inspections << "</td></tr>";
         out << "</table></td></tr>";
-        if (n != 0) {
-            html.replace(QString("<num_attr>%1</num_attr>").arg(int(n / 2 + n % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+        if (num_valid != 0) {
+            html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
         }
-        for (int k = 0; k < n; ++k) {
+        for (int k = 0; k < num_valid; ++k) {
             html.remove(QString("<num_attr>%1</num_attr>").arg(k));
         }
     }
@@ -127,47 +106,28 @@ void MainWindow::viewCustomer(const QString & customer_id)
     QString html; QTextStream out(&html);
     MTRecord customer_rec("customer", customer_id, MTDictionary());
     QMap<QString, QVariant> customer = customer_rec.list();
-    /*QSqlQuery query = customer.select("company, contact_person, address, mail, phone");
-    query.setForwardOnly(true);
-    query.exec();
-    while (query.next()) {*/
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
     out << "<a href=\"customer:" << customer_id << "/modify\">" << customer.value("company").toString() << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    int n;
+    int num_valid = 0;
     QString attr_value;
     int cu_length = QString("customer::").length();
-    for (n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
-        out << "<num_attr>" << n << "</num_attr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
+    for (int n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
         attr_value = dict_attrnames.key(n).mid(cu_length);
+        if (customer.value(attr_value).toString().isEmpty()) continue;
+        out << "<num_attr>" << num_valid << "</num_attr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
         attr_value = QString(attr_value == "id" ? customer.value(attr_value).toString().rightJustified(8, '0') : customer.value(attr_value).toString());
         out << "<td>" << attr_value << "</td></tr>";
+        num_valid++;
     }
-        /*out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("ID:") << "&nbsp;</td>";
-        out << "<td style=\"width:50%;\">" << customer_id.rightJustified(8, '0') << "</td></tr>";
-        out << "<tr><td style=\"text-align: right;\"><b>" << tr("Contact person:") << "&nbsp;</b></td>";
-        out << "<td><b>" << query.value(1).toString() << "</b></td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Address:") << "&nbsp;</td>";
-        out << "<td>" << query.value(2).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("E-mail:") << "&nbsp;</td>";
-        out << "<td>" << query.value(3).toString() << "</td></tr>";
-        out << "</table></td>";
-        out << "<td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Phone:") << "&nbsp;</td>";
-        out << "<td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";*/
-    out << "<num_attr>" << n << "</num_attr>"; n++;
+    out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
     out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
     out << "<td>";
     MTRecord circuits_rec("circuit", "", MTDictionary("parent", customer_id));
     QList<QMap<QString, QVariant> > circuits = circuits_rec.listAll();
-    /*QSqlQuery circuits;
-    circuits.prepare("SELECT id, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation FROM circuits WHERE parent = :parent ORDER BY id");
-    circuits.bindValue(":parent", customer_id.toInt());
-    circuits.exec();*/
     int num_circuits = 0, num_inspections = 0;
-    //while (circuits.next()) {
     for (int i = 0; i < circuits.count(); ++i) {
         num_circuits++;
         MTDictionary inspection_parents("circuit", circuits.at(i).value("id").toString());
@@ -177,31 +137,33 @@ void MainWindow::viewCustomer(const QString & customer_id)
     }
     out << num_circuits;
     out << "</td></tr>";
-    out << "<num_attr>" << n << "</num_attr>"; n++;
+    out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
     out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
     out << "<td>" << num_inspections << "</td></tr>";
     out << "</table></td></tr>";
     out << "</table>";
-    if (n != 0) {
-        html.replace(QString("<num_attr>%1</num_attr>").arg(int(n / 2 + n % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+    if (num_valid != 0) {
+        html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
     }
-    for (int k = 0; k < n; ++k) {
+    for (int k = 0; k < num_valid; ++k) {
         html.remove(QString("<num_attr>%1</num_attr>").arg(k));
     }
     cu_length = QString("circuit::").length();
     int start = dict_attrnames.indexOfKey("circuit::id");
     for (int i = 0; i < circuits.count(); ++i) {
+        num_valid = 0;
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
         out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>" << tr("Circuit:") << "&nbsp;";
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuits.at(i).value("id").toString() << "\">" << circuits.at(i).value("id").toString().rightJustified(4, '0') << "</a></b></td>";
         out << "<td rowspan=\"8\" style=\"width:10%;\"/></tr>";
         out << "<tr><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        for (n = start; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
-            out << "<num_attr>" << n - start << "</num_attr>";
+        for (int n = dict_attrnames.indexOfKey("circuit::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
             QStringList dict_value = dict_attrnames.value(n).split("||");
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
             attr_value = dict_attrnames.key(n).mid(cu_length);
             attr_value = circuits.at(i).value(attr_value).toString();
+            if (attr_value.isEmpty()) continue;
+            out << "<num_attr>" << num_valid << "</num_attr>";
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
             if (dict_attrnames.key(n) == "circuit::field") {
                 if (dict_attrvalues.contains("field::" + attr_value)) {
                     attr_value = dict_attrvalues.value("field::" + attr_value);
@@ -216,54 +178,14 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 out << dict_value.last();
             }
             out << "</td></tr>";
+            num_valid++;
         }
-        int ns = n - start;
-        if (ns != 0) {
-            html.replace(QString("<num_attr>%1</num_attr>").arg(int(ns / 2 + ns % 2)), "</table></td><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+        if (num_valid != 0) {
+            html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
         }
-        for (int k = 0; k < n; ++k) {
+        for (int k = 0; k < num_valid; ++k) {
             html.remove(QString("<num_attr>%1</num_attr>").arg(k));
         }
-        /*if (circuits.first()) {
-            do {
-                out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Manufacturer:") << "&nbsp;</b></td>";
-                out << "<td style=\"width:50%;\"><b>" << circuits.value(1).toString() << "</b></td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Type:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(2).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Serial number:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(3).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Year of purchase:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(4).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Date of commissioning:") << "&nbsp;</td>";
-                out << "<td style=\"width:50%;\">" << circuits.value(5).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Field of application:") << "&nbsp;</td>";
-                out << "<td style=\"width:50%;\">";
-                if (dict_attrvalues.contains("field::" + circuits.value(6).toString())) {
-                    out << dict_attrvalues.value("field::" + circuits.value(6).toString());
-                }
-                out << "</td></tr>";
-                out << "</table></td>";
-                out << "<td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-                out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td>";
-                out << "<td style=\"width:50%;\">" << circuits.value(7).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(8).toString() << "&nbsp;kg</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td>";
-                out << "<td>";
-                if (dict_attrvalues.contains("oil::" + circuits.value(9).toString())) {
-                    out << dict_attrvalues.value("oil::" + circuits.value(9).toString());
-                }
-                out << "</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(10).toString() << "&nbsp;kg</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Service life:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(11).toString() << "&nbsp;" << tr("years") << "</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Run-time per day:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(12).toString() << "</td></tr>";
-                out << "<tr><td style=\"text-align: right;\">" << tr("Rate of utilisation:") << "&nbsp;</td>";
-                out << "<td>" << circuits.value(13).toString() << "&nbsp;%</td></tr>";*/
-            //} while (circuits.next());
-        //}
         out << "</table></td></tr>";
         out << "</table>";
     }
@@ -273,86 +195,85 @@ void MainWindow::viewCustomer(const QString & customer_id)
 void MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
 {
     QString html; QTextStream out(&html);
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
-    QSqlQuery query = circuit.select("manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, life, runtime, utilisation");
-    query.setForwardOnly(true);
-    query.exec();
-    if (!query.next()) { return; }
+    MTRecord circuit_rec("circuit", circuit_id, MTDictionary("parent", customer_id));
+    QMap<QString, QVariant> circuit = circuit_rec.list();
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
+    out << "<a href=\"customer:" << customer_id << "\">";
+    MTRecord customer("customer", customer_id, MTDictionary());
+    out << customer.list("company").value("company").toString();
+    out << "</a></b></td></tr>";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
+    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << circuit_id.rightJustified(4, '0') << "</a></b></td></tr>";
+    out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    int num_valid = 0; QString attr_value;
+    int cu_length = QString("circuit::").length();
+    for (int n = dict_attrnames.indexOfKey("circuit::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
+        QStringList dict_value = dict_attrnames.value(n).split("||");
+        attr_value = dict_attrnames.key(n).mid(cu_length);
+        attr_value = circuit.value(attr_value).toString();
+        if (attr_value.isEmpty()) continue;
+        out << "<num_attr>" << num_valid << "</num_attr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
+        if (dict_attrnames.key(n) == "circuit::field") {
+            if (dict_attrvalues.contains("field::" + attr_value)) {
+                attr_value = dict_attrvalues.value("field::" + attr_value);
+            }
+        } else if (dict_attrnames.key(n) == "circuit::oil") {
+            if (dict_attrvalues.contains("oil::" + attr_value)) {
+                attr_value = dict_attrvalues.value("oil::" + attr_value);
+            }
+        }
+        out << "<td>" << attr_value << "&nbsp;";
+        if (dict_value.count() > 1) {
+            out << dict_value.last();
+        }
+        out << "</td></tr>";
+        num_valid++;
+    }
+    if (num_valid != 0) {
+        html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"40%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+    }
+    for (int k = 0; k < num_valid; ++k) {
+        html.remove(QString("<num_attr>%1</num_attr>").arg(k));
+    }
+    out << "</table></td></tr>";
+    out << "</table>";
+    MTDictionary inspection_parents("circuit", circuit_id);
+    inspection_parents.insert("customer", customer_id);
+    MTRecord inspection_record("inspection", "", inspection_parents);
+    QList<QMap<QString, QVariant> > inspections = inspection_record.listAll("date, nominal");
+    int num_inspections = inspections.count();
+    if (num_inspections > 0) {
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
-        out << "<a href=\"customer:" << customer_id << "\">";
-        MTRecord customer("customer", customer_id, MTDictionary());
-        out << customer.list("company").value("company").toString();
-        out << "</a></b></td></tr>";
-        out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << circuit_id.rightJustified(4, '0') << "</a></b></td></tr>";
-        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Manufacturer:") << "&nbsp;</b></td><td style=\"width:50%;\"><b>" << query.value(0).toString() << "</b></td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Type:") << "&nbsp;</td><td>" << query.value(1).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Serial number:") << "&nbsp;</td><td>" << query.value(2).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Year of purchase:") << "&nbsp;</td><td>" << query.value(3).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Date of commissioning:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(4).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Field of application:") << "&nbsp;</td><td style=\"width:50%;\">";
-        if (dict_attrvalues.contains("field::" + query.value(5).toString())) {
-            out << dict_attrvalues.value("field::" + query.value(5).toString());
+        out << "<tr><td rowspan=\"";
+        int row_span;
+        if (num_inspections % 2 == 0) row_span = num_inspections / 2 + 1;
+        else row_span = num_inspections / 2 + 2;
+        out << row_span;
+        out << "\" style=\"width:10%;\"/>";
+        out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>";
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">" << tr("Inspections") << "</a></b></td>";
+        out << "<td rowspan=\"";
+        out << row_span;
+        out << "\" style=\"width:10%;\"/></tr>";
+        out << "<tr><td style=\"width:40%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+        if (num_inspections % 2 != 0) num_inspections++;
+        for (int i = 0; i < inspections.count(); ++i) {
+            if (int(num_inspections / 2) == i) {
+                out << "</table></td>";
+                out << "<td style=\"width:40%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+            }
+            out << "<tr><td style=\"text-align: center\">";
+            if (inspections.at(i).value("nominal").toInt() == 1) {
+                out << tr("Nominal:") << "&nbsp;";
+            }
+            out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspections.at(i).value("date").toString() << "\">" << inspections.at(i).value("date").toString() << "</a>";
+            out << "</td></tr>";
         }
-        out << "</td></tr>";
-        out << "</table></td>";
-        out << "<td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Refrigerant:") << "&nbsp;</td><td style=\"width:50%;\">" << query.value(6).toString() << "</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Amount of refrigerant:") << "&nbsp;</td><td>" << query.value(7).toString() << "&nbsp;kg</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Oil:") << "&nbsp;</td><td>";
-        if (dict_attrvalues.contains("oil::" + query.value(8).toString())) {
-            out << dict_attrvalues.value("oil::" + query.value(8).toString());
-        }
-        out << "</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Amount of oil:") << "&nbsp;</td><td>" << query.value(9).toString() << "&nbsp;kg</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Service life:") << "&nbsp;</td><td>" << query.value(10).toString() << "&nbsp;years</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Run-time per day:") << "&nbsp;</td><td>" << query.value(11).toString() << "&nbsp;hours</td></tr>";
-        out << "<tr><td style=\"text-align: right;\">" << tr("Rate of utilisation:") << "&nbsp;</td><td>" << query.value(12).toString() << "&nbsp;%</td></tr>";
         out << "</table></td></tr>";
         out << "</table>";
-        MTDictionary inspection_parents("circuit", circuit_id);
-        inspection_parents.insert("customer", customer_id);
-        MTRecord inspection_record("inspection", "", inspection_parents);
-        QSqlQuery inspections = inspection_record.select("date, nominal");
-        inspections.exec();
-        int num_inspections = 0;
-        while (inspections.next()) {
-            num_inspections++;
-        }
-        if (num_inspections > 0) {
-            out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-            out << "<tr><td rowspan=\"";
-            int row_span;
-            if (num_inspections % 2 == 0) row_span = num_inspections / 2 + 1;
-            else row_span = num_inspections / 2 + 2;
-            out << row_span;
-            out << "\" style=\"width:10%;\"/>";
-            out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>";
-            out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">" << tr("Inspections") << "</a></b></td>";
-            out << "<td rowspan=\"";
-            out << row_span;
-            out << "\" style=\"width:10%;\"/></tr>";
-            out << "<tr><td style=\"width:40%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-            if (inspections.first()) {
-                if (num_inspections % 2 != 0) num_inspections++;
-                do {
-                    if (int(num_inspections / 2) == inspections.at()) {
-                        out << "</table></td>";
-                        out << "<td style=\"width:40%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-                    }
-                    out << "<tr><td style=\"text-align: center\">";
-                    if (inspections.value(1).toInt() == 1) {
-                        out << tr("Nominal:") << "&nbsp;";
-                    }
-                    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspections.value(0).toString() << "\">" << inspections.value(0).toString() << "</a>";
-                    out << "</td></tr>";
-                } while (inspections.next());
-            }
-            out << "</table></td></tr>";
-            out << "</table>";
-        }
+    }
     wv_main->setHtml(dict_html.value(tr("Customer information")).arg(html));
 }
 
