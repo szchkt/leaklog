@@ -228,6 +228,7 @@ QDialog(parent)
             md_dict_input.insert("col_bg", "ccb");
         }
         md_used_ids << listVariableIds(true);
+        if (!md_record.id().isEmpty()) { md_used_ids.removeAll(md_record.id()); }
     } else if (md_record.type() == "table") {
         md_dict.insert("table", tr("Table")); // _i = 1;
         md_dict.insert("id", tr("ID"));

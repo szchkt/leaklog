@@ -691,16 +691,18 @@ void Variables::saveResult()
         row.clear();
         insert = true;
         if (dict_varnames.contains(query()->value(VAR_ID).toString())) {
-            int index = var_indices.value(query()->value(VAR_ID).toString(), var_indices.value(query()->value(SUBVAR_ID).toString(), -1));
-            if (index < 0) { insert = true; }
-            else {
+            QSet<int> indices = var_indices.values(query()->value(VAR_ID).toString()).toSet();
+            indices.unite(var_indices.values(query()->value(SUBVAR_ID).toString()).toSet());
+            foreach (int index, indices) {
                 insert = false;
                 QMap<QString, QVariant> _row = result()->at(index);
                 if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
                 if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
                 if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
-                if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
-                if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
+                if (query()->value(SUBVAR_ID).toString() == _row.value("SUBVAR_ID").toString()) {
+                    if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
+                    if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
+                }
                 if (insert) { result()->replace(index, _row); insert = false; }
             }
         }
@@ -833,6 +835,7 @@ void Variables::initSubvariable(const QString & filter, const QString & parent, 
     row.insert("SUBVAR_COMPARE_NOM", compare_nom ? 1 : 0);
     row.insert("SUBVAR_TOLERANCE", tolerance);
     *result() << row;
+    var_indices.insert(parent, result()->count() - 1);
     var_indices.insert(id, result()->count() - 1);
 }
 

@@ -133,7 +133,7 @@ protected:
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
 
     MTDictionary dict_varnames;
-    QMap<QString, int> var_indices;
+    QMultiMap<QString, int> var_indices;
 };
 
 class Variable : public Variables
