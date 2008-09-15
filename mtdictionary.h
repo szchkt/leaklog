@@ -61,6 +61,9 @@ public:
     QString value(const QString & key) const {
         return dict_keys.indexOf(key) < 0 ? key : dict_values.at(dict_keys.indexOf(key));
     };
+    QString value(const QString & key, const QString & default_value) const {
+        return dict_keys.indexOf(key) < 0 ? default_value : dict_values.at(dict_keys.indexOf(key));
+    };
     QStringList values() const { return dict_values; };
     int indexOfValue(const QString & value, int from = 0) const { return dict_values.indexOf(value, from); };
     int lastIndexOfValue(const QString & value, int from = -1) const { return dict_values.lastIndexOf(value, from); };

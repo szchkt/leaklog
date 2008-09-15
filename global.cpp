@@ -360,6 +360,18 @@ MTDictionary Global::get_dict_attrnames()
     return dict_attrnames;
 }
 
+QStringList Global::listVariableIds(bool all)
+{
+    QStringList ids; bool sub_empty = false;
+    Variables query;
+    while (query.next()) {
+        sub_empty = query.value("SUBVAR_ID").toString().isEmpty();
+        if (all || sub_empty) { ids << query.value("VAR_ID").toString(); }
+        if (!sub_empty) { ids << query.value("SUBVAR_ID").toString(); }
+    }
+    return ids;
+}
+
 using namespace Global;
 
 MTRecord::MTRecord(const QString & type, const QString & id, const MTDictionary & parents)
@@ -556,4 +568,364 @@ bool MTRecord::remove()
     bool result = query.exec();
     if (result) { r_id.clear(); }
     return result;
+}
+
+MTSqlQueryResult::MTSqlQueryResult(const QString & q, QSqlDatabase db)
+{
+    _query = new QSqlQuery(q, db.isValid() ? db : QSqlDatabase::database());
+    _pos = -1;
+}
+
+MTSqlQueryResult::MTSqlQueryResult(QSqlDatabase db)
+{
+    _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
+    _pos = -1;
+}
+
+MTSqlQueryResult::~MTSqlQueryResult()
+{
+    if (_query) { delete _query; }
+}
+
+void MTSqlQueryResult::bindValue(const QString & placeholder, const QVariant & value, QSql::ParamType type)
+{
+    _query->bindValue(placeholder, value, type);
+}
+
+QVariant MTSqlQueryResult::boundValue(const QString & placeholder) const
+{
+    return _query->boundValue(placeholder);
+}
+
+bool MTSqlQueryResult::exec(const QString & q)
+{
+    bool ok = _query->exec(q);
+    if (ok) { saveResult(); }
+    return ok;
+}
+
+bool MTSqlQueryResult::exec()
+{
+    bool ok = _query->exec();
+    if (ok) { saveResult(); }
+    return ok;
+}
+
+void MTSqlQueryResult::saveResult()
+{
+    int n = _query->record().count();
+    _pos = -1;
+    _result.clear();
+    QMap<QString, QVariant> row;
+    while (_query->next()) {
+        row.clear();
+        for (int i = 0; i < n; ++i) {
+            row.insert(toString(i), _query->value(i));
+        }
+        _result << row;
+    }
+}
+
+bool MTSqlQueryResult::next()
+{
+    _pos++;
+    if (_pos >= _result.count()) { _pos = -1; return false; }
+    return true;
+}
+
+int * MTSqlQueryResult::pos()
+{
+    return &_pos;
+}
+
+bool MTSqlQueryResult::prepare(const QString & q)
+{
+    return _query->prepare(q);
+}
+
+QSqlQuery * MTSqlQueryResult::query()
+{
+    return _query;
+}
+
+QSqlRecord MTSqlQueryResult::record() const
+{
+    return _query->record();
+}
+
+QList<QMap<QString, QVariant> > * MTSqlQueryResult::result()
+{
+    return &_result;
+}
+
+QVariant MTSqlQueryResult::value(int i) const
+{
+    return value(toString(i));
+}
+
+QVariant MTSqlQueryResult::value(const QString & s) const
+{
+    if (_pos < 0) { return QVariant(); }
+    return _result.at(_pos).value(s);
+}
+
+Variables::Variables(QSqlDatabase db, bool exec_query):
+MTSqlQueryResult(db)
+{
+    dict_varnames = get_dict_varnames();
+    if (exec_query)
+        exec("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+}
+
+const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
+const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;
+
+void Variables::saveResult()
+{
+    bool insert = true;
+    *pos() = -1;
+    result()->clear();
+    initVariables();
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        insert = true;
+        if (dict_varnames.contains(query()->value(VAR_ID).toString())) {
+            int index = var_indices.value(query()->value(VAR_ID).toString(), var_indices.value(query()->value(SUBVAR_ID).toString(), -1));
+            if (index < 0) { insert = true; }
+            else {
+                insert = false;
+                QMap<QString, QVariant> _row = result()->at(index);
+                if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
+                if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
+                if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
+                if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
+                if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
+                if (insert) { result()->replace(index, _row); insert = false; }
+            }
+        }
+        if (insert) {
+            row.insert("VAR_ID", query()->value(VAR_ID));
+            row.insert("VAR_NAME", query()->value(VAR_NAME));
+            row.insert("VAR_TYPE", query()->value(VAR_TYPE));
+            row.insert("VAR_UNIT", query()->value(VAR_UNIT));
+            row.insert("VAR_VALUE", query()->value(VAR_VALUE));
+            row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM));
+            row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE));
+            row.insert("VAR_COL_BG", query()->value(VAR_COL_BG));
+            row.insert("SUBVAR_ID", query()->value(SUBVAR_ID));
+            row.insert("SUBVAR_NAME", query()->value(SUBVAR_NAME));
+            row.insert("SUBVAR_TYPE", query()->value(SUBVAR_TYPE));
+            row.insert("SUBVAR_UNIT", query()->value(SUBVAR_UNIT));
+            row.insert("SUBVAR_VALUE", query()->value(SUBVAR_VALUE));
+            row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM));
+            row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE));
+            *result() << row;
+        }
+    }
+}
+
+void Variables::initVariables(const QString & filter)
+{
+    initVariable(filter, "t", "");
+    initSubvariable(filter, "t", "", "t_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t", "", "t_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+
+    initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "");
+    initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "");
+    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "t_c-t_ev", true, 0.0, "");
+
+    initVariable(filter, "t_sh", "");
+    initSubvariable(filter, "t_sh", "", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-t_0", true, 0.0);
+    initSubvariable(filter, "t_sh", "", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-t_0", true, 0.0);
+
+    initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-t_0", true, 0.0, "");
+    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-t_c", true, 0.0, "");
+    initVariable(filter, "ep_comp", "float", tr("kW"), "", true, 0.0, "");
+
+    initVariable(filter, "ec", "");
+    initSubvariable(filter, "ec", "", "ec_l1", "float", tr("A"), "", true, 0.0);
+    initSubvariable(filter, "ec", "", "ec_l2", "float", tr("A"), "", true, 0.0);
+    initSubvariable(filter, "ec", "", "ec_l3", "float", tr("A"), "", true, 0.0);
+
+    initVariable(filter, "ev", "");
+    initSubvariable(filter, "ev", "", "ev_l1", "float", tr("V"), "", true, 0.0);
+    initSubvariable(filter, "ev", "", "ev_l2", "float", tr("V"), "", true, 0.0);
+    initSubvariable(filter, "ev", "", "ev_l3", "float", tr("V"), "", true, 0.0);
+
+    initVariable(filter, "ppsw", "");
+    initSubvariable(filter, "ppsw", "", "ppsw_hip", "float", tr("Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", "", "ppsw_lop", "float", tr("Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", "", "ppsw_diff", "float", tr("Bar"), "", true, 0.0);
+
+    initVariable(filter, "sftsw", "float", tr("Bar"), "", true, 0.0, "");
+    initVariable(filter, "rmds", "string", "", "", false, 0.0, "");
+    initVariable(filter, "arno", "string", "", "", false, 0.0, "");
+
+    initVariable(filter, "vis_aur_chk", "");
+    initSubvariable(filter, "vis_aur_chk", "", "corr_def", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", "", "noise_vibr", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", "", "bbl_lvl", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", "", "oil_leak", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", "float", tr("kg"), "", false, 0.0);
+
+    initVariable(filter, "dir_leak_chk", "green");
+    initSubvariable(filter, "dir_leak_chk", "green", "el_detect", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "dir_leak_chk", "green", "uv_detect", "bool", "", "", false, 0.0);
+    initSubvariable(filter, "dir_leak_chk", "green", "bbl_detect", "bool", "", "", false, 0.0);
+
+    initVariable(filter, "refr_add", "yellow");
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_am", "float", tr("kg"), "", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am)/refrigerant_amount", false, 0.0);
+
+    initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_recy", "float", tr("kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_disp", "float", tr("kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
+    initVariable(filter, "operator", "string", "", "", false, 0.0, "");
+}
+
+void Variables::initVariable(const QString & filter, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
+{
+    if (!filter.isEmpty() && filter != id) { return; }
+    QMap<QString, QVariant> row;
+    row.insert("VAR_ID", id);
+    row.insert("VAR_NAME", dict_varnames.value(id));
+    row.insert("VAR_TYPE", type);
+    row.insert("VAR_UNIT", unit);
+    row.insert("VAR_VALUE", value);
+    row.insert("VAR_COMPARE_NOM", compare_nom ? 1 : 0);
+    row.insert("VAR_TOLERANCE", tolerance);
+    row.insert("VAR_COL_BG", col_bg);
+    *result() << row;
+    var_indices.insert(id, result()->count() - 1);
+}
+
+void Variables::initVariable(const QString & filter, const QString & id, const QString & col_bg)
+{
+    if (filter.isEmpty() || filter != id) { return; }
+    QMap<QString, QVariant> row;
+    row.insert("VAR_ID", id);
+    row.insert("VAR_NAME", dict_varnames.value(id));
+    row.insert("VAR_COL_BG", col_bg);
+    *result() << row;
+    var_indices.insert(id, result()->count() - 1);
+}
+
+void Variables::initSubvariable(const QString & filter, const QString & parent, const QString & col_bg, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance)
+{
+    if (!filter.isEmpty() && filter != id) { return; }
+    QMap<QString, QVariant> row;
+    row.insert("VAR_ID", parent);
+    row.insert("VAR_NAME", dict_varnames.value(parent));
+    row.insert("VAR_COL_BG", col_bg);
+    row.insert("SUBVAR_ID", id);
+    row.insert("SUBVAR_NAME", dict_varnames.value(id));
+    row.insert("SUBVAR_TYPE", type);
+    row.insert("SUBVAR_UNIT", unit);
+    row.insert("SUBVAR_VALUE", value);
+    row.insert("SUBVAR_COMPARE_NOM", compare_nom ? 1 : 0);
+    row.insert("SUBVAR_TOLERANCE", tolerance);
+    *result() << row;
+    var_indices.insert(id, result()->count() - 1);
+}
+
+Variable::Variable(const QString & id, QSqlDatabase db):
+Variables(db, false)
+{
+    var_id = id;
+    prepare("SELECT id, name, type, unit, value, compare_nom, tolerance, col_bg FROM variables" + QString(id.isEmpty() ? "" : " WHERE id = :id"));
+    if (!id.isEmpty()) { bindValue(":id", var_id); }
+    exec();
+}
+
+void Variable::saveResult()
+{
+    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
+    const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
+    bool insert = true;
+    *pos() = -1;
+    result()->clear();
+    initVariables(var_id);
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        insert = true;
+        if (dict_varnames.contains(query()->value(VAR_ID).toString())) {
+            int index = var_indices.value(query()->value(VAR_ID).toString(), -1);
+            if (index < 0) { insert = true; }
+            else {
+                insert = false;
+                QMap<QString, QVariant> _row = result()->at(index);
+                if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
+                if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
+                if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
+                if (insert) { result()->replace(index, _row); insert = false; }
+            }
+        }
+        if (insert) {
+            row.insert("VAR_ID", query()->value(VAR_ID));
+            row.insert("VAR_NAME", query()->value(VAR_NAME));
+            row.insert("VAR_TYPE", query()->value(VAR_TYPE));
+            row.insert("VAR_UNIT", query()->value(VAR_UNIT));
+            row.insert("VAR_VALUE", query()->value(VAR_VALUE));
+            row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM));
+            row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE));
+            row.insert("VAR_COL_BG", query()->value(VAR_COL_BG));
+            *result() << row;
+        }
+    }
+}
+
+Subvariable::Subvariable(const QString & parent, const QString & id, QSqlDatabase db):
+Variables(db, false)
+{
+    var_id = id;
+    prepare("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables WHERE parent = :parent" + QString(id.isEmpty() ? "" : " AND id = :id"));
+    bindValue(":parent", parent);
+    if (!id.isEmpty()) { bindValue(":id", var_id); }
+    exec();
+}
+
+void Subvariable::saveResult()
+{
+    const int VAR_ID = 0; const int SUBVAR_ID = 1; const int SUBVAR_NAME = 2; const int SUBVAR_TYPE = 3;
+    const int SUBVAR_UNIT = 4; const int SUBVAR_VALUE = 5; const int SUBVAR_COMPARE_NOM = 6; const int SUBVAR_TOLERANCE = 7;
+    bool insert = true;
+    *pos() = -1;
+    result()->clear();
+    initVariables(var_id);
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        insert = true;
+        if (dict_varnames.contains(query()->value(SUBVAR_ID).toString())) {
+            int index = var_indices.value(query()->value(SUBVAR_ID).toString(), -1);
+            if (index < 0) { insert = true; }
+            else {
+                insert = false;
+                QMap<QString, QVariant> _row = result()->at(index);
+                if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
+                if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
+                if (insert) { result()->replace(index, _row); insert = false; }
+            }
+        }
+        if (insert) {
+            row.insert("VAR_ID", query()->value(VAR_ID));
+            row.insert("SUBVAR_ID", query()->value(SUBVAR_ID));
+            row.insert("SUBVAR_NAME", query()->value(SUBVAR_NAME));
+            row.insert("SUBVAR_TYPE", query()->value(SUBVAR_TYPE));
+            row.insert("SUBVAR_UNIT", query()->value(SUBVAR_UNIT));
+            row.insert("SUBVAR_VALUE", query()->value(SUBVAR_VALUE));
+            row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM));
+            row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE));
+            *result() << row;
+        }
+    }
 }

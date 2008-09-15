@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/local_database.png</file>
+    <file>images/remote_database.png</file>
     <file>images/print_label.png</file>
     <file>images/inspector_add16.png</file>
     <file>images/inspector_modify22.png</file>

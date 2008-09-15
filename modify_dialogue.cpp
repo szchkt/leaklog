@@ -83,7 +83,7 @@ QDialog(parent)
     bool md_nominal_allowed = true;
     QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    int _i = 1;
+    int _i = 1; QStringList types;
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
@@ -158,14 +158,12 @@ QDialog(parent)
         md_dict_input.insert("date", "dte");
         md_dict.insert("nominal", tr("Nominal"));
         md_dict_input.insert("nominal", "chb");
-        QSqlQuery query("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-        const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4;
-        const int SUBVAR_ID = 5; const int SUBVAR_NAME = 6; const int SUBVAR_TYPE = 7; const int SUBVAR_UNIT = 8; const int SUBVAR_VALUE = 9;
+        Variables query;
         while (query.next()) {
-            if (query.value(SUBVAR_ID).toString().isEmpty()) {
-                if (!query.value(VAR_VALUE).toString().isEmpty()) { continue; }
-                md_dict.insert(query.value(VAR_ID).toString(), query.value(VAR_NAME).toString());
-                if (query.value(VAR_ID).toString() == "inspector") {
+            if (query.value("SUBVAR_ID").toString().isEmpty()) {
+                if (!query.value("VAR_VALUE").toString().isEmpty()) { continue; }
+                md_dict.insert(query.value("VAR_ID").toString(), query.value("VAR_NAME").toString());
+                if (query.value("VAR_ID").toString() == "inspector") {
                     QString inspectors_string;
                     QSqlQuery inspectors("SELECT id, person FROM inspectors");
                     if (inspectors.next()) {
@@ -175,27 +173,27 @@ QDialog(parent)
                             if (inspectors.next()) { inspectors_string.append(";"); } else { break; }
                         }
                     }
-                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("cb;%1").arg(inspectors_string));
-                } else if (query.value(VAR_TYPE).toString() == "int") {
-                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(VAR_UNIT).toString()));
-                } else if (query.value(VAR_TYPE).toString() == "float") {
-                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value(VAR_UNIT).toString()));
-                } else if (query.value(VAR_TYPE).toString() == "string") {
-                    md_dict_input.insert(query.value(VAR_ID).toString(), "le");
-                } else if (query.value(VAR_TYPE).toString() == "bool") {
-                    md_dict_input.insert(query.value(VAR_ID).toString(), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
+                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("cb;%1").arg(inspectors_string));
+                } else if (query.value("VAR_TYPE").toString() == "int") {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("spb;-999999999;0.0;999999999; %1").arg(query.value("VAR_UNIT").toString()));
+                } else if (query.value("VAR_TYPE").toString() == "float") {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value("VAR_UNIT").toString()));
+                } else if (query.value("VAR_TYPE").toString() == "string") {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), "le");
+                } else if (query.value("VAR_TYPE").toString() == "bool") {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
                 }
             } else {
-                if (!query.value(SUBVAR_VALUE).toString().isEmpty()) { continue; }
-                md_dict.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), tr("%1: %2").arg(query.value(VAR_NAME).toString()).arg(query.value(SUBVAR_NAME).toString()));
-                if (query.value(SUBVAR_TYPE).toString() == "int") {
-                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("spb;-999999999;0.0;999999999; %1").arg(query.value(SUBVAR_UNIT).toString()));
-                } else if (query.value(SUBVAR_TYPE).toString() == "float") {
-                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value(SUBVAR_UNIT).toString()));
-                } else if (query.value(SUBVAR_TYPE).toString() == "string") {
-                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), "le");
-                } else if (query.value(SUBVAR_TYPE).toString() == "bool") {
-                    md_dict_input.insert(QString("%1/%2").arg(query.value(VAR_ID).toString()).arg(query.value(SUBVAR_ID).toString()), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
+                if (!query.value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
+                md_dict.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), tr("%1: %2").arg(query.value("VAR_NAME").toString()).arg(query.value("SUBVAR_NAME").toString()));
+                if (query.value("SUBVAR_TYPE").toString() == "int") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), QString("spb;-999999999;0.0;999999999; %1").arg(query.value("SUBVAR_UNIT").toString()));
+                } else if (query.value("SUBVAR_TYPE").toString() == "float") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value("SUBVAR_UNIT").toString()));
+                } else if (query.value("SUBVAR_TYPE").toString() == "string") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), "le");
+                } else if (query.value("SUBVAR_TYPE").toString() == "bool") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
                 }
             }
         }
@@ -214,7 +212,6 @@ QDialog(parent)
         md_dict.insert("unit", tr("Unit"));
         md_dict_input.insert("unit", "le");
         md_dict.insert("type", tr("Type"));
-        QStringList types;
         types << tr("Integer") + "||int";
         types << tr("Real number") + "||float";
         types << tr("String") + "||string";
@@ -230,8 +227,7 @@ QDialog(parent)
             md_dict.insert("col_bg", tr("Colour"));
             md_dict_input.insert("col_bg", "ccb");
         }
-        query_used_ids.prepare(QString("SELECT id FROM variables%1 UNION SELECT id FROM subvariables%1").arg(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
-        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
+        md_used_ids << listVariableIds(true);
     } else if (md_record.type() == "table") {
         md_dict.insert("table", tr("Table")); // _i = 1;
         md_dict.insert("id", tr("ID"));
@@ -257,7 +253,7 @@ QDialog(parent)
         query_used_ids.prepare("SELECT id FROM inspectors" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     }
-    if (query_used_ids.exec()) {
+    if (md_record.type() != "variable" && md_record.type() != "subvariable" && query_used_ids.exec()) {
         bool _nominal = md_record.type() == "inspection";
         while (query_used_ids.next()) {
             md_used_ids << query_used_ids.value(0).toString();
@@ -266,16 +262,45 @@ QDialog(parent)
     }
     MTDictionary md_dict_values;
     if (!md_record.id().isEmpty()) {
-        QSqlQuery query = md_record.select();
-        query.exec();
-        if (query.next()) {
-            for (int i = 0; i < query.record().count(); ++i) {
-                md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+        if (md_record.type() == "variable") {
+            Variable query(md_record.id());
+            if (query.next()) {
+                md_dict_values.insert("id", query.value("VAR_ID").toString());
+                md_dict_values.insert("name", query.value("VAR_NAME").toString());
+                md_dict_values.insert("type", query.value("VAR_TYPE").toString());
+                md_dict_values.insert("unit", query.value("VAR_UNIT").toString());
+                md_dict_values.insert("value", query.value("VAR_VALUE").toString());
+                md_dict_values.insert("compare_nom", query.value("VAR_COMPARE_NOM").toString());
+                md_dict_values.insert("tolerance", query.value("VAR_TOLERANCE").toString());
+                md_dict_values.insert("col_bg", query.value("VAR_COL_BG").toString());
+            }
+        } else if (md_record.type() == "subvariable") {
+            Subvariable query(md_record.parents()->value("parent"), md_record.id());
+            if (query.next()) {
+                md_dict_values.insert("id", query.value("SUBVAR_ID").toString());
+                md_dict_values.insert("name", query.value("SUBVAR_NAME").toString());
+                md_dict_values.insert("type", query.value("SUBVAR_TYPE").toString());
+                md_dict_values.insert("unit", query.value("SUBVAR_UNIT").toString());
+                md_dict_values.insert("value", query.value("SUBVAR_VALUE").toString());
+                md_dict_values.insert("compare_nom", query.value("SUBVAR_COMPARE_NOM").toString());
+                md_dict_values.insert("tolerance", query.value("SUBVAR_TOLERANCE").toString());
+            }
+        } else {
+            QSqlQuery query = md_record.select();
+            query.exec();
+            if (query.next()) {
+                for (int i = 0; i < query.record().count(); ++i) {
+                    md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+                }
             }
         }
         if (md_record.type() == "variable" || md_record.type() == "subvariable") {
             if (get_dict_varnames().contains(md_record.id())) {
                 md_dict_input.setValue("id", "led");
+                md_dict_input.setValue("name", "led");
+                md_dict_input.setValue("unit", "led");
+                md_dict_input.setValue("type", QString("cbd;%1").arg(types.join(";")));
+                md_dict_input.setValue("value", "ptehd");
             }
         }
     }
@@ -340,8 +365,9 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         else { md_dspb_var->setValue(value.toDouble()); }
         if (inputtype.count() > 4) { md_dspb_var->setSuffix(inputtype.at(4)); }
         return md_dspb_var;
-    } else if (inputtype.at(0) == "cb") {
+    } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "cbd") {
         QComboBox * md_cb_var = new QComboBox(this); int n = -1;
+        if (inputtype.at(0) == "cbd") { md_cb_var->setEnabled(false); }
         for (int j = 1; j < inputtype.count(); ++j) {
             md_cb_var->addItem(inputtype.at(j).split("||").first());
             if (inputtype.at(j).split("||").last() == value) { n = j - 1; }
@@ -364,8 +390,9 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         md_de_var->setDisplayFormat("yyyy.MM.dd");
         md_de_var->setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
         return md_de_var;
-    } else if (inputtype.at(0) == "pteh") {
+    } else if (inputtype.at(0) == "pteh" || inputtype.at(0) == "ptehd") {
         QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
+        if (inputtype.at(0) == "ptehd") { md_pte_var->setEnabled(false); }
         md_pte_var->setMinimumSize(200, 30);
         md_pte_var->setPlainText(value);
         new Highlighter(md_used_ids, md_pte_var->document());
@@ -400,7 +427,7 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
         value = ((QSpinBox *)input_widget)->value();
     } else if (inputtype.at(0) == "dspb") {
         value = ((QDoubleSpinBox *)input_widget)->value();
-    } else if (inputtype.at(0) == "cb") {
+    } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "cbd") {
         MTDictionary item_values;
         for (int j = 1; j < inputtype.count(); ++j) {
             item_values.insert(inputtype.at(j).split("||").first(), inputtype.at(j).split("||").last());

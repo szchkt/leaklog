@@ -68,6 +68,7 @@ private slots:
     void openRecent(QListWidgetItem *);
     void newDatabase();
     void open();
+    void openRemote();
     void save();
     void saveAndCompact();
     void closeDatabase(bool = true);
@@ -123,9 +124,6 @@ private:
     // DATABASE
     bool saveChangesBeforeProceeding(QString, bool);
     void initDatabase(QSqlDatabase *, bool = true);
-    void initVariables();
-    void initVariable(const QString &, const QString &, const QString &, const QString &, bool, const QString &);
-    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool);
     void initTables();
     void initWarnings();
     QString initWarning(const QString &, const QString &);
@@ -140,7 +138,6 @@ private:
     void moveTableVariable(bool);
     void loadInspector(QListWidgetItem *, bool);
     void exportData(const QString &);
-    QStringList listVariableIds(bool = false);
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
