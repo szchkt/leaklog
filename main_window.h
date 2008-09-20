@@ -149,6 +149,7 @@ private:
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
     void viewAllInspectors(const QString &);
+    void viewRefrigerantConsumption(const QString & = QString());
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
 

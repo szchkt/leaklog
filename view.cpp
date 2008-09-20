@@ -31,6 +31,8 @@ void MainWindow::viewChanged(const QString & view)
     lbl_since->setEnabled(table_view);
     spb_since->setEnabled(table_view);
 
+    wv_main->setHtml(tr("Loading..."));
+    qApp->processEvents();
     if (view == tr("All customers")) {
         viewAllCustomers();
     } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
@@ -43,6 +45,8 @@ void MainWindow::viewChanged(const QString & view)
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("Inspectors")) {
         viewAllInspectors(toString(selectedInspector()));
+    } else if (view == tr("Refrigerant consumption")) {
+        viewRefrigerantConsumption(toString(selectedCustomer()));
     } else {
         wv_main->setHtml(QString());
     }
@@ -767,6 +771,40 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
     while (warnings.next()) {
         bool show_warning = true;
 
+        QSqlQuery warnings_filters;
+        warnings_filters.prepare("SELECT circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
+        warnings_filters.bindValue(":parent", warnings.value(0).toString());
+        warnings_filters.exec();
+        while (warnings_filters.next()) {
+            QString circuit_attribute = circuit_attributes.value(warnings_filters.value(0).toString()).toString();
+            QString function = warnings_filters.value(1).toString();
+            QString value = warnings_filters.value(2).toString();
+            bool ok1 = true; bool ok2 = true;
+            int int_circuit_attribute = circuit_attribute.toInt(&ok1);
+            int int_value = value.toInt(&ok2);
+            if (ok1 && ok2) {
+                if (function == "=" && int_circuit_attribute == int_value) {}
+                if (function == "!=" && int_circuit_attribute != int_value) {}
+                else if (function == ">" && int_circuit_attribute > int_value) {}
+                else if (function == ">=" && int_circuit_attribute >= int_value) {}
+                else if (function == "<" && int_circuit_attribute < int_value) {}
+                else if (function == "<=" && int_circuit_attribute <= int_value) {}
+                else {
+                    show_warning = false;
+                }
+            } else if (!ok1 && !ok2) {
+                if (function == "=" && circuit_attribute == value) {}
+                else if (function == "!=" && circuit_attribute != value) {}
+                else if (function == ">" && circuit_attribute > value) {}
+                else if (function == "<" && circuit_attribute < value) {}
+                else {
+                    show_warning = false;
+                }
+            }
+        }
+
+        if (!show_warning) { continue; }
+
         QSqlQuery warnings_conditions;
         warnings_conditions.prepare("SELECT value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
         warnings_conditions.bindValue(":parent", warnings.value(0).toString());
@@ -807,38 +845,6 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
             }
         }
 
-        QSqlQuery warnings_filters;
-        warnings_filters.prepare("SELECT circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
-        warnings_filters.bindValue(":parent", warnings.value(0).toString());
-        warnings_filters.exec();
-        while (warnings_filters.next()) {
-            QString circuit_attribute = circuit_attributes.value(warnings_filters.value(0).toString()).toString();
-            QString function = warnings_filters.value(1).toString();
-            QString value = warnings_filters.value(2).toString();
-            bool ok1 = true; bool ok2 = true;
-            int int_circuit_attribute = circuit_attribute.toInt(&ok1);
-            int int_value = value.toInt(&ok2);
-            if (ok1 && ok2) {
-                if (function == "=" && int_circuit_attribute == int_value) {}
-                if (function == "!=" && int_circuit_attribute != int_value) {}
-                else if (function == ">" && int_circuit_attribute > int_value) {}
-                else if (function == ">=" && int_circuit_attribute >= int_value) {}
-                else if (function == "<" && int_circuit_attribute < int_value) {}
-                else if (function == "<=" && int_circuit_attribute <= int_value) {}
-                else {
-                    show_warning = false;
-                }
-            } else if (!ok1 && !ok2) {
-                if (function == "=" && circuit_attribute == value) {}
-                else if (function == "!=" && circuit_attribute != value) {}
-                else if (function == ">" && circuit_attribute > value) {}
-                else if (function == "<" && circuit_attribute < value) {}
-                else {
-                    show_warning = false;
-                }
-            }
-        }
-
         if (show_warning) {
             warnings_list << warnings.value(1).toString();
         }
@@ -876,4 +882,89 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
         out << "</table></td></tr>";
     }
     wv_main->setHtml(dict_html.value(tr("Inspectors")).arg(html), QUrl("qrc:/html/"));
+}
+
+void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
+{
+    QString html; QTextStream out(&html);
+    QSqlQuery query;
+    query.prepare("SELECT circuits.field, circuits.refrigerant, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent" + QString(customer_id.toInt() < 0 ? "" : " WHERE inspections.customer = :customer_id"));
+    if (customer_id.toInt() >= 0) { query.bindValue(":customer_id", customer_id); }
+    query.exec();
+    QMap<QString, double> sums_map; QString current_name;
+    while (query.next()) {
+        current_name = query.value(1).toString() + "<:?:>" + query.value(0).toString();
+        double old_value = sums_map.value(current_name);
+        sums_map.insert(current_name, old_value + query.value(2).toDouble());
+    }
+    QMapIterator <QString, double> iter(sums_map);
+
+    MTDictionary used_fields;
+    MTDictionary used_refrs;
+    while (iter.hasNext()) {
+        iter.next();
+        QString refr = iter.key().split("<:?:>").first();
+        QString field = iter.key().split("<:?:>").last();
+        if (refr == field) continue;
+        if (refr != "") {
+            used_refrs.insert(refr, dict_attrvalues.value(dict_attrvalues.indexOfKey("refrigerant::" + refr)));
+        }
+        if (field != "") {
+            used_fields.insert(field, dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + field)));
+        }
+    }
+
+    out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
+    out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Refrigerant consumption:") << "&nbsp;";
+    if (customer_id.toInt() < 0) {
+        out << "<a href=\"allcustomers:\">" << tr("All customers") << "</a>";
+    } else {
+        out << tr("Customer:") << "&nbsp;" << "<a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a>";
+    }
+    out << "</b></td></tr></thead></table><br />";
+    out << "<table><thead><tr><th>" << tr("Fields") << "</th><th rowspan=\"2\">" << tr("All") << "</th>";
+    for (int i = 0; i < used_fields.count(); ++i) {
+        out << "<th rowspan=\"2\">" << used_fields.value(i) << "</th>";
+    }
+    out << "</tr><tr><th>" << tr("Refrigerants") << "</th></tr>";
+    out << "<tr><th>" << tr("All") << "</th>";
+    double s_value = 0;
+    iter.toFront();
+    while(iter.hasNext()) {
+        iter.next();
+        s_value += iter.value();
+    }
+    out << "<td>" << s_value << "</td>";
+    for (int n = 0; n < used_fields.count(); ++n) {
+        s_value = 0;
+        iter.toFront();
+        while(iter.hasNext()) {
+            iter.next();
+            if (iter.key().endsWith(used_fields.key(n))) {
+                s_value += iter.value();
+            }
+        }
+        out << "<td>" << s_value << "</td>";
+    }
+    out << "</tr>";
+    for (int i = 0; i < used_refrs.count(); ++i) {
+        out << "<tr><th>" << used_refrs.value(i) << "</th>";
+        s_value = 0;
+        iter.toFront();
+        while(iter.hasNext()) {
+            iter.next();
+            if (iter.key().startsWith(used_refrs.key(i))) {
+                s_value += iter.value();
+            }
+        }
+        out << "<td>" << s_value << "</td>";
+        for (int n = 0; n < used_fields.count(); ++n) {
+            current_name = used_refrs.key(i) + "<:?:>" + used_fields.key(n);
+            out << "<td>" << sums_map.value(current_name) << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table></thead>";
+
+    wv_main->setHtml(dict_html.value(tr("Refrigerant consumption")).arg(html), QUrl("qrc:/html/"));
 }

@@ -50,6 +50,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Inspectors"), in.readAll());
     file.close();
+    file.setFileName(":/html/refrigerant_consumption.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Refrigerant consumption"), in.readAll());
+    file.close();
     // ----
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -191,6 +194,8 @@ void MainWindow::executeLink(const QUrl & url)
                     loadInspector(lw_inspectors->item(i), path.count() <= 1); break;
                 }
             }
+        } else if (path.at(0).startsWith("allcustomers:")) {
+            setView(tr("All customers"));
         }
     }
     if (path.count() > 1) {

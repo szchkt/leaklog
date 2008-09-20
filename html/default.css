@@ -20,6 +20,10 @@ table,td,th {
 table {
 	width: 100%;
 }
+.normal_table {
+	border-collapse: separate;
+	border-style: none;
+}
 .no_border {
 	border-collapse: collapse;
 	border-style: none;
