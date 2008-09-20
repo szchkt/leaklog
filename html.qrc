@@ -6,6 +6,7 @@
     <file>html/inspection.html</file>
     <file>html/table.html</file>
     <file>html/inspectors.html</file>
+    <file>html/refrigerant_consumption.html</file>
     <file>html/default.css</file>
     <file>html/colours.css</file>
   </qresource>

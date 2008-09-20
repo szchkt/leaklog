@@ -312,6 +312,7 @@ MTDictionary Global::get_dict_varnames()
 MTDictionary Global::get_dict_attrvalues()
 {
     MTDictionary dict_attrvalues;
+    dict_attrvalues.insert("field", QApplication::translate("AttributeValues", "Field of application"));
     dict_attrvalues.insert("field::car", QApplication::translate("AttributeValues", "Car air conditioning"));
     dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Low-rise residential buildings"));
     dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "High-rise residential buildings"));
@@ -321,12 +322,30 @@ MTDictionary Global::get_dict_attrvalues()
     dict_attrvalues.insert("field::transportation", QApplication::translate("AttributeValues", "Transportation"));
     dict_attrvalues.insert("field::airconditioning", QApplication::translate("AttributeValues", "Air conditioning"));
     dict_attrvalues.insert("field::heatpumps", QApplication::translate("AttributeValues", "Heat pumps"));
+    dict_attrvalues.insert("oil", QApplication::translate("AttributeValues", "Oil"));
     dict_attrvalues.insert("oil::mo", QApplication::translate("AttributeValues", "MO (Mineral oil)"));
     dict_attrvalues.insert("oil::ab", QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)"));
     dict_attrvalues.insert("oil::poe", QApplication::translate("AttributeValues", "POE (Polyolester oil)"));
     dict_attrvalues.insert("oil::pao", QApplication::translate("AttributeValues", "PAO (Polyalphaolefin oil)"));
     dict_attrvalues.insert("oil::pve", QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"));
     dict_attrvalues.insert("oil::pag", QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"));
+    dict_attrvalues.insert("refrigerant", QApplication::translate("AttributeValues", "Refrigerant"));
+    dict_attrvalues.insert("refrigerant::R11", "R11");
+    dict_attrvalues.insert("refrigerant::R12", "R12");
+    dict_attrvalues.insert("refrigerant::R22", "R22");
+    dict_attrvalues.insert("refrigerant::R32", "R32");
+    dict_attrvalues.insert("refrigerant::R123", "R123");
+    dict_attrvalues.insert("refrigerant::R124", "R124");
+    dict_attrvalues.insert("refrigerant::R125", "R125");
+    dict_attrvalues.insert("refrigerant::R134a", "R134a");
+    dict_attrvalues.insert("refrigerant::R143a", "R143a");
+    dict_attrvalues.insert("refrigerant::R227ea", "R227ea");
+    dict_attrvalues.insert("refrigerant::R365mfc", "R365mfc");
+    dict_attrvalues.insert("refrigerant::R404A", "R404A");
+    dict_attrvalues.insert("refrigerant::R407C", "R407C");
+    dict_attrvalues.insert("refrigerant::R410A", "R410A");
+    dict_attrvalues.insert("refrigerant::R502", "R502");
+    dict_attrvalues.insert("refrigerant::R507", "R507");
     return dict_attrvalues;
 }
 
@@ -341,6 +360,10 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone:"));
 
     dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("circuit::operation", QApplication::translate("AttributeNames", "Place of operation:"));
+    dict_attrnames.insert("circuit::building", QApplication::translate("AttributeNames", "Building:"));
+    dict_attrnames.insert("circuit::device", QApplication::translate("AttributeNames", "Device:"));
+    dict_attrnames.insert("circuit::hermetic", QApplication::translate("AttributeNames", "Hermetically sealed:"));
     dict_attrnames.insert("circuit::manufacturer", QApplication::translate("AttributeNames", "Manufacturer:"));
     dict_attrnames.insert("circuit::type", QApplication::translate("AttributeNames", "Type:"));
     dict_attrnames.insert("circuit::sn", QApplication::translate("AttributeNames", "Serial number:"));
@@ -354,9 +377,6 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life:") + "||" + QApplication::translate("AttributeNames", "years"));
     dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day:"));
     dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation:") + "||" + "%");
-    dict_attrnames.insert("circuit::operation", QApplication::translate("AttributeNames", "Place of operation:"));
-    dict_attrnames.insert("circuit::building", QApplication::translate("AttributeNames", "Building:"));
-    dict_attrnames.insert("circuit::device", QApplication::translate("AttributeNames", "Device:"));
     return dict_attrnames;
 }
 
