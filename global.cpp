@@ -235,7 +235,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
     dict_dbtables.insert("tables", "id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT");
-    dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, name TEXT, description TEXT");
+    dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
     dict_dbtables.insert("db_info", "id TEXT, value TEXT");
@@ -934,5 +934,295 @@ void Subvariable::saveResult()
             row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE));
             *result() << row;
         }
+    }
+}
+
+Warnings::Warnings(QSqlDatabase db, bool enabled_only):
+MTSqlQueryResult(db)
+{
+    database = db.isValid() ? db : QSqlDatabase::database();
+    this->enabled_only = enabled_only;
+    exec("SELECT id, enabled, name, description FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""));
+}
+
+void Warnings::saveResult()
+{
+    int n = query()->record().count();
+    *pos() = -1;
+    result()->clear();
+    initWarnings(database, result(), 0, -1, enabled_only);
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        if (query()->value(0).toInt() >= 1000) { continue; }
+        row.clear();
+        for (int i = 0; i < n; ++i) {
+            row.insert(query()->record().fieldName(i), query()->value(i));
+        }
+        *result() << row;
+    }
+}
+
+void Warnings::initWarnings(QSqlDatabase _database, QList<QMap<QString, QVariant> > * map, int type, int id, bool enabled_only)
+{
+    QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
+    w = "1000";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", "<", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "3");
+            initFilter(map, w, "refrigerant_amount", "<", "10");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+        }
+    }
+    w = "1001";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", ">=", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "3");
+            initFilter(map, w, "refrigerant_amount", "<", "10");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
+        }
+    }
+    w = "1002";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", "<", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "10");
+            initFilter(map, w, "refrigerant_amount", "<", "100");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+        }
+    }
+    w = "1003";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", ">=", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "10");
+            initFilter(map, w, "refrigerant_amount", "<", "100");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+        }
+    }
+    w = "1004";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", "<", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "100");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
+        }
+    }
+    w = "1005";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"), enabled_only);
+        } else if (type == 1) {
+            initFilter(map, w, "commissioning", ">=", "2011.07.04");
+            initFilter(map, w, "refrigerant_amount", ">=", "100");
+        } else if (type == 2) {
+            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+        }
+    }
+    w = "1100";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Refrigerant leakage"), "", enabled_only);
+        } else if (type == 2) {
+            initCondition(map, w, "t_0", "<", "t_0");
+            initCondition(map, w, "t_evap_out-t_0", ">", "t_evap_out-t_0");
+            initCondition(map, w, "t_c", "<", "t_c");
+            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
+            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+        }
+    }
+    w = "1101";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Compressor valve leakage"), "", enabled_only);
+        } else if (type == 2) {
+            initCondition(map, w, "t_0", ">", "t_0");
+            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
+            initCondition(map, w, "t_c", "<", "t_c");
+            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
+            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+        }
+    }
+    w = "1102";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Liquid-line restriction"), "", enabled_only);
+        } else if (type == 2) {
+            initCondition(map, w, "t_0", "<", "t_0");
+            initCondition(map, w, "t_evap_out-t_0", ">", "t_evap_out-t_0");
+            initCondition(map, w, "t_c", "<", "t_c");
+            initCondition(map, w, "t_c-t_ev", ">", "t_c-t_ev");
+            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
+            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+        }
+    }
+    w = "1103";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Condenser fouling"), "", enabled_only);
+        } else if (type == 2) {
+            initCondition(map, w, "t_0", ">", "t_0");
+            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
+            initCondition(map, w, "t_c", ">", "t_c");
+            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+            initCondition(map, w, "t_out-t_c", ">", "t_out-t_c");
+            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+        }
+    }
+    w = "1104";
+    if (id < 0 || id == w.toInt()) {
+        if (type == 0) {
+            initWarning(database, map, w, tr("Evaporator fouling"), "", enabled_only);
+        } else if (type == 2) {
+            initCondition(map, w, "t_0", "<", "t_0");
+            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
+            initCondition(map, w, "t_c", "<", "t_c");
+            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "t_comp_out", "<", "t_comp_out");
+            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
+            initCondition(map, w, "t_in-t_0", ">", "t_in-t_0");
+        }
+    }
+}
+
+void Warnings::initWarning(QSqlDatabase database, QList<QMap<QString, QVariant> > * map, const QString & id, const QString & name, const QString & description, bool enabled_only)
+{
+    QSqlQuery query(database);
+    query.prepare("SELECT enabled FROM warnings WHERE id = :id");
+    query.bindValue(":id", id);
+    query.exec();
+    QMap<QString, QVariant> set;
+    if (query.next()) {
+        if (enabled_only && !query.value(0).toInt()) { return; }
+        set.insert("enabled", query.value(0).toInt());
+    } else {
+        set.insert("enabled", 1);
+    }
+    set.insert("id", id);
+    set.insert("name", name);
+    set.insert("description", description);
+    *map << set;
+}
+
+void Warnings::initFilter(QList<QMap<QString, QVariant> > * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
+{
+    QMap<QString, QVariant> set;
+    set.insert("parent", parent);
+    set.insert("circuit_attribute", circuit_attribute);
+    set.insert("function", function);
+    set.insert("value", value);
+    *map << set;
+}
+
+void Warnings::initCondition(QList<QMap<QString, QVariant> > * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
+{
+    QMap<QString, QVariant> set;
+    set.insert("parent", parent);
+    set.insert("value_ins", value_ins);
+    set.insert("function", function);
+    set.insert("value_nom", value_nom);
+    *map << set;
+}
+
+Warning::Warning(int id, QSqlDatabase db):
+MTSqlQueryResult(db)
+{
+    database = db.isValid() ? db : QSqlDatabase::database();
+    this->id = id;
+    prepare("SELECT id, enabled, name, description FROM warnings WHERE id = :id");
+    bindValue(":id", id);
+    exec();
+}
+
+void Warning::saveResult()
+{
+    int n = query()->record().count();
+    *pos() = -1;
+    result()->clear();
+    Warnings::initWarnings(database, result(), 0, id);
+    if (id >= 1000) { return; }
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        for (int i = 0; i < n; ++i) {
+            row.insert(query()->record().fieldName(i), query()->value(i));
+        }
+        *result() << row;
+    }
+}
+
+WarningFilters::WarningFilters(int id, QSqlDatabase db):
+MTSqlQueryResult(db)
+{
+    database = db.isValid() ? db : QSqlDatabase::database();
+    this->id = id;
+    prepare("SELECT parent, circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
+    bindValue(":parent", id);
+    exec();
+}
+
+void WarningFilters::saveResult()
+{
+    int n = query()->record().count();
+    *pos() = -1;
+    result()->clear();
+    Warnings::initWarnings(database, result(), 1, id);
+    if (id >= 1000) { return; }
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        for (int i = 0; i < n; ++i) {
+            row.insert(query()->record().fieldName(i), query()->value(i));
+        }
+        *result() << row;
+    }
+}
+
+WarningConditions::WarningConditions(int id, QSqlDatabase db):
+MTSqlQueryResult(db)
+{
+    database = db.isValid() ? db : QSqlDatabase::database();
+    this->id = id;
+    prepare("SELECT parent, value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
+    bindValue(":parent", id);
+    exec();
+}
+
+void WarningConditions::saveResult()
+{
+    int n = query()->record().count();
+    *pos() = -1;
+    result()->clear();
+    Warnings::initWarnings(database, result(), 2, id);
+    if (id >= 1000) { return; }
+    QMap<QString, QVariant> row;
+    while (query()->next()) {
+        row.clear();
+        for (int i = 0; i < n; ++i) {
+            row.insert(query()->record().fieldName(i), query()->value(i));
+        }
+        *result() << row;
     }
 }

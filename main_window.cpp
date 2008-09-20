@@ -148,6 +148,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(lw_inspectors, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspector(QListWidgetItem *)));
+    QObject::connect(btn_clear_current_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(tbtn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
     QObject::connect(tbtn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
@@ -417,6 +418,15 @@ void MainWindow::findPrevious()
     if (!db.isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
+}
+
+void MainWindow::clearSelection()
+{
+    lw_inspections->unhighlightAllItems();
+    lw_circuits->unhighlightAllItems();
+    lw_customers->unhighlightAllItems();
+    enableTools();
+    setView(tr("All customers"));
 }
 
 void MainWindow::setView(QAction * action)

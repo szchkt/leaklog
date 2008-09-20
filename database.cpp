@@ -112,73 +112,6 @@ void MainWindow::initTables()
     QSqlQuery commit("COMMIT");
 }
 
-void MainWindow::initWarnings()
-{
-    QSqlQuery begin("BEGIN");
-    QString w;
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"));
-    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "3");
-    initWarningAddFilter(w, "refrigerant_amount", "<", "10");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "6");
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"));
-    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "3");
-    initWarningAddFilter(w, "refrigerant_amount", "<", "10");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "8");
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"));
-    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "10");
-    initWarningAddFilter(w, "refrigerant_amount", "<", "100");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "4");
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"));
-    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "10");
-    initWarningAddFilter(w, "refrigerant_amount", "<", "100");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "6");
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"));
-    initWarningAddFilter(w, "commissioning", "<", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "100");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "2");
-    w = initWarning(tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"));
-    initWarningAddFilter(w, "commissioning", ">=", "2011.07.04");
-    initWarningAddFilter(w, "refrigerant_amount", ">=", "100");
-    initWarningAddCondition(w, "100*refr_add_am/refrigerant_amount", ">", "4");
-    QSqlQuery commit("COMMIT");
-}
-
-QString MainWindow::initWarning(const QString & name, const QString & description)
-{
-    MTRecord warning("warning", "", MTDictionary());
-    QMap<QString, QVariant> set;
-    set.insert("name", name);
-    set.insert("description", description);
-    warning.update(set);
-    return warning.id();
-}
-
-void MainWindow::initWarningAddFilter(const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
-{
-    QSqlQuery filter;
-    filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");
-    filter.bindValue(":parent", parent);
-    filter.bindValue(":circuit_attribute", circuit_attribute);
-    filter.bindValue(":function", function);
-    filter.bindValue(":value", value);
-    filter.exec();
-}
-
-void MainWindow::initWarningAddCondition(const QString & parent, const QString & ins_value, const QString & function, const QString & nom_value)
-{
-    QSqlQuery condition;
-    condition.prepare("INSERT INTO warnings_conditions (parent, ins_value, function, nom_value) VALUES (:parent, :ins_value, :function, :nom_value)");
-    condition.bindValue(":parent", parent);
-    condition.bindValue(":ins_value", ins_value);
-    condition.bindValue(":function", function);
-    condition.bindValue(":nom_value", nom_value);
-    condition.exec();
-}
-
 void MainWindow::newDatabase()
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
@@ -195,7 +128,6 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(&db);
     initTables();
-    initWarnings();
     QSqlQuery begin("BEGIN");
     QSqlQuery save_leaklog_version("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'created_with'");
     QSqlQuery save_date_created("UPDATE db_info SET value = '" + QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm") + "' WHERE id = 'date_created'");
@@ -359,11 +291,11 @@ void MainWindow::openDatabase(QString path)
         cb_table_edit->addItem(tables.value(0).toString());
         cb_table->addItem(tables.value(0).toString());
     }
-    QSqlQuery warnings("SELECT id, name, description FROM warnings");
+    Warnings warnings;
     while (warnings.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(warnings.value(2).toString().isEmpty() ? warnings.value(1).toString() : tr("%1 (%2)").arg(warnings.value(1).toString()).arg(warnings.value(2).toString()));
-        item->setData(Qt::UserRole, warnings.value(0).toString());
+        item->setText(warnings.value("description").toString().isEmpty() ? warnings.value("name").toString() : tr("%1 (%2)").arg(warnings.value("name").toString()).arg(warnings.value("description").toString()));
+        item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
     }
 #ifdef Q_WS_MAC

@@ -193,11 +193,10 @@ ModifyDialogue(record, used_ids, parent)
     md_dict_input.insert("description", "le");
     MTDictionary md_dict_values;
     if (!md_record.id().isEmpty()) {
-        QSqlQuery query = md_record.select();
-        query.exec();
+        Warning query(md_record.id().toInt());
         if (query.next()) {
             for (int i = 0; i < query.record().count(); ++i) {
-                md_dict_values.insert(query.record().fieldName(i), query.value(i).toString());
+                md_dict_values.insert(query.record().fieldName(i), query.value(query.record().fieldName(i)).toString());
             }
         }
     }
@@ -238,19 +237,13 @@ ModifyDialogue(record, used_ids, parent)
     QObject::connect(md_tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_grid_main->addWidget(md_conditions, r + 3, 0, 1, 4);
     if (!md_record.id().isEmpty()) {
-        QSqlQuery filters;
-        filters.prepare("SELECT circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
-        filters.bindValue(":parent", md_record.id());
-        filters.exec();
+        WarningFilters filters(md_record.id().toInt());
         while (filters.next()) {
-            md_filters->add(filters.value(0).toString(), filters.value(1).toString(), filters.value(2).toString());
+            md_filters->add(filters.value("circuit_attribute").toString(), filters.value("function").toString(), filters.value("value").toString());
         }
-        QSqlQuery conditions;
-        conditions.prepare("SELECT value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
-        conditions.bindValue(":parent", md_record.id());
-        conditions.exec();
+        WarningConditions conditions(md_record.id().toInt());
         while (conditions.next()) {
-            md_conditions->add(conditions.value(0).toString(), conditions.value(1).toString(), conditions.value(2).toString());
+            md_conditions->add(conditions.value("value_ins").toString(), conditions.value("function").toString(), conditions.value("value_nom").toString());
         }
     }
     this->resize(450, 20);

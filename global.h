@@ -164,4 +164,66 @@ private:
     QString var_id;
 };
 
+class Warnings : public MTSqlQueryResult
+{
+    Q_OBJECT
+
+public:
+    Warnings(QSqlDatabase = QSqlDatabase(), bool = false);
+
+    static void initWarnings(QSqlDatabase, QList<QMap<QString, QVariant> > *, int, int = -1, bool = false);
+
+protected:
+    void saveResult();
+
+    static void initWarning(QSqlDatabase, QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, bool);
+    static void initFilter(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
+    static void initCondition(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
+
+    QSqlDatabase database;
+    bool enabled_only;
+};
+
+class Warning : public MTSqlQueryResult
+{
+    Q_OBJECT
+
+public:
+    Warning(int, QSqlDatabase = QSqlDatabase());
+
+protected:
+    void saveResult();
+
+    QSqlDatabase database;
+    int id;
+};
+
+class WarningFilters : public MTSqlQueryResult
+{
+    Q_OBJECT
+
+public:
+    WarningFilters(int, QSqlDatabase = QSqlDatabase());
+
+protected:
+    void saveResult();
+
+    QSqlDatabase database;
+    int id;
+};
+
+class WarningConditions : public MTSqlQueryResult
+{
+    Q_OBJECT
+
+public:
+    WarningConditions(int, QSqlDatabase = QSqlDatabase());
+
+protected:
+    void saveResult();
+
+    QSqlDatabase database;
+    int id;
+};
+
 #endif // GLOBAL_H

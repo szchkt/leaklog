@@ -66,6 +66,13 @@ public slots:
         item->setForeground(QBrush::QBrush(QColor::QColor(0, 0, 0)));
         item->listWidget()->clearSelection();
     };
+    void unhighlightAllItems() {
+        for (int i = 0; i < this->count(); ++i) {
+            this->item(i)->setBackground(QBrush::QBrush(QColor::QColor(255, 255, 255)));
+            this->item(i)->setForeground(QBrush::QBrush(QColor::QColor(0, 0, 0)));
+        }
+        this->clearSelection();
+    };
     bool isItemHighlighted(int i) { return isItemHighlighted(item(i)); };
     static bool isItemHighlighted(QListWidgetItem * item) {
         if (item == NULL) { return false; }
