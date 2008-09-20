@@ -30,7 +30,7 @@ class ImportDialogue : public QDialog, private Ui::ImportDialogue
 
 public:
     ImportDialogue(QWidget * parent = NULL):
-    QDialog(parent) {
+    QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint) {
         setupUi(this);
         id_trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
         id_trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
@@ -40,6 +40,7 @@ public:
         id_trw_variables->header()->setResizeMode(5, QHeaderView::ResizeToContents);
         id_trw_variables->header()->setResizeMode(6, QHeaderView::ResizeToContents);
         id_trw_variables->header()->setResizeMode(7, QHeaderView::ResizeToContents);
+        id_trw_variables->header()->setResizeMode(8, QHeaderView::ResizeToContents);
         QObject::connect(id_le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
         QObject::connect(id_le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
         QObject::connect(id_le_search_inspections, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_inspections, SLOT(filterItems(QLineEdit *, const QString &)));

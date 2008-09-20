@@ -417,7 +417,7 @@ void MainWindow::saveDatabase(bool compact)
 void MainWindow::closeDatabase(bool save)
 {
 	if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
-    db.close(); QSqlDatabase::removeDatabase(db.connectionName());
+    QSqlQuery rollback("ROLLBACK"); db.close(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
@@ -1201,6 +1201,8 @@ void MainWindow::importData()
 		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
+    QSqlQuery begin("BEGIN", data);
+    initDatabase(&data, false);
     ImportDialogue * id = new ImportDialogue(this);
     QString id_justified;
     QSqlQuery customers("SELECT id, company FROM customers", data);
@@ -1240,7 +1242,8 @@ void MainWindow::importData()
             last_item->setText(3, dict_vartypes.value(query.value("VAR_TYPE").toString()));
             last_item->setText(4, query.value("VAR_VALUE").toString());
             last_item->setText(5, query.value("VAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
-            last_item->setText(6, query.value("VAR_COL_BG").toString());
+            last_item->setText(6, query.value("VAR_TOLERANCE").toString());
+            last_item->setText(7, query.value("VAR_COL_BG").toString());
             Variable variable(query.value("VAR_ID").toString());
             bool found = false, overwrite = false;
             if (variable.next()) {
@@ -1249,8 +1252,9 @@ void MainWindow::importData()
                 if (variable.value("VAR_UNIT").toString() != query.value("VAR_UNIT").toString()) { overwrite = true; last_item->setBackground(2, QBrush(Qt::darkMagenta)); last_item->setForeground(2, QBrush(Qt::white)); }
                 if (variable.value("VAR_TYPE").toString() != query.value("VAR_TYPE").toString()) { overwrite = true; last_item->setBackground(3, QBrush(Qt::darkMagenta)); last_item->setForeground(3, QBrush(Qt::white)); }
                 if (variable.value("VAR_VALUE").toString() != query.value("VAR_VALUE").toString()) { overwrite = true; last_item->setBackground(4, QBrush(Qt::darkMagenta)); last_item->setForeground(4, QBrush(Qt::white)); }
-                if (variable.value("VAR_COMPARE_NOM").toInt() != query.value("VAR_COMPARE_NOM").toInt()) { overwrite = true; last_item->setBackground(5, QBrush(Qt::darkMagenta)); last_item->setForeground(5, QBrush(Qt::white)); }
-                if (variable.value("VAR_COL_BG").toString() != query.value("VAR_COL_BG").toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
+                if ((variable.value("VAR_COMPARE_NOM").toInt() > 0) != (query.value("VAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; last_item->setBackground(5, QBrush(Qt::darkMagenta)); last_item->setForeground(5, QBrush(Qt::white)); }
+                if (variable.value("VAR_TOLERANCE").toString() != query.value("VAR_TOLERANCE").toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
+                if (variable.value("VAR_COL_BG").toString() != query.value("VAR_COL_BG").toString()) { overwrite = true; last_item->setBackground(7, QBrush(Qt::darkMagenta)); last_item->setForeground(7, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
             if (!found) {
@@ -1271,7 +1275,7 @@ void MainWindow::importData()
             } else {
                 cb_action->setCurrentIndex(0);
             }
-            id->variables()->setItemWidget(last_item, 7, cb_action);
+            id->variables()->setItemWidget(last_item, 8, cb_action);
             last_id = query.value("VAR_ID").toString();
         }
         if (!query.value("SUBVAR_ID").toString().isEmpty() && last_item) {
@@ -1282,6 +1286,7 @@ void MainWindow::importData()
             subitem->setText(3, dict_vartypes.value(query.value("SUBVAR_TYPE").toString()));
             subitem->setText(4, query.value("SUBVAR_VALUE").toString());
             subitem->setText(5, query.value("SUBVAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
+            subitem->setText(6, query.value("SUBVAR_TOLERANCE").toString());
             Subvariable variable(query.value("VAR_ID").toString(), query.value("SUBVAR_ID").toString());
             bool found = false, overwrite = false;
             if (variable.next()) {
@@ -1290,7 +1295,8 @@ void MainWindow::importData()
                 if (variable.value("SUBVAR_UNIT").toString() != query.value("SUBVAR_UNIT").toString()) { overwrite = true; subitem->setBackground(2, QBrush(Qt::darkMagenta)); subitem->setForeground(2, QBrush(Qt::white)); }
                 if (variable.value("SUBVAR_TYPE").toString() != query.value("SUBVAR_TYPE").toString()) { overwrite = true; subitem->setBackground(3, QBrush(Qt::darkMagenta)); subitem->setForeground(3, QBrush(Qt::white)); }
                 if (variable.value("SUBVAR_VALUE").toString() != query.value("SUBVAR_VALUE").toString()) { overwrite = true; subitem->setBackground(4, QBrush(Qt::darkMagenta)); subitem->setForeground(4, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_COMPARE_NOM").toInt() != query.value("SUBVAR_COMPARE_NOM").toInt()) { overwrite = true; subitem->setBackground(5, QBrush(Qt::darkMagenta)); subitem->setForeground(5, QBrush(Qt::white)); }
+                if ((variable.value("SUBVAR_COMPARE_NOM").toInt() > 0) != (query.value("SUBVAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; subitem->setBackground(5, QBrush(Qt::darkMagenta)); subitem->setForeground(5, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_TOLERANCE").toString() != query.value("SUBVAR_TOLERANCE").toString()) { overwrite = true; subitem->setBackground(6, QBrush(Qt::darkMagenta)); subitem->setForeground(6, QBrush(Qt::white)); }
                 if (variable.value("VAR_ID").toString() != query.value("VAR_ID").toString()) { overwrite = true; last_item->setBackground(1, QBrush(Qt::darkMagenta)); subitem->setForeground(1, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
@@ -1312,11 +1318,11 @@ void MainWindow::importData()
             } else {
                 cb_action->setCurrentIndex(0);
             }
-            id->variables()->setItemWidget(subitem, 7, cb_action);
+            id->variables()->setItemWidget(subitem, 8, cb_action);
             last_item->setExpanded(true);
         }
     }
-    if (id->exec() != QDialog::Accepted) { data.close(); QSqlDatabase::removeDatabase(data.connectionName()); return; }
+    if (id->exec() != QDialog::Accepted) { QSqlQuery rollback("ROLLBACK", data); data.close(); QSqlDatabase::removeDatabase(data.connectionName()); return; }
     QMap<QString, QVariant> set;
     for (int c = 0; c < id->customers()->count(); ++c) {
         if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
@@ -1372,7 +1378,7 @@ void MainWindow::importData()
     for (int v = 0; v < id->variables()->topLevelItemCount(); ++v) {
         item = id->variables()->topLevelItem(v);
         skip_parent = false; new_item = NULL;
-        current_text = ((QComboBox *)id->variables()->itemWidget(item, 7))->currentText();
+        current_text = ((QComboBox *)id->variables()->itemWidget(item, 8))->currentText();
         if (current_text == tr("Do not import")) {
             inspections_skip_columns << item->text(1);
             skip_parent = true;
@@ -1392,12 +1398,13 @@ void MainWindow::importData()
             set.insert("type", dict_vartypes.firstKey(item->text(3)));
             set.insert("value", item->text(4));
             set.insert("compare_nom", item->text(5) == tr("Yes") ? 1 : 0);
-            set.insert("col_bg", item->text(6));
+            set.insert("tolerance", item->text(6));
+            set.insert("col_bg", item->text(7));
             record.update(set);
         }
         for (int sv = 0; sv < item->childCount(); ++sv) {
             subitem = item->child(sv);
-            current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 7))->currentText();
+            current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 8))->currentText();
             if (skip_parent || current_text == tr("Do not import")) {
                 inspections_skip_columns << subitem->text(1);
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
@@ -1416,6 +1423,7 @@ void MainWindow::importData()
                 set.insert("type", dict_vartypes.firstKey(subitem->text(3)));
                 set.insert("value", subitem->text(4));
                 set.insert("compare_nom", subitem->text(5) == tr("Yes") ? 1 : 0);
+                set.insert("tolerance", subitem->text(6));
                 record.update(set);
             }
         }
@@ -1452,7 +1460,7 @@ void MainWindow::importData()
         record.update(set, j == 0);
         j++;
     }
-    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+    QSqlQuery rollback("ROLLBACK", data); data.close(); QSqlDatabase::removeDatabase(data.connectionName());
     this->setWindowModified(true);
     refreshView();
 }

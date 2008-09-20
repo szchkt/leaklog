@@ -687,6 +687,7 @@ void Variables::saveResult()
     result()->clear();
     initVariables();
     QMap<QString, QVariant> row;
+    QSet<int> updated_indices;
     while (query()->next()) {
         row.clear();
         insert = true;
@@ -696,9 +697,12 @@ void Variables::saveResult()
             foreach (int index, indices) {
                 insert = false;
                 QMap<QString, QVariant> _row = result()->at(index);
-                if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
-                if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
-                if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
+                if (!updated_indices.contains(index)) {
+                    updated_indices << index;
+                    if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
+                    if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
+                    if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
+                }
                 if (query()->value(SUBVAR_ID).toString() == _row.value("SUBVAR_ID").toString()) {
                     if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
                     if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
