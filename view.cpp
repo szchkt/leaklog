@@ -762,23 +762,18 @@ void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value,
 
 QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<QString, QVariant> & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids)
 {
-    QSqlQuery warnings;
-    warnings.prepare("SELECT id, name FROM warnings");
-    warnings.exec();
+    Warnings warnings(db, true);
     QStringList warnings_list;
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
     QMap<QString, QVariant> circuit_attributes = circuit.list();
     while (warnings.next()) {
         bool show_warning = true;
 
-        QSqlQuery warnings_filters;
-        warnings_filters.prepare("SELECT circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
-        warnings_filters.bindValue(":parent", warnings.value(0).toString());
-        warnings_filters.exec();
+        WarningFilters warnings_filters(warnings.value("id").toInt());
         while (warnings_filters.next()) {
-            QString circuit_attribute = circuit_attributes.value(warnings_filters.value(0).toString()).toString();
-            QString function = warnings_filters.value(1).toString();
-            QString value = warnings_filters.value(2).toString();
+            QString circuit_attribute = circuit_attributes.value(warnings_filters.value("circuit_attribute").toString()).toString();
+            QString function = warnings_filters.value("function").toString();
+            QString value = warnings_filters.value("value").toString();
             bool ok1 = true; bool ok2 = true;
             int int_circuit_attribute = circuit_attribute.toInt(&ok1);
             int int_value = value.toInt(&ok2);
@@ -805,15 +800,12 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
 
         if (!show_warning) { continue; }
 
-        QSqlQuery warnings_conditions;
-        warnings_conditions.prepare("SELECT value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
-        warnings_conditions.bindValue(":parent", warnings.value(0).toString());
-        warnings_conditions.exec();
+        WarningConditions warnings_conditions(warnings.value("id").toInt());
         while (warnings_conditions.next()) {
             MTDictionary expression;
             bool ok_eval = true;
             double ins_value = 0;
-            QString unparsed_expression = warnings_conditions.value(0).toString();
+            QString unparsed_expression = warnings_conditions.value("value_ins").toString();
             if (!unparsed_expression.isEmpty()) {
                 if (!parsed_expressions.contains(unparsed_expression)) {
                     parsed_expressions.insert(unparsed_expression, parseExpression(unparsed_expression, &used_ids));
@@ -824,7 +816,7 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
             }
             expression.clear();
             double nom_value = 0;
-            unparsed_expression = warnings_conditions.value(2).toString();
+            unparsed_expression = warnings_conditions.value("value_nom").toString();
             if (!unparsed_expression.isEmpty()) {
                 if (!parsed_expressions.contains(unparsed_expression)) {
                     parsed_expressions.insert(unparsed_expression, parseExpression(unparsed_expression, &used_ids));
@@ -833,7 +825,7 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
                 nom_value = evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval);
                 if (!ok_eval) show_warning = false;
             }
-            QString function = warnings_conditions.value(1).toString();
+            QString function = warnings_conditions.value("function").toString();
             if (function == "=" && ins_value == nom_value) {}
             else if (function == "!=" && ins_value != nom_value) {}
             else if (function == ">" && ins_value > nom_value) {}
@@ -846,7 +838,7 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
         }
 
         if (show_warning) {
-            warnings_list << warnings.value(1).toString();
+            warnings_list << warnings.value("name").toString();
         }
     }
     return warnings_list;

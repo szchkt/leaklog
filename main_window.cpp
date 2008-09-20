@@ -557,7 +557,7 @@ void MainWindow::enableTools()
     tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
     actionModify_warning->setEnabled(lw_warnings->currentIndex().isValid());
-    actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid());
+    actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
     actionModify_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
 }
