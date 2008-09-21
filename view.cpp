@@ -488,7 +488,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "</th><th>" << tr("E-mail");
     out << "</th><th>" << tr("Phone");
     out << "</th></tr><tr>";
-    out << "<td><a href=\"customer:" << customer_id << "\">" << customer_id << "</a></td>";
+    out << "<td><a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a></td>";
     out << "<td>" << customer_info.value("company").toString() << "</td>";
     out << "<td>" << customer_info.value("contact_person").toString() << "</td>";
     out << "<td>" << customer_info.value("address").toString() << "</td>";
@@ -506,7 +506,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "</th><th>" << tr("Amount of oil");
     out << "</th><th>" << tr("Service life");
     out << "</th></tr><tr>";
-    out << "<td><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id << "</a></td>";
+    out << "<td><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id.rightJustified(4, '0') << "</a></td>";
     out << "<td>" << circuit_info.value("manufacturer").toString() << "</td>";
     out << "<td>" << circuit_info.value("type").toString() << "</td>";
     out << "<td>" << circuit_info.value("year").toString() << "</td>";
@@ -906,6 +906,10 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
         }
     }
 
+    QString ver_refr_str; QString refr_str = tr("Refrigerants");
+    for (int i = 0; i < refr_str.count(); ++i) {
+        ver_refr_str.append(QString(refr_str.at(i)) + "<br />");
+    }
     out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
     out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Refrigerant consumption:") << "&nbsp;";
     if (customer_id.toInt() < 0) {
@@ -914,12 +918,15 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
         out << tr("Customer:") << "&nbsp;" << "<a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a>";
     }
     out << "</b></td></tr></thead></table><br />";
-    out << "<table><thead><tr><th>" << tr("Fields") << "</th><th rowspan=\"2\">" << tr("All") << "</th>";
-    for (int i = 0; i < used_fields.count(); ++i) {
-        out << "<th rowspan=\"2\">" << used_fields.value(i) << "</th>";
-    }
-    out << "</tr><tr><th>" << tr("Refrigerants") << "</th></tr>";
+    out << "<table><thead><tr><th colspan=\"2\" rowspan=\"2\"></th>";
+    out << "<th colspan=\"" << used_fields.count()+1 << "\">" << tr("Fields") << "</th></tr>";
     out << "<tr><th>" << tr("All") << "</th>";
+    for (int i = 0; i < used_fields.count(); ++i) {
+        out << "<th>" << used_fields.value(i) << "</th>";
+    }
+    out << "</tr>";
+    out << "<tr><th rowspan=\"" << used_refrs.count()+2 << "\">" << ver_refr_str << "</th>";
+    out << "<th>" << tr("All") << "</th>";
     double s_value = 0;
     iter.toFront();
     while(iter.hasNext()) {
@@ -956,7 +963,7 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
         }
         out << "</tr>";
     }
-    out << "</table></thead>";
+    out << "<tr></tr></table></thead>";
 
     wv_main->setHtml(dict_html.value(tr("Refrigerant consumption")).arg(html), QUrl("qrc:/html/"));
 }
