@@ -9,9 +9,9 @@ body,td,th {
 tbody > tr:hover > td {
 	background-color: rgb(180, 215, 255);
 }
-/*th {
-	background-color: rgb(180, 215, 255);
-}*/
+th {
+	background-color: #F3F3F3;
+}
 table,td,th {
 	border-collapse: collapse;
 	border-style: solid;

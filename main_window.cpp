@@ -427,11 +427,11 @@ void MainWindow::findPrevious()
 
 void MainWindow::clearSelection()
 {
-    lw_inspections->unhighlightAllItems();
-    lw_circuits->unhighlightAllItems();
+    lw_inspections->clear();
+    lw_circuits->clear();
     lw_customers->unhighlightAllItems();
     enableTools();
-    setView(tr("All customers"));
+    refreshView();
 }
 
 void MainWindow::setView(QAction * action)

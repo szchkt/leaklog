@@ -47,6 +47,8 @@ void MainWindow::viewChanged(const QString & view)
         viewAllInspectors(toString(selectedInspector()));
     } else if (view == tr("Refrigerant consumption")) {
         viewRefrigerantConsumption(toString(selectedCustomer()));
+    } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
+        setView(tr("All customers"));
     } else {
         wv_main->setHtml(QString());
     }
@@ -880,16 +882,26 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
 {
     QString html; QTextStream out(&html);
     QSqlQuery query;
-    query.prepare("SELECT circuits.field, circuits.refrigerant, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent" + QString(customer_id.toInt() < 0 ? "" : " WHERE inspections.customer = :customer_id"));
+    query.prepare("SELECT circuits.field, circuits.refrigerant, inspections.refr_add_am, inspections.refr_reco, inspections.refr_recy, inspections.refr_disp FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent" + QString(customer_id.toInt() < 0 ? "" : " WHERE inspections.customer = :customer_id"));
     if (customer_id.toInt() >= 0) { query.bindValue(":customer_id", customer_id); }
     query.exec();
-    QMap<QString, double> sums_map; QString current_name;
+    QMap<QString, QStringList> sums_map; QString current_name;
     while (query.next()) {
         current_name = query.value(1).toString() + "<:?:>" + query.value(0).toString();
-        double old_value = sums_map.value(current_name);
-        sums_map.insert(current_name, old_value + query.value(2).toDouble());
+        //double old_value = sums_map.value(current_name);
+        QStringList old_str_list = sums_map.value(current_name);
+        QStringList new_str_list;
+        for (int i = 0; i < 4; ++i) {
+            if (old_str_list.count() != 4) {
+                new_str_list << query.value(2+i).toString();
+            } else {
+                new_str_list << toString(old_str_list.at(i).toDouble() + query.value(2+i).toDouble());
+            }
+        }
+        //sums_map.insert(current_name, old_value + query.value(2).toDouble());
+        sums_map.insert(current_name, new_str_list);
     }
-    QMapIterator <QString, double> iter(sums_map);
+    QMapIterator <QString, QStringList> iter(sums_map);
 
     MTDictionary used_fields;
     MTDictionary used_refrs;
@@ -910,6 +922,7 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
     for (int i = 0; i < refr_str.count(); ++i) {
         ver_refr_str.append(QString(refr_str.at(i)) + "<br />");
     }
+
     out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
     out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Refrigerant consumption:") << "&nbsp;";
     if (customer_id.toInt() < 0) {
@@ -917,53 +930,60 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
     } else {
         out << tr("Customer:") << "&nbsp;" << "<a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a>";
     }
-    out << "</b></td></tr></thead></table><br />";
-    out << "<table><thead><tr><th colspan=\"2\" rowspan=\"2\"></th>";
-    out << "<th colspan=\"" << used_fields.count()+1 << "\">" << tr("Fields") << "</th></tr>";
-    out << "<tr><th>" << tr("All") << "</th>";
-    for (int i = 0; i < used_fields.count(); ++i) {
-        out << "<th>" << used_fields.value(i) << "</th>";
-    }
-    out << "</tr>";
-    out << "<tr><th rowspan=\"" << used_refrs.count()+2 << "\">" << ver_refr_str << "</th>";
-    out << "<th>" << tr("All") << "</th>";
-    double s_value = 0;
-    iter.toFront();
-    while(iter.hasNext()) {
-        iter.next();
-        s_value += iter.value();
-    }
-    out << "<td>" << s_value << "</td>";
-    for (int n = 0; n < used_fields.count(); ++n) {
-        s_value = 0;
-        iter.toFront();
-        while(iter.hasNext()) {
-            iter.next();
-            if (iter.key().endsWith(used_fields.key(n))) {
-                s_value += iter.value();
-            }
+    out << "</b></td></tr></thead></table>";
+
+    QStringList default_return_list;
+    default_return_list << "0"; default_return_list << "0"; default_return_list << "0"; default_return_list << "0";
+    QStringList tables;
+    tables << dict_varnames.value("refr_add"); tables << dict_varnames.value("refr_reco");
+    tables << dict_varnames.value("refr_recy"); tables << dict_varnames.value("refr_disp");
+    for (int t = 0; t < tables.count(); ++t) {
+        out << "<br /><table><thead><tr><th colspan=\"2\" rowspan=\"2\">" << tables.at(t) << "</th>";
+        out << "<th colspan=\"" << used_fields.count()+1 << "\">" << tr("Fields") << "</th></tr>";
+        out << "<tr><th>" << tr("All") << "</th>";
+        for (int i = 0; i < used_fields.count(); ++i) {
+            out << "<th>" << used_fields.value(i) << "</th>";
         }
-        out << "<td>" << s_value << "</td>";
-    }
-    out << "</tr>";
-    for (int i = 0; i < used_refrs.count(); ++i) {
-        out << "<tr><th>" << used_refrs.value(i) << "</th>";
-        s_value = 0;
+        out << "</tr></thead>";
+        out << "<tr><th rowspan=\"" << used_refrs.count()+2 << "\">" << ver_refr_str << "</th>";
+        out << "<th>" << tr("All") << "</th>";
+        double s_value = 0;
         iter.toFront();
         while(iter.hasNext()) {
             iter.next();
-            if (iter.key().startsWith(used_refrs.key(i))) {
-                s_value += iter.value();
-            }
+            s_value += iter.value().at(t).toDouble();
         }
         out << "<td>" << s_value << "</td>";
         for (int n = 0; n < used_fields.count(); ++n) {
-            current_name = used_refrs.key(i) + "<:?:>" + used_fields.key(n);
-            out << "<td>" << sums_map.value(current_name) << "</td>";
+            s_value = 0;
+            iter.toFront();
+            while(iter.hasNext()) {
+                iter.next();
+                if (iter.key().endsWith(used_fields.key(n))) {
+                    s_value += iter.value().at(t).toDouble();
+                }
+            }
+            out << "<td>" << s_value << "</td>";
         }
         out << "</tr>";
+        for (int i = 0; i < used_refrs.count(); ++i) {
+            out << "<tr><th>" << used_refrs.value(i) << "</th>";
+            s_value = 0;
+            iter.toFront();
+            while(iter.hasNext()) {
+                iter.next();
+                if (iter.key().startsWith(used_refrs.key(i))) {
+                    s_value += iter.value().at(t).toDouble();
+                }
+            }
+            out << "<td>" << s_value << "</td>";
+            for (int n = 0; n < used_fields.count(); ++n) {
+                current_name = used_refrs.key(i) + "<:?:>" + used_fields.key(n);
+                out << "<td>" << sums_map.value(current_name, default_return_list).at(t).toDouble() << "</td>";
+            }
+            out << "</tr>";
+        }
+        out << "<tr></tr></table>";
     }
-    out << "<tr></tr></table></thead>";
-
     wv_main->setHtml(dict_html.value(tr("Refrigerant consumption")).arg(html), QUrl("qrc:/html/"));
 }
