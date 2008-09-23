@@ -90,28 +90,36 @@ void Global::addColumn(const QString & column, const QString & table, QSqlDataba
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
 {
-    QStringList all_field_names = getTableFieldNames(table, database);
-    all_field_names.removeAll(column);
-    QString field_names = all_field_names.join(", ");
-    QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol)").arg(field_names));
-    QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
-    QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
-    QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2, %3)").arg(table).arg(field_names).arg(new_name));
-    QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
-    QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+    if (!database->driverName().contains("SQLITE")) {
+        QSqlQuery rename_column("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name, *database);
+    } else {
+        QStringList all_field_names = getTableFieldNames(table, database);
+        all_field_names.removeAll(column);
+        QString field_names = all_field_names.join(", ");
+        QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol)").arg(field_names));
+        QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
+        QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
+        QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2, %3)").arg(table).arg(field_names).arg(new_name));
+        QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
+        QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+    }
 }
 
 void Global::dropColumn(const QString & column, const QString & table, QSqlDatabase * database)
 {
-    QStringList all_field_names = getTableFieldNames(table, database);
-    all_field_names.removeAll(column);
-    QString field_names = all_field_names.join(", ");
-    QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(field_names));
-    QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
-    QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
-    QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2)").arg(table).arg(field_names));
-    QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
-    QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+    if (!database->driverName().contains("SQLITE")) {
+        QSqlQuery drop_column("ALTER TABLE " + table + " DROP COLUMN " + column, *database);
+    } else {
+        QStringList all_field_names = getTableFieldNames(table, database);
+        all_field_names.removeAll(column);
+        QString field_names = all_field_names.join(", ");
+        QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(field_names));
+        QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
+        QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
+        QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2)").arg(table).arg(field_names));
+        QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
+        QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+    }
 }
 
 MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids)

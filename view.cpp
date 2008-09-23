@@ -78,18 +78,15 @@ void MainWindow::viewAllCustomers()
         out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
         out << "<td>";
-        QSqlQuery circuits;
-        circuits.setForwardOnly(true);
-        circuits.prepare("SELECT id FROM circuits WHERE parent = :parent");
-        circuits.bindValue(":parent", list.at(i).value("id").toInt());
-        circuits.exec();
+        MTRecord circuits_record("circuit", "", MTDictionary("parent", list.at(i).value("id").toString()));
+        QList<QMap<QString, QVariant> > circuits = circuits_record.listAll("id");
         int num_circuits = 0, num_inspections = 0;
-        while (circuits.next()) {
+        for (int j = 0; j < circuits.count(); ++j) {
             num_circuits++;
-            MTDictionary inspection_parents("circuit", circuits.value(0).toString());
+            MTDictionary inspection_parents("circuit", circuits.at(j).value("id").toString());
             inspection_parents.insert("customer", list.at(i).value("id").toString());
             MTRecord inspection_record("inspection", "", inspection_parents);
-            num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
+            num_inspections += inspection_record.listAll("date").count();
         }
         out << num_circuits;
         out << "</td></tr>";
@@ -139,7 +136,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
         MTDictionary inspection_parents("circuit", circuits.at(i).value("id").toString());
         inspection_parents.insert("customer", customer_id);
         MTRecord inspection_record("inspection", "", inspection_parents);
-        num_inspections += inspection_record.list("COUNT(date)").value("COUNT(date)").toInt();
+        num_inspections += inspection_record.listAll("date").count();
     }
     out << num_circuits;
     out << "</td></tr>";
