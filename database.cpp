@@ -782,14 +782,14 @@ void MainWindow::loadTable(const QString &)
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
     for (int i = 0; i < variables.count(); ++i) {
-        MTRecord variable("variable", variables.at(i), MTDictionary());
+        Variable variable(variables.at(i));
         QTreeWidgetItem * item = new QTreeWidgetItem(trw_table_variables);
-        item->setText(0, variable.list("name").value("name").toString());
-        item->setText(1, variable.id());
+        if (variable.next()) { item->setText(0, variable.value("VAR_NAME").toString()); }
+        item->setText(1, variables.at(i));
         QComboBox * cb_foot = new QComboBox;
         cb_foot->addItem(tr("None"));
         cb_foot->addItem(tr("Sum"));
-        if (sum.contains(variable.id())) { cb_foot->setCurrentIndex(1); }
+        if (sum.contains(variables.at(i))) { cb_foot->setCurrentIndex(1); }
         else { cb_foot->setCurrentIndex(0); }
         QObject::connect(cb_foot, SIGNAL(currentIndexChanged(int)), this, SLOT(saveTable()));
         trw_table_variables->setItemWidget(item, 2, cb_foot);
@@ -1316,7 +1316,8 @@ void MainWindow::importData()
             skip_parent = true;
         } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
             MTRecord record("variable", item->text(1), MTDictionary());
-            if (!record.exists()) {
+            Variable variable(item->text(1));
+            if (!variable.next()) {
                 new_item = new QTreeWidgetItem(trw_variables);
                 new_item->setText(0, item->text(0));
                 new_item->setText(1, item->text(1));
@@ -1341,7 +1342,8 @@ void MainWindow::importData()
                 inspections_skip_columns << subitem->text(1);
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
                 MTRecord record("subvariable", subitem->text(1), MTDictionary("parent", item->text(1)));
-                if (new_item != NULL && !record.exists()) {
+                Subvariable subvariable(item->text(1), subitem->text(1));
+                if (new_item != NULL && !subvariable.next()) {
                     QTreeWidgetItem * new_subitem = new QTreeWidgetItem(new_item);
                     new_subitem->setText(0, subitem->text(0));
                     new_subitem->setText(1, subitem->text(1));

@@ -289,8 +289,9 @@ void MainWindow::printLabel()
     MTRecord inspection_record("inspection", toString(selectedInspection()), parents);
     QMap<QString, QVariant> inspection = inspection_record.list();
     attributes.insert("date", inspection.value("date").toString());
-    MTRecord refr_add_per("subvariable", "refr_add_per", MTDictionary("parent", "refr_add"));
-    QString unparsed_expression = refr_add_per.list("value").value("value").toString();
+    Subvariable refr_add_per("refr_add", "refr_add_per");
+    refr_add_per.next();
+    QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
     if (!unparsed_expression.isEmpty()) {
         if (!parsed_expressions.contains(unparsed_expression)) {
             QStringList var_ids = listVariableIds();
@@ -363,7 +364,7 @@ void MainWindow::paintLabel(const QMap<QString, QVariant> & attributes, QPainter
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
     painter.drawText(m + x + (w / 2), m + y + title_h + (5 * h / 7), w / 6 - dm, h / 14 - dm, Qt::AlignCenter, attributes.value("company_reg_num", QString()).toString());
     font.setBold(true); painter.setFont(font);
-    painter.drawText(m + x, m + y, w - dm, title_h - dm, Qt::AlignCenter, tr("RECORD OF INSPECTION OF A HERMETIC COOLING CIRCUIT\ncontaining greenhouse gases according to the Kyoto Protocol"));
+    painter.drawText(m + x, m + y, w - dm, title_h - dm, Qt::AlignCenter, tr("RECORD OF INSPECTION OF COOLING CIRCUIT\nin accordance with Regulation (EC) No. 842/2006"));
     painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("id", QString()).toString());
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("refrigerant", QString()).toString());
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("refrigerant_amount", QString()).toString() + " " + tr("kg"));
