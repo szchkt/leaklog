@@ -137,7 +137,7 @@ QDialog(parent)
         md_dict.insert("refrigerant", tr("Refrigerant"));
         md_dict_input.insert("refrigerant", "cb;R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R404A;R407C;R410A;R502;R507");
         md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
-        md_dict_input.insert("refrigerant_amount", QString("spb;0;0;999999; %1").arg(tr("kg")));
+        md_dict_input.insert("refrigerant_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
         md_dict.insert("oil", tr("Oil"));
         QStringList oils;
         oils << tr("MO (Mineral oil)") + "||mo";
@@ -148,13 +148,17 @@ QDialog(parent)
         oils << tr("PAG (Polyglycol oil)") + "||pag";
         md_dict_input.insert("oil", QString("cb;%1").arg(oils.join(";")));
         md_dict.insert("oil_amount", tr("Amount of oil"));
-        md_dict_input.insert("oil_amount", QString("spb;0;0;999999; %1").arg(tr("kg")));
+        md_dict_input.insert("oil_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
+        md_dict.insert("leak_detector", tr("Fixed leakage detector installed"));
+        md_dict_input.insert("leak_detector", "chb");
         md_dict.insert("life", tr("Service life"));
         md_dict_input.insert("life", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("years")));
         md_dict.insert("runtime", tr("Run-time per day"));
         md_dict_input.insert("runtime", QString("dspb;0.0;0.0;24.0; %1").arg(tr("hours")));
         md_dict.insert("utilisation", tr("Rate of utilisation"));
         md_dict_input.insert("utilisation", QString("dspb;0.0;0.0;100.0; %1").arg(tr("%")));
+        md_dict.insert("inspection_interval", tr("Inspection interval"));
+        md_dict_input.insert("inspection_interval", QString("spb;0;0;999999; %1").arg(tr("days")));
         query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(md_record.id().isEmpty() ? "" : " AND id <> :id"));
         query_used_ids.bindValue(":parent", md_record.parents()->value("parent"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }

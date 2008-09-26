@@ -48,9 +48,11 @@ QWidget(parent)
     af_attributes.insert("commissioning", tr("Date of commissioning"));
     af_attributes.insert("refrigerant_amount", tr("Amount of refrigerant"));
     af_attributes.insert("oil_amount", tr("Amount of oil"));
+    af_attributes.insert("leak_detector", tr("Fixed leakage detector installed"));
     af_attributes.insert("life", tr("Service life"));
     af_attributes.insert("runtime", tr("Run-time per day"));
     af_attributes.insert("utilisation", tr("Rate of utilisation"));
+    af_attributes.insert("inspection_interval", tr("Inspection interval"));
     af_functions << "<";
     af_functions << "<=";
     af_functions << "=";
@@ -191,6 +193,8 @@ ModifyDialogue(record, used_ids, parent)
     md_dict_input.insert("name", "le");
     md_dict.insert("description", tr("Description"));
     md_dict_input.insert("description", "le");
+    md_dict.insert("delay", tr("Delay"));
+    md_dict_input.insert("delay", QString("spb;0;0;999999; %1").arg(tr("days")));
     MTDictionary md_dict_values;
     if (!md_record.id().isEmpty()) {
         Warning query(md_record.id().toInt());
