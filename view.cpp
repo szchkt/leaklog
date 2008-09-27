@@ -48,7 +48,7 @@ void MainWindow::viewChanged(const QString & view)
     } else if (view == tr("Refrigerant consumption")) {
         viewRefrigerantConsumption(toString(selectedCustomer()));
     } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
-        setView(tr("All customers"));
+        viewLevelUp();
     } else {
         wv_main->setHtml(QString());
     }
@@ -288,15 +288,12 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     QString html; QTextStream out(&html);
 
     Variables vars;
-    /*QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6;
-    const int SUBVAR_ID = 7; const int SUBVAR_NAME = 8; const int SUBVAR_TYPE = 9; const int SUBVAR_UNIT = 10; const int SUBVAR_VALUE = 11; const int SUBVAR_COMPARE_NOM = 12; const int SUBVAR_TOLERANCE = 13;*/
 
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", inspection_date, inspection_parents);
     QMap<QString, QVariant> inspection = inspection_record.list();
-    int nominal = inspection.value("nominal").toInt();
+    bool nominal = inspection.value("nominal").toInt();
     MTDictionary nom_inspection_parents("circuit", circuit_id);
     nom_inspection_parents.insert("customer", customer_id);
     nom_inspection_parents.insert("nominal", "1");
@@ -309,7 +306,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Circuit:") << "&nbsp;";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id.rightJustified(4, '0') << "</a></b></td></tr>";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
-    if (nominal == 1) out << tr("Nominal inspection:") << "&nbsp;";
+    if (nominal) out << tr("Nominal inspection:") << "&nbsp;";
     else out << tr("Inspection:") << "&nbsp;";
 	out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspection_date << "/modify\">";
 	out << inspection_date << "</a></b></td></tr>";
@@ -327,10 +324,10 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
             var_id = vars.value("SUBVAR_ID").toString();
             tolerance = vars.value("SUBVAR_TOLERANCE").toDouble();
         }
-        if (nominal == 0) {
-            if (vars.value("VAR_COMPARE_NOM").toInt() == 1) {
+        if (!nominal) {
+            if (vars.value("VAR_COMPARE_NOM").toInt()) {
                 compare_nom = true;
-            } else if (vars.value("SUBVAR_COMPARE_NOM").toInt() == 1) {
+            } else if (vars.value("SUBVAR_COMPARE_NOM").toInt()) {
                 compare_nom = true;
             }
         }
@@ -341,7 +338,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
             expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), &used_ids);
         }
         QString ins_value; QString nom_value;
-        if (expression.count() != 0) {
+        if (expression.count()) {
             ins_value = toString(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
             if (!ok_eval) continue;
             if (compare_nom) {
@@ -363,9 +360,9 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
         out << "<num_var>" << num_shown_vars << "</num_var>";
         out << "<tr><td style=\"text-align: right; width:50%;\">";
         if (vars.value("SUBVAR_ID").toString().isEmpty()) {
-            out << vars.value("VAR_NAME").toString() << ":&nbsp;";
+            out << vars.value("VAR_NAME").toString() << ":";
         } else {
-            out << vars.value("VAR_NAME").toString() << ":&nbsp;" << vars.value("SUBVAR_NAME").toString() << ":&nbsp;";
+            out << vars.value("VAR_NAME").toString() << ": " << vars.value("SUBVAR_NAME").toString() << ":";
         }
         out << "</td><td><table cellpadding=\"0\" cellspacing=\"0\"><tr><td align=\"right\" valign=\"center\">";
         if (compare_nom) {
@@ -386,7 +383,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
         out << "</tr></table></td>";
         num_shown_vars++;
     }
-    if (num_shown_vars != 0) {
+    if (num_shown_vars) {
         html.replace(QString("<num_var>%1</num_var>").arg(int(num_shown_vars / 2 + num_shown_vars % 2)), "</table></td><td style=\"width:50%;\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
     }
     for (int i = 0; i < num_shown_vars; ++i) {
@@ -396,7 +393,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     out << "</table></td></tr>";
 //*** Warnings ***
     QStringList warnings_list = listWarnings(inspection, nominal_ins, customer_id, circuit_id, used_ids);
-    if (warnings_list.count() > 0) {
+    if (warnings_list.count()) {
         out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td colspan=\"2\" style=\"font-size: larger; width:100%;\">";
         out << "<b><i18n>" << tr("Warnings") << "</i18n></b></td></tr>";
@@ -414,9 +411,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     QString html; QTextStream out(&html);
 
     Variables vars;
-    /*QSqlQuery vars("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
-    const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;*/
+
     QStringList used_ids = listVariableIds();
 
 //*** Mapping variables ***
@@ -457,7 +452,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 
     MTRecord table_record("table", table_id, MTDictionary());
     QMap<QString, QVariant> table = table_record.list();
-    QStringList table_vars = table.value("variables").toString().split(";");
+    QStringList table_vars = table.value("variables").toString().split(";", QString::SkipEmptyParts);
 
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
@@ -664,7 +659,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     if (!table.value("sum").toString().isEmpty()) {
         out << "<tr class=\"border_top border_bottom\">";
         out << "<th>" << tr("Sum") << "</th>";
-        QStringList sum_vars = table.value("sum").toString().split(";");
+        QStringList sum_vars = table.value("sum").toString().split(";", QString::SkipEmptyParts);
         for (int i = 0; i < table_vars.count(); ++i) {
             bool is_in_foot = sum_vars.contains(table_vars.at(i));
             if (variables.value(table_vars.at(i)).value("subvariables").toList().count() > 0) {

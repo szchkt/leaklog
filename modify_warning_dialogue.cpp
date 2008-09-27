@@ -189,6 +189,8 @@ ModifyDialogue(record, used_ids, parent)
 {
     md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
     md_dict.insert("warning", tr("Warning"));
+    md_dict.insert("enabled", tr("Enabled"));
+    md_dict_input.insert("enabled", "chb");
     md_dict.insert("name", tr("Name"));
     md_dict_input.insert("name", "le");
     md_dict.insert("description", tr("Description"));
@@ -212,6 +214,7 @@ ModifyDialogue(record, used_ids, parent)
     }
     QLabel * md_lbl_var = NULL; QWidget * md_w_var = NULL;
     int r = 0; QStringList inputtype; QString value;
+    bool disable_input = md_record.id().toInt() >= 1000;
     for (int i = 0; i < md_dict.count(); ++i) {
         if (md_dict.key(i) == md_record.type()) { continue; }
         value = md_dict_values.contains(md_dict.key(i)) ? md_dict_values.value(md_dict.key(i)) : "";
@@ -222,22 +225,27 @@ ModifyDialogue(record, used_ids, parent)
             md_grid_main->addWidget(md_lbl_var, r, 0);
         }
         md_w_var = createInputWidget(inputtype, md_dict.value(i), value);
+        md_w_var->setDisabled(disable_input && md_dict.key(i) != "enabled");
         md_grid_main->addWidget(md_w_var, r, 1, 1, 3);
         md_vars.insert(md_dict.key(i), md_w_var);
         r++;
     }
     md_grid_main->addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
     QToolButton * md_tbtn_add_filter = new QToolButton(this);
+    md_tbtn_add_filter->setDisabled(disable_input);
     md_tbtn_add_filter->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     md_grid_main->addWidget(md_tbtn_add_filter, r, 3);
     md_filters = new AttributeFilters(this);
+    md_filters->setDisabled(disable_input);
     QObject::connect(md_tbtn_add_filter, SIGNAL(clicked()), md_filters, SLOT(add()));
     md_grid_main->addWidget(md_filters, r + 1, 0, 1, 4);
     md_grid_main->addWidget(new QLabel(tr("Conditions:"), this), r + 2, 0, 1, 3);
     QToolButton * md_tbtn_add_condition = new QToolButton(this);
+    md_tbtn_add_condition->setDisabled(disable_input);
     md_tbtn_add_condition->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     md_grid_main->addWidget(md_tbtn_add_condition, r + 2, 3);
     md_conditions = new Conditions(md_used_ids, this);
+    md_conditions->setDisabled(disable_input);
     QObject::connect(md_tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_grid_main->addWidget(md_conditions, r + 3, 0, 1, 4);
     if (!md_record.id().isEmpty()) {

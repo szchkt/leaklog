@@ -175,7 +175,8 @@ QDialog(parent)
                 md_dict.insert(query.value("VAR_ID").toString(), query.value("VAR_NAME").toString());
                 if (query.value("VAR_ID").toString() == "inspector") {
                     QString inspectors_string;
-                    QSqlQuery inspectors("SELECT id, person FROM inspectors");
+                    QSqlQuery inspectors;
+                    inspectors.exec("SELECT id, person FROM inspectors");
                     if (inspectors.next()) {
                         while (true) {
                             inspectors_string.append(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : inspectors.value(1).toString());

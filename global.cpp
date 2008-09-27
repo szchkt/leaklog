@@ -41,7 +41,8 @@ QString Global::delta() { return QApplication::translate("Global", "\316\224", 0
 
 void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
 {
-    QSqlQuery select("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)), *from);
+    QSqlQuery select(*from);
+    select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
     if (select.next() && select.record().count()) {
         QString copy("INSERT INTO " + table + " (");
         QStringList field_names = getTableFieldNames(table, to);
@@ -74,7 +75,8 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
 QStringList Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
 {
     QStringList field_names;
-    QSqlQuery query("SELECT * FROM " + table, *database);
+    QSqlQuery query(*database);
+    query.exec("SELECT * FROM " + table);
     for (int i = 0; i < query.record().count(); ++i) {
         field_names << query.record().fieldName(i);
     }
@@ -85,40 +87,45 @@ void Global::addColumn(const QString & column, const QString & table, QSqlDataba
 {
     QString col = column;
     if (column.split(" ").count() < 2) { col.append(" TEXT"); }
-    QSqlQuery add_column("ALTER TABLE " + table + " ADD COLUMN " + col, *database);
+    QSqlQuery add_column(*database);
+    add_column.exec("ALTER TABLE " + table + " ADD COLUMN " + col);
 }
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
 {
     if (!database->driverName().contains("SQLITE")) {
-        QSqlQuery rename_column("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name, *database);
+        QSqlQuery rename_column(*database);
+        rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
         QStringList all_field_names = getTableFieldNames(table, database);
         all_field_names.removeAll(column);
         QString field_names = all_field_names.join(", ");
-        QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol)").arg(field_names));
-        QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
-        QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
-        QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2, %3)").arg(table).arg(field_names).arg(new_name));
-        QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
-        QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+        QSqlQuery query(*database);
+        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol)").arg(field_names));
+        query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
+        query.exec(QString("DROP TABLE %1").arg(table));
+        query.exec(QString("CREATE TABLE %1 (%2, %3)").arg(table).arg(field_names).arg(new_name));
+        query.exec(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
+        query.exec(QString("DROP TABLE _tmp"));
     }
 }
 
 void Global::dropColumn(const QString & column, const QString & table, QSqlDatabase * database)
 {
     if (!database->driverName().contains("SQLITE")) {
-        QSqlQuery drop_column("ALTER TABLE " + table + " DROP COLUMN " + column, *database);
+        QSqlQuery drop_column(*database);
+        drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
         QStringList all_field_names = getTableFieldNames(table, database);
         all_field_names.removeAll(column);
         QString field_names = all_field_names.join(", ");
-        QSqlQuery create_temp(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(field_names));
-        QSqlQuery copy_to_temp(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
-        QSqlQuery drop_table(QString("DROP TABLE %1").arg(table));
-        QSqlQuery recreate_table(QString("CREATE TABLE %1 (%2)").arg(table).arg(field_names));
-        QSqlQuery copy_from_temp(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
-        QSqlQuery drop_temp(QString("DROP TABLE _tmp"));
+        QSqlQuery query(*database);
+        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(field_names));
+        query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
+        query.exec(QString("DROP TABLE %1").arg(table));
+        query.exec(QString("CREATE TABLE %1 (%2)").arg(table).arg(field_names));
+        query.exec(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
+        query.exec(QString("DROP TABLE _tmp"));
     }
 }
 
@@ -186,7 +193,7 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
-    const QString sum_query("SELECT SUM(%1) FROM inspections WHERE date LIKE :year AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
+    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
     QMap<QString, QVariant> circuit_attributes = circuit.list();
     QString value;
@@ -199,13 +206,14 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
                 continue;
             }
             QSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(expression.key(i)));
+            sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
             sum_ins.bindValue(":customer_id", customer_id);
             sum_ins.bindValue(":circuit_id", circuit_id);
-            sum_ins.bindValue(":year", QString("%1%").arg(inspection_date.left(4)));
-            if (sum_ins.exec() && sum_ins.next()) {
-                value.append(sum_ins.value(0).toString());
+            double v = 0.0;
+            if (sum_ins.exec()) {
+                while (sum_ins.next()) { v += sum_ins.value(0).toDouble(); }
             }
+            value.append(toString(v));
         } else if (expression.value(i) == "circuit_attribute") {
             value.append(circuit_attributes.value(expression.key(i)).toString());
         } else {
@@ -600,7 +608,8 @@ bool MTRecord::remove()
 
 MTSqlQueryResult::MTSqlQueryResult(const QString & q, QSqlDatabase db)
 {
-    _query = new QSqlQuery(q, db.isValid() ? db : QSqlDatabase::database());
+    _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
+    _query->exec(q);
     _pos = -1;
 }
 

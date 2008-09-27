@@ -41,11 +41,12 @@ bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
 
 void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 {
-    if (transaction) { QSqlQuery begin("BEGIN", *database); }
+    QSqlQuery query(*database);
+    if (transaction) { query.exec("BEGIN"); }
     QStringList tables = db.tables();
     for (int i = 0; i < dict_dbtables.count(); ++i) {
         if (!tables.contains(dict_dbtables.key(i))) {
-            QSqlQuery create_table("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")", *database);
+            query.exec("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")");
         } else {
             QStringList field_names = getTableFieldNames(dict_dbtables.key(i), database);
             QStringList all_field_names = dict_dbtables.value(i).split(", ");
@@ -59,42 +60,43 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
     QStringList db_info_ids;
     db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version";
     for (int i = 0; i < db_info_ids.count(); ++i) {
-        QSqlQuery id_exists("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'", *database);
-        if (!id_exists.next()) {
-            QSqlQuery insert_db_info_id("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')", *database);
+        query.exec("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'");
+        if (!query.next()) {
+            query.exec("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')");
         }
     }
     double db_ver = 0.0;
-    QSqlQuery get_db_version("SELECT value FROM db_info WHERE id = 'db_version'");
-    if (get_db_version.next()) { db_ver = get_db_version.value(0).toDouble(); }
+    query.exec("SELECT value FROM db_info WHERE id = 'db_version'");
+    if (query.next()) { db_ver = query.value(0).toDouble(); }
     if (db_ver < f_db_version) {
-        QSqlQuery drop_index_customers_id("DROP INDEX IF EXISTS index_customers_id", *database);
-        QSqlQuery drop_index_circuits_id("DROP INDEX IF EXISTS index_circuits_id", *database);
-        QSqlQuery drop_index_inspections_id("DROP INDEX IF EXISTS index_inspections_id", *database);
-        QSqlQuery drop_index_inspectors_id("DROP INDEX IF EXISTS index_inspectors_id", *database);
-        QSqlQuery drop_index_variables_id("DROP INDEX IF EXISTS index_variables_id", *database);
-        QSqlQuery drop_index_subvariables_id("DROP INDEX IF EXISTS index_subvariables_id", *database);
-        QSqlQuery drop_index_tables_id("DROP INDEX IF EXISTS index_tables_id", *database);
-        QSqlQuery drop_index_warnings_id("DROP INDEX IF EXISTS index_warnings_id", *database);
-        QSqlQuery drop_index_warnings_filters_parent("DROP INDEX IF EXISTS index_warnings_filters_parent", *database);
-        QSqlQuery drop_index_warnings_conditions_parent("DROP INDEX IF EXISTS index_warnings_conditions_parent", *database);
-        QSqlQuery create_index_customers_id("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)", *database);
-        QSqlQuery create_index_circuits_id("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)", *database);
-        QSqlQuery create_index_inspections_id("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)", *database);
-        QSqlQuery create_index_inspectors_id("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)", *database);
-        QSqlQuery create_index_variables_id("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)", *database);
-        QSqlQuery create_index_subvariables_id("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)", *database);
-        QSqlQuery create_index_tables_id("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)", *database);
-        QSqlQuery create_index_warnings_id("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)", *database);
-        QSqlQuery create_index_warnings_filters_parent("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)", *database);
-        QSqlQuery create_index_warnings_conditions_parent("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)", *database);
+        query.exec("DROP INDEX IF EXISTS index_customers_id");
+        query.exec("DROP INDEX IF EXISTS index_circuits_id");
+        query.exec("DROP INDEX IF EXISTS index_inspections_id");
+        query.exec("DROP INDEX IF EXISTS index_inspectors_id");
+        query.exec("DROP INDEX IF EXISTS index_variables_id");
+        query.exec("DROP INDEX IF EXISTS index_subvariables_id");
+        query.exec("DROP INDEX IF EXISTS index_tables_id");
+        query.exec("DROP INDEX IF EXISTS index_warnings_id");
+        query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
+        query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
+        query.exec("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)");
+        query.exec("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)");
+        query.exec("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)");
+        query.exec("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)");
+        query.exec("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
     }
-    if (transaction) { QSqlQuery commit("COMMIT", *database); }
+    if (transaction) { query.exec("COMMIT"); }
 }
 
 void MainWindow::initTables()
 {
-    QSqlQuery begin("BEGIN");
+    QSqlQuery query;
+    query.exec("BEGIN");
     QMap<QString, QVariant> set;
     MTRecord table_of_leakages("table", "", MTDictionary());
     set.insert("id", tr("Table of leakages"));
@@ -109,7 +111,7 @@ void MainWindow::initTables()
     set.insert("variables", "t;p_0;p_c;t_0;t_c;t_ev;t_evap_out;t_comp_in;t_sc;t_sh;t_comp_out;ep_comp;ec;ev;ppsw;sftsw;rmds;arno");
     set.insert("sum", "");
     table_of_parameters.update(set);
-    QSqlQuery commit("COMMIT");
+    query.exec("COMMIT");
 }
 
 void MainWindow::newDatabase()
@@ -128,9 +130,10 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(&db);
     initTables();
-    QSqlQuery begin("BEGIN");
-    QSqlQuery save_leaklog_version("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'created_with'");
-    QSqlQuery save_date_created("UPDATE db_info SET value = '" + QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm") + "' WHERE id = 'date_created'");
+    QSqlQuery query;
+    query.exec("BEGIN");
+    query.exec("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'created_with'");
+    query.exec("UPDATE db_info SET value = '" + QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm") + "' WHERE id = 'date_created'");
     openDatabase(QString());
 }
 
@@ -150,7 +153,7 @@ void MainWindow::openRecent(QListWidgetItem * item)
         db.setUserName(path.at(0).split(":").at(2));
         db.setPassword(password);
         if (db.open()) {
-            QSqlQuery begin("BEGIN");
+            QSqlQuery begin; begin.exec("BEGIN");
             initDatabase(&db, false);
         }
         openDatabase(QString());
@@ -223,7 +226,7 @@ void MainWindow::openRemote()
     db.setPassword(le_password->text());
     if (db.open()) {
         addRecent("db:QPSQL:" + le_user_name->text() + "@" + le_db_name->text() + "@" + le_server->text() + ":" + toString(spb_port->value()));
-        QSqlQuery begin("BEGIN");
+        QSqlQuery begin; begin.exec("BEGIN");
         initDatabase(&db, false);
     }
     openDatabase(QString());
@@ -247,49 +250,49 @@ void MainWindow::openDatabase(QString path)
             this->setWindowTitle(tr("Leaklog"));
             return;
         }
-        QSqlQuery begin("BEGIN");
+        QSqlQuery begin; begin.exec("BEGIN");
         initDatabase(&db, false);
     }
-    QString id;
-    QSqlQuery customers("SELECT id, company FROM customers");
-    while (customers.next()) {
-        id = customers.value(0).toString().rightJustified(8, '0');
+    QString id; QSqlQuery query;
+    query.exec("SELECT id, company FROM customers");
+    while (query.next()) {
+        id = query.value(0).toString().rightJustified(8, '0');
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(customers.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(customers.value(1).toString()));
-        item->setData(Qt::UserRole, customers.value(0).toString());
+        item->setText(query.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(query.value(1).toString()));
+        item->setData(Qt::UserRole, query.value(0).toString());
         lw_customers->addItem(item);
     }
-    QSqlQuery inspectors("SELECT id, person FROM inspectors");
-    while (inspectors.next()) {
-        id = inspectors.value(0).toString().rightJustified(4, '0');
+    query.exec("SELECT id, person FROM inspectors");
+    while (query.next()) {
+        id = query.value(0).toString().rightJustified(4, '0');
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(inspectors.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(inspectors.value(1).toString()));
-        item->setData(Qt::UserRole, inspectors.value(0).toString());
+        item->setText(query.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(query.value(1).toString()));
+        item->setData(Qt::UserRole, query.value(0).toString());
         lw_inspectors->addItem(item);
     }
-    Variables query;
+    Variables variables;
     QString last_id; QTreeWidgetItem * last_item = NULL;
-    while (query.next()) {
-        if (query.value("VAR_ID").toString() != last_id) {
+    while (variables.next()) {
+        if (variables.value("VAR_ID").toString() != last_id) {
             last_item = new QTreeWidgetItem(trw_variables);
-            last_item->setText(0, query.value("VAR_NAME").toString());
-            last_item->setText(1, query.value("VAR_ID").toString());
-            last_item->setText(2, query.value("VAR_UNIT").toString());
-            last_item->setText(3, dict_vartypes.value(query.value("VAR_TYPE").toString()));
-            last_id = query.value("VAR_ID").toString();
+            last_item->setText(0, variables.value("VAR_NAME").toString());
+            last_item->setText(1, variables.value("VAR_ID").toString());
+            last_item->setText(2, variables.value("VAR_UNIT").toString());
+            last_item->setText(3, dict_vartypes.value(variables.value("VAR_TYPE").toString()));
+            last_id = variables.value("VAR_ID").toString();
         }
-        if (!query.value("SUBVAR_ID").toString().isEmpty() && last_item) {
+        if (!variables.value("SUBVAR_ID").toString().isEmpty() && last_item) {
             QTreeWidgetItem * subitem = new QTreeWidgetItem(last_item);
-            subitem->setText(0, query.value("SUBVAR_NAME").toString());
-            subitem->setText(1, query.value("SUBVAR_ID").toString());
-            subitem->setText(2, query.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, dict_vartypes.value(query.value("SUBVAR_TYPE").toString()));
+            subitem->setText(0, variables.value("SUBVAR_NAME").toString());
+            subitem->setText(1, variables.value("SUBVAR_ID").toString());
+            subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
+            subitem->setText(3, dict_vartypes.value(variables.value("SUBVAR_TYPE").toString()));
         }
     }
-    QSqlQuery tables("SELECT id FROM tables");
-    while (tables.next()) {
-        cb_table_edit->addItem(tables.value(0).toString());
-        cb_table->addItem(tables.value(0).toString());
+    query.exec("SELECT id FROM tables");
+    while (query.next()) {
+        cb_table_edit->addItem(query.value(0).toString());
+        cb_table->addItem(query.value(0).toString());
     }
     Warnings warnings;
     while (warnings.next()) {
@@ -322,19 +325,21 @@ void MainWindow::saveAndCompact()
 
 void MainWindow::saveDatabase(bool compact)
 {
-    QSqlQuery save_leaklog_version("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'saved_with'");
-    QSqlQuery save_db_version("UPDATE db_info SET value = '" + toString(f_db_version) + "' WHERE id = 'db_version'");
-    QString error;
-    QSqlQuery commit("COMMIT");
-    if (commit.lastError().type() != QSqlError::NoError) { error = commit.lastError().text(); }
+    QStringList errors; QSqlQuery query;
+    query.exec("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'saved_with'");
+    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    query.exec("UPDATE db_info SET value = '" + toString(f_db_version) + "' WHERE id = 'db_version'");
+    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    query.exec("COMMIT");
+    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
     if (compact) {
-        QSqlQuery compact("VACUUM");
-        if (compact.lastError().type() != QSqlError::NoError) { error = compact.lastError().text(); }
+        query.exec("VACUUM");
+        if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
     }
-    QSqlQuery begin("BEGIN");
-    if (begin.lastError().type() != QSqlError::NoError) { error = begin.lastError().text(); }
-    if (!error.isEmpty()) {
-		QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(error));
+    query.exec("BEGIN");
+    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    if (!errors.isEmpty()) {
+		QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(errors.join("; ")));
 		return;
     }
 #ifdef Q_WS_MAC
@@ -349,7 +354,8 @@ void MainWindow::saveDatabase(bool compact)
 void MainWindow::closeDatabase(bool save)
 {
 	if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
-    QSqlQuery rollback("ROLLBACK"); db.close(); QSqlDatabase::removeDatabase(db.connectionName());
+    QSqlQuery rollback; rollback.exec("ROLLBACK");
+    db.close(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
@@ -861,7 +867,7 @@ void MainWindow::addTableVariable()
     }
     if (d->exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
         MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-        QStringList variables = record.list("variables").value("variables").toString().split(";");
+        QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
         QMap<QString, QVariant> set;
         set.insert("variables", variables.join(";"));
@@ -887,8 +893,8 @@ void MainWindow::removeTableVariable()
     }
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
     QMap<QString, QVariant> attributes = record.list("variables, sum");
-    QStringList variables = attributes.value("variables").toString().split(";");
-    QStringList sum = attributes.value("sum").toString().split(";");
+    QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
+    QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
     variables.removeAll(item->text(1));
     sum.removeAll(item->text(1));
     QMap<QString, QVariant> set;
@@ -918,7 +924,7 @@ void MainWindow::moveTableVariable(bool up)
     int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
     if (i < 0) { return; }
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    QStringList variables = record.list("variables").value("variables").toString().split(";");
+    QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);
     if (up) {
         if (i != 0) { i--; } else { i = variables.count(); }
@@ -1102,23 +1108,26 @@ void MainWindow::exportData(const QString & type)
 		QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
-    initDatabase(&data);
-    QSqlQuery begin("BEGIN", data);
-    copyTable("variables", &db, &data);
-    copyTable("subvariables", &db, &data);
-    copyTable("tables", &db, &data);
-    copyTable("customers", &db, &data, QString("id = %1").arg(selectedCustomer()));
-    if (type == "customer") {
-        copyTable("circuits", &db, &data, QString("parent = %1").arg(selectedCustomer()));
-        copyTable("inspections", &db, &data, QString("customer = %1").arg(selectedCustomer()));
-    } else if (type == "circuit") {
-        copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-    } else if (type == "inspection") {
-        copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-        copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
-    }
-    QSqlQuery commit("COMMIT", data);
+    { // BEGIN EXPORT (SCOPE)
+        initDatabase(&data);
+        QSqlQuery query(data);
+        query.exec("BEGIN");
+        copyTable("variables", &db, &data);
+        copyTable("subvariables", &db, &data);
+        copyTable("tables", &db, &data);
+        copyTable("customers", &db, &data, QString("id = %1").arg(selectedCustomer()));
+        if (type == "customer") {
+            copyTable("circuits", &db, &data, QString("parent = %1").arg(selectedCustomer()));
+            copyTable("inspections", &db, &data, QString("customer = %1").arg(selectedCustomer()));
+        } else if (type == "circuit") {
+            copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+        } else if (type == "inspection") {
+            copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
+        }
+        query.exec("COMMIT");
+    } // END EXPORT (SCOPE)
     data.close(); QSqlDatabase::removeDatabase(data.connectionName());
 }
 
@@ -1133,60 +1142,62 @@ void MainWindow::importData()
 		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
-    QSqlQuery begin("BEGIN", data);
+{ // BEGIN IMPORT (SCOPE)
+    QSqlQuery query(data);
+    query.exec("BEGIN");
     initDatabase(&data, false);
     ImportDialogue * id = new ImportDialogue(this);
     QString id_justified;
-    QSqlQuery customers("SELECT id, company FROM customers", data);
-    while (customers.next()) {
-        id_justified = customers.value(0).toString().rightJustified(8, '0');
+    query.exec("SELECT id, company FROM customers");
+    while (query.next()) {
+        id_justified = query.value(0).toString().rightJustified(8, '0');
         QListWidgetItem * item = new QListWidgetItem(id->customers());
         item->setCheckState(Qt::Unchecked);
-        item->setText(customers.value(1).toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(customers.value(1).toString()));
-        item->setData(Qt::UserRole, customers.value(0).toString());
+        item->setText(query.value(1).toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(query.value(1).toString()));
+        item->setData(Qt::UserRole, query.value(0).toString());
     }
-    QSqlQuery circuits("SELECT id, parent FROM circuits", data);
-    while (circuits.next()) {
+    query.exec("SELECT id, parent FROM circuits");
+    while (query.next()) {
         QListWidgetItem * item = new QListWidgetItem(id->circuits());
         item->setCheckState(Qt::Unchecked);
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
-        item->setText(QString("%1 (%2)").arg(circuits.value(0).toString().rightJustified(4, '0')).arg(circuits.value(1).toString().rightJustified(8, '0')));
-        item->setData(Qt::UserRole, QString("%1::%2").arg(circuits.value(1).toString()).arg(circuits.value(0).toString()));
+        item->setText(QString("%1 (%2)").arg(query.value(0).toString().rightJustified(4, '0')).arg(query.value(1).toString().rightJustified(8, '0')));
+        item->setData(Qt::UserRole, QString("%1::%2").arg(query.value(1).toString()).arg(query.value(0).toString()));
     }
-    QSqlQuery inspections("SELECT date, customer, circuit FROM inspections", data);
-    while (inspections.next()) {
+    query.exec("SELECT date, customer, circuit FROM inspections");
+    while (query.next()) {
         QListWidgetItem * item = new QListWidgetItem(id->inspections());
         item->setCheckState(Qt::Checked);
         item->setHidden(true);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
-        item->setText(QString("%1 (%2::%3)").arg(inspections.value(0).toString()).arg(inspections.value(1).toString().rightJustified(8, '0')).arg(inspections.value(2).toString().rightJustified(4, '0')));
-        item->setData(Qt::UserRole, QString("%1::%2::%3").arg(inspections.value(1).toString()).arg(inspections.value(2).toString()).arg(inspections.value(0).toString()));
+        item->setText(QString("%1 (%2::%3)").arg(query.value(0).toString()).arg(query.value(1).toString().rightJustified(8, '0')).arg(query.value(2).toString().rightJustified(4, '0')));
+        item->setData(Qt::UserRole, QString("%1::%2::%3").arg(query.value(1).toString()).arg(query.value(2).toString()).arg(query.value(0).toString()));
     }
-    Variables query(data);
+    Variables variables(data);
     QString last_id; QTreeWidgetItem * last_item = NULL;
-    while (query.next()) {
-        if (query.value("VAR_ID").toString() != last_id) {
+    while (variables.next()) {
+        if (variables.value("VAR_ID").toString() != last_id) {
             last_item = new QTreeWidgetItem(id->variables());
-            last_item->setText(0, query.value("VAR_NAME").toString());
-            last_item->setText(1, query.value("VAR_ID").toString());
-            last_item->setText(2, query.value("VAR_UNIT").toString());
-            last_item->setText(3, dict_vartypes.value(query.value("VAR_TYPE").toString()));
-            last_item->setText(4, query.value("VAR_VALUE").toString());
-            last_item->setText(5, query.value("VAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
-            last_item->setText(6, query.value("VAR_TOLERANCE").toString());
-            last_item->setText(7, query.value("VAR_COL_BG").toString());
-            Variable variable(query.value("VAR_ID").toString());
+            last_item->setText(0, variables.value("VAR_NAME").toString());
+            last_item->setText(1, variables.value("VAR_ID").toString());
+            last_item->setText(2, variables.value("VAR_UNIT").toString());
+            last_item->setText(3, dict_vartypes.value(variables.value("VAR_TYPE").toString()));
+            last_item->setText(4, variables.value("VAR_VALUE").toString());
+            last_item->setText(5, variables.value("VAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
+            last_item->setText(6, variables.value("VAR_TOLERANCE").toString());
+            last_item->setText(7, variables.value("VAR_COL_BG").toString());
+            Variable variable(variables.value("VAR_ID").toString());
             bool found = false, overwrite = false;
             if (variable.next()) {
                 found = true;
-                if (variable.value("VAR_NAME").toString() != query.value("VAR_NAME").toString()) { overwrite = true; last_item->setBackground(0, QBrush(Qt::darkMagenta)); last_item->setForeground(0, QBrush(Qt::white)); }
-                if (variable.value("VAR_UNIT").toString() != query.value("VAR_UNIT").toString()) { overwrite = true; last_item->setBackground(2, QBrush(Qt::darkMagenta)); last_item->setForeground(2, QBrush(Qt::white)); }
-                if (variable.value("VAR_TYPE").toString() != query.value("VAR_TYPE").toString()) { overwrite = true; last_item->setBackground(3, QBrush(Qt::darkMagenta)); last_item->setForeground(3, QBrush(Qt::white)); }
-                if (variable.value("VAR_VALUE").toString() != query.value("VAR_VALUE").toString()) { overwrite = true; last_item->setBackground(4, QBrush(Qt::darkMagenta)); last_item->setForeground(4, QBrush(Qt::white)); }
-                if ((variable.value("VAR_COMPARE_NOM").toInt() > 0) != (query.value("VAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; last_item->setBackground(5, QBrush(Qt::darkMagenta)); last_item->setForeground(5, QBrush(Qt::white)); }
-                if (variable.value("VAR_TOLERANCE").toString() != query.value("VAR_TOLERANCE").toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
-                if (variable.value("VAR_COL_BG").toString() != query.value("VAR_COL_BG").toString()) { overwrite = true; last_item->setBackground(7, QBrush(Qt::darkMagenta)); last_item->setForeground(7, QBrush(Qt::white)); }
+                if (variable.value("VAR_NAME").toString() != variables.value("VAR_NAME").toString()) { overwrite = true; last_item->setBackground(0, QBrush(Qt::darkMagenta)); last_item->setForeground(0, QBrush(Qt::white)); }
+                if (variable.value("VAR_UNIT").toString() != variables.value("VAR_UNIT").toString()) { overwrite = true; last_item->setBackground(2, QBrush(Qt::darkMagenta)); last_item->setForeground(2, QBrush(Qt::white)); }
+                if (variable.value("VAR_TYPE").toString() != variables.value("VAR_TYPE").toString()) { overwrite = true; last_item->setBackground(3, QBrush(Qt::darkMagenta)); last_item->setForeground(3, QBrush(Qt::white)); }
+                if (variable.value("VAR_VALUE").toString() != variables.value("VAR_VALUE").toString()) { overwrite = true; last_item->setBackground(4, QBrush(Qt::darkMagenta)); last_item->setForeground(4, QBrush(Qt::white)); }
+                if ((variable.value("VAR_COMPARE_NOM").toInt() > 0) != (variables.value("VAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; last_item->setBackground(5, QBrush(Qt::darkMagenta)); last_item->setForeground(5, QBrush(Qt::white)); }
+                if (variable.value("VAR_TOLERANCE").toString() != variables.value("VAR_TOLERANCE").toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
+                if (variable.value("VAR_COL_BG").toString() != variables.value("VAR_COL_BG").toString()) { overwrite = true; last_item->setBackground(7, QBrush(Qt::darkMagenta)); last_item->setForeground(7, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
             if (!found) {
@@ -1201,35 +1212,35 @@ void MainWindow::importData()
                     last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            if (!dict_varnames.contains(query.value("VAR_ID").toString())) {
+            if (!dict_varnames.contains(variables.value("VAR_ID").toString())) {
                 cb_action->insertItem(0, tr("Do not import"));
                 cb_action->setCurrentIndex(1);
             } else {
                 cb_action->setCurrentIndex(0);
             }
             id->variables()->setItemWidget(last_item, 8, cb_action);
-            last_id = query.value("VAR_ID").toString();
+            last_id = variables.value("VAR_ID").toString();
         }
-        if (!query.value("SUBVAR_ID").toString().isEmpty() && last_item) {
+        if (!variables.value("SUBVAR_ID").toString().isEmpty() && last_item) {
             QTreeWidgetItem * subitem = new QTreeWidgetItem(last_item);
-            subitem->setText(0, query.value("SUBVAR_NAME").toString());
-            subitem->setText(1, query.value("SUBVAR_ID").toString());
-            subitem->setText(2, query.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, dict_vartypes.value(query.value("SUBVAR_TYPE").toString()));
-            subitem->setText(4, query.value("SUBVAR_VALUE").toString());
-            subitem->setText(5, query.value("SUBVAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
-            subitem->setText(6, query.value("SUBVAR_TOLERANCE").toString());
-            Subvariable variable(query.value("VAR_ID").toString(), query.value("SUBVAR_ID").toString());
+            subitem->setText(0, variables.value("SUBVAR_NAME").toString());
+            subitem->setText(1, variables.value("SUBVAR_ID").toString());
+            subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
+            subitem->setText(3, dict_vartypes.value(variables.value("SUBVAR_TYPE").toString()));
+            subitem->setText(4, variables.value("SUBVAR_VALUE").toString());
+            subitem->setText(5, variables.value("SUBVAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
+            subitem->setText(6, variables.value("SUBVAR_TOLERANCE").toString());
+            Subvariable variable(variables.value("VAR_ID").toString(), variables.value("SUBVAR_ID").toString());
             bool found = false, overwrite = false;
             if (variable.next()) {
                 found = true;
-                if (variable.value("SUBVAR_NAME").toString() != query.value("SUBVAR_NAME").toString()) { overwrite = true; subitem->setBackground(0, QBrush(Qt::darkMagenta)); subitem->setForeground(0, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_UNIT").toString() != query.value("SUBVAR_UNIT").toString()) { overwrite = true; subitem->setBackground(2, QBrush(Qt::darkMagenta)); subitem->setForeground(2, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_TYPE").toString() != query.value("SUBVAR_TYPE").toString()) { overwrite = true; subitem->setBackground(3, QBrush(Qt::darkMagenta)); subitem->setForeground(3, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_VALUE").toString() != query.value("SUBVAR_VALUE").toString()) { overwrite = true; subitem->setBackground(4, QBrush(Qt::darkMagenta)); subitem->setForeground(4, QBrush(Qt::white)); }
-                if ((variable.value("SUBVAR_COMPARE_NOM").toInt() > 0) != (query.value("SUBVAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; subitem->setBackground(5, QBrush(Qt::darkMagenta)); subitem->setForeground(5, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_TOLERANCE").toString() != query.value("SUBVAR_TOLERANCE").toString()) { overwrite = true; subitem->setBackground(6, QBrush(Qt::darkMagenta)); subitem->setForeground(6, QBrush(Qt::white)); }
-                if (variable.value("VAR_ID").toString() != query.value("VAR_ID").toString()) { overwrite = true; last_item->setBackground(1, QBrush(Qt::darkMagenta)); subitem->setForeground(1, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_NAME").toString() != variables.value("SUBVAR_NAME").toString()) { overwrite = true; subitem->setBackground(0, QBrush(Qt::darkMagenta)); subitem->setForeground(0, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_UNIT").toString() != variables.value("SUBVAR_UNIT").toString()) { overwrite = true; subitem->setBackground(2, QBrush(Qt::darkMagenta)); subitem->setForeground(2, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_TYPE").toString() != variables.value("SUBVAR_TYPE").toString()) { overwrite = true; subitem->setBackground(3, QBrush(Qt::darkMagenta)); subitem->setForeground(3, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_VALUE").toString() != variables.value("SUBVAR_VALUE").toString()) { overwrite = true; subitem->setBackground(4, QBrush(Qt::darkMagenta)); subitem->setForeground(4, QBrush(Qt::white)); }
+                if ((variable.value("SUBVAR_COMPARE_NOM").toInt() > 0) != (variables.value("SUBVAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; subitem->setBackground(5, QBrush(Qt::darkMagenta)); subitem->setForeground(5, QBrush(Qt::white)); }
+                if (variable.value("SUBVAR_TOLERANCE").toString() != variables.value("SUBVAR_TOLERANCE").toString()) { overwrite = true; subitem->setBackground(6, QBrush(Qt::darkMagenta)); subitem->setForeground(6, QBrush(Qt::white)); }
+                if (variable.value("VAR_ID").toString() != variables.value("VAR_ID").toString()) { overwrite = true; last_item->setBackground(1, QBrush(Qt::darkMagenta)); subitem->setForeground(1, QBrush(Qt::white)); }
             }
             QComboBox * cb_action = new QComboBox;
             if (!found) {
@@ -1244,7 +1255,7 @@ void MainWindow::importData()
                     subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            if (!dict_varnames.contains(query.value("SUBVAR_ID").toString())) {
+            if (!dict_varnames.contains(variables.value("SUBVAR_ID").toString())) {
                 cb_action->insertItem(0, tr("Do not import"));
                 cb_action->setCurrentIndex(1);
             } else {
@@ -1254,19 +1265,18 @@ void MainWindow::importData()
             last_item->setExpanded(true);
         }
     }
-    if (id->exec() != QDialog::Accepted) { QSqlQuery rollback("ROLLBACK", data); data.close(); QSqlDatabase::removeDatabase(data.connectionName()); return; }
+if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
     QMap<QString, QVariant> set;
     for (int c = 0; c < id->customers()->count(); ++c) {
         if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
         set.clear();
         QString c_id = id->customers()->item(c)->data(Qt::UserRole).toString();
-        QSqlQuery customer_data(data);
-        customer_data.prepare("SELECT * FROM customers WHERE id = :id");
-        customer_data.bindValue(":id", c_id);
-        customer_data.exec();
-        if (customer_data.next()) {
-            for (int f = 0; f < customer_data.record().count(); ++f) {
-                set.insert(customer_data.record().fieldName(f), customer_data.value(f));
+        query.prepare("SELECT * FROM customers WHERE id = :id");
+        query.bindValue(":id", c_id);
+        query.exec();
+        if (query.next()) {
+            for (int f = 0; f < query.record().count(); ++f) {
+                set.insert(query.record().fieldName(f), query.value(f));
             }
         }
         MTRecord record("customer", c_id, MTDictionary());
@@ -1284,14 +1294,13 @@ void MainWindow::importData()
         set.clear();
         QString cc_parent = id->circuits()->item(cc)->data(Qt::UserRole).toString().split("::").first();
         QString cc_id = id->circuits()->item(cc)->data(Qt::UserRole).toString().split("::").last();
-        QSqlQuery circuit_data(data);
-        circuit_data.prepare("SELECT * FROM circuits WHERE parent = :parent AND id = :id");
-        circuit_data.bindValue(":parent", cc_parent);
-        circuit_data.bindValue(":id", cc_id);
-        circuit_data.exec();
-        if (circuit_data.next()) {
-            for (int f = 0; f < circuit_data.record().count(); ++f) {
-                set.insert(circuit_data.record().fieldName(f), circuit_data.value(f));
+        query.prepare("SELECT * FROM circuits WHERE parent = :parent AND id = :id");
+        query.bindValue(":parent", cc_parent);
+        query.bindValue(":id", cc_id);
+        query.exec();
+        if (query.next()) {
+            for (int f = 0; f < query.record().count(); ++f) {
+                set.insert(query.record().fieldName(f), query.value(f));
             }
             set.remove("parent");
         }
@@ -1369,16 +1378,15 @@ void MainWindow::importData()
         QString i_customer = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(0);
         QString i_circuit = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(1);
         QString i_date = id->inspections()->item(i)->data(Qt::UserRole).toString().split("::").at(2);
-        QSqlQuery inspection_data(data);
-        inspection_data.prepare("SELECT * FROM inspections WHERE customer = :customer AND circuit = :circuit AND date = :date");
-        inspection_data.bindValue(":customer", i_customer);
-        inspection_data.bindValue(":circuit", i_circuit);
-        inspection_data.bindValue(":date", i_date);
-        inspection_data.exec();
-        if (inspection_data.next()) {
-            for (int f = 0; f < inspection_data.record().count(); ++f) {
-                if (!inspections_skip_columns.contains(inspection_data.record().fieldName(f))) {
-                    set.insert(inspection_data.record().fieldName(f), inspection_data.value(f));
+        query.prepare("SELECT * FROM inspections WHERE customer = :customer AND circuit = :circuit AND date = :date");
+        query.bindValue(":customer", i_customer);
+        query.bindValue(":circuit", i_circuit);
+        query.bindValue(":date", i_date);
+        query.exec();
+        if (query.next()) {
+            for (int f = 0; f < query.record().count(); ++f) {
+                if (!inspections_skip_columns.contains(query.record().fieldName(f))) {
+                    set.insert(query.record().fieldName(f), query.value(f));
                 }
             }
         }
@@ -1394,7 +1402,10 @@ void MainWindow::importData()
         record.update(set, j == 0);
         j++;
     }
-    QSqlQuery rollback("ROLLBACK", data); data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+} // END IMPORT
+    query.exec("ROLLBACK");
+} // END IMPORT (SCOPE)
+    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
     this->setWindowModified(true);
     refreshView();
 }
