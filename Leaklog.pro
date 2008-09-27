@@ -26,7 +26,7 @@ SOURCES      += global.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp
 QT           += network webkit sql
-QTPLUGIN     += qsqlite qsqlpsql
+# QTPLUGIN     += qsqlite qsqlpsql
 # fparser
 HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
