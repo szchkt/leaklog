@@ -767,6 +767,16 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
     QMap<QString, QVariant> circuit_attributes = circuit.list();
     while (warnings.next()) {
         bool show_warning = true;
+        int delay = warnings.value("delay").toInt();
+        if (delay) {
+            int interval = circuit_attributes.value("inspection_interval").toInt();
+            if (interval) { delay = interval; }
+            QDate ins_date;
+            ins_date.fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd");
+            if (ins_date.daysTo(QDate::currentDate()) < delay) {
+                show_warning = false;
+            }
+        }
 
         WarningFilters warnings_filters(warnings.value("id").toInt());
         while (warnings_filters.next()) {
