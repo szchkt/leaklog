@@ -465,7 +465,16 @@ void MainWindow::viewLevelUp()
 
 void MainWindow::viewLevelDown()
 {
-    if (cb_view->currentIndex() < cb_view->count() - 1) { cb_view->setCurrentIndex(cb_view->currentIndex() + 1); }
+    if (cb_view->currentIndex() < cb_view->count() - 1) {
+        QString view = cb_view->currentText();
+        if ((view == tr("All customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
+            setView(tr("Inspectors"));
+        } else if (view == tr("Circuit information") && selectedInspection().isNull()) {
+            setView(tr("Table of inspections"));
+        } else {
+            cb_view->setCurrentIndex(cb_view->currentIndex() + 1);
+        }
+    }
 }
 
 void MainWindow::addRecent(QString name)
