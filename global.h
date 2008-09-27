@@ -176,7 +176,7 @@ public:
 protected:
     void saveResult();
 
-    static void initWarning(QSqlDatabase, QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, bool);
+    static void initWarning(QSqlDatabase, QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, int, bool);
     static void initFilter(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
     static void initCondition(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
 

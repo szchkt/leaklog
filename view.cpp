@@ -174,6 +174,8 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 if (dict_attrvalues.contains("oil::" + attr_value)) {
                     attr_value = dict_attrvalues.value("oil::" + attr_value);
                 }
+            } else if (dict_attrnames.key(n) == "circuit::hermetic") {
+                attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
             }
             out << "<td>" << attr_value << "&nbsp;";
             if (dict_value.count() > 1) {
@@ -225,6 +227,8 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
             if (dict_attrvalues.contains("oil::" + attr_value)) {
                 attr_value = dict_attrvalues.value("oil::" + attr_value);
             }
+        } else if (dict_attrnames.key(n) == "circuit::hermetic") {
+            attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
         }
         out << "<td>" << attr_value << "&nbsp;";
         if (dict_value.count() > 1) {
@@ -788,7 +792,7 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
             int int_value = value.toInt(&ok2);
             if (ok1 && ok2) {
                 if (function == "=" && int_circuit_attribute == int_value) {}
-                if (function == "!=" && int_circuit_attribute != int_value) {}
+                else if (function == "!=" && int_circuit_attribute != int_value) {}
                 else if (function == ">" && int_circuit_attribute > int_value) {}
                 else if (function == ">=" && int_circuit_attribute >= int_value) {}
                 else if (function == "<" && int_circuit_attribute < int_value) {}
@@ -796,7 +800,7 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
                 else {
                     show_warning = false;
                 }
-            } else if (!ok1 && !ok2) {
+            } else {
                 if (function == "=" && circuit_attribute == value) {}
                 else if (function == "!=" && circuit_attribute != value) {}
                 else if (function == ">" && circuit_attribute > value) {}
