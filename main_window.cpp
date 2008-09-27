@@ -53,6 +53,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/refrigerant_consumption.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Refrigerant consumption"), in.readAll());
     file.close();
+    file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Agenda"), in.readAll());
+    file.close();
     // ----
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");

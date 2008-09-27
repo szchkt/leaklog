@@ -74,6 +74,7 @@ public:
     QSqlQuery select(const QString & = "*");
     QMap<QString, QVariant> list(const QString & = "*");
     QList<QMap<QString, QVariant> > listAll(const QString & = "*");
+    QMap<QString, QMap<QString, QVariant> > mapAll(const QString &, const QString & = "*");
     bool update(const QMap<QString, QVariant> &, bool = false);
     bool remove();
 

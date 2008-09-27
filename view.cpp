@@ -47,6 +47,8 @@ void MainWindow::viewChanged(const QString & view)
         viewAllInspectors(toString(selectedInspector()));
     } else if (view == tr("Refrigerant consumption")) {
         viewRefrigerantConsumption(toString(selectedCustomer()));
+    } else if (view == tr("Agenda")) {
+        viewAgenda();
     } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
         setView(tr("All customers"));
     } else {
@@ -395,7 +397,8 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     out << "</table></td></tbody>";
     out << "</table></td></tr>";
 //*** Warnings ***
-    QStringList warnings_list = listWarnings(inspection, nominal_ins, customer_id, circuit_id, used_ids);
+    QStringList global_warnings;
+    QStringList warnings_list = listWarnings(inspection, nominal_ins, customer_id, circuit_id, used_ids, global_warnings);
     if (warnings_list.count() > 0) {
         out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><td colspan=\"2\" style=\"font-size: larger; width:100%;\">";
@@ -722,9 +725,10 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 
 //*** Warnings ***
     QString warnings_html;
+    QStringList global_warnings;
     QStringList last_warnings_list;
     for (int i = 0; i < inspections.count(); ++i) {
-        QStringList warnings_list = listWarnings(inspections[i], nominal_ins, customer_id, circuit_id, used_ids);
+        QStringList warnings_list = listWarnings(inspections[i], nominal_ins, customer_id, circuit_id, used_ids, global_warnings, i == inspections.count()-1);
         QStringList backup_warnings = warnings_list;
         for (int n = 0; n < warnings_list.count(); ++n) {
             if (last_warnings_list.contains(warnings_list.at(n))) {
@@ -732,7 +736,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                 warnings_list[n].append("</b></span>");
             }
         }
-        if (warnings_list.count() > 0) {
+        if (warnings_list.count()) {
             warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id + "/inspection:" + inspections.at(i).value("date").toString() + "\">");
             warnings_html.append(inspections.at(i).value("date").toString() + "</a>");
             warnings_html.append("</td><td>");
@@ -740,6 +744,11 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
             warnings_html.append("</td></tr>");
         }
         last_warnings_list = backup_warnings;
+    }
+    if (global_warnings.count()) {
+        warnings_html.append("<tr><td colspan=\"2\"><b>");
+        warnings_html.append(global_warnings.join(", "));
+        warnings_html.append("</b></td></tr>");
     }
     if (!warnings_html.isEmpty()) {
         out << "<br /><table>";
@@ -763,7 +772,7 @@ void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value,
     out << "</td>";
 }
 
-QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<QString, QVariant> & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids)
+QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<QString, QVariant> & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids, QStringList & global_warnings, bool is_last)
 {
     Warnings warnings(db, true);
     QStringList warnings_list;
@@ -775,10 +784,10 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
         if (delay) {
             int interval = circuit_attributes.value("inspection_interval").toInt();
             if (interval) { delay = interval; }
-            QDate ins_date;
-            ins_date.fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd");
-            if (ins_date.daysTo(QDate::currentDate()) < delay) {
-                show_warning = false;
+            QStringList date = inspection.value("date").toString().split("-").first().split(".");
+            QDate ins_date(date.at(0).toInt(), date.at(1).toInt(), date.at(2).toInt());
+            if (ins_date.daysTo(QDate::currentDate()) < delay || !is_last) {
+                show_warning = false; continue;
             }
         }
 
@@ -851,7 +860,11 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
         }
 
         if (show_warning) {
-            warnings_list << warnings.value("name").toString();
+            if (delay && is_last) {
+                global_warnings << warnings.value("name").toString();
+            } else {
+                warnings_list << warnings.value("name").toString();
+            }
         }
     }
     return warnings_list;
@@ -997,4 +1010,108 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
         out << "<tr></tr></table>";
     }
     wv_main->setHtml(dict_html.value(tr("Refrigerant consumption")).arg(html), QUrl("qrc:/html/"));
+}
+
+void MainWindow::viewAgenda()
+{
+    QString html; QTextStream out(&html);
+
+    MTRecord inspections_rec("inspection", "", MTDictionary());
+    QList<QMap<QString, QVariant> > inspections = inspections_rec.listAll("date, customer, circuit");
+    MTRecord circuits_rec("circuit", "", MTDictionary());
+    QList<QMap<QString, QVariant> > circuits = circuits_rec.listAll();
+    MTRecord customers_rec("customer", "", MTDictionary());
+    QMap<QString, QMap<QString, QVariant> > customers = customers_rec.mapAll("id", "company");
+
+    out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
+    out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Agenda");
+    out << "</b></td></tr></thead></table>";
+    out << "<br /><table><tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
+    out << "<th>" << tr("Circuit") << "</th><th>" << tr("Last inspection") << "</th></tr>";
+    QMap<QString, QString> inspections_map;
+    QMap<QString, QString> next_inspections_map;
+    Warnings warnings(db, true);
+    for (int i = 0; i < circuits.count(); ++i) {
+        QString newest_ins = "0000.00.00-00:00";
+        QString circuit = circuits.at(i).value("id").toString();
+        QString customer = circuits.at(i).value("parent").toString();
+        for (int j = 0; j < inspections.count(); ++j) {
+            if (inspections.at(j).value("circuit").toString() != circuit ||
+                inspections.at(j).value("customer").toString() != customer) { continue; }
+            if (newest_ins < inspections.at(j).value("date").toString()) {
+                newest_ins = inspections.at(j).value("date").toString();
+            }
+        }
+        if (newest_ins == "0000.00.00-00:00") continue;
+        inspections_map.insert(customer + "<:?:>" + circuit, newest_ins);
+        int interval = circuits.at(i).value("inspection_interval").toInt();
+        QDate ins_date = QDate::fromString(newest_ins.split("-").first(), "yyyy.MM.dd");
+        while (warnings.next()) {
+            int delay = warnings.value("delay").toInt();
+            if (!delay) continue;
+            bool show_warning = true;
+
+            WarningFilters warnings_filters(warnings.value("id").toInt());
+            while (warnings_filters.next()) {
+                QString circuit_attribute = circuits.at(i).value(warnings_filters.value("circuit_attribute").toString()).toString();
+                QString function = warnings_filters.value("function").toString();
+                QString value = warnings_filters.value("value").toString();
+                bool ok1 = true; bool ok2 = true;
+                int int_circuit_attribute = circuit_attribute.toInt(&ok1);
+                int int_value = value.toInt(&ok2);
+                if (ok1 && ok2) {
+                    if (function == "=" && int_circuit_attribute == int_value) {}
+                    else if (function == "!=" && int_circuit_attribute != int_value) {}
+                    else if (function == ">" && int_circuit_attribute > int_value) {}
+                    else if (function == ">=" && int_circuit_attribute >= int_value) {}
+                    else if (function == "<" && int_circuit_attribute < int_value) {}
+                    else if (function == "<=" && int_circuit_attribute <= int_value) {}
+                    else {
+                        show_warning = false;
+                    }
+                } else {
+                    if (function == "=" && circuit_attribute == value) {}
+                    else if (function == "!=" && circuit_attribute != value) {}
+                    else if (function == ">" && circuit_attribute > value) {}
+                    else if (function == "<" && circuit_attribute < value) {}
+                    else {
+                        show_warning = false;
+                    }
+                }
+            }
+            if (!show_warning) continue;
+
+            if (interval) delay = interval;
+            next_inspections_map.insert(ins_date.addDays(delay).toString("yyyy.MM.dd"), customer + "<:?:>" + circuit);
+        }
+    }
+    QMapIterator<QString, QString> i(next_inspections_map);
+    QString next_ins; QString colour;
+    while (i.hasNext()) { i.next();
+        QString customer = i.value().split("<:?:>").first();
+        QString circuit = i.value().split("<:?:>").last();
+        int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), "yyyy.MM.dd"));
+        if (days_to == 0) {
+            next_ins = tr("Today");
+        } else if (days_to == 1) {
+            next_ins = tr("Tomorrow");
+        } else if (days_to == -1) {
+            next_ins = tr("Yesterday");
+        } else {
+            next_ins = i.key();
+        }
+        if (days_to < 0) colour = "tomato";
+        else if (days_to == 0) colour = "yellow";
+        else colour = "";
+        out << "<tr><td class=\"" << colour << "\">" << next_ins << "</td>";
+        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
+        out << customer.rightJustified(8, '0') << " (" << customers.value(customer).value("company").toString() << ")</a></td>";
+        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
+        out << circuit.rightJustified(4, '0') << "</a></td>";
+        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:" << inspections_map.value(i.value()) << "\">";
+        out << inspections_map.value(i.value()) << "</a></td></tr>";
+    }
+    out << "</table>";
+
+    wv_main->setHtml(dict_html.value(tr("Agenda")).arg(html), QUrl("qrc:/html/"));
 }

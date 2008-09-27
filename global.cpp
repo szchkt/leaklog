@@ -507,6 +507,24 @@ QList<QMap<QString, QVariant> > MTRecord::listAll(const QString & fields)
     return list;
 }
 
+QMap<QString, QMap<QString, QVariant> > MTRecord::mapAll(const QString & map_to, const QString & fields)
+{
+    QMap<QString, QMap<QString, QVariant> > map;
+    QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + map_to));
+    query.setForwardOnly(true);
+    query.exec();
+    const int index_map_to = query.record().indexOf(map_to);
+    if (index_map_to < 0) { return map; }
+    while (query.next()) {
+        QMap<QString, QVariant> row_map;
+        for (int i = 0; i < query.record().count(); ++i) {
+            row_map.insert(query.record().fieldName(i), query.value(i));
+        }
+        map.insert(query.value(index_map_to).toString(), row_map);
+    }
+    return map;
+}
+
 bool MTRecord::update(const QMap<QString, QVariant> & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
