@@ -125,7 +125,7 @@ private:
     // DATABASE
     bool saveChangesBeforeProceeding(QString, bool);
     void initDatabase(QSqlDatabase *, bool = true);
-    void initTables();
+    void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
     void loadCustomer(QListWidgetItem *, bool);

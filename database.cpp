@@ -93,25 +93,29 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
     if (transaction) { query.exec("COMMIT"); }
 }
 
-void MainWindow::initTables()
+void MainWindow::initTables(bool transaction)
 {
     QSqlQuery query;
-    query.exec("BEGIN");
+    if (transaction) { query.exec("BEGIN"); }
     QMap<QString, QVariant> set;
-    MTRecord table_of_leakages("table", "", MTDictionary());
-    set.insert("id", tr("Table of leakages"));
-    set.insert("highlight_nominal", 0);
-    set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;refr_recy;refr_disp;inspector;operator;rmds;arno");
-    set.insert("sum", "vis_aur_chk;refr_add;refr_reco;refr_recy;refr_disp");
-    table_of_leakages.update(set);
-    set.clear();
-    MTRecord table_of_parameters("table", "", MTDictionary());
-    set.insert("id", tr("Table of parameters"));
-    set.insert("highlight_nominal", 1);
-    set.insert("variables", "t;p_0;p_c;t_0;t_c;t_ev;t_evap_out;t_comp_in;t_sc;t_sh;t_comp_out;ep_comp;ec;ev;ppsw;sftsw;rmds;arno");
-    set.insert("sum", "");
-    table_of_parameters.update(set);
-    query.exec("COMMIT");
+    MTRecord table_of_leakages("table", tr("Table of leakages"), MTDictionary());
+    if (!table_of_leakages.exists()) {
+        set.insert("id", tr("Table of leakages"));
+        set.insert("highlight_nominal", 0);
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;refr_recy;refr_disp;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add;refr_reco;refr_recy;refr_disp");
+        table_of_leakages.update(set);
+        set.clear();
+    }
+    MTRecord table_of_parameters("table", tr("Table of parameters"), MTDictionary());
+    if (!table_of_parameters.exists()) {
+        set.insert("id", tr("Table of parameters"));
+        set.insert("highlight_nominal", 1);
+        set.insert("variables", "t;p_0;p_c;t_0;t_c;t_ev;t_evap_out;t_comp_in;t_sc;t_sh;t_comp_out;ep_comp;ec;ev;ppsw;sftsw;rmds;arno");
+        set.insert("sum", "");
+        table_of_parameters.update(set);
+    }
+    if (transaction) { query.exec("COMMIT"); }
 }
 
 void MainWindow::newDatabase()
@@ -253,6 +257,7 @@ void MainWindow::openDatabase(QString path)
         QSqlQuery begin; begin.exec("BEGIN");
         initDatabase(&db, false);
     }
+    initTables(false);
     QString id; QSqlQuery query;
     query.exec("SELECT id, company FROM customers");
     while (query.next()) {
