@@ -22,6 +22,7 @@
 
 #include "fparser/fparser.hh"
 #include "mtdictionary.h"
+#include "refrigerants.h"
 
 #include <QApplication>
 #include <QVariant>

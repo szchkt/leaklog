@@ -213,7 +213,7 @@ QDialog(parent)
         query_used_ids.bindValue(":circuit", md_record.parents()->value("circuit"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
-        md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
+        md_used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
         md_dict.insert("variable", tr("Variable"));
         md_dict.insert("subvariable", tr("Subvariable")); _i = 2;
         md_dict.insert("id", tr("ID"));

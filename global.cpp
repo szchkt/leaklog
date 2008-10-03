@@ -133,9 +133,14 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
 {
     MTDictionary dict_exp(true);
     if (!exp.isEmpty()) {
-        if (!used_ids->contains("refrigerant_amount")) { *used_ids << "refrigerant_amount"; }
-        if (!used_ids->contains("oil_amount")) { *used_ids << "oil_amount"; }
-        if (!used_ids->contains("sum")) { *used_ids << "sum"; }
+        QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
+        QStringList functions; functions << "sum" << "p_to_t";
+        for (int i = 0; i < circuit_attributes.count(); ++i) {
+            if (!used_ids->contains(circuit_attributes.at(i))) { *used_ids << circuit_attributes.at(i); }
+        }
+        for (int i = 0; i < functions.count(); ++i) {
+            if (!used_ids->contains(functions.at(i))) { *used_ids << functions.at(i); }
+        }
         QSet<int> matched;
         for (int i = 0; i < used_ids->count(); ++i) {
             QRegExp expression(QString("\\b%1\\b").arg(used_ids->at(i)));
@@ -148,7 +153,7 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
                 index = exp.indexOf(expression, index + length);
             }
         }
-        QString id_, f_; bool last_id = false; bool last_sum = false;
+        QString id_, f_; bool last_id = false; int last_f = 0;
         for (int i = 0; i < exp.length(); ++i) {
             if (matched.contains(i)) {
                 if (!f_.isEmpty()) {
@@ -159,16 +164,14 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
                 id_.append(exp.at(i));
             } else {
                 if (!id_.isEmpty()) {
-                    if (id_ == "sum") {
-                        last_sum = true;
-                    } else {
-                        if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
+                    if (!functions.contains(id_)) {
+                        if (circuit_attributes.contains(id_)) {
                             dict_exp.insert(id_, "circuit_attribute");
                         } else {
-                            dict_exp.insert(id_, last_sum ? "sum" : "id");
+                            dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
                         }
-                        last_sum = false;
                     }
+                    last_f = functions.indexOf(id_) + 1;
                     id_.clear();
                 }
                 last_id = false;
@@ -179,15 +182,17 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
             dict_exp.insert(f_, "function");
         }
         if (!id_.isEmpty()) {
-            if (id_ == "refrigerant_amount" || id_ == "oil_amount") {
+            if (circuit_attributes.contains(id_)) {
                 dict_exp.insert(id_, "circuit_attribute");
             } else {
-                dict_exp.insert(id_, last_sum ? "sum" : "id");
+                dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
             }
         }
     }
     return dict_exp;
 }
+
+Refrigerants refrigerants;
 
 double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
 {
@@ -216,6 +221,10 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
             value.append(toString(v));
         } else if (expression.value(i) == "circuit_attribute") {
             value.append(circuit_attributes.value(expression.key(i)).toString());
+        } else if (expression.value(i) == "p_to_t") {
+            MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+            QString refrigerant = circuit.list("refrigerant").value("refrigerant").toString();
+            value.append(toString(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0)));
         } else {
             value.append(expression.key(i));
         }
@@ -227,7 +236,7 @@ double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MT
     if (ok) *ok = true;
     long double result = fparser.Eval(NULL);
     if (round(result) == result) return (double)result;
-    return (double)(round(result * 100.0)/100.0);
+    return (double)(round(result * 100.0) / 100.0);
 }
 
 QString Global::compareValues(double value1, double value2, double tolerance)
@@ -794,8 +803,8 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "");
     initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "");
-    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
-    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
+    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "");
+    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "");
     initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
     initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
     initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");

@@ -187,7 +187,7 @@ void Conditions::remove(Condition * condition)
 ModifyWarningDialogue::ModifyWarningDialogue(const MTRecord & record, const QStringList & used_ids, QWidget * parent):
 ModifyDialogue(record, used_ids, parent)
 {
-    md_used_ids << "refrigerant_amount" << "oil_amount" << "sum";
+    md_used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     md_dict.insert("warning", tr("Warning"));
     md_dict.insert("enabled", tr("Enabled"));
     md_dict_input.insert("enabled", "chb");
