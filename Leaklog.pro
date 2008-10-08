@@ -19,6 +19,7 @@ RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
 SOURCES      += global.cpp \
+                refrigerants.cpp \
                 main.cpp \
                 main_window.cpp \
                 about_widget.cpp \
