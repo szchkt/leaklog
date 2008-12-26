@@ -385,6 +385,7 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone:"));
 
     dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("circuit::disused", QApplication::translate("AttributeNames", "Disused:"));
     dict_attrnames.insert("circuit::operation", QApplication::translate("AttributeNames", "Place of operation:"));
     dict_attrnames.insert("circuit::building", QApplication::translate("AttributeNames", "Building:"));
     dict_attrnames.insert("circuit::device", QApplication::translate("AttributeNames", "Device:"));

@@ -162,6 +162,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
     }
     cu_length = QString("circuit::").length();
     for (int i = 0; i < circuits.count(); ++i) {
+        if (circuits.at(i).value("disused").toInt()) continue;
         num_valid = 0;
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
         out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>" << tr("Circuit:") << "&nbsp;";
@@ -173,8 +174,6 @@ void MainWindow::viewCustomer(const QString & customer_id)
             attr_value = dict_attrnames.key(n).mid(cu_length);
             attr_value = circuits.at(i).value(attr_value).toString();
             if (attr_value.isEmpty()) continue;
-            out << "<num_attr>" << num_valid << "</num_attr>";
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
             if (dict_attrnames.key(n) == "circuit::field") {
                 if (dict_attrvalues.contains("field::" + attr_value)) {
                     attr_value = dict_attrvalues.value("field::" + attr_value);
@@ -185,7 +184,11 @@ void MainWindow::viewCustomer(const QString & customer_id)
                 }
             } else if (dict_attrnames.key(n) == "circuit::hermetic") {
                 attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
+            } else if (dict_attrnames.key(n) == "circuit::disused") {
+                continue;
             }
+            out << "<num_attr>" << num_valid << "</num_attr>";
+            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_value.first() << "&nbsp;</td>";
             out << "<td>" << attr_value << "&nbsp;";
             if (dict_value.count() > 1) {
                 out << dict_value.last();
@@ -202,6 +205,32 @@ void MainWindow::viewCustomer(const QString & customer_id)
         out << "</table></td></tr>";
         out << "</table>";
     }
+
+    bool show_disused = false;
+    QString disused_c;
+    disused_c.append("<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>");
+    disused_c.append("<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>");
+    disused_c.append(tr("Disused circuits"));
+    disused_c.append("&nbsp;</b></td><td rowspan=\"8\" style=\"width:10%;\"/></tr>");
+    disused_c.append("<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+    disused_c.append("<tr><th>" + dict_attrnames.value("circuit::id").remove(-1, 1) + "</th>");
+    disused_c.append("<th>" + dict_attrnames.value("circuit::manufacturer").remove(-1, 1) + "</th>");
+    disused_c.append("<th>" + dict_attrnames.value("circuit::type").remove(-1, 1) + "</th>");
+    disused_c.append("<th>" + dict_attrnames.value("circuit::sn").remove(-1, 1) + "</th>");
+    disused_c.append("<th>" + dict_attrnames.value("circuit::commissioning").remove(-1, 1) + "</th></tr>");
+    for (int i = 0; i < circuits.count(); ++i) {
+        if (!circuits.at(i).value("disused").toInt()) continue;
+        show_disused = true;
+        disused_c.append("<tr><th><a href=\"customer:" + customer_id + "/circuit:" + circuits.at(i).value("id").toString() + "\">");
+        disused_c.append(circuits.at(i).value("id").toString().rightJustified(4, '0') + "</a></th>");
+        disused_c.append("<td style=\"text-align: center;\">" + circuits.at(i).value("manufacturer").toString() + "</td>");
+        disused_c.append("<td style=\"text-align: center;\">" + circuits.at(i).value("type").toString() + "</td>");
+        disused_c.append("<td style=\"text-align: center;\">" + circuits.at(i).value("sn").toString() + "</td>");
+        disused_c.append("<td style=\"text-align: center;\">" + circuits.at(i).value("commissioning").toString() + "</td></tr>");
+    }
+    disused_c.append("</table></td></tr>");
+    if (show_disused) { out << disused_c; }
+
     wv_main->setHtml(dict_html.value(tr("Customer information")).arg(html));
 }
 
@@ -237,6 +266,8 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
                 attr_value = dict_attrvalues.value("oil::" + attr_value);
             }
         } else if (dict_attrnames.key(n) == "circuit::hermetic") {
+            attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
+        } else if (dict_attrnames.key(n) == "circuit::disused") {
             attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
         }
         out << "<td>" << attr_value << "&nbsp;";
