@@ -671,7 +671,7 @@ void MainWindow::httpRequestFinished(bool error)
 	if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
 	QString current_ver = in.readLine();
 	if (in.readLine() != "[Leaklog.current-version.float]") { error = true; goto httpRequestFinished_start; }
-	float f_current_ver = in.readLine().toFloat();
+	double f_current_ver = in.readLine().toDouble();
     if (in.readLine() != "[Leaklog.download-url.src]") { error = true; goto httpRequestFinished_start; }
 	QString src_url = in.readLine();
     if (in.readLine() != "[Leaklog.download-url.macx]") { error = true; goto httpRequestFinished_start; }

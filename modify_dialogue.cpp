@@ -104,6 +104,8 @@ QDialog(parent)
         md_dict.insert("circuit", tr("Cooling circuit")); // _i = 1;
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le;0000");
+        md_dict.insert("disused", tr("Disused"));
+        md_dict_input.insert("disused", "chb");
         md_dict.insert("operation", tr("Place of operation"));
         md_dict_input.insert("operation", "le");
         md_dict.insert("building", tr("Building"));
