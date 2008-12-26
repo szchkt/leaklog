@@ -1037,7 +1037,10 @@ void MainWindow::viewAgenda()
                 newest_ins = inspections.at(j).value("date").toString();
             }
         }
-        if (newest_ins == "0000.00.00-00:00") continue;
+        if (newest_ins == "0000.00.00-00:00") {
+            newest_ins = circuits.at(i).value("commissioning").toString();
+            if (newest_ins == "") continue;
+        }
         inspections_map.insert(customer + "<:?:>" + circuit, newest_ins);
         int interval = circuits.at(i).value("inspection_interval").toInt();
         QDate ins_date = QDate::fromString(newest_ins.split("-").first(), "yyyy.MM.dd");
@@ -1103,8 +1106,11 @@ void MainWindow::viewAgenda()
         out << customer.rightJustified(8, '0') << " (" << customers.value(customer).value("company").toString() << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
         out << circuit.rightJustified(4, '0') << "</a></td>";
-        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:" << inspections_map.value(i.value()) << "\">";
-        out << inspections_map.value(i.value()) << "</a></td></tr>";
+        out << "<td class=\"" << colour << "\"><a ";
+        if (inspections_map.value(i.value()).split("-").count() > 1) {
+            out << "href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:" << inspections_map.value(i.value()) << "\"";
+        }
+        out << ">" << inspections_map.value(i.value()) << "</a></td></tr>";
     }
     out << "</table>";
 
