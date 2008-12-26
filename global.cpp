@@ -403,6 +403,13 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life:") + "||" + QApplication::translate("AttributeNames", "years"));
     dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day:") + "||" + QApplication::translate("AttributeNames", "hours"));
     dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation:") + "||" + "%");
+    dict_attrnames.insert("service_companies::certification_num", QApplication::translate("AttributeNames", "Certification number:"));
+    dict_attrnames.insert("service_companies::name", QApplication::translate("AttributeNames", "Name:"));
+    dict_attrnames.insert("service_companies::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("service_companies::address", QApplication::translate("AttributeNames", "Address:"));
+    dict_attrnames.insert("service_companies::phone", QApplication::translate("AttributeNames", "Phone:"));
+    dict_attrnames.insert("service_companies::mail", QApplication::translate("AttributeNames", "E-mail:"));
+    dict_attrnames.insert("service_companies::website", QApplication::translate("AttributeNames", "Website:"));
     return dict_attrnames;
 }
 
@@ -445,7 +452,9 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
 
 QString MTRecord::tableForRecordType(const QString & type)
 {
-    /*if (type == "customer") {
+    if (type == "service_company") {
+        return "service_companies";
+    /*} else if (type == "customer") {
         return "customers";
     } else if (type == "circuit") {
         return "circuits";
@@ -460,10 +469,10 @@ QString MTRecord::tableForRecordType(const QString & type)
     } else if (type == "warning") {
         return "warnings";
     } else if (type == "inspector") {
-        return "inspectors";
-    } else {*/
+        return "inspectors";*/
+    } else {
         return type + "s";
-    //}
+    }
 }
 
 bool MTRecord::exists()

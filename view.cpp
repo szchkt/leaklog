@@ -60,7 +60,34 @@ void MainWindow::viewChanged(const QString & view)
 
 void MainWindow::viewServiceCompany()
 {
-    wv_main->setHtml(QString());
+    QString html; QTextStream out(&html);
+    QSqlQuery query("SELECT value FROM db_info WHERE id = 'default_service_company'");
+    if (!query.next()) return;
+    MTRecord serv_company_rec("service_company", QString(), MTDictionary());
+    QMap<QString, QVariant> serv_company = serv_company_rec.list();
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Service company") << "</b></td></tr>";
+    out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    int sc_length = QString("service_companies::").length();
+    int num_valid = 0; QString attr_value;
+    for (int n = dict_attrnames.indexOfKey("service_companies::certification_num"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("service_companies::"); ++n) {
+        attr_value = dict_attrnames.key(n).mid(sc_length);
+        if (serv_company.value(attr_value).toString().isEmpty()) continue;
+        out << "<num_attr>" << num_valid << "</num_attr>";
+        out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
+        attr_value = serv_company.value(attr_value).toString();
+        out << "<td>" << attr_value << "</td></tr>";
+        num_valid++;
+    }
+    if (num_valid != 0) {
+        html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+    }
+    for (int k = 0; k < num_valid; ++k) {
+        html.remove(QString("<num_attr>%1</num_attr>").arg(k));
+    }
+    out << "</td></tr></table>";
+    out << "</table>";
+    wv_main->setHtml(dict_html.value(tr("Service company")).arg(html));
 }
 
 void MainWindow::viewAllCustomers()
