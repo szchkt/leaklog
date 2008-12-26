@@ -21,8 +21,8 @@
 
 MainWindow::MainWindow()
 {
-    leaklog_version = "0.9.1"; f_leaklog_version = 0.901;
-    db_version = "0.9.1"; f_db_version = 0.901;
+    leaklog_version = "0.9.2"; f_leaklog_version = 0.902;
+    db_version = "0.9.2"; f_db_version = 0.902;
     // Dictionaries
     dict_dbtables = get_dict_dbtables();
     dict_vartypes = get_dict_vartypes();
@@ -32,6 +32,9 @@ MainWindow::MainWindow()
     // ------------
     // HTML
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");
+    file.setFileName(":/html/service_company.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("Service company"), in.readAll());
+    file.close();
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("All customers"), in.readAll());
     file.close();

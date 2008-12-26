@@ -33,7 +33,9 @@ void MainWindow::viewChanged(const QString & view)
 
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
-    if (view == tr("All customers")) {
+    if (view == tr("Service company")) {
+        viewServiceCompany();
+    } else if (view == tr("All customers")) {
         viewAllCustomers();
     } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
         viewCustomer(toString(selectedCustomer()));
@@ -54,6 +56,11 @@ void MainWindow::viewChanged(const QString & view)
     } else {
         wv_main->setHtml(QString());
     }
+}
+
+void MainWindow::viewServiceCompany()
+{
+    wv_main->setHtml(QString());
 }
 
 void MainWindow::viewAllCustomers()

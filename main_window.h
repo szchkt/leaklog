@@ -140,6 +140,7 @@ private:
     inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
     inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
+    void viewServiceCompany();
     void viewAllCustomers();
     void viewCustomer(const QString &);
     void viewCircuit(const QString &, const QString &);

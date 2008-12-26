@@ -764,7 +764,7 @@
        </column>
        <column>
         <property name="text" >
-         <string>Type</string>
+         <string>Tolerance</string>
         </property>
        </column>
       </widget>

@@ -283,7 +283,7 @@ void MainWindow::openDatabase(QString path)
             last_item->setText(0, variables.value("VAR_NAME").toString());
             last_item->setText(1, variables.value("VAR_ID").toString());
             last_item->setText(2, variables.value("VAR_UNIT").toString());
-            last_item->setText(3, dict_vartypes.value(variables.value("VAR_TYPE").toString()));
+            last_item->setText(3, variables.value("VAR_TOLERANCE").toString());
             last_id = variables.value("VAR_ID").toString();
         }
         if (!variables.value("SUBVAR_ID").toString().isEmpty() && last_item) {
@@ -291,7 +291,7 @@ void MainWindow::openDatabase(QString path)
             subitem->setText(0, variables.value("SUBVAR_NAME").toString());
             subitem->setText(1, variables.value("SUBVAR_ID").toString());
             subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, dict_vartypes.value(variables.value("SUBVAR_TYPE").toString()));
+            subitem->setText(3, variables.value("SUBVAR_TOLERANCE").toString());
         }
     }
     query.exec("SELECT id FROM tables");
@@ -648,7 +648,7 @@ void MainWindow::addVariable(bool subvar)
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, unit, type");
+        QMap<QString, QVariant> attributes = record.list("name, unit, tolerance");
         QTreeWidgetItem * item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
@@ -658,7 +658,7 @@ void MainWindow::addVariable(bool subvar)
         item->setText(0, attributes.value("name").toString());
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
-        item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
+        item->setText(3, attributes.value("tolerance").toString());
         addColumn(record.id(), "inspections", &db);
         parsed_expressions.clear();
         this->setWindowModified(true);
@@ -680,11 +680,11 @@ void MainWindow::modifyVariable()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, unit, type");
+        QMap<QString, QVariant> attributes = record.list("name, unit, tolerance");
         item->setText(0, attributes.value("name").toString());
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
-        item->setText(3, dict_vartypes.value(attributes.value("type").toString()));
+        item->setText(3, attributes.value("tolerance").toString());
         if (id != record.id()) {
             renameColumn(id, record.id(), "inspections", &db);
             parsed_expressions.clear();
@@ -1336,7 +1336,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
                 new_item->setText(0, item->text(0));
                 new_item->setText(1, item->text(1));
                 new_item->setText(2, item->text(2));
-                new_item->setText(3, item->text(3));
+                new_item->setText(3, item->text(6));
             }
             set.clear();
             set.insert("name", item->text(0));
@@ -1362,7 +1362,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
                     new_subitem->setText(0, subitem->text(0));
                     new_subitem->setText(1, subitem->text(1));
                     new_subitem->setText(2, subitem->text(2));
-                    new_subitem->setText(3, subitem->text(3));
+                    new_subitem->setText(3, subitem->text(6));
                 }
                 set.clear();
                 set.insert("name", subitem->text(0));

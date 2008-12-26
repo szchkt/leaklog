@@ -8,6 +8,7 @@
     <file>html/inspectors.html</file>
     <file>html/refrigerant_consumption.html</file>
     <file>html/agenda.html</file>
+    <file>html/service_company.html</file>
     <file>html/default.css</file>
     <file>html/colours.css</file>
   </qresource>
