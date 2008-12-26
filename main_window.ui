@@ -538,6 +538,8 @@
      <addaction name="actionNew_variable" />
      <addaction name="actionNew_subvariable" />
     </widget>
+    <addaction name="actionService_company_information" />
+    <addaction name="separator" />
     <addaction name="menuAdd_variable" />
     <addaction name="actionModify_variable" />
     <addaction name="actionRemove_variable" />
@@ -1681,6 +1683,11 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionService_company_information" >
+   <property name="text" >
+    <string>Service company information</string>
    </property>
   </action>
  </widget>

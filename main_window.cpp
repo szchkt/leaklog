@@ -114,6 +114,7 @@ MainWindow::MainWindow()
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
+    QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));

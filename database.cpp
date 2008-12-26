@@ -58,17 +58,14 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         }
     }
     QStringList db_info_ids;
-    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version";
+    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version" << "default_service_company";
     for (int i = 0; i < db_info_ids.count(); ++i) {
         query.exec("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'");
         if (!query.next()) {
             query.exec("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')");
         }
     }
-    double db_ver = 0.0;
-    query.exec("SELECT value FROM db_info WHERE id = 'db_version'");
-    if (query.next()) { db_ver = query.value(0).toDouble(); }
-    if (db_ver < f_db_version) {
+    if (DBInfoValueForKey("db_version").toDouble() < f_db_version) {
         query.exec("DROP INDEX IF EXISTS index_customers_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
         query.exec("DROP INDEX IF EXISTS index_inspections_id");
@@ -134,10 +131,9 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(&db);
     initTables();
-    QSqlQuery query;
-    query.exec("BEGIN");
-    query.exec("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'created_with'");
-    query.exec("UPDATE db_info SET value = '" + QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm") + "' WHERE id = 'date_created'");
+    QSqlQuery query("BEGIN");
+    setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(f_leaklog_version));
+    setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
     openDatabase(QString());
 }
 
@@ -331,10 +327,8 @@ void MainWindow::saveAndCompact()
 void MainWindow::saveDatabase(bool compact)
 {
     QStringList errors; QSqlQuery query;
-    query.exec("UPDATE db_info SET value = 'Leaklog-" + toString(f_leaklog_version) + "' WHERE id = 'saved_with'");
-    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
-    query.exec("UPDATE db_info SET value = '" + toString(f_db_version) + "' WHERE id = 'db_version'");
-    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(f_leaklog_version));
+    setDBInfoValueForKey("db_version", toString(f_db_version));
     query.exec("COMMIT");
     if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
     if (compact) {
@@ -365,6 +359,24 @@ void MainWindow::closeDatabase(bool save)
 	clearAll(); setAllEnabled(false);
 	this->setWindowTitle(tr("Leaklog"));
 	this->setWindowModified(false);
+}
+
+QString MainWindow::DBInfoValueForKey(const QString & key)
+{
+    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    if (!query.next()) { return QString(); }
+    return query.value(0).toString();
+}
+
+QSqlError MainWindow::setDBInfoValueForKey(const QString & key, const QString & value)
+{
+    QSqlQuery query(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key));
+    return query.lastError();
+}
+
+void MainWindow::modifyServiceCompany()
+{
+    if (!db.isOpen()) { return; }
 }
 
 void MainWindow::addCustomer()

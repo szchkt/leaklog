@@ -73,6 +73,7 @@ private slots:
     void save();
     void saveAndCompact();
     void closeDatabase(bool = true);
+    void modifyServiceCompany();
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -128,6 +129,8 @@ private:
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
+    QString DBInfoValueForKey(const QString &);
+    QSqlError setDBInfoValueForKey(const QString &, const QString &);
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);
