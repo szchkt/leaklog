@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1043</width>
-    <height>751</height>
+    <width>1000</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize" >
@@ -451,7 +451,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1043</width>
+     <width>1000</width>
      <height>22</height>
     </rect>
    </property>
@@ -518,6 +518,10 @@
     <addaction name="actionAdd_inspection" />
     <addaction name="actionModify_inspection" />
     <addaction name="actionRemove_inspection" />
+    <addaction name="separator" />
+    <addaction name="actionAdd_repair" />
+    <addaction name="actionModify_repair" />
+    <addaction name="actionRemove_repair" />
     <addaction name="separator" />
     <addaction name="actionPrint_label" />
     <addaction name="separator" />
@@ -593,8 +597,17 @@
   </widget>
   <widget class="QStatusBar" name="statusbar" />
   <widget class="QToolBar" name="toolBar" >
+   <property name="contextMenuPolicy" >
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
    <property name="windowTitle" >
     <string>Tool bar</string>
+   </property>
+   <property name="iconSize" >
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
    </property>
    <property name="toolButtonStyle" >
     <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -618,6 +631,12 @@
    <addaction name="separator" />
    <addaction name="actionAdd_inspection" />
    <addaction name="actionModify_inspection" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_repair" />
+   <addaction name="actionModify_repair" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_inspector" />
+   <addaction name="actionModify_inspector" />
    <addaction name="separator" />
    <addaction name="actionPrint" />
   </widget>
@@ -1613,7 +1632,7 @@
   <action name="actionAdd_inspector" >
    <property name="icon" >
     <iconset resource="resources.qrc" >
-     <normaloff>:/images/images/inspector_add16.png</normaloff>:/images/images/inspector_add16.png</iconset>
+     <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
    </property>
    <property name="text" >
     <string>Add inspector</string>
@@ -1637,7 +1656,7 @@
   <action name="actionRemove_inspector" >
    <property name="icon" >
     <iconset resource="resources.qrc" >
-     <normaloff>:/images/images/inspector_remove16.png</normaloff>:/images/images/inspector_remove16.png</iconset>
+     <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
    </property>
    <property name="text" >
     <string>Remove inspector</string>
@@ -1688,6 +1707,39 @@
   <action name="actionService_company_information" >
    <property name="text" >
     <string>Service company information</string>
+   </property>
+  </action>
+  <action name="actionAdd_repair" >
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add repair</string>
+   </property>
+  </action>
+  <action name="actionModify_repair" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Modify repair</string>
+   </property>
+  </action>
+  <action name="actionRemove_repair" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="resources.qrc" >
+     <normaloff>:/images/images/repair_remove.png</normaloff>:/images/images/repair_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove repair</string>
    </property>
   </action>
  </widget>

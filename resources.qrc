@@ -1,11 +1,14 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/inspector_add.png</file>
+    <file>images/inspector_remove.png</file>
+    <file>images/repair_add.png</file>
+    <file>images/repair_modify.png</file>
+    <file>images/repair_remove.png</file>
     <file>images/local_database.png</file>
     <file>images/remote_database.png</file>
     <file>images/print_label.png</file>
-    <file>images/inspector_add16.png</file>
     <file>images/inspector_modify22.png</file>
-    <file>images/inspector_remove16.png</file>
     <file>images/item_found16.png</file>
     <file>images/item_found_diff16.png</file>
     <file>images/item_new16.png</file>

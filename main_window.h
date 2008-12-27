@@ -47,6 +47,7 @@ public:
 
 private slots:
     // UI
+    void showIconsOnly(bool);
     void about();
     void executeLink(const QUrl &);
     void printPreview();
@@ -115,6 +116,7 @@ private slots:
 
 private:
     // UI
+    QMenu * createPopupMenu();
     void paintLabel(const QMap<QString, QVariant> &, QPainter &, int, int, int, int);
     void setView(const QString &);
     void addRecent(QString);
@@ -164,6 +166,7 @@ private:
     QMap<QString, MTDictionary> parsed_expressions;
     QMap<QString, int> view_indices;
     QActionGroup * actgrp_view;
+    QAction * actionShow_icons_only;
     QString last_search_keyword;
     QSqlDatabase db;
     QComboBox * cb_lang;

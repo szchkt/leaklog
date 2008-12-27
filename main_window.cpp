@@ -93,6 +93,8 @@ MainWindow::MainWindow()
         menuView->insertAction(separator, action);
         cb_view->addItem(views.at(i)); view_indices.insert(views.at(i), i);
     }
+    actionShow_icons_only = new QAction(tr("Show icons only"), this);
+    actionShow_icons_only->setCheckable(true);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
@@ -101,6 +103,7 @@ MainWindow::MainWindow()
     trw_table_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     setAllEnabled(false);
+    QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionLocal_database, SIGNAL(triggered()), this, SLOT(open()));
@@ -178,6 +181,23 @@ MainWindow::MainWindow()
             addRecent(file_info.absoluteFilePath());
             openDatabase(file_info.absoluteFilePath());
         }
+    }
+}
+
+QMenu * MainWindow::createPopupMenu()
+{
+    QMenu * popup_menu = this->QMainWindow::createPopupMenu();
+    popup_menu->addSeparator();
+    popup_menu->addAction(actionShow_icons_only);
+    return popup_menu;
+}
+
+void MainWindow::showIconsOnly(bool show)
+{
+    if (show) {
+        toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    } else {
+        toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     }
 }
 
@@ -514,23 +534,35 @@ void MainWindow::setAllEnabled(bool enable)
     actionPrint_preview->setEnabled(enable);
     actionPrint->setEnabled(enable);
     actgrp_view->setEnabled(enable);
+
     menuDatabase->setEnabled(enable);
     menuCustomer->setEnabled(enable);
-        actionAdd_customer->setEnabled(enable);
-        if (!enable) actionModify_customer->setEnabled(enable);
-        if (!enable) actionRemove_customer->setEnabled(enable);
     menuCooling_circuit->setEnabled(enable);
-        if (!enable) actionAdd_circuit->setEnabled(enable);
-        if (!enable) actionModify_circuit->setEnabled(enable);
-        if (!enable) actionRemove_circuit->setEnabled(enable);
     menuInspection->setEnabled(enable);
-        if (!enable) actionAdd_inspection->setEnabled(enable);
-        if (!enable) actionModify_inspection->setEnabled(enable);
-        if (!enable) actionRemove_inspection->setEnabled(enable);
-        if (!enable) actionPrint_label->setEnabled(enable);
     menuInspector->setEnabled(enable);
-        if (!enable) actionModify_inspector->setEnabled(enable);
-        if (!enable) actionRemove_inspector->setEnabled(enable);
+
+    actionAdd_customer->setEnabled(enable);
+    actionAdd_repair->setEnabled(enable);
+    actionAdd_inspector->setEnabled(enable);
+    if (!enable) {
+    // menuCustomer
+        actionModify_customer->setEnabled(enable);
+        actionRemove_customer->setEnabled(enable);
+    // menuCooling_circuit
+        actionAdd_circuit->setEnabled(enable);
+        actionModify_circuit->setEnabled(enable);
+        actionRemove_circuit->setEnabled(enable);
+    // menuInspection
+        actionAdd_inspection->setEnabled(enable);
+        actionModify_inspection->setEnabled(enable);
+        actionRemove_inspection->setEnabled(enable);
+        actionModify_repair->setEnabled(enable);
+        actionRemove_repair->setEnabled(enable);
+        actionPrint_label->setEnabled(enable);
+    // menuInspector
+        actionModify_inspector->setEnabled(enable);
+        actionRemove_inspector->setEnabled(enable);
+    }
     dw_browser->setEnabled(enable);
     dw_inspectors->setEnabled(enable);
     dw_variables->setEnabled(enable);
@@ -594,6 +626,8 @@ void MainWindow::loadSettings()
     this->move(settings.value("pos", this->pos()).toPoint());
     this->resize(settings.value("size", this->size()).toSize());
     this->restoreState(settings.value("window_state").toByteArray(), 0);
+    actionShow_icons_only->setChecked(settings.value("toolbar_icons_only", false).toBool());
+    showIconsOnly(actionShow_icons_only->isChecked());
 }
 
 void MainWindow::saveSettings()
@@ -606,6 +640,7 @@ void MainWindow::saveSettings()
     settings.setValue("pos", this->pos());
     settings.setValue("size", this->size());
     settings.setValue("window_state", this->saveState(0));
+    settings.setValue("toolbar_icons_only", actionShow_icons_only->isChecked());
 }
 
 void MainWindow::changeLanguage()
