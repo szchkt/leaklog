@@ -460,6 +460,8 @@ QString MTRecord::tableForRecordType(const QString & type)
         return "circuits";
     } else if (type == "inspection") {
         return "inspections";
+    } else if (type == "repair") {
+        return "repairs";
     } else if (type == "variable") {
         return "variables";
     } else if (type == "subvariable") {
@@ -470,15 +472,25 @@ QString MTRecord::tableForRecordType(const QString & type)
         return "warnings";
     } else if (type == "inspector") {
         return "inspectors";*/
+    } else if (type == "refrigerant_management") {
+        return "refrigerant_management";
     } else {
         return type + "s";
     }
 }
 
+QString MTRecord::idFieldForRecordType(const QString & type)
+{
+    if (type == "inspection" || type == "repair" || type == "refrigerant_management") {
+        return "date";
+    }
+    return "id";
+}
+
 bool MTRecord::exists()
 {
     if (r_id.isEmpty()) { return false; }
-    QString id_field = r_type == "inspection" ? "date" : "id";
+    QString id_field = idFieldForRecordType(r_type);
     QSqlQuery find_record = select(id_field);
     find_record.exec();
     return find_record.next();
@@ -487,7 +499,7 @@ bool MTRecord::exists()
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = r_type == "inspection" ? "date" : "id";
+    QString id_field = idFieldForRecordType(r_type);
     QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type);
     if (has_id || r_parents.count()) { select.append(" WHERE "); }
     if (has_id) { select.append(id_field + " = :_id"); }
@@ -555,7 +567,7 @@ QMap<QString, QMap<QString, QVariant> > MTRecord::mapAll(const QString & map_to,
 bool MTRecord::update(const QMap<QString, QVariant> & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = r_type == "inspection" ? "date" : "id";
+    QString id_field = idFieldForRecordType(r_type);
     QString update;
     QMapIterator<QString, QVariant> i(set);
     if (add_columns) {
@@ -625,7 +637,7 @@ bool MTRecord::remove()
 {
     if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
     bool has_id = !r_id.isEmpty();
-    QString id_field = r_type == "inspection" ? "date" : "id";
+    QString id_field = idFieldForRecordType(r_type);
     QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE ";
     if (has_id) { remove.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {

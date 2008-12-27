@@ -81,6 +81,7 @@ public:
 
 protected:
     QString tableForRecordType(const QString &);
+    QString idFieldForRecordType(const QString &);
 
 private:
     QString r_type;
