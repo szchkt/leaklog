@@ -23,6 +23,8 @@
 #include "modify_dialogue.h"
 #include "mtwidgetpalettes.h"
 
+#include <QToolButton>
+
 class AttributeFilters;
 
 class AttributeFilter : public QWidget

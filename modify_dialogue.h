@@ -35,6 +35,7 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QPushButton>
 #include <QSyntaxHighlighter>
 #include <QHash>
 #include <QTextCharFormat>
@@ -61,36 +62,31 @@ private:
     QTextCharFormat keywordFormat;
 };
 
-class ModifyWarningDialogue;
-
 class ModifyDialogue : public QDialog
 {
     Q_OBJECT
-
-protected:
-    void init(const MTRecord &, const QStringList &);
-    ModifyDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
 
 public:
     ModifyDialogue(const MTRecord &, QWidget * = NULL);
     inline MTRecord record() { return md_record; };
 
-private:
-    QWidget * createInputWidget(const QStringList &, const QString &, const QString &);
-    QVariant getInputFromWidget(QWidget *, const QStringList &, const QString &);
-
 private slots:
     virtual void save();
 
-private:
+protected:
+    void init(const MTRecord &, const QStringList &);
+    ModifyDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
+
+    QWidget * createInputWidget(const QStringList &, const QString &, const QString &);
+    QVariant getInputFromWidget(QWidget *, const QStringList &, const QString &);
+
     MTRecord md_record;
     MTDictionary md_dict;
     MTDictionary md_dict_input;
     QStringList md_used_ids;
     QMap<QString, QWidget *> md_vars;
+    QMap<QString, QVariant> md_values;
     QGridLayout * md_grid_main;
-
-    friend class ModifyWarningDialogue;
 };
 
 #endif // MODIFY_DIALOGUE_H

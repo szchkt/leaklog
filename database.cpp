@@ -644,6 +644,40 @@ void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
     }
 }
 
+void MainWindow::addRepair()
+{
+    if (!db.isOpen()) { return; }
+    MTDictionary parents;
+    if (selectedCustomer() >= 0 && selectedCircuit() >= 0) {
+        parents.insert("customer", toString(selectedCustomer()));
+        parents.insert("circuit", toString(selectedCircuit()));
+    }
+    MTRecord record("repair", "", parents);
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        if (!parents.isEmpty()) {
+            QListWidgetItem * item = new QListWidgetItem;
+            item->setText(record.id());
+            item->setData(Qt::UserRole, record.id());
+            lw_inspections->addItem(item);
+        }
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::modifyRepair()
+{
+
+}
+
+void MainWindow::removeRepair()
+{
+
+}
+
 void MainWindow::addVariable() { addVariable(false); }
 
 void MainWindow::addSubvariable() { addVariable(true); }

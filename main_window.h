@@ -87,6 +87,9 @@ private slots:
     void modifyInspection();
     void removeInspection();
     void loadInspection(QListWidgetItem *);
+    void addRepair();
+    void modifyRepair();
+    void removeRepair();
     void addVariable();
     void addSubvariable();
     void modifyVariable();
@@ -174,7 +177,4 @@ private:
     QHttp * http; QBuffer * http_buffer;
     QString leaklog_version; double f_leaklog_version;
     QString db_version; double f_db_version;
-
-    friend class ModifyDialogue;
-    friend class ModifyWarningDialogue;
 };

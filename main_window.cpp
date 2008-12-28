@@ -127,6 +127,7 @@ MainWindow::MainWindow()
     QObject::connect(actionAdd_inspection, SIGNAL(triggered()), this, SLOT(addInspection()));
     QObject::connect(actionModify_inspection, SIGNAL(triggered()), this, SLOT(modifyInspection()));
     QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
+    QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
     QObject::connect(actionPrint_label, SIGNAL(triggered()), this, SLOT(printLabel()));
     QObject::connect(actionNew_variable, SIGNAL(triggered()), this, SLOT(addVariable()));
     QObject::connect(actionNew_subvariable, SIGNAL(triggered()), this, SLOT(addSubvariable()));

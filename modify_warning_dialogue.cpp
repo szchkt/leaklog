@@ -17,7 +17,7 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "main_window.h"
+#include "modify_warning_dialogue.h"
 
 AttributeFilter::AttributeFilter(AttributeFilters * parent):
 QWidget(parent)
@@ -263,11 +263,11 @@ ModifyDialogue(record, used_ids, parent)
 
 void ModifyWarningDialogue::save()
 {
-    QMap<QString, QVariant> values; QStringList inputtype;
+    QStringList inputtype;
     QMapIterator<QString, QWidget *> i(md_vars);
     while (i.hasNext()) { i.next();
         inputtype = md_dict_input.value(i.key()).split(";");
-        values.insert(i.key(), getInputFromWidget(i.value(), inputtype, i.key()));
+        md_values.insert(i.key(), getInputFromWidget(i.value(), inputtype, i.key()));
     }
     if (!md_record.id().isEmpty()) {
         QSqlQuery delete_filters;
@@ -279,7 +279,7 @@ void ModifyWarningDialogue::save()
         delete_conditions.bindValue(":parent", md_record.id());
         delete_conditions.exec();
     }
-    md_record.update(values);
+    md_record.update(md_values);
     for (int i = 0; i < md_filters->count(); ++i) {
         QSqlQuery insert_filter;
         insert_filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");

@@ -17,7 +17,7 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "main_window.h"
+#include "modify_dialogue.h"
 
 Highlighter::Highlighter(QStringList used_ids, QTextDocument * parent):
 QSyntaxHighlighter(parent)
@@ -84,6 +84,17 @@ QDialog(parent)
     QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     int _i = 1; QStringList types;
+    QStringList fields;
+    fields << tr("Car air conditioning") + "||car";
+    fields << tr("Low-rise residential buildings") + "||lowrise";
+    fields << tr("High-rise residential buildings") + "||highrise";
+    fields << tr("Commercial buildings") + "||commercial";
+    fields << tr("Institutional buildings") + "||institutional";
+    fields << tr("Industrial spaces") + "||industrial";
+    fields << tr("Transportation") + "||transportation";
+    fields << tr("Air conditioning") + "||airconditioning";
+    fields << tr("Heat pumps") + "||heatpumps";
+    fields << tr("Other") + "||other";
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
@@ -125,16 +136,6 @@ QDialog(parent)
         md_dict.insert("commissioning", tr("Date of commissioning"));
         md_dict_input.insert("commissioning", "de");
         md_dict.insert("field", tr("Field of application"));
-        QStringList fields;
-        fields << tr("Car air conditioning") + "||car";
-        fields << tr("Low-rise residential buildings") + "||lowrise";
-        fields << tr("High-rise residential buildings") + "||highrise";
-        fields << tr("Commercial buildings") + "||commercial";
-        fields << tr("Institutional buildings") + "||institutional";
-        fields << tr("Industrial spaces") + "||industrial";
-        fields << tr("Transportation") + "||transportation";
-        fields << tr("Air conditioning") + "||airconditioning";
-        fields << tr("Heat pumps") + "||heatpumps";
         md_dict_input.insert("field", QString("cb;%1").arg(fields.join(";")));
         md_dict.insert("refrigerant", tr("Refrigerant"));
         md_dict_input.insert("refrigerant", "cb;R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R404A;R407C;R410A;R502;R507");
@@ -164,12 +165,20 @@ QDialog(parent)
         query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(md_record.id().isEmpty() ? "" : " AND id <> :id"));
         query_used_ids.bindValue(":parent", md_record.parents()->value("parent"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
-    } else if (md_record.type() == "inspection") {
-        md_dict.insert("inspection", tr("Inspection")); // _i = 1;
+    } else if (md_record.type() == "inspection" || (md_record.type() == "repair" && !md_record.parents()->isEmpty())) {
+        bool is_inspection = md_record.type() == "inspection";
+        if (is_inspection) {
+            md_dict.insert("inspection", tr("Inspection")); // _i = 1;
+        } else {
+            md_record.setType("inspection"); // REPAIR -> INSPECTION
+            md_dict.insert("inspection", tr("Repair")); // _i = 1;
+        }
         md_dict.insert("date", tr("Date"));
         md_dict_input.insert("date", "dte");
-        md_dict.insert("nominal", tr("Nominal"));
-        md_dict_input.insert("nominal", "chb");
+        if (is_inspection) {
+            md_dict.insert("nominal", tr("Nominal"));
+            md_dict_input.insert("nominal", "chb");
+        }
         Variables query;
         while (query.next()) {
             if (query.value("SUBVAR_ID").toString().isEmpty()) {
@@ -214,6 +223,28 @@ QDialog(parent)
         query_used_ids.bindValue(":customer", md_record.parents()->value("customer"));
         query_used_ids.bindValue(":circuit", md_record.parents()->value("circuit"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
+    } else if (md_record.type() == "repair" && md_record.parents()->isEmpty()) {
+        md_dict.insert("repair", tr("Repair")); // _i = 1;
+        md_dict.insert("date", tr("Date"));
+        md_dict_input.insert("date", "dte");
+        md_dict.insert("customer", tr("Customer"));
+        md_dict_input.insert("customer", "le");
+        md_dict.insert("field", tr("Field of application"));
+        md_dict_input.insert("field", QString("cb;%1").arg(fields.join(";")));
+        md_dict.insert("repairman", tr("Repairman"));
+        md_dict_input.insert("repairman", "le");
+        md_dict.insert("arno", tr("Assembly record No."));
+        md_dict_input.insert("arno", "le");
+        md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
+        md_dict_input.insert("refrigerant_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_add_am", tr("Refrigerant addition"));
+        md_dict_input.insert("refr_add_am", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_reco", tr("Refrigerant recovery"));
+        md_dict_input.insert("refr_reco", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_recy", tr("Refrigerant recycling"));
+        md_dict_input.insert("refr_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_disp", tr("Refrigerant disposal"));
+        md_dict_input.insert("refr_disp", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
     } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
         md_dict.insert("variable", tr("Variable"));
@@ -467,14 +498,14 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
 
 void ModifyDialogue::save()
 {
-    QMap<QString, QVariant> values; QStringList inputtype;
+    QStringList inputtype;
     QMapIterator<QString, QWidget *> i(md_vars);
     while (i.hasNext()) { i.next();
         inputtype = md_dict_input.value(i.key()).split(";");
         QVariant value = getInputFromWidget(i.value(), inputtype, i.key());
         if (value.isNull()) { return; }
-        values.insert(i.key().split("/").last(), value);
+        md_values.insert(i.key().split("/").last(), value);
     }
-    md_record.update(values, true);
+    md_record.update(md_values, true);
     accept();
 }
