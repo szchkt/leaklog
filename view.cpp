@@ -79,6 +79,9 @@ void MainWindow::viewServiceCompany()
         out << "<td>" << attr_value << "</td></tr>";
         num_valid++;
     }
+    out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
+    out << "<tr><td style=\"text-align: right; width:50%;\"><b>" << tr("Amount of refrigerant in store:") << "&nbsp;</b></td>";
+    out << "<td><b><num_stored /></b></td></tr>";
     if (num_valid != 0) {
         html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
     }
@@ -86,6 +89,64 @@ void MainWindow::viewServiceCompany()
         html.remove(QString("<num_attr>%1</num_attr>").arg(k));
     }
     out << "</td></tr></table>";
+    out << "</table>";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>";
+    out << "<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>";
+    out << tr("Refrigerant management") << "</b></td><td rowspan=\"8\" style=\"width:10%;\"/></tr>";
+    out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th>" << tr("Date") << "</th>";
+    out << "<th>" << tr("Purchased") << "</th>";
+    out << "<th>" << tr("Sold") << "</th>";
+    out << "<th>" << tr("Added") << "</th>";
+    out << "<th>" << tr("Recovered") << "</th>";
+    out << "<th>" << tr("Recycled") << "</th>";
+    out << "<th>" << tr("Disposed of") << "</th></tr>";
+    long double stored = 0.0;
+    QMap<QString, QStringList> entries_map;
+    MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
+    QList<QMap<QString, QVariant> > refr_man = refr_man_rec.listAll();
+    for (int i = 0; i < refr_man.count(); ++i) {
+        QStringList entries_list;
+        entries_list << refr_man.at(i).value("purchased").toString();
+        entries_list << refr_man.at(i).value("sold").toString();
+        entries_map.insert(refr_man.at(i).value("date").toString(), entries_list);
+        stored += (long double)refr_man.at(i).value("purchased").toDouble();
+        //QMessageBox::information(this, toString(refr_man.at(i).value("purchased").toDouble()), toString((double)stored));
+        stored -= (long double)refr_man.at(i).value("sold").toDouble();
+        //QMessageBox::information(this, toString(refr_man.at(i).value("sold").toDouble()), toString((double)stored));
+    }
+    MTRecord inspections_record("inspection", "", MTDictionary());
+    QList<QMap<QString, QVariant> > inspections = inspections_record.listAll("date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp");
+    MTRecord repairs_rec("repair", "", MTDictionary());
+    QList<QMap<QString, QVariant> > repairs = repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp");
+    inspections << repairs;
+    for (int i = 0; i < inspections.count(); ++i) {
+        if (!inspections.at(i).value("refr_add_am").toDouble() && !inspections.at(i).value("refr_reco").toDouble() && !inspections.at(i).value("refr_recy").toDouble() && !inspections.at(i).value("refr_disp").toDouble()) continue;
+        QStringList entries_list;
+        entries_list << QString();
+        entries_list << QString();
+        entries_list << inspections.at(i).value("refr_add_am").toString();
+        entries_list << inspections.at(i).value("refr_reco").toString();
+        entries_list << inspections.at(i).value("refr_recy").toString();
+        entries_list << inspections.at(i).value("refr_disp").toString();
+        entries_map.insert(inspections.at(i).value("date").toString(), entries_list);
+        stored -= (long double)inspections.at(i).value("refr_add_am").toDouble();
+        //QMessageBox::information(this, toString(inspections.at(i).value("refr_add_am").toDouble()), toString((double)stored));
+    }
+    html.replace("<num_stored />", toString((double)stored));
+    QMapIterator<QString, QStringList> i(entries_map);
+    i.toBack();
+    while (i.hasPrevious()) {
+        i.previous();
+        out << "<tr><td style=\"text-align: center;\">" << i.key() << "</td>";
+        for (int n = 0; n < i.value().count(); ++n) {
+            out << "<td style=\"text-align: center;\">";
+            if (i.value().at(n).toDouble()) out << i.value().at(n);
+            out << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table></td></tr>";
     out << "</table>";
     wv_main->setHtml(dict_html.value(tr("Service company")).arg(html));
 }
@@ -238,7 +299,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
     disused_c.append("<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><td rowspan=\"8\" style=\"width:10%;\"/>");
     disused_c.append("<td colspan=\"2\" style=\"background-color: #eee; font-size: medium; text-align: center; width:80%;\"><b>");
     disused_c.append(tr("Disused circuits"));
-    disused_c.append("&nbsp;</b></td><td rowspan=\"8\" style=\"width:10%;\"/></tr>");
+    disused_c.append("</b></td><td rowspan=\"8\" style=\"width:10%;\"/></tr>");
     disused_c.append("<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
     disused_c.append("<tr><th>" + dict_attrnames.value("circuit::id").remove(-1, 1) + "</th>");
     disused_c.append("<th>" + dict_attrnames.value("circuit::manufacturer").remove(-1, 1) + "</th>");
