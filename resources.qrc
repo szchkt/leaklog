@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/warning_modify.png</file>
     <file>images/inspector_add.png</file>
     <file>images/inspector_remove.png</file>
     <file>images/repair_add.png</file>
