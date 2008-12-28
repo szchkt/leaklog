@@ -45,6 +45,8 @@ void MainWindow::viewChanged(const QString & view)
         viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
+    } else if (view == tr("List of repairs")) {
+        viewAllRepairs();
     } else if (view == tr("Inspectors")) {
         viewAllInspectors(toString(selectedInspector()));
     } else if (view == tr("Refrigerant consumption")) {
@@ -989,6 +991,40 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
         }
     }
     return warnings_list;
+}
+
+void MainWindow::viewAllRepairs()
+{
+    QString html; QTextStream out(&html);
+    MTRecord repairs_rec("repair", "", MTDictionary());
+    QList<QMap<QString, QVariant> > repairs = repairs_rec.listAll();
+
+    out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
+    out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("List of repairs");
+    out << "</b></td></tr></thead></table>";
+    out << "<br /><table><tr>";
+    int re_length = QString("repairs::").length();
+    QString attr_value;
+    for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
+        out << "<th>" << dict_attrnames.value(n) << "</th>";
+    }
+    out << "</tr>";
+    for (int i = 0; i < repairs.count(); ++i) {
+        out << "<tr>";
+        for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
+            attr_value = dict_attrnames.key(n).mid(re_length);
+            attr_value = repairs.at(i).value(attr_value).toString();
+            if (dict_attrnames.key(n) == "repairs::field") {
+                if (dict_attrvalues.contains("field::" + attr_value)) {
+                    attr_value = dict_attrvalues.value("field::" + attr_value);
+                }
+            }
+            out << "<td>" << attr_value << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table>";
+    wv_main->setHtml(dict_html.value(tr("List of repairs")).arg(html), QUrl("qrc:/html/"));
 }
 
 void MainWindow::viewAllInspectors(const QString & highlighted_id)

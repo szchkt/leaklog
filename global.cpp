@@ -411,6 +411,16 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("service_companies::phone", QApplication::translate("AttributeNames", "Phone:"));
     dict_attrnames.insert("service_companies::mail", QApplication::translate("AttributeNames", "E-mail:"));
     dict_attrnames.insert("service_companies::website", QApplication::translate("AttributeNames", "Website:"));
+    dict_attrnames.insert("repairs::date", QApplication::translate("AttributeNames", "Date"));
+    dict_attrnames.insert("repairs::customer", QApplication::translate("AttributeNames", "Customer"));
+    dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
+    dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
+    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("AttributeNames", "Refrigerant addition"));
+    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("AttributeNames", "Refrigerant recovery"));
+    dict_attrnames.insert("repairs::refr_recy", QApplication::translate("AttributeNames", "Refrigerant recycling"));
+    dict_attrnames.insert("repairs::refr_disp", QApplication::translate("AttributeNames", "Refrigerant disposal"));
+    dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
+    dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     return dict_attrnames;
 }
 

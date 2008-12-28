@@ -50,6 +50,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/table.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Table of inspections"), in.readAll());
     file.close();
+    file.setFileName(":/html/repairs.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(tr("List of repairs"), in.readAll());
+    file.close();
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Inspectors"), in.readAll());
     file.close();
