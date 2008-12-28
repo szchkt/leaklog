@@ -154,6 +154,7 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
+    void viewAllRepairs();
     void viewAllInspectors(const QString &);
     void viewRefrigerantConsumption(const QString & = QString());
     void viewAgenda();

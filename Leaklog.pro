@@ -4,7 +4,7 @@ FORMS        += main_window.ui \
                 about_widget.ui \
                 import_dialogue.ui
 HEADERS      += global.h \
-				refrigerants.h \
+                refrigerants.h \
                 main_window.h \
                 about_widget.h \
                 extendedlineedit.h \
