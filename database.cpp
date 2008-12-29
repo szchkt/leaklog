@@ -119,7 +119,7 @@ void MainWindow::newDatabase()
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
-	if (path.isNull() || path.isEmpty()) { return; }
+	if (path.isEmpty()) { return; }
     QFile file(path); if (file.exists()) { file.remove(); }
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
@@ -166,7 +166,7 @@ void MainWindow::open()
 {
     if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
-	if (path.isNull() || path.isEmpty()) { return; }
+	if (path.isEmpty()) { return; }
     addRecent(path);
     openDatabase(path);
 }
@@ -234,6 +234,7 @@ void MainWindow::openRemote()
 
 void MainWindow::openDatabase(QString path)
 {
+    selected_repair.clear();
     clearAll();
     if (path.isEmpty()) {
         path = db.databaseName();
@@ -352,13 +353,14 @@ void MainWindow::saveDatabase(bool compact)
 
 void MainWindow::closeDatabase(bool save)
 {
-	if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
+    if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
     QSqlQuery rollback; rollback.exec("ROLLBACK");
     db.close(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
-	clearAll(); setAllEnabled(false);
-	this->setWindowTitle(tr("Leaklog"));
-	this->setWindowModified(false);
+    selected_repair.clear();
+    clearAll(); setAllEnabled(false);
+    this->setWindowTitle(tr("Leaklog"));
+    this->setWindowModified(false);
 }
 
 QString MainWindow::DBInfoValueForKey(const QString & key)
@@ -596,7 +598,7 @@ void MainWindow::modifyInspection()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isNull()) { return; }
+    if (selectedInspection().isEmpty()) { return; }
     MTDictionary parents("customer", toString(selectedCustomer()));
     parents.insert("circuit", toString(selectedCircuit()));
     MTRecord record("inspection", selectedInspection(), parents);
@@ -617,7 +619,7 @@ void MainWindow::removeInspection()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isNull()) { return; }
+    if (selectedInspection().isEmpty()) { return; }
     QListWidgetItem * item = lw_inspections->highlightedItem();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
@@ -670,12 +672,32 @@ void MainWindow::addRepair()
 
 void MainWindow::modifyRepair()
 {
-
+    if (!db.isOpen()) { return; }
+    if (selectedRepair().isEmpty()) { return; }
+    MTRecord record("repair", selectedRepair(), MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        //record = md->record();
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
 }
 
 void MainWindow::removeRepair()
 {
 
+}
+
+void MainWindow::loadRepair(const QString & date, bool refresh)
+{
+    if (date.isEmpty()) { return; }
+    clearSelection(false);
+    selected_repair = date;
+    enableTools();
+    if (refresh) {
+        setView(tr("List of repairs"));
+    }
 }
 
 void MainWindow::addVariable() { addVariable(false); }
@@ -1142,7 +1164,7 @@ void MainWindow::exportCircuitData()
 void MainWindow::exportInspectionData()
 {
     if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isNull()) { return; }
+    if (selectedInspection().isEmpty()) { return; }
     exportData("inspection");
 }
 
@@ -1151,7 +1173,7 @@ void MainWindow::exportData(const QString & type)
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
-	if (path.isNull() || path.isEmpty()) { return; }
+	if (path.isEmpty()) { return; }
     QFile file(path); if (file.exists()) { file.remove(); }
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
     data.setDatabaseName(path);
@@ -1186,7 +1208,7 @@ void MainWindow::importData()
 {
     if (!db.isOpen()) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
-	if (path.isNull() || path.isEmpty()) { return; }
+	if (path.isEmpty()) { return; }
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
     data.setDatabaseName(path);
     if (!data.open()) {

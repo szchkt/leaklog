@@ -57,7 +57,7 @@ private slots:
     void find();
     void findNext();
     void findPrevious();
-    void clearSelection();
+    void clearSelection(bool = true);
     void setView(QAction *);
     void refreshView();
     void viewLevelUp();
@@ -139,6 +139,7 @@ private:
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);
+    void loadRepair(const QString &, bool);
     void addVariable(bool);
     void moveTableVariable(bool);
     void loadInspector(QListWidgetItem *, bool);
@@ -146,6 +147,7 @@ private:
     inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
     inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
+    inline QString selectedRepair() { return selected_repair; };
     inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
     void viewServiceCompany();
@@ -154,13 +156,14 @@ private:
     void viewCircuit(const QString &, const QString &);
     void viewInspection(const QString &, const QString &, const QString &);
     void viewTable(const QString &, const QString &, const QString &, int);
-    void viewAllRepairs();
+    void viewAllRepairs(const QString &, int);
     void viewAllInspectors(const QString &);
     void viewRefrigerantConsumption(const QString & = QString());
     void viewAgenda();
     QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
 
+    QString selected_repair;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;

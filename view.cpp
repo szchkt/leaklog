@@ -26,10 +26,11 @@ void MainWindow::viewChanged(const QString & view)
     tbtn_view_level_up->setEnabled(cb_view->currentIndex() > 0);
     tbtn_view_level_down->setEnabled(cb_view->currentIndex() < cb_view->count() - 1);
     bool table_view = cb_view->currentText() == tr("Table of inspections");
+    bool repairs_view = view == tr("List of repairs");
     lbl_table->setEnabled(table_view);
     cb_table->setEnabled(table_view);
-    lbl_since->setEnabled(table_view);
-    spb_since->setEnabled(table_view);
+    lbl_since->setEnabled(table_view || repairs_view);
+    spb_since->setEnabled(table_view || repairs_view);
 
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
@@ -41,12 +42,12 @@ void MainWindow::viewChanged(const QString & view)
         viewCustomer(toString(selectedCustomer()));
     } else if (view == tr("Circuit information") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
         viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
-    } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isNull()) {
+    } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
         viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
         viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else if (view == tr("List of repairs")) {
-        viewAllRepairs();
+    } else if (repairs_view) {
+        viewAllRepairs(selectedRepair(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("Inspectors")) {
         viewAllInspectors(toString(selectedInspector()));
     } else if (view == tr("Refrigerant consumption")) {
@@ -707,7 +708,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
 //*** Body ***
     out << "<tbody>";
     for (int i = 0; i < inspections.count(); ++i) {
-     out << "<tr class=\"";
+        out << "<tr class=\"";
         if (inspections.at(i).value("nominal").toInt() == 1 && table.value("highlight_nominal").toInt() != 0) {
             out << "nominal";
         }
@@ -993,11 +994,16 @@ QStringList MainWindow::listWarnings(QMap<QString, QVariant> & inspection, QMap<
     return warnings_list;
 }
 
-void MainWindow::viewAllRepairs()
+void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 {
     QString html; QTextStream out(&html);
     MTRecord repairs_rec("repair", "", MTDictionary());
     QList<QMap<QString, QVariant> > repairs = repairs_rec.listAll();
+    for (int i = 0; i < repairs.count();) {
+        if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
+            repairs.removeAt(i);
+        } else { ++i; }
+    }
 
     out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
     out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("List of repairs");
@@ -1009,8 +1015,10 @@ void MainWindow::viewAllRepairs()
         out << "<th>" << dict_attrnames.value(n) << "</th>";
     }
     out << "</tr>";
+    bool make_link;
     for (int i = 0; i < repairs.count(); ++i) {
         out << "<tr>";
+        make_link = true;
         for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
             attr_value = dict_attrnames.key(n).mid(re_length);
             attr_value = repairs.at(i).value(attr_value).toString();
@@ -1019,7 +1027,24 @@ void MainWindow::viewAllRepairs()
                     attr_value = dict_attrvalues.value("field::" + attr_value);
                 }
             }
-            out << "<td>" << attr_value << "</td>";
+            if (highlighted_id == repairs.at(i).value("date").toString()) {
+                out << "<th align=\"left\">";
+                if (make_link) {
+                    out << "<a href=\"repair:" << repairs.at(i).value("date").toString() << "/modify\">";
+                }
+                out << attr_value;
+                if (make_link) { out << "</a>"; }
+                out << "</th>";
+            } else {
+                out << "<td>";
+                if (make_link) {
+                    out << "<a href=\"repair:" << repairs.at(i).value("date").toString() << "\">";
+                }
+                out << attr_value;
+                if (make_link) { out << "</a>"; }
+                out << "</td>";
+            }
+            make_link = false;
         }
         out << "</tr>";
     }

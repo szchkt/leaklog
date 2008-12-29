@@ -131,6 +131,8 @@ MainWindow::MainWindow()
     QObject::connect(actionModify_inspection, SIGNAL(triggered()), this, SLOT(modifyInspection()));
     QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
     QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
+    QObject::connect(actionModify_repair, SIGNAL(triggered()), this, SLOT(modifyRepair()));
+    QObject::connect(actionRemove_repair, SIGNAL(triggered()), this, SLOT(removeRepair()));
     QObject::connect(actionPrint_label, SIGNAL(triggered()), this, SLOT(printLabel()));
     QObject::connect(actionNew_variable, SIGNAL(triggered()), this, SLOT(addVariable()));
     QObject::connect(actionNew_subvariable, SIGNAL(triggered()), this, SLOT(addSubvariable()));
@@ -218,6 +220,10 @@ void MainWindow::executeLink(const QUrl & url)
                     loadCustomer(lw_customers->item(i), path.count() <= 1); break;
                 }
             }
+        } else if (path.at(0).startsWith("repair:")) {
+            id = path.at(0);
+            id.remove(0, QString("repair:").length());
+            loadRepair(id, path.count() <= 1);
         } else if (path.at(0).startsWith("inspector:")) {
             id = path.at(0);
             id.remove(0, QString("inspector:").length());
@@ -241,6 +247,7 @@ void MainWindow::executeLink(const QUrl & url)
             }
         } else if (path.at(1).startsWith("modify")) {
             if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
+            else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
             else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
         }
     }
@@ -283,7 +290,7 @@ void MainWindow::printLabel()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isNull()) { return; }
+    if (selectedInspection().isEmpty()) { return; }
 
     QMap<QString, QCheckBox *> label_positions;
     QDialog * d = new QDialog(this);
@@ -457,13 +464,16 @@ void MainWindow::findPrevious()
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
 }
 
-void MainWindow::clearSelection()
+void MainWindow::clearSelection(bool clear_selected_repair)
 {
     lw_inspections->clear();
     lw_circuits->clear();
     lw_customers->unhighlightAllItems();
+    if (clear_selected_repair) {
+        selected_repair.clear();
+        refreshView();
+    }
     enableTools();
-    refreshView();
 }
 
 void MainWindow::setView(QAction * action)
@@ -496,8 +506,8 @@ void MainWindow::viewLevelDown()
     if (cb_view->currentIndex() < cb_view->count() - 1) {
         QString view = cb_view->currentText();
         if ((view == tr("All customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
-            setView(tr("Inspectors"));
-        } else if (view == tr("Circuit information") && selectedInspection().isNull()) {
+            setView(tr("List of repairs"));
+        } else if (view == tr("Circuit information") && selectedInspection().isEmpty()) {
             setView(tr("Table of inspections"));
         } else {
             cb_view->setCurrentIndex(cb_view->currentIndex() + 1);
@@ -581,13 +591,20 @@ void MainWindow::enableTools()
     bool circuit_selected = lw_circuits->highlightedRow() >= 0;
     bool inspection_selected = lw_inspections->highlightedRow() >= 0;
     bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
+    bool repair_selected = !selected_repair.isEmpty();
     lbl_selected_customer->setText(customer_selected ? lw_customers->highlightedItem()->text() : QString());
     lbl_current_selection_arrow1->setVisible(circuit_selected);
     lbl_selected_circuit->setVisible(circuit_selected);
     lbl_selected_circuit->setText(circuit_selected ? lw_circuits->highlightedItem()->text() : QString());
     lbl_current_selection_arrow2->setVisible(inspection_selected);
-    lbl_selected_inspection->setVisible(inspection_selected);
-    lbl_selected_inspection->setText(inspection_selected ? lw_inspections->highlightedItem()->text() : QString());
+    lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
+    if (inspection_selected) {
+        lbl_selected_inspection->setText(lw_inspections->highlightedItem()->text());
+    } else if (repair_selected) {
+        lbl_selected_inspection->setText(selectedRepair());
+    } else {
+        lbl_selected_inspection->setText(QString());
+    }
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);
@@ -598,6 +615,8 @@ void MainWindow::enableTools()
     actionAdd_inspection->setEnabled(circuit_selected);
     actionModify_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
+    actionModify_repair->setEnabled(repair_selected);
+    actionRemove_repair->setEnabled(repair_selected);
     actionPrint_label->setEnabled(inspection_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
