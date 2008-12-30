@@ -472,6 +472,7 @@ void MainWindow::loadCustomer(QListWidgetItem * item) { loadCustomer(item, true)
 void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
 {
     if (item == NULL) { return; }
+    clearSelection();
     lw_customers->highlightItem(item);
     QSqlQuery query;
     query.prepare("SELECT company FROM customers WHERE id = :id");
@@ -700,7 +701,17 @@ void MainWindow::modifyRepair()
 
 void MainWindow::removeRepair()
 {
-
+    if (!db.isOpen()) { return; }
+    if (selectedRepair().isEmpty()) { return; }
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(selectedRepair()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    MTRecord record("repair", selectedRepair(), MTDictionary());
+    record.remove();
+    selected_repair.clear();
+    enableTools();
+    this->setWindowModified(true);
+    setView(tr("List of repairs"));
 }
 
 void MainWindow::loadRepair(const QString & date, bool refresh)

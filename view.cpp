@@ -114,9 +114,7 @@ void MainWindow::viewServiceCompany()
         entries_list << refr_man.at(i).value("sold").toString();
         entries_map.insert(refr_man.at(i).value("date").toString(), entries_list);
         stored += (long double)refr_man.at(i).value("purchased").toDouble();
-        //QMessageBox::information(this, toString(refr_man.at(i).value("purchased").toDouble()), toString((double)stored));
         stored -= (long double)refr_man.at(i).value("sold").toDouble();
-        //QMessageBox::information(this, toString(refr_man.at(i).value("sold").toDouble()), toString((double)stored));
     }
     MTRecord inspections_record("inspection", "", MTDictionary());
     QList<QMap<QString, QVariant> > inspections = inspections_record.listAll("date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp");
@@ -124,7 +122,10 @@ void MainWindow::viewServiceCompany()
     QList<QMap<QString, QVariant> > repairs = repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp");
     inspections << repairs;
     for (int i = 0; i < inspections.count(); ++i) {
-        if (!inspections.at(i).value("refr_add_am").toDouble() && !inspections.at(i).value("refr_reco").toDouble() && !inspections.at(i).value("refr_recy").toDouble() && !inspections.at(i).value("refr_disp").toDouble()) continue;
+        if (!inspections.at(i).value("refr_add_am").toDouble()
+            && !inspections.at(i).value("refr_reco").toDouble()
+            && !inspections.at(i).value("refr_recy").toDouble()
+            && !inspections.at(i).value("refr_disp").toDouble()) continue;
         QStringList entries_list;
         entries_list << QString();
         entries_list << QString();
@@ -134,7 +135,6 @@ void MainWindow::viewServiceCompany()
         entries_list << inspections.at(i).value("refr_disp").toString();
         entries_map.insert(inspections.at(i).value("date").toString(), entries_list);
         stored -= (long double)inspections.at(i).value("refr_add_am").toDouble();
-        //QMessageBox::information(this, toString(inspections.at(i).value("refr_add_am").toDouble()), toString((double)stored));
     }
     html.replace("<num_stored />", toString((double)stored));
     QMapIterator<QString, QStringList> i(entries_map);

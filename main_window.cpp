@@ -593,16 +593,16 @@ void MainWindow::enableTools()
     bool inspection_selected = lw_inspections->highlightedRow() >= 0;
     bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
     bool repair_selected = !selected_repair.isEmpty();
-    lbl_selected_customer->setText(customer_selected ? lw_customers->highlightedItem()->text() : QString());
+    lbl_selected_customer->setText(customer_selected ? QString("Customer: %1").arg(lw_customers->highlightedItem()->text()) : QString());
     lbl_current_selection_arrow1->setVisible(circuit_selected);
     lbl_selected_circuit->setVisible(circuit_selected);
-    lbl_selected_circuit->setText(circuit_selected ? lw_circuits->highlightedItem()->text() : QString());
+    lbl_selected_circuit->setText(circuit_selected ? QString("Circuit: %1").arg(lw_circuits->highlightedItem()->text()) : QString());
     lbl_current_selection_arrow2->setVisible(inspection_selected);
     lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
     if (inspection_selected) {
-        lbl_selected_inspection->setText(lw_inspections->highlightedItem()->text());
+        lbl_selected_inspection->setText(QString("Inspection: %1").arg(lw_inspections->highlightedItem()->text()));
     } else if (repair_selected) {
-        lbl_selected_inspection->setText(selectedRepair());
+        lbl_selected_inspection->setText(QString("Repair: %1").arg(selectedRepair()));
     } else {
         lbl_selected_inspection->setText(QString());
     }
