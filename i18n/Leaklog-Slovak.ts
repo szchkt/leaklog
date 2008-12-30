@@ -1860,6 +1860,26 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>Disused circuits</source>
         <translation>Vyradené okruhy</translation>
     </message>
+    <message>
+        <location filename="../main_window.cpp" line="596"/>
+        <source>Customer: %1</source>
+        <translation>Zákazník: %1</translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="599"/>
+        <source>Circuit: %1</source>
+        <translation>Okruh: %1</translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="603"/>
+        <source>Inspection: %1</source>
+        <translation>Inšpekcia: %1</translation>
+    </message>
+    <message>
+        <location filename="../main_window.cpp" line="605"/>
+        <source>Repair: %1</source>
+        <translation>Oprava: %1</translation>
+    </message>
 </context>
 <context>
     <name>ModifyDialogue</name>
