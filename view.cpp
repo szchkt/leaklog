@@ -64,12 +64,12 @@ void MainWindow::viewChanged(const QString & view)
 void MainWindow::viewServiceCompany()
 {
     QString html; QTextStream out(&html);
-    QSqlQuery query("SELECT value FROM db_info WHERE id = 'default_service_company'");
-    if (!query.next()) return;
-    MTRecord serv_company_rec("service_company", QString(), MTDictionary());
+    MTRecord serv_company_rec("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
     QMap<QString, QVariant> serv_company = serv_company_rec.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>" << tr("Service company") << "</b></td></tr>";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
+    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
+    out << tr("Service company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int sc_length = QString("service_companies::").length();
     int num_valid = 0; QString attr_value;

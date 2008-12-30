@@ -249,6 +249,7 @@ void MainWindow::executeLink(const QUrl & url)
             if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
             else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
             else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
+            else if (path.at(0).startsWith("servicecompany:")) { modifyServiceCompany(); }
         }
     }
     if (path.count() > 2) {

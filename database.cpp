@@ -66,9 +66,11 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         }
     }
     if (DBInfoValueForKey("db_version").toDouble() < f_db_version) {
+        query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
         query.exec("DROP INDEX IF EXISTS index_inspections_id");
+        query.exec("DROP INDEX IF EXISTS index_repairs_id");
         query.exec("DROP INDEX IF EXISTS index_inspectors_id");
         query.exec("DROP INDEX IF EXISTS index_variables_id");
         query.exec("DROP INDEX IF EXISTS index_subvariables_id");
@@ -76,9 +78,12 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("DROP INDEX IF EXISTS index_warnings_id");
         query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
         query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
+        query.exec("DROP INDEX IF EXISTS index_refrigerant_management_id");
+        query.exec("CREATE UNIQUE INDEX index_service_companies_id ON service_companies (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)");
         query.exec("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)");
+        query.exec("CREATE UNIQUE INDEX index_repairs_id ON repairs (date ASC)");
         query.exec("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)");
@@ -86,6 +91,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)");
         query.exec("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)");
         query.exec("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
+        query.exec("CREATE UNIQUE INDEX index_refrigerant_management_id ON refrigerant_management (date ASC)");
     }
     if (transaction) { query.exec("COMMIT"); }
 }
@@ -379,6 +385,14 @@ QSqlError MainWindow::setDBInfoValueForKey(const QString & key, const QString & 
 void MainWindow::modifyServiceCompany()
 {
     if (!db.isOpen()) { return; }
+    MTRecord record("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        setDBInfoValueForKey("default_service_company", record.id());
+        this->setWindowModified(true);
+        refreshView();
+    }
 }
 
 void MainWindow::addCustomer()

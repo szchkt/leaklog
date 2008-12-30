@@ -245,6 +245,8 @@ QDialog(parent)
         md_dict_input.insert("refr_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("refr_disp", tr("Refrigerant disposal"));
         md_dict_input.insert("refr_disp", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(md_record.id().isEmpty() ? "" : " date <> :date"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
         md_used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
         md_dict.insert("variable", tr("Variable"));
@@ -297,12 +299,30 @@ QDialog(parent)
         md_dict_input.insert("phone", "le");
         query_used_ids.prepare("SELECT id FROM inspectors" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
+    } else if (md_record.type() == "service_company") {
+        md_dict.insert("service_company", tr("Service company")); // _i = 1;
+        md_dict.insert("certification_num", tr("Certification number"));
+        md_dict_input.insert("certification_num", "le");
+        md_dict.insert("name", tr("Name"));
+        md_dict_input.insert("name", "le");
+        md_dict.insert("id", tr("ID"));
+        md_dict_input.insert("id", "le;00000000");
+        md_dict.insert("address", tr("Address"));
+        md_dict_input.insert("address", "pte");
+        md_dict.insert("phone", tr("Phone"));
+        md_dict_input.insert("phone", "le");
+        md_dict.insert("mail", tr("E-mail"));
+        md_dict_input.insert("mail", "le");
+        md_dict.insert("website", tr("Website"));
+        md_dict_input.insert("website", "le");
+        query_used_ids.prepare("SELECT id FROM service_companies" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     }
     if (md_record.type() != "variable" && md_record.type() != "subvariable" && query_used_ids.exec()) {
-        bool _nominal = md_record.type() == "inspection";
+        bool nominal_ = md_record.type() == "inspection";
         while (query_used_ids.next()) {
             md_used_ids << query_used_ids.value(0).toString();
-            if (_nominal && query_used_ids.value(1).toInt()) { md_nominal_allowed = false; }
+            if (nominal_ && query_used_ids.value(1).toInt()) { md_nominal_allowed = false; }
         }
     }
     MTDictionary md_dict_values;

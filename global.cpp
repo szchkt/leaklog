@@ -253,9 +253,11 @@ QString Global::compareValues(double value1, double value2, double tolerance)
 MTDictionary Global::get_dict_dbtables()
 {
     MTDictionary dict_dbtables;
+    dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, certification_num TEXT, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, refr_recy NUMERIC, refr_disp NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -263,6 +265,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
+    dict_dbtables.insert("refrigerant_management", "date TEXT, purchased NUMERIC, sold NUMERIC");
     dict_dbtables.insert("db_info", "id TEXT, value TEXT");
     return dict_dbtables;
 }
