@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008 Matus & Michal Tomlein
+ Copyright (C) 2008-2009 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -318,7 +318,7 @@ void MainWindow::openDatabase(QString path)
     setAllEnabled(true);
     enableTools();
     loadTable(cb_table_edit->currentText());
-    setView(tr("All customers"));
+    setView(tr("Service company"));
 }
 
 void MainWindow::save()
@@ -472,7 +472,7 @@ void MainWindow::loadCustomer(QListWidgetItem * item) { loadCustomer(item, true)
 void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
 {
     if (item == NULL) { return; }
-    clearSelection();
+    if (refresh) { clearSelection(); }
     lw_customers->highlightItem(item);
     QSqlQuery query;
     query.prepare("SELECT company FROM customers WHERE id = :id");

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008 Matus & Michal Tomlein
+ Copyright (C) 2008-2009 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -772,8 +772,8 @@ void MainWindow::httpRequestFinished(bool error)
 
 void MainWindow::about()
 {
-    AboutWidget * leaklog_about = new AboutWidget(leaklog_version, QString());
-	leaklog_about->setParent(this);
+    AboutWidget * leaklog_about = new AboutWidget(leaklog_version);
+    leaklog_about->setParent(this);
     leaklog_about->setWindowFlags(Qt::Dialog /*| Qt::WindowMaximizeButtonHint*/ | Qt::WindowStaysOnTopHint);
-	leaklog_about->show();
+    leaklog_about->show();
 }

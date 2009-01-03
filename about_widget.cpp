@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008 Matus & Michal Tomlein
+ Copyright (C) 2008-2009 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -19,7 +19,7 @@
 
 #include "about_widget.h"
 
-AboutWidget::AboutWidget(QString ver, QString year)
+AboutWidget::AboutWidget(QString ver)
 {
 	setupUi(this);
 	QObject::connect(btn_close, SIGNAL(released()), this, SLOT(close()));
@@ -33,7 +33,7 @@ AboutWidget::AboutWidget(QString ver, QString year)
 	about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("This programme is distributed under the terms of the GPL v2."));
 	about.append("</p><p></p>");
-	about.append(QString("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008%1 <span style=\"font-style:italic;\">Matus & Michal Tomlein</span></p>").arg(year));
+        about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2009 <span style=\"font-style:italic;\">Matus & Michal Tomlein</span></p>");
 	about.append("<p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
 	about.append(tr("The programme is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
 	about.append("</p>");
