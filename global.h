@@ -33,6 +33,20 @@
 #include <QSqlRecord>
 #include <QSqlError>
 
+#include <memory>
+
+using std::auto_ptr;
+
+#define StringVariantMap QMap<QString, QVariant>
+
+#define ListOfStringVariantMaps QList<StringVariantMap>
+
+#define MapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
+
+#define ListOfStringVariantMapsPtr auto_ptr<ListOfStringVariantMaps>
+
+#define MapOfStringVariantMapsPtr auto_ptr<MapOfStringVariantMaps>
+
 namespace Global {
     QString toString(const QVariant &);
     //QString escapeDoubleQuotes(const QString &);
@@ -46,7 +60,7 @@ namespace Global {
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
     MTDictionary parseExpression(const QString &, QStringList *);
-    double evaluateExpression(QMap<QString, QVariant> &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
+    double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
     QString compareValues(double, double, double = 0.0);
     // Dictionaries
     MTDictionary get_dict_dbtables();
@@ -73,10 +87,10 @@ public:
     inline MTDictionary * parents() { return &r_parents; };
     bool exists();
     QSqlQuery select(const QString & = "*");
-    QMap<QString, QVariant> list(const QString & = "*");
-    QList<QMap<QString, QVariant> > listAll(const QString & = "*");
-    QMap<QString, QMap<QString, QVariant> > mapAll(const QString &, const QString & = "*");
-    bool update(const QMap<QString, QVariant> &, bool = false);
+    StringVariantMap list(const QString & = "*");
+    ListOfStringVariantMapsPtr listAll(const QString & = "*");
+    MapOfStringVariantMapsPtr mapAll(const QString &, const QString & = "*");
+    bool update(const StringVariantMap &, bool = false);
     bool remove();
 
 protected:
@@ -111,12 +125,12 @@ public:
 
 protected:
     int * pos();
-    QList<QMap<QString, QVariant> > * result();
+    ListOfStringVariantMaps * result();
     virtual void saveResult();
 
 private:
     QSqlQuery * _query;
-    QList<QMap<QString, QVariant> > _result;
+    ListOfStringVariantMaps _result;
     int _pos;
 };
 
@@ -174,14 +188,14 @@ class Warnings : public MTSqlQueryResult
 public:
     Warnings(QSqlDatabase = QSqlDatabase(), bool = false);
 
-    static void initWarnings(QSqlDatabase, QList<QMap<QString, QVariant> > *, int, int = -1, bool = false);
+    static void initWarnings(QSqlDatabase, ListOfStringVariantMaps *, int, int = -1, bool = false);
 
 protected:
     void saveResult();
 
-    static void initWarning(QSqlDatabase, QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, int, bool);
-    static void initFilter(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
-    static void initCondition(QList<QMap<QString, QVariant> > *, const QString &, const QString &, const QString &, const QString &);
+    static void initWarning(QSqlDatabase, ListOfStringVariantMaps *, const QString &, const QString &, const QString &, int, bool);
+    static void initFilter(ListOfStringVariantMaps *, const QString &, const QString &, const QString &, const QString &);
+    static void initCondition(ListOfStringVariantMaps *, const QString &, const QString &, const QString &, const QString &);
 
     QSqlDatabase database;
     bool enabled_only;

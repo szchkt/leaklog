@@ -321,12 +321,12 @@ void MainWindow::printLabel()
     }
     if (!ok) { return; }
 
-    QMap<QString, QVariant> attributes;
+    StringVariantMap attributes;
     attributes.insert("id", toString(selectedCustomer()) + "::" + toString(selectedCircuit()));
     MTDictionary parents("customer", toString(selectedCustomer()));
     parents.insert("circuit", toString(selectedCircuit()));
     MTRecord inspection_record("inspection", toString(selectedInspection()), parents);
-    QMap<QString, QVariant> inspection = inspection_record.list();
+    StringVariantMap inspection = inspection_record.list();
     attributes.insert("date", inspection.value("date").toString());
     Subvariable refr_add_per("refr_add", "refr_add_per");
     refr_add_per.next();
@@ -373,7 +373,7 @@ void MainWindow::printLabel()
     delete printer;
 }
 
-void MainWindow::paintLabel(const QMap<QString, QVariant> & attributes, QPainter & painter, int x, int y, int w, int h)
+void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
 {
     painter.save();
     QPen pen; pen.setWidthF(15.0); painter.setPen(pen);

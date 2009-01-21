@@ -120,7 +120,7 @@ private slots:
 private:
     // UI
     QMenu * createPopupMenu();
-    void paintLabel(const QMap<QString, QVariant> &, QPainter &, int, int, int, int);
+    void paintLabel(const StringVariantMap &, QPainter &, int, int, int, int);
     void setView(const QString &);
     void addRecent(QString);
     void clearAll();
@@ -160,7 +160,7 @@ private:
     void viewAllInspectors(const QString &);
     void viewRefrigerantConsumption(const QString & = QString());
     void viewAgenda();
-    QStringList listWarnings(QMap<QString, QVariant> &, QMap<QString, QVariant> &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
+    QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
 
     QString selected_repair;

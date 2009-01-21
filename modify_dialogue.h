@@ -85,7 +85,7 @@ protected:
     MTDictionary md_dict_input;
     QStringList md_used_ids;
     QMap<QString, QWidget *> md_vars;
-    QMap<QString, QVariant> md_values;
+    StringVariantMap md_values;
     QGridLayout * md_grid_main;
 };
 

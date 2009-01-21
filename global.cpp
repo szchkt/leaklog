@@ -194,13 +194,13 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
 
 Refrigerants refrigerants;
 
-double Global::evaluateExpression(QMap<QString, QVariant> & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
+double Global::evaluateExpression(StringVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
-    QMap<QString, QVariant> circuit_attributes = circuit.list();
+    StringVariantMap circuit_attributes = circuit.list();
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
@@ -531,9 +531,9 @@ QSqlQuery MTRecord::select(const QString & fields)
     return query;
 }
 
-QMap<QString, QVariant> MTRecord::list(const QString & fields)
+StringVariantMap MTRecord::list(const QString & fields)
 {
-    QMap<QString, QVariant> list;
+    StringVariantMap list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
@@ -544,41 +544,41 @@ QMap<QString, QVariant> MTRecord::list(const QString & fields)
     return list;
 }
 
-QList<QMap<QString, QVariant> > MTRecord::listAll(const QString & fields)
+ListOfStringVariantMapsPtr MTRecord::listAll(const QString & fields)
 {
-    QList<QMap<QString, QVariant> > list;
+    ListOfStringVariantMapsPtr list(new ListOfStringVariantMaps);
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
-        QMap<QString, QVariant> map;
+        StringVariantMap map;
         for (int i = 0; i < query.record().count(); ++i) {
             map.insert(query.record().fieldName(i), query.value(i));
         }
-        list << map;
+        *list << map;
     }
     return list;
 }
 
-QMap<QString, QMap<QString, QVariant> > MTRecord::mapAll(const QString & map_to, const QString & fields)
+MapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
-    QMap<QString, QMap<QString, QVariant> > map;
+    MapOfStringVariantMapsPtr map(new MapOfStringVariantMaps);
     QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + map_to));
     query.setForwardOnly(true);
     query.exec();
     const int index_map_to = query.record().indexOf(map_to);
     if (index_map_to < 0) { return map; }
     while (query.next()) {
-        QMap<QString, QVariant> row_map;
+        StringVariantMap row_map;
         for (int i = 0; i < query.record().count(); ++i) {
             row_map.insert(query.record().fieldName(i), query.value(i));
         }
-        map.insert(query.value(index_map_to).toString(), row_map);
+        map->insert(query.value(index_map_to).toString(), row_map);
     }
     return map;
 }
 
-bool MTRecord::update(const QMap<QString, QVariant> & set, bool add_columns)
+bool MTRecord::update(const StringVariantMap & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
     QString id_field = idFieldForRecordType(r_type);
@@ -716,7 +716,7 @@ void MTSqlQueryResult::saveResult()
     int n = _query->record().count();
     _pos = -1;
     _result.clear();
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (_query->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -753,7 +753,7 @@ QSqlRecord MTSqlQueryResult::record() const
     return _query->record();
 }
 
-QList<QMap<QString, QVariant> > * MTSqlQueryResult::result()
+ListOfStringVariantMaps * MTSqlQueryResult::result()
 {
     return &_result;
 }
@@ -786,7 +786,7 @@ void Variables::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables();
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     QSet<int> updated_indices;
     while (query()->next()) {
         row.clear();
@@ -796,7 +796,7 @@ void Variables::saveResult()
             indices.unite(var_indices.values(query()->value(SUBVAR_ID).toString()).toSet());
             foreach (int index, indices) {
                 insert = false;
-                QMap<QString, QVariant> _row = result()->at(index);
+                StringVariantMap _row = result()->at(index);
                 if (!updated_indices.contains(index)) {
                     updated_indices << index;
                     if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
@@ -900,7 +900,7 @@ void Variables::initVariables(const QString & filter)
 void Variables::initVariable(const QString & filter, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
 {
     if (!filter.isEmpty() && filter != id) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     row.insert("VAR_ID", id);
     row.insert("VAR_NAME", dict_varnames.value(id));
     row.insert("VAR_TYPE", type);
@@ -916,7 +916,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
 void Variables::initVariable(const QString & filter, const QString & id, const QString & col_bg)
 {
     if (filter.isEmpty() || filter != id) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     row.insert("VAR_ID", id);
     row.insert("VAR_NAME", dict_varnames.value(id));
     row.insert("VAR_COL_BG", col_bg);
@@ -927,7 +927,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
 void Variables::initSubvariable(const QString & filter, const QString & parent, const QString & col_bg, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance)
 {
     if (!filter.isEmpty() && filter != id) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     row.insert("VAR_ID", parent);
     row.insert("VAR_NAME", dict_varnames.value(parent));
     row.insert("VAR_COL_BG", col_bg);
@@ -960,7 +960,7 @@ void Variable::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables(var_id);
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         row.clear();
         insert = true;
@@ -969,7 +969,7 @@ void Variable::saveResult()
             if (index < 0) { insert = true; }
             else {
                 insert = false;
-                QMap<QString, QVariant> _row = result()->at(index);
+                StringVariantMap _row = result()->at(index);
                 if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
                 if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
                 if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
@@ -1008,7 +1008,7 @@ void Subvariable::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables(var_id);
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         row.clear();
         insert = true;
@@ -1017,7 +1017,7 @@ void Subvariable::saveResult()
             if (index < 0) { insert = true; }
             else {
                 insert = false;
-                QMap<QString, QVariant> _row = result()->at(index);
+                StringVariantMap _row = result()->at(index);
                 if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
                 if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
                 if (insert) { result()->replace(index, _row); insert = false; }
@@ -1051,7 +1051,7 @@ void Warnings::saveResult()
     *pos() = -1;
     result()->clear();
     initWarnings(database, result(), 0, -1, enabled_only);
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         if (query()->value(0).toInt() >= 1000) { continue; }
         row.clear();
@@ -1062,7 +1062,7 @@ void Warnings::saveResult()
     }
 }
 
-void Warnings::initWarnings(QSqlDatabase _database, QList<QMap<QString, QVariant> > * map, int type, int id, bool enabled_only)
+void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * map, int type, int id, bool enabled_only)
 {
     QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
     w = "1000";
@@ -1265,13 +1265,13 @@ void Warnings::initWarnings(QSqlDatabase _database, QList<QMap<QString, QVariant
     }
 }
 
-void Warnings::initWarning(QSqlDatabase database, QList<QMap<QString, QVariant> > * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
+void Warnings::initWarning(QSqlDatabase database, ListOfStringVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
 {
     QSqlQuery query(database);
     query.prepare("SELECT enabled FROM warnings WHERE id = :id");
     query.bindValue(":id", id);
     query.exec();
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     if (query.next()) {
         if (enabled_only && !query.value(0).toInt()) { return; }
         set.insert("enabled", query.value(0).toInt());
@@ -1285,9 +1285,9 @@ void Warnings::initWarning(QSqlDatabase database, QList<QMap<QString, QVariant> 
     *map << set;
 }
 
-void Warnings::initFilter(QList<QMap<QString, QVariant> > * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
+void Warnings::initFilter(ListOfStringVariantMaps * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
 {
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     set.insert("parent", parent);
     set.insert("circuit_attribute", circuit_attribute);
     set.insert("function", function);
@@ -1295,9 +1295,9 @@ void Warnings::initFilter(QList<QMap<QString, QVariant> > * map, const QString &
     *map << set;
 }
 
-void Warnings::initCondition(QList<QMap<QString, QVariant> > * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
+void Warnings::initCondition(ListOfStringVariantMaps * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
 {
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     set.insert("parent", parent);
     set.insert("value_ins", value_ins);
     set.insert("function", function);
@@ -1322,7 +1322,7 @@ void Warning::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 0, id);
     if (id >= 1000) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -1349,7 +1349,7 @@ void WarningFilters::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 1, id);
     if (id >= 1000) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -1376,7 +1376,7 @@ void WarningConditions::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 2, id);
     if (id >= 1000) { return; }
-    QMap<QString, QVariant> row;
+    StringVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {

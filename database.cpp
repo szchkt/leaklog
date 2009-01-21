@@ -100,7 +100,7 @@ void MainWindow::initTables(bool transaction)
 {
     QSqlQuery query;
     if (transaction) { query.exec("BEGIN"); }
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     MTRecord table_of_leakages("table", tr("Table of leakages"), MTDictionary());
     if (!table_of_leakages.exists()) {
         set.insert("id", tr("Table of leakages"));
@@ -741,7 +741,7 @@ void MainWindow::addVariable(bool subvar)
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, unit, tolerance");
+        StringVariantMap attributes = record.list("name, unit, tolerance");
         QTreeWidgetItem * item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
@@ -773,7 +773,7 @@ void MainWindow::modifyVariable()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, unit, tolerance");
+        StringVariantMap attributes = record.list("name, unit, tolerance");
         item->setText(0, attributes.value("name").toString());
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
@@ -882,7 +882,7 @@ void MainWindow::loadTable(const QString &)
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     trw_table_variables->clear();
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    QMap<QString, QVariant> attributes = record.list("variables, sum");
+    StringVariantMap attributes = record.list("variables, sum");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
     for (int i = 0; i < variables.count(); ++i) {
@@ -912,7 +912,7 @@ void MainWindow::saveTable()
         QString value = ((QComboBox *)trw_table_variables->itemWidget(trw_table_variables->topLevelItem(i), 2))->currentText();
         if (value == tr("Sum")) { sum << trw_table_variables->topLevelItem(i)->text(1); }
     }
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     set.insert("variables", variables.join(";"));
     set.insert("sum", sum.join(";"));
     record.update(set);
@@ -967,7 +967,7 @@ void MainWindow::addTableVariable()
         MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
         QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
-        QMap<QString, QVariant> set;
+        StringVariantMap set;
         set.insert("variables", variables.join(";"));
         record.update(set);
         loadTable(cb_table_edit->currentText());
@@ -990,12 +990,12 @@ void MainWindow::removeTableVariable()
             return; break;
     }
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    QMap<QString, QVariant> attributes = record.list("variables, sum");
+    StringVariantMap attributes = record.list("variables, sum");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
     variables.removeAll(item->text(1));
     sum.removeAll(item->text(1));
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     set.insert("variables", variables.join(";"));
     set.insert("sum", sum.join(";"));
     record.update(set);
@@ -1030,7 +1030,7 @@ void MainWindow::moveTableVariable(bool up)
         if (i != variables.count()) { i++; } else { i = 0; }
     }
     variables.insert(i, variable);
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     set.insert("variables", variables.join(";"));
     record.update(set);
     loadTable(cb_table_edit->currentText());
@@ -1047,7 +1047,7 @@ void MainWindow::addWarning()
     ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, description");
+        StringVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
         QString description = attributes.value("description").toString();
         QListWidgetItem * item = new QListWidgetItem;
@@ -1070,7 +1070,7 @@ void MainWindow::modifyWarning()
     ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        QMap<QString, QVariant> attributes = record.list("name, description");
+        StringVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
         QString description = attributes.value("description").toString();
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
@@ -1364,7 +1364,7 @@ void MainWindow::importData()
         }
     }
 if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
-    QMap<QString, QVariant> set;
+    StringVariantMap set;
     for (int c = 0; c < id->customers()->count(); ++c) {
         if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
         set.clear();
