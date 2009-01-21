@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008 Matus & Michal Tomlein
+ Copyright (C) 2008-2009 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -27,7 +27,7 @@ class AboutWidget : public QWidget, private Ui::AboutWidget
     Q_OBJECT
 
 public:
-    AboutWidget(QString, QString);
+    AboutWidget(QString);
 };
 
 #endif // ABOUT_WIDGET_H
