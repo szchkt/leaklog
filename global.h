@@ -41,11 +41,13 @@ using std::auto_ptr;
 
 #define ListOfStringVariantMaps QList<StringVariantMap>
 
-#define MapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
+#define MapOfStringVariantMaps QMap<QString, StringVariantMap>
+
+#define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
 
 #define ListOfStringVariantMapsPtr auto_ptr<ListOfStringVariantMaps>
 
-#define MapOfStringVariantMapsPtr auto_ptr<MapOfStringVariantMaps>
+#define MultiMapOfStringVariantMapsPtr auto_ptr<MultiMapOfStringVariantMaps>
 
 namespace Global {
     QString toString(const QVariant &);
@@ -89,7 +91,7 @@ public:
     QSqlQuery select(const QString & = "*");
     StringVariantMap list(const QString & = "*");
     ListOfStringVariantMapsPtr listAll(const QString & = "*");
-    MapOfStringVariantMapsPtr mapAll(const QString &, const QString & = "*");
+    MultiMapOfStringVariantMapsPtr mapAll(const QString &, const QString & = "*");
     bool update(const StringVariantMap &, bool = false);
     bool remove();
 

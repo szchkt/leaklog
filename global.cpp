@@ -560,9 +560,9 @@ ListOfStringVariantMapsPtr MTRecord::listAll(const QString & fields)
     return list;
 }
 
-MapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QString & fields)
+MultiMapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
-    MapOfStringVariantMapsPtr map(new MapOfStringVariantMaps);
+    MultiMapOfStringVariantMapsPtr map(new MultiMapOfStringVariantMaps);
     QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + map_to));
     query.setForwardOnly(true);
     query.exec();

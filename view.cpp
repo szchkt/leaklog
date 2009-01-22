@@ -107,7 +107,7 @@ void MainWindow::viewServiceCompany()
     long double stored = 0.0;
     QMap<QString, QStringList> entries_map;
     MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
-    ListOfStringVariantMapsPtr refr_man = refr_man_rec.listAll();
+    ListOfStringVariantMapsPtr refr_man(refr_man_rec.listAll());
     for (int i = 0; i < refr_man->count(); ++i) {
         QStringList entries_list;
         entries_list << refr_man->at(i).value("purchased").toString();
@@ -117,9 +117,9 @@ void MainWindow::viewServiceCompany()
         stored -= (long double)refr_man->at(i).value("sold").toDouble();
     }
     MTRecord inspections_record("inspection", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspections = inspections_record.listAll("date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp");
+    ListOfStringVariantMapsPtr inspections(inspections_record.listAll("date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp"));
     MTRecord repairs_rec("repair", "", MTDictionary());
-    ListOfStringVariantMapsPtr repairs = repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp");
+    ListOfStringVariantMapsPtr repairs(repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp"));
     *inspections << *repairs;
     for (int i = 0; i < inspections->count(); ++i) {
         if (!inspections->at(i).value("refr_add_am").toDouble()
@@ -158,7 +158,7 @@ void MainWindow::viewAllCustomers()
 {
     QString html; QTextStream out(&html);
     MTRecord all_customers("customer", "", MTDictionary());
-    ListOfStringVariantMapsPtr list = all_customers.listAll();
+    ListOfStringVariantMapsPtr list(all_customers.listAll());
     int cu_length = QString("customer::").length();
     for (int i = 0; i < list->count(); ++i) {
         out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
@@ -179,7 +179,7 @@ void MainWindow::viewAllCustomers()
         out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
         out << "<td>";
         MTRecord circuits_record("circuit", "", MTDictionary("parent", list->at(i).value("id").toString()));
-        ListOfStringVariantMapsPtr circuits = circuits_record.listAll("id");
+        ListOfStringVariantMapsPtr circuits(circuits_record.listAll("id"));
         int num_circuits = 0, num_inspections = 0;
         for (int j = 0; j < circuits->count(); ++j) {
             num_circuits++;
@@ -229,7 +229,7 @@ void MainWindow::viewCustomer(const QString & customer_id)
     out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
     out << "<td>";
     MTRecord circuits_rec("circuit", "", MTDictionary("parent", customer_id));
-    ListOfStringVariantMapsPtr circuits = circuits_rec.listAll();
+    ListOfStringVariantMapsPtr circuits(circuits_rec.listAll());
     int num_circuits = 0, num_inspections = 0;
     for (int i = 0; i < circuits->count(); ++i) {
         num_circuits++;
@@ -379,7 +379,7 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
-    ListOfStringVariantMapsPtr inspections = inspection_record.listAll("date, nominal");
+    ListOfStringVariantMapsPtr inspections(inspection_record.listAll("date, nominal"));
     int num_inspections = inspections->count();
     if (num_inspections > 0) {
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -547,7 +547,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     QStringList used_ids = listVariableIds();
 
 //*** Mapping variables ***
-    QMap<QString, StringVariantMap> variables;
+    MapOfStringVariantMaps variables;
     QString last_id; StringVariantMap map; QList<QVariant> subvariables;
     while (vars.next()) {
         if (vars.value("VAR_ID").toString() != last_id) {
@@ -589,7 +589,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
-    ListOfStringVariantMapsPtr inspections = inspection_record.listAll();
+    ListOfStringVariantMapsPtr inspections(inspection_record.listAll());
     for (int i = 0; i < inspections->count(); ++i) {
         if (table.value("highlight_nominal").toInt() && inspections->at(i).value("nominal").toInt()) {}
         else if (inspections->at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -998,7 +998,7 @@ void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 {
     QString html; QTextStream out(&html);
     MTRecord repairs_rec("repair", "", MTDictionary());
-    ListOfStringVariantMapsPtr repairs = repairs_rec.listAll();
+    ListOfStringVariantMapsPtr repairs(repairs_rec.listAll());
     for (int i = 0; i < repairs->count();) {
         if (repairs->at(i).value("date").toString().split(".").first().toInt() < year) {
             repairs->removeAt(i);
@@ -1056,7 +1056,7 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; QTextStream out(&html);
     MTRecord inspectors_rec("inspector", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspectors = inspectors_rec.listAll();
+    ListOfStringVariantMapsPtr inspectors(inspectors_rec.listAll());
 
     for (int i = 0; i < inspectors->count(); ++i) {
         QString link;
@@ -1199,11 +1199,11 @@ void MainWindow::viewAgenda()
     QString html; QTextStream out(&html);
 
     MTRecord inspections_rec("inspection", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspections = inspections_rec.listAll("date, customer, circuit");
+    ListOfStringVariantMapsPtr inspections(inspections_rec.listAll("date, customer, circuit"));
     MTRecord circuits_rec("circuit", "", MTDictionary());
-    ListOfStringVariantMapsPtr circuits = circuits_rec.listAll();
+    ListOfStringVariantMapsPtr circuits(circuits_rec.listAll());
     MTRecord customers_rec("customer", "", MTDictionary());
-    MapOfStringVariantMapsPtr customers = customers_rec.mapAll("id", "company");
+    MultiMapOfStringVariantMapsPtr customers(customers_rec.mapAll("id", "company"));
 
     out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
     out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Agenda");
