@@ -75,6 +75,7 @@ private slots:
     void saveAndCompact();
     void closeDatabase(bool = true);
     void modifyServiceCompany();
+    void addRecordOfPurchaseOrSaleOfRefrigerant();
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -136,6 +137,7 @@ private:
     void saveDatabase(bool = false);
     QString DBInfoValueForKey(const QString &);
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
+    void modifyRecordOfPurchaseOrSaleOfRefrigerant(const QString &);
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);

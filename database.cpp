@@ -395,6 +395,28 @@ void MainWindow::modifyServiceCompany()
     }
 }
 
+void MainWindow::addRecordOfPurchaseOrSaleOfRefrigerant()
+{
+    modifyRecordOfPurchaseOrSaleOfRefrigerant("");
+}
+
+void MainWindow::modifyRecordOfPurchaseOrSaleOfRefrigerant(const QString & date)
+{
+    if (!db.isOpen()) { return; }
+    MTRecord record("refrigerant_management", date, MTDictionary());
+    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (md->exec() == QDialog::Accepted) {
+        record = md->record();
+        StringVariantMap attributes = record.list("purchased, sold");
+        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("sold").toDouble() <= 0.0) {
+            record.remove();
+        }
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
 void MainWindow::addCustomer()
 {
     if (!db.isOpen()) { return; }

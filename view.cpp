@@ -23,8 +23,8 @@ void MainWindow::viewChanged(const QString & view)
 {
     if (!db.isOpen()) { wv_main->setHtml(QString()); return; }
 
-    tbtn_view_level_up->setEnabled(cb_view->currentIndex() > 0);
-    tbtn_view_level_down->setEnabled(cb_view->currentIndex() < cb_view->count() - 1);
+    btn_view_level_up->setEnabled(cb_view->currentIndex() > 0);
+    btn_view_level_down->setEnabled(cb_view->currentIndex() < cb_view->count() - 1);
     bool service_company_view = view == tr("Service company");
     bool table_view = cb_view->currentText() == tr("Table of inspections");
     bool repairs_view = view == tr("List of repairs");
@@ -118,7 +118,7 @@ void MainWindow::viewServiceCompany(int since)
         QStringList entries_list;
         QVariant purchased = refr_man->at(i).value("purchased");
         QVariant sold = refr_man->at(i).value("sold");
-        entries_list << "";
+        entries_list << QString("recordofpurchaseorsale:%1/modify").arg(date);
         entries_list << purchased.toString();
         entries_list << sold.toString();
         entries_map.insert(date, entries_list);

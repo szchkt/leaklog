@@ -317,6 +317,16 @@ QDialog(parent)
         md_dict_input.insert("website", "le");
         query_used_ids.prepare("SELECT id FROM service_companies" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
+    } else if (md_record.type() == "refrigerant_management") {
+        md_dict.insert("refrigerant_management", tr("Record of purchase/sale of refrigerant")); // _i = 1;
+        md_dict.insert("date", tr("Date"));
+        md_dict_input.insert("date", "dte");
+        md_dict.insert("purchased", tr("Purchased"));
+        md_dict_input.insert("purchased", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
+        md_dict.insert("sold", tr("Sold"));
+        md_dict_input.insert("sold", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
+        query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(md_record.id().isEmpty() ? "" : " WHERE date <> :date"));
+        if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     }
     if (md_record.type() != "variable" && md_record.type() != "subvariable" && query_used_ids.exec()) {
         bool nominal_ = md_record.type() == "inspection";

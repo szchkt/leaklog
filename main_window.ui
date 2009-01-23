@@ -425,7 +425,19 @@
          </spacer>
         </item>
         <item row="1" column="3" >
-         <widget class="QToolButton" name="tbtn_view_level_up" >
+         <widget class="QPushButton" name="btn_view_level_up" >
+          <property name="minimumSize" >
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
           <property name="icon" >
            <iconset resource="resources.qrc" >
             <normaloff>:/images/images/up16.png</normaloff>:/images/images/up16.png</iconset>
@@ -436,10 +448,25 @@
             <height>16</height>
            </size>
           </property>
+          <property name="flat" >
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item row="1" column="4" >
-         <widget class="QToolButton" name="tbtn_view_level_down" >
+         <widget class="QPushButton" name="btn_view_level_down" >
+          <property name="minimumSize" >
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
           <property name="icon" >
            <iconset resource="resources.qrc" >
             <normaloff>:/images/images/down16.png</normaloff>:/images/images/down16.png</iconset>
@@ -449,6 +476,9 @@
             <width>16</width>
             <height>16</height>
            </size>
+          </property>
+          <property name="flat" >
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -555,6 +585,7 @@
      <addaction name="actionNew_subvariable" />
     </widget>
     <addaction name="actionService_company_information" />
+    <addaction name="actionAdd_record_of_purchase_sale_of_refrigerant" />
     <addaction name="separator" />
     <addaction name="menuAdd_variable" />
     <addaction name="actionModify_variable" />
@@ -1790,6 +1821,9 @@
    <property name="text" >
     <string>Add repair</string>
    </property>
+   <property name="shortcut" >
+    <string>Meta++</string>
+   </property>
   </action>
   <action name="actionModify_repair" >
    <property name="enabled" >
@@ -1802,6 +1836,9 @@
    <property name="text" >
     <string>Modify repair</string>
    </property>
+   <property name="shortcut" >
+    <string>Meta+*</string>
+   </property>
   </action>
   <action name="actionRemove_repair" >
    <property name="enabled" >
@@ -1813,6 +1850,14 @@
    </property>
    <property name="text" >
     <string>Remove repair</string>
+   </property>
+   <property name="shortcut" >
+    <string>Meta+-</string>
+   </property>
+  </action>
+  <action name="actionAdd_record_of_purchase_sale_of_refrigerant" >
+   <property name="text" >
+    <string>Add record of purchase/sale of refrigerant</string>
    </property>
   </action>
  </widget>

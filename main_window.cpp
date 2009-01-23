@@ -123,6 +123,7 @@ MainWindow::MainWindow()
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
+    QObject::connect(actionAdd_record_of_purchase_sale_of_refrigerant, SIGNAL(triggered()), this, SLOT(addRecordOfPurchaseOrSaleOfRefrigerant()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
@@ -171,8 +172,8 @@ MainWindow::MainWindow()
     QObject::connect(lw_inspectors, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspector(QListWidgetItem *)));
     QObject::connect(btn_clear_current_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
-    QObject::connect(tbtn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
-    QObject::connect(tbtn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
+    QObject::connect(btn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
+    QObject::connect(btn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
     QObject::connect(spb_since, SIGNAL(valueChanged(int)), this, SLOT(refreshView()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
@@ -239,6 +240,9 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("toggledetailedview:")) {
             show_details_in_service_company_view = !show_details_in_service_company_view;
             refreshView();
+        } else if (path.at(0).startsWith("recordofpurchaseorsale:")) {
+            id = path.at(0);
+            id.remove(0, QString("recordofpurchaseorsale:").length());
         }
     }
     if (path.count() > 1) {
@@ -255,6 +259,7 @@ void MainWindow::executeLink(const QUrl & url)
             else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
             else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
             else if (path.at(0).startsWith("servicecompany:")) { modifyServiceCompany(); }
+            else if (path.at(0).startsWith("recordofpurchaseorsale:")) { modifyRecordOfPurchaseOrSaleOfRefrigerant(id); }
         }
     }
     if (path.count() > 2) {
@@ -560,6 +565,10 @@ void MainWindow::setAllEnabled(bool enable)
     menuCooling_circuit->setEnabled(enable);
     menuInspection->setEnabled(enable);
     menuInspector->setEnabled(enable);
+
+    actionFind->setEnabled(enable);
+    actionFind_next->setEnabled(enable);
+    actionFind_previous->setEnabled(enable);
 
     actionAdd_customer->setEnabled(enable);
     actionAdd_repair->setEnabled(enable);
