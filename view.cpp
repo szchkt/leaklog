@@ -25,17 +25,18 @@ void MainWindow::viewChanged(const QString & view)
 
     tbtn_view_level_up->setEnabled(cb_view->currentIndex() > 0);
     tbtn_view_level_down->setEnabled(cb_view->currentIndex() < cb_view->count() - 1);
+    bool service_company_view = view == tr("Service company");
     bool table_view = cb_view->currentText() == tr("Table of inspections");
     bool repairs_view = view == tr("List of repairs");
     lbl_table->setEnabled(table_view);
     cb_table->setEnabled(table_view);
-    lbl_since->setEnabled(table_view || repairs_view);
-    spb_since->setEnabled(table_view || repairs_view);
+    lbl_since->setEnabled(service_company_view || table_view || repairs_view);
+    spb_since->setEnabled(service_company_view || table_view || repairs_view);
 
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
-    if (view == tr("Service company")) {
-        viewServiceCompany();
+    if (service_company_view) {
+        viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("All customers")) {
         viewAllCustomers();
     } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
@@ -61,7 +62,7 @@ void MainWindow::viewChanged(const QString & view)
     }
 }
 
-void MainWindow::viewServiceCompany()
+void MainWindow::viewServiceCompany(int since)
 {
     QString html; QTextStream out(&html);
     MTRecord serv_company_rec("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
@@ -105,49 +106,115 @@ void MainWindow::viewServiceCompany()
     out << "<th>" << tr("Recycled") << "</th>";
     out << "<th>" << tr("Disposed of") << "</th></tr>";
     long double stored = 0.0;
-    QMap<QString, QStringList> entries_map;
+    QMultiMap<QString, QStringList> entries_map;
+    QMap<int, QList<double> *> sums_map;
+    QList<double> * sum_list; int year = 0; QString date;
     MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
     ListOfStringVariantMapsPtr refr_man(refr_man_rec.listAll());
     for (int i = 0; i < refr_man->count(); ++i) {
+        date = refr_man->at(i).value("date").toString();
+        year = date.left(4).toInt();
+        if (year < since) { continue; }
         QStringList entries_list;
-        entries_list << refr_man->at(i).value("purchased").toString();
-        entries_list << refr_man->at(i).value("sold").toString();
-        entries_map.insert(refr_man->at(i).value("date").toString(), entries_list);
-        stored += (long double)refr_man->at(i).value("purchased").toDouble();
-        stored -= (long double)refr_man->at(i).value("sold").toDouble();
+        QVariant purchased = refr_man->at(i).value("purchased");
+        QVariant sold = refr_man->at(i).value("sold");
+        entries_list << "";
+        entries_list << purchased.toString();
+        entries_list << sold.toString();
+        entries_map.insert(date, entries_list);
+        stored += (long double)purchased.toDouble();
+        stored -= (long double)sold.toDouble();
+        // ----------------------------------------------------
+        if (!sums_map.contains(year)) {
+            sum_list = new QList<double>;
+            *sum_list << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
+            sums_map.insert(year, sum_list);
+        } else {
+            sum_list = sums_map.value(year);
+        }
+        // ----------------------------------------------------
+        (*sum_list)[0] += purchased.toDouble();
+        (*sum_list)[1] += sold.toDouble();
     }
     MTRecord inspections_record("inspection", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspections(inspections_record.listAll("date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp"));
+    ListOfStringVariantMapsPtr inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_reco, refr_recy, refr_disp"));
     MTRecord repairs_rec("repair", "", MTDictionary());
-    ListOfStringVariantMapsPtr repairs(repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp"));
-    *inspections << *repairs;
+    *inspections << *(repairs_rec.listAll("date, refr_add_am, refr_reco, refr_recy, refr_disp"));
+    QVariant refr_add_am, refr_reco, refr_recy, refr_disp;
     for (int i = 0; i < inspections->count(); ++i) {
-        if (!inspections->at(i).value("refr_add_am").toDouble()
-            && !inspections->at(i).value("refr_reco").toDouble()
-            && !inspections->at(i).value("refr_recy").toDouble()
-            && !inspections->at(i).value("refr_disp").toDouble()) continue;
+        date = inspections->at(i).value("date").toString();
+        year = date.left(4).toInt();
+        if (year < since) { continue; }
+        refr_add_am = inspections->at(i).value("refr_add_am");
+        refr_reco = inspections->at(i).value("refr_reco");
+        refr_recy = inspections->at(i).value("refr_recy");
+        refr_disp = inspections->at(i).value("refr_disp");
+        if (!refr_add_am.toDouble() && !refr_reco.toDouble()
+            && !refr_recy.toDouble() && !refr_disp.toDouble()) continue;
         QStringList entries_list;
-        entries_list << QString();
-        entries_list << QString();
-        entries_list << inspections->at(i).value("refr_add_am").toString();
-        entries_list << inspections->at(i).value("refr_reco").toString();
-        entries_list << inspections->at(i).value("refr_recy").toString();
-        entries_list << inspections->at(i).value("refr_disp").toString();
-        entries_map.insert(inspections->at(i).value("date").toString(), entries_list);
-        stored -= (long double)inspections->at(i).value("refr_add_am").toDouble();
+        if (inspections->at(i).contains("customer")) {
+            entries_list << QString("customer:%1/circuit:%2/inspection:%3")
+                            .arg(inspections->at(i).value("customer").toString())
+                            .arg(inspections->at(i).value("circuit").toString())
+                            .arg(date);
+        } else {
+            entries_list << QString("repair:%1").arg(date);
+        }
+        entries_list << QString() << QString();
+        entries_list << refr_add_am.toString();
+        entries_list << refr_reco.toString();
+        entries_list << refr_recy.toString();
+        entries_list << refr_disp.toString();
+        entries_map.insert(date, entries_list);
+        stored -= (long double)refr_add_am.toDouble();
+        // ----------------------------------------------------
+        if (!sums_map.contains(year)) {
+            sum_list = new QList<double>;
+            *sum_list << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
+            sums_map.insert(year, sum_list);
+        } else {
+            sum_list = sums_map.value(year);
+        }
+        // ----------------------------------------------------
+        (*sum_list)[2] += refr_add_am.toDouble();
+        (*sum_list)[3] += refr_reco.toDouble();
+        (*sum_list)[4] += refr_recy.toDouble();
+        (*sum_list)[5] += refr_disp.toDouble();
     }
     html.replace("<num_stored />", toString((double)stored));
+    int last_year = 0;
     QMapIterator<QString, QStringList> i(entries_map);
     i.toBack();
-    while (i.hasPrevious()) {
-        i.previous();
-        out << "<tr><td style=\"text-align: center;\">" << i.key() << "</td>";
-        for (int n = 0; n < i.value().count(); ++n) {
-            out << "<td style=\"text-align: center;\">";
-            if (i.value().at(n).toDouble()) out << i.value().at(n);
-            out << "</td>";
+    while (i.hasPrevious()) { i.previous();
+        year = i.key().left(4).toInt();
+        if (year < last_year) { last_year = 0; }
+        if (!last_year) {
+            last_year = year;
+            out << "<tr><th><a href=\"toggledetailedview:\">" << year << "</a></th>";
+            sum_list = sums_map.value(year, NULL);
+            if (sum_list) {
+                for (int n = 0; n < sum_list->count(); ++n) {
+                    out << "<th>";
+                    if (sum_list->at(n)) out << sum_list->at(n);
+                    out << "</th>";
+                }
+            }
+            out << "</tr>";
         }
-        out << "</tr>";
+        if (show_details_in_service_company_view) {
+            out << "<tr><td style=\"text-align: center;\"><a href=\"";
+            out << i.value().at(0) << "\">" << i.key() << "</a></td>";
+            for (int n = 1; n < i.value().count(); ++n) {
+                out << "<td style=\"text-align: center;\">";
+                if (i.value().at(n).toDouble()) out << i.value().at(n);
+                out << "</td>";
+            }
+            out << "</tr>";
+        }
+    }
+    QMapIterator<int, QList<double> *> s(sums_map);
+    while (s.hasNext()) { s.next();
+        delete s.value();
     }
     out << "</table></td></tr>";
     out << "</table>";

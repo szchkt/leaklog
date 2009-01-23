@@ -68,6 +68,8 @@ MainWindow::MainWindow()
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
     // ----
+    show_details_in_service_company_view = true;
+    // ----
     if (tr("LTR") == "RTL") { qApp->setLayoutDirection(Qt::RightToLeft); }
     setupUi(this);
     http = new QHttp(this);
@@ -234,6 +236,9 @@ void MainWindow::executeLink(const QUrl & url)
             }
         } else if (path.at(0).startsWith("allcustomers:")) {
             setView(tr("All customers"));
+        } else if (path.at(0).startsWith("toggledetailedview:")) {
+            show_details_in_service_company_view = !show_details_in_service_company_view;
+            refreshView();
         }
     }
     if (path.count() > 1) {

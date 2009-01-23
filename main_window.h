@@ -150,7 +150,7 @@ private:
     inline QString selectedRepair() { return selected_repair; };
     inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
-    void viewServiceCompany();
+    void viewServiceCompany(int);
     void viewAllCustomers();
     void viewCustomer(const QString &);
     void viewCircuit(const QString &, const QString &);
@@ -163,6 +163,7 @@ private:
     QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
 
+    bool show_details_in_service_company_view;
     QString selected_repair;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;
