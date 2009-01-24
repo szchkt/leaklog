@@ -12,5 +12,6 @@
     <file>html/agenda.html</file>
     <file>html/default.css</file>
     <file>html/colours.css</file>
+    <file>html/wz_tooltip.js</file>
   </qresource>
 </RCC>

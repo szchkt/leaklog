@@ -202,8 +202,12 @@ QDialog(parent)
                     md_dict_input.insert(query.value("VAR_ID").toString(), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value("VAR_UNIT").toString()));
                 } else if (query.value("VAR_TYPE").toString() == "string") {
                     md_dict_input.insert(query.value("VAR_ID").toString(), "le");
+                } else if (query.value("VAR_TYPE").toString() == "text") {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), "pte");
                 } else if (query.value("VAR_TYPE").toString() == "bool") {
                     md_dict_input.insert(query.value("VAR_ID").toString(), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
+                } else {
+                    md_dict_input.insert(query.value("VAR_ID").toString(), "le");
                 }
             } else {
                 if (!query.value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
@@ -214,8 +218,12 @@ QDialog(parent)
                     md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(query.value("SUBVAR_UNIT").toString()));
                 } else if (query.value("SUBVAR_TYPE").toString() == "string") {
                     md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), "le");
+                } else if (query.value("SUBVAR_TYPE").toString() == "text") {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), "pte");
                 } else if (query.value("SUBVAR_TYPE").toString() == "bool") {
                     md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), QString("cb;%1||1;%2||0").arg(tr("Yes")).arg(tr("No")));
+                } else {
+                    md_dict_input.insert(QString("%1/%2").arg(query.value("VAR_ID").toString()).arg(query.value("SUBVAR_ID").toString()), "le");
                 }
             }
         }
@@ -261,6 +269,7 @@ QDialog(parent)
         types << tr("Integer") + "||int";
         types << tr("Real number") + "||float";
         types << tr("String") + "||string";
+        types << tr("Text") + "||text";
         types << tr("Boolean") + "||bool";
         md_dict_input.insert("type", QString("cb;%1").arg(types.join(";")));
         md_dict.insert("value", tr("Value"));

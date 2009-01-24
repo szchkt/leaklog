@@ -163,7 +163,7 @@ private:
     void viewRefrigerantConsumption(const QString & = QString());
     void viewAgenda();
     QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
-    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, bool, int, double);
+    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
 
     bool show_details_in_service_company_view;
     QString selected_repair;

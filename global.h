@@ -51,7 +51,7 @@ using std::auto_ptr;
 
 namespace Global {
     QString toString(const QVariant &);
-    //QString escapeDoubleQuotes(const QString &);
+    QString escapeString(QString);
     QString upArrow();
     QString downArrow();
     QString degreeSign();

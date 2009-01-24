@@ -182,7 +182,7 @@ void MainWindow::viewServiceCompany(int since)
         (*sum_list)[5] += refr_disp.toDouble();
     }
     html.replace("<num_stored />", toString((double)stored));
-    int last_year = 0;
+    int last_year = 0; bool it = false;
     QMapIterator<QString, QStringList> i(entries_map);
     i.toBack();
     while (i.hasPrevious()) { i.previous();
@@ -202,10 +202,14 @@ void MainWindow::viewServiceCompany(int since)
             out << "</tr>";
         }
         if (show_details_in_service_company_view) {
-            out << "<tr><td style=\"text-align: center;\"><a href=\"";
-            out << i.value().at(0) << "\">" << i.key() << "</a></td>";
+            it = i.value().at(0).startsWith("repair:");
+            out << "<tr><td style=\"text-align: center;";
+            if (it) out << " font-style: italic;";
+            out << "\"><a href=\"" << i.value().at(0) << "\">" << i.key() << "</a></td>";
             for (int n = 1; n < i.value().count(); ++n) {
-                out << "<td style=\"text-align: center;\">";
+                out << "<td style=\"text-align: center;";
+                if (it) out << " font-style: italic;";
+                out << "\">";
                 if (i.value().at(n).toDouble()) out << i.value().at(n);
                 out << "</td>";
             }
@@ -783,8 +787,8 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         out << inspections->at(i).value("date").toString() << "</a></td>";
         for (int n = 0; n < table_vars.count(); ++n) {
             bool compare_nom = false; int rowspan = 1; QString ins_value = ""; QString nom_value = ""; bool ok_eval;
-            if (variables.value(table_vars.at(n)).value("subvariables").toList().count() > 0) {
-                subvariables = variables.value(table_vars.at(n)).value("subvariables").toList();
+            subvariables = variables.value(table_vars.at(n)).value("subvariables").toList();
+            if (subvariables.count() > 0) {
                 for (int s = 0; s < subvariables.count(); ++s) {
                     compare_nom = subvariables.at(s).toMap().value("compare_nom").toInt() > 0;
                     if (subvariables.at(s).toMap().value("value").toString().contains("sum")) {
@@ -820,7 +824,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     if (subvariables.at(s).toMap().value("type").toString() == "bool") {
                         ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
                     }
-                    writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, subvariables.at(s).toMap().value("tolerance").toDouble());
+                    writeTableVarCell(out, subvariables.at(s).toMap().value("type").toString(), ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, subvariables.at(s).toMap().value("tolerance").toDouble());
                 }
             } else {
                 compare_nom = variables.value(table_vars.at(n)).value("compare_nom").toInt() > 0;
@@ -846,7 +850,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
                     MTRecord inspector("inspector", ins_value, MTDictionary());
                     ins_value = inspector.list().value("person").toString();
                 }
-                writeTableVarCell(out, ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, variables.value(table_vars.at(n)).value("tolerance").toDouble());
+                writeTableVarCell(out, variables.value(table_vars.at(n)).value("type").toString(), ins_value, nom_value, variables.value(table_vars.at(n)).value("col_bg").toString(), compare_nom, rowspan, variables.value(table_vars.at(n)).value("tolerance").toDouble());
             }
         }
         out << "</tr>";
@@ -950,13 +954,17 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     wv_main->setHtml(dict_html.value(tr("Table of inspections")).arg(html), QUrl("qrc:/html/"));
 }
 
-void MainWindow::writeTableVarCell(QTextStream & out, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
+void MainWindow::writeTableVarCell(QTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
 {
-    out << "<td class=\"" << bg_class;
-    out << "\" rowspan=\"" << rowspan;
-    out << "\">";
+    out << "<td class=\"" << bg_class << "\" rowspan=\"" << rowspan << "\"";
+    if (var_type == "text" && !ins_value.isEmpty()) {
+        out << "onmouseover=\"Tip('" << escapeString(ins_value) << "')\" onmouseout=\"UnTip()\"";
+    }
+    out << ">";
     if (compare_nom) {
         out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value);
+    } else if (var_type == "text" && !ins_value.isEmpty()) {
+        out << "...";
     } else {
         out << ins_value;
     }

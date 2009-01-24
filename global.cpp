@@ -23,13 +23,16 @@
 
 QString Global::toString(const QVariant & v) { return v.toString(); }
 
-/*QString Global::escapeDoubleQuotes(const QString & s)
+QString Global::escapeString(QString s)
 {
-    QString r = s;
-    r.replace("\\", "\\\\");
-    r.replace("\"", "\\\"");
-    return r;
-}*/
+    s.replace("\\", "\\\\");
+    s.replace("'", "\\'");
+    s.replace("&", "&amp;");
+    s.replace("\"", "&quot;");
+    s.replace("<", "&lt;");
+    s.replace(">", "&gt;");
+    return s;
+}
 
 QString Global::upArrow() { return QApplication::translate("Global", "\342\206\221", 0, QApplication::UnicodeUTF8); }
 
@@ -276,6 +279,7 @@ MTDictionary Global::get_dict_vartypes()
     dict_vartypes.insert("int", QApplication::translate("VariableTypes", "Integer"));
     dict_vartypes.insert("float", QApplication::translate("VariableTypes", "Real number"));
     dict_vartypes.insert("string", QApplication::translate("VariableTypes", "String"));
+    dict_vartypes.insert("text", QApplication::translate("VariableTypes", "Text"));
     dict_vartypes.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
     return dict_vartypes;
 }
@@ -871,7 +875,7 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "ppsw", "", "ppsw_diff", "float", tr("Bar"), "", true, 0.0);
 
     initVariable(filter, "sftsw", "float", tr("Bar"), "", true, 0.0, "");
-    initVariable(filter, "rmds", "string", "", "", false, 0.0, "");
+    initVariable(filter, "rmds", "text", "", "", false, 0.0, "");
     initVariable(filter, "arno", "string", "", "", false, 0.0, "");
 
     initVariable(filter, "vis_aur_chk", "");
