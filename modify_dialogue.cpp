@@ -85,16 +85,20 @@ QDialog(parent)
     query_used_ids.setForwardOnly(true);
     int _i = 1; QStringList types;
     QStringList fields;
-    fields << tr("Car air conditioning") + "||car";
-    fields << tr("Low-rise residential buildings") + "||lowrise";
-    fields << tr("High-rise residential buildings") + "||highrise";
-    fields << tr("Commercial buildings") + "||commercial";
-    fields << tr("Institutional buildings") + "||institutional";
-    fields << tr("Industrial spaces") + "||industrial";
-    fields << tr("Transportation") + "||transportation";
-    fields << tr("Air conditioning") + "||airconditioning";
-    fields << tr("Heat pumps") + "||heatpumps";
-    fields << tr("Other") + "||other";
+    fields << QApplication::translate("AttributeValues", "Car air conditioning") + "||car";
+    fields << QApplication::translate("AttributeValues", "Home air conditioning") + "||home";
+    fields << QApplication::translate("AttributeValues", "Commercial buildings") + "||commercial";
+    fields << QApplication::translate("AttributeValues", "Industrial spaces") + "||industrial";
+    fields << QApplication::translate("AttributeValues", "Agricultural air conditioning") + "||agricultural";
+    fields << QApplication::translate("AttributeValues", "Transportation") + "||transportation";
+    fields << QApplication::translate("AttributeValues", "Air conditioning") + "||airconditioning";
+    fields << QApplication::translate("AttributeValues", "Heat pumps") + "||heatpumps";
+    fields << QApplication::translate("AttributeValues", "Other") + "||other";
+    // OBSOLETE
+    fields << QApplication::translate("AttributeValues", "Home air conditioning") + "||lowrise";
+    fields << QApplication::translate("AttributeValues", "Air conditioning") + "||highrise";
+    fields << QApplication::translate("AttributeValues", "Air conditioning") + "||institutional";
+    // --------
     if (md_record.type() == "customer") {
         md_dict.insert("customer", tr("Customer")); // _i = 1;
         md_dict.insert("id", tr("ID"));
@@ -143,12 +147,12 @@ QDialog(parent)
         md_dict_input.insert("refrigerant_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
         md_dict.insert("oil", tr("Oil"));
         QStringList oils;
-        oils << tr("MO (Mineral oil)") + "||mo";
-        oils << tr("AB (Alkylbenzene oil)") + "||ab";
-        oils << tr("POE (Polyolester oil)") + "||poe";
-        oils << tr("PAO (Polyalphaolefin oil)") + "||pao";
-        oils << tr("PVE (Polyvinylether oil)") + "||pve";
-        oils << tr("PAG (Polyglycol oil)") + "||pag";
+        oils << QApplication::translate("AttributeValues", "MO (Mineral oil)") + "||mo";
+        oils << QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)") + "||ab";
+        oils << QApplication::translate("AttributeValues", "POE (Polyolester oil)") + "||poe";
+        oils << QApplication::translate("AttributeValues", "PAO (Polyalphaolefin oil)") + "||pao";
+        oils << QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)") + "||pve";
+        oils << QApplication::translate("AttributeValues", "PAG (Polyglycol oil)") + "||pag";
         md_dict_input.insert("oil", QString("cb;%1").arg(oils.join(";")));
         md_dict.insert("oil_amount", tr("Amount of oil"));
         md_dict_input.insert("oil_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
@@ -249,10 +253,6 @@ QDialog(parent)
         md_dict_input.insert("refr_add_am", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("refr_reco", tr("Refrigerant recovery"));
         md_dict_input.insert("refr_reco", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_recy", tr("Refrigerant recycling"));
-        md_dict_input.insert("refr_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_disp", tr("Refrigerant disposal"));
-        md_dict_input.insert("refr_disp", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
         query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(md_record.id().isEmpty() ? "" : " date <> :date"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
@@ -266,11 +266,11 @@ QDialog(parent)
         md_dict.insert("unit", tr("Unit"));
         md_dict_input.insert("unit", "le");
         md_dict.insert("type", tr("Type"));
-        types << tr("Integer") + "||int";
-        types << tr("Real number") + "||float";
-        types << tr("String") + "||string";
-        types << tr("Text") + "||text";
-        types << tr("Boolean") + "||bool";
+        types << QApplication::translate("VariableTypes", "Integer") + "||int";
+        types << QApplication::translate("VariableTypes", "Real number") + "||float";
+        types << QApplication::translate("VariableTypes", "String") + "||string";
+        types << QApplication::translate("VariableTypes", "Text") + "||text";
+        types << QApplication::translate("VariableTypes", "Boolean") + "||bool";
         md_dict_input.insert("type", QString("cb;%1").arg(types.join(";")));
         md_dict.insert("value", tr("Value"));
         md_dict_input.insert("value", "pteh");
@@ -327,13 +327,17 @@ QDialog(parent)
         query_used_ids.prepare("SELECT id FROM service_companies" + QString(md_record.id().isEmpty() ? "" : " WHERE id <> :id"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":id", md_record.id()); }
     } else if (md_record.type() == "refrigerant_management") {
-        md_dict.insert("refrigerant_management", tr("Record of purchase/sale of refrigerant")); // _i = 1;
+        md_dict.insert("refrigerant_management", tr("Record of refrigerant management")); // _i = 1;
         md_dict.insert("date", tr("Date"));
         md_dict_input.insert("date", "dte");
         md_dict.insert("purchased", tr("Purchased"));
         md_dict_input.insert("purchased", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
         md_dict.insert("sold", tr("Sold"));
         md_dict_input.insert("sold", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_recy", tr("Recycled"));
+        md_dict_input.insert("refr_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_disp", tr("Disposed of"));
+        md_dict_input.insert("refr_disp", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
         query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(md_record.id().isEmpty() ? "" : " WHERE date <> :date"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     }
@@ -452,9 +456,14 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
     } else if (inputtype.at(0) == "cb" || inputtype.at(0) == "cbd") {
         QComboBox * md_cb_var = new QComboBox(this); int n = -1;
         if (inputtype.at(0) == "cbd") { md_cb_var->setEnabled(false); }
+        QStringList items; QString item;
         for (int j = 1; j < inputtype.count(); ++j) {
-            md_cb_var->addItem(inputtype.at(j).split("||").first());
-            if (inputtype.at(j).split("||").last() == value) { n = j - 1; }
+            item = inputtype.at(j).split("||").first();
+            if (!items.contains(item)) {
+                items << item;
+                md_cb_var->addItem(item);
+            }
+            if (inputtype.at(j).split("||").last() == value) { n = items.indexOf(item); }
         }
         md_cb_var->setCurrentIndex(n);
         return md_cb_var;

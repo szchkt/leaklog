@@ -123,7 +123,7 @@ MainWindow::MainWindow()
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
-    QObject::connect(actionAdd_record_of_purchase_sale_of_refrigerant, SIGNAL(triggered()), this, SLOT(addRecordOfPurchaseOrSaleOfRefrigerant()));
+    QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
@@ -170,6 +170,9 @@ MainWindow::MainWindow()
     QObject::connect(lw_circuits, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadCircuit(QListWidgetItem *)));
     QObject::connect(lw_inspections, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspection(QListWidgetItem *)));
     QObject::connect(lw_inspectors, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(loadInspector(QListWidgetItem *)));
+    QObject::connect(lbl_selected_customer, SIGNAL(linkActivated(const QString &)), this, SLOT(setView(const QString &)));
+    QObject::connect(lbl_selected_circuit, SIGNAL(linkActivated(const QString &)), this, SLOT(setView(const QString &)));
+    QObject::connect(lbl_selected_inspection, SIGNAL(linkActivated(const QString &)), this, SLOT(setView(const QString &)));
     QObject::connect(btn_clear_current_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
     QObject::connect(btn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
@@ -240,9 +243,9 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("toggledetailedview:")) {
             show_details_in_service_company_view = !show_details_in_service_company_view;
             refreshView();
-        } else if (path.at(0).startsWith("recordofpurchaseorsale:")) {
+        } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {
             id = path.at(0);
-            id.remove(0, QString("recordofpurchaseorsale:").length());
+            id.remove(0, QString("recordofrefrigerantmanagement:").length());
         }
     }
     if (path.count() > 1) {
@@ -259,7 +262,7 @@ void MainWindow::executeLink(const QUrl & url)
             else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
             else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
             else if (path.at(0).startsWith("servicecompany:")) { modifyServiceCompany(); }
-            else if (path.at(0).startsWith("recordofpurchaseorsale:")) { modifyRecordOfPurchaseOrSaleOfRefrigerant(id); }
+            else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) { modifyRecordOfRefrigerantManagement(id); }
         }
     }
     if (path.count() > 2) {
@@ -607,19 +610,20 @@ void MainWindow::enableTools()
     bool inspection_selected = lw_inspections->highlightedRow() >= 0;
     bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
     bool repair_selected = !selected_repair.isEmpty();
-    lbl_selected_customer->setText(customer_selected ? tr("Customer: %1").arg(lw_customers->highlightedItem()->text()) : QString());
+    lbl_selected_customer->setText(customer_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Customer information")).arg(tr("Customer: %1").arg(lw_customers->highlightedItem()->text())) : QString());
+    lbl_selected_customer->setVisible(customer_selected);
     lbl_current_selection_arrow1->setVisible(circuit_selected);
+    lbl_selected_circuit->setText(circuit_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Circuit information")).arg(tr("Circuit: %1").arg(lw_circuits->highlightedItem()->text())) : QString());
     lbl_selected_circuit->setVisible(circuit_selected);
-    lbl_selected_circuit->setText(circuit_selected ? tr("Circuit: %1").arg(lw_circuits->highlightedItem()->text()) : QString());
     lbl_current_selection_arrow2->setVisible(inspection_selected);
-    lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
     if (inspection_selected) {
-        lbl_selected_inspection->setText(tr("Inspection: %1").arg(lw_inspections->highlightedItem()->text()));
+        lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Inspection information")).arg(tr("Inspection: %1").arg(lw_inspections->highlightedItem()->text())));
     } else if (repair_selected) {
-        lbl_selected_inspection->setText(tr("Repair: %1").arg(selectedRepair()));
+        lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of repairs")).arg(tr("Repair: %1").arg(selectedRepair())));
     } else {
         lbl_selected_inspection->setText(QString());
     }
+    lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);

@@ -585,7 +585,7 @@
      <addaction name="actionNew_subvariable" />
     </widget>
     <addaction name="actionService_company_information" />
-    <addaction name="actionAdd_record_of_purchase_sale_of_refrigerant" />
+    <addaction name="actionAdd_record_of_refrigerant_management" />
     <addaction name="separator" />
     <addaction name="menuAdd_variable" />
     <addaction name="actionModify_variable" />
@@ -1855,9 +1855,9 @@
     <string>Meta+-</string>
    </property>
   </action>
-  <action name="actionAdd_record_of_purchase_sale_of_refrigerant" >
+  <action name="actionAdd_record_of_refrigerant_management" >
    <property name="text" >
-    <string>Add record of purchase/sale of refrigerant</string>
+    <string>Add record of refrigerant management</string>
    </property>
   </action>
  </widget>

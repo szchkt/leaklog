@@ -31,6 +31,7 @@ QString Global::escapeString(QString s)
     s.replace("\"", "&quot;");
     s.replace("<", "&lt;");
     s.replace(">", "&gt;");
+    s.replace("\n", "<br>");
     return s;
 }
 
@@ -260,7 +261,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, refr_recy NUMERIC, refr_disp NUMERIC, repairman TEXT, arno TEXT");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -268,7 +269,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-    dict_dbtables.insert("refrigerant_management", "date TEXT, purchased NUMERIC, sold NUMERIC");
+    dict_dbtables.insert("refrigerant_management", "date TEXT, purchased NUMERIC, sold NUMERIC, refr_recy NUMERIC, refr_disp NUMERIC");
     dict_dbtables.insert("db_info", "id TEXT, value TEXT");
     return dict_dbtables;
 }
@@ -346,11 +347,10 @@ MTDictionary Global::get_dict_attrvalues()
     MTDictionary dict_attrvalues;
     dict_attrvalues.insert("field", QApplication::translate("AttributeValues", "Field of application"));
     dict_attrvalues.insert("field::car", QApplication::translate("AttributeValues", "Car air conditioning"));
-    dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Low-rise residential buildings"));
-    dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "High-rise residential buildings"));
+    dict_attrvalues.insert("field::home", QApplication::translate("AttributeValues", "Home air conditioning"));
     dict_attrvalues.insert("field::commercial", QApplication::translate("AttributeValues", "Commercial buildings"));
-    dict_attrvalues.insert("field::institutional", QApplication::translate("AttributeValues", "Institutional buildings"));
     dict_attrvalues.insert("field::industrial", QApplication::translate("AttributeValues", "Industrial spaces"));
+    dict_attrvalues.insert("field::agricultural", QApplication::translate("AttributeValues", "Agricultural air conditioning"));
     dict_attrvalues.insert("field::transportation", QApplication::translate("AttributeValues", "Transportation"));
     dict_attrvalues.insert("field::airconditioning", QApplication::translate("AttributeValues", "Air conditioning"));
     dict_attrvalues.insert("field::heatpumps", QApplication::translate("AttributeValues", "Heat pumps"));
@@ -379,6 +379,11 @@ MTDictionary Global::get_dict_attrvalues()
     dict_attrvalues.insert("refrigerant::R410A", "R410A");
     dict_attrvalues.insert("refrigerant::R502", "R502");
     dict_attrvalues.insert("refrigerant::R507", "R507");
+    // OBSOLETE
+    dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Home air conditioning"));
+    dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "Air conditioning"));
+    dict_attrvalues.insert("field::institutional", QApplication::translate("AttributeValues", "Air conditioning"));
+    // --------
     return dict_attrvalues;
 }
 
@@ -424,8 +429,8 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
     dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("AttributeNames", "Refrigerant addition"));
     dict_attrnames.insert("repairs::refr_reco", QApplication::translate("AttributeNames", "Refrigerant recovery"));
-    dict_attrnames.insert("repairs::refr_recy", QApplication::translate("AttributeNames", "Refrigerant recycling"));
-    dict_attrnames.insert("repairs::refr_disp", QApplication::translate("AttributeNames", "Refrigerant disposal"));
+    //dict_attrnames.insert("repairs::refr_recy", QApplication::translate("AttributeNames", "Refrigerant recycling"));
+    //dict_attrnames.insert("repairs::refr_disp", QApplication::translate("AttributeNames", "Refrigerant disposal"));
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     return dict_attrnames;

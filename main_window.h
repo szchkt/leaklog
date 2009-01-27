@@ -59,6 +59,7 @@ private slots:
     void findPrevious();
     void clearSelection(bool = true);
     void setView(QAction *);
+    void setView(const QString &);
     void refreshView();
     void viewLevelUp();
     void viewLevelDown();
@@ -75,7 +76,7 @@ private slots:
     void saveAndCompact();
     void closeDatabase(bool = true);
     void modifyServiceCompany();
-    void addRecordOfPurchaseOrSaleOfRefrigerant();
+    void addRecordOfRefrigerantManagement();
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
@@ -122,7 +123,6 @@ private:
     // UI
     QMenu * createPopupMenu();
     void paintLabel(const StringVariantMap &, QPainter &, int, int, int, int);
-    void setView(const QString &);
     void addRecent(QString);
     void clearAll();
     void setAllEnabled(bool);
@@ -137,7 +137,7 @@ private:
     void saveDatabase(bool = false);
     QString DBInfoValueForKey(const QString &);
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
-    void modifyRecordOfPurchaseOrSaleOfRefrigerant(const QString &);
+    void modifyRecordOfRefrigerantManagement(const QString &);
     void loadCustomer(QListWidgetItem *, bool);
     void loadCircuit(QListWidgetItem *, bool);
     void loadInspection(QListWidgetItem *, bool);

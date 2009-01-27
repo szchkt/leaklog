@@ -395,12 +395,12 @@ void MainWindow::modifyServiceCompany()
     }
 }
 
-void MainWindow::addRecordOfPurchaseOrSaleOfRefrigerant()
+void MainWindow::addRecordOfRefrigerantManagement()
 {
-    modifyRecordOfPurchaseOrSaleOfRefrigerant("");
+    modifyRecordOfRefrigerantManagement("");
 }
 
-void MainWindow::modifyRecordOfPurchaseOrSaleOfRefrigerant(const QString & date)
+void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 {
     if (!db.isOpen()) { return; }
     MTRecord record("refrigerant_management", date, MTDictionary());
