@@ -75,6 +75,49 @@ MainWindow::MainWindow()
     http = new QHttp(this);
     http_buffer = new QBuffer(this);
     this->setUnifiedTitleAndToolBarOnMac(true);
+    tbtn_open = new QToolButton(this);
+    tbtn_open->setDefaultAction(actionOpen);
+    tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_open->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionSave, tbtn_open);
+    tbtn_view = new QToolButton(this);
+    tbtn_view->setDefaultAction(actionView);
+    tbtn_view->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_view->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionFind, tbtn_view);
+    tbtn_add = new QToolButton(this);
+    tbtn_add->setDefaultAction(actionAdd);
+    tbtn_add->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_add->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionFind, tbtn_add);
+    tbtn_modify = new QToolButton(this);
+    tbtn_modify->setDefaultAction(actionModify);
+    tbtn_modify->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_modify->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionFind, tbtn_modify);
+    menu_view = new QMenu(this);
+    tbtn_view->setMenu(menu_view);
+    menu_add = new QMenu(this);
+    menu_add->addAction(actionAdd_customer);
+    menu_add->addAction(actionAdd_circuit);
+    menu_add->addAction(actionAdd_inspection);
+    menu_add->addAction(actionAdd_repair);
+    menu_add->addAction(actionAdd_inspector);
+    menu_add->addAction(actionAdd_record_of_refrigerant_management);
+    menu_add->addAction(menuAdd_variable->menuAction());
+    menu_add->addAction(actionAdd_table);
+    menu_add->addAction(actionAdd_warning);
+    tbtn_add->setMenu(menu_add);
+    menu_modify = new QMenu(this);
+    menu_modify->addAction(actionModify_customer);
+    menu_modify->addAction(actionModify_circuit);
+    menu_modify->addAction(actionModify_inspection);
+    menu_modify->addAction(actionModify_repair);
+    menu_modify->addAction(actionModify_inspector);
+    menu_modify->addAction(actionModify_variable);
+    menu_modify->addAction(actionModify_table);
+    menu_modify->addAction(actionModify_warning);
+    tbtn_modify->setMenu(menu_modify);
     dw_browser->setVisible(false);
     dw_inspectors->setVisible(false);
     dw_variables->setVisible(false);
@@ -89,15 +132,18 @@ MainWindow::MainWindow()
     tbtn_remove_warning->setDefaultAction(actionRemove_warning);
     tbtn_add_inspector->setDefaultAction(actionAdd_inspector);
     tbtn_remove_inspector->setDefaultAction(actionRemove_inspector);
-    QStringList views = dict_html.keys();
+    views_list = dict_html.keys();
     QAction * action; actgrp_view = new QActionGroup(this);
     QAction * separator = menuView->actions().at(0);
-    QObject::connect(actgrp_view, SIGNAL(triggered(QAction *)), this, SLOT(setView(QAction *)));
-    for (int i = 0; i < views.count(); ++i) {
-        action = new QAction(actgrp_view); action->setText(views.at(i));
+    for (int i = 0; i < views_list.count(); ++i) {
+        action = new QAction(actgrp_view); action->setText(views_list.at(i));
+        action->setCheckable(true);
+        if (!i) { action->setChecked(true); }
         menuView->insertAction(separator, action);
-        cb_view->addItem(views.at(i)); view_indices.insert(views.at(i), i);
+        menu_view->addAction(action);
+        view_actions.insert(views_list.at(i), action);
     }
+    lbl_view->setText(tr("Service company"));
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
@@ -174,7 +220,7 @@ MainWindow::MainWindow()
     QObject::connect(lbl_selected_circuit, SIGNAL(linkActivated(const QString &)), this, SLOT(setView(const QString &)));
     QObject::connect(lbl_selected_inspection, SIGNAL(linkActivated(const QString &)), this, SLOT(setView(const QString &)));
     QObject::connect(btn_clear_current_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
-    QObject::connect(cb_view, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(viewChanged(const QString &)));
+    QObject::connect(actgrp_view, SIGNAL(triggered(QAction *)), this, SLOT(setView(QAction *)));
     QObject::connect(btn_view_level_up, SIGNAL(clicked()), this, SLOT(viewLevelUp()));
     QObject::connect(btn_view_level_down, SIGNAL(clicked()), this, SLOT(viewLevelDown()));
     QObject::connect(spb_since, SIGNAL(valueChanged(int)), this, SLOT(refreshView()));
@@ -207,8 +253,16 @@ QMenu * MainWindow::createPopupMenu()
 void MainWindow::showIconsOnly(bool show)
 {
     if (show) {
+        tbtn_open->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        tbtn_view->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        tbtn_add->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        tbtn_modify->setToolButtonStyle(Qt::ToolButtonIconOnly);
         toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     } else {
+        tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        tbtn_view->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        tbtn_add->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        tbtn_modify->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
         toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     }
 }
@@ -497,36 +551,52 @@ void MainWindow::setView(QAction * action)
 
 void MainWindow::setView(const QString & view)
 {
-    int i = view_indices.value(view);
-    if (cb_view->currentIndex() == i) {
+    QAction * action = view_actions.value(view);
+    if (actgrp_view->checkedAction() && actgrp_view->checkedAction() == action) {
         refreshView();
     } else {
-        cb_view->setCurrentIndex(i);
+        action->setChecked(true);
+        setView(action);
     }
 }
 
 void MainWindow::refreshView()
 {
-    viewChanged(cb_view->currentText());
+    if (actgrp_view->checkedAction()) { viewChanged(actgrp_view->checkedAction()->text()); }
+    else {
+        QAction * action = view_actions.value(tr("Service company"));
+        action->setChecked(true);
+        setView(action);
+    }
 }
 
 void MainWindow::viewLevelUp()
 {
-    if (cb_view->currentIndex() > 0) { cb_view->setCurrentIndex(cb_view->currentIndex() - 1); }
+    if (actgrp_view->checkedAction()) {
+        int i = views_list.indexOf(actgrp_view->checkedAction()->text());
+        if (!i) { return; }
+        QAction * action = view_actions.value(views_list.at(i - 1));
+        action->setChecked(true);
+        setView(action);
+    } else { refreshView(); }
 }
 
 void MainWindow::viewLevelDown()
 {
-    if (cb_view->currentIndex() < cb_view->count() - 1) {
-        QString view = cb_view->currentText();
+    if (actgrp_view->checkedAction()) {
+        QString view = actgrp_view->checkedAction()->text();
+        int i = views_list.indexOf(view);
+        if (i >= views_list.count() - 1) { return; }
         if ((view == tr("All customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
             setView(tr("List of repairs"));
         } else if (view == tr("Circuit information") && selectedInspection().isEmpty()) {
             setView(tr("Table of inspections"));
         } else {
-            cb_view->setCurrentIndex(cb_view->currentIndex() + 1);
+            QAction * action = view_actions.value(views_list.at(i + 1));
+            action->setChecked(true);
+            setView(action);
         }
-    }
+    } else { refreshView(); }
 }
 
 void MainWindow::addRecent(QString name)
@@ -569,9 +639,17 @@ void MainWindow::setAllEnabled(bool enable)
     menuInspection->setEnabled(enable);
     menuInspector->setEnabled(enable);
 
+    tbtn_view->setEnabled(enable);
+    tbtn_add->setEnabled(enable);
+    tbtn_modify->setEnabled(enable);
+
     actionFind->setEnabled(enable);
     actionFind_next->setEnabled(enable);
     actionFind_previous->setEnabled(enable);
+
+    actionAdd_record_of_refrigerant_management->setEnabled(enable);
+    actionAdd_table->setEnabled(enable);
+    actionAdd_warning->setEnabled(enable);
 
     actionAdd_customer->setEnabled(enable);
     actionAdd_repair->setEnabled(enable);
@@ -607,17 +685,29 @@ void MainWindow::enableTools()
 {
     bool customer_selected = lw_customers->highlightedRow() >= 0;
     bool circuit_selected = lw_circuits->highlightedRow() >= 0;
-    bool inspection_selected = lw_inspections->highlightedRow() >= 0;
-    bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
+    bool inspection_selected = false;
     bool repair_selected = !selected_repair.isEmpty();
+    bool circuit_repair_selected = false;
+    if (lw_inspections->highlightedRow() >= 0) {
+        if (!lw_inspections->highlightedItem()->font().italic()) {
+            inspection_selected = true;
+            circuit_repair_selected = false;
+        } else {
+            inspection_selected = false;
+            circuit_repair_selected = repair_selected = true;
+        }
+    }
+    bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
     lbl_selected_customer->setText(customer_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Customer information")).arg(tr("Customer: %1").arg(lw_customers->highlightedItem()->text())) : QString());
     lbl_selected_customer->setVisible(customer_selected);
     lbl_current_selection_arrow1->setVisible(circuit_selected);
     lbl_selected_circuit->setText(circuit_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Circuit information")).arg(tr("Circuit: %1").arg(lw_circuits->highlightedItem()->text())) : QString());
     lbl_selected_circuit->setVisible(circuit_selected);
-    lbl_current_selection_arrow2->setVisible(inspection_selected);
+    lbl_current_selection_arrow2->setVisible(inspection_selected || circuit_repair_selected);
     if (inspection_selected) {
         lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Inspection information")).arg(tr("Inspection: %1").arg(lw_inspections->highlightedItem()->text())));
+    } else if (circuit_repair_selected) {
+        lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of repairs")).arg(tr("Repair: %1").arg(lw_inspections->highlightedItem()->text())));
     } else if (repair_selected) {
         lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of repairs")).arg(tr("Repair: %1").arg(selectedRepair())));
     } else {

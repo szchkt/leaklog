@@ -182,6 +182,9 @@ QDialog(parent)
         if (is_inspection) {
             md_dict.insert("nominal", tr("Nominal"));
             md_dict_input.insert("nominal", "chb");
+        } else {
+            md_dict.insert("repair", tr("Repair"));
+            md_dict_input.insert("repair", "chbd;1");
         }
         Variables query;
         while (query.next()) {
@@ -189,17 +192,7 @@ QDialog(parent)
                 if (!query.value("VAR_VALUE").toString().isEmpty()) { continue; }
                 md_dict.insert(query.value("VAR_ID").toString(), query.value("VAR_NAME").toString());
                 if (query.value("VAR_ID").toString() == "inspector") {
-                    QString inspectors_string;
-                    QSqlQuery inspectors;
-                    inspectors.exec("SELECT id, person FROM inspectors");
-                    if (inspectors.next()) {
-                        while (true) {
-                            inspectors_string.append(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : inspectors.value(1).toString());
-                            inspectors_string.append("||" + inspectors.value(0).toString());
-                            if (inspectors.next()) { inspectors_string.append(";"); } else { break; }
-                        }
-                    }
-                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("cb;%1").arg(inspectors_string));
+                    md_dict_input.insert(query.value("VAR_ID").toString(), QString("cb;%1").arg(listInspectorsToString()));
                 } else if (query.value("VAR_TYPE").toString() == "int") {
                     md_dict_input.insert(query.value("VAR_ID").toString(), QString("spb;-999999999;0.0;999999999; %1").arg(query.value("VAR_UNIT").toString()));
                 } else if (query.value("VAR_TYPE").toString() == "float") {
@@ -244,7 +237,7 @@ QDialog(parent)
         md_dict.insert("field", tr("Field of application"));
         md_dict_input.insert("field", QString("cb;%1").arg(fields.join(";")));
         md_dict.insert("repairman", tr("Repairman"));
-        md_dict_input.insert("repairman", "le");
+        md_dict_input.insert("repairman", QString("cb;%1").arg(listInspectorsToString()));
         md_dict.insert("arno", tr("Assembly record No."));
         md_dict_input.insert("arno", "le");
         md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
@@ -410,7 +403,7 @@ QDialog(parent)
             //if (md_dict.key(_i) == md_record.type()) { _i++; r--; continue; }
             value = md_dict_values.contains(md_dict.key(_i).split("/").last()) ? md_dict_values.value(md_dict.key(_i).split("/").last()) : "";
             inputtype = md_dict_input.value(md_dict.key(_i)).split(";");
-            if (inputtype.at(0) != "chb") {
+            if (!inputtype.at(0).startsWith("chb")) {
                 md_lbl_var = new QLabel(tr("%1:").arg(md_dict.value(_i)), this);
                 md_lbl_var->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 md_grid_main->addWidget(md_lbl_var, r, 2 * c);
@@ -433,9 +426,14 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         if (inputtype.count() > 1) { md_le_var->setInputMask(inputtype.at(1)); }
         md_le_var->setText(value);
         return md_le_var;
-    } else if (inputtype.at(0) == "chb") {
+    } else if (inputtype.at(0) == "chb" || inputtype.at(0) == "chbd") {
         QCheckBox * md_chb_var = new QCheckBox(name, this);
-        md_chb_var->setChecked(value.toInt());
+        if (inputtype.at(0) == "chbd") {
+            md_chb_var->setEnabled(false);
+            if (inputtype.count() > 1) { md_chb_var->setChecked(inputtype.at(1).toInt()); }
+        } else {
+            md_chb_var->setChecked(value.toInt());
+        }
         return md_chb_var;
     } else if (inputtype.at(0) == "spb") {
         QSpinBox * md_spb_var = new QSpinBox(this);
@@ -502,7 +500,7 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
 QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStringList & inputtype, const QString & key)
 {
     QVariant value(QVariant::String);
-    if (inputtype.at(0) == "chb") {
+    if (inputtype.at(0) == "chb" || inputtype.at(0) == "chbd") {
         value = ((QCheckBox *)input_widget)->isChecked() ? 1 : 0;
     } else if (inputtype.at(0) == "le" || inputtype.at(0) == "led") {
         value = ((QLineEdit *)input_widget)->text();

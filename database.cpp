@@ -50,6 +50,11 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         } else {
             QStringList field_names = getTableFieldNames(dict_dbtables.key(i), database);
             QStringList all_field_names = dict_dbtables.value(i).split(", ");
+            if (dict_dbtables.key(i) == "inspections") {
+                for (int v = 0; v < dict_varnames.count(); ++v) {
+                    all_field_names << dict_varnames.key(v) + " TEXT";
+                }
+            }
             for (int f = 0; f < all_field_names.count(); ++f) {
                 if (!field_names.contains(all_field_names.at(f).split(" ").first())) {
                     addColumn(all_field_names.at(f), dict_dbtables.key(i), database);
@@ -105,8 +110,8 @@ void MainWindow::initTables(bool transaction)
     if (!table_of_leakages.exists()) {
         set.insert("id", tr("Table of leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;refr_recy;refr_disp;inspector;operator;rmds;arno");
-        set.insert("sum", "vis_aur_chk;refr_add;refr_reco;refr_recy;refr_disp");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add;refr_reco");
         table_of_leakages.update(set);
         set.clear();
     }
@@ -595,12 +600,16 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     MTDictionary parents("circuit", toString(selectedCircuit()));
     parents.insert("customer", toString(selectedCustomer()));
     MTRecord record("inspection", "", parents);
-    QSqlQuery inspections = record.select("date");
+    QFont font;
+    QSqlQuery inspections = record.select("date, nominal, repair");
     inspections.exec();
     while (inspections.next()) {
         QListWidgetItem * item = new QListWidgetItem;
         item->setText(inspections.value(0).toString());
         item->setData(Qt::UserRole, inspections.value(0).toString());
+        font.setBold(inspections.value(1).toInt());
+        font.setItalic(inspections.value(2).toInt());
+        item->setFont(font);
         lw_inspections->addItem(item);
     }
     enableTools();
@@ -623,6 +632,7 @@ void MainWindow::addInspection()
         QListWidgetItem * item = new QListWidgetItem;
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
+        QFont font; font.setBold(record.list("nominal").value("nominal").toInt()); item->setFont(font);
         lw_inspections->addItem(item);
         this->setWindowModified(true);
         refreshView();
@@ -645,6 +655,7 @@ void MainWindow::modifyInspection()
         QListWidgetItem * item = lw_inspections->highlightedItem();
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
+        QFont font; font.setBold(record.list("nominal").value("nominal").toInt()); item->setFont(font);
         this->setWindowModified(true);
         refreshView();
     }
@@ -699,6 +710,7 @@ void MainWindow::addRepair()
             QListWidgetItem * item = new QListWidgetItem;
             item->setText(record.id());
             item->setData(Qt::UserRole, record.id());
+            QFont font; font.setItalic(true); item->setFont(font);
             lw_inspections->addItem(item);
         }
         this->setWindowModified(true);
@@ -710,11 +722,29 @@ void MainWindow::addRepair()
 void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
-    if (selectedRepair().isEmpty()) { return; }
-    MTRecord record("repair", selectedRepair(), MTDictionary());
+    MTDictionary parents; QString repair;
+    QListWidgetItem * item = NULL;
+    if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
+        item = lw_inspections->highlightedItem();
+        if (item->font().italic()) {
+            parents.insert("customer", toString(selectedCustomer()));
+            parents.insert("circuit", toString(selectedCircuit()));
+            repair = selectedInspection();
+        }
+    }
+    if (parents.isEmpty()) {
+        if (!selectedRepair().isEmpty()) {
+            repair = selectedRepair();
+        } else { return; }
+    }
+    MTRecord record("repair", repair, parents);
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
-        //record = md->record();
+        record = md->record();
+        if (!parents.isEmpty()) {
+            item->setText(record.id());
+            item->setData(Qt::UserRole, record.id());
+        }
         this->setWindowModified(true);
         refreshView();
     }
@@ -724,16 +754,35 @@ void MainWindow::modifyRepair()
 void MainWindow::removeRepair()
 {
     if (!db.isOpen()) { return; }
-    if (selectedRepair().isEmpty()) { return; }
+    MTDictionary parents; QString repair;
+    QListWidgetItem * item = NULL;
+    if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
+        item = lw_inspections->highlightedItem();
+        if (item->font().italic()) {
+            parents.insert("customer", toString(selectedCustomer()));
+            parents.insert("circuit", toString(selectedCircuit()));
+            repair = selectedInspection();
+        }
+    }
+    if (parents.isEmpty()) {
+        if (!selectedRepair().isEmpty()) {
+            repair = selectedRepair();
+        } else { return; }
+    }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(selectedRepair()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("repair", selectedRepair(), MTDictionary());
+    MTRecord record(parents.isEmpty() ? "repair" : "inspection", repair, parents);
     record.remove();
-    selected_repair.clear();
+    if (parents.isEmpty()) { selected_repair.clear(); }
+    if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of repairs"));
+    if (parents.isEmpty()) {
+        setView(tr("List of repairs"));
+    } else {
+        setView(tr("Circuit information"));
+    }
 }
 
 void MainWindow::loadRepair(const QString & date, bool refresh)
@@ -902,6 +951,7 @@ void MainWindow::loadTable(const QString &)
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
+    cb_table->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
     StringVariantMap attributes = record.list("variables, sum");
@@ -1513,13 +1563,21 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
         MTDictionary parents("customer", i_customer);
         parents.insert("circuit", i_circuit);
         MTRecord record("inspection", i_date, parents);
+        QListWidgetItem * item = NULL;
         if (toString(selectedCustomer()) == i_customer && toString(selectedCircuit()) == i_circuit && !record.exists()) {
-            QListWidgetItem * item = new QListWidgetItem;
+            item = new QListWidgetItem;
             item->setText(i_date);
             item->setData(Qt::UserRole, i_date);
             lw_inspections->addItem(item);
         }
         record.update(set, j == 0);
+        if (item) {
+            StringVariantMap attributes = record.list("nominal, repair");
+            QFont font;
+            font.setBold(attributes.value("nominal").toInt());
+            font.setItalic(attributes.value("repair").toInt());
+            item->setFont(font);
+        }
         j++;
     }
 } // END IMPORT

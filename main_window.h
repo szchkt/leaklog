@@ -174,9 +174,17 @@ private:
     MTDictionary dict_attrnames;
     MTDictionary dict_html;
     QMap<QString, MTDictionary> parsed_expressions;
-    QMap<QString, int> view_indices;
+    QMap<QString, QAction *> view_actions;
+    QStringList views_list;
     QActionGroup * actgrp_view;
     QAction * actionShow_icons_only;
+    QToolButton * tbtn_open;
+    QToolButton * tbtn_view;
+    QToolButton * tbtn_add;
+    QToolButton * tbtn_modify;
+    QMenu * menu_view;
+    QMenu * menu_add;
+    QMenu * menu_modify;
     QString last_search_keyword;
     QSqlDatabase db;
     QComboBox * cb_lang;

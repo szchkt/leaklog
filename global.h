@@ -70,7 +70,8 @@ namespace Global {
     MTDictionary get_dict_varnames();
     MTDictionary get_dict_attrvalues();
     MTDictionary get_dict_attrnames();
-    // Variables
+    // List
+    QString listInspectorsToString();
     QStringList listVariableIds(bool = false);
 }
 
@@ -124,6 +125,7 @@ public:
     QSqlRecord record() const;
     QVariant value(int) const;
     QVariant value(const QString &) const;
+    int count() const;
 
 protected:
     int * pos();

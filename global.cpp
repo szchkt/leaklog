@@ -208,23 +208,38 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
-            value.append(inspection.value(expression.key(i)).toString());
+            value.append(toString(inspection.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "sum") {
             if (inspection.value("nominal").toInt()) {
-                value.append(inspection.value(expression.key(i)).toString());
+                value.append(toString(inspection.value(expression.key(i)).toDouble()));
                 continue;
             }
+            QStringList attributes;
+            Subvariable subvariable("", expression.key(i));
+            if (subvariable.count()) {
+                attributes = subvariable.value("SUBVAR_VALUE").toString().split("+");
+            } else {
+                Variable variable(expression.key(i));
+                if (variable.count()) {
+                    attributes = variable.value("VAR_VALUE").toString().split("+");
+                }
+            }
+            if (attributes.isEmpty()) { attributes << expression.key(i); }
             QSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
+            sum_ins.prepare(sum_query.arg(attributes.join(", ")).arg(inspection_date.left(4)));
             sum_ins.bindValue(":customer_id", customer_id);
             sum_ins.bindValue(":circuit_id", circuit_id);
             double v = 0.0;
             if (sum_ins.exec()) {
-                while (sum_ins.next()) { v += sum_ins.value(0).toDouble(); }
+                while (sum_ins.next()) {
+                    for (int a = 0; a < attributes.count(); ++a) {
+                        v += sum_ins.value(a).toDouble();
+                    }
+                }
             }
             value.append(toString(v));
         } else if (expression.value(i) == "circuit_attribute") {
-            value.append(circuit_attributes.value(expression.key(i)).toString());
+            value.append(toString(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
             MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.list("refrigerant").value("refrigerant").toString();
@@ -260,7 +275,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, certification_num TEXT, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
-    dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER");
+    dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
     dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
@@ -332,11 +347,13 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
     dict_varnames.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
     dict_varnames.insert("refr_add", QApplication::translate("VariableNames", "Refrigerant addition"));
-    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "kg"));
+    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "New"));
+    dict_varnames.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recycled"));
+    dict_varnames.insert("refr_add_am_total", QApplication::translate("VariableNames", "Total"));
     dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "%"));
     dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
-    dict_varnames.insert("refr_recy", QApplication::translate("VariableNames", "Refrigerant recycling"));
-    dict_varnames.insert("refr_disp", QApplication::translate("VariableNames", "Refrigerant disposal"));
+    //dict_varnames.insert("refr_recy", QApplication::translate("VariableNames", "Refrigerant recycling"));
+    //dict_varnames.insert("refr_disp", QApplication::translate("VariableNames", "Refrigerant disposal"));
     dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
     dict_varnames.insert("operator", QApplication::translate("VariableNames", "Operator"));
     return dict_varnames;
@@ -434,6 +451,21 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     return dict_attrnames;
+}
+
+QString Global::listInspectorsToString()
+{
+    QString inspectors_string; QSqlQuery inspectors;
+    inspectors.setForwardOnly(true);
+    inspectors.exec("SELECT id, person FROM inspectors");
+    if (inspectors.next()) {
+        while (true) {
+            inspectors_string.append(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : inspectors.value(1).toString());
+            inspectors_string.append("||" + inspectors.value(0).toString());
+            if (inspectors.next()) { inspectors_string.append(";"); } else { break; }
+        }
+    }
+    return inspectors_string;
 }
 
 QStringList Global::listVariableIds(bool all)
@@ -778,6 +810,11 @@ QVariant MTSqlQueryResult::value(const QString & s) const
     return _result.at(_pos).value(s);
 }
 
+int MTSqlQueryResult::count() const
+{
+    return _result.count();
+}
+
 Variables::Variables(QSqlDatabase db, bool exec_query):
 MTSqlQueryResult(db)
 {
@@ -897,11 +934,13 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "refr_add", "yellow");
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am", "float", tr("kg"), "", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am)/refrigerant_amount", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_am_recy", "float", tr("kg"), "", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_am_total", "float", tr("kg"), "refr_add_am+refr_add_am_recy", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am_total)/refrigerant_amount", false, 0.0);
 
     initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_recy", "float", tr("kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_disp", "float", tr("kg"), "", false, 0.0, "yellow");
+    //initVariable(filter, "refr_recy", "float", tr("kg"), "", false, 0.0, "yellow");
+    //initVariable(filter, "refr_disp", "float", tr("kg"), "", false, 0.0, "yellow");
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");
 }
@@ -1003,8 +1042,15 @@ Subvariable::Subvariable(const QString & parent, const QString & id, QSqlDatabas
 Variables(db, false)
 {
     var_id = id;
-    prepare("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables WHERE parent = :parent" + QString(id.isEmpty() ? "" : " AND id = :id"));
-    bindValue(":parent", parent);
+    QString query = "SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables";
+    if (!parent.isEmpty() || !id.isEmpty()) { query.append(" WHERE "); }
+    if (!parent.isEmpty()) {
+        query.append("parent = :parent");
+        if (!id.isEmpty()) { query.append(" AND "); }
+    }
+    if (!id.isEmpty()) { query.append("id = :id"); }
+    prepare(query);
+    if (!parent.isEmpty()) { bindValue(":parent", parent); }
     if (!id.isEmpty()) { bindValue(":id", var_id); }
     exec();
 }
