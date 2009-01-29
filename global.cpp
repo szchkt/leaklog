@@ -220,32 +220,34 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
         if (expression.value(i) == "id") {
             value.append(toString(inspection.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "sum") {
-            if (inspection.value("nominal").toInt()) {
-                value.append(toString(inspection.value(expression.key(i)).toDouble()));
-                continue;
-            }
-            QStringList attributes;
+            QStringList fields;
             Subvariable subvariable("", expression.key(i));
             subvariable.next();
             if (subvariable.count()) {
-                attributes << subvariable.value("SUBVAR_VALUE").toString().split("+");
+                fields << subvariable.value("SUBVAR_VALUE").toString().split("+");
             } else {
                 Variable variable(expression.key(i));
                 variable.next();
                 if (variable.count()) {
-                    attributes << variable.value("VAR_VALUE").toString().split("+");
+                    fields << variable.value("VAR_VALUE").toString().split("+");
                 }
             }
-            if (attributes.isEmpty()) { attributes << expression.key(i); }
-            QSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(attributes.join(", ")).arg(inspection_date.left(4)));
-            sum_ins.bindValue(":customer_id", customer_id);
-            sum_ins.bindValue(":circuit_id", circuit_id);
+            if (fields.isEmpty()) { fields << expression.key(i); }
             double v = 0.0;
-            if (sum_ins.exec()) {
-                while (sum_ins.next()) {
-                    for (int a = 0; a < attributes.count(); ++a) {
-                        v += sum_ins.value(a).toDouble();
+            if (inspection.value("nominal").toInt()) {
+                for (int a = 0; a < fields.count(); ++a) {
+                    v += inspection.value(fields.at(a)).toDouble();
+                }
+            } else {
+                QSqlQuery sum_ins;
+                sum_ins.prepare(sum_query.arg(fields.join(", ")).arg(inspection_date.left(4)));
+                sum_ins.bindValue(":customer_id", customer_id);
+                sum_ins.bindValue(":circuit_id", circuit_id);
+                if (sum_ins.exec()) {
+                    while (sum_ins.next()) {
+                        for (int a = 0; a < fields.count(); ++a) {
+                            v += sum_ins.value(a).toDouble();
+                        }
                     }
                 }
             }
