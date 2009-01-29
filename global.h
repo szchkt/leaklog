@@ -32,6 +32,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QColor>
 
 #include <memory>
 
@@ -56,6 +57,7 @@ namespace Global {
     QString downArrow();
     QString degreeSign();
     QString delta();
+    QColor textColourForBaseColour(const QColor &);
     void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     QStringList getTableFieldNames(const QString &, QSqlDatabase *);
     void addColumn(const QString &, const QString &, QSqlDatabase *);
@@ -71,6 +73,7 @@ namespace Global {
     MTDictionary get_dict_attrvalues();
     MTDictionary get_dict_attrnames();
     // List
+    QString listRefrigerantsToString();
     QString listInspectorsToString();
     QStringList listVariableIds(bool = false);
 }

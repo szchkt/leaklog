@@ -16,6 +16,7 @@ table,td,th {
 	border-collapse: collapse;
 	border-style: solid;
 	border-width: thin;
+	border-color: black;
 }
 table {
 	width: 100%;

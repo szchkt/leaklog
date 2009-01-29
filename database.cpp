@@ -412,8 +412,10 @@ void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        StringVariantMap attributes = record.list("purchased, sold");
-        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("sold").toDouble() <= 0.0) {
+        StringVariantMap attributes = record.list("purchased, sold, refr_recy, refr_rege, refr_disp");
+        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("sold").toDouble() <= 0.0 &&
+            attributes.value("refr_recy").toDouble() <= 0.0 && attributes.value("refr_rege").toDouble() <= 0.0 &&
+            attributes.value("refr_disp").toDouble() <= 0.0) {
             record.remove();
         }
         this->setWindowModified(true);
@@ -508,12 +510,12 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
     if (!query.next()) { return; }
     lw_circuits->clear(); lw_inspections->clear();
     QSqlQuery circuits;
-    circuits.prepare("SELECT id FROM circuits WHERE parent = :parent");
+    circuits.prepare("SELECT id, name FROM circuits WHERE parent = :parent");
     circuits.bindValue(":parent", selectedCustomer());
     circuits.exec();
     while (circuits.next()) {
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(circuits.value(0).toString().rightJustified(4, '0'));
+        item->setText(circuits.value(1).toString().isEmpty() ? circuits.value(0).toString().rightJustified(4, '0') : tr("%1 (%2)").arg(circuits.value(0).toString().rightJustified(4, '0')).arg(circuits.value(1).toString()));
         item->setData(Qt::UserRole, circuits.value(0).toString());
         lw_circuits->addItem(item);
     }
@@ -531,8 +533,10 @@ void MainWindow::addCircuit()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(4, '0');
+        QString name = record.list("name").value("name").toString();
         QListWidgetItem * item = new QListWidgetItem;
-        item->setText(record.id().rightJustified(4, '0'));
+        item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
         item->setData(Qt::UserRole, record.id());
         lw_circuits->addItem(item);
         this->setWindowModified(true);
@@ -551,8 +555,10 @@ void MainWindow::modifyCircuit()
     QString old_id = toString(selectedCircuit());
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
+        QString id = record.id().rightJustified(4, '0');
+        QString name = record.list("name").value("name").toString();
         QListWidgetItem * item = lw_circuits->highlightedItem();
-        item->setText(record.id().rightJustified(4, '0'));
+        item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
         item->setData(Qt::UserRole, record.id());
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
@@ -1476,8 +1482,9 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
         }
         MTRecord record("circuit", cc_id, MTDictionary("parent", cc_parent));
         if (toString(selectedCustomer()) == cc_parent && !record.exists()) {
+            QString cc_name = record.list("name").value("name").toString();
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(cc_id.rightJustified(4, '0'));
+            item->setText(cc_name.isEmpty() ? cc_id.rightJustified(4, '0') : tr("%1 (%2)").arg(cc_id.rightJustified(4, '0')).arg(cc_name));
             item->setData(Qt::UserRole, cc_id);
             lw_circuits->addItem(item);
         }

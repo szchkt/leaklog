@@ -43,6 +43,16 @@ QString Global::degreeSign() { return QApplication::translate("Global", "\302\26
 
 QString Global::delta() { return QApplication::translate("Global", "\316\224", 0, QApplication::UnicodeUTF8); }
 
+QColor Global::textColourForBaseColour(const QColor & c)
+{
+    if ((((c.red() * 299.0) + (c.green() * 587.0) + (c.blue() * 114.0)) / 1000.0) > 125.0 &&
+        (c.red() + c.green() + c.blue()) > 500) {
+        return QColor(Qt::black);
+    } else {
+        return QColor(Qt::white);
+    }
+}
+
 void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
 {
     QSqlQuery select(*from);
@@ -216,12 +226,14 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
             }
             QStringList attributes;
             Subvariable subvariable("", expression.key(i));
+            subvariable.next();
             if (subvariable.count()) {
-                attributes = subvariable.value("SUBVAR_VALUE").toString().split("+");
+                attributes << subvariable.value("SUBVAR_VALUE").toString().split("+");
             } else {
                 Variable variable(expression.key(i));
+                variable.next();
                 if (variable.count()) {
-                    attributes = variable.value("VAR_VALUE").toString().split("+");
+                    attributes << variable.value("VAR_VALUE").toString().split("+");
                 }
             }
             if (attributes.isEmpty()) { attributes << expression.key(i); }
@@ -274,9 +286,9 @@ MTDictionary Global::get_dict_dbtables()
     MTDictionary dict_dbtables;
     dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, certification_num TEXT, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
-    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
+    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -284,7 +296,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-    dict_dbtables.insert("refrigerant_management", "date TEXT, purchased NUMERIC, sold NUMERIC, refr_recy NUMERIC, refr_disp NUMERIC");
+    dict_dbtables.insert("refrigerant_management", "date TEXT, refrigerant TEXT, purchased NUMERIC, sold NUMERIC, refr_recy NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC");
     dict_dbtables.insert("db_info", "id TEXT, value TEXT");
     return dict_dbtables;
 }
@@ -380,22 +392,10 @@ MTDictionary Global::get_dict_attrvalues()
     dict_attrvalues.insert("oil::pve", QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"));
     dict_attrvalues.insert("oil::pag", QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"));
     dict_attrvalues.insert("refrigerant", QApplication::translate("AttributeValues", "Refrigerant"));
-    dict_attrvalues.insert("refrigerant::R11", "R11");
-    dict_attrvalues.insert("refrigerant::R12", "R12");
-    dict_attrvalues.insert("refrigerant::R22", "R22");
-    dict_attrvalues.insert("refrigerant::R32", "R32");
-    dict_attrvalues.insert("refrigerant::R123", "R123");
-    dict_attrvalues.insert("refrigerant::R124", "R124");
-    dict_attrvalues.insert("refrigerant::R125", "R125");
-    dict_attrvalues.insert("refrigerant::R134a", "R134a");
-    dict_attrvalues.insert("refrigerant::R143a", "R143a");
-    dict_attrvalues.insert("refrigerant::R227ea", "R227ea");
-    dict_attrvalues.insert("refrigerant::R365mfc", "R365mfc");
-    dict_attrvalues.insert("refrigerant::R404A", "R404A");
-    dict_attrvalues.insert("refrigerant::R407C", "R407C");
-    dict_attrvalues.insert("refrigerant::R410A", "R410A");
-    dict_attrvalues.insert("refrigerant::R502", "R502");
-    dict_attrvalues.insert("refrigerant::R507", "R507");
+    QStringList list_refrigerants = listRefrigerantsToString().split(";");
+    for (int i = 0; i < list_refrigerants.count(); ++i) {
+        dict_attrvalues.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
+    }
     // OBSOLETE
     dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Home air conditioning"));
     dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "Air conditioning"));
@@ -443,6 +443,7 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::date", QApplication::translate("AttributeNames", "Date"));
     dict_attrnames.insert("repairs::customer", QApplication::translate("AttributeNames", "Customer"));
     dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
+    dict_attrnames.insert("repairs::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
     dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
     dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("AttributeNames", "Refrigerant addition"));
     dict_attrnames.insert("repairs::refr_reco", QApplication::translate("AttributeNames", "Refrigerant recovery"));
@@ -451,6 +452,11 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     return dict_attrnames;
+}
+
+QString Global::listRefrigerantsToString()
+{
+    return "R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R404A;R407C;R410A;R502;R507";
 }
 
 QString Global::listInspectorsToString()
@@ -604,17 +610,24 @@ ListOfStringVariantMapsPtr MTRecord::listAll(const QString & fields)
 MultiMapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
     MultiMapOfStringVariantMapsPtr map(new MultiMapOfStringVariantMaps);
-    QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + map_to));
+    QStringList list_map_to = map_to.split("::");
+    QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
     query.setForwardOnly(true);
     query.exec();
-    const int index_map_to = query.record().indexOf(map_to);
-    if (index_map_to < 0) { return map; }
+    QList<int> indices;
+    for (int i = 0; i < list_map_to.count(); ++i) {
+        indices << query.record().indexOf(list_map_to.at(i));
+        if (indices.last() < 0) { return map; }
+    }
     while (query.next()) {
-        StringVariantMap row_map;
+        StringVariantMap row_map; QStringList list_key;
         for (int i = 0; i < query.record().count(); ++i) {
             row_map.insert(query.record().fieldName(i), query.value(i));
         }
-        map->insert(query.value(index_map_to).toString(), row_map);
+        for (int i = 0; i < indices.count(); ++i) {
+            list_key << query.value(indices.at(i)).toString();
+        }
+        map->insert(list_key.join("::"), row_map);
     }
     return map;
 }
