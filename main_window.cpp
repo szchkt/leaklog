@@ -21,8 +21,6 @@
 
 MainWindow::MainWindow()
 {
-    leaklog_version = "0.9.2"; f_leaklog_version = 0.902;
-    db_version = "0.9.2"; f_db_version = 0.902;
     // Dictionaries
     dict_dbtables = get_dict_dbtables();
     dict_vartypes = get_dict_vartypes();
@@ -860,7 +858,7 @@ void MainWindow::httpRequestFinished(bool error)
 	if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
 	QString release_notes;
 	while (!in.atEnd()) { release_notes.append(in.readLine()); }
-	if (f_current_ver <= f_leaklog_version) {
+	if (f_current_ver <= F_LEAKLOG_VERSION) {
 		QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
 	} else {
 		QString info; QTextStream out(&info);
@@ -880,7 +878,7 @@ void MainWindow::httpRequestFinished(bool error)
 
 void MainWindow::about()
 {
-    AboutWidget * leaklog_about = new AboutWidget(leaklog_version);
+    AboutWidget * leaklog_about = new AboutWidget;
     leaklog_about->setParent(this);
     leaklog_about->setWindowFlags(Qt::Dialog /*| Qt::WindowMaximizeButtonHint*/ | Qt::WindowStaysOnTopHint);
     leaklog_about->show();

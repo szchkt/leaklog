@@ -190,6 +190,4 @@ private:
     QComboBox * cb_lang;
     QMap<QString, QString> leaklog_i18n;
     QHttp * http; QBuffer * http_buffer;
-    QString leaklog_version; double f_leaklog_version;
-    QString db_version; double f_db_version;
 };

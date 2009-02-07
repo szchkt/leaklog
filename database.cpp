@@ -70,7 +70,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
             query.exec("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')");
         }
     }
-    if (DBInfoValueForKey("db_version").toDouble() < f_db_version) {
+    if (DBInfoValueForKey("db_version").toDouble() < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
@@ -143,7 +143,7 @@ void MainWindow::newDatabase()
     initDatabase(&db);
     initTables();
     QSqlQuery query("BEGIN");
-    setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(f_leaklog_version));
+    setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
     openDatabase(QString());
 }
@@ -339,8 +339,8 @@ void MainWindow::saveAndCompact()
 void MainWindow::saveDatabase(bool compact)
 {
     QStringList errors; QSqlQuery query;
-    setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(f_leaklog_version));
-    setDBInfoValueForKey("db_version", toString(f_db_version));
+    setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
+    setDBInfoValueForKey("db_version", toString(F_DB_VERSION));
     query.exec("COMMIT");
     if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
     if (compact) {

@@ -50,6 +50,11 @@ using std::auto_ptr;
 
 #define MultiMapOfStringVariantMapsPtr auto_ptr<MultiMapOfStringVariantMaps>
 
+#define LEAKLOG_VERSION "0.9.3"
+#define F_LEAKLOG_VERSION 0.903
+#define DB_VERSION "0.9.3"
+#define F_DB_VERSION 0.903
+
 namespace Global {
     QString toString(const QVariant &);
     QString escapeString(QString);

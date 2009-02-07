@@ -18,24 +18,25 @@
 ********************************************************************/
 
 #include "about_widget.h"
+#include "global.h"
 
-AboutWidget::AboutWidget(QString ver)
+AboutWidget::AboutWidget()
 {
 	setupUi(this);
 	QObject::connect(btn_close, SIGNAL(released()), this, SLOT(close()));
 	QString about = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">Leaklog</span><br>";
 	about.append("<span style=\"font-size:8pt;\">");
     about.append(tr("Version"));
-    about.append(QString(" %1</span></p><p></p>").arg(ver));
+    about.append(QString(" %1</span></p><p></p>").arg(LEAKLOG_VERSION));
 	about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage."));
     about.append("</p><p></p>");
 	about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about.append(tr("This programme is distributed under the terms of the GPL v2."));
+    about.append(tr("This program is distributed under the terms of the GPL v2."));
 	about.append("</p><p></p>");
         about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2009 <span style=\"font-style:italic;\">Matus & Michal Tomlein</span></p>");
 	about.append("<p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-	about.append(tr("The programme is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+	about.append(tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
 	about.append("</p>");
 #ifdef Q_WS_MAC
 	about.remove("font-family: sans-serif;");
@@ -46,7 +47,7 @@ AboutWidget::AboutWidget(QString ver)
 	QString about_qt = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">";
     about_qt.append(tr("About Qt"));
 	about_qt.append("</span></p><p></p><p style=\"font-family: sans-serif; font-size:8pt; font-style:italic;\">");
-	about_qt.append(tr("This programme uses Qt Open Source Edition version %1.").arg(qVersion()));
+	about_qt.append(tr("This program uses Qt Open Source Edition version %1.").arg(qVersion()));
 	about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
 	about_qt.append(tr("Qt is a C++ toolkit for cross-platform application development."));
 	about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");

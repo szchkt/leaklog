@@ -27,7 +27,7 @@ class AboutWidget : public QWidget, private Ui::AboutWidget
     Q_OBJECT
 
 public:
-    AboutWidget(QString);
+    AboutWidget();
 };
 
 #endif // ABOUT_WIDGET_H
