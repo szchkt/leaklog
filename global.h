@@ -70,7 +70,8 @@ namespace Global {
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
     MTDictionary parseExpression(const QString &, QStringList *);
     double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
-    QString compareValues(double, double, double = 0.0);
+    QString compareValues(double, double, double = 0.0, const QString & = QString());
+    QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString());
     // Dictionaries
     MTDictionary get_dict_dbtables();
     MTDictionary get_dict_vartypes();

@@ -484,7 +484,9 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         return md_dspb_var;
     } else if (widget_type == "cb" || widget_type == "cbd") {
         QComboBox * md_cb_var = new QComboBox(this); int n = -1;
+#ifndef Q_WS_MAC
         md_cb_var->setPalette(palette);
+#endif
         if (widget_type == "cbd") { md_cb_var->setEnabled(false); }
         QStringList items; QString item;
         for (int j = 1; j < inputtype.count(); ++j) {

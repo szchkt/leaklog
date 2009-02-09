@@ -793,7 +793,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "</th><th>" << tr("E-mail");
     out << "</th><th>" << tr("Phone");
     out << "</th></tr><tr>";
-    out << "<td><a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a></td>";
+    out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
     out << "<td>" << customer_info.value("company").toString() << "</td>";
     out << "<td>" << customer_info.value("contact_person").toString() << "</td>";
     out << "<td>" << customer_info.value("address").toString() << "</td>";
@@ -812,7 +812,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "</th><th>" << tr("Amount of oil");
     out << "</th><th>" << tr("Service life");
     out << "</th></tr><tr>";
-    out << "<td><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "\">" << circuit_id.rightJustified(4, '0') << "</a></td>";
+    out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";
     out << "<td>" << circuit_info.value("name").toString() << "</td>";
     out << "<td>" << circuit_info.value("manufacturer").toString() << "</td>";
     out << "<td>" << circuit_info.value("type").toString() << "</td>";
@@ -895,8 +895,7 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         out << "\"><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspections->at(i).value("date").toString() << "\">";
-        out << inspections->at(i).value("date").toString() << "</a>";
+        out << toolTipLink("customer/circuit/inspection", inspections->at(i).value("date").toString(), customer_id, circuit_id, inspections->at(i).value("date").toString());
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
         out << "</td>";
@@ -974,61 +973,68 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "<tfoot>";
 
 //*** Foot ***
-    if (!table.value("sum").toString().isEmpty()) {
-        out << "<tr class=\"border_top border_bottom\">";
-        out << "<th>" << tr("Sum") << "</th>";
-        QStringList sum_vars = table.value("sum").toString().split(";", QString::SkipEmptyParts);
-        for (int i = 0; i < table_vars.count(); ++i) {
-            bool is_in_foot = sum_vars.contains(table_vars.at(i));
-            if (variables.value(table_vars.at(i)).value("subvariables").toList().count() > 0) {
-                subvariables = variables.value(table_vars.at(i)).value("subvariables").toList();
-                for (int s = 0; s < subvariables.count(); ++s) {
-                    is_in_foot = sum_vars.contains(table_vars.at(i));
-                    if (subvariables.at(s).toMap().value("type").toString() != "float" && subvariables.at(s).toMap().value("type").toString() != "int") is_in_foot = false;
-                    out << "<td class=\"" << variables.value(table_vars.at(i)).value("col_bg").toString() << "\">";
-                    if (is_in_foot) {
-                        double value = 0;
-                        if (subvariables.at(s).toMap().value("value").toString().isEmpty()) {
-                            for (int ins = 0; ins < inspections->count(); ++ins) {
-                                value += inspections->at(ins).value(subvariables.at(s).toMap().value("id").toString()).toDouble();
-                            }
-                            out << value;
-                        } else {
-                            MTDictionary expression = parseExpression(subvariables.at(s).toMap().value("value").toString(), &used_ids);
-                            for (int ins = 0; ins < inspections->count(); ++ins) {
-                                if (subvariables.at(s).toMap().value("value").toString().contains("sum")) {
-                                    if (ins > 0 && !inspections->at(ins-1).value("nominal").toInt() && inspections->at(ins-1).value("date").toString().split(".").first() == inspections->at(ins).value("date").toString().split(".").first())
-                                        continue;
+    MTDictionary foot_functions;
+    foot_functions.insert("sum", tr("Sum"));
+    foot_functions.insert("avg", tr("Average"));
+    for (int f = 0; f < foot_functions.count(); ++f) {
+        if (!table.value(foot_functions.key(f)).toString().isEmpty()) {
+            out << "<tr class=\"border_top border_bottom\">";
+            out << "<th>" << foot_functions.value(f) << "</th>";
+            QStringList f_vars = table.value(foot_functions.key(f)).toString().split(";", QString::SkipEmptyParts);
+            for (int i = 0; i < table_vars.count(); ++i) {
+                bool is_in_foot = f_vars.contains(table_vars.at(i));
+                if (variables.value(table_vars.at(i)).value("subvariables").toList().count() > 0) {
+                    subvariables = variables.value(table_vars.at(i)).value("subvariables").toList();
+                    for (int s = 0; s < subvariables.count(); ++s) {
+                        is_in_foot = f_vars.contains(table_vars.at(i));
+                        if (subvariables.at(s).toMap().value("type").toString() != "float" && subvariables.at(s).toMap().value("type").toString() != "int") is_in_foot = false;
+                        out << "<td class=\"" << variables.value(table_vars.at(i)).value("col_bg").toString() << "\">";
+                        if (is_in_foot) {
+                            double value = 0.0; int num_ins = 0;
+                            if (subvariables.at(s).toMap().value("value").toString().isEmpty()) {
+                                num_ins = inspections->count();
+                                for (int ins = 0; ins < inspections->count(); ++ins) {
+                                    value += inspections->at(ins).value(subvariables.at(s).toMap().value("id").toString()).toDouble();
                                 }
-                                value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
+                            } else {
+                                MTDictionary expression = parseExpression(subvariables.at(s).toMap().value("value").toString(), &used_ids);
+                                for (int ins = 0; ins < inspections->count(); ++ins) {
+                                    if (subvariables.at(s).toMap().value("value").toString().contains("sum") &&
+                                        ins > 0 && !inspections->at(ins-1).value("nominal").toInt() &&
+                                        inspections->at(ins-1).value("date").toString().split(".").first() == inspections->at(ins).value("date").toString().split(".").first())
+                                            continue;
+                                    num_ins++;
+                                    value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
+                                }
                             }
+                            if (num_ins && foot_functions.key(f) == "avg") { value /= (double)num_ins; }
                             out << value;
                         }
+                        out << "</td>";
+                    }
+                } else {
+                    if (variables.value(table_vars.at(i)).value("type").toString() != "float" && variables.value(table_vars.at(i)).value("type").toString() != "int") is_in_foot = false;
+                    out << "<td class=\"" << variables.value(table_vars.at(i)).value("col_bg").toString() << "\">";
+                    if (is_in_foot) {
+                        double value = 0.0; int num_ins = inspections->count();
+                        if (variables.value(table_vars.at(i)).value("value").toString().isEmpty()) {
+                            for (int ins = 0; ins < inspections->count(); ++ins) {
+                                value += inspections->at(ins).value(table_vars.at(i)).toDouble();
+                            }
+                        } else {
+                            MTDictionary expression = parseExpression(variables.value(table_vars.at(i)).value("value").toString(), &used_ids);
+                            for (int ins = 0; ins < inspections->count(); ++ins) {
+                                value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
+                            }
+                        }
+                        if (num_ins && foot_functions.key(f) == "avg") { value /= (double)num_ins; }
+                        out << value;
                     }
                     out << "</td>";
                 }
-            } else {
-                if (variables.value(table_vars.at(i)).value("type").toString() != "float" && variables.value(table_vars.at(i)).value("type").toString() != "int") is_in_foot = false;
-                out << "<td class=\"" << variables.value(table_vars.at(i)).value("col_bg").toString() << "\">";
-                double value = 0;
-                if (is_in_foot) {
-                    if (variables.value(table_vars.at(i)).value("value").toString().isEmpty()) {
-                        for (int ins = 0; ins < inspections->count(); ++ins) {
-                            value += inspections->at(ins).value(table_vars.at(i)).toDouble();
-                        }
-                        out << value;
-                    } else {
-                        MTDictionary expression = parseExpression(variables.value(table_vars.at(i)).value("value").toString(), &used_ids);
-                        for (int ins = 0; ins < inspections->count(); ++ins) {
-                            value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
-                        }
-                        out << value;
-                    }
-                }
-                out << "</td>";
             }
+            out << "</tr>";
         }
-        out << "</tr>";
     }
     out << "</tfoot>";
     out << "</table>";
@@ -1077,7 +1083,7 @@ void MainWindow::writeTableVarCell(QTextStream & out, const QString & var_type, 
     }
     out << ">";
     if (compare_nom) {
-        out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value);
+        out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
     } else if (var_type == "text" && !ins_value.isEmpty()) {
         out << "...";
     } else {

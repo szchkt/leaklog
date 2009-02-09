@@ -224,12 +224,12 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
             Subvariable subvariable("", expression.key(i));
             subvariable.next();
             if (subvariable.count()) {
-                fields << subvariable.value("SUBVAR_VALUE").toString().split("+");
+                fields << subvariable.value("SUBVAR_VALUE").toString().split("+", QString::SkipEmptyParts);
             } else {
                 Variable variable(expression.key(i));
                 variable.next();
                 if (variable.count()) {
-                    fields << variable.value("VAR_VALUE").toString().split("+");
+                    fields << variable.value("VAR_VALUE").toString().split("+", QString::SkipEmptyParts);
                 }
             }
             if (fields.isEmpty()) { fields << expression.key(i); }
@@ -272,15 +272,29 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
     return (double)(round(result * 100.0) / 100.0);
 }
 
-QString Global::compareValues(double value1, double value2, double tolerance)
+QString Global::compareValues(double value1, double value2, double tolerance, const QString & bg_class)
 {
     if (value1 < value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
 	} else if (value1 > value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border\" valign=\"center\">%1</td></tr></table>";
+		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
 	} else {
 		return "%1";
 	}
+}
+
+QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3)
+{
+    QString link = "<a onmouseover=\"Tip('<a href=&quot;%1&quot;>"
+        + QApplication::translate("MainWindow", "View")
+        + "</a> | <a href=&quot;%1/modify&quot;>"
+        + QApplication::translate("MainWindow", "Modify")
+        + "</a>', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\" href=\"%1\">" + text + "</a>";
+    QString href; QStringList typelist = type.split("/");
+    if (typelist.count() > 0) href.append(typelist.at(0) + ":" + l1);
+    if (typelist.count() > 1) href.append("/" + typelist.at(1) + ":" + l2);
+    if (typelist.count() > 2) href.append("/" + typelist.at(2) + ":" + l3);
+    return link.arg(href);
 }
 
 MTDictionary Global::get_dict_dbtables()
@@ -294,7 +308,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
-    dict_dbtables.insert("tables", "id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT");
+    dict_dbtables.insert("tables", "id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
@@ -354,8 +368,9 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
     dict_varnames.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
     dict_varnames.insert("bbl_lvl", QApplication::translate("VariableNames", "Bubble/Level"));
-    dict_varnames.insert("oil_leak", QApplication::translate("VariableNames", "Oil leak"));
-    dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Leaked"));
+    //dict_varnames.insert("oil_leak", QApplication::translate("VariableNames", "Oil leak"));
+    //dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Leaked"));
+    dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil leak"));
     dict_varnames.insert("dir_leak_chk", QApplication::translate("VariableNames", "Direct leak check (location)"));
     dict_varnames.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
     dict_varnames.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
@@ -939,7 +954,7 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "vis_aur_chk", "", "corr_def", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "noise_vibr", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "bbl_lvl", "bool", "", "", false, 0.0);
-    initSubvariable(filter, "vis_aur_chk", "", "oil_leak", "bool", "", "", false, 0.0);
+    //initSubvariable(filter, "vis_aur_chk", "", "oil_leak", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", "float", tr("kg"), "", false, 0.0);
 
     initVariable(filter, "dir_leak_chk", "green");

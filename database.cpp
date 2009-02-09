@@ -960,9 +960,10 @@ void MainWindow::loadTable(const QString &)
     cb_table->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    StringVariantMap attributes = record.list("variables, sum");
+    StringVariantMap attributes = record.list("variables, sum, avg");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
+    QStringList avg = attributes.value("avg").toString().split(";", QString::SkipEmptyParts);
     for (int i = 0; i < variables.count(); ++i) {
         Variable variable(variables.at(i));
         QTreeWidgetItem * item = new QTreeWidgetItem(trw_table_variables);
@@ -971,7 +972,9 @@ void MainWindow::loadTable(const QString &)
         QComboBox * cb_foot = new QComboBox;
         cb_foot->addItem(tr("None"));
         cb_foot->addItem(tr("Sum"));
+        cb_foot->addItem(tr("Average"));
         if (sum.contains(variables.at(i))) { cb_foot->setCurrentIndex(1); }
+        else if (avg.contains(variables.at(i))) { cb_foot->setCurrentIndex(2); }
         else { cb_foot->setCurrentIndex(0); }
         QObject::connect(cb_foot, SIGNAL(currentIndexChanged(int)), this, SLOT(saveTable()));
         trw_table_variables->setItemWidget(item, 2, cb_foot);
@@ -984,15 +987,17 @@ void MainWindow::saveTable()
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    QStringList variables, sum; QString value;
+    QStringList variables, sum, avg; QString value;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
         variables << trw_table_variables->topLevelItem(i)->text(1);
         QString value = ((QComboBox *)trw_table_variables->itemWidget(trw_table_variables->topLevelItem(i), 2))->currentText();
         if (value == tr("Sum")) { sum << trw_table_variables->topLevelItem(i)->text(1); }
+        else if (value == tr("Average")) { avg << trw_table_variables->topLevelItem(i)->text(1); }
     }
     StringVariantMap set;
     set.insert("variables", variables.join(";"));
     set.insert("sum", sum.join(";"));
+    set.insert("avg", avg.join(";"));
     record.update(set);
     this->setWindowModified(true);
     refreshView();
@@ -1071,11 +1076,13 @@ void MainWindow::removeTableVariable()
     StringVariantMap attributes = record.list("variables, sum");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
+    QStringList avg = attributes.value("avg").toString().split(";", QString::SkipEmptyParts);
     variables.removeAll(item->text(1));
     sum.removeAll(item->text(1));
     StringVariantMap set;
     set.insert("variables", variables.join(";"));
     set.insert("sum", sum.join(";"));
+    set.insert("avg", avg.join(";"));
     record.update(set);
     loadTable(cb_table_edit->currentText());
     this->setWindowModified(true);
