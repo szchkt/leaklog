@@ -43,7 +43,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 {
     QSqlQuery query(*database);
     if (transaction) { query.exec("BEGIN"); }
-    QStringList tables = db.tables();
+    QStringList tables = database->tables();
     for (int i = 0; i < dict_dbtables.count(); ++i) {
         if (!tables.contains(dict_dbtables.key(i))) {
             query.exec("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")");
@@ -1285,13 +1285,13 @@ void MainWindow::exportData(const QString & type)
     QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
     QFile file(path); if (file.exists()) { file.remove(); }
-    QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
-    data.setDatabaseName(path);
-    if (!data.open()) {
-		QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
-		return;
-    }
     { // BEGIN EXPORT (SCOPE)
+        QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
+        data.setDatabaseName(path);
+        if (!data.open()) {
+            QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
+            return;
+        }
         initDatabase(&data);
         QSqlQuery query(data);
         query.exec("BEGIN");
@@ -1310,8 +1310,9 @@ void MainWindow::exportData(const QString & type)
             copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
         }
         query.exec("COMMIT");
+        data.close();
     } // END EXPORT (SCOPE)
-    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+    QSqlDatabase::removeDatabase("exportData");
 }
 
 void MainWindow::importData()
@@ -1319,13 +1320,13 @@ void MainWindow::importData()
     if (!db.isOpen()) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
 	if (path.isEmpty()) { return; }
+{ // BEGIN IMPORT (SCOPE)
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
     data.setDatabaseName(path);
     if (!data.open()) {
 		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
-{ // BEGIN IMPORT (SCOPE)
     QSqlQuery query(data);
     query.exec("BEGIN");
     initDatabase(&data, false);
@@ -1596,8 +1597,9 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
     }
 } // END IMPORT
     query.exec("ROLLBACK");
+    data.close();
 } // END IMPORT (SCOPE)
-    data.close(); QSqlDatabase::removeDatabase(data.connectionName());
+    QSqlDatabase::removeDatabase("importData");
     this->setWindowModified(true);
     refreshView();
 }
