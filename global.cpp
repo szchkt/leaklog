@@ -424,12 +424,12 @@ MTDictionary Global::get_dict_attrvalues()
 MTDictionary Global::get_dict_attrnames()
 {
     MTDictionary dict_attrnames;
-    dict_attrnames.insert("customer::id", QApplication::translate("AttributeNames", "ID:"));
-    dict_attrnames.insert("customer::company", QApplication::translate("AttributeNames", "Company:"));
-    dict_attrnames.insert("customer::contact_person", QApplication::translate("AttributeNames", "Contact person:"));
-    dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address:"));
-    dict_attrnames.insert("customer::mail", QApplication::translate("AttributeNames", "E-mail:"));
-    dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone:"));
+    dict_attrnames.insert("customer::id", QApplication::translate("AttributeNames", "ID"));
+    dict_attrnames.insert("customer::company", QApplication::translate("AttributeNames", "Company"));
+    dict_attrnames.insert("customer::contact_person", QApplication::translate("AttributeNames", "Contact person"));
+    dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address"));
+    dict_attrnames.insert("customer::mail", QApplication::translate("AttributeNames", "E-mail"));
+    dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone"));
 
     dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID:"));
     dict_attrnames.insert("circuit::disused", QApplication::translate("AttributeNames", "Disused:"));

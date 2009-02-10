@@ -43,7 +43,7 @@ void MainWindow::viewChanged(const QString & view)
     qApp->processEvents();
     if (service_company_view) {
         viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else if (view == tr("All customers")) {
+    } else if (view == tr("List of customers")) {
         viewAllCustomers();
     } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
         viewCustomer(toString(selectedCustomer()));
@@ -324,48 +324,34 @@ void MainWindow::viewAllCustomers()
     MTRecord all_customers("customer", "", MTDictionary());
     ListOfStringVariantMapsPtr list(all_customers.listAll());
     int cu_length = QString("customer::").length();
-    for (int i = 0; i < list->count(); ++i) {
-        out << "<tr style=\"background-color: #eee;\"><td colspan=\"2\" style=\"font-size: large; text-align: center;\"><b>" << tr("Company:") << "&nbsp;";
-        out << "<a href=\"customer:" << list->at(i).value("id").toString() << "\">" << list->at(i).value("company").toString() << "</a></b></td></tr>";
-        out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        QString attr_value;
-        int num_valid = 0;
-        for (int n = 0; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
-            attr_value = dict_attrnames.key(n).mid(cu_length);
-            if (list->at(i).value(attr_value).toString().isEmpty()) continue;
-            out << "<num_attr>" << num_valid << "</num_attr>";
-            out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
-            attr_value = QString(attr_value == "id" ? list->at(i).value(attr_value).toString().rightJustified(8, '0') : list->at(i).value(attr_value).toString());
-            out << "<td>" << attr_value << "</td></tr>";
-            num_valid++;
-        }
-        out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Number of circuits:") << "&nbsp;</td>";
-        out << "<td>";
-        MTRecord circuits_record("circuit", "", MTDictionary("parent", list->at(i).value("id").toString()));
-        ListOfStringVariantMapsPtr circuits(circuits_record.listAll("id"));
-        int num_circuits = 0, num_inspections = 0;
-        for (int j = 0; j < circuits->count(); ++j) {
-            num_circuits++;
-            MTDictionary inspection_parents("circuit", circuits->at(j).value("id").toString());
-            inspection_parents.insert("customer", list->at(i).value("id").toString());
-            MTRecord inspection_record("inspection", "", inspection_parents);
-            num_inspections += inspection_record.listAll("date")->count();
-        }
-        out << num_circuits;
-        out << "</td></tr>";
-        out << "<num_attr>" << num_valid << "</num_attr>"; num_valid++;
-        out << "<tr><td style=\"text-align: right; width:50%;\">" << tr("Total number of inspections:") << "&nbsp;</td>";
-        out << "<td>" << num_inspections << "</td></tr>";
-        out << "</table></td></tr>";
-        if (num_valid != 0) {
-            html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
-        }
-        for (int k = 0; k < num_valid; ++k) {
-            html.remove(QString("<num_attr>%1</num_attr>").arg(k));
-        }
+    out << "<tr>";
+    for (int n = dict_attrnames.indexOfKey("customer::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
+        out << "<th>" << dict_attrnames.value(n) << "</th>";
     }
-    wv_main->setHtml(dict_html.value(tr("All customers")).arg(html));
+    out << "<th>" << tr("Number of circuits") << "</th>";
+    out << "<th>" << tr("Total number of inspections") << "</th>";
+    out << "</tr>";
+    QString begin_tag, end_tag; QString id;
+    QString highlighted_id = toString(selectedCustomer());
+    for (int i = 0; i < list->count(); ++i) {
+        id = list->at(i).value("id").toString();
+        if (id == highlighted_id) {
+            begin_tag = "<th>", end_tag = "</th>";
+        } else {
+            begin_tag = "<td>", end_tag = "</td>";
+        }
+        out << "<tr>";
+        out << begin_tag << toolTipLink("customer", id.rightJustified(8, '0'), id) << end_tag;
+        for (int n = dict_attrnames.indexOfKey("customer::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
+            out << begin_tag << list->at(i).value(dict_attrnames.key(n).mid(cu_length)).toString() << end_tag;
+        }
+        MTRecord circuits_record("circuit", "", MTDictionary("parent", id));
+        out << begin_tag << circuits_record.listAll("id")->count() << end_tag;
+        MTRecord inspection_record("inspection", "", MTDictionary("customer", id));
+        out << begin_tag << inspection_record.listAll("date")->count() << end_tag;
+        out << "</tr>";
+    }
+    wv_main->setHtml(dict_html.value(tr("List of customers")).arg(html), QUrl("qrc:/html/"));
 }
 
 void MainWindow::viewCustomer(const QString & customer_id)
@@ -1206,12 +1192,11 @@ void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
     out << "</b></td></tr></thead></table>";
     out << "<br /><table><tr>";
     int re_length = QString("repairs::").length();
-    QString attr_value;
     for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
         out << "<th>" << dict_attrnames.value(n) << "</th>";
     }
     out << "</tr>";
-    bool make_link; bool highlight;
+    QString attr_value; bool make_link; bool highlight;
     for (int i = 0; i < repairs->count(); ++i) {
         out << "<tr>";
         make_link = true; highlight = (highlighted_id == repairs->at(i).value("date").toString());
@@ -1336,7 +1321,7 @@ void MainWindow::viewRefrigerantConsumption(const QString & customer_id)
     out << "<table class=\"default_table\" cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><thead><tr class=\"normal_table\" style=\"background-color:#eee\">";
     out << "<td class=\"normal_table\" style=\"font-size: large; text-align: center;\"><b>" << tr("Refrigerant consumption:") << "&nbsp;";
     if (customer_id.toInt() < 0) {
-        out << "<a href=\"allcustomers:\">" << tr("All customers") << "</a>";
+        out << "<a href=\"allcustomers:\">" << tr("List of customers") << "</a>";
     } else {
         out << tr("Customer:") << "&nbsp;" << "<a href=\"customer:" << customer_id << "\">" << customer_id.rightJustified(8, '0') << "</a>";
     }

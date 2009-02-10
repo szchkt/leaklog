@@ -34,7 +34,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Service company"), in.readAll());
     file.close();
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(tr("All customers"), in.readAll());
+    dict_html.insert(tr("List of customers"), in.readAll());
     file.close();
     file.setFileName(":/html/customer.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Customer information"), in.readAll());
@@ -291,7 +291,7 @@ void MainWindow::executeLink(const QUrl & url)
                 }
             }
         } else if (path.at(0).startsWith("allcustomers:")) {
-            setView(tr("All customers"));
+            setView(tr("List of customers"));
         } else if (path.at(0).startsWith("toggledetailedview:")) {
             show_details_in_service_company_view = !show_details_in_service_company_view;
             refreshView();
@@ -585,7 +585,7 @@ void MainWindow::viewLevelDown()
         QString view = actgrp_view->checkedAction()->text();
         int i = views_list.indexOf(view);
         if (i >= views_list.count() - 1) { return; }
-        if ((view == tr("All customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
+        if ((view == tr("List of customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
             setView(tr("List of repairs"));
         } else if (view == tr("Circuit information") && selectedInspection().isEmpty()) {
             setView(tr("Table of inspections"));

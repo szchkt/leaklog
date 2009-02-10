@@ -493,7 +493,7 @@ void MainWindow::removeCustomer()
     lw_circuits->clear(); lw_inspections->clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("All customers"));
+    setView(tr("List of customers"));
 }
 
 void MainWindow::loadCustomer(QListWidgetItem * item) { loadCustomer(item, true); }
