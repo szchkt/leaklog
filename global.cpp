@@ -53,20 +53,41 @@ QColor Global::textColourForBaseColour(const QColor & c)
     }
 }
 
+QString Global::variantTypeToSqlType(QVariant::Type type)
+{
+    switch (type) {
+        case QVariant::Int: return "INTEGER"; break;
+        case QVariant::Double: return "NUMERIC"; break;
+        default: break;
+    }
+    return "TEXT";
+}
+
+MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
+{
+    MTDictionary field_names;
+    QSqlQuery query(*database);
+    query.exec("SELECT * FROM " + table);
+    for (int i = 0; i < query.record().count(); ++i) {
+        field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
+    }
+    return field_names;
+}
+
 void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
 {
     QSqlQuery select(*from);
     select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
     if (select.next() && select.record().count()) {
         QString copy("INSERT INTO " + table + " (");
-        QStringList field_names = getTableFieldNames(table, to);
+        MTDictionary field_names = getTableFieldNames(table, to);
         QString field_name;
         for (int i = 0; i < select.record().count(); ++i) {
             field_name = select.record().fieldName(i);
             copy.append(i == 0 ? "" : ", ");
             copy.append(field_name);
             if (!field_names.contains(field_name)) {
-                addColumn(field_name, table, to);
+                addColumn(field_name + " " + variantTypeToSqlType(select.record().field(i).type()), table, to);
             }
         }
         copy.append(") VALUES (");
@@ -86,17 +107,6 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
     }
 }
 
-QStringList Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
-{
-    QStringList field_names;
-    QSqlQuery query(*database);
-    query.exec("SELECT * FROM " + table);
-    for (int i = 0; i < query.record().count(); ++i) {
-        field_names << query.record().fieldName(i);
-    }
-    return field_names;
-}
-
 void Global::addColumn(const QString & column, const QString & table, QSqlDatabase * database)
 {
     QString col = column;
@@ -111,14 +121,22 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
         QSqlQuery rename_column(*database);
         rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
-        QStringList all_field_names = getTableFieldNames(table, database);
-        all_field_names.removeAll(column);
-        QString field_names = all_field_names.join(", ");
+        MTDictionary all_field_names = getTableFieldNames(table, database);
+        QString column_type;
+        if (all_field_names.contains(column)) {
+            column_type = " " + all_field_names.value(column);
+            all_field_names.remove(column);
+        }
+        QString fields; QString field_names = all_field_names.keys().join(", ");
+        for (int i = 0; i < all_field_names.count(); ++i) {
+            if (i) { fields.append(", "); }
+            fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
+        }
         QSqlQuery query(*database);
-        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol)").arg(field_names));
+        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol%2)").arg(fields).arg(column_type));
         query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
-        query.exec(QString("CREATE TABLE %1 (%2, %3)").arg(table).arg(field_names).arg(new_name));
+        query.exec(QString("CREATE TABLE %1 (%2, %3%4)").arg(table).arg(fields).arg(new_name).arg(column_type));
         query.exec(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
@@ -130,14 +148,18 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
         QSqlQuery drop_column(*database);
         drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
-        QStringList all_field_names = getTableFieldNames(table, database);
-        all_field_names.removeAll(column);
-        QString field_names = all_field_names.join(", ");
+        MTDictionary all_field_names = getTableFieldNames(table, database);
+        all_field_names.remove(column);
+        QString fields; QString field_names = all_field_names.keys().join(", ");
+        for (int i = 0; i < all_field_names.count(); ++i) {
+            if (i) { fields.append(", "); }
+            fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
+        }
         QSqlQuery query(*database);
-        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(field_names));
+        query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(fields));
         query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
-        query.exec(QString("CREATE TABLE %1 (%2)").arg(table).arg(field_names));
+        query.exec(QString("CREATE TABLE %1 (%2)").arg(table).arg(fields));
         query.exec(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
@@ -446,9 +468,6 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant") + "||" + QApplication::translate("AttributeNames", "kg"));
     dict_attrnames.insert("circuit::oil", QApplication::translate("AttributeNames", "Oil"));
     dict_attrnames.insert("circuit::oil_amount", QApplication::translate("AttributeNames", "Amount of oil") + "||" + QApplication::translate("AttributeNames", "kg"));
-    dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life") + "||" + QApplication::translate("AttributeNames", "years"));
-    dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day") + "||" + QApplication::translate("AttributeNames", "hours"));
-    dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation") + "||" + "%");
     dict_attrnames.insert("service_companies::certification_num", QApplication::translate("AttributeNames", "Certification number:"));
     dict_attrnames.insert("service_companies::name", QApplication::translate("AttributeNames", "Name:"));
     dict_attrnames.insert("service_companies::id", QApplication::translate("AttributeNames", "ID:"));
@@ -468,6 +487,9 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     dict_attrnames.insert("circuit::disused", QApplication::translate("AttributeNames", "Disused"));
+    dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life") + "||" + QApplication::translate("AttributeNames", "years"));
+    dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day") + "||" + QApplication::translate("AttributeNames", "hours"));
+    dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation") + "||%");
     return dict_attrnames;
 }
 
@@ -657,7 +679,7 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
     QMapIterator<QString, QVariant> i(set);
     if (add_columns) {
         QSqlDatabase db = QSqlDatabase::database();
-        QStringList field_names = getTableFieldNames(tableForRecordType(r_type), &db);
+        MTDictionary field_names = getTableFieldNames(tableForRecordType(r_type), &db);
         while (i.hasNext()) { i.next();
             if (!field_names.contains(i.key())) {
                 addColumn(i.key(), tableForRecordType(r_type), &db);

@@ -273,11 +273,13 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(0).startsWith("customer:")) {
             id = path.at(0);
             id.remove(0, QString("customer:").length());
-            for (int i = 0; i < lw_customers->count(); ++i) {
-                if (lw_customers->item(i)->data(Qt::UserRole).toString() == id) {
-                    loadCustomer(lw_customers->item(i), path.count() <= 1); break;
+            if (id != toString(selectedCustomer())) {
+                for (int i = 0; i < lw_customers->count(); ++i) {
+                    if (lw_customers->item(i)->data(Qt::UserRole).toString() == id) {
+                        loadCustomer(lw_customers->item(i), path.count() <= 1); break;
+                    }
                 }
-            }
+            } else if (path.count() <= 1) { setView(tr("Customer information")); }
         } else if (path.at(0).startsWith("repair:")) {
             id = path.at(0);
             id.remove(0, QString("repair:").length());
@@ -304,11 +306,13 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(1).startsWith("circuit:")) {
             id = path.at(1);
             id.remove(0, QString("circuit:").length());
-            for (int i = 0; i < lw_circuits->count(); ++i) {
-                if (lw_circuits->item(i)->data(Qt::UserRole).toString() == id) {
-                    loadCircuit(lw_circuits->item(i), path.count() <= 2); break;
+            if (id != toString(selectedCircuit())) {
+                for (int i = 0; i < lw_circuits->count(); ++i) {
+                    if (lw_circuits->item(i)->data(Qt::UserRole).toString() == id) {
+                        loadCircuit(lw_circuits->item(i), path.count() <= 2); break;
+                    }
                 }
-            }
+            } else if (path.count() <= 2) { setView(tr("Circuit information")); }
         } else if (path.at(1).startsWith("modify")) {
             if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
             else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
@@ -321,11 +325,13 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(2).startsWith("inspection:")) {
             id = path.at(2);
             id.remove(0, QString("inspection:").length());
-            for (int i = 0; i < lw_inspections->count(); ++i) {
-                if (lw_inspections->item(i)->data(Qt::UserRole).toString() == id) {
-                    loadInspection(lw_inspections->item(i), path.count() <= 3); break;
+            if (id != selectedInspection()) {
+                for (int i = 0; i < lw_inspections->count(); ++i) {
+                    if (lw_inspections->item(i)->data(Qt::UserRole).toString() == id) {
+                        loadInspection(lw_inspections->item(i), path.count() <= 3); break;
+                    }
                 }
-            }
+            } else if (path.count() <= 3) { setView(tr("Inspection information")); }
         } else if (path.at(2).startsWith("table")) {
             setView(tr("Table of inspections"));
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }

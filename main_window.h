@@ -164,6 +164,8 @@ private:
     void viewAgenda();
     QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
     void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
+    void writeCustomersTable(QTextStream &, const QString & = QString());
+    void writeCircuitsTable(QTextStream &, const QString &, const QString & = QString());
 
     bool show_details_in_service_company_view;
     QString selected_repair;

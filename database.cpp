@@ -48,7 +48,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         if (!tables.contains(dict_dbtables.key(i))) {
             query.exec("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")");
         } else {
-            QStringList field_names = getTableFieldNames(dict_dbtables.key(i), database);
+            MTDictionary field_names = getTableFieldNames(dict_dbtables.key(i), database);
             QStringList all_field_names = dict_dbtables.value(i).split(", ");
             if (dict_dbtables.key(i) == "inspections") {
                 for (int v = 0; v < dict_varnames.count(); ++v) {
@@ -365,8 +365,10 @@ void MainWindow::saveDatabase(bool compact)
 void MainWindow::closeDatabase(bool save)
 {
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
-    QSqlQuery rollback; rollback.exec("ROLLBACK");
-    db.close(); QSqlDatabase::removeDatabase(db.connectionName());
+    {
+        QSqlQuery rollback; rollback.exec("ROLLBACK");
+    }
+    db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
     selected_repair.clear();
     clearAll(); setAllEnabled(false);

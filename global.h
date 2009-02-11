@@ -32,6 +32,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QSqlField>
 #include <QColor>
 
 #include <memory>
@@ -63,8 +64,9 @@ namespace Global {
     QString degreeSign();
     QString delta();
     QColor textColourForBaseColour(const QColor &);
+    QString variantTypeToSqlType(QVariant::Type);
+    MTDictionary getTableFieldNames(const QString &, QSqlDatabase *);
     void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
-    QStringList getTableFieldNames(const QString &, QSqlDatabase *);
     void addColumn(const QString &, const QString &, QSqlDatabase *);
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
