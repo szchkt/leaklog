@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="sk_SK">
+<defaultcodec></defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -108,7 +109,7 @@
     <message>
         <location filename="../modify_warning_dialogue.cpp" line="55"/>
         <source>Inspection interval</source>
-        <translation>Interval inšpekcií</translation>
+        <translation>Interval kontrol</translation>
     </message>
 </context>
 <context>
@@ -530,7 +531,7 @@
     <message>
         <location filename="../import_dialogue.ui" line="161"/>
         <source>Inspections</source>
-        <translation>Inšpekcie</translation>
+        <translation>Kontroly</translation>
     </message>
     <message>
         <location filename="../import_dialogue.ui" line="219"/>
@@ -702,7 +703,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../main_window.ui" line="560"/>
         <source>Inspection</source>
-        <translation>Inšpekcia</translation>
+        <translation>Kontrola</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="448"/>
@@ -792,7 +793,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../main_window.ui" line="1342"/>
         <source>Add inspection</source>
-        <translation>Pridať inšpekciu</translation>
+        <translation>Pridať kontrolu</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="1568"/>
@@ -802,7 +803,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../main_window.ui" line="1357"/>
         <source>Remove inspection</source>
-        <translation>Odstrániť inšpekciu</translation>
+        <translation>Odstrániť kontrolu</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="829"/>
@@ -852,7 +853,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../main_window.ui" line="1472"/>
         <source>Modify inspection</source>
-        <translation>Upraviť inšpekciu</translation>
+        <translation>Upraviť kontrolu</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="1484"/>
@@ -872,7 +873,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../view.cpp" line="624"/>
         <source>Inspection information</source>
-        <translation>Informácie o inšpekcii</translation>
+        <translation>Informácie o kontrole</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="814"/>
@@ -897,7 +898,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../main_window.ui" line="1550"/>
         <source>Export inspection data</source>
-        <translation>Exportovať údaje o inšpekcii</translation>
+        <translation>Exportovať údaje o kontrole</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="1577"/>
@@ -922,7 +923,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
     <message>
         <location filename="../view.cpp" line="986"/>
         <source>Table of inspections</source>
-        <translation>Tabuľka inšpekcií</translation>
+        <translation>Tabuľka kontrol</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="605"/>
@@ -939,14 +940,14 @@ Na odstránenie všetkých údajov o okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../database.cpp" line="700"/>
         <source>Remove inspection - Leaklog</source>
-        <translation>Odstrániť inšpekciu - Leaklog</translation>
+        <translation>Odstrániť kontrolu - Leaklog</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="700"/>
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú inšpekciu?
-Na odstránenie všetkých údajov o inšpekcii &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Naozaj chcete odstrániť vybranú kontrolu?
+Na odstránenie všetkých údajov o kontrole &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="1090"/>
@@ -1192,12 +1193,12 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
     <message>
         <location filename="../view.cpp" line="533"/>
         <source>Nominal inspection:</source>
-        <translation>Nominálna inšpekcia:</translation>
+        <translation>Nominálna kontrola:</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="533"/>
         <source>Inspection:</source>
-        <translation>Inšpekcia:</translation>
+        <translation>Kontrola:</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="982"/>
@@ -1695,7 +1696,7 @@ v súlade s Nariadením (ES) č. 842/2006</translation>
     <message>
         <location filename="../view.cpp" line="1317"/>
         <source>Next inspection</source>
-        <translation>Nasledujúca inšpekcia</translation>
+        <translation>Nasledujúca kontrola</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="1318"/>
@@ -1705,7 +1706,7 @@ v súlade s Nariadením (ES) č. 842/2006</translation>
     <message>
         <location filename="../view.cpp" line="1318"/>
         <source>Last inspection</source>
-        <translation>Posledná inšpekcia</translation>
+        <translation>Posledná kontrola</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="1389"/>
@@ -1827,7 +1828,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../main_window.cpp" line="714"/>
         <source>Inspection: %1</source>
-        <translation>Inšpekcia: %1</translation>
+        <translation>Kontrola: %1</translation>
     </message>
     <message>
         <location filename="../main_window.cpp" line="718"/>
@@ -1857,7 +1858,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../view.cpp" line="467"/>
         <source>Inspections and repairs</source>
-        <translation>Inšpekcie a opravy</translation>
+        <translation>Kontroly a opravy</translation>
     </message>
     <message>
         <location filename="../main_window.ui" line="1875"/>
@@ -1902,7 +1903,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../view.cpp" line="333"/>
         <source>Total number of inspections</source>
-        <translation>Celkový počet inšpekcií</translation>
+        <translation>Celkový počet kontrol</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="110"/>
@@ -1927,7 +1928,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../view.cpp" line="1165"/>
         <source>Number of inspections</source>
-        <translation>Počet inšpekcií</translation>
+        <translation>Počet kontrol</translation>
     </message>
     <message>
         <location filename="../view.cpp" line="1166"/>
@@ -2110,7 +2111,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../modify_dialogue.cpp" line="177"/>
         <source>Inspection</source>
-        <translation>Inšpekcia</translation>
+        <translation>Kontrola</translation>
     </message>
     <message>
         <location filename="../modify_dialogue.cpp" line="328"/>
@@ -2160,7 +2161,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../modify_dialogue.cpp" line="288"/>
         <source>Highlight the nominal inspection</source>
-        <translation>Vyznačiť nominálnu inšpekciu</translation>
+        <translation>Vyznačiť nominálnu kontrolu</translation>
     </message>
     <message>
         <location filename="../modify_dialogue.cpp" line="132"/>
@@ -2245,7 +2246,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../modify_dialogue.cpp" line="169"/>
         <source>Inspection interval</source>
-        <translation>Interval inšpekcií</translation>
+        <translation>Interval kontrol</translation>
     </message>
     <message>
         <location filename="../modify_dialogue.cpp" line="170"/>
@@ -2755,7 +2756,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <location filename="../global.cpp" line="1373"/>
         <source>Needs inspection</source>
-        <translation>Potrebuje inšpekciu</translation>
+        <translation>Potrebuje kontrolu</translation>
     </message>
     <message>
         <location filename="../global.cpp" line="1324"/>
