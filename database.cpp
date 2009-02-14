@@ -1247,7 +1247,7 @@ void MainWindow::removeInspector()
     if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
-    setView(tr("Inspectors"));
+    setView(tr("List of inspectors"));
 }
 
 void MainWindow::loadInspector(QListWidgetItem * item) { loadInspector(item, true); }
@@ -1258,7 +1258,7 @@ void MainWindow::loadInspector(QListWidgetItem * item, bool refresh)
     lw_inspections->highlightItem(item);
     enableTools();
     if (refresh) {
-        setView(tr("Inspectors"));
+        setView(tr("List of inspectors"));
     }
 }
 

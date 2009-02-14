@@ -52,7 +52,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("List of repairs"), in.readAll());
     file.close();
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(tr("Inspectors"), in.readAll());
+    dict_html.insert(tr("List of inspectors"), in.readAll());
     file.close();
     file.setFileName(":/html/refrigerant_consumption.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Refrigerant consumption"), in.readAll());
