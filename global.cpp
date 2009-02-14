@@ -330,7 +330,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
-    dict_dbtables.insert("tables", "id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
+    dict_dbtables.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
@@ -941,22 +941,22 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "t", "", "t_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
     initSubvariable(filter, "t", "", "t_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
 
-    initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "");
-    initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "");
-    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "");
-    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "");
-    initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
-    initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
-    initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
-    initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "t_c-t_ev", true, 0.0, "");
+    initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
+    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-p_to_t(p_0)", true, 0.0, "aliceblue");
+    initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
-    initVariable(filter, "t_sh", "");
-    initSubvariable(filter, "t_sh", "", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-t_0", true, 0.0);
-    initSubvariable(filter, "t_sh", "", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-t_0", true, 0.0);
+    initVariable(filter, "t_sh", "aliceblue");
+    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
+    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
 
-    initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "");
-    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-t_0", true, 0.0, "");
-    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-t_c", true, 0.0, "");
+    initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
+    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-p_to_t(p_c)", true, 0.0, "floralwhite");
+    initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
+    initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
     initVariable(filter, "ep_comp", "float", tr("kW"), "", true, 0.0, "");
 
     initVariable(filter, "ec", "");
@@ -1497,4 +1497,20 @@ void WarningConditions::saveResult()
         }
         *result() << row;
     }
+}
+
+bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest & request, QWebPage::NavigationType type)
+{
+    if (type == NavigationTypeLinkClicked || type == NavigationTypeOther) {
+        switch (linkDelegationPolicy()) {
+            case DontDelegateLinks:
+                return true;
+
+            case DelegateExternalLinks:
+            case DelegateAllLinks:
+                emit linkClicked(request.url());
+                return false;
+        }
+    }
+    return true;
 }

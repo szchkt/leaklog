@@ -34,6 +34,8 @@
 #include <QSqlError>
 #include <QSqlField>
 #include <QColor>
+#include <QWebPage>
+#include <QNetworkRequest>
 
 #include <memory>
 
@@ -256,6 +258,17 @@ protected:
 
     QSqlDatabase database;
     int id;
+};
+
+class MTWebPage : public QWebPage
+{
+    Q_OBJECT
+
+public:
+    MTWebPage(QObject * parent = 0): QWebPage(parent) {};
+
+protected:
+    bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
 };
 
 #endif // GLOBAL_H

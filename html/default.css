@@ -4,10 +4,15 @@ body {
 body,td,th {
 	font-family: "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;
 	font-size: small;
-	color: #333333;
+	color: #000000;
 }
 tbody > tr:hover > td {
-	background-color: rgb(180, 215, 255);
+	background-color: rgb(180, 215, 255) !important;
+	color: #000000 !important;
+}
+tbody > tr:hover > td > table > tbody > tr > td {
+	background-color: rgb(180, 215, 255) !important;
+	color: #000000 !important;
 }
 th {
 	background-color: #F3F3F3;
@@ -37,8 +42,9 @@ header_top {
 header_bottom {
 	border-bottom-width: medium;
 }
-tr.nominal {
-	background-color: #FFFF33;
+tr.nominal > td {
+	background-color: #FFFF33 !important;
+	color: #000000 !important;
 }
 .default_table {
 	background-color: #eee;

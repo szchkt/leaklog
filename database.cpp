@@ -106,22 +106,41 @@ void MainWindow::initTables(bool transaction)
     QSqlQuery query;
     if (transaction) { query.exec("BEGIN"); }
     StringVariantMap set;
-    MTRecord table_of_leakages("table", tr("Table of leakages"), MTDictionary());
-    if (!table_of_leakages.exists()) {
-        set.insert("id", tr("Table of leakages"));
+    MTRecord leakages("table", "", MTDictionary("uid", "Leakages"));
+    if (!leakages.exists()) {
+        set.insert("uid", "Leakages");
+        set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
         set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
         set.insert("sum", "vis_aur_chk;refr_add;refr_reco");
-        table_of_leakages.update(set);
+        leakages.update(set);
         set.clear();
     }
-    MTRecord table_of_parameters("table", tr("Table of parameters"), MTDictionary());
-    if (!table_of_parameters.exists()) {
-        set.insert("id", tr("Table of parameters"));
+    MTRecord pressures_and_temperatures("table", "", MTDictionary("uid", "Pressures and temperatures"));
+    if (!pressures_and_temperatures.exists()) {
+        set.insert("uid", "Pressures and temperatures");
+        set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
-        set.insert("variables", "t;p_0;p_c;t_0;t_c;t_ev;t_evap_out;t_comp_in;t_sc;t_sh;t_comp_out;ep_comp;ec;ev;ppsw;sftsw;rmds;arno");
+        set.insert("variables", "t;p_0;t_0;delta_t_evap;t_evap_out;t_comp_in;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;t_comp_out");
         set.insert("sum", "");
-        table_of_parameters.update(set);
+        pressures_and_temperatures.update(set);
+        set.clear();
+    }
+    MTRecord electrical_parameters("table", "", MTDictionary("uid", "Electrical parameters"));
+    if (!electrical_parameters.exists()) {
+        set.insert("uid", "Electrical parameters");
+        set.insert("id", tr("Electrical parameters"));
+        set.insert("highlight_nominal", 1);
+        set.insert("variables", "ep_comp;ec;ev;ppsw;sftsw");
+        set.insert("sum", "");
+        electrical_parameters.update(set);
+        //set.clear();
+    }
+    if (DBInfoValueForKey("db_version").toDouble() < 0.903) {
+        MTRecord table_of_leakages("table", tr("Table of leakages"), MTDictionary());
+        table_of_leakages.remove();
+        MTRecord table_of_parameters("table", tr("Table of parameters"), MTDictionary());
+        table_of_parameters.remove();
     }
     if (transaction) { query.exec("COMMIT"); }
 }

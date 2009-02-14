@@ -229,7 +229,9 @@ MainWindow::MainWindow()
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
-    wv_main->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    MTWebPage * page = new MTWebPage(wv_main);
+    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    wv_main->setPage(page);
     loadSettings();
     if (qApp->arguments().count() > 1) {
         QFileInfo file_info(qApp->arguments().at(1));

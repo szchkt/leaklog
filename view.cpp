@@ -332,7 +332,7 @@ void MainWindow::writeCustomersTable(QTextStream & out, const QString & customer
     thead.append("<th>" + tr("Number of circuits") + "</th>");
     thead.append("<th>" + tr("Total number of inspections") + "</th>");
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large; background-color: floralwhite;\">";
     if (customer_id.isEmpty()) { out << tr("List of customers"); }
     else { out << "<a href=\"customer:" << customer_id << "/modify\">" << tr("Customer") << "</a>"; }
     out << "</th></tr>";
@@ -340,9 +340,10 @@ void MainWindow::writeCustomersTable(QTextStream & out, const QString & customer
     QString id; QString highlighted_id = toString(selectedCustomer());
     for (int i = 0; i < list->count(); ++i) {
         id = list->at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'customer:" << id << "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
-            out << "<tr style=\"background-color: #F3F3F3;\">";
-        } else { out << "<tr>"; }
+            out << " background-color: #F3F3F3;\">";
+        } else { out << "\">"; }
         out << "<td>" << toolTipLink("customer", id.rightJustified(8, '0'), id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("customer::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
             out << "<td>" << list->at(i).value(dict_attrnames.key(n).mid(cu_length)).toString() << "</td>";
@@ -370,7 +371,7 @@ void MainWindow::writeCircuitsTable(QTextStream & out, const QString & customer_
     thead.append("<th>" + dict_attrnames.value("circuit::refrigerant") + "</th>");
     thead.append("<th>" + dict_attrnames.value("circuit::oil") + "</th>");
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large; background-color: aliceblue;\">";
     if (circuit_id.isEmpty()) { out << tr("Circuits"); }
     else { out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
     out << "</th></tr>";
@@ -381,9 +382,10 @@ void MainWindow::writeCircuitsTable(QTextStream & out, const QString & customer_
     for (int i = 0; i < circuits->count(); ++i) {
         if (circuit_id.isEmpty() && circuits->at(i).value("disused").toInt()) { show_disused = true; continue; }
         id = circuits->at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << id << "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
-            out << "<tr style=\"background-color: #F3F3F3;\">";
-        } else { out << "<tr>"; }
+            out << " background-color: #F3F3F3;\">";
+        } else { out << "\">"; }
         out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("circuit::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
             dict_value = dict_attrnames.value(n).split("||");
@@ -460,24 +462,26 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         MTRecord inspectors_record("inspector", "", MTDictionary());
         MultiMapOfStringVariantMapsPtr inspectors(inspectors_record.mapAll("id", "person"));
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><th colspan=\"8\" style=\"font-size: large;\"><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
+        out << "<tr><th colspan=\"8\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
         out << tr("Inspections and repairs") << "</a></th></tr>";
         out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
         out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
         out << "<th rowspan=\"2\">" << dict_varnames.value("refr_reco") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th></tr>";
+        out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
+        out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
+        out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th>";
+        out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th></tr>";
         out << "<tr><th>" << dict_varnames.value("refr_add_am") << "</th>";
         out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th></tr>";
         bool is_nominal, is_repair;
         QString id; QString highlighted_id = selectedInspection();
         for (int i = 0; i < inspections->count(); ++i) {
             id = inspections->at(i).value("date").toString();
+            out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << id << "'\" style=\"cursor: pointer;";
             if (id == highlighted_id) {
-                out << "<tr style=\"background-color: #F3F3F3;\">";
-            } else { out << "<tr>"; }
+                out << " background-color: #F3F3F3;\">";
+            } else { out << "\">"; }
             out << "<td>";
             is_nominal = inspections->at(i).value("nominal").toInt();
             is_repair = inspections->at(i).value("repair").toInt();
@@ -487,17 +491,17 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
             out << "</td>";
-            out << "<td>" << inspections->at(i).value("arno").toString() << "</td>";
-            out << "<td>" << inspectors->value(inspections->at(i).value("inspector").toString()).value("person").toString() << "</td>";
-            out << "<td>" << inspections->at(i).value("operator").toString() << "</td>";
             out << "<td>" << inspections->at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
             out << "<td>" << inspections->at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
             out << "<td>" << inspections->at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspectors->value(inspections->at(i).value("inspector").toString()).value("person").toString() << "</td>";
+            out << "<td>" << inspections->at(i).value("operator").toString() << "</td>";
             if (!inspections->at(i).value("rmds").toString().isEmpty()) {
                 out << "<td onmouseover=\"Tip('" << escapeString(inspections->at(i).value("rmds").toString()) << "')\" onmouseout=\"UnTip()\">...</td>";
             } else {
                 out << "<td></td>";
             }
+            out << "<td>" << inspections->at(i).value("arno").toString() << "</td>";
             out << "</tr>";
         }
         out << "</table>";
@@ -524,7 +528,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     QString circuit_name = circuit_rec.list("name").value("name").toString();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th colspan=\"4\" style=\"font-size: large;\">";
+    out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspection_date << "/modify\">";
     if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
 	out << "&nbsp;" << inspection_date << "</a></th></tr>";
@@ -1116,17 +1120,18 @@ void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr>";
     out << thead;
     if (repairs->count()) {
-        QString attr_value;
+        QString id, attr_value;
         MTRecord inspectors_record("inspector", "", MTDictionary());
         MultiMapOfStringVariantMapsPtr inspectors(inspectors_record.mapAll("id", "person"));
         for (int i = 0; i < repairs->count(); ++i) {
-            if (highlighted_id == repairs->at(i).value("date").toString()) {
-                out << "<tr style=\"background-color: #F3F3F3; font-weight: bold;\">";
-                out << "<td><a href=\"repair:" << repairs->at(i).value("date").toString() << "/modify\">";
+            id = repairs->at(i).value("date").toString();
+            out << "<tr onclick=\"window.location = 'repair:" << id << "";
+            if (highlighted_id == id) {
+                out << "/modify'\" style=\"background-color: #F3F3F3; font-weight: bold;";
             } else {
-                out << "<tr><td><a href=\"repair:" << repairs->at(i).value("date").toString() << "\">";
+                out << "'\" style=\"";
             }
-            out << repairs->at(i).value("date").toString() << "</a>";
+            out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
             for (int n = dict_attrnames.indexOfKey("repairs::date") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
                 attr_value = repairs->at(i).value(dict_attrnames.key(n).mid(re_length)).toString();
                 out << "<td>";
@@ -1165,13 +1170,13 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
     QString id;
     for (int i = 0; i < inspectors->count(); ++i) {
         id = inspectors->at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'inspector:" << id << "";
         if (highlighted_id == id) {
-            out << "<tr style=\"background-color: #F3F3F3; font-weight: bold;\">";
-            out << "<td><a href=\"inspector:" << id << "/modify\">";
+            out << "/modify'\" style=\"background-color: #F3F3F3; font-weight: bold;";
         } else {
-            out << "<tr><td><a href=\"inspector:" << id << "\">";
+            out << "'\" style=\"";
         }
-        out << id.rightJustified(4, '0') << "</a>";
+        out << " cursor: pointer;\"><td><a href=\"\">" << id.rightJustified(4, '0') << "</a></td>";
         for (int n = dict_attrnames.indexOfKey("inspectors::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
             out << "<td>" << inspectors->at(i).value(dict_attrnames.key(n).mid(in_length)).toString() << "</td>";
         }
