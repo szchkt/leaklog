@@ -8,11 +8,11 @@ body,td,th {
 }
 tbody > tr:hover > td {
 	background-color: rgb(180, 215, 255) !important;
-	color: #000000 !important;
+	color: #000000;
 }
 tbody > tr:hover > td > table > tbody > tr > td {
 	background-color: rgb(180, 215, 255) !important;
-	color: #000000 !important;
+	color: #000000;
 }
 th {
 	background-color: #F3F3F3;
@@ -53,11 +53,11 @@ tr.nominal > td {
 	border-collapse: collapse;
 }
 a:link {
-	color: #333333;
+	color: inherit;
 	text-decoration: none;
 }
 a:visited {
-	color: #333333;
+	color: inherit;
 	text-decoration: none;
 }
 a:hover {
@@ -65,7 +65,7 @@ a:hover {
 	text-decoration: underline;
 }
 a:active {
-	color: #333333;
+	color: inherit;
 	text-decoration: none;
 }
 warning {

@@ -36,8 +36,10 @@
 #include <QColor>
 #include <QWebPage>
 #include <QNetworkRequest>
+#include <QTextStream>
 
 #include <memory>
+#include <cmath>
 
 using std::auto_ptr;
 
@@ -57,6 +59,9 @@ using std::auto_ptr;
 #define F_LEAKLOG_VERSION 0.903
 #define DB_VERSION "0.9.3"
 #define F_DB_VERSION 0.903
+
+#define REAL_NUMBER_PRECISION 2
+#define REAL_NUMBER_PRECISION_EXP 100.0
 
 namespace Global {
     QString toString(const QVariant &);
@@ -269,6 +274,21 @@ public:
 
 protected:
     bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
+};
+
+class MTTextStream : public QTextStream
+{
+public:
+    MTTextStream(QString * string, QIODevice::OpenMode openMode = QIODevice::ReadWrite): QTextStream(string, openMode) {};
+
+    inline MTTextStream & operator<<(double f) {
+        long double ld = (long double)f;
+        if (round(ld) == ld) this->QTextStream::operator<<(f);
+        else this->QTextStream::operator<<((double)(round(ld * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP));
+        return *this;
+    };
+    inline MTTextStream & operator<<(const char * string) { this->QTextStream::operator<<(string); return *this; };
+    inline MTTextStream & operator<<(const QString & string) { this->QTextStream::operator<<(string); return *this; };
 };
 
 #endif // GLOBAL_H

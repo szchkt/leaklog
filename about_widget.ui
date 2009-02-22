@@ -50,14 +50,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="lbl_about" >
+      <widget class="QLabel" name="lbl_leaklog" >
        <property name="font" >
         <font>
          <pointsize>16</pointsize>
         </font>
        </property>
        <property name="text" >
-        <string>About Leaklog</string>
+        <string>Leaklog</string>
        </property>
        <property name="alignment" >
         <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -161,7 +161,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="6" />
- <includes/>
  <resources>
   <include location="resources.qrc" />
  </resources>

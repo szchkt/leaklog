@@ -19,10 +19,19 @@
 
 #include "main_window.h"
 
-bool MainWindow::saveChangesBeforeProceeding(QString title, bool close_)
+bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
 {
 	if (db.isOpen() && this->isWindowModified()) {
-		switch (QMessageBox::information(this, title, tr("Save changes before proceeding?"), tr("&Save"), tr("&Discard"), tr("Cancel"), 0, 2)) {
+        QMessageBox message(this);
+        message.setWindowTitle(title);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setText(tr("The database has been modified."));
+        message.setInformativeText(tr("Do you want to save your changes?"));
+        message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+        message.addButton(tr("&Discard"), QMessageBox::DestructiveRole);
+        message.addButton(tr("Cancel"), QMessageBox::RejectRole);
+        switch (message.exec()) {
 			case 0: // Save
 				save(); if (close_) { closeDatabase(false); }; return false;
 				break;

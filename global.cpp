@@ -19,8 +19,6 @@
 
 #include "global.h"
 
-#include <cmath>
-
 QString Global::toString(const QVariant & v) { return v.toString(); }
 
 QString Global::escapeString(QString s)
@@ -234,7 +232,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
-    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal = 0");
+    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal <> 1");
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
     StringVariantMap circuit_attributes = circuit.list();
     QString value;
@@ -291,7 +289,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
     if (ok) *ok = true;
     long double result = fparser.Eval(NULL);
     if (round(result) == result) return (double)result;
-    return (double)(round(result * 100.0) / 100.0);
+    return (double)(round(result * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP);
 }
 
 QString Global::compareValues(double value1, double value2, double tolerance, const QString & bg_class)

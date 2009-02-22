@@ -28,7 +28,6 @@
 #include <QLocale>
 #include <QFileDialog>
 #include <QInputDialog>
-#include <QTextStream>
 #include <QBuffer>
 #include <QUrl>
 #include <QPrintPreviewDialog>
@@ -123,14 +122,14 @@ private:
     // UI
     QMenu * createPopupMenu();
     void paintLabel(const StringVariantMap &, QPainter &, int, int, int, int);
-    void addRecent(QString);
+    void addRecent(const QString &);
     void clearAll();
     void setAllEnabled(bool);
     void closeEvent(QCloseEvent *);
     void loadSettings();
     void saveSettings();
     // DATABASE
-    bool saveChangesBeforeProceeding(QString, bool);
+    bool saveChangesBeforeProceeding(const QString &, bool);
     void initDatabase(QSqlDatabase *, bool = true);
     void initTables(bool = true);
     void openDatabase(QString);
@@ -160,14 +159,14 @@ private:
     void viewTable(const QString &, const QString &, const QString &, int);
     void viewAllRepairs(const QString &, int);
     void viewAllInspectors(const QString &);
-    void viewRefrigerantConsumption(const QString & = QString());
+    void viewLeakagesByApplication();
     void viewAgenda();
     QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
-    void writeTableVarCell(QTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
-    void writeCustomersTable(QTextStream &, const QString & = QString());
-    void writeCircuitsTable(QTextStream &, const QString &, const QString & = QString());
+    void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
+    void writeCustomersTable(MTTextStream &, const QString & = QString());
+    void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
 
-    bool show_details_in_service_company_view;
+    QSet<int> years_expanded_in_service_company_view;
     QString selected_repair;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;

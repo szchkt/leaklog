@@ -55,7 +55,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("List of inspectors"), in.readAll());
     file.close();
     file.setFileName(":/html/refrigerant_consumption.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(tr("Refrigerant consumption"), in.readAll());
+    dict_html.insert(tr("Leakages by application"), in.readAll());
     file.close();
     file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Agenda"), in.readAll());
@@ -65,8 +65,6 @@ MainWindow::MainWindow()
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
-    // ----
-    show_details_in_service_company_view = true;
     // ----
     if (tr("LTR") == "RTL") { qApp->setLayoutDirection(Qt::RightToLeft); }
     setupUi(this);
@@ -297,7 +295,13 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("allcustomers:")) {
             setView(tr("List of customers"));
         } else if (path.at(0).startsWith("toggledetailedview:")) {
-            show_details_in_service_company_view = !show_details_in_service_company_view;
+            id = path.at(0);
+            id.remove(0, QString("toggledetailedview:").length());
+            if (years_expanded_in_service_company_view.contains(id.toInt())) {
+                years_expanded_in_service_company_view.remove(id.toInt());
+            } else {
+                years_expanded_in_service_company_view << id.toInt();
+            }
             refreshView();
         } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {
             id = path.at(0);
@@ -605,7 +609,7 @@ void MainWindow::viewLevelDown()
     } else { refreshView(); }
 }
 
-void MainWindow::addRecent(QString name)
+void MainWindow::addRecent(const QString & name)
 {
     for (int i = 0; i < lw_recent_docs->count();) {
         if (lw_recent_docs->item(i)->text() == name) {
@@ -627,6 +631,8 @@ void MainWindow::clearAll()
     trw_variables->clear();
     trw_table_variables->clear();
     lw_warnings->clear();
+    // ----
+    years_expanded_in_service_company_view.clear();
 }
 
 void MainWindow::setAllEnabled(bool enable)
