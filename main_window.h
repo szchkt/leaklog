@@ -161,7 +161,7 @@ private:
     void viewAllInspectors(const QString &);
     void viewLeakagesByApplication();
     void viewAgenda();
-    QStringList listWarnings(StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, QStringList &, bool = false);
+    QStringList listWarnings(Warnings &, StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, bool = false);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
@@ -174,7 +174,6 @@ private:
     MTDictionary dict_attrvalues;
     MTDictionary dict_attrnames;
     MTDictionary dict_html;
-    QMap<QString, MTDictionary> parsed_expressions;
     QMap<QString, QAction *> view_actions;
     QStringList views_list;
     QActionGroup * actgrp_view;

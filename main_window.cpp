@@ -409,12 +409,8 @@ void MainWindow::printLabel()
     refr_add_per.next();
     QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
     if (!unparsed_expression.isEmpty()) {
-        if (!parsed_expressions.contains(unparsed_expression)) {
-            QStringList var_ids = listVariableIds();
-            parsed_expressions.insert(unparsed_expression, parseExpression(unparsed_expression, &var_ids));
-        }
-        MTDictionary expression = parsed_expressions.value(unparsed_expression);
-        attributes.insert("refr_add_per", evaluateExpression(inspection, expression, toString(selectedCustomer()), toString(selectedCircuit())));
+        QStringList var_ids = listVariableIds();
+        attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, &var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
     }
     MTRecord circuit("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
     attributes.unite(circuit.list("refrigerant, refrigerant_amount"));

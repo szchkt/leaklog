@@ -163,10 +163,12 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
     }
 }
 
+QMap<QString, MTDictionary> Global::parsed_expressions;
+
 MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids)
 {
     MTDictionary dict_exp(true);
-    if (!exp.isEmpty()) {
+    if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
         QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
         QStringList functions; functions << "sum" << "p_to_t";
         for (int i = 0; i < circuit_attributes.count(); ++i) {
@@ -222,6 +224,9 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids
                 dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
             }
         }
+        parsed_expressions.insert(exp, dict_exp);
+    } else {
+        return parsed_expressions.value(exp, MTDictionary(true));
     }
     return dict_exp;
 }
@@ -1148,13 +1153,66 @@ void Subvariable::saveResult()
     }
 }
 
-Warnings::Warnings(QSqlDatabase db, bool enabled_only):
+Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_id, const QString & circuit_id):
 MTSqlQueryResult(db)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
     this->enabled_only = enabled_only;
-    exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""));
+    if (exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""))
+        && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
+        MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+        StringVariantMap circuit_attributes = circuit.list();
+        QString circuit_attribute, function, value;
+        bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
+        bool skip = false; int id; QStringList used_ids = listVariableIds();
+        for (int i = 0; i < result()->count(); ++i) {
+            id = result()->at(i).value("id").toInt();
+            skip = false;
+            WarningFilters warning_filters(id);
+            while (warning_filters.next()) {
+                circuit_attribute = circuit_attributes.value(warning_filters.value("circuit_attribute").toString()).toString();
+                function = warning_filters.value("function").toString();
+                value = warning_filters.value("value").toString();
+                f_circuit_attribute = circuit_attribute.toDouble(&ok1);
+                f_value = value.toDouble(&ok2);
+                if (ok1 && ok2) {
+                    if (function == "=" && f_circuit_attribute == f_value) {}
+                    else if (function == "!=" && f_circuit_attribute != f_value) {}
+                    else if (function == ">" && f_circuit_attribute > f_value) {}
+                    else if (function == ">=" && f_circuit_attribute >= f_value) {}
+                    else if (function == "<" && f_circuit_attribute < f_value) {}
+                    else if (function == "<=" && f_circuit_attribute <= f_value) {}
+                    else { skip = true; break; }
+                } else {
+                    if (function == "=" && circuit_attribute == value) {}
+                    else if (function == "!=" && circuit_attribute != value) {}
+                    else if (function == ">" && circuit_attribute > value) {}
+                    else if (function == "<" && circuit_attribute < value) {}
+                    else { skip = true; break; }
+                }
+            }
+            if (skip) { result()->removeAt(i); i--; continue; }
+            WarningConditions warning_conditions(id);
+            while (warning_conditions.next()) {
+                conditions_value_ins[id] << parseExpression(warning_conditions.value("value_ins").toString(), &used_ids);
+                conditions_value_nom[id] << parseExpression(warning_conditions.value("value_nom").toString(), &used_ids);
+                conditions_functions[id] << warning_conditions.value("function").toString();
+            }
+        }
+    }
 }
+
+int Warnings::warningConditionValueInsCount(int id) { return conditions_value_ins.value(id).count(); }
+
+MTDictionary Warnings::warningConditionValueIns(int id, int i) { return conditions_value_ins.value(id).at(i); }
+
+int Warnings::warningConditionValueNomCount(int id) { return conditions_value_nom.value(id).count(); }
+
+MTDictionary Warnings::warningConditionValueNom(int id, int i) { return conditions_value_nom.value(id).at(i); }
+
+int Warnings::warningConditionFunctionCount(int id) { return conditions_functions.value(id).count(); }
+
+QString Warnings::warningConditionFunction(int id, int i) { return conditions_functions.value(id).at(i); }
 
 void Warnings::saveResult()
 {
@@ -1185,7 +1243,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "refrigerant_amount", ">=", "3");
             initFilter(map, w, "refrigerant_amount", "<", "10");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "6");
         }
     }
     w = "1001";
@@ -1197,7 +1255,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "refrigerant_amount", ">=", "3");
             initFilter(map, w, "refrigerant_amount", "<", "10");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "8");
         }
     }
     w = "1002";
@@ -1209,7 +1267,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "refrigerant_amount", ">=", "10");
             initFilter(map, w, "refrigerant_amount", "<", "100");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "4");
         }
     }
     w = "1003";
@@ -1221,7 +1279,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "refrigerant_amount", ">=", "10");
             initFilter(map, w, "refrigerant_amount", "<", "100");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "6");
         }
     }
     w = "1004";
@@ -1232,7 +1290,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "commissioning", "<", "2011.07.04");
             initFilter(map, w, "refrigerant_amount", ">=", "100");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "2");
         }
     }
     w = "1005";
@@ -1243,7 +1301,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initFilter(map, w, "commissioning", ">=", "2011.07.04");
             initFilter(map, w, "refrigerant_amount", ">=", "100");
         } else if (type == 2) {
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+            initCondition(map, w, "100*(refr_add_am+refr_add_am_recy)/refrigerant_amount", ">", "4");
         }
     }
     w = "1100";
@@ -1251,13 +1309,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
         if (type == 0) {
             initWarning(database, map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
         } else if (type == 2) {
-            initCondition(map, w, "t_0", "<", "t_0");
-            initCondition(map, w, "t_evap_out-t_0", ">", "t_evap_out-t_0");
-            initCondition(map, w, "t_c", "<", "t_c");
-            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+            initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
-            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
+            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
         }
     }
     w = "1101";
@@ -1265,13 +1323,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
         if (type == 0) {
             initWarning(database, map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
         } else if (type == 2) {
-            initCondition(map, w, "t_0", ">", "t_0");
-            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
-            initCondition(map, w, "t_c", "<", "t_c");
-            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
+            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
-            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
+            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
         }
     }
     w = "1102";
@@ -1279,13 +1337,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
         if (type == 0) {
             initWarning(database, map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
         } else if (type == 2) {
-            initCondition(map, w, "t_0", "<", "t_0");
-            initCondition(map, w, "t_evap_out-t_0", ">", "t_evap_out-t_0");
-            initCondition(map, w, "t_c", "<", "t_c");
-            initCondition(map, w, "t_c-t_ev", ">", "t_c-t_ev");
+            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+            initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+            initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
-            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
+            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
         }
     }
     w = "1103";
@@ -1293,13 +1351,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
         if (type == 0) {
             initWarning(database, map, w, tr("Condenser fouling"), "", 0, enabled_only);
         } else if (type == 2) {
-            initCondition(map, w, "t_0", ">", "t_0");
-            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
-            initCondition(map, w, "t_c", ">", "t_c");
-            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
+            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+            initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
+            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-t_c", ">", "t_out-t_c");
-            initCondition(map, w, "t_in-t_0", "<", "t_in-t_0");
+            initCondition(map, w, "t_out-p_to_t(p_c)", ">", "t_out-p_to_t(p_c)");
+            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
         }
     }
     w = "1104";
@@ -1307,13 +1365,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
         if (type == 0) {
             initWarning(database, map, w, tr("Evaporator fouling"), "", 0, enabled_only);
         } else if (type == 2) {
-            initCondition(map, w, "t_0", "<", "t_0");
-            initCondition(map, w, "t_evap_out-t_0", "<", "t_evap_out-t_0");
-            initCondition(map, w, "t_c", "<", "t_c");
-            initCondition(map, w, "t_c-t_ev", "<", "t_c-t_ev");
+            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", "<", "t_comp_out");
-            initCondition(map, w, "t_out-t_c", "<", "t_out-t_c");
-            initCondition(map, w, "t_in-t_0", ">", "t_in-t_0");
+            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
+            initCondition(map, w, "t_in-p_to_t(p_0)", ">", "t_in-p_to_t(p_0)");
         }
     }
     w = "1200";

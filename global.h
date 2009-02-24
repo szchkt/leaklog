@@ -77,6 +77,7 @@ namespace Global {
     void addColumn(const QString &, const QString &, QSqlDatabase *);
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
+    extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList *);
     double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
@@ -208,7 +209,14 @@ class Warnings : public MTSqlQueryResult
     Q_OBJECT
 
 public:
-    Warnings(QSqlDatabase = QSqlDatabase(), bool = false);
+    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QString & = QString(), const QString & = QString());
+
+    int warningConditionValueInsCount(int);
+    MTDictionary warningConditionValueIns(int, int);
+    int warningConditionValueNomCount(int);
+    MTDictionary warningConditionValueNom(int, int);
+    int warningConditionFunctionCount(int);
+    QString warningConditionFunction(int, int);
 
     static void initWarnings(QSqlDatabase, ListOfStringVariantMaps *, int, int = -1, bool = false);
 
@@ -221,6 +229,9 @@ protected:
 
     QSqlDatabase database;
     bool enabled_only;
+    QMap<int, QList<MTDictionary> > conditions_value_ins;
+    QMap<int, QList<MTDictionary> > conditions_value_nom;
+    QMap<int, QList<QString> > conditions_functions;
 };
 
 class Warning : public MTSqlQueryResult

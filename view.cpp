@@ -576,7 +576,7 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
             } else compare_nom = false;
         }
         //if (ins_value.isEmpty()) continue;
-        if (var_id == "inspector") {
+        if (var_id == "inspector" && !ins_value.isEmpty()) {
             MTRecord inspector("inspector", ins_value, MTDictionary());
             ins_value = inspector.list("person").value("person").toString();
         }
@@ -613,8 +613,9 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
     }
     out << "</table>";
 //*** Warnings ***
+    Warnings warnings(db, true, customer_id, circuit_id);
     QStringList global_warnings;
-    QStringList warnings_list = listWarnings(inspection, nominal_ins, customer_id, circuit_id, used_ids, global_warnings);
+    QStringList warnings_list = listWarnings(warnings, inspection, nominal_ins, customer_id, circuit_id, global_warnings);
     if (warnings_list.count()) {
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><th style=\"font-size: larger;\">" << tr("Warnings") << "</th></tr>";
@@ -882,9 +883,9 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         out << "</tr>";
     }
     out << "</tbody>";
-    out << "<tfoot>";
 
 //*** Foot ***
+    out << "<tfoot>";
     MTDictionary foot_functions;
     foot_functions.insert("sum", tr("Sum"));
     foot_functions.insert("avg", tr("Average"));
@@ -956,11 +957,12 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
     out << "</table>";
 
 //*** Warnings ***
+    Warnings warnings(db, true, customer_id, circuit_id);
     QString warnings_html;
     QStringList global_warnings;
     QStringList last_warnings_list;
     for (int i = 0; i < inspections->count(); ++i) {
-        QStringList warnings_list = listWarnings((*inspections)[i], nominal_ins, customer_id, circuit_id, used_ids, global_warnings, i == inspections->count()-1);
+        QStringList warnings_list = listWarnings(warnings, (*inspections)[i], nominal_ins, customer_id, circuit_id, global_warnings, i == inspections->count()-1);
         QStringList backup_warnings = warnings_list;
         for (int n = 0; n < warnings_list.count(); ++n) {
             if (last_warnings_list.contains(warnings_list.at(n))) {
@@ -1008,89 +1010,40 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
     out << "</td>";
 }
 
-QStringList MainWindow::listWarnings(StringVariantMap & inspection, StringVariantMap & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & used_ids, QStringList & global_warnings, bool is_last)
+QStringList MainWindow::listWarnings(Warnings & warnings, StringVariantMap & inspection, StringVariantMap & nominal_ins, const QString & customer_id, const QString & circuit_id, QStringList & global_warnings, bool is_last)
 {
-    Warnings warnings(db, true);
     QStringList warnings_list;
     MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
     StringVariantMap circuit_attributes = circuit.list();
+    bool show_warning, ok; QString function;
+    int id, delay, interval, num_conditions; double ins_value, nom_value;
     while (warnings.next()) {
-        bool show_warning = true;
-        int delay = warnings.value("delay").toInt();
+        show_warning = true;
+        id = warnings.value("id").toInt();
+        delay = warnings.value("delay").toInt();
         if (delay) {
-            int interval = circuit_attributes.value("inspection_interval").toInt();
+            interval = circuit_attributes.value("inspection_interval").toInt();
             if (interval) { delay = interval; }
             if (!is_last || QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").daysTo(QDate::currentDate()) < delay) {
                 show_warning = false; continue;
             }
         }
 
-        WarningFilters warnings_filters(warnings.value("id").toInt());
-        while (warnings_filters.next()) {
-            QString circuit_attribute = circuit_attributes.value(warnings_filters.value("circuit_attribute").toString()).toString();
-            QString function = warnings_filters.value("function").toString();
-            QString value = warnings_filters.value("value").toString();
-            bool ok1 = true; bool ok2 = true;
-            int int_circuit_attribute = circuit_attribute.toInt(&ok1);
-            int int_value = value.toInt(&ok2);
-            if (ok1 && ok2) {
-                if (function == "=" && int_circuit_attribute == int_value) {}
-                else if (function == "!=" && int_circuit_attribute != int_value) {}
-                else if (function == ">" && int_circuit_attribute > int_value) {}
-                else if (function == ">=" && int_circuit_attribute >= int_value) {}
-                else if (function == "<" && int_circuit_attribute < int_value) {}
-                else if (function == "<=" && int_circuit_attribute <= int_value) {}
-                else {
-                    show_warning = false;
-                }
-            } else {
-                if (function == "=" && circuit_attribute == value) {}
-                else if (function == "!=" && circuit_attribute != value) {}
-                else if (function == ">" && circuit_attribute > value) {}
-                else if (function == "<" && circuit_attribute < value) {}
-                else {
-                    show_warning = false;
-                }
-            }
-        }
-
-        if (!show_warning) { continue; }
-
-        WarningConditions warnings_conditions(warnings.value("id").toInt());
-        while (warnings_conditions.next()) {
-            MTDictionary expression;
-            bool ok_eval = true;
-            double ins_value = 0;
-            QString unparsed_expression = warnings_conditions.value("value_ins").toString();
-            if (!unparsed_expression.isEmpty()) {
-                if (!parsed_expressions.contains(unparsed_expression)) {
-                    parsed_expressions.insert(unparsed_expression, parseExpression(unparsed_expression, &used_ids));
-                }
-                expression = parsed_expressions.value(unparsed_expression);
-                ins_value = evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval);
-                if (!ok_eval) show_warning = false;
-            }
-            expression.clear();
-            double nom_value = 0;
-            unparsed_expression = warnings_conditions.value("value_nom").toString();
-            if (!unparsed_expression.isEmpty()) {
-                if (!parsed_expressions.contains(unparsed_expression)) {
-                    parsed_expressions.insert(unparsed_expression, parseExpression(unparsed_expression, &used_ids));
-                }
-                expression = parsed_expressions.value(unparsed_expression);
-                nom_value = evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval);
-                if (!ok_eval) show_warning = false;
-            }
-            QString function = warnings_conditions.value("function").toString();
+        num_conditions = warnings.warningConditionFunctionCount(id);
+        for (int i = 0; i < num_conditions; ++i) {
+            ok = true;
+            ins_value = evaluateExpression(inspection, warnings.warningConditionValueIns(id, i), customer_id, circuit_id, &ok);
+            if (!ok) { show_warning = false; break; }
+            nom_value = evaluateExpression(nominal_ins, warnings.warningConditionValueNom(id, i), customer_id, circuit_id, &ok);
+            if (!ok) { show_warning = false; break; }
+            function = warnings.warningConditionFunction(id, i);
             if (function == "=" && ins_value == nom_value) {}
             else if (function == "!=" && ins_value != nom_value) {}
             else if (function == ">" && ins_value > nom_value) {}
             else if (function == ">=" && ins_value >= nom_value) {}
             else if (function == "<" && ins_value < nom_value) {}
             else if (function == "<=" && ins_value <= nom_value) {}
-            else {
-                show_warning = false;
-            }
+            else { show_warning = false; break; }
         }
 
         if (show_warning) {
