@@ -161,7 +161,8 @@ private:
     void viewAllInspectors(const QString &);
     void viewLeakagesByApplication();
     void viewAgenda();
-    QStringList listWarnings(Warnings &, StringVariantMap &, StringVariantMap &, const QString &, const QString &, QStringList &, bool = false);
+    QStringList listWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, StringVariantMap &);
+    QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());

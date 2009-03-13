@@ -327,7 +327,7 @@ MTDictionary Global::get_dict_dbtables()
     MTDictionary dict_dbtables;
     dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, certification_num TEXT, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
-    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, life NUMERIC, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
+    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
     dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
@@ -496,7 +496,6 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant") + "||" + QApplication::translate("AttributeNames", "kg"));
     dict_attrnames.insert("circuit::oil", QApplication::translate("AttributeNames", "Oil"));
     dict_attrnames.insert("circuit::oil_amount", QApplication::translate("AttributeNames", "Amount of oil") + "||" + QApplication::translate("AttributeNames", "kg"));
-    dict_attrnames.insert("circuit::life", QApplication::translate("AttributeNames", "Service life") + "||" + QApplication::translate("AttributeNames", "years"));
     dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day") + "||" + QApplication::translate("AttributeNames", "hours"));
     dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation") + "||%");
     return dict_attrnames;

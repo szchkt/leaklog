@@ -34,12 +34,12 @@ HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
 DEFINES      += NO_SUPPORT_OPTIMIZER
 # *******
-win32 {
 DESTDIR       = ./
+win32 {
 RC_FILE       = leaklog.rc
-OBJECTS_DIR   = .tmp.win32/
-MOC_DIR       = .tmp.win32/
-RCC_DIR       = .tmp.win32/
+OBJECTS_DIR   = .tmp.win32
+MOC_DIR       = .tmp.win32
+RCC_DIR       = .tmp.win32
 }
 macx {
 ICON          = images/leaklog128.icns
@@ -47,11 +47,12 @@ CONFIG       += x86 ppc
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
 QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.4u.sdk
 }
+unix {
+OBJECTS_DIR   = .tmp.unix
+MOC_DIR       = .tmp.unix
+RCC_DIR       = .tmp.unix
+}
 unix:!macx {
-DESTDIR       = ./
-OBJECTS_DIR   = .tmp.unix/
-MOC_DIR       = .tmp.unix/
-RCC_DIR       = .tmp.unix/
 exists(/usr/bin/apgcc) {
 QMAKE_CC      = apgcc
 }

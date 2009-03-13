@@ -160,8 +160,6 @@ QDialog(parent)
         md_dict_input.insert("oil_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
         md_dict.insert("leak_detector", tr("Fixed leakage detector installed"));
         md_dict_input.insert("leak_detector", "chb");
-        md_dict.insert("life", tr("Service life"));
-        md_dict_input.insert("life", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("years")));
         md_dict.insert("runtime", tr("Run-time per day"));
         md_dict_input.insert("runtime", QString("dspb;0.0;0.0;24.0; %1").arg(tr("hours")));
         md_dict.insert("utilisation", tr("Rate of utilisation"));

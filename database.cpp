@@ -26,6 +26,7 @@ bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
         message.setWindowTitle(title);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
         message.setText(tr("The database has been modified."));
         message.setInformativeText(tr("Do you want to save your changes?"));
         message.addButton(tr("&Save"), QMessageBox::AcceptRole);
@@ -50,8 +51,9 @@ bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
 
 void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 {
+    if (transaction) { database->transaction(); }
+{ // (SCOPE)
     QSqlQuery query(*database);
-    if (transaction) { query.exec("BEGIN"); }
     QStringList tables = database->tables();
     for (int i = 0; i < dict_dbtables.count(); ++i) {
         if (!tables.contains(dict_dbtables.key(i))) {
@@ -107,17 +109,18 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
         query.exec("CREATE UNIQUE INDEX index_refrigerant_management_id ON refrigerant_management (date ASC)");
     }
-    if (transaction) { query.exec("COMMIT"); }
+} // (SCOPE)
+    if (transaction) { database->commit(); }
 }
 
 void MainWindow::initTables(bool transaction)
 {
+    if (transaction) { db.transaction(); }
+{ // (SCOPE)
     QSqlQuery query;
-    if (transaction) { query.exec("BEGIN"); }
     StringVariantMap set;
     MTRecord leakages("table", "", MTDictionary("uid", "Leakages"));
     if (!leakages.exists()) {
-        set.insert("uid", "Leakages");
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
         set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
@@ -127,7 +130,6 @@ void MainWindow::initTables(bool transaction)
     }
     MTRecord pressures_and_temperatures("table", "", MTDictionary("uid", "Pressures and temperatures"));
     if (!pressures_and_temperatures.exists()) {
-        set.insert("uid", "Pressures and temperatures");
         set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
         set.insert("variables", "t;p_0;t_0;delta_t_evap;t_evap_out;t_comp_in;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;t_comp_out");
@@ -137,7 +139,6 @@ void MainWindow::initTables(bool transaction)
     }
     MTRecord electrical_parameters("table", "", MTDictionary("uid", "Electrical parameters"));
     if (!electrical_parameters.exists()) {
-        set.insert("uid", "Electrical parameters");
         set.insert("id", tr("Electrical parameters"));
         set.insert("highlight_nominal", 1);
         set.insert("variables", "ep_comp;ec;ev;ppsw;sftsw");
@@ -151,7 +152,8 @@ void MainWindow::initTables(bool transaction)
         MTRecord table_of_parameters("table", tr("Table of parameters"), MTDictionary());
         table_of_parameters.remove();
     }
-    if (transaction) { query.exec("COMMIT"); }
+} // (SCOPE)
+    if (transaction) { db.commit(); }
 }
 
 void MainWindow::newDatabase()
@@ -170,7 +172,7 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(&db);
     initTables();
-    QSqlQuery query("BEGIN");
+    db.transaction();
     setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
     openDatabase(QString());
@@ -192,7 +194,7 @@ void MainWindow::openRecent(QListWidgetItem * item)
         db.setUserName(path.at(0).split(":").at(2));
         db.setPassword(password);
         if (db.open()) {
-            QSqlQuery begin; begin.exec("BEGIN");
+            db.transaction();
             initDatabase(&db, false);
         }
         openDatabase(QString());
@@ -265,7 +267,7 @@ void MainWindow::openRemote()
     db.setPassword(le_password->text());
     if (db.open()) {
         addRecent("db:QPSQL:" + le_user_name->text() + "@" + le_db_name->text() + "@" + le_server->text() + ":" + toString(spb_port->value()));
-        QSqlQuery begin; begin.exec("BEGIN");
+        db.transaction();
         initDatabase(&db, false);
     }
     openDatabase(QString());
@@ -290,7 +292,7 @@ void MainWindow::openDatabase(QString path)
             this->setWindowTitle(tr("Leaklog"));
             return;
         }
-        QSqlQuery begin; begin.exec("BEGIN");
+        db.transaction();
         initDatabase(&db, false);
     }
     initTables(false);
@@ -366,17 +368,16 @@ void MainWindow::saveAndCompact()
 
 void MainWindow::saveDatabase(bool compact)
 {
-    QStringList errors; QSqlQuery query;
+    QStringList errors;
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("db_version", toString(F_DB_VERSION));
-    query.exec("COMMIT");
-    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    db.commit();
     if (compact) {
+        QSqlQuery query;
         query.exec("VACUUM");
         if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
     }
-    query.exec("BEGIN");
-    if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+    db.transaction();
     if (!errors.isEmpty()) {
 		QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(errors.join("; ")));
 		return;
@@ -393,10 +394,7 @@ void MainWindow::saveDatabase(bool compact)
 void MainWindow::closeDatabase(bool save)
 {
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
-    {
-        QSqlQuery rollback; rollback.exec("ROLLBACK");
-    }
-    db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
+    db.rollback(); db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
     selected_repair.clear();
     clearAll(); setAllEnabled(false);
@@ -1323,8 +1321,7 @@ void MainWindow::exportData(const QString & type)
             return;
         }
         initDatabase(&data);
-        QSqlQuery query(data);
-        query.exec("BEGIN");
+        data.transaction();
         copyTable("variables", &db, &data);
         copyTable("subvariables", &db, &data);
         copyTable("tables", &db, &data);
@@ -1339,7 +1336,7 @@ void MainWindow::exportData(const QString & type)
             copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
             copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
         }
-        query.exec("COMMIT");
+        data.commit();
         data.close();
     } // END EXPORT (SCOPE)
     QSqlDatabase::removeDatabase("exportData");
@@ -1357,8 +1354,8 @@ void MainWindow::importData()
 		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
 		return;
     }
+    data.transaction();
     QSqlQuery query(data);
-    query.exec("BEGIN");
     initDatabase(&data, false);
     ImportDialogue * id = new ImportDialogue(this);
     QString id_justified;
@@ -1626,7 +1623,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
         j++;
     }
 } // END IMPORT
-    query.exec("ROLLBACK");
+    data.rollback();
     data.close();
 } // END IMPORT (SCOPE)
     QSqlDatabase::removeDatabase("importData");

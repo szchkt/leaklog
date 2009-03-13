@@ -49,7 +49,6 @@ QWidget(parent)
     af_attributes.insert("refrigerant_amount", tr("Amount of refrigerant"));
     af_attributes.insert("oil_amount", tr("Amount of oil"));
     af_attributes.insert("leak_detector", tr("Fixed leakage detector installed"));
-    af_attributes.insert("life", tr("Service life"));
     af_attributes.insert("runtime", tr("Run-time per day"));
     af_attributes.insert("utilisation", tr("Rate of utilisation"));
     af_attributes.insert("inspection_interval", tr("Inspection interval"));
