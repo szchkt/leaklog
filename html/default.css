@@ -6,13 +6,15 @@ body,td,th {
 	font-size: small;
 	color: #000000;
 }
-tbody > tr:hover > td {
-	background-color: rgb(180, 215, 255) !important;
-	color: #000000;
-}
-tbody > tr:hover > td > table > tbody > tr > td {
-	background-color: rgb(180, 215, 255) !important;
-	color: #000000;
+@media screen {
+	tbody > tr:hover > td {
+		background-color: rgb(180, 215, 255) !important;
+		color: #000000;
+	}
+	tbody > tr:hover > td > table > tbody > tr > td {
+		background-color: rgb(180, 215, 255) !important;
+		color: #000000;
+	}
 }
 th {
 	background-color: #F3F3F3;

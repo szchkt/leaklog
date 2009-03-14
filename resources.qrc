@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/export_html_pdf.png</file>
+    <file>images/html.png</file>
+    <file>images/pdf.png</file>
     <file>images/view.png</file>
     <file>images/warning_modify.png</file>
     <file>images/inspector_add.png</file>

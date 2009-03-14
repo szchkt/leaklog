@@ -8,11 +8,10 @@
     <file>html/table.html</file>
     <file>html/repairs.html</file>
     <file>html/inspectors.html</file>
-    <file>html/refrigerant_consumption.html</file>
+    <file>html/leakages.html</file>
     <file>html/agenda.html</file>
     <file>html/default.css</file>
     <file>html/colours.css</file>
-    <file>html/colours_print.css</file>
     <file>html/wz_tooltip.js</file>
   </qresource>
 </RCC>

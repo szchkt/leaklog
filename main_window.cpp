@@ -54,7 +54,7 @@ MainWindow::MainWindow()
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("List of inspectors"), in.readAll());
     file.close();
-    file.setFileName(":/html/refrigerant_consumption.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    file.setFileName(":/html/leakages.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Leakages by application"), in.readAll());
     file.close();
     file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -91,6 +91,11 @@ MainWindow::MainWindow()
     tbtn_modify->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_modify->setPopupMode(QToolButton::InstantPopup);
     toolBar->insertWidget(actionFind, tbtn_modify);
+    tbtn_export = new QToolButton(this);
+    tbtn_export->setDefaultAction(actionExport);
+    tbtn_export->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_export->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionPrint, tbtn_export);
     menu_view = new QMenu(this);
     tbtn_view->setMenu(menu_view);
     menu_add = new QMenu(this);
@@ -120,6 +125,7 @@ MainWindow::MainWindow()
     dw_tables->setVisible(false);
     dw_warnings->setVisible(false);
     actionOpen->setMenu(menuOpen);
+    actionExport->setMenu(menuExport);
     tbtn_add_variable->setMenu(menuAdd_variable);
     tbtn_remove_variable->setDefaultAction(actionRemove_variable);
     tbtn_add_table->setDefaultAction(actionAdd_table);
@@ -160,10 +166,13 @@ MainWindow::MainWindow()
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
+    QObject::connect(actionPDF, SIGNAL(triggered()), this, SLOT(exportPDF()));
+    QObject::connect(actionHTML, SIGNAL(triggered()), this, SLOT(exportHTML()));
     QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
+    QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -250,19 +259,13 @@ QMenu * MainWindow::createPopupMenu()
 
 void MainWindow::showIconsOnly(bool show)
 {
-    if (show) {
-        tbtn_open->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        tbtn_view->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        tbtn_add->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        tbtn_modify->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    } else {
-        tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        tbtn_view->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        tbtn_add->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        tbtn_modify->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    }
+    Qt::ToolButtonStyle tbtn_style = show ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon;
+    tbtn_open->setToolButtonStyle(tbtn_style);
+    tbtn_view->setToolButtonStyle(tbtn_style);
+    tbtn_add->setToolButtonStyle(tbtn_style);
+    tbtn_modify->setToolButtonStyle(tbtn_style);
+    tbtn_export->setToolButtonStyle(tbtn_style);
+    toolBar->setToolButtonStyle(tbtn_style);
 }
 
 void MainWindow::executeLink(const QUrl & url)
@@ -361,6 +364,48 @@ void MainWindow::print()
     d->setWindowTitle(tr("Print"));
     if (d->exec() != QDialog::Accepted) { return; }
     wv_main->print(&printer);
+}
+
+void MainWindow::exportPDF()
+{
+    QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1-%2.pdf").arg(QFileInfo(db.databaseName()).baseName()).arg(lbl_view->text()), tr("Adobe PDF (*.pdf)"));
+	if (path.isEmpty()) { return; }
+    if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(path);
+    wv_main->print(&printer);
+}
+
+void MainWindow::exportHTML()
+{
+    QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"), QString("%1-%2.html").arg(QFileInfo(db.databaseName()).baseName()).arg(lbl_view->text()), tr("Webpage (*.html)"));
+	if (path.isEmpty()) { return; }
+    if (!path.endsWith(".html", Qt::CaseInsensitive)) { path.append(".html"); }
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(this, tr("Export HTML - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
+        return;
+    }
+    QString html = viewChanged(lbl_view->text());
+    if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
+        QFile default_css(":/html/default.css");
+        default_css.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&default_css); in.setCodec("UTF-8");
+        html.replace("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
+        default_css.close();
+    }
+    if (html.contains("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
+        QFile colours_css(":/html/colours.css");
+        colours_css.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&colours_css); in.setCodec("UTF-8");
+        html.replace("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
+        colours_css.close();
+    }
+    QTextStream out(&file);
+	out.setCodec("UTF-8");
+    out << html;
+    file.close();
 }
 
 void MainWindow::printLabel()
@@ -552,39 +597,33 @@ void MainWindow::clearSelection(bool clear_selected_repair)
 
 void MainWindow::setView(QAction * action)
 {
-    setView(action->text());
+    if (action && actgrp_view->checkedAction() && actgrp_view->checkedAction() != action) {
+        action->setChecked(true);
+    }
+    refreshView();
 }
 
 void MainWindow::setView(const QString & view)
 {
-    QAction * action = view_actions.value(view);
-    if (actgrp_view->checkedAction() && actgrp_view->checkedAction() == action) {
-        refreshView();
-    } else {
-        action->setChecked(true);
-        setView(action);
-    }
+    setView(view_actions.value(view));
 }
 
 void MainWindow::refreshView()
 {
-    if (actgrp_view->checkedAction()) { viewChanged(actgrp_view->checkedAction()->text()); }
-    else {
-        QAction * action = view_actions.value(tr("Service company"));
-        action->setChecked(true);
-        setView(action);
+    if (!actgrp_view->checkedAction()) {
+        view_actions.value(tr("Service company"))->setChecked(true);
     }
+    viewChanged(actgrp_view->checkedAction()->text());
 }
 
 void MainWindow::viewLevelUp()
 {
     if (actgrp_view->checkedAction()) {
         int i = views_list.indexOf(actgrp_view->checkedAction()->text());
-        if (!i) { return; }
-        QAction * action = view_actions.value(views_list.at(i - 1));
-        action->setChecked(true);
-        setView(action);
-    } else { refreshView(); }
+        if (i <= 0) { return; }
+        view_actions.value(views_list.at(i - 1))->setChecked(true);
+    }
+    refreshView();
 }
 
 void MainWindow::viewLevelDown()
@@ -598,9 +637,8 @@ void MainWindow::viewLevelDown()
         } else if (view == tr("Circuit information") && selectedInspection().isEmpty()) {
             setView(tr("Table of inspections"));
         } else {
-            QAction * action = view_actions.value(views_list.at(i + 1));
-            action->setChecked(true);
-            setView(action);
+            view_actions.value(views_list.at(i + 1))->setChecked(true);
+            refreshView();
         }
     } else { refreshView(); }
 }
@@ -637,6 +675,9 @@ void MainWindow::setAllEnabled(bool enable)
     actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
     actionImport_data->setEnabled(enable);
+    actionExport->setEnabled(enable);
+    actionPDF->setEnabled(enable);
+    actionHTML->setEnabled(enable);
     actionPrint_preview->setEnabled(enable);
     actionPrint->setEnabled(enable);
     actgrp_view->setEnabled(enable);
@@ -650,6 +691,7 @@ void MainWindow::setAllEnabled(bool enable)
     tbtn_view->setEnabled(enable);
     tbtn_add->setEnabled(enable);
     tbtn_modify->setEnabled(enable);
+    tbtn_export->setEnabled(enable);
 
     actionFind->setEnabled(enable);
     actionFind_next->setEnabled(enable);

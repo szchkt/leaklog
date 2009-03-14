@@ -19,9 +19,10 @@
 
 #include "main_window.h"
 
-void MainWindow::viewChanged(const QString & view)
+QString MainWindow::viewChanged(const QString & view)
 {
-    if (!db.isOpen()) { wv_main->setHtml(QString()); return; }
+    QString html;
+    if (!db.isOpen()) { wv_main->setHtml(html); return html; }
 
     bool service_company_view = view == tr("Service company");
     bool repairs_view = view == tr("List of repairs");
@@ -46,35 +47,35 @@ void MainWindow::viewChanged(const QString & view)
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
     if (service_company_view) {
-        viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
+        html = viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("List of customers")) {
-        viewAllCustomers();
+        html = viewAllCustomers();
     } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
-        viewCustomer(toString(selectedCustomer()));
+        html = viewCustomer(toString(selectedCustomer()));
     } else if (view == tr("Circuit information") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
-        viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
+        html = viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
     } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
-        viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+        html = viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
-        viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
+        html = viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (repairs_view) {
-        viewAllRepairs(selectedRepair(), spb_since->value() == 1999 ? 0 : spb_since->value());
+        html = viewAllRepairs(selectedRepair(), spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("List of inspectors")) {
-        viewAllInspectors(toString(selectedInspector()));
+        html = viewAllInspectors(toString(selectedInspector()));
     } else if (view == tr("Leakages by application")) {
-        viewLeakagesByApplication();
+        html = viewLeakagesByApplication();
     } else if (view == tr("Agenda")) {
-        viewAgenda();
+        html = viewAgenda();
     } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
-        viewLevelUp();
+        view_actions.value(views_list.at(views_list.indexOf(view) - 1))->setChecked(true);
+        return viewChanged(actgrp_view->checkedAction()->text());
     } else if (actgrp_view->checkedAction()) {
-        setView(actgrp_view->checkedAction()->text());
-    } else {
-        wv_main->setHtml(QString());
+        return viewChanged(actgrp_view->checkedAction()->text());
     }
+    wv_main->setHtml(html, QUrl("qrc:/html/")); return html;
 }
 
-void MainWindow::viewServiceCompany(int since)
+QString MainWindow::viewServiceCompany(int since)
 {
     QString html; MTTextStream out(&html);
     MTRecord serv_company_rec("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
@@ -313,7 +314,7 @@ void MainWindow::viewServiceCompany(int since)
     }
     out << "</table></td></tr>";
     out << "</table>";
-    wv_main->setHtml(dict_html.value(tr("Service company")).arg(html));
+    return dict_html.value(tr("Service company")).arg(html);
 }
 
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)
@@ -431,23 +432,23 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     }
 }
 
-void MainWindow::viewAllCustomers()
+QString MainWindow::viewAllCustomers()
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out);
-    wv_main->setHtml(dict_html.value(tr("List of customers")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("List of customers")).arg(html);
 }
 
-void MainWindow::viewCustomer(const QString & customer_id)
+QString MainWindow::viewCustomer(const QString & customer_id)
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id);
-    wv_main->setHtml(dict_html.value(tr("Customer information")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("Customer information")).arg(html);
 }
 
-void MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
+QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
@@ -505,10 +506,10 @@ void MainWindow::viewCircuit(const QString & customer_id, const QString & circui
         }
         out << "</table>";
     }
-    wv_main->setHtml(dict_html.value(tr("Circuit information")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("Circuit information")).arg(html);
 }
 
-void MainWindow::viewInspection(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
+QString MainWindow::viewInspection(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
@@ -620,10 +621,10 @@ void MainWindow::viewInspection(const QString & customer_id, const QString & cir
         out << "<tr><th style=\"font-size: larger;\">" << tr("Warnings") << "</th></tr>";
         out << "<tr><td>" << warnings_list.join(", ") << "</td></tr></table>";
     }
-    wv_main->setHtml(dict_html.value(tr("Inspection information")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("Inspection information")).arg(html);
 }
 
-void MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id, int year)
+QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id, int year)
 {
     QString html; MTTextStream out(&html);
 
@@ -994,7 +995,8 @@ void MainWindow::viewTable(const QString & customer_id, const QString & circuit_
         out << warnings_html;
         out << "</table>";
     }
-    wv_main->setHtml(dict_html.value(tr("Table of inspections")).arg(html), QUrl("qrc:/html/"));
+    QString colours = !actionPrinter_friendly_version->isChecked() ? "<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />" : "";
+    return dict_html.value(tr("Table of inspections")).arg(colours).arg(html);
 }
 
 void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
@@ -1094,7 +1096,7 @@ QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString &
     return warnings_list;
 }
 
-void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
+QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 {
     QString html; MTTextStream out(&html);
     MTRecord repairs_rec("repair", "", MTDictionary());
@@ -1143,10 +1145,10 @@ void MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
         }
     }
     out << "</table>";
-    wv_main->setHtml(dict_html.value(tr("List of repairs")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("List of repairs")).arg(html);
 }
 
-void MainWindow::viewAllInspectors(const QString & highlighted_id)
+QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; MTTextStream out(&html);
     MTRecord inspectors_rec("inspector", "", MTDictionary());
@@ -1181,10 +1183,10 @@ void MainWindow::viewAllInspectors(const QString & highlighted_id)
         out << "<td>" << repairs.listAll("date")->count() << "</td>";
         out << "</tr>";
     }
-    wv_main->setHtml(dict_html.value(tr("List of inspectors")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("List of inspectors")).arg(html);
 }
 
-void MainWindow::viewLeakagesByApplication()
+QString MainWindow::viewLeakagesByApplication()
 {
     QString html; MTTextStream out(&html);
     QMap<QString, QVector<double> > map;
@@ -1262,10 +1264,10 @@ void MainWindow::viewLeakagesByApplication()
         }
         out << "<tr></tr></table><br>";
     }
-    wv_main->setHtml(dict_html.value(tr("Leakages by application")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("Leakages by application")).arg(html);
 }
 
-void MainWindow::viewAgenda()
+QString MainWindow::viewAgenda()
 {
     QString html; MTTextStream out(&html);
 
@@ -1351,5 +1353,5 @@ void MainWindow::viewAgenda()
     }
     out << "</table>";
 
-    wv_main->setHtml(dict_html.value(tr("Agenda")).arg(html), QUrl("qrc:/html/"));
+    return dict_html.value(tr("Agenda")).arg(html);
 }

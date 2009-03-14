@@ -51,6 +51,8 @@ private slots:
     void executeLink(const QUrl &);
     void printPreview();
     void print();
+    void exportPDF();
+    void exportHTML();
     void printLabel();
     void enableTools();
     void find();
@@ -116,7 +118,7 @@ private slots:
     void exportInspectionData();
     void importData();
     // VIEW
-    void viewChanged(const QString &);
+    QString viewChanged(const QString &);
 
 private:
     // UI
@@ -151,16 +153,16 @@ private:
     inline QString selectedRepair() { return selected_repair; };
     inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
     // VIEW
-    void viewServiceCompany(int);
-    void viewAllCustomers();
-    void viewCustomer(const QString &);
-    void viewCircuit(const QString &, const QString &);
-    void viewInspection(const QString &, const QString &, const QString &);
-    void viewTable(const QString &, const QString &, const QString &, int);
-    void viewAllRepairs(const QString &, int);
-    void viewAllInspectors(const QString &);
-    void viewLeakagesByApplication();
-    void viewAgenda();
+    QString viewServiceCompany(int);
+    QString viewAllCustomers();
+    QString viewCustomer(const QString &);
+    QString viewCircuit(const QString &, const QString &);
+    QString viewInspection(const QString &, const QString &, const QString &);
+    QString viewTable(const QString &, const QString &, const QString &, int);
+    QString viewAllRepairs(const QString &, int);
+    QString viewAllInspectors(const QString &);
+    QString viewLeakagesByApplication();
+    QString viewAgenda();
     QStringList listWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, StringVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
@@ -183,6 +185,7 @@ private:
     QToolButton * tbtn_view;
     QToolButton * tbtn_add;
     QToolButton * tbtn_modify;
+    QToolButton * tbtn_export;
     QMenu * menu_view;
     QMenu * menu_add;
     QMenu * menu_modify;

@@ -161,6 +161,7 @@ void MainWindow::newDatabase()
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
+    if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
@@ -1312,6 +1313,7 @@ void MainWindow::exportData(const QString & type)
     if (selectedCustomer() < 0) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
+    if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
     { // BEGIN EXPORT (SCOPE)
         QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
