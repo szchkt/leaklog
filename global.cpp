@@ -33,13 +33,13 @@ QString Global::escapeString(QString s)
     return s;
 }
 
-QString Global::upArrow() { return QApplication::translate("Global", "\342\206\221", 0, QApplication::UnicodeUTF8); }
+QString Global::upArrow() { return QString::fromUtf8("\342\206\221"); }
 
-QString Global::downArrow() { return QApplication::translate("Global", "\342\206\223", 0, QApplication::UnicodeUTF8); }
+QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 
-QString Global::degreeSign() { return QApplication::translate("Global", "\302\260", 0, QApplication::UnicodeUTF8); }
+QString Global::degreeSign() { return QString::fromUtf8("\302\260"); }
 
-QString Global::delta() { return QApplication::translate("Global", "\316\224", 0, QApplication::UnicodeUTF8); }
+QString Global::delta() { return QString::fromUtf8("\316\224"); }
 
 QColor Global::textColourForBaseColour(const QColor & c)
 {
@@ -371,8 +371,8 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("t_sh_evap", QApplication::translate("VariableNames", "evap."));
     dict_varnames.insert("t_sh_comp", QApplication::translate("VariableNames", "comp."));
     dict_varnames.insert("t_comp_out", QApplication::translate("VariableNames", "Temperature discharge"));
-    dict_varnames.insert("delta_t_evap", QApplication::translate("VariableNames", "\316\224T (evaporating)", 0, QApplication::UnicodeUTF8));
-    dict_varnames.insert("delta_t_c", QApplication::translate("VariableNames", "\316\224T (condensing)", 0, QApplication::UnicodeUTF8));
+    dict_varnames.insert("delta_t_evap", QApplication::translate("VariableNames", "%1T (evaporating)", 0, QApplication::UnicodeUTF8).arg(delta()));
+    dict_varnames.insert("delta_t_c", QApplication::translate("VariableNames", "%1T (condensing)", 0, QApplication::UnicodeUTF8).arg(delta()));
     dict_varnames.insert("ep_comp", QApplication::translate("VariableNames", "Comp. el. power input"));
     dict_varnames.insert("ec", QApplication::translate("VariableNames", "Electric current"));
     dict_varnames.insert("ec_l1", QApplication::translate("VariableNames", "L1"));
