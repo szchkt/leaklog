@@ -597,7 +597,7 @@ QString MTRecord::idFieldForRecordType(const QString & type)
 
 bool MTRecord::exists()
 {
-    if (r_id.isEmpty()) { return false; }
+    if ((r_type != "table" && r_id.isEmpty()) || (r_type == "table" && r_parents.isEmpty())) { return false; }
     QString id_field = idFieldForRecordType(r_type);
     QSqlQuery find_record = select(id_field);
     find_record.exec();
@@ -612,7 +612,7 @@ QSqlQuery MTRecord::select(const QString & fields)
     if (has_id || r_parents.count()) { select.append(" WHERE "); }
     if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
-        if (has_id || i != 0) { select.append(" AND "); }
+        if (has_id || i) { select.append(" AND "); }
         select.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     select.append(" ORDER BY " + id_field);
@@ -756,7 +756,7 @@ bool MTRecord::remove()
     QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE ";
     if (has_id) { remove.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
-        if (has_id || i != 0) { remove.append(" AND "); }
+        if (has_id || i) { remove.append(" AND "); }
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     QSqlQuery query;
