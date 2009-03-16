@@ -170,6 +170,7 @@ private:
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
 
     QSet<int> years_expanded_in_service_company_view;
+    bool show_leaked_in_store_in_service_company_view;
     QString selected_repair;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;

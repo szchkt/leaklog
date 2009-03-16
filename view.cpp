@@ -111,7 +111,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<tr><th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
     out << "<th>" << tr("Recovered in store") << "</th>";
-    out << "<th>" << tr("Recycled in store") << "</th></tr>";
+    out << "<th><a href=\"toggledetailedview:leakedinstore\">" << tr("Leaked in store") << "</a></th></tr>";
     out << "<store />";
     out << "</table></td></tr>";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
@@ -119,68 +119,87 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"centred_with_borders\">";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Purchased") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Sold") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th colspan=\"3\">" << tr("Added") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Recycled") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Regenerated") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th></tr>";
-    out << "<tr><td>" << QApplication::translate("VariableNames", "New") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Recycled") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Total") << "</td></tr>";
+    out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
+    if (show_leaked_in_store_in_service_company_view)
+        out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    out << "</tr><tr style=\"background-color: #FBFBFB;\">";
+    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Total") << "</td>";
+    if (show_leaked_in_store_in_service_company_view) {
+        out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+        out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    }
+    out << "</tr>";
     QMap<QString, double> store;
     QMap<QString, double> store_recovered;
-    QMap<QString, double> store_recycled;
-    QMultiMap<QString, QStringList> entries_map;
-    QMap<QString, QList<double> *> sums_map;
-    QList<double> * sum_list; int year = 0; QString date, refrigerant;
-    QVariant purchased, sold, refr_add_am, refr_add_am_recy, refr_reco, refr_recy, refr_rege, refr_disp;
+    QMap<QString, double> store_leaked;
+    QMultiMap<QString, QVector<QString> > entries_map;
+    QMap<QString, QVector<double> *> sums_map;
+    QVector<double> * sum_list; int year = 0; QString date, refrigerant;
+    QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
     MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
     ListOfStringVariantMapsPtr refr_man(refr_man_rec.listAll());
     for (int i = 0; i < refr_man->count(); ++i) {
         refrigerant = refr_man->at(i).value("refrigerant").toString();
         purchased = refr_man->at(i).value("purchased");
+        purchased_reco = refr_man->at(i).value("purchased_reco");
         sold = refr_man->at(i).value("sold");
-        refr_recy = refr_man->at(i).value("refr_recy");
+        sold_reco = refr_man->at(i).value("sold_reco");
         refr_rege = refr_man->at(i).value("refr_rege");
         refr_disp = refr_man->at(i).value("refr_disp");
+        leaked = refr_man->at(i).value("leaked");
+        leaked_reco = refr_man->at(i).value("leaked_reco");
+
         if (!store.contains(refrigerant)) { store.insert(refrigerant, 0.0); }
-        store[refrigerant] += purchased.toDouble() - sold.toDouble();
+        store[refrigerant] += purchased.toDouble() - sold.toDouble() - leaked.toDouble();
         if (!store_recovered.contains(refrigerant)) { store_recovered.insert(refrigerant, 0.0); }
-        store_recovered[refrigerant] -= refr_recy.toDouble() + refr_rege.toDouble() + refr_disp.toDouble();
-        if (!store_recycled.contains(refrigerant)) { store_recycled.insert(refrigerant, 0.0); }
-        store_recycled[refrigerant] += refr_recy.toDouble();
+        store_recovered[refrigerant] += purchased_reco.toDouble() - sold_reco.toDouble() - refr_rege.toDouble() - refr_disp.toDouble() - leaked_reco.toDouble();
+        if (!store_leaked.contains(refrigerant)) { store_leaked.insert(refrigerant, 0.0); }
+        store_leaked[refrigerant] += leaked.toDouble() + leaked_reco.toDouble();
 
         date = refr_man->at(i).value("date").toString();
         year = date.left(4).toInt();
         if (year < since) { continue; }
 
-        QStringList entries_list;
-        entries_list << QString("recordofrefrigerantmanagement:%1/modify").arg(date);
-        entries_list << refrigerant;
-        entries_list << purchased.toString();
-        entries_list << sold.toString();
-        entries_list << QString() << QString() << QString() << QString();
-        entries_list << refr_recy.toString();
-        entries_list << refr_rege.toString();
-        entries_list << refr_disp.toString();
+        QVector<QString> entries_list(14);
+        entries_list[0] = QString("recordofrefrigerantmanagement:%1/modify").arg(date);
+        entries_list[1] = refrigerant;
+        entries_list[2] = purchased.toString();
+        entries_list[3] = purchased_reco.toString();
+        entries_list[4] = sold.toString();
+        entries_list[5] = sold_reco.toString();
+        entries_list[10] = refr_rege.toString();
+        entries_list[11] = refr_disp.toString();
+        entries_list[12] = leaked.toString();
+        entries_list[13] = leaked_reco.toString();
         entries_map.insert(date, entries_list);
         // ----------------------------------------------------
         if (!sums_map.contains(toString(year))) { sums_map.insert(toString(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
-            sum_list = new QList<double>;
-            *sum_list << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
+            sum_list = new QVector<double>(12);
             sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
         // ----------------------------------------------------
         (*sum_list)[0] += purchased.toDouble();
-        (*sum_list)[1] += sold.toDouble();
-        (*sum_list)[6] += refr_recy.toDouble();
-        (*sum_list)[7] += refr_rege.toDouble();
-        (*sum_list)[8] += refr_disp.toDouble();
+        (*sum_list)[1] += purchased_reco.toDouble();
+        (*sum_list)[2] += sold.toDouble();
+        (*sum_list)[3] += sold_reco.toDouble();
+        (*sum_list)[8] += refr_rege.toDouble();
+        (*sum_list)[9] += refr_disp.toDouble();
+        (*sum_list)[10] += leaked.toDouble();
+        (*sum_list)[11] += leaked_reco.toDouble();
     }
     MTRecord circuits_record("circuit", "", MTDictionary());
     MultiMapOfStringVariantMapsPtr circuits(circuits_record.mapAll("parent::id", "refrigerant"));
@@ -189,10 +208,15 @@ QString MainWindow::viewServiceCompany(int since)
     MTRecord repairs_rec("repair", "", MTDictionary());
     *inspections << *(repairs_rec.listAll("date, refrigerant, refr_add_am, refr_reco"));
     for (int i = 0; i < inspections->count(); ++i) {
+        refr_add_am = inspections->at(i).value("refr_add_am");
+        refr_add_am_recy = inspections->at(i).value("refr_add_am_recy");
+        refr_reco = inspections->at(i).value("refr_reco");
+        if (refr_add_am.toDouble() == 0.0 && refr_add_am_recy.toDouble() == 0.0 && refr_reco.toDouble() == 0.0) continue;
+
         date = inspections->at(i).value("date").toString();
-        QStringList entries_list;
+        QVector<QString> entries_list(14);
         if (inspections->at(i).contains("customer")) {
-            entries_list << QString("customer:%1/circuit:%2/%3:%4")
+            entries_list[0] = QString("customer:%1/circuit:%2/%3:%4")
                             .arg(inspections->at(i).value("customer").toString())
                             .arg(inspections->at(i).value("circuit").toString())
                             .arg(inspections->at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
@@ -201,63 +225,56 @@ QString MainWindow::viewServiceCompany(int since)
                             .arg(inspections->at(i).value("customer").toString())
                             .arg(inspections->at(i).value("circuit").toString()))
                             .value("refrigerant").toString();
-            entries_list << refrigerant;
+            entries_list[1] = refrigerant;
         } else {
-            entries_list << QString("repair:%1").arg(date);
+            entries_list[0] = QString("repair:%1").arg(date);
             refrigerant = inspections->at(i).value("refrigerant").toString();
-            entries_list << refrigerant;
+            entries_list[1] = refrigerant;
         }
-        refr_add_am = inspections->at(i).value("refr_add_am");
-        refr_add_am_recy = inspections->at(i).value("refr_add_am_recy");
-        refr_reco = inspections->at(i).value("refr_reco");
+
         if (!store.contains(refrigerant)) { store.insert(refrigerant, 0.0); }
         store[refrigerant] -= refr_add_am.toDouble();
         if (!store_recovered.contains(refrigerant)) { store_recovered.insert(refrigerant, 0.0); }
-        store_recovered[refrigerant] += refr_reco.toDouble();
-        if (!store_recycled.contains(refrigerant)) { store_recycled.insert(refrigerant, 0.0); }
-        store_recycled[refrigerant] -= refr_add_am_recy.toDouble();
+        store_recovered[refrigerant] += refr_reco.toDouble() - refr_add_am_recy.toDouble();
 
         year = date.left(4).toInt();
         if (year < since) { continue; }
 
-        if (!refr_add_am.toDouble() && !refr_reco.toDouble()) continue;
-        entries_list << QString() << QString();
-        entries_list << refr_add_am.toString();
-        entries_list << refr_add_am_recy.toString();
-        entries_list << toString(refr_add_am.toDouble() + refr_add_am_recy.toDouble());
-        entries_list << refr_reco.toString();
-        entries_list << QString() << QString() << QString();
+        entries_list[6] = refr_add_am.toString();
+        entries_list[7] = refr_add_am_recy.toString();
+        entries_list[8] = toString(refr_add_am.toDouble() + refr_add_am_recy.toDouble());
+        entries_list[9] = refr_reco.toString();
         entries_map.insert(date, entries_list);
         // ----------------------------------------------------
         if (!sums_map.contains(toString(year))) { sums_map.insert(toString(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
-            sum_list = new QList<double>;
-            *sum_list << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
+            sum_list = new QVector<double>(12);
             sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
         // ----------------------------------------------------
-        (*sum_list)[2] += refr_add_am.toDouble();
-        (*sum_list)[3] += refr_add_am_recy.toDouble();
-        (*sum_list)[4] += refr_add_am.toDouble() + refr_add_am_recy.toDouble();
-        (*sum_list)[5] += refr_reco.toDouble();
+        (*sum_list)[4] += refr_add_am.toDouble();
+        (*sum_list)[5] += refr_add_am_recy.toDouble();
+        (*sum_list)[6] += refr_add_am.toDouble() + refr_add_am_recy.toDouble();
+        (*sum_list)[7] += refr_reco.toDouble();
     }
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerantsToString().split(";");
     list_refrigerants.insert(0, "");
     for (int i = 0; i < list_refrigerants.count(); ++i) {
-        if (store.contains(list_refrigerants.at(i)) || store_recovered.contains(list_refrigerants.at(i)) || store_recycled.contains(list_refrigerants.at(i))) {
+        if (store.contains(list_refrigerants.at(i)) || store_recovered.contains(list_refrigerants.at(i)) || store_leaked.contains(list_refrigerants.at(i))) {
             store_out << "<tr><td>" << list_refrigerants.at(i) << "</td>";
             store_out << "<td>" << store.value(list_refrigerants.at(i)) << "</td>";
             store_out << "<td>" << store_recovered.value(list_refrigerants.at(i)) << "</td>";
-            store_out << "<td>" << store_recycled.value(list_refrigerants.at(i)) << "</td></tr>";
+            store_out << "<td>" << store_leaked.value(list_refrigerants.at(i)) << "</td></tr>";
         }
     }
     html.replace("<store />", store_html);
+    int x = show_leaked_in_store_in_service_company_view ? 0 : 2;
     int last_year = 0; bool it = false, bf = false; QString link;
-    QMap<QString, QList<double> *>::const_iterator sums_iterator;
-    QMapIterator<QString, QStringList> i(entries_map);
+    QMap<QString, QVector<double> *>::const_iterator sums_iterator;
+    QMapIterator<QString, QVector<QString> > i(entries_map);
     i.toBack();
     while (i.hasPrevious()) { i.previous();
         year = i.key().left(4).toInt();
@@ -271,7 +288,7 @@ QString MainWindow::viewServiceCompany(int since)
                 while (sums_iterator != sums_map.constEnd() && (sum_list = sums_iterator.value())) {
                     if (row_count) { out << "</tr><tr>"; }
                     out << "<th>" << sums_iterator.key().split("::").last() << "</th>";
-                    for (int n = 0; n < sum_list->count(); ++n) {
+                    for (int n = 0; n < sum_list->count() - x; ++n) {
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
                         out << "</th>";
@@ -296,7 +313,7 @@ QString MainWindow::viewServiceCompany(int since)
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
             out << ">" << i.value().at(1) << "</td>";
-            for (int n = 2; n < i.value().count(); ++n) {
+            for (int n = 2; n < i.value().count() - x; ++n) {
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
                 else if (it) out << " style=\"font-style: italic;\"";

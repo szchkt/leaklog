@@ -327,16 +327,22 @@ QDialog(parent)
         md_dict_input.insert("date", "dte");
         md_dict.insert("refrigerant", tr("Refrigerant"));
         md_dict_input.insert("refrigerant", QString("cb;%1").arg(listRefrigerantsToString()));
-        md_dict.insert("purchased", tr("Purchased"));
-        md_dict_input.insert("purchased", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
-        md_dict.insert("sold", tr("Sold"));
-        md_dict_input.insert("sold", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_recy", tr("Recycled"));
-        md_dict_input.insert("refr_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("purchased", tr("Purchased (new)"));
+        md_dict_input.insert("purchased", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("purchased_reco", tr("Purchased (recovered)"));
+        md_dict_input.insert("purchased_reco", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("sold", tr("Sold (new)"));
+        md_dict_input.insert("sold", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("sold_reco", tr("Sold (recovered)"));
+        md_dict_input.insert("sold_reco", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("refr_rege", tr("Regenerated"));
-        md_dict_input.insert("refr_rege", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict_input.insert("refr_rege", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("refr_disp", tr("Disposed of"));
-        md_dict_input.insert("refr_disp", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict_input.insert("refr_disp", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("leaked", tr("Leaked (new)"));
+        md_dict_input.insert("leaked", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("leaked_reco", tr("Leaked (recovered)"));
+        md_dict_input.insert("leaked_reco", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
         query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(md_record.id().isEmpty() ? "" : " WHERE date <> :date"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     }

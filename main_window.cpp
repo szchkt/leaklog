@@ -61,6 +61,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Agenda"), in.readAll());
     file.close();
     // ----
+    show_leaked_in_store_in_service_company_view = false;
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
@@ -300,10 +301,14 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("toggledetailedview:")) {
             id = path.at(0);
             id.remove(0, QString("toggledetailedview:").length());
-            if (years_expanded_in_service_company_view.contains(id.toInt())) {
-                years_expanded_in_service_company_view.remove(id.toInt());
+            if (id == "leakedinstore") {
+                show_leaked_in_store_in_service_company_view = !show_leaked_in_store_in_service_company_view;
             } else {
-                years_expanded_in_service_company_view << id.toInt();
+                if (years_expanded_in_service_company_view.contains(id.toInt())) {
+                    years_expanded_in_service_company_view.remove(id.toInt());
+                } else {
+                    years_expanded_in_service_company_view << id.toInt();
+                }
             }
             refreshView();
         } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {

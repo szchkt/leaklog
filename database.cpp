@@ -441,10 +441,11 @@ void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         record = md->record();
-        StringVariantMap attributes = record.list("purchased, sold, refr_recy, refr_rege, refr_disp");
-        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("sold").toDouble() <= 0.0 &&
-            attributes.value("refr_recy").toDouble() <= 0.0 && attributes.value("refr_rege").toDouble() <= 0.0 &&
-            attributes.value("refr_disp").toDouble() <= 0.0) {
+        StringVariantMap attributes = record.list();
+        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("purchased_reco").toDouble() <= 0.0 &&
+            attributes.value("sold").toDouble() <= 0.0 && attributes.value("sold_reco").toDouble() <= 0.0 &&
+            attributes.value("refr_rege").toDouble() <= 0.0 && attributes.value("refr_disp").toDouble() <= 0.0 &&
+            attributes.value("leaked").toDouble() <= 0.0 && attributes.value("leaked_reco").toDouble() <= 0.0) {
             record.remove();
         }
         this->setWindowModified(true);

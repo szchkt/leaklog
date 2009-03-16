@@ -337,7 +337,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
     dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
     dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-    dict_dbtables.insert("refrigerant_management", "date TEXT, refrigerant TEXT, purchased NUMERIC, sold NUMERIC, refr_recy NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC");
+    dict_dbtables.insert("refrigerant_management", "date TEXT, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC");
     dict_dbtables.insert("db_info", "id TEXT, value TEXT");
     return dict_dbtables;
 }
@@ -402,7 +402,7 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
     dict_varnames.insert("refr_add", QApplication::translate("VariableNames", "Refrigerant addition"));
     dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "New"));
-    dict_varnames.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recycled"));
+    dict_varnames.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
     dict_varnames.insert("refr_add_am_total", QApplication::translate("VariableNames", "Total"));
     dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "%"));
     dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
