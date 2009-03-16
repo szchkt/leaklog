@@ -13,13 +13,11 @@
  * Leaklog is distributed under the terms of the GPL v2, see details below.   *
  ******************************************************************************/
 
-#include <QApplication>
-
-#include "main_window.h"
+#include "main.h"
 
 int main(int argc, char *argv[])
 {
-	QApplication app(argc, argv);
+	MTApplication app(argc, argv);
 
 	QSettings settings("SZCHKT", "Leaklog");
 	QString lang = settings.value("lang").toString();
@@ -36,6 +34,7 @@ int main(int argc, char *argv[])
 	}
 
 	MainWindow * leaklog_window = new MainWindow;
+	app.setAppMainWindow(leaklog_window);
 	leaklog_window->show();
 	return app.exec();
 }

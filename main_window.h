@@ -44,6 +44,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 public:
     MainWindow();
 
+    void openFile(const QString &);
+
 private slots:
     // UI
     void showIconsOnly(bool);

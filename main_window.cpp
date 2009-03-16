@@ -242,11 +242,16 @@ MainWindow::MainWindow()
     wv_main->setPage(page);
     loadSettings();
     if (qApp->arguments().count() > 1) {
-        QFileInfo file_info(qApp->arguments().at(1));
-        if (file_info.exists()) {
-            addRecent(file_info.absoluteFilePath());
-            openDatabase(file_info.absoluteFilePath());
-        }
+        openFile(qApp->arguments().at(1));
+    }
+}
+
+void MainWindow::openFile(const QString & file)
+{
+    QFileInfo file_info(file);
+    if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
+        addRecent(file_info.absoluteFilePath());
+        openDatabase(file_info.absoluteFilePath());
     }
 }
 
