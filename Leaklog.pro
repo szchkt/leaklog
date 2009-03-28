@@ -33,7 +33,7 @@ QT           += network webkit sql
 # fparser
 HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
-DEFINES      += NO_SUPPORT_OPTIMIZER
+DEFINES      += FP_NO_SUPPORT_OPTIMIZER
 # *******
 DESTDIR       = ./
 win32 {
