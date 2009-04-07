@@ -23,6 +23,7 @@
 #include "fparser/fparser.hh"
 #include "mtdictionary.h"
 #include "refrigerants.h"
+#include "mtaddress.h"
 
 #include <QApplication>
 #include <QVariant>
@@ -287,6 +288,31 @@ protected:
     bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
 };
 
+class MTVariant
+{
+public:
+    enum Type { Default = 0, Address = 128 };
+    MTVariant(Type t = Default, const QVariant & v = QVariant()): v_type(t), v_value(v) {};
+
+    inline void setType(Type t) { v_type = t; };
+    inline Type type() const { return v_type; };
+    inline QVariant::Type variantType() const { return v_value.type(); };
+    inline void setValue(const QVariant & v) { v_value = v; };
+    inline QVariant value() const { return v_value; };
+
+    QString toString() const {
+        switch (v_type) {
+            case Address: return MTAddress(v_value.toString()).toHtml(); break;
+            case Default: break;
+        }
+        return v_value.toString();
+    };
+
+private:
+    Type v_type;
+    QVariant v_value;
+};
+
 class MTTextStream : public QTextStream
 {
 public:
@@ -300,6 +326,7 @@ public:
     };
     inline MTTextStream & operator<<(const char * string) { this->QTextStream::operator<<(string); return *this; };
     inline MTTextStream & operator<<(const QString & string) { this->QTextStream::operator<<(string); return *this; };
+    inline MTTextStream & operator<<(const MTVariant & variant) { this->QTextStream::operator<<(variant.toString()); return *this; };
 };
 
 #endif // GLOBAL_H

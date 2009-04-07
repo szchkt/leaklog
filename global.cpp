@@ -329,7 +329,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_add_am_recy NUMERIC, refr_reco NUMERIC, refr_reco_cust NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -405,7 +405,9 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
     dict_varnames.insert("refr_add_am_total", QApplication::translate("VariableNames", "Total"));
     dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "%"));
-    dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
+    dict_varnames.insert("refr_recovery", QApplication::translate("VariableNames", "Refrigerant recovery"));
+    dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Store"));
+    dict_varnames.insert("refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
     //dict_varnames.insert("refr_recy", QApplication::translate("VariableNames", "Refrigerant recycling"));
     //dict_varnames.insert("refr_disp", QApplication::translate("VariableNames", "Refrigerant disposal"));
     dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
@@ -479,8 +481,10 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
     dict_attrnames.insert("repairs::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
     dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
-    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("AttributeNames", "Refrigerant addition"));
-    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("AttributeNames", "Refrigerant recovery"));
+    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("VariableNames", "New"));
+    dict_attrnames.insert("repairs::refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
+    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("VariableNames", "Store"));
+    dict_attrnames.insert("repairs::refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
     //dict_attrnames.insert("repairs::refr_recy", QApplication::translate("AttributeNames", "Refrigerant recycling"));
     //dict_attrnames.insert("repairs::refr_disp", QApplication::translate("AttributeNames", "Refrigerant disposal"));
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
@@ -998,7 +1002,9 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am_total", "float", tr("kg"), "refr_add_am+refr_add_am_recy", false, 0.0);
     initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am_total)/refrigerant_amount", false, 0.0);
 
-    initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_recovery", "yellow");
+    initSubvariable(filter, "refr_recovery", "yellow", "refr_reco", "float", tr("kg"), "", false, 0.0);
+    initSubvariable(filter, "refr_recovery", "yellow", "refr_reco_cust", "float", tr("kg"), "", false, 0.0);
     //initVariable(filter, "refr_recy", "float", tr("kg"), "", false, 0.0, "yellow");
     //initVariable(filter, "refr_disp", "float", tr("kg"), "", false, 0.0, "yellow");
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");

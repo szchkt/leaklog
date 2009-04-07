@@ -180,6 +180,7 @@ private:
     MTDictionary dict_attrvalues;
     MTDictionary dict_attrnames;
     MTDictionary dict_html;
+    QMap<QString, MTVariant::Type> dict_fieldtypes;
     QMap<QString, QAction *> view_actions;
     QStringList views_list;
     QActionGroup * actgrp_view;

@@ -67,12 +67,33 @@ QString MainWindow::viewChanged(const QString & view)
     } else if (view == tr("Agenda")) {
         html = viewAgenda();
     } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
-        view_actions.value(views_list.at(views_list.indexOf(view) - 1))->setChecked(true);
+        if (table_view) {
+            view_actions.value(views_list.at(views_list.indexOf(tr("Table of inspections")) - 1))->setChecked(true);
+        } else {
+            view_actions.value(views_list.at(views_list.indexOf(view) - 1))->setChecked(true);
+        }
         return viewChanged(actgrp_view->checkedAction()->text());
     } else if (actgrp_view->checkedAction()) {
         return viewChanged(actgrp_view->checkedAction()->text());
     }
     wv_main->setHtml(html, QUrl("qrc:/html/")); return html;
+}
+
+void addToStore(QMap<int, QMap<QString, double> > & store, QList<int> & years, int year, const QString & refrigerant, double value)
+{
+    if (!years.contains(year)) {
+        years << year;
+        qSort(years);
+        QList<int>::const_iterator pos = qBinaryFind(years, year);
+        if (pos != years.constBegin()) {
+            pos--;
+            store.insert(year, store.value(*pos));
+        }
+    }
+    store[year][refrigerant] += value;
+    for (int i = years.count() - 1; i >= 0 && years.at(i) > year; --i) {
+        store[years.at(i)][refrigerant] += value;
+    }
 }
 
 QString MainWindow::viewServiceCompany(int since)
@@ -92,8 +113,7 @@ QString MainWindow::viewServiceCompany(int since)
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
         out << "<num_attr>" << num_valid << "</num_attr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
-        attr_value = serv_company.value(attr_value).toString();
-        out << "<td>" << attr_value << "</td></tr>";
+        out << "<td>" << MTVariant(dict_fieldtypes.value(attr_value), serv_company.value(attr_value)) << "</td></tr>";
         num_valid++;
     }
     if (num_valid != 0) {
@@ -108,7 +128,8 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
     out << tr("Store") << "</b></td></tr>";
     out << "<tr><td align=\"center\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:60%;\" class=\"centred_with_borders\">";
-    out << "<tr><th>" << tr("Refrigerant") << "</th>";
+    out << "<tr><th>" << tr("Year") << "</th>";
+    out << "<th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
     out << "<th>" << tr("Recovered in store") << "</th>";
     out << "<th><a href=\"toggledetailedview:leakedinstore\">" << tr("Leaked in store") << "</a></th></tr>";
@@ -123,7 +144,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th colspan=\"3\">" << tr("Added") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Regenerated") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     if (show_leaked_in_store_in_service_company_view)
         out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
@@ -140,9 +161,9 @@ QString MainWindow::viewServiceCompany(int since)
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     }
     out << "</tr>";
-    QMap<QString, double> store;
-    QMap<QString, double> store_recovered;
-    QMap<QString, double> store_leaked;
+    QMap<int, QMap<QString, double> > store; QList<int> store_years;
+    QMap<int, QMap<QString, double> > store_recovered; QList<int> store_recovered_years;
+    QMap<int, QMap<QString, double> > store_leaked; QList<int> store_leaked_years;
     QMultiMap<QString, QVector<QString> > entries_map;
     QMap<QString, QVector<double> *> sums_map;
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
@@ -159,16 +180,13 @@ QString MainWindow::viewServiceCompany(int since)
         refr_disp = refr_man->at(i).value("refr_disp");
         leaked = refr_man->at(i).value("leaked");
         leaked_reco = refr_man->at(i).value("leaked_reco");
-
-        if (!store.contains(refrigerant)) { store.insert(refrigerant, 0.0); }
-        store[refrigerant] += purchased.toDouble() - sold.toDouble() - leaked.toDouble();
-        if (!store_recovered.contains(refrigerant)) { store_recovered.insert(refrigerant, 0.0); }
-        store_recovered[refrigerant] += purchased_reco.toDouble() - sold_reco.toDouble() - refr_rege.toDouble() - refr_disp.toDouble() - leaked_reco.toDouble();
-        if (!store_leaked.contains(refrigerant)) { store_leaked.insert(refrigerant, 0.0); }
-        store_leaked[refrigerant] += leaked.toDouble() + leaked_reco.toDouble();
-
         date = refr_man->at(i).value("date").toString();
         year = date.left(4).toInt();
+
+        addToStore(store, store_years, year, refrigerant, purchased.toDouble() - sold.toDouble() - leaked.toDouble());
+        addToStore(store_recovered, store_recovered_years, year, refrigerant, purchased_reco.toDouble() - sold_reco.toDouble() - refr_rege.toDouble() - refr_disp.toDouble() - leaked_reco.toDouble());
+        addToStore(store_leaked, store_leaked_years, year, refrigerant, leaked.toDouble() + leaked_reco.toDouble());
+
         if (year < since) { continue; }
 
         QVector<QString> entries_list(14);
@@ -206,7 +224,7 @@ QString MainWindow::viewServiceCompany(int since)
     MTRecord inspections_record("inspection", "", MTDictionary());
     ListOfStringVariantMapsPtr inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco"));
     MTRecord repairs_rec("repair", "", MTDictionary());
-    *inspections << *(repairs_rec.listAll("date, refrigerant, refr_add_am, refr_reco"));
+    *inspections << *(repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco"));
     for (int i = 0; i < inspections->count(); ++i) {
         refr_add_am = inspections->at(i).value("refr_add_am");
         refr_add_am_recy = inspections->at(i).value("refr_add_am_recy");
@@ -214,6 +232,7 @@ QString MainWindow::viewServiceCompany(int since)
         if (refr_add_am.toDouble() == 0.0 && refr_add_am_recy.toDouble() == 0.0 && refr_reco.toDouble() == 0.0) continue;
 
         date = inspections->at(i).value("date").toString();
+        year = date.left(4).toInt();
         QVector<QString> entries_list(14);
         if (inspections->at(i).contains("customer")) {
             entries_list[0] = QString("customer:%1/circuit:%2/%3:%4")
@@ -232,12 +251,9 @@ QString MainWindow::viewServiceCompany(int since)
             entries_list[1] = refrigerant;
         }
 
-        if (!store.contains(refrigerant)) { store.insert(refrigerant, 0.0); }
-        store[refrigerant] -= refr_add_am.toDouble();
-        if (!store_recovered.contains(refrigerant)) { store_recovered.insert(refrigerant, 0.0); }
-        store_recovered[refrigerant] += refr_reco.toDouble() - refr_add_am_recy.toDouble();
+        addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());
+        addToStore(store_recovered, store_recovered_years, year, refrigerant, refr_reco.toDouble() - refr_add_am_recy.toDouble());
 
-        year = date.left(4).toInt();
         if (year < since) { continue; }
 
         entries_list[6] = refr_add_am.toString();
@@ -262,12 +278,26 @@ QString MainWindow::viewServiceCompany(int since)
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerantsToString().split(";");
     list_refrigerants.insert(0, "");
-    for (int i = 0; i < list_refrigerants.count(); ++i) {
-        if (store.contains(list_refrigerants.at(i)) || store_recovered.contains(list_refrigerants.at(i)) || store_leaked.contains(list_refrigerants.at(i))) {
-            store_out << "<tr><td>" << list_refrigerants.at(i) << "</td>";
-            store_out << "<td>" << store.value(list_refrigerants.at(i)) << "</td>";
-            store_out << "<td>" << store_recovered.value(list_refrigerants.at(i)) << "</td>";
-            store_out << "<td>" << store_leaked.value(list_refrigerants.at(i)) << "</td></tr>";
+    QMap<QString, double> store_map;
+    QMap<QString, double> store_recovered_map;
+    QMap<QString, double> store_leaked_map;
+    QList<int>::const_iterator y = store_years.constEnd();
+    while (y != store_years.constBegin()) {
+        y--;
+        store_map = store.value(*y);
+        store_recovered_map = store_recovered.value(*y);
+        store_leaked_map = store_leaked.value(*y);
+        store_out << "<tr><th rowspan=\"" << store_map.size() << "\">" << *y << "</th>";
+        for (int i = 0, n = 0; i < list_refrigerants.count(); ++i) {
+            refrigerant = list_refrigerants.at(i);
+            if (store_map.contains(refrigerant) || store_recovered_map.contains(refrigerant) || store_leaked_map.contains(refrigerant)) {
+                if (n) { store_out << "<tr>"; }
+                store_out << "<td>" << refrigerant << "</td>";
+                store_out << "<td>" << store_map.value(refrigerant) << "</td>";
+                store_out << "<td>" << store_recovered_map.value(refrigerant) << "</td>";
+                store_out << "<td>" << store_leaked_map.value(refrigerant) << "</td></tr>";
+                n++;
+            }
         }
     }
     html.replace("<store />", store_html);
@@ -362,7 +392,8 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
         } else { out << "\">"; }
         out << "<td>" << toolTipLink("customer", id.rightJustified(8, '0'), id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("customer::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
-            out << "<td>" << list->at(i).value(dict_attrnames.key(n).mid(cu_length)).toString() << "</td>";
+            out << "<td>" << MTVariant(dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length)),
+                                        list->at(i).value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
         }
         MTRecord circuits_record("circuit", "", MTDictionary("parent", id));
         out << "<td>" << circuits_record.listAll("id")->count() << "</td>";
@@ -474,23 +505,25 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
-    ListOfStringVariantMapsPtr inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco"));
+    ListOfStringVariantMapsPtr inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
     if (inspections->count()) {
         MTRecord inspectors_record("inspector", "", MTDictionary());
         MultiMapOfStringVariantMapsPtr inspectors(inspectors_record.mapAll("id", "person"));
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><th colspan=\"8\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
+        out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
         out << tr("Inspections and repairs") << "</a></th></tr>";
         out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
         out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("refr_reco") << "</th>";
+        out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
         out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
         out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
         out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th>";
         out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th></tr>";
         out << "<tr><th>" << dict_varnames.value("refr_add_am") << "</th>";
-        out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th></tr>";
+        out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th>";
+        out << "<th>" << dict_varnames.value("refr_reco") << "</th>";
+        out << "<th>" << dict_varnames.value("refr_reco_cust") << "</th></tr>";
         bool is_nominal, is_repair;
         QString id; QString highlighted_id = selectedInspection();
         for (int i = 0; i < inspections->count(); ++i) {
@@ -511,6 +544,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
             out << "<td>" << inspections->at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
             out << "<td>" << inspections->at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
             out << "<td>" << inspections->at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspections->at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
             out << "<td>" << inspectors->value(inspections->at(i).value("inspector").toString()).value("person").toString() << "</td>";
             out << "<td>" << inspections->at(i).value("operator").toString() << "</td>";
             if (!inspections->at(i).value("rmds").toString().isEmpty()) {
@@ -730,7 +764,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
     out << "<td>" << customer_info.value("company").toString() << "</td>";
     out << "<td>" << customer_info.value("contact_person").toString() << "</td>";
-    out << "<td>" << customer_info.value("address").toString() << "</td>";
+    out << "<td>" << MTAddress(customer_info.value("address").toString()).toHtml() << "</td>";
     out << "<td>" << customer_info.value("mail").toString() << "</td>";
     out << "<td>" << customer_info.value("phone").toString() << "</td>";
     out << "</tr></table><br />";
@@ -1125,14 +1159,22 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
     }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int re_length = QString("repairs::").length();
-    QString thead = "<tr>"; int thead_colspan = 0;
-    for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
-        thead.append("<th>" + dict_attrnames.value(n) + "</th>");
-        thead_colspan++;
-    }
-    thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr>";
-    out << thead;
+    out << "<tr><th colspan=\"11\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr><tr>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::date") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::customer") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::field") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant_amount") << "</th>";
+    out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
+    out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::repairman") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::arno") << "</th>";
+    out << "</tr><tr>";
+    out << "<th>" << dict_attrnames.value("repairs::refr_add_am") << "</th>";
+    out << "<th>" << dict_attrnames.value("repairs::refr_add_am_recy") << "</th>";
+    out << "<th>" << dict_attrnames.value("repairs::refr_reco") << "</th>";
+    out << "<th>" << dict_attrnames.value("repairs::refr_reco_cust") << "</th>";
+    out << "</tr>";
     if (repairs->count()) {
         QString id, attr_value;
         MTRecord inspectors_record("inspector", "", MTDictionary());

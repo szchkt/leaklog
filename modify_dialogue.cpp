@@ -108,7 +108,7 @@ QDialog(parent)
         md_dict.insert("contact_person", tr("Contact person"));
         md_dict_input.insert("contact_person", "le");
         md_dict.insert("address", tr("Address"));
-        md_dict_input.insert("address", "pte");
+        md_dict_input.insert("address", "ae");
         md_dict.insert("mail", tr("E-mail"));
         md_dict_input.insert("mail", "le");
         md_dict.insert("phone", tr("Phone"));
@@ -244,10 +244,14 @@ QDialog(parent)
         md_dict_input.insert("arno", "le");
         md_dict.insert("refrigerant_amount", tr("Amount of refrigerant"));
         md_dict_input.insert("refrigerant_amount", QString("dspb;0.0;0.0;999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_add_am", tr("Refrigerant addition"));
+        md_dict.insert("refr_add_am", tr("%1:").arg(tr("Refrigerant addition")) + " " + tr("New"));
         md_dict_input.insert("refr_add_am", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_reco", tr("Refrigerant recovery"));
+        md_dict.insert("refr_add_am_recy", tr("%1:").arg(tr("Refrigerant addition")) + " " + tr("Recovered"));
+        md_dict_input.insert("refr_add_am_recy", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_reco", tr("%1:").arg(tr("Refrigerant recovery")) + " " + tr("Store"));
         md_dict_input.insert("refr_reco", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
+        md_dict.insert("refr_reco_cust", tr("%1:").arg(tr("Refrigerant recovery")) + " " + tr("Customer"));
+        md_dict_input.insert("refr_reco_cust", QString("dspb;-999999999.9;0.0;999999999.9; %1").arg(tr("kg")));
         query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(md_record.id().isEmpty() ? "" : " date <> :date"));
         if (!md_record.id().isEmpty()) { query_used_ids.bindValue(":date", md_record.id()); }
     } else if (md_record.type() == "variable" || md_record.type() == "subvariable") {
@@ -312,7 +316,7 @@ QDialog(parent)
         md_dict.insert("id", tr("ID"));
         md_dict_input.insert("id", "le;00000000");
         md_dict.insert("address", tr("Address"));
-        md_dict_input.insert("address", "pte");
+        md_dict_input.insert("address", "ae");
         md_dict.insert("phone", tr("Phone"));
         md_dict_input.insert("phone", "le");
         md_dict.insert("mail", tr("E-mail"));
@@ -335,7 +339,7 @@ QDialog(parent)
         md_dict_input.insert("sold", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("sold_reco", tr("Sold (recovered)"));
         md_dict_input.insert("sold_reco", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
-        md_dict.insert("refr_rege", tr("Regenerated"));
+        md_dict.insert("refr_rege", tr("Reclaimed"));
         md_dict_input.insert("refr_rege", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
         md_dict.insert("refr_disp", tr("Disposed of"));
         md_dict_input.insert("refr_disp", QString("dspb;0.0;0.0;999999999.9; %1").arg(tr("kg")));
@@ -526,6 +530,11 @@ QWidget * ModifyDialogue::createInputWidget(const QStringList & inputtype, const
         md_pte_var->setPlainText(value);
         new Highlighter(md_used_ids, md_pte_var->document());
         return md_pte_var;
+    } else if (widget_type == "ae") {
+        MTAddressEdit * md_ae_var = new MTAddressEdit(this);
+        md_ae_var->setMinimumSize(200, md_ae_var->sizeHint().height());
+        md_ae_var->setAddress(MTAddress(value));
+        return md_ae_var;
     } else {
         QPlainTextEdit * md_pte_var = new QPlainTextEdit(this);
         md_pte_var->setPalette(palette);
@@ -576,6 +585,8 @@ QVariant ModifyDialogue::getInputFromWidget(QWidget * input_widget, const QStrin
         }
     } else if (widget_type == "de") {
         value = ((QDateEdit *)input_widget)->date().toString("yyyy.MM.dd");
+    } else if (widget_type == "ae") {
+        value = ((MTAddressEdit *)input_widget)->address().toString();
     } else {
         value = ((QPlainTextEdit *)input_widget)->toPlainText();
     }

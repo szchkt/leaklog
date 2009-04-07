@@ -123,8 +123,8 @@ void MainWindow::initTables(bool transaction)
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
-        set.insert("sum", "vis_aur_chk;refr_add;refr_reco");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_recovery;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add;refr_recovery");
         leakages.update(set);
         set.clear();
     }
@@ -353,7 +353,7 @@ void MainWindow::openDatabase(QString path)
     this->setWindowModified(false);
     setAllEnabled(true);
     enableTools();
-    loadTable(cb_table_edit->currentText());
+    //loadTable(cb_table_edit->currentText());
     setView(tr("Service company"));
 }
 
@@ -1312,7 +1312,12 @@ void MainWindow::exportData(const QString & type)
 {
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("Export customer data - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
+    QString title;
+    if (type == "customer") { title = tr("Export customer data - Leaklog"); }
+    else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }
+    else if (type == "inspection") { title = tr("Export inspection data - Leaklog"); }
+    else { title = tr("Export data - Leaklog"); }
+    QString path = QFileDialog::getSaveFileName(this, title, tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
@@ -1320,7 +1325,7 @@ void MainWindow::exportData(const QString & type)
         QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
         data.setDatabaseName(path);
         if (!data.open()) {
-            QMessageBox::critical(this, tr("Export customer data - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
+            QMessageBox::critical(this, title, tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
             return;
         }
         initDatabase(&data);
