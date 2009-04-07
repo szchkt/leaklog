@@ -16,7 +16,9 @@ HEADERS      += global.h \
                 mtdictionary.h \
                 mtcolourcombobox.h \
                 import_dialogue.h \
-                mtaddress.h
+                mtaddress.h \
+                mtrecord.h \
+                mtsqlqueryresult.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -29,7 +31,9 @@ SOURCES      += global.cpp \
                 view.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp \
-                mtaddress.cpp
+                mtaddress.cpp \
+                mtrecord.cpp \
+                mtsqlqueryresult.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser

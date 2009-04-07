@@ -21,19 +21,14 @@
 #define GLOBAL_H
 
 #include "fparser/fparser.hh"
-#include "mtdictionary.h"
 #include "refrigerants.h"
 #include "mtaddress.h"
+#include "mtsqlqueryresult.h"
 
 #include <QApplication>
 #include <QVariant>
 #include <QSet>
 #include <QStringList>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QSqlError>
-#include <QSqlField>
 #include <QColor>
 #include <QWebPage>
 #include <QNetworkRequest>
@@ -41,20 +36,6 @@
 
 #include <memory>
 #include <cmath>
-
-//using std::auto_ptr;
-
-#define StringVariantMap QMap<QString, QVariant>
-
-#define ListOfStringVariantMaps QList<StringVariantMap>
-
-#define MapOfStringVariantMaps QMap<QString, StringVariantMap>
-
-#define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
-
-//#define ListOfStringVariantMapsPtr auto_ptr<ListOfStringVariantMaps>
-
-//#define MultiMapOfStringVariantMapsPtr auto_ptr<MultiMapOfStringVariantMaps>
 
 #define LEAKLOG_VERSION "0.9.3"
 #define F_LEAKLOG_VERSION 0.903
@@ -94,69 +75,6 @@ namespace Global {
     QString listInspectorsToString();
     QStringList listVariableIds(bool = false);
 }
-
-class MTRecord : public QObject
-{
-    Q_OBJECT
-
-public:
-    MTRecord() {};
-    MTRecord(const QString &, const QString &, const MTDictionary &);
-    MTRecord(const MTRecord &);
-    MTRecord & operator=(const MTRecord &);
-    void setType(const QString & type) { r_type = type; };
-    inline QString type() { return r_type; };
-    inline QString id() { return r_id; };
-    inline MTDictionary * parents() { return &r_parents; };
-    bool exists();
-    QSqlQuery select(const QString & = "*");
-    StringVariantMap list(const QString & = "*");
-    ListOfStringVariantMaps listAll(const QString & = "*");
-    MultiMapOfStringVariantMaps mapAll(const QString &, const QString & = "*");
-    bool update(const StringVariantMap &, bool = false);
-    bool remove();
-
-protected:
-    QString tableForRecordType(const QString &);
-    QString idFieldForRecordType(const QString &);
-
-private:
-    QString r_type;
-    QString r_id;
-    MTDictionary r_parents;
-};
-
-class MTSqlQueryResult : public QObject
-{
-    Q_OBJECT
-
-public:
-    MTSqlQueryResult(const QString &, QSqlDatabase = QSqlDatabase());
-    MTSqlQueryResult(QSqlDatabase = QSqlDatabase());
-    ~MTSqlQueryResult();
-
-    void bindValue(const QString &, const QVariant &, QSql::ParamType = QSql::In);
-    QVariant boundValue(const QString &) const;
-    bool exec(const QString &);
-    bool exec();
-    bool next();
-    bool prepare(const QString &);
-    QSqlQuery * query();
-    QSqlRecord record() const;
-    QVariant value(int) const;
-    QVariant value(const QString &) const;
-    int count() const;
-
-protected:
-    int * pos();
-    ListOfStringVariantMaps * result();
-    virtual void saveResult();
-
-private:
-    QSqlQuery * _query;
-    ListOfStringVariantMaps _result;
-    int _pos;
-};
 
 class Variables : public MTSqlQueryResult
 {
