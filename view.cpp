@@ -169,18 +169,18 @@ QString MainWindow::viewServiceCompany(int since)
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
     MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
-    ListOfStringVariantMapsPtr refr_man(refr_man_rec.listAll());
-    for (int i = 0; i < refr_man->count(); ++i) {
-        refrigerant = refr_man->at(i).value("refrigerant").toString();
-        purchased = refr_man->at(i).value("purchased");
-        purchased_reco = refr_man->at(i).value("purchased_reco");
-        sold = refr_man->at(i).value("sold");
-        sold_reco = refr_man->at(i).value("sold_reco");
-        refr_rege = refr_man->at(i).value("refr_rege");
-        refr_disp = refr_man->at(i).value("refr_disp");
-        leaked = refr_man->at(i).value("leaked");
-        leaked_reco = refr_man->at(i).value("leaked_reco");
-        date = refr_man->at(i).value("date").toString();
+    ListOfStringVariantMaps refr_man(refr_man_rec.listAll());
+    for (int i = 0; i < refr_man.count(); ++i) {
+        refrigerant = refr_man.at(i).value("refrigerant").toString();
+        purchased = refr_man.at(i).value("purchased");
+        purchased_reco = refr_man.at(i).value("purchased_reco");
+        sold = refr_man.at(i).value("sold");
+        sold_reco = refr_man.at(i).value("sold_reco");
+        refr_rege = refr_man.at(i).value("refr_rege");
+        refr_disp = refr_man.at(i).value("refr_disp");
+        leaked = refr_man.at(i).value("leaked");
+        leaked_reco = refr_man.at(i).value("leaked_reco");
+        date = refr_man.at(i).value("date").toString();
         year = date.left(4).toInt();
 
         addToStore(store, store_years, year, refrigerant, purchased.toDouble() - sold.toDouble() - leaked.toDouble());
@@ -220,34 +220,34 @@ QString MainWindow::viewServiceCompany(int since)
         (*sum_list)[11] += leaked_reco.toDouble();
     }
     MTRecord circuits_record("circuit", "", MTDictionary());
-    MultiMapOfStringVariantMapsPtr circuits(circuits_record.mapAll("parent::id", "refrigerant"));
+    MultiMapOfStringVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
     MTRecord inspections_record("inspection", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco"));
+    ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco"));
     MTRecord repairs_rec("repair", "", MTDictionary());
-    *inspections << *(repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco"));
-    for (int i = 0; i < inspections->count(); ++i) {
-        refr_add_am = inspections->at(i).value("refr_add_am");
-        refr_add_am_recy = inspections->at(i).value("refr_add_am_recy");
-        refr_reco = inspections->at(i).value("refr_reco");
+    inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco");
+    for (int i = 0; i < inspections.count(); ++i) {
+        refr_add_am = inspections.at(i).value("refr_add_am");
+        refr_add_am_recy = inspections.at(i).value("refr_add_am_recy");
+        refr_reco = inspections.at(i).value("refr_reco");
         if (refr_add_am.toDouble() == 0.0 && refr_add_am_recy.toDouble() == 0.0 && refr_reco.toDouble() == 0.0) continue;
 
-        date = inspections->at(i).value("date").toString();
+        date = inspections.at(i).value("date").toString();
         year = date.left(4).toInt();
         QVector<QString> entries_list(14);
-        if (inspections->at(i).contains("customer")) {
+        if (inspections.at(i).contains("customer")) {
             entries_list[0] = QString("customer:%1/circuit:%2/%3:%4")
-                            .arg(inspections->at(i).value("customer").toString())
-                            .arg(inspections->at(i).value("circuit").toString())
-                            .arg(inspections->at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
+                            .arg(inspections.at(i).value("customer").toString())
+                            .arg(inspections.at(i).value("circuit").toString())
+                            .arg(inspections.at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
                             .arg(date);
-            refrigerant = circuits->value(QString("%1::%2")
-                            .arg(inspections->at(i).value("customer").toString())
-                            .arg(inspections->at(i).value("circuit").toString()))
+            refrigerant = circuits.value(QString("%1::%2")
+                            .arg(inspections.at(i).value("customer").toString())
+                            .arg(inspections.at(i).value("circuit").toString()))
                             .value("refrigerant").toString();
             entries_list[1] = refrigerant;
         } else {
             entries_list[0] = QString("repair:%1").arg(date);
-            refrigerant = inspections->at(i).value("refrigerant").toString();
+            refrigerant = inspections.at(i).value("refrigerant").toString();
             entries_list[1] = refrigerant;
         }
 
@@ -367,7 +367,7 @@ QString MainWindow::viewServiceCompany(int since)
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)
 {
     MTRecord all_customers("customer", customer_id, MTDictionary());
-    ListOfStringVariantMapsPtr list(all_customers.listAll());
+    ListOfStringVariantMaps list(all_customers.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int cu_length = QString("customer::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -384,8 +384,8 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     out << "</th></tr>";
     out << thead;
     QString id; QString highlighted_id = toString(selectedCustomer());
-    for (int i = 0; i < list->count(); ++i) {
-        id = list->at(i).value("id").toString();
+    for (int i = 0; i < list.count(); ++i) {
+        id = list.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'customer:" << id << "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
             out << " background-color: rgb(242, 248, 255);\">";
@@ -393,12 +393,12 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
         out << "<td>" << toolTipLink("customer", id.rightJustified(8, '0'), id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("customer::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
             out << "<td>" << MTVariant(dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length)),
-                                        list->at(i).value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
+                                        list.at(i).value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
         }
         MTRecord circuits_record("circuit", "", MTDictionary("parent", id));
-        out << "<td>" << circuits_record.listAll("id")->count() << "</td>";
+        out << "<td>" << circuits_record.listAll("id").count() << "</td>";
         MTRecord inspection_record("inspection", "", MTDictionary("customer", id));
-        out << "<td>" << inspection_record.listAll("date")->count() << "</td>";
+        out << "<td>" << inspection_record.listAll("date").count() << "</td>";
         out << "</tr>";
     }
     out << "</table>";
@@ -407,7 +407,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
 void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id)
 {
     MTRecord circuits_record("circuit", circuit_id, MTDictionary("parent", customer_id));
-    ListOfStringVariantMapsPtr circuits(circuits_record.listAll());
+    ListOfStringVariantMaps circuits(circuits_record.listAll());
     out << "<table cellspacing=\"0\" style=\"width:100%;\">";
     int cc_length = QString("circuit::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -426,9 +426,9 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     QString attr_value; QStringList dict_value; QString id;
     QString highlighted_id = toString(selectedCircuit());
     bool show_disused = false;
-    for (int i = 0; i < circuits->count(); ++i) {
-        if (circuit_id.isEmpty() && circuits->at(i).value("disused").toInt()) { show_disused = true; continue; }
-        id = circuits->at(i).value("id").toString();
+    for (int i = 0; i < circuits.count(); ++i) {
+        if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt()) { show_disused = true; continue; }
+        id = circuits.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << id << "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
             out << " background-color: rgb(242, 248, 255);\">";
@@ -436,7 +436,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
         out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("circuit::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
             dict_value = dict_attrnames.value(n).split("||");
-            attr_value = circuits->at(i).value(dict_attrnames.key(n).mid(cc_length)).toString();
+            attr_value = circuits.at(i).value(dict_attrnames.key(n).mid(cc_length)).toString();
             if (dict_attrnames.key(n) == "circuit::field") {
                 if (dict_attrvalues.contains("field::" + attr_value)) {
                     attr_value = dict_attrvalues.value("field::" + attr_value);
@@ -448,10 +448,10 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
             if (dict_value.count() > 1) { out << "&nbsp;" << dict_value.last(); }
             out << "</td>";
         }
-        out << "<td>" << circuits->at(i).value("refrigerant_amount").toDouble() << "&nbsp;" << tr("kg");
-        out << " " << circuits->at(i).value("refrigerant").toString() << "</td>";
-        out << "<td>" << circuits->at(i).value("oil_amount").toDouble() << "&nbsp;" << tr("kg");
-        out << " " << circuits->at(i).value("oil").toString().toUpper() << "</td>";
+        out << "<td>" << circuits.at(i).value("refrigerant_amount").toDouble() << "&nbsp;" << tr("kg");
+        out << " " << circuits.at(i).value("refrigerant").toString() << "</td>";
+        out << "<td>" << circuits.at(i).value("oil_amount").toDouble() << "&nbsp;" << tr("kg");
+        out << " " << circuits.at(i).value("oil").toString().toUpper() << "</td>";
         out << "</tr>";
     }
     out << "</table>";
@@ -463,18 +463,18 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
         out << "<th>" << dict_attrnames.value("circuit::type") << "</th>";
         out << "<th>" << dict_attrnames.value("circuit::sn") << "</th>";
         out << "<th>" << dict_attrnames.value("circuit::commissioning") << "</th></tr>";
-        for (int i = 0; i < circuits->count(); ++i) {
-            if (!circuits->at(i).value("disused").toInt()) continue;
-            id = circuits->at(i).value("id").toString();
+        for (int i = 0; i < circuits.count(); ++i) {
+            if (!circuits.at(i).value("disused").toInt()) continue;
+            id = circuits.at(i).value("id").toString();
             out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << id << "'\" style=\"cursor: pointer;";
             if (id == highlighted_id) {
                 out << " background-color: rgb(242, 248, 255);\">";
             } else { out << "\">"; }
             out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
-            out << "<td>" << circuits->at(i).value("manufacturer").toString() << "</td>";
-            out << "<td>" << circuits->at(i).value("type").toString() << "</td>";
-            out << "<td>" << circuits->at(i).value("sn").toString() << "</td>";
-            out << "<td>" << circuits->at(i).value("commissioning").toString() << "</td></tr>";
+            out << "<td>" << circuits.at(i).value("manufacturer").toString() << "</td>";
+            out << "<td>" << circuits.at(i).value("type").toString() << "</td>";
+            out << "<td>" << circuits.at(i).value("sn").toString() << "</td>";
+            out << "<td>" << circuits.at(i).value("commissioning").toString() << "</td></tr>";
         }
         out << "</table>";
     }
@@ -505,10 +505,10 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
-    ListOfStringVariantMapsPtr inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
-    if (inspections->count()) {
+    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
+    if (inspections.count()) {
         MTRecord inspectors_record("inspector", "", MTDictionary());
-        MultiMapOfStringVariantMapsPtr inspectors(inspectors_record.mapAll("id", "person"));
+        MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
@@ -526,33 +526,33 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "<th>" << dict_varnames.value("refr_reco_cust") << "</th></tr>";
         bool is_nominal, is_repair;
         QString id; QString highlighted_id = selectedInspection();
-        for (int i = 0; i < inspections->count(); ++i) {
-            id = inspections->at(i).value("date").toString();
+        for (int i = 0; i < inspections.count(); ++i) {
+            id = inspections.at(i).value("date").toString();
             out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << id << "'\" style=\"cursor: pointer;";
             if (id == highlighted_id) {
                 out << " background-color: rgb(242, 248, 255);\">";
             } else { out << "\">"; }
             out << "<td>";
-            is_nominal = inspections->at(i).value("nominal").toInt();
-            is_repair = inspections->at(i).value("repair").toInt();
+            is_nominal = inspections.at(i).value("nominal").toInt();
+            is_repair = inspections.at(i).value("repair").toInt();
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
             out << toolTipLink("customer/circuit/inspection", id, customer_id, circuit_id, id);
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
             out << "</td>";
-            out << "<td>" << inspections->at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections->at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections->at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections->at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspectors->value(inspections->at(i).value("inspector").toString()).value("person").toString() << "</td>";
-            out << "<td>" << inspections->at(i).value("operator").toString() << "</td>";
-            if (!inspections->at(i).value("rmds").toString().isEmpty()) {
-                out << "<td onmouseover=\"Tip('" << escapeString(inspections->at(i).value("rmds").toString()) << "')\" onmouseout=\"UnTip()\">...</td>";
+            out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspections.at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspections.at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+            out << "<td>" << inspectors.value(inspections.at(i).value("inspector").toString()).value("person").toString() << "</td>";
+            out << "<td>" << inspections.at(i).value("operator").toString() << "</td>";
+            if (!inspections.at(i).value("rmds").toString().isEmpty()) {
+                out << "<td onmouseover=\"Tip('" << escapeString(inspections.at(i).value("rmds").toString()) << "')\" onmouseout=\"UnTip()\">...</td>";
             } else {
                 out << "<td></td>";
             }
-            out << "<td>" << inspections->at(i).value("arno").toString() << "</td>";
+            out << "<td>" << inspections.at(i).value("arno").toString() << "</td>";
             out << "</tr>";
         }
         out << "</table>";
@@ -725,26 +725,26 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     MTDictionary inspection_parents("circuit", circuit_id);
     inspection_parents.insert("customer", customer_id);
     MTRecord inspection_record("inspection", "", inspection_parents);
-    ListOfStringVariantMapsPtr inspections(inspection_record.listAll());
+    ListOfStringVariantMaps inspections(inspection_record.listAll());
     QString last_inspection_date, last_entry_date, date;
-    for (int i = 0; i < inspections->count(); ++i) {
-        date = inspections->at(i).value("date").toString();
+    for (int i = 0; i < inspections.count(); ++i) {
+        date = inspections.at(i).value("date").toString();
         if (date > last_entry_date) {
             last_entry_date = date;
-            if (!inspections->at(i).value("repair").toInt()) {
+            if (!inspections.at(i).value("repair").toInt()) {
                 last_inspection_date = date;
             }
         }
-        if ((!table.value("highlight_nominal").toInt() || !inspections->at(i).value("nominal").toInt())
+        if ((!table.value("highlight_nominal").toInt() || !inspections.at(i).value("nominal").toInt())
             && date.split(".").first().toInt() < year) {
-            inspections->removeAt(i);
+            inspections.removeAt(i);
             i--;
         }
     }
     StringVariantMap nominal_ins;
-    for (int i = 0; i < inspections->count(); ++i) {
-        if (inspections->at(i).value("nominal").toInt()) {
-            nominal_ins = (*inspections)[i];
+    for (int i = 0; i < inspections.count(); ++i) {
+        if (inspections.at(i).value("nominal").toInt()) {
+            nominal_ins = inspections[i];
             break;
         }
     }
@@ -852,9 +852,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 //*** Body ***
     bool is_nominal, is_repair;
     out << "<tbody>";
-    for (int i = 0; i < inspections->count(); ++i) {
-        is_nominal = inspections->at(i).value("nominal").toInt();
-        is_repair = inspections->at(i).value("repair").toInt();
+    for (int i = 0; i < inspections.count(); ++i) {
+        is_nominal = inspections.at(i).value("nominal").toInt();
+        is_repair = inspections.at(i).value("repair").toInt();
         out << "<tr class=\"";
         if (is_nominal && table.value("highlight_nominal").toInt()) {
             out << "nominal";
@@ -862,7 +862,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "\"><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink("customer/circuit/inspection", inspections->at(i).value("date").toString(), customer_id, circuit_id, inspections->at(i).value("date").toString());
+        out << toolTipLink("customer/circuit/inspection", inspections.at(i).value("date").toString(), customer_id, circuit_id, inspections.at(i).value("date").toString());
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
         out << "</td>";
@@ -875,14 +875,14 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     subvariable = subvariables.at(s).toMap();
                     compare_nom = subvariable.value("compare_nom").toInt() > 0;
                     if (subvariable.value("value").toString().contains("sum")) {
-                        QString i_year = inspections->at(i).value("date").toString().split(".").first();
+                        QString i_year = inspections.at(i).value("date").toString().split(".").first();
                         if (is_nominal) rowspan = 1;
-                        else if (i > 0 && !inspections->at(i-1).value("nominal").toInt() && inspections->at(i-1).value("date").toString().split(".").first() == i_year) continue;
+                        else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
                         else {
                             int in = i;
-                            for (; in < inspections->count(); ++in) {
-                                if (inspections->at(in).value("nominal").toInt()) in--;
-                                if (inspections->at(in).value("date").toString().split(".").first() != i_year) {
+                            for (; in < inspections.count(); ++in) {
+                                if (inspections.at(in).value("nominal").toInt()) in--;
+                                if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
                                     break;
                                 }
                             }
@@ -890,14 +890,14 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                         }
                     } else rowspan = 1;
                     if (subvariable.value("value").toString().isEmpty()) {
-                        ins_value = inspections->at(i).value(subvariable.value("id").toString()).toString();
+                        ins_value = inspections.at(i).value(subvariable.value("id").toString()).toString();
                         if (compare_nom) {
                             nom_value = nominal_ins.value(subvariable.value("id").toString()).toString();
                             if (nom_value.isEmpty()) compare_nom = false;
                         }
                     } else {
                         MTDictionary expression = parseExpression(subvariable.value("value").toString(), &used_ids);
-                        ins_value = toString(evaluateExpression((*inspections)[i], expression, customer_id, circuit_id, &ok_eval));
+                        ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                         if (!ok_eval) ins_value = "";
                         if (compare_nom) {
                             nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
@@ -912,14 +912,14 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             } else {
                 compare_nom = variable.value("compare_nom").toInt() > 0;
                 if (variable.value("value").toString().isEmpty()) {
-                    ins_value = inspections->at(i).value(table_vars.at(n)).toString();
+                    ins_value = inspections.at(i).value(table_vars.at(n)).toString();
                     if (compare_nom) {
                         nom_value = nominal_ins.value(table_vars.at(n)).toString();
                         if (nom_value.isEmpty()) compare_nom = false;
                     }
                 } else {
                     MTDictionary expression = parseExpression(variable.value("value").toString(), &used_ids);
-                    ins_value = toString(evaluateExpression((*inspections)[i], expression, customer_id, circuit_id, &ok_eval));
+                    ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                     if (!ok_eval) ins_value = "";
                     if (compare_nom) {
                         nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
@@ -963,19 +963,19 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                         if (is_in_foot) {
                             double value = 0.0; int num_ins = 0;
                             if (subvariable.value("value").toString().isEmpty()) {
-                                num_ins = inspections->count();
-                                for (int ins = 0; ins < inspections->count(); ++ins) {
-                                    value += inspections->at(ins).value(subvariable.value("id").toString()).toDouble();
+                                num_ins = inspections.count();
+                                for (int ins = 0; ins < inspections.count(); ++ins) {
+                                    value += inspections.at(ins).value(subvariable.value("id").toString()).toDouble();
                                 }
                             } else {
                                 MTDictionary expression = parseExpression(subvariable.value("value").toString(), &used_ids);
-                                for (int ins = 0; ins < inspections->count(); ++ins) {
+                                for (int ins = 0; ins < inspections.count(); ++ins) {
                                     if (subvariable.value("value").toString().contains("sum") &&
-                                        ins > 0 && !inspections->at(ins-1).value("nominal").toInt() &&
-                                        inspections->at(ins-1).value("date").toString().split(".").first() == inspections->at(ins).value("date").toString().split(".").first())
+                                        ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
+                                        inspections.at(ins-1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
                                             continue;
                                     num_ins++;
-                                    value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
+                                    value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
                                 }
                             }
                             if (num_ins && (foot_functions.key(f) == "avg" || subvariable.value("unit").toString() == "%"))
@@ -988,15 +988,15 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     if (variable.value("type").toString() != "float" && variable.value("type").toString() != "int") is_in_foot = false;
                     out << "<td class=\"" << variable.value("col_bg").toString() << "\">";
                     if (is_in_foot) {
-                        double value = 0.0; int num_ins = inspections->count();
+                        double value = 0.0; int num_ins = inspections.count();
                         if (variable.value("value").toString().isEmpty()) {
-                            for (int ins = 0; ins < inspections->count(); ++ins) {
-                                value += inspections->at(ins).value(table_vars.at(i)).toDouble();
+                            for (int ins = 0; ins < inspections.count(); ++ins) {
+                                value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
                             MTDictionary expression = parseExpression(variable.value("value").toString(), &used_ids);
-                            for (int ins = 0; ins < inspections->count(); ++ins) {
-                                value += evaluateExpression((*inspections)[ins], expression, customer_id, circuit_id);
+                            for (int ins = 0; ins < inspections.count(); ++ins) {
+                                value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
                             }
                         }
                         if (num_ins && (foot_functions.key(f) == "avg" || variable.value("unit").toString() == "%"))
@@ -1016,8 +1016,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     Warnings warnings(db, true, customer_id, circuit_id);
     QString warnings_html;
     QStringList last_warnings_list, warnings_list, backup_warnings;
-    for (int i = 0; i < inspections->count(); ++i) {
-        warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, (*inspections)[i]);
+    for (int i = 0; i < inspections.count(); ++i) {
+        warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspections[i]);
         backup_warnings = warnings_list;
         for (int n = 0; n < warnings_list.count(); ++n) {
             if (last_warnings_list.contains(warnings_list.at(n))) {
@@ -1026,8 +1026,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             }
         }
         if (warnings_list.count()) {
-            warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id + "/inspection:" + inspections->at(i).value("date").toString() + "\">");
-            warnings_html.append(inspections->at(i).value("date").toString() + "</a>");
+            warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id + "/inspection:" + inspections.at(i).value("date").toString() + "\">");
+            warnings_html.append(inspections.at(i).value("date").toString() + "</a>");
             warnings_html.append("</td><td>");
             warnings_html.append(warnings_list.join(", "));
             warnings_html.append("</td></tr>");
@@ -1151,10 +1151,10 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 {
     QString html; MTTextStream out(&html);
     MTRecord repairs_rec("repair", "", MTDictionary());
-    ListOfStringVariantMapsPtr repairs(repairs_rec.listAll());
-    for (int i = 0; i < repairs->count();) {
-        if (repairs->at(i).value("date").toString().split(".").first().toInt() < year) {
-            repairs->removeAt(i);
+    ListOfStringVariantMaps repairs(repairs_rec.listAll());
+    for (int i = 0; i < repairs.count();) {
+        if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
+            repairs.removeAt(i);
         } else { ++i; }
     }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -1175,12 +1175,12 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
     out << "<th>" << dict_attrnames.value("repairs::refr_reco") << "</th>";
     out << "<th>" << dict_attrnames.value("repairs::refr_reco_cust") << "</th>";
     out << "</tr>";
-    if (repairs->count()) {
+    if (repairs.count()) {
         QString id, attr_value;
         MTRecord inspectors_record("inspector", "", MTDictionary());
-        MultiMapOfStringVariantMapsPtr inspectors(inspectors_record.mapAll("id", "person"));
-        for (int i = 0; i < repairs->count(); ++i) {
-            id = repairs->at(i).value("date").toString();
+        MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
+        for (int i = 0; i < repairs.count(); ++i) {
+            id = repairs.at(i).value("date").toString();
             out << "<tr onclick=\"window.location = 'repair:" << id << "";
             if (highlighted_id == id) {
                 out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
@@ -1189,14 +1189,14 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
             }
             out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
             for (int n = dict_attrnames.indexOfKey("repairs::date") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
-                attr_value = repairs->at(i).value(dict_attrnames.key(n).mid(re_length)).toString();
+                attr_value = repairs.at(i).value(dict_attrnames.key(n).mid(re_length)).toString();
                 out << "<td>";
                 if (dict_attrnames.key(n) == "repairs::field") {
                     if (dict_attrvalues.contains("field::" + attr_value)) {
                         attr_value = dict_attrvalues.value("field::" + attr_value);
                     }
                 } else if (dict_attrnames.key(n) == "repairs::repairman") {
-                    attr_value = inspectors->value(attr_value).value("person").toString();
+                    attr_value = inspectors.value(attr_value).value("person").toString();
                 }
                 out << attr_value << "</td>";
             }
@@ -1211,7 +1211,7 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; MTTextStream out(&html);
     MTRecord inspectors_rec("inspector", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspectors(inspectors_rec.listAll());
+    ListOfStringVariantMaps inspectors(inspectors_rec.listAll());
     int in_length = QString("inspectors::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = dict_attrnames.indexOfKey("inspectors::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
@@ -1224,8 +1224,8 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">" << tr("List of inspectors") << "</th></tr>";
     out << thead;
     QString id;
-    for (int i = 0; i < inspectors->count(); ++i) {
-        id = inspectors->at(i).value("id").toString();
+    for (int i = 0; i < inspectors.count(); ++i) {
+        id = inspectors.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'inspector:" << id << "";
         if (highlighted_id == id) {
             out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
@@ -1234,12 +1234,12 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
         }
         out << " cursor: pointer;\"><td><a href=\"\">" << id.rightJustified(4, '0') << "</a></td>";
         for (int n = dict_attrnames.indexOfKey("inspectors::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
-            out << "<td>" << inspectors->at(i).value(dict_attrnames.key(n).mid(in_length)).toString() << "</td>";
+            out << "<td>" << inspectors.at(i).value(dict_attrnames.key(n).mid(in_length)).toString() << "</td>";
         }
         MTRecord inspections("inspection", "", MTDictionary("inspector", id));
-        out << "<td>" << inspections.listAll("date")->count() << "</td>";
+        out << "<td>" << inspections.listAll("date").count() << "</td>";
         MTRecord repairs("repair", "", MTDictionary("repairman", id));
-        out << "<td>" << repairs.listAll("date")->count() << "</td>";
+        out << "<td>" << repairs.listAll("date").count() << "</td>";
         out << "</tr>";
     }
     return dict_html.value(tr("List of inspectors")).arg(html);
@@ -1331,11 +1331,11 @@ QString MainWindow::viewAgenda()
     QString html; MTTextStream out(&html);
 
     MTRecord inspections_record("inspection", "", MTDictionary());
-    ListOfStringVariantMapsPtr inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
+    ListOfStringVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
     MTRecord circuits_record("circuit", "", MTDictionary());
-    ListOfStringVariantMapsPtr circuits(circuits_record.listAll());
+    ListOfStringVariantMaps circuits(circuits_record.listAll());
     MTRecord customers_record("customer", "", MTDictionary());
-    MultiMapOfStringVariantMapsPtr customers(customers_record.mapAll("id", "company"));
+    MultiMapOfStringVariantMaps customers(customers_record.mapAll("id", "company"));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th colspan=\"4\" style=\"font-size: large;\">" << tr("Agenda") << "</th></tr>";
@@ -1345,20 +1345,20 @@ QString MainWindow::viewAgenda()
     QMultiMap<QString, QString> next_inspections_map;
     QString last_inspection_date, circuit, customer;
     int delay, warning_delay, id, interval;
-    for (int i = 0; i < circuits->count(); ++i) {
-        circuit = circuits->at(i).value("id").toString();
-        customer = circuits->at(i).value("parent").toString();
+    for (int i = 0; i < circuits.count(); ++i) {
+        circuit = circuits.at(i).value("id").toString();
+        customer = circuits.at(i).value("parent").toString();
         last_inspection_date.clear();
-        for (int j = 0; j < inspections->count(); ++j) {
-            if (inspections->at(j).value("customer").toString() == customer &&
-                inspections->at(j).value("circuit").toString() == circuit &&
-                !inspections->at(j).value("repair").toInt() &&
-                last_inspection_date < inspections->at(j).value("date").toString()) {
-                last_inspection_date = inspections->at(j).value("date").toString();
+        for (int j = 0; j < inspections.count(); ++j) {
+            if (inspections.at(j).value("customer").toString() == customer &&
+                inspections.at(j).value("circuit").toString() == circuit &&
+                !inspections.at(j).value("repair").toInt() &&
+                last_inspection_date < inspections.at(j).value("date").toString()) {
+                last_inspection_date = inspections.at(j).value("date").toString();
             }
         }
         if (last_inspection_date.isEmpty()) {
-            last_inspection_date = circuits->at(i).value("commissioning").toString();
+            last_inspection_date = circuits.at(i).value("commissioning").toString();
             if (last_inspection_date.isEmpty()) continue;
         }
         inspections_map.insert(customer + "::" + circuit, last_inspection_date);
@@ -1369,14 +1369,14 @@ QString MainWindow::viewAgenda()
             if (!warning_delay) { continue; }
             id = warnings.value("id").toInt();
             if (id >= 1200 && id < 1300) {
-                interval = circuits->at(i).value("inspection_interval").toInt();
+                interval = circuits.at(i).value("inspection_interval").toInt();
                 if (interval) { warning_delay = interval; }
                 if (delay < warning_delay) { delay = warning_delay; }
             }
         }
         if (delay) {
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"),
-                                        customer + "::" + circuit + ";" + circuits->at(i).value("name").toString());
+                                        customer + "::" + circuit + ";" + circuits.at(i).value("name").toString());
         }
     }
     QMapIterator<QString, QString> i(next_inspections_map);
@@ -1399,7 +1399,7 @@ QString MainWindow::viewAgenda()
         else colour = "";
         out << "<tr><td class=\"" << colour << "\">" << next_ins << "</td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
-        out << customer.rightJustified(8, '0') << " (" << customers->value(customer).value("company").toString() << ")</a></td>";
+        out << customer.rightJustified(8, '0') << " (" << customers.value(customer).value("company").toString() << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
         out << circuit.rightJustified(4, '0');
         if (!circuit_name.isEmpty()) { out << " (" << circuit_name << ")"; }

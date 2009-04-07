@@ -642,9 +642,9 @@ StringVariantMap MTRecord::list(const QString & fields)
     return list;
 }
 
-ListOfStringVariantMapsPtr MTRecord::listAll(const QString & fields)
+ListOfStringVariantMaps MTRecord::listAll(const QString & fields)
 {
-    ListOfStringVariantMapsPtr list(new ListOfStringVariantMaps);
+    ListOfStringVariantMaps list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
@@ -653,14 +653,14 @@ ListOfStringVariantMapsPtr MTRecord::listAll(const QString & fields)
         for (int i = 0; i < query.record().count(); ++i) {
             map.insert(query.record().fieldName(i), query.value(i));
         }
-        *list << map;
+        list << map;
     }
     return list;
 }
 
-MultiMapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QString & fields)
+MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
-    MultiMapOfStringVariantMapsPtr map(new MultiMapOfStringVariantMaps);
+    MultiMapOfStringVariantMaps map;
     QStringList list_map_to = map_to.split("::");
     QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
     query.setForwardOnly(true);
@@ -678,7 +678,7 @@ MultiMapOfStringVariantMapsPtr MTRecord::mapAll(const QString & map_to, const QS
         for (int i = 0; i < indices.count(); ++i) {
             list_key << query.value(indices.at(i)).toString();
         }
-        map->insert(list_key.join("::"), row_map);
+        map.insert(list_key.join("::"), row_map);
     }
     return map;
 }

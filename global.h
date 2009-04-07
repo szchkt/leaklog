@@ -42,7 +42,7 @@
 #include <memory>
 #include <cmath>
 
-using std::auto_ptr;
+//using std::auto_ptr;
 
 #define StringVariantMap QMap<QString, QVariant>
 
@@ -52,9 +52,9 @@ using std::auto_ptr;
 
 #define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
 
-#define ListOfStringVariantMapsPtr auto_ptr<ListOfStringVariantMaps>
+//#define ListOfStringVariantMapsPtr auto_ptr<ListOfStringVariantMaps>
 
-#define MultiMapOfStringVariantMapsPtr auto_ptr<MultiMapOfStringVariantMaps>
+//#define MultiMapOfStringVariantMapsPtr auto_ptr<MultiMapOfStringVariantMaps>
 
 #define LEAKLOG_VERSION "0.9.3"
 #define F_LEAKLOG_VERSION 0.903
@@ -111,8 +111,8 @@ public:
     bool exists();
     QSqlQuery select(const QString & = "*");
     StringVariantMap list(const QString & = "*");
-    ListOfStringVariantMapsPtr listAll(const QString & = "*");
-    MultiMapOfStringVariantMapsPtr mapAll(const QString &, const QString & = "*");
+    ListOfStringVariantMaps listAll(const QString & = "*");
+    MultiMapOfStringVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const StringVariantMap &, bool = false);
     bool remove();
 
