@@ -482,7 +482,7 @@ MTDictionary Global::get_dict_attrvalues()
 MTDictionary Global::get_dict_attrnames()
 {
     MTDictionary dict_attrnames;
-    dict_attrnames.insert("customer::id", QApplication::translate("AttributeNames", "ID"));
+    dict_attrnames.insert("customer::id", QApplication::translate("Customer", "ID"));
     dict_attrnames.insert("customer::company", QApplication::translate("AttributeNames", "Company"));
     dict_attrnames.insert("customer::contact_person", QApplication::translate("AttributeNames", "Contact person"));
     dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address"));
@@ -502,7 +502,7 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::field", QApplication::translate("AttributeNames", "Field of application"));
     dict_attrnames.insert("service_companies::certification_num", QApplication::translate("AttributeNames", "Certification number:"));
     dict_attrnames.insert("service_companies::name", QApplication::translate("AttributeNames", "Name:"));
-    dict_attrnames.insert("service_companies::id", QApplication::translate("AttributeNames", "ID:"));
+    dict_attrnames.insert("service_companies::id", QApplication::translate("ServiceCompany", "ID:"));
     dict_attrnames.insert("service_companies::address", QApplication::translate("AttributeNames", "Address:"));
     dict_attrnames.insert("service_companies::phone", QApplication::translate("AttributeNames", "Phone:"));
     dict_attrnames.insert("service_companies::mail", QApplication::translate("AttributeNames", "E-mail:"));

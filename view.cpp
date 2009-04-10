@@ -751,7 +751,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     StringVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
     Circuit circuit(customer_id, circuit_id);
     StringVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, runtime, utilisation");
-    out << "<table><tr><th>" << tr("ID");
+    out << "<table><tr><th>" << QApplication::translate("Customer", "ID");
     out << "</th><th>" << tr("Company");
     out << "</th><th>" << tr("Contact person");
     out << "</th><th>" << tr("Address");
