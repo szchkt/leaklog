@@ -99,8 +99,8 @@ void addToStore(QMap<int, QMap<QString, double> > & store, QList<int> & years, i
 QString MainWindow::viewServiceCompany(int since)
 {
     QString html; MTTextStream out(&html);
-    MTRecord serv_company_rec("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
-    StringVariantMap serv_company = serv_company_rec.list();
+    ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
+    StringVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
@@ -168,8 +168,8 @@ QString MainWindow::viewServiceCompany(int since)
     QMap<QString, QVector<double> *> sums_map;
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
-    MTRecord refr_man_rec("refrigerant_management", QString(), MTDictionary());
-    ListOfStringVariantMaps refr_man(refr_man_rec.listAll());
+    RecordOfRefrigerantManagement refr_man_record("");
+    ListOfStringVariantMaps refr_man(refr_man_record.listAll());
     for (int i = 0; i < refr_man.count(); ++i) {
         refrigerant = refr_man.at(i).value("refrigerant").toString();
         purchased = refr_man.at(i).value("purchased");
@@ -219,11 +219,11 @@ QString MainWindow::viewServiceCompany(int since)
         (*sum_list)[10] += leaked.toDouble();
         (*sum_list)[11] += leaked_reco.toDouble();
     }
-    MTRecord circuits_record("circuit", "", MTDictionary());
+    MTRecord circuits_record("circuits", "", MTDictionary());
     MultiMapOfStringVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
-    MTRecord inspections_record("inspection", "", MTDictionary());
+    MTRecord inspections_record("inspections", "", MTDictionary());
     ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco"));
-    MTRecord repairs_rec("repair", "", MTDictionary());
+    Repair repairs_rec("");
     inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco");
     for (int i = 0; i < inspections.count(); ++i) {
         refr_add_am = inspections.at(i).value("refr_add_am");
@@ -366,7 +366,7 @@ QString MainWindow::viewServiceCompany(int since)
 
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)
 {
-    MTRecord all_customers("customer", customer_id, MTDictionary());
+    Customer all_customers(customer_id);
     ListOfStringVariantMaps list(all_customers.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int cu_length = QString("customer::").length();
@@ -395,9 +395,9 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
             out << "<td>" << MTVariant(dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length)),
                                         list.at(i).value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
         }
-        MTRecord circuits_record("circuit", "", MTDictionary("parent", id));
+        Circuit circuits_record(id, "");
         out << "<td>" << circuits_record.listAll("id").count() << "</td>";
-        MTRecord inspection_record("inspection", "", MTDictionary("customer", id));
+        MTRecord inspection_record("inspections", "", MTDictionary("customer", id));
         out << "<td>" << inspection_record.listAll("date").count() << "</td>";
         out << "</tr>";
     }
@@ -406,7 +406,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
 
 void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id)
 {
-    MTRecord circuits_record("circuit", circuit_id, MTDictionary("parent", customer_id));
+    Circuit circuits_record(customer_id, circuit_id);
     ListOfStringVariantMaps circuits(circuits_record.listAll());
     out << "<table cellspacing=\"0\" style=\"width:100%;\">";
     int cc_length = QString("circuit::").length();
@@ -502,12 +502,10 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
-    MTDictionary inspection_parents("circuit", circuit_id);
-    inspection_parents.insert("customer", customer_id);
-    MTRecord inspection_record("inspection", "", inspection_parents);
+    Inspection inspection_record(customer_id, circuit_id, "");
     ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
     if (inspections.count()) {
-        MTRecord inspectors_record("inspector", "", MTDictionary());
+        Inspector inspectors_record("");
         MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
         out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
@@ -566,16 +564,14 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
-    MTDictionary inspection_parents("circuit", circuit_id);
-    inspection_parents.insert("customer", customer_id);
-    MTRecord inspection_record("inspection", inspection_date, inspection_parents);
+    Inspection inspection_record(customer_id, circuit_id, inspection_date);
     StringVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
-    inspection_parents.insert("nominal", "1");
-    MTRecord nom_inspection_record("inspection", "", inspection_parents);
+    Inspection nom_inspection_record(customer_id, circuit_id, "");
+    nom_inspection_record.parents()->insert("nominal", "1");
     StringVariantMap nominal_ins = nom_inspection_record.list();
-    MTRecord circuit_rec("circuit", circuit_id, MTDictionary("parent", customer_id));
+    Circuit circuit_rec(customer_id, circuit_id);
     QString circuit_name = circuit_rec.list("name").value("name").toString();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
@@ -587,15 +583,19 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QStringList used_ids = listVariableIds(); // all = false
     Variables vars;
     int half = vars.count() % 2 ? (vars.count() / 2 + 1) : (vars.count() / 2);
-    QStringList rows; int row = 0, iterator = 0;
+    QVector<QString> rows(half); int row = 0;
+    QString var_id, var_type; QString ins_value, nom_value;
+    bool compare_nom = false, ok_eval = true, is_subvar = false;
+    MTDictionary expression; double tolerance = 0.0;
     while (vars.next()) {
-        QString var_id; bool compare_nom = false; bool ok_eval = true;
-        MTDictionary expression; double tolerance = 0; bool is_subvar = false;
+        compare_nom = false; ok_eval = true; is_subvar = false;
         if (vars.value("SUBVAR_ID").toString().isEmpty()) {
             var_id = vars.value("VAR_ID").toString();
+            var_type = vars.value("VAR_TYPE").toString();
             tolerance = vars.value("VAR_TOLERANCE").toDouble();
         } else {
             var_id = vars.value("SUBVAR_ID").toString();
+            var_type = vars.value("SUBVAR_TYPE").toString();
             tolerance = vars.value("SUBVAR_TOLERANCE").toDouble();
             is_subvar = true;
         }
@@ -607,36 +607,34 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
             }
         }
 //*** Expressions and values ***
+        expression.clear();
         if (!vars.value("VAR_VALUE").toString().isEmpty()) {
             expression = parseExpression(vars.value("VAR_VALUE").toString(), &used_ids);
         } else if (!vars.value("SUBVAR_VALUE").toString().isEmpty()) {
             expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), &used_ids);
         }
-        QString ins_value; QString nom_value;
         if (expression.count()) {
             ins_value = toString(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
             if (!ok_eval) continue;
             if (compare_nom) {
                 nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                 if (!ok_eval) compare_nom = false;
-            } else compare_nom = false;
+            }
         } else {
             ins_value = inspection.value(var_id).toString();
             if (compare_nom) {
                 nom_value = nominal_ins.value(var_id).toString();
-                if (nom_value == "") compare_nom = false;
-            } else compare_nom = false;
+                if (nom_value.isEmpty()) compare_nom = false;
+            }
         }
         //if (ins_value.isEmpty()) continue;
         if (var_id == "inspector" && !ins_value.isEmpty()) {
-            MTRecord inspector("inspector", ins_value, MTDictionary());
+            Inspector inspector(ins_value);
             ins_value = inspector.list("person").value("person").toString();
+        } else if (var_type == "bool") {
+            ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
         }
-        if (iterator == half) {
-            row = 0;
-        } else if (iterator < half) {
-            rows << QString();
-        }
+        if (row == half) { row = 0; }
         rows[row].append("<td style=\"text-align: right; width: 25%; border-style: none;\">");
         if (!is_subvar) {
             rows[row].append(vars.value("VAR_NAME").toString() + ":");
@@ -644,7 +642,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
             rows[row].append(vars.value("VAR_NAME").toString() + ": " + vars.value("SUBVAR_NAME").toString() + ":");
         }
         rows[row].append("</td><td style=\"width: 25%; border-style: none;\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"no_border\" style=\"width: 0%\"><tr><td ");
-        if ((is_subvar && vars.value("SUBVAR_TYPE").toString() != "text") || (!is_subvar && vars.value("VAR_TYPE").toString() != "text")) rows[row].append("align=\"right\"");
+        if ((is_subvar && vars.value("SUBVAR_TYPE").toString() != "text") || (!is_subvar && vars.value("VAR_TYPE").toString() != "text"))
+            rows[row].append("align=\"right\"");
         rows[row].append(" valign=\"center\" style=\"border-style: none;\">");
         if (compare_nom) {
             rows[row].append(compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value));
@@ -658,7 +657,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
             rows[row].append(vars.value("SUBVAR_UNIT").toString());
         }
         rows[row].append("</td></tr></table></td>");
-        row++; iterator++;
+        row++;
     }
     for (int i = 0; i < rows.count(); ++i) {
         out << "<tr>" << rows.at(i) << "</tr>";
@@ -718,13 +717,11 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         variables.insert(last_id, variable);
     }
 
-    MTRecord table_record("table", table_id, MTDictionary());
+    Table table_record(table_id);
     StringVariantMap table = table_record.list();
     QStringList table_vars = table.value("variables").toString().split(";", QString::SkipEmptyParts);
 
-    MTDictionary inspection_parents("circuit", circuit_id);
-    inspection_parents.insert("customer", customer_id);
-    MTRecord inspection_record("inspection", "", inspection_parents);
+    Inspection inspection_record(customer_id, circuit_id, "");
     ListOfStringVariantMaps inspections(inspection_record.listAll());
     QString last_inspection_date, last_entry_date, date;
     for (int i = 0; i < inspections.count(); ++i) {
@@ -750,9 +747,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     }
 
 //*** Top tables ***
-    MTRecord customer("customer", customer_id, MTDictionary());
+    Customer customer(customer_id);
     StringVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    Circuit circuit(customer_id, circuit_id);
     StringVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, runtime, utilisation");
     out << "<table><tr><th>" << tr("ID");
     out << "</th><th>" << tr("Company");
@@ -930,7 +927,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
                 }
                 if (table_vars.at(n) == "inspector" && !ins_value.isEmpty()) {
-                    MTRecord inspector("inspector", ins_value, MTDictionary());
+                    Inspector inspector(ins_value);
                     ins_value = inspector.list("person").value("person").toString();
                 }
                 writeTableVarCell(out, variable.value("type").toString(), ins_value, nom_value, variable.value("col_bg").toString(), compare_nom, rowspan, variable.value("tolerance").toDouble());
@@ -1088,7 +1085,7 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
 QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, StringVariantMap & nominal_ins, StringVariantMap & inspection)
 {
     QStringList warnings_list;
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    Circuit circuit(customer_id, circuit_id);
     StringVariantMap circuit_attributes = circuit.list();
     bool show_warning, ok; QString function;
     int id, num_conditions; double ins_value, nom_value;
@@ -1107,17 +1104,15 @@ QStringList MainWindow::listWarnings(Warnings & warnings, const QString & custom
 QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, StringVariantMap & nominal_ins, const QString & last_entry_date, const QString & last_inspection_date, int * delay_out)
 {
     QStringList warnings_list;
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    Circuit circuit(customer_id, circuit_id);
     StringVariantMap circuit_attributes = circuit.list();
-    MTDictionary parents("customer", customer_id);
-    parents.insert("circuit", circuit_id);
-    MTRecord last_entry_record("inspection", last_entry_date, parents);
+    Inspection last_entry_record(customer_id, circuit_id, last_entry_date);
     StringVariantMap last_entry = last_entry_record.list();
     StringVariantMap last_inspection;
     if (last_inspection_date == last_entry_date) {
         last_inspection = last_entry;
     } else {
-        MTRecord last_inspection_record("inspection", last_inspection_date, parents);
+        Inspection last_inspection_record(customer_id, circuit_id, last_inspection_date);
         last_inspection = last_inspection_record.list();
     }
     StringVariantMap * entry;
@@ -1150,8 +1145,8 @@ QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString &
 QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 {
     QString html; MTTextStream out(&html);
-    MTRecord repairs_rec("repair", "", MTDictionary());
-    ListOfStringVariantMaps repairs(repairs_rec.listAll());
+    Repair repairs_record("");
+    ListOfStringVariantMaps repairs(repairs_record.listAll());
     for (int i = 0; i < repairs.count();) {
         if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
             repairs.removeAt(i);
@@ -1177,7 +1172,7 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
     out << "</tr>";
     if (repairs.count()) {
         QString id, attr_value;
-        MTRecord inspectors_record("inspector", "", MTDictionary());
+        Inspector inspectors_record("");
         MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
         for (int i = 0; i < repairs.count(); ++i) {
             id = repairs.at(i).value("date").toString();
@@ -1210,8 +1205,8 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
 QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; MTTextStream out(&html);
-    MTRecord inspectors_rec("inspector", "", MTDictionary());
-    ListOfStringVariantMaps inspectors(inspectors_rec.listAll());
+    Inspector inspectors_record("");
+    ListOfStringVariantMaps inspectors(inspectors_record.listAll());
     int in_length = QString("inspectors::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = dict_attrnames.indexOfKey("inspectors::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
@@ -1236,9 +1231,9 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
         for (int n = dict_attrnames.indexOfKey("inspectors::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
             out << "<td>" << inspectors.at(i).value(dict_attrnames.key(n).mid(in_length)).toString() << "</td>";
         }
-        MTRecord inspections("inspection", "", MTDictionary("inspector", id));
+        MTRecord inspections("inspections", "", MTDictionary("inspector", id));
         out << "<td>" << inspections.listAll("date").count() << "</td>";
-        MTRecord repairs("repair", "", MTDictionary("repairman", id));
+        MTRecord repairs("repairs", "", MTDictionary("repairman", id));
         out << "<td>" << repairs.listAll("date").count() << "</td>";
         out << "</tr>";
     }
@@ -1330,11 +1325,11 @@ QString MainWindow::viewAgenda()
 {
     QString html; MTTextStream out(&html);
 
-    MTRecord inspections_record("inspection", "", MTDictionary());
+    MTRecord inspections_record("inspections", "", MTDictionary());
     ListOfStringVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
-    MTRecord circuits_record("circuit", "", MTDictionary());
+    MTRecord circuits_record("circuits", "", MTDictionary());
     ListOfStringVariantMaps circuits(circuits_record.listAll());
-    MTRecord customers_record("customer", "", MTDictionary());
+    MTRecord customers_record("customers", "", MTDictionary());
     MultiMapOfStringVariantMaps customers(customers_record.mapAll("id", "company"));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";

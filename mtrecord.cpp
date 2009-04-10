@@ -21,9 +21,9 @@
 
 using namespace Global;
 
-MTRecord::MTRecord(const QString & type, const QString & id, const MTDictionary & parents)
+MTRecord::MTRecord(const QString & table, const QString & id, const MTDictionary & parents)
 {
-    r_type = type;
+    r_table = table;
     r_id = id;
     r_parents = parents;
 }
@@ -31,51 +31,22 @@ MTRecord::MTRecord(const QString & type, const QString & id, const MTDictionary 
 MTRecord::MTRecord(const MTRecord & other):
 QObject()
 {
-    r_type = other.r_type;
+    r_table = other.r_table;
     r_id = other.r_id;
     r_parents = other.r_parents;
 }
 
 MTRecord & MTRecord::operator=(const MTRecord & other)
 {
-    r_type = other.r_type;
+    r_table = other.r_table;
     r_id = other.r_id;
     r_parents = other.r_parents;
     return *this;
 }
 
-QString MTRecord::tableForRecordType(const QString & type)
+QString MTRecord::idFieldName() const
 {
-    if (type == "service_company") {
-        return "service_companies";
-    /*} else if (type == "customer") {
-        return "customers";
-    } else if (type == "circuit") {
-        return "circuits";
-    } else if (type == "inspection") {
-        return "inspections";
-    } else if (type == "repair") {
-        return "repairs";
-    } else if (type == "variable") {
-        return "variables";
-    } else if (type == "subvariable") {
-        return "subvariables";
-    } else if (type == "table") {
-        return "tables";
-    } else if (type == "warning") {
-        return "warnings";
-    } else if (type == "inspector") {
-        return "inspectors";*/
-    } else if (type == "refrigerant_management") {
-        return "refrigerant_management";
-    } else {
-        return type + "s";
-    }
-}
-
-QString MTRecord::idFieldForRecordType(const QString & type)
-{
-    if (type == "inspection" || type == "repair" || type == "refrigerant_management") {
+    if (r_table == "inspections" || r_table == "repairs" || r_table == "refrigerant_management") {
         return "date";
     }
     return "id";
@@ -83,9 +54,8 @@ QString MTRecord::idFieldForRecordType(const QString & type)
 
 bool MTRecord::exists()
 {
-    if ((r_type != "table" && r_id.isEmpty()) || (r_type == "table" && r_parents.isEmpty())) { return false; }
-    QString id_field = idFieldForRecordType(r_type);
-    QSqlQuery find_record = select(id_field);
+    if ((r_table != "tables" && r_id.isEmpty()) || (r_table == "tables" && r_parents.isEmpty())) { return false; }
+    QSqlQuery find_record = select(idFieldName());
     find_record.exec();
     return find_record.next();
 }
@@ -93,8 +63,8 @@ bool MTRecord::exists()
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = idFieldForRecordType(r_type);
-    QString select = "SELECT " + fields + " FROM " + tableForRecordType(r_type);
+    QString id_field = idFieldName();
+    QString select = "SELECT " + fields + " FROM " + r_table;
     if (has_id || r_parents.count()) { select.append(" WHERE "); }
     if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
@@ -168,22 +138,22 @@ MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QStri
 bool MTRecord::update(const StringVariantMap & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = idFieldForRecordType(r_type);
+    QString id_field = idFieldName();
     QString update;
     QMapIterator<QString, QVariant> i(set);
     if (add_columns) {
         QSqlDatabase db = QSqlDatabase::database();
-        MTDictionary field_names = getTableFieldNames(tableForRecordType(r_type), &db);
+        MTDictionary field_names = getTableFieldNames(r_table, &db);
         while (i.hasNext()) { i.next();
             if (!field_names.contains(i.key())) {
-                addColumn(i.key(), tableForRecordType(r_type), &db);
+                addColumn(i.key(), r_table, &db);
             }
         }
         i.toFront();
     }
     if (has_id && !exists()) { has_id = false; }
     if (has_id) {
-        update = "UPDATE " + tableForRecordType(r_type) + " SET ";
+        update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) { update.append(", "); }
@@ -193,7 +163,7 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
             update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
         }
     } else {
-        update = "INSERT INTO " + tableForRecordType(r_type) + " (";
+        update = "INSERT INTO " + r_table + " (";
         while (i.hasNext()) { i.next();
             update.append(i.key());
             if (i.hasNext() || r_parents.count()) { update.append(", "); }
@@ -238,9 +208,8 @@ bool MTRecord::remove()
 {
     if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
     bool has_id = !r_id.isEmpty();
-    QString id_field = idFieldForRecordType(r_type);
-    QString remove = "DELETE FROM " + tableForRecordType(r_type) + " WHERE ";
-    if (has_id) { remove.append(id_field + " = :_id"); }
+    QString remove = "DELETE FROM " + r_table + " WHERE ";
+    if (has_id) { remove.append(idFieldName() + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { remove.append(" AND "); }
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));

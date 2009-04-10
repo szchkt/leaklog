@@ -127,7 +127,9 @@ class ModifyWarningDialogue : public ModifyDialogue
     Q_OBJECT
 
 public:
-    ModifyWarningDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
+    ModifyWarningDialogue(WarningRecord *, QWidget * = NULL);
+
+    void setWindowTitle(const QString &);
 
 private slots:
     void save();
@@ -135,6 +137,8 @@ private slots:
 private:
     AttributeFilters * md_filters;
     Conditions * md_conditions;
+
+    friend class WarningRecord;
 };
 
 #endif // MODIFY_WARNING_DIALOGUE_H

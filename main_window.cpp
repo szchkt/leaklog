@@ -456,9 +456,7 @@ void MainWindow::printLabel()
 
     StringVariantMap attributes;
     attributes.insert("id", toString(selectedCustomer()) + "::" + toString(selectedCircuit()));
-    MTDictionary parents("customer", toString(selectedCustomer()));
-    parents.insert("circuit", toString(selectedCircuit()));
-    MTRecord inspection_record("inspection", toString(selectedInspection()), parents);
+    Inspection inspection_record(toString(selectedCustomer()), toString(selectedCircuit()), toString(selectedInspection()));
     StringVariantMap inspection = inspection_record.list();
     attributes.insert("date", inspection.value("date").toString());
     Subvariable refr_add_per("refr_add", "refr_add_per");
@@ -468,9 +466,9 @@ void MainWindow::printLabel()
         QStringList var_ids = listVariableIds();
         attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, &var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
     }
-    MTRecord circuit("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
+    Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
     attributes.unite(circuit.list("refrigerant, refrigerant_amount"));
-    MTRecord inspector("inspector", inspection.value("inspector").toString(), MTDictionary());
+    Inspector inspector(inspection.value("inspector").toString());
     if (inspector.exists()) {
         attributes.unite(inspector.list("person, company, person_reg_num, company_reg_num"));
     }

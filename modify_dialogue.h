@@ -20,73 +20,61 @@
 #ifndef MODIFY_DIALOGUE_H
 #define MODIFY_DIALOGUE_H
 
-#include "global.h"
-#include "mtcolourcombobox.h"
+#include "records.h"
 
 #include <QTextDocument>
-#include <QDateTimeEdit>
-#include <QPlainTextEdit>
-#include <QLineEdit>
 #include <QDialog>
 #include <QGridLayout>
-#include <QLabel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
-#include <QCheckBox>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QPushButton>
-#include <QSyntaxHighlighter>
-#include <QHash>
-#include <QTextCharFormat>
 
 using namespace Global;
-
-class Highlighter : public QSyntaxHighlighter
-{
-    Q_OBJECT
-
-public:
-    Highlighter(QStringList, QTextDocument * = 0);
-
-protected:
-    void highlightBlock(const QString &);
-
-private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> highlightingRules;
-    QTextCharFormat keywordFormat;
-};
 
 class ModifyDialogue : public QDialog
 {
     Q_OBJECT
 
 public:
-    ModifyDialogue(const MTRecord &, QWidget * = NULL);
-    inline MTRecord record() { return md_record; };
+    ModifyDialogue(DBRecord *, QWidget * = NULL);
+
+    virtual void setWindowTitle(const QString &);
+
+    inline DBRecord * record() { return md_record; }
 
 private slots:
     virtual void save();
 
 protected:
-    void init(const MTRecord &, const QStringList &);
-    ModifyDialogue(const MTRecord &, const QStringList &, QWidget * = NULL);
+    ModifyDialogue(QWidget * = NULL);
+    void init(DBRecord *);
 
-    QWidget * createInputWidget(const QStringList &, const QString &, const QString &);
-    QVariant getInputFromWidget(QWidget *, const QStringList &, const QString &);
+    inline void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
+    inline int inputWidgetCount() { return md_inputwidgets.count(); }
+    inline void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0) {
+        md_grid_main->addWidget(widget, row, column, alignment);
+    }
+    inline void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0) {
+        md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
+    }
 
-    MTRecord md_record;
-    MTDictionary md_dict;
-    MTDictionary md_dict_input;
+    inline void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
+
+    QList<MDInputWidget *> md_inputwidgets;
+    DBRecord * md_record;
     QStringList md_used_ids;
-    QMap<QString, QWidget *> md_vars;
-    StringVariantMap md_values;
     QGridLayout * md_grid_main;
+
+    friend class Customer;
+    friend class Circuit;
+    friend class Inspection;
+    friend class Repair;
+    friend class VariableRecord;
+    friend class Table;
+    friend class Inspector;
+    friend class ServiceCompany;
+    friend class RecordOfRefrigerantManagement;
+    friend class WarningRecord;
 };
 
 #endif // MODIFY_DIALOGUE_H

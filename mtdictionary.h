@@ -22,20 +22,35 @@
 class MTDictionary
 {
 public:
-    MTDictionary() { allow_duplicate_keys = false; };
+    MTDictionary() { allow_duplicate_keys = false; }
     MTDictionary(const QString & key, const QString & value) {
         allow_duplicate_keys = false;
         dict_keys << key; dict_values << value;
-    };
-    MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; };
+    }
+    MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; }
+    MTDictionary(const QStringList & keys, const QStringList & values = QStringList()) {
+        dict_keys = keys;
+        if (values.isEmpty()) {
+            dict_values = keys;
+        } else {
+            dict_values = values; int i;
+            for (i = dict_values.count(); i < dict_keys.count(); ++i) {
+                dict_values << dict_keys.at(i);
+            }
+            for (i = dict_keys.count(); i < dict_values.count(); ++i) {
+                dict_keys << dict_values.at(i);
+            }
+        }
+    }
     MTDictionary(const MTDictionary & other) {
         allow_duplicate_keys = other.allow_duplicate_keys;
         dict_keys = other.dict_keys;
         dict_values = other.dict_values;
-    };
+    }
 
-    int count() const { return dict_keys.count(); };
-    bool isEmpty() const { return dict_keys.isEmpty(); };
+    inline void allowDuplicateKeys() { allow_duplicate_keys = true; }
+    inline int count() const { return dict_keys.count(); }
+    inline bool isEmpty() const { return dict_keys.isEmpty(); }
     void insert(const QString & key, const QString & value) {
         while (dict_keys.contains(key) && !allow_duplicate_keys) {
             int i = dict_keys.indexOf(key);
@@ -43,45 +58,51 @@ public:
             dict_values.removeAt(i);
         }
         dict_keys << key; dict_values << value;
-    };
+    }
     void setValue(const QString & key, const QString & value) {
         if (contains(key)) { dict_values.replace(indexOfKey(key), value); }
         else { dict_keys << key; dict_values << value; }
-    };
-    QString key(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i); else return QString(); };
+    }
+    QString key(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i); else return QString(); }
     QString firstKey(const QString & value) const {
         return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));
-    };
-    QStringList keys() const { return dict_keys; };
-    int indexOfKey(const QString & key) const { return dict_keys.indexOf(key); };
-    bool contains(const QString & key) const {
+    }
+    QStringList keys() const { return dict_keys; }
+    inline int indexOfKey(const QString & key) const { return dict_keys.indexOf(key); }
+    inline bool contains(const QString & key) const {
         return dict_keys.contains(key, Qt::CaseSensitive);
-    };
-    QString value(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_values.at(i); else return QString(); };
+    }
+    QString value(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_values.at(i); else return QString(); }
     QString value(const QString & key) const {
         return dict_keys.indexOf(key) < 0 ? key : dict_values.at(dict_keys.indexOf(key));
-    };
+    }
     QString value(const QString & key, const QString & default_value) const {
         return dict_keys.indexOf(key) < 0 ? default_value : dict_values.at(dict_keys.indexOf(key));
-    };
-    QStringList values() const { return dict_values; };
-    int indexOfValue(const QString & value, int from = 0) const { return dict_values.indexOf(value, from); };
-    int lastIndexOfValue(const QString & value, int from = -1) const { return dict_values.lastIndexOf(value, from); };
-    void removeAt(int i) { if (i >= 0 && i < count()) { dict_keys.removeAt(i); dict_values.removeAt(i); } };
+    }
+    QStringList values() const { return dict_values; }
+    inline int indexOfValue(const QString & value, int from = 0) const { return dict_values.indexOf(value, from); }
+    inline int lastIndexOfValue(const QString & value, int from = -1) const { return dict_values.lastIndexOf(value, from); }
+    void removeAt(int i) { if (i >= 0 && i < count()) { dict_keys.removeAt(i); dict_values.removeAt(i); } }
     void remove(const QString & key) {
         while (dict_keys.contains(key)) {
             int i = dict_keys.indexOf(key);
             dict_keys.removeAt(i);
             dict_values.removeAt(i);
         }
-    };
-    void clear() { dict_keys.clear(); dict_values.clear(); };
+    }
+    void clear() { dict_keys.clear(); dict_values.clear(); }
     MTDictionary & operator=(const MTDictionary & other) {
         allow_duplicate_keys = other.allow_duplicate_keys;
         dict_keys = other.dict_keys;
         dict_values = other.dict_values;
         return *this;
-    };
+    }
+    MTDictionary & swapKeysAndValues() {
+        QStringList tmp = dict_keys;
+        dict_keys = dict_values;
+        dict_values = tmp;
+        return *this;
+    }
 
 private:
     bool allow_duplicate_keys;

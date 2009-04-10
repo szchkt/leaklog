@@ -33,6 +33,9 @@
 #include <QWebPage>
 #include <QNetworkRequest>
 #include <QTextStream>
+#include <QSyntaxHighlighter>
+#include <QHash>
+#include <QTextCharFormat>
 
 #include <memory>
 #include <cmath>
@@ -68,11 +71,13 @@ namespace Global {
     MTDictionary get_dict_dbtables();
     MTDictionary get_dict_vartypes();
     MTDictionary get_dict_varnames();
+    MTDictionary get_dict_fields();
+    MTDictionary get_dict_oils();
     MTDictionary get_dict_attrvalues();
     MTDictionary get_dict_attrnames();
     // List
     QString listRefrigerantsToString();
-    QString listInspectorsToString();
+    MTDictionary listInspectors();
     QStringList listVariableIds(bool = false);
 }
 
@@ -245,6 +250,26 @@ public:
     inline MTTextStream & operator<<(const char * string) { this->QTextStream::operator<<(string); return *this; };
     inline MTTextStream & operator<<(const QString & string) { this->QTextStream::operator<<(string); return *this; };
     inline MTTextStream & operator<<(const MTVariant & variant) { this->QTextStream::operator<<(variant.toString()); return *this; };
+};
+
+class Highlighter : public QSyntaxHighlighter
+{
+    Q_OBJECT
+
+public:
+    Highlighter(QStringList, QTextDocument * = 0);
+
+protected:
+    void highlightBlock(const QString &);
+
+private:
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+    QTextCharFormat keywordFormat;
 };
 
 #endif // GLOBAL_H

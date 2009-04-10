@@ -42,14 +42,13 @@ class MTRecord : public QObject
     Q_OBJECT
 
 public:
-    MTRecord() {};
+    MTRecord() {}
     MTRecord(const QString &, const QString &, const MTDictionary &);
     MTRecord(const MTRecord &);
     MTRecord & operator=(const MTRecord &);
-    void setType(const QString & type) { r_type = type; };
-    inline QString type() { return r_type; };
-    inline QString id() { return r_id; };
-    inline MTDictionary * parents() { return &r_parents; };
+    inline QString table() const { return r_table; }
+    inline QString id() const { return r_id; }
+    inline MTDictionary * parents() { return &r_parents; }
     bool exists();
     QSqlQuery select(const QString & = "*");
     StringVariantMap list(const QString & = "*");
@@ -58,12 +57,10 @@ public:
     bool update(const StringVariantMap &, bool = false);
     bool remove();
 
-protected:
-    QString tableForRecordType(const QString &);
-    QString idFieldForRecordType(const QString &);
+    QString idFieldName() const;
 
 private:
-    QString r_type;
+    QString r_table;
     QString r_id;
     MTDictionary r_parents;
 };

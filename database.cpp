@@ -119,7 +119,7 @@ void MainWindow::initTables(bool transaction)
 { // (SCOPE)
     QSqlQuery query;
     StringVariantMap set;
-    MTRecord leakages("table", "", MTDictionary("uid", "Leakages"));
+    Table leakages("", "Leakages");
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
@@ -128,7 +128,7 @@ void MainWindow::initTables(bool transaction)
         leakages.update(set);
         set.clear();
     }
-    MTRecord pressures_and_temperatures("table", "", MTDictionary("uid", "Pressures and temperatures"));
+    Table pressures_and_temperatures("", "Pressures and temperatures");
     if (!pressures_and_temperatures.exists()) {
         set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
@@ -137,7 +137,7 @@ void MainWindow::initTables(bool transaction)
         pressures_and_temperatures.update(set);
         set.clear();
     }
-    MTRecord electrical_parameters("table", "", MTDictionary("uid", "Electrical parameters"));
+    Table electrical_parameters("", "Electrical parameters");
     if (!electrical_parameters.exists()) {
         set.insert("id", tr("Electrical parameters"));
         set.insert("highlight_nominal", 1);
@@ -147,9 +147,9 @@ void MainWindow::initTables(bool transaction)
         //set.clear();
     }
     if (DBInfoValueForKey("db_version").toDouble() < 0.903) {
-        MTRecord table_of_leakages("table", tr("Table of leakages"), MTDictionary());
+        Table table_of_leakages(tr("Table of leakages"));
         table_of_leakages.remove();
-        MTRecord table_of_parameters("table", tr("Table of parameters"), MTDictionary());
+        Table table_of_parameters(tr("Table of parameters"));
         table_of_parameters.remove();
     }
 } // (SCOPE)
@@ -419,10 +419,9 @@ QSqlError MainWindow::setDBInfoValueForKey(const QString & key, const QString & 
 void MainWindow::modifyServiceCompany()
 {
     if (!db.isOpen()) { return; }
-    MTRecord record("service_company", DBInfoValueForKey("default_service_company"), MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    ServiceCompany record(DBInfoValueForKey("default_service_company"));
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         setDBInfoValueForKey("default_service_company", record.id());
         this->setWindowModified(true);
         refreshView();
@@ -437,10 +436,9 @@ void MainWindow::addRecordOfRefrigerantManagement()
 void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 {
     if (!db.isOpen()) { return; }
-    MTRecord record("refrigerant_management", date, MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    RecordOfRefrigerantManagement record(date);
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         StringVariantMap attributes = record.list();
         if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("purchased_reco").toDouble() <= 0.0 &&
             attributes.value("sold").toDouble() <= 0.0 && attributes.value("sold_reco").toDouble() <= 0.0 &&
@@ -457,10 +455,9 @@ void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 void MainWindow::addCustomer()
 {
     if (!db.isOpen()) { return; }
-    MTRecord record("customer", "", MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Customer record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(8, '0');
         QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = new QListWidgetItem;
@@ -477,11 +474,10 @@ void MainWindow::modifyCustomer()
 {
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
-    MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Customer record(toString(selectedCustomer()));
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = toString(selectedCustomer());
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(8, '0');
         QString company = record.list("company").value("company").toString();
         QListWidgetItem * item = lw_customers->highlightedItem();
@@ -513,11 +509,11 @@ void MainWindow::removeCustomer()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("customer", toString(selectedCustomer()), MTDictionary());
+    Customer record(toString(selectedCustomer()));
     record.remove();
-    MTRecord circuits("circuit", "", MTDictionary("parent", toString(selectedCustomer())));
+    Circuit circuits(toString(selectedCustomer()), "");
     circuits.remove();
-    MTRecord inspections("inspection", "", MTDictionary("customer", toString(selectedCustomer())));
+    MTRecord inspections("inspections", "", MTDictionary("customer", toString(selectedCustomer())));
     inspections.remove();
     if (item != NULL) { delete item; }
     lw_circuits->clear(); lw_inspections->clear();
@@ -559,10 +555,9 @@ void MainWindow::addCircuit()
 {
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
-    MTRecord record("circuit", "", MTDictionary("parent", toString(selectedCustomer())));
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Circuit record(toString(selectedCustomer()), "");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(4, '0');
         QString name = record.list("name").value("name").toString();
         QListWidgetItem * item = new QListWidgetItem;
@@ -580,11 +575,10 @@ void MainWindow::modifyCircuit()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Circuit record(toString(selectedCustomer()), toString(selectedCircuit()));
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = toString(selectedCircuit());
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(4, '0');
         QString name = record.list("name").value("name").toString();
         QListWidgetItem * item = lw_circuits->highlightedItem();
@@ -613,11 +607,9 @@ void MainWindow::removeCircuit()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("circuit", toString(selectedCircuit()), MTDictionary("parent", toString(selectedCustomer())));
+    Circuit record(toString(selectedCustomer()), toString(selectedCircuit()));
     record.remove();
-    MTDictionary parents("customer", toString(selectedCustomer()));
-    parents.insert("circuit", toString(selectedCircuit()));
-    MTRecord inspections("inspection", "", parents);
+    Inspection inspections(toString(selectedCustomer()), toString(selectedCircuit()), "");
     inspections.remove();
     if (item != NULL) { delete item; }
     lw_inspections->clear();
@@ -633,9 +625,7 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     if (item == NULL) { return; }
     lw_circuits->highlightItem(item);
     lw_inspections->clear();
-    MTDictionary parents("circuit", toString(selectedCircuit()));
-    parents.insert("customer", toString(selectedCustomer()));
-    MTRecord record("inspection", "", parents);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "");
     QFont font;
     QSqlQuery inspections = record.select("date, nominal, repair");
     inspections.exec();
@@ -659,12 +649,9 @@ void MainWindow::addInspection()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    MTDictionary parents("customer", toString(selectedCustomer()));
-    parents.insert("circuit", toString(selectedCircuit()));
-    MTRecord record("inspection", "", parents);
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "", Inspection::Default);
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QListWidgetItem * item = new QListWidgetItem;
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
@@ -682,12 +669,9 @@ void MainWindow::modifyInspection()
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
     if (selectedInspection().isEmpty()) { return; }
-    MTDictionary parents("customer", toString(selectedCustomer()));
-    parents.insert("circuit", toString(selectedCircuit()));
-    MTRecord record("inspection", selectedInspection(), parents);
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection(), Inspection::Default);
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QListWidgetItem * item = lw_inspections->highlightedItem();
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
@@ -708,9 +692,7 @@ void MainWindow::removeInspection()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTDictionary parents("customer", toString(selectedCustomer()));
-    parents.insert("circuit", toString(selectedCircuit()));
-    MTRecord record("inspection", selectedInspection(), parents);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     record.remove();
     if (item != NULL) { delete item; }
     enableTools();
@@ -733,57 +715,54 @@ void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
 void MainWindow::addRepair()
 {
     if (!db.isOpen()) { return; }
-    MTDictionary parents;
+    DBRecord * record = NULL;
     if (selectedCustomer() >= 0 && selectedCircuit() >= 0) {
-        parents.insert("customer", toString(selectedCustomer()));
-        parents.insert("circuit", toString(selectedCircuit()));
+        record = new Inspection(toString(selectedCustomer()), toString(selectedCircuit()), "", Inspection::Repair);
+    } else {
+        record = new Repair("");
     }
-    MTRecord record("repair", "", parents);
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
-        if (!parents.isEmpty()) {
+        if (record->table() == "inspections") {
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(record.id());
-            item->setData(Qt::UserRole, record.id());
+            item->setText(record->id());
+            item->setData(Qt::UserRole, record->id());
             QFont font; font.setItalic(true); item->setFont(font);
             lw_inspections->addItem(item);
         }
         this->setWindowModified(true);
         refreshView();
     }
+    delete record;
     delete md;
 }
 
 void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
-    MTDictionary parents; QString repair;
+    DBRecord * record = NULL;
     QListWidgetItem * item = NULL;
     if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
         item = lw_inspections->highlightedItem();
         if (item->font().italic()) {
-            parents.insert("customer", toString(selectedCustomer()));
-            parents.insert("circuit", toString(selectedCircuit()));
-            repair = selectedInspection();
-        }
+            record = new Inspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection(), Inspection::Repair);
+        } else { item = NULL; }
     }
-    if (parents.isEmpty()) {
+    if (!record) {
         if (!selectedRepair().isEmpty()) {
-            repair = selectedRepair();
+            record = new Repair(selectedRepair());
         } else { return; }
     }
-    MTRecord record("repair", repair, parents);
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
-        if (!parents.isEmpty()) {
-            item->setText(record.id());
-            item->setData(Qt::UserRole, record.id());
+        if (item) {
+            item->setText(record->id());
+            item->setData(Qt::UserRole, record->id());
         }
         this->setWindowModified(true);
         refreshView();
     }
+    delete record;
     delete md;
 }
 
@@ -839,15 +818,14 @@ void MainWindow::addSubvariable() { addVariable(true); }
 void MainWindow::addVariable(bool subvar)
 {
     if (!db.isOpen()) { return; }
-    MTDictionary parents;
+    QString parent;
     if (subvar) {
         if (trw_variables->currentItem()->parent() != NULL) { return; }
-        parents.insert("parent", trw_variables->currentItem()->text(1));
+        parent = trw_variables->currentItem()->text(1);
     }
-    MTRecord record(subvar ? "subvariable" : "variable", "", parents);
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    VariableRecord record((VariableRecord::Type)subvar, parent);
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         StringVariantMap attributes = record.list("name, unit, tolerance");
         QTreeWidgetItem * item = NULL;
         if (subvar) {
@@ -873,13 +851,12 @@ void MainWindow::modifyVariable()
     if (!trw_variables->currentIndex().isValid()) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
     bool subvar = item->parent() != NULL;
-    MTDictionary parents;
-    if (subvar) { parents.insert("parent", item->parent()->text(1)); }
-    MTRecord record(subvar ? "subvariable" : "variable", item->text(1), parents);
+    QString parent;
+    if (subvar) { parent = item->parent()->text(1); }
     QString id = item->text(1);
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    VariableRecord record((VariableRecord::Type)subvar, subvar ? parent : id, subvar ? id : "");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         StringVariantMap attributes = record.list("name, unit, tolerance");
         item->setText(0, attributes.value("name").toString());
         item->setText(1, record.id());
@@ -888,7 +865,7 @@ void MainWindow::modifyVariable()
         if (id != record.id()) {
             renameColumn(id, record.id(), "inspections", &db);
             parsed_expressions.clear();
-            if (record.type() == "variable") {
+            if (!subvar) {
                 QSqlQuery update_subvariables;
                 update_subvariables.prepare("UPDATE subvariables SET parent = :new_id WHERE parent = :old_id");
                 update_subvariables.bindValue(":old_id", id);
@@ -916,7 +893,7 @@ void MainWindow::removeVariable()
     MTDictionary parents;
     if (subvar) { parents.insert("parent", item->parent()->text(1)); }
     else {
-        MTRecord subvars("subvariable", "", MTDictionary("parent", id));
+        MTRecord subvars("subvariables", "", MTDictionary("parent", id));
         subvars.remove();
     }
     MTRecord record(subvar ? "subvariable" : "variable", id, parents);
@@ -932,10 +909,9 @@ void MainWindow::removeVariable()
 void MainWindow::addTable()
 {
     if (!db.isOpen()) { return; }
-    MTRecord record("table", "", MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Table record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         cb_table->addItem(record.id());
         cb_table_edit->addItem(record.id());
         this->setWindowModified(true);
@@ -948,10 +924,9 @@ void MainWindow::modifyTable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Table record(cb_table_edit->currentText());
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         int i = cb_table_edit->currentIndex();
         int j = cb_table->currentIndex();
         cb_table_edit->removeItem(i);
@@ -973,7 +948,7 @@ void MainWindow::removeTable()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    Table record(cb_table_edit->currentText());
     record.remove();
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
@@ -989,7 +964,7 @@ void MainWindow::loadTable(const QString &)
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     cb_table->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    Table record(cb_table_edit->currentText());
     StringVariantMap attributes = record.list("variables, sum, avg");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
@@ -1016,7 +991,7 @@ void MainWindow::saveTable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    Table record(cb_table_edit->currentText());
     QStringList variables, sum, avg; QString value;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
         variables << trw_table_variables->topLevelItem(i)->text(1);
@@ -1077,7 +1052,7 @@ void MainWindow::addTableVariable()
         }
     }
     if (d->exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
-        MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+        Table record(cb_table_edit->currentText());
         QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
         StringVariantMap set;
@@ -1102,7 +1077,7 @@ void MainWindow::removeTableVariable()
         case 1: // Cancel
             return; break;
     }
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    Table record(cb_table_edit->currentText());
     StringVariantMap attributes = record.list("variables, sum");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
     QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
@@ -1136,7 +1111,7 @@ void MainWindow::moveTableVariable(bool up)
     if (!trw_table_variables->currentIndex().isValid()) { return; }
     int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
     if (i < 0) { return; }
-    MTRecord record("table", cb_table_edit->currentText(), MTDictionary());
+    Table record(cb_table_edit->currentText());
     QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);
     if (up) {
@@ -1157,11 +1132,9 @@ void MainWindow::moveTableVariable(bool up)
 void MainWindow::addWarning()
 {
     if (!db.isOpen()) { return; }
-    QStringList used_ids = listVariableIds();
-    MTRecord record("warning", "", MTDictionary());
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
+    WarningRecord record("");
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         StringVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
         QString description = attributes.value("description").toString();
@@ -1180,11 +1153,9 @@ void MainWindow::modifyWarning()
     if (!db.isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
-    QStringList used_ids = listVariableIds();
-    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(record, used_ids, this);
+    WarningRecord record(item->data(Qt::UserRole).toString());
+    ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         StringVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
         QString description = attributes.value("description").toString();
@@ -1204,11 +1175,11 @@ void MainWindow::removeWarning()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("warning", item->data(Qt::UserRole).toString(), MTDictionary());
+    WarningRecord record(item->data(Qt::UserRole).toString());
     record.remove();
-    MTRecord filters("warnings_filter", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    MTRecord filters("warnings_filters", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
     filters.remove();
-    MTRecord conditions("warnings_condition", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    MTRecord conditions("warnings_conditions", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
     conditions.remove();
     delete item;
     enableTools();
@@ -1219,10 +1190,9 @@ void MainWindow::removeWarning()
 void MainWindow::addInspector()
 {
     if (!db.isOpen()) { return; }
-    MTRecord record("inspector", "", MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Inspector record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(4, '0');
         QString person = record.list("person").value("person").toString();
         QListWidgetItem * item = new QListWidgetItem;
@@ -1239,11 +1209,10 @@ void MainWindow::modifyInspector()
 {
     if (!db.isOpen()) { return; }
     if (selectedInspector() < 0) { return; }
-    MTRecord record("inspector", toString(selectedInspector()), MTDictionary());
-    ModifyDialogue * md = new ModifyDialogue(record, this);
     QString old_id = toString(selectedInspector());
+    Inspector record(old_id);
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        record = md->record();
         QString id = record.id().rightJustified(4, '0');
         QString person = record.list("person").value("person").toString();
         QListWidgetItem * item = lw_inspectors->highlightedItem();
@@ -1255,6 +1224,11 @@ void MainWindow::modifyInspector()
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            QSqlQuery update_repairs;
+            update_repairs.prepare("UPDATE repairs SET repairman = :new_id WHERE repairman = :old_id");
+            update_repairs.bindValue(":old_id", old_id);
+            update_repairs.bindValue(":new_id", record.id());
+            update_repairs.exec();
         }
         this->setWindowModified(true);
         refreshView();
@@ -1270,7 +1244,7 @@ void MainWindow::removeInspector()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("inspector", toString(selectedInspector()), MTDictionary());
+    Inspector record(toString(selectedInspector()));
     record.remove();
     if (item != NULL) { delete item; }
     enableTools();
@@ -1498,7 +1472,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
                 set.insert(query.record().fieldName(f), query.value(f));
             }
         }
-        MTRecord record("customer", c_id, MTDictionary());
+        Customer record(c_id);
         if (!record.exists()) {
             id_justified = c_id.rightJustified(8, '0');
             QListWidgetItem * item = new QListWidgetItem;
@@ -1523,7 +1497,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
             }
             set.remove("parent");
         }
-        MTRecord record("circuit", cc_id, MTDictionary("parent", cc_parent));
+        Circuit record(cc_parent, cc_id);
         if (toString(selectedCustomer()) == cc_parent && !record.exists()) {
             QString cc_name = record.list("name").value("name").toString();
             QListWidgetItem * item = new QListWidgetItem;
@@ -1544,7 +1518,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
             inspections_skip_columns << item->text(1);
             skip_parent = true;
         } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-            MTRecord record("variable", item->text(1), MTDictionary());
+            VariableRecord record(VariableRecord::VARIABLE, item->text(1));
             Variable variable(item->text(1));
             if (!variable.next()) {
                 new_item = new QTreeWidgetItem(trw_variables);
@@ -1570,7 +1544,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
             if (skip_parent || current_text == tr("Do not import")) {
                 inspections_skip_columns << subitem->text(1);
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                MTRecord record("subvariable", subitem->text(1), MTDictionary("parent", item->text(1)));
+                VariableRecord record(VariableRecord::SUBVARIABLE, item->text(1), subitem->text(1));
                 Subvariable subvariable(item->text(1), subitem->text(1));
                 if (new_item != NULL && !subvariable.next()) {
                     QTreeWidgetItem * new_subitem = new QTreeWidgetItem(new_item);
@@ -1610,9 +1584,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
                 }
             }
         }
-        MTDictionary parents("customer", i_customer);
-        parents.insert("circuit", i_circuit);
-        MTRecord record("inspection", i_date, parents);
+        Inspection record(i_customer, i_circuit, i_date);
         QListWidgetItem * item = NULL;
         if (toString(selectedCustomer()) == i_customer && toString(selectedCircuit()) == i_circuit && !record.exists()) {
             item = new QListWidgetItem;

@@ -238,7 +238,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal <> 1");
-    MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+    MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
     StringVariantMap circuit_attributes = circuit.list();
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
@@ -280,7 +280,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
         } else if (expression.value(i) == "circuit_attribute") {
             value.append(toString(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
-            MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+            MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.list("refrigerant").value("refrigerant").toString();
             value.append(toString(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0)));
         } else {
@@ -415,6 +415,37 @@ MTDictionary Global::get_dict_varnames()
     return dict_varnames;
 }
 
+MTDictionary Global::get_dict_fields()
+{
+    MTDictionary dict_fields(true);
+    dict_fields.insert(QApplication::translate("AttributeValues", "Car air conditioning"), "car");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Home air conditioning"), "home");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Commercial buildings"), "commercial");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Industrial spaces"), "industrial");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Agricultural air conditioning"), "agricultural");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Transportation"), "transportation");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "airconditioning");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Heat pumps"), "heatpumps");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Other"), "other");
+    // OBSOLETE
+    dict_fields.insert(QApplication::translate("AttributeValues", "Home air conditioning"), "lowrise");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "highrise");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "institutional");
+    return dict_fields;
+}
+
+MTDictionary Global::get_dict_oils()
+{
+    MTDictionary dict_oils;
+    dict_oils.insert(QApplication::translate("AttributeValues", "MO (Mineral oil)"), "mo");
+    dict_oils.insert(QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)"), "ab");
+    dict_oils.insert(QApplication::translate("AttributeValues", "POE (Polyolester oil)"), "poe");
+    dict_oils.insert(QApplication::translate("AttributeValues", "PAO (Polyalphaolefin oil)"), "pao");
+    dict_oils.insert(QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"), "pve");
+    dict_oils.insert(QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"), "pag");
+    return dict_oils;
+}
+
 MTDictionary Global::get_dict_attrvalues()
 {
     MTDictionary dict_attrvalues;
@@ -510,19 +541,16 @@ QString Global::listRefrigerantsToString()
     return "R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R404A;R407C;R410A;R502;R507";
 }
 
-QString Global::listInspectorsToString()
+MTDictionary Global::listInspectors()
 {
-    QString inspectors_string; QSqlQuery inspectors;
-    inspectors.setForwardOnly(true);
-    inspectors.exec("SELECT id, person FROM inspectors");
-    if (inspectors.next()) {
-        while (true) {
-            inspectors_string.append(inspectors.value(1).toString().isEmpty() ? inspectors.value(0).toString() : inspectors.value(1).toString());
-            inspectors_string.append("||" + inspectors.value(0).toString());
-            if (inspectors.next()) { inspectors_string.append(";"); } else { break; }
+    MTDictionary inspectors(true); QSqlQuery query;
+    query.setForwardOnly(true);
+    if (query.exec("SELECT id, person FROM inspectors")) {
+        while (query.next()) {
+            inspectors.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
         }
     }
-    return inspectors_string;
+    return inspectors;
 }
 
 QStringList Global::listVariableIds(bool all)
@@ -825,7 +853,7 @@ MTSqlQueryResult(db)
     this->enabled_only = enabled_only;
     if (exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""))
         && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
-        MTRecord circuit("circuit", circuit_id, MTDictionary("parent", customer_id));
+        MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
         StringVariantMap circuit_attributes = circuit.list();
         QString circuit_attribute, function, value;
         bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
@@ -1234,4 +1262,33 @@ bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest & req
         }
     }
     return true;
+}
+
+Highlighter::Highlighter(QStringList used_ids, QTextDocument * parent):
+QSyntaxHighlighter(parent)
+{
+    HighlightingRule rule;
+    keywordFormat.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns;
+    for (int i = 0; i < used_ids.count(); ++i) {
+        keywordPatterns << QString("\\b%1\\b").arg(used_ids.at(i));
+    }
+    foreach (QString pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+}
+
+void Highlighter::highlightBlock(const QString & text)
+{
+    foreach (HighlightingRule rule, highlightingRules) {
+        QRegExp expression(rule.pattern);
+        int index = text.indexOf(expression);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = text.indexOf(expression, index + length);
+        }
+    }
 }

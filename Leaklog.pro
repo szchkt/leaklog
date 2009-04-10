@@ -18,7 +18,8 @@ HEADERS      += global.h \
                 import_dialogue.h \
                 mtaddress.h \
                 mtrecord.h \
-                mtsqlqueryresult.h
+                mtsqlqueryresult.h \
+                records.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -33,7 +34,8 @@ SOURCES      += global.cpp \
                 modify_warning_dialogue.cpp \
                 mtaddress.cpp \
                 mtrecord.cpp \
-                mtsqlqueryresult.cpp
+                mtsqlqueryresult.cpp \
+                records.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser
