@@ -54,7 +54,7 @@ QString MTRecord::idFieldName() const
 
 bool MTRecord::exists()
 {
-    if ((r_table != "tables" && r_id.isEmpty()) || (r_table == "tables" && r_parents.isEmpty())) { return false; }
+    if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
     QSqlQuery find_record = select(idFieldName());
     find_record.exec();
     return find_record.next();

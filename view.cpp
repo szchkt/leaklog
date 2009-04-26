@@ -526,16 +526,17 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         QString id; QString highlighted_id = selectedInspection();
         for (int i = 0; i < inspections.count(); ++i) {
             id = inspections.at(i).value("date").toString();
-            out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << id << "'\" style=\"cursor: pointer;";
+            is_nominal = inspections.at(i).value("nominal").toInt();
+            is_repair = inspections.at(i).value("repair").toInt();
+            out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id;
+            out << (is_repair ? "/repair:" : "/inspection:") << id << "'\" style=\"cursor: pointer;";
             if (id == highlighted_id) {
                 out << " background-color: rgb(242, 248, 255);\">";
             } else { out << "\">"; }
             out << "<td>";
-            is_nominal = inspections.at(i).value("nominal").toInt();
-            is_repair = inspections.at(i).value("repair").toInt();
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
-            out << toolTipLink("customer/circuit/inspection", id, customer_id, circuit_id, id);
+            out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
             out << "</td>";
@@ -576,7 +577,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
-    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/inspection:" << inspection_date << "/modify\">";
+    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
+    out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
     if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
 	out << "&nbsp;" << inspection_date << "</a></th></tr>";
 
@@ -859,7 +861,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "\"><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink("customer/circuit/inspection", inspections.at(i).value("date").toString(), customer_id, circuit_id, inspections.at(i).value("date").toString());
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspections.at(i).value("date").toString(), customer_id, circuit_id, inspections.at(i).value("date").toString());
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
         out << "</td>";
@@ -1023,7 +1025,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             }
         }
         if (warnings_list.count()) {
-            warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id + "/inspection:" + inspections.at(i).value("date").toString() + "\">");
+            warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
+            warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
+            warnings_html.append(inspections.at(i).value("date").toString() + "\">");
             warnings_html.append(inspections.at(i).value("date").toString() + "</a>");
             warnings_html.append("</td><td>");
             warnings_html.append(warnings_list.join(", "));

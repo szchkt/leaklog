@@ -1458,7 +1458,7 @@ void MainWindow::importData()
             last_item->setExpanded(true);
         }
     }
-if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
+if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
     StringVariantMap set;
     for (int c = 0; c < id->customers()->count(); ++c) {
         if (id->customers()->item(c)->checkState() == Qt::Unchecked) { continue; }
@@ -1476,7 +1476,7 @@ if (id->exec() != QDialog::Accepted) { // BEGIN IMPORT
         if (!record.exists()) {
             id_justified = c_id.rightJustified(8, '0');
             QListWidgetItem * item = new QListWidgetItem;
-            item->setText(set.value("name", QString()).toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(set.value("name").toString()));
+            item->setText(set.value("company").toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(set.value("company").toString()));
             item->setData(Qt::UserRole, c_id);
             lw_customers->addItem(item);
         }

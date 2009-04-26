@@ -51,9 +51,9 @@ AboutWidget::AboutWidget()
 	about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
 	about_qt.append(tr("Qt is a C++ toolkit for cross-platform application development."));
 	about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-	about_qt.append(tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux and all major commercial Unix variants. Qt is also available for embedded devices as Qtopia Core."));
+	about_qt.append(tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE."));
 	about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-	about_qt.append(tr("Qt is a Trolltech product. See <span style=\"font-style:italic;\">http://www.trolltech.com/qt/</span> for more information."));
+	about_qt.append(tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">www.qtsoftware.com/qt</span> for more information."));
 	about_qt.append("</p>");
 #ifdef Q_WS_MAC
 	about_qt.remove("font-family: sans-serif;");

@@ -342,9 +342,9 @@ void MainWindow::executeLink(const QUrl & url)
         }
     }
     if (path.count() > 2) {
-        if (path.at(2).startsWith("inspection:")) {
+        if (path.at(2).startsWith("inspection:") || path.at(2).startsWith("repair:")) {
             id = path.at(2);
-            id.remove(0, QString("inspection:").length());
+            id.remove(0, id.indexOf(":") + 1);
             if (id != selectedInspection()) {
                 for (int i = 0; i < lw_inspections->count(); ++i) {
                     if (lw_inspections->item(i)->data(Qt::UserRole).toString() == id) {
@@ -357,7 +357,10 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
     }
     if (path.count() > 3) {
-        if (path.at(3).startsWith("modify")) { modifyInspection(); }
+        if (path.at(3).startsWith("modify")) {
+            if (path.at(2).startsWith("inspection:")) { modifyInspection(); }
+            else if (path.at(2).startsWith("repair:")) { modifyRepair(); }
+        }
     }
 }
 
