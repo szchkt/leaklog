@@ -27,7 +27,7 @@ AboutWidget::AboutWidget()
 	QString about = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">Leaklog</span><br>";
 	about.append("<span style=\"font-size:8pt;\">");
     about.append(tr("Version"));
-    about.append(QString(" %1</span></p><p></p>").arg(LEAKLOG_VERSION));
+    about.append(QString(" %1%2</span></p><p></p>").arg(LEAKLOG_VERSION).arg(LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : ""));
 	about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage."));
     about.append("</p><p></p>");

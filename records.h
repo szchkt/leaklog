@@ -22,6 +22,7 @@
 
 #include "global.h"
 #include "mtcolourcombobox.h"
+#include "mtcheckboxgroup.h"
 
 #include <QCheckBox>
 #include <QSpinBox>
@@ -61,7 +62,7 @@ public:
     QVariant variantValue();
 };
 
-class MDCheckBox : public QCheckBox, public MDInputWidget
+class MDCheckBox : public MTCheckBox, public MDInputWidget
 {
     Q_OBJECT
 

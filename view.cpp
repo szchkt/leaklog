@@ -611,9 +611,9 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
 //*** Expressions and values ***
         expression.clear();
         if (!vars.value("VAR_VALUE").toString().isEmpty()) {
-            expression = parseExpression(vars.value("VAR_VALUE").toString(), &used_ids);
+            expression = parseExpression(vars.value("VAR_VALUE").toString(), used_ids);
         } else if (!vars.value("SUBVAR_VALUE").toString().isEmpty()) {
-            expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), &used_ids);
+            expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), used_ids);
         }
         if (expression.count()) {
             ins_value = toString(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
@@ -895,9 +895,10 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                             if (nom_value.isEmpty()) compare_nom = false;
                         }
                     } else {
-                        MTDictionary expression = parseExpression(subvariable.value("value").toString(), &used_ids);
+                        MTDictionary expression = parseExpression(subvariable.value("value").toString(), used_ids);
                         ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                         if (!ok_eval) ins_value = "";
+                        if (nominal_ins.isEmpty()) compare_nom = false;
                         if (compare_nom) {
                             nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                             if (!ok_eval) compare_nom = false;
@@ -917,9 +918,10 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                         if (nom_value.isEmpty()) compare_nom = false;
                     }
                 } else {
-                    MTDictionary expression = parseExpression(variable.value("value").toString(), &used_ids);
+                    MTDictionary expression = parseExpression(variable.value("value").toString(), used_ids);
                     ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                     if (!ok_eval) ins_value = "";
+                    if (nominal_ins.isEmpty()) compare_nom = false;
                     if (compare_nom) {
                         nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                         if (!ok_eval) compare_nom = false;
@@ -967,7 +969,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                                     value += inspections.at(ins).value(subvariable.value("id").toString()).toDouble();
                                 }
                             } else {
-                                MTDictionary expression = parseExpression(subvariable.value("value").toString(), &used_ids);
+                                MTDictionary expression = parseExpression(subvariable.value("value").toString(), used_ids);
                                 for (int ins = 0; ins < inspections.count(); ++ins) {
                                     if (subvariable.value("value").toString().contains("sum") &&
                                         ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
@@ -993,7 +995,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                                 value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
-                            MTDictionary expression = parseExpression(variable.value("value").toString(), &used_ids);
+                            MTDictionary expression = parseExpression(variable.value("value").toString(), used_ids);
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
                             }
@@ -1058,7 +1060,7 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
         out << "onmouseover=\"Tip('" << escapeString(ins_value) << "')\" onmouseout=\"UnTip()\"";
     }
     out << ">";
-    if (compare_nom) {
+    if (compare_nom && !nom_value.isEmpty()) {
         out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
     } else if (var_type == "text" && !ins_value.isEmpty()) {
         out << "...";

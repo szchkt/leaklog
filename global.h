@@ -40,8 +40,9 @@
 #include <memory>
 #include <cmath>
 
-#define LEAKLOG_VERSION "0.9.3"
-#define F_LEAKLOG_VERSION 0.903
+#define LEAKLOG_VERSION "0.9.4"
+#define F_LEAKLOG_VERSION 0.904
+#define LEAKLOG_PREVIEW_VERSION 1
 #define DB_VERSION "0.9.3"
 #define F_DB_VERSION 0.903
 
@@ -63,7 +64,7 @@ namespace Global {
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
     extern QMap<QString, MTDictionary> parsed_expressions;
-    MTDictionary parseExpression(const QString &, QStringList *);
+    MTDictionary parseExpression(const QString &, QStringList &);
     double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString());
@@ -79,6 +80,7 @@ namespace Global {
     QString listRefrigerantsToString();
     MTDictionary listInspectors();
     QStringList listVariableIds(bool = false);
+    QStringList listSupportedFunctions();
 }
 
 class Variables : public MTSqlQueryResult

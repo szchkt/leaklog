@@ -672,10 +672,15 @@ void MainWindow::modifyInspection()
     Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection(), Inspection::Default);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
+        StringVariantMap attributes = record.list("nominal, repair");
         QListWidgetItem * item = lw_inspections->highlightedItem();
         item->setText(record.id());
         item->setData(Qt::UserRole, record.id());
-        QFont font; font.setBold(record.list("nominal").value("nominal").toInt()); item->setFont(font);
+        QFont font;
+        font.setBold(attributes.value("nominal").toInt());
+        font.setItalic(attributes.value("repair").toInt());
+        item->setFont(font);
+        enableTools();
         this->setWindowModified(true);
         refreshView();
     }
@@ -756,8 +761,14 @@ void MainWindow::modifyRepair()
     ModifyDialogue * md = new ModifyDialogue(record, this);
     if (md->exec() == QDialog::Accepted) {
         if (item) {
+            StringVariantMap attributes = record->list("nominal, repair");
             item->setText(record->id());
             item->setData(Qt::UserRole, record->id());
+            QFont font;
+            font.setBold(attributes.value("nominal").toInt());
+            font.setItalic(attributes.value("repair").toInt());
+            item->setFont(font);
+            enableTools();
         }
         this->setWindowModified(true);
         refreshView();

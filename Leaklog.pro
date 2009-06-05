@@ -19,6 +19,7 @@ HEADERS      += global.h \
                 mtaddress.h \
                 mtrecord.h \
                 mtsqlqueryresult.h \
+                mtcheckboxgroup.h \
                 records.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
@@ -46,9 +47,9 @@ DEFINES      += FP_NO_SUPPORT_OPTIMIZER
 DESTDIR       = ./
 win32 {
 RC_FILE       = leaklog.rc
-OBJECTS_DIR   = .tmp.win32
-MOC_DIR       = .tmp.win32
-RCC_DIR       = .tmp.win32
+OBJECTS_DIR   = .build.win32
+MOC_DIR       = .build.win32
+RCC_DIR       = .build.win32
 }
 macx {
 ICON          = images/leaklog128.icns
@@ -57,9 +58,9 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
 QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.4u.sdk
 }
 unix {
-OBJECTS_DIR   = .tmp.unix
-MOC_DIR       = .tmp.unix
-RCC_DIR       = .tmp.unix
+OBJECTS_DIR   = .build.unix
+MOC_DIR       = .build.unix
+RCC_DIR       = .build.unix
 }
 unix:!macx {
 exists(/usr/bin/apgcc) {

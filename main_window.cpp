@@ -467,7 +467,7 @@ void MainWindow::printLabel()
     QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
     if (!unparsed_expression.isEmpty()) {
         QStringList var_ids = listVariableIds();
-        attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, &var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
+        attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
     }
     Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
     attributes.unite(circuit.list("refrigerant, refrigerant_amount"));

@@ -165,21 +165,21 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
 
 QMap<QString, MTDictionary> Global::parsed_expressions;
 
-MTDictionary Global::parseExpression(const QString & exp, QStringList * used_ids)
+MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids)
 {
     MTDictionary dict_exp(true);
     if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
         QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
         QStringList functions; functions << "sum" << "p_to_t";
         for (int i = 0; i < circuit_attributes.count(); ++i) {
-            if (!used_ids->contains(circuit_attributes.at(i))) { *used_ids << circuit_attributes.at(i); }
+            if (!used_ids.contains(circuit_attributes.at(i))) { used_ids << circuit_attributes.at(i); }
         }
         for (int i = 0; i < functions.count(); ++i) {
-            if (!used_ids->contains(functions.at(i))) { *used_ids << functions.at(i); }
+            if (!used_ids.contains(functions.at(i))) { used_ids << functions.at(i); }
         }
         QSet<int> matched;
-        for (int i = 0; i < used_ids->count(); ++i) {
-            QRegExp expression(QString("\\b%1\\b").arg(used_ids->at(i)));
+        for (int i = 0; i < used_ids.count(); ++i) {
+            QRegExp expression(QString("\\b%1\\b").arg(used_ids.at(i)));
             int index = exp.indexOf(expression);
             while (index >= 0) {
                 int length = expression.matchedLength();
@@ -565,6 +565,40 @@ QStringList Global::listVariableIds(bool all)
     return ids;
 }
 
+QStringList Global::listSupportedFunctions()
+{
+    QStringList functions;
+    functions << "abs" // (A)       Absolute value of A. If A is negative, returns -A otherwise returns A.
+              << "acos" // (A)      Arc-cosine of A. Returns the angle, measured in radians, whose cosine is A.
+              << "acosh" // (A)     Same as acos() but for hyperbolic cosine.
+              << "asin" // (A)      Arc-sine of A. Returns the angle, measured in radians, whose sine is A.
+              << "asinh" // (A)     Same as asin() but for hyperbolic sine.
+              << "atan" // (A)      Arc-tangent of (A). Returns the angle, measured in radians, whose tangent is (A).
+              << "atan2" // (A,B)	Arc-tangent of A/B. The two main differences to atan() is that it will return the right angle depending on the signs of A and B (atan() can only return values betwen -pi/2 and pi/2), and that the return value of pi/2 and -pi/2 are possible.
+              << "atanh" // (A)     Same as atan() but for hyperbolic tangent.
+              << "ceil" // (A)      Ceiling of A. Returns the smallest integer greater than A. Rounds up to the next higher integer.
+              << "cos" // (A)       Cosine of A. Returns the cosine of the angle A, where A is measured in radians.
+              << "cosh" // (A)      Same as cos() but for hyperbolic cosine.
+              << "cot" // (A)       Cotangent of A (equivalent to 1/tan(A)).
+              << "csc" // (A)       Cosecant of A (equivalent to 1/sin(A)).
+              << "exp" // (A)       Exponential of A. Returns the value of e raised to the power A where e is the base of the natural logarithm, i.e. the non-repeating value approximately equal to 2.71828182846.
+              << "floor" // (A)     Floor of A. Returns the largest integer less than A. Rounds down to the next lower integer.
+              << "if" // (A,B,C)	If int(A) differs from 0, the return value of this function is B, else C. Only the parameter which needs to be evaluated is evaluated, the other parameter is skipped.
+              << "int" // (A)       Rounds A to the closest integer. 0.5 is rounded to 1.
+              << "log" // (A)       Natural (base e) logarithm of A.
+              << "log10" // (A)     Base 10 logarithm of A.
+              << "max" // (A,B)     If A>B, the result is A, else B.
+              << "min" // (A,B)     If A<B, the result is A, else B.
+              << "pow" // (A,B)     Exponentiation (A raised to the power B).
+              << "sec" // (A)       Secant of A (equivalent to 1/cos(A)).
+              << "sin" // (A)       Sine of A. Returns the sine of the angle A, where A is measured in radians.
+              << "sinh" // (A)      Same as sin() but for hyperbolic sine.
+              << "sqrt" // (A)      Square root of A. Returns the value whose square is A.
+              << "tan" // (A)       Tangent of A. Returns the tangent of the angle A, where A is measured in radians.
+              << "tanh"; // (A)     Same as tan() but for hyperbolic tangent.
+    return functions;
+}
+
 using namespace Global;
 
 Variables::Variables(QSqlDatabase db, bool exec_query):
@@ -637,7 +671,7 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "aliceblue");
     initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
-    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "t_in-p_to_t(p_0)", true, 0.0, "aliceblue");
+    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "abs(t_in-p_to_t(p_0))", true, 0.0, "aliceblue");
     initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
     initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
@@ -647,7 +681,7 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "floralwhite");
     initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
-    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "t_out-p_to_t(p_c)", true, 0.0, "floralwhite");
+    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "abs(t_out-p_to_t(p_c))", true, 0.0, "floralwhite");
     initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
     initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
     initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
@@ -887,8 +921,8 @@ MTSqlQueryResult(db)
             if (skip) { result()->removeAt(i); i--; continue; }
             WarningConditions warning_conditions(id);
             while (warning_conditions.next()) {
-                conditions_value_ins[id] << parseExpression(warning_conditions.value("value_ins").toString(), &used_ids);
-                conditions_value_nom[id] << parseExpression(warning_conditions.value("value_nom").toString(), &used_ids);
+                conditions_value_ins[id] << parseExpression(warning_conditions.value("value_ins").toString(), used_ids);
+                conditions_value_nom[id] << parseExpression(warning_conditions.value("value_nom").toString(), used_ids);
                 conditions_functions[id] << warning_conditions.value("function").toString();
             }
         }
@@ -1007,8 +1041,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
-            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
+            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
         }
     }
     w = "1101";
@@ -1021,8 +1055,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
-            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
+            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
         }
     }
     w = "1102";
@@ -1035,8 +1069,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
-            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
+            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
         }
     }
     w = "1103";
@@ -1049,8 +1083,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "t_out-p_to_t(p_c)", ">", "t_out-p_to_t(p_c)");
-            initCondition(map, w, "t_in-p_to_t(p_0)", "<", "t_in-p_to_t(p_0)");
+            initCondition(map, w, "abs(t_out-p_to_t(p_c))", ">", "abs(t_out-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
         }
     }
     w = "1104";
@@ -1063,8 +1097,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", "<", "t_comp_out");
-            initCondition(map, w, "t_out-p_to_t(p_c)", "<", "t_out-p_to_t(p_c)");
-            initCondition(map, w, "t_in-p_to_t(p_0)", ">", "t_in-p_to_t(p_0)");
+            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_in-p_to_t(p_0))", ">", "abs(t_in-p_to_t(p_0))");
         }
     }
     w = "1200";

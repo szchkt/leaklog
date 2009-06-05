@@ -60,7 +60,7 @@ QVariant MDLineEdit::variantValue()
 }
 
 MDCheckBox::MDCheckBox(const QString & id, const QString & labeltext, QWidget * parent, bool checked, bool enabled):
-QCheckBox(labeltext, parent),
+MTCheckBox(labeltext, parent),
 MDInputWidget(id, "", parent, this)
 {
     setEnabled(enabled);
@@ -130,7 +130,7 @@ MDInputWidget(id, labeltext, parent, this)
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setEnabled(enabled);
-    QStringList list; int n = -1;
+    QStringList list; int n = 0;
     for (int i = 0; i < items.count(); ++i) {
         if (!list.contains(items.key(i))) {
             list << items.key(i);
@@ -280,7 +280,6 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     } else {
         attributes.insert("year", QDate::currentDate().year());
-        attributes.insert("refrigerant", refrigerants.key(0));
     }
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "0000"));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
@@ -322,15 +321,15 @@ DBRecord("inspections", date, MTDictionary(QStringList() << "customer" << "circu
 
 void Inspection::initModifyDialogue(ModifyDialogue * md)
 {
-    MTDictionary bool_values(QStringList() << tr("Yes") << tr("No"), QStringList() << "1" << "0");
-
-    switch (i_type) {
-        case Repair: md->setWindowTitle(tr("Repair")); break;
-        default: md->setWindowTitle(tr("Inspection")); break;
-    }
+    Type type = i_type;
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
+        if (attributes.value("repair").toInt()) { type = Repair; }
+    }
+    switch (type) {
+        case Repair: md->setWindowTitle(tr("Repair")); break;
+        default: md->setWindowTitle(tr("Inspection")); break;
     }
     bool nominal_allowed = true;
     QStringList used_ids; QSqlQuery query_used_ids;
@@ -347,10 +346,13 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     }
     md->setUsedIds(used_ids);
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
-    switch (i_type) {
-        case Repair: md->addInputWidget(new MDCheckBox("repair", tr("Repair"), md, true, false)); break;
-        default: md->addInputWidget(new MDCheckBox("nominal", tr("Nominal"), md, attributes.value("nominal").toInt(), nominal_allowed)); break;
-    }
+    MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md);
+    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt(), nominal_allowed);
+    md->addInputWidget(chb_nominal);
+    chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
+    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, type == Repair, true);
+    md->addInputWidget(chb_repair);
+    chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
     while (query.next()) {
         var_id = query.value("VAR_ID").toString();
@@ -375,8 +377,9 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));
             } else if (var_type == "bool") {
-                md->addInputWidget(new MDComboBox(var_id, var_name, md,
-                    attributes.value(var_id).toString(), bool_values, query.value("VAR_COL_BG").toString()));
+                MDCheckBox * chb = new MDCheckBox(var_id, "", md, attributes.value(var_id).toInt());
+                chb->label()->setText(var_name);
+                md->addInputWidget(chb);
             } else {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), "", query.value("VAR_COL_BG").toString()));
@@ -398,8 +401,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "bool") {
-                md->addInputWidget(new MDComboBox(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), bool_values, query.value("VAR_COL_BG").toString()));
+                MDCheckBox * chb = new MDCheckBox(subvar_id, query.value("SUBVAR_NAME").toString(), md,
+                    attributes.value(subvar_id).toInt());
+                chb->label()->setText(tr("%1:").arg(query.value("VAR_NAME").toString()));
+                md->addInputWidget(chb);
             } else {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));
@@ -420,8 +425,6 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
-    } else {
-        attributes.insert("refrigerant", refrigerants.key(0));
     }
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
     md->addInputWidget(new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString()));
@@ -486,6 +489,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
     }
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
+    used_ids << listSupportedFunctions();
     used_ids << listVariableIds(true);
     if (!id().isEmpty()) { used_ids.removeAll(id()); }
     md->setUsedIds(used_ids);
@@ -597,8 +601,6 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
-    } else {
-        attributes.insert("refrigerant", refrigerants.key(0));
     }
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
@@ -648,6 +650,7 @@ void WarningRecord::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md, 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
+    used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
 }
