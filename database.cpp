@@ -74,7 +74,8 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         }
     }
     QStringList db_info_ids;
-    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version" << "default_service_company";
+    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version" << "default_service_company"
+            << "lock_date" << "lock_password" << "locked";
     for (int i = 0; i < db_info_ids.count(); ++i) {
         query.exec("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'");
         if (!query.next()) {
@@ -219,7 +220,6 @@ void MainWindow::openRemote()
     QDialog * d = new QDialog(this);
 	d->setWindowTitle(tr("Open remote database - Leaklog"));
         QGridLayout * gl = new QGridLayout(d);
-        gl->setContentsMargins(6, 6, 6, 6); gl->setSpacing(6);
             QLabel * lbl_driver_ = new QLabel(tr("Driver:"), d);
             lbl_driver_->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_driver_, 0, 0);
@@ -345,8 +345,11 @@ void MainWindow::openDatabase(QString path)
         item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
     }
+    database_lock_date = DBInfoValueForKey("lock_date");
+    database_locked = DBInfoValueForKey("locked") == "true";
+    updateLockButton();
 #ifdef Q_WS_MAC
-	this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
+    this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
 #else
     this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
 #endif

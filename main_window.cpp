@@ -62,6 +62,7 @@ MainWindow::MainWindow()
     dict_html.insert(tr("Agenda"), in.readAll());
     file.close();
     // ----
+    database_locked = false;
     show_leaked_in_store_in_service_company_view = false;
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -121,6 +122,9 @@ MainWindow::MainWindow()
     menu_modify->addAction(actionModify_table);
     menu_modify->addAction(actionModify_warning);
     tbtn_modify->setMenu(menu_modify);
+    QWidget * spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    toolBar->insertWidget(actionLock, spacer);
     dw_browser->setVisible(false);
     dw_inspectors->setVisible(false);
     dw_variables->setVisible(false);
@@ -175,6 +179,7 @@ MainWindow::MainWindow()
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -383,7 +388,7 @@ void MainWindow::print()
 void MainWindow::exportPDF()
 {
     QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1-%2.pdf").arg(QFileInfo(db.databaseName()).baseName()).arg(lbl_view->text()), tr("Adobe PDF (*.pdf)"));
-	if (path.isEmpty()) { return; }
+    if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
@@ -394,7 +399,7 @@ void MainWindow::exportPDF()
 void MainWindow::exportHTML()
 {
     QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"), QString("%1-%2.html").arg(QFileInfo(db.databaseName()).baseName()).arg(lbl_view->text()), tr("Webpage (*.html)"));
-	if (path.isEmpty()) { return; }
+    if (path.isEmpty()) { return; }
     if (!path.endsWith(".html", Qt::CaseInsensitive)) { path.append(".html"); }
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -417,7 +422,7 @@ void MainWindow::exportHTML()
         colours_css.close();
     }
     QTextStream out(&file);
-	out.setCodec("UTF-8");
+    out.setCodec("UTF-8");
     out << html;
     file.close();
 }
@@ -433,7 +438,6 @@ void MainWindow::printLabel()
     QDialog * d = new QDialog(this);
 	d->setWindowTitle(tr("Print label - Leaklog"));
         QGridLayout * gl = new QGridLayout(d);
-        gl->setContentsMargins(9, 9, 9, 9); gl->setSpacing(9);
             QLabel * lbl_print_labels = new QLabel(tr("Choose the position of the label on the paper:"), d);
         gl->addWidget(lbl_print_labels, 0, 0, 1, 2);
             for (int c = 0; c < 2; ++c) {
@@ -709,6 +713,8 @@ void MainWindow::setAllEnabled(bool enable)
     actionFind_next->setEnabled(enable);
     actionFind_previous->setEnabled(enable);
 
+    actionLock->setEnabled(enable);
+
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
     actionAdd_table->setEnabled(enable);
     actionAdd_warning->setEnabled(enable);
@@ -743,6 +749,23 @@ void MainWindow::setAllEnabled(bool enable)
     stw_main->setCurrentIndex(enable ? 1 : 0);
 }
 
+void MainWindow::updateLockButton()
+{
+    if (database_locked) {
+        actionLock->setIcon(QIcon::QIcon(":/images/images/locked.png"));
+        actionLock->setText(tr("Unlock"));
+    } else {
+        actionLock->setIcon(QIcon::QIcon(":/images/images/unlocked.png"));
+        actionLock->setText(tr("Lock"));
+    }
+}
+
+bool MainWindow::isRecordLocked(const QString & date)
+{
+    if (!database_locked) return false;
+    return date < database_lock_date;
+}
+
 void MainWindow::enableTools()
 {
     bool customer_selected = lw_customers->highlightedRow() >= 0;
@@ -750,6 +773,7 @@ void MainWindow::enableTools()
     bool inspection_selected = false;
     bool repair_selected = !selected_repair.isEmpty();
     bool circuit_repair_selected = false;
+    bool record_locked = false;
     if (lw_inspections->highlightedRow() >= 0) {
         if (!lw_inspections->highlightedItem()->font().italic()) {
             inspection_selected = true;
@@ -758,6 +782,12 @@ void MainWindow::enableTools()
             inspection_selected = false;
             circuit_repair_selected = repair_selected = true;
         }
+    }
+    if (database_locked && (inspection_selected || repair_selected)) {
+        QString date = (circuit_repair_selected || inspection_selected) ?
+                       lw_inspections->highlightedItem()->data(Qt::UserRole).toString() : selected_repair;
+        if (date < database_lock_date)
+            record_locked = true;
     }
     bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
     lbl_selected_customer->setText(customer_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Customer information")).arg(tr("Customer: %1").arg(lw_customers->highlightedItem()->text())) : QString());
@@ -784,10 +814,10 @@ void MainWindow::enableTools()
     actionRemove_circuit->setEnabled(circuit_selected);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
-    actionModify_inspection->setEnabled(inspection_selected);
-    actionRemove_inspection->setEnabled(inspection_selected);
-    actionModify_repair->setEnabled(repair_selected);
-    actionRemove_repair->setEnabled(repair_selected);
+    actionModify_inspection->setEnabled(inspection_selected && !record_locked);
+    actionRemove_inspection->setEnabled(inspection_selected && !record_locked);
+    actionModify_repair->setEnabled(repair_selected && !record_locked);
+    actionRemove_repair->setEnabled(repair_selected && !record_locked);
     actionPrint_label->setEnabled(inspection_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
@@ -803,6 +833,71 @@ void MainWindow::enableTools()
     actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
     actionModify_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
+}
+
+void MainWindow::toggleLocked()
+{
+    if (actionLock->text() == tr("Lock")) {
+        QDialog * d = new QDialog(this);
+        d->setWindowTitle(tr("Lock database - Leaklog"));
+        QGridLayout * gl = new QGridLayout(d);
+
+        QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), d);
+        lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        gl->addWidget(lbl, 0, 0, 1, 2);
+
+        QString last_date = DBInfoValueForKey("lock_date");
+
+        QDateEdit * date = new QDateEdit(d);
+        date->setDisplayFormat("yyyy.MM.dd");
+        date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, "yyyy.MM.dd"));
+        gl->addWidget(date, 1, 1);
+
+        lbl = new QLabel(tr("Password:"), d);
+        lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        gl->addWidget(lbl, 2, 0);
+
+        QLineEdit * password = new QLineEdit(d);
+        password->setText(DBInfoValueForKey("lock_password"));
+        gl->addWidget(password, 2, 1);
+
+        QDialogButtonBox * bb = new QDialogButtonBox(d);
+        bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
+        QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+        QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+        gl->addWidget(bb, 3, 0, 1, 2);
+
+        if (d->exec() != QDialog::Accepted) return;
+
+        database_lock_date = date->date().toString("yyyy.MM.dd");
+        setDBInfoValueForKey("lock_date", database_lock_date);
+        setDBInfoValueForKey("lock_password", password->text());
+        setDBInfoValueForKey("locked", "true");
+        database_locked = true;
+        updateLockButton();
+        enableTools();
+        this->setWindowModified(true);
+        refreshView();
+    } else {
+        bool ok;
+        QString password = QInputDialog::getText(this, tr("Unlock database - Leaklog"),
+                                                 tr("Password:"), QLineEdit::Password,
+                                                 "", &ok);
+        if (!ok) return;
+
+        if (password != DBInfoValueForKey("lock_password")) {
+            QMessageBox::warning(this, tr("Unlock database - Leaklog"), tr("Wrong password."));
+            return;
+        }
+
+        setDBInfoValueForKey("locked", "false");
+        database_locked = false;
+        updateLockButton();
+        enableTools();
+        this->setWindowModified(true);
+        refreshView();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)
@@ -829,7 +924,7 @@ void MainWindow::saveSettings()
     QSettings settings("SZCHKT", "Leaklog");
     QStringList recent;
     for (int i = 0; i < lw_recent_docs->count(); ++i)
-    { recent << lw_recent_docs->item(i)->text(); }
+        recent << lw_recent_docs->item(i)->text();
     settings.setValue("recent_docs", recent);
     settings.setValue("pos", this->pos());
     settings.setValue("size", this->size());
@@ -839,96 +934,96 @@ void MainWindow::saveSettings()
 
 void MainWindow::changeLanguage()
 {
-	QWidget * w_lang = new QWidget(this, Qt::Dialog);
-	w_lang->setWindowModality(Qt::WindowModal);
-	w_lang->setAttribute(Qt::WA_DeleteOnClose);
+    QWidget * w_lang = new QWidget(this, Qt::Dialog);
+    w_lang->setWindowModality(Qt::WindowModal);
+    w_lang->setAttribute(Qt::WA_DeleteOnClose);
 #ifdef Q_WS_MAC
-	w_lang->setWindowTitle(tr("Change language"));
+    w_lang->setWindowTitle(tr("Change language"));
 #else
     w_lang->setWindowTitle(tr("Change language - Leaklog"));
 #endif
-	QGridLayout * glayout_lang = new QGridLayout(w_lang);
-	glayout_lang->setMargin(6); glayout_lang->setSpacing(6);
-	QLabel * lbl_lang = new QLabel(w_lang);
-	lbl_lang->setText(tr("Select your preferred language"));
-	glayout_lang->addWidget(lbl_lang, 0, 0);
-	cb_lang = new QComboBox(w_lang);
-	QStringList langs(leaklog_i18n.keys()); langs.sort();
-	for (int i = 0; i < langs.count(); ++i) {
-		cb_lang->addItem(langs.at(i));
-		if (langs.at(i) == "English") { cb_lang->setCurrentIndex(i); }
-	}
-	glayout_lang->addWidget(cb_lang, 1, 0);
-	QDialogButtonBox * bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
-	QObject::connect(bb_lang, SIGNAL(accepted()), this, SLOT(languageChanged()));
-	QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(close()));
-	glayout_lang->addWidget(bb_lang, 2, 0);
-	w_lang->show();
+    QGridLayout * glayout_lang = new QGridLayout(w_lang);
+    glayout_lang->setMargin(6); glayout_lang->setSpacing(6);
+    QLabel * lbl_lang = new QLabel(w_lang);
+    lbl_lang->setText(tr("Select your preferred language"));
+    glayout_lang->addWidget(lbl_lang, 0, 0);
+    cb_lang = new QComboBox(w_lang);
+    QStringList langs(leaklog_i18n.keys()); langs.sort();
+    for (int i = 0; i < langs.count(); ++i) {
+        cb_lang->addItem(langs.at(i));
+        if (langs.at(i) == "English") { cb_lang->setCurrentIndex(i); }
+    }
+    glayout_lang->addWidget(cb_lang, 1, 0);
+    QDialogButtonBox * bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
+    QObject::connect(bb_lang, SIGNAL(accepted()), this, SLOT(languageChanged()));
+    QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(close()));
+    glayout_lang->addWidget(bb_lang, 2, 0);
+    w_lang->show();
 }
 
 void MainWindow::languageChanged()
 {
-	if (cb_lang == NULL) { return; }
-	QString lang = leaklog_i18n.value(cb_lang->currentText(), cb_lang->currentText());
-	QSettings settings("SZCHKT", "Leaklog");
-	QString current_lang = settings.value("lang", "Slovak").toString();
-	if (current_lang != lang) {
-		settings.setValue("lang", lang);
-		QMessageBox::information(this, tr("Leaklog"), tr("You need to restart Leaklog for the changes to apply."));
-	}
-	if (cb_lang->parent() == NULL) { return; }
-	QWidget * w_lang = (QWidget *)cb_lang->parent();
-	w_lang->close();
+    if (cb_lang == NULL) { return; }
+    QString lang = leaklog_i18n.value(cb_lang->currentText(), cb_lang->currentText());
+    QSettings settings("SZCHKT", "Leaklog");
+    QString current_lang = settings.value("lang", "Slovak").toString();
+    if (current_lang != lang) {
+        settings.setValue("lang", lang);
+        QMessageBox::information(this, tr("Leaklog"), tr("You need to restart Leaklog for the changes to apply."));
+    }
+    if (cb_lang->parent() == NULL) { return; }
+    QWidget * w_lang = (QWidget *)cb_lang->parent();
+    w_lang->close();
     cb_lang = NULL;
 }
 
 void MainWindow::checkForUpdates()
 {
-	delete http_buffer; http_buffer = new QBuffer(this);
+    delete http_buffer; http_buffer = new QBuffer(this);
     http->setHost("leaklog.sourceforge.net");
-	http->get("/current-version", http_buffer);
+    http->get("/current-version", http_buffer);
 }
 
 void MainWindow::httpRequestFinished(bool error)
 {
-	httpRequestFinished_start:
-	if (error) {
-		switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
-			case 0: // Try again
-				checkForUpdates(); return; break;
-			case 1: // Cancel
-				return; break;
-		}
-	}
-	QString str(http_buffer->data()); QTextStream in(&str);
-	if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
-	QString current_ver = in.readLine();
-	if (in.readLine() != "[Leaklog.current-version.float]") { error = true; goto httpRequestFinished_start; }
-	double f_current_ver = in.readLine().toDouble();
+    httpRequestFinished_start:
+    if (error) {
+        switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
+            case 0: // Try again
+                checkForUpdates(); return; break;
+            case 1: // Cancel
+                return; break;
+        }
+    }
+    QString str(http_buffer->data()); QTextStream in(&str);
+    if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
+    QString current_ver = in.readLine();
+    if (in.readLine() != "[Leaklog.current-version.float]") { error = true; goto httpRequestFinished_start; }
+    double f_current_ver = in.readLine().toDouble();
     if (in.readLine() != "[Leaklog.download-url.src]") { error = true; goto httpRequestFinished_start; }
-	QString src_url = in.readLine();
+    QString src_url = in.readLine();
     if (in.readLine() != "[Leaklog.download-url.macx]") { error = true; goto httpRequestFinished_start; }
 #ifdef Q_WS_MAC
-	QString macx_url = in.readLine();
+    QString macx_url = in.readLine();
 #else
     in.readLine();
 #endif
     if (in.readLine() != "[Leaklog.download-url.win32]") { error = true; goto httpRequestFinished_start; }
 #ifdef Q_WS_WIN
-	QString win32_url = in.readLine();
+    QString win32_url = in.readLine();
 #else
     in.readLine();
 #endif
-	if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
-	QString release_notes;
-	while (!in.atEnd()) { release_notes.append(in.readLine()); }
-	if (f_current_ver <= F_LEAKLOG_VERSION) {
-		QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
-	} else {
-		QString info; QTextStream out(&info);
-		out << "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body><p>" << endl;
-		out << "<b>" << tr("Leaklog %1 is available now.").arg(current_ver) << "</b><br><br>" << endl;
-		out << release_notes << endl << "<br><br>" << endl;
+    if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
+    QString release_notes;
+    while (!in.atEnd()) { release_notes.append(in.readLine()); }
+    if (f_current_ver <= F_LEAKLOG_VERSION) {
+        QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
+    } else {
+        QString info; QTextStream out(&info);
+        out << "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body><p>" << endl;
+        out << "<b>" << tr("Leaklog %1 is available now.").arg(current_ver) << "</b><br><br>" << endl;
+        out << release_notes << endl << "<br><br>" << endl;
 #ifdef Q_WS_MAC
         out << "<a href=\"" << macx_url << "\">" << tr("Download Leaklog %1 for Mac OS X").arg(current_ver) << "</a><br>" << endl;
 #elif defined Q_WS_WIN
@@ -936,8 +1031,8 @@ void MainWindow::httpRequestFinished(bool error)
 #endif
         out << "<a href=\"" << src_url << "\">" << tr("Download source code") << "</a>" << endl;
         out << "</p></body></html>";
-		QMessageBox::information(this, tr("Leaklog"), info);
-	}
+        QMessageBox::information(this, tr("Leaklog"), info);
+    }
 }
 
 void MainWindow::about()

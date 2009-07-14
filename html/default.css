@@ -19,30 +19,18 @@ body,td,th {
 th {
 	background-color: #F3F3F3;
 }
+table {
+	width: 100%;
+}
 table,td,th {
 	border-collapse: collapse;
 	border-style: solid;
 	border-width: thin;
 	border-color: black;
 }
-table {
-	width: 100%;
-}
-.normal_table {
-	border-collapse: separate;
-	border-style: none;
-}
 .no_border {
 	border-collapse: collapse;
 	border-style: none;
-}
-header_top {
-	border-left-width: medium;
-	border-top-width: medium;
-	border-right-width: medium;
-}
-header_bottom {
-	border-bottom-width: medium;
 }
 tr.nominal > td {
 	background-color: #FFFF33 !important;
@@ -51,7 +39,7 @@ tr.nominal > td {
 .default_table {
 	background-color: #eee;
 	border-spacing: 2px;
-	border: 1px solid #CACACA; // #990000
+	border: 1px solid #CACACA;
 	border-collapse: collapse;
 }
 a:link {

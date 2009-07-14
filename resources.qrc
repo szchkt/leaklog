@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="images" >
+    <file>images/locked.png</file>
+    <file>images/unlocked.png</file>
     <file>images/export_html_pdf.png</file>
     <file>images/html.png</file>
     <file>images/pdf.png</file>

@@ -57,6 +57,7 @@ private slots:
     void exportHTML();
     void printLabel();
     void enableTools();
+    void toggleLocked();
     void find();
     void findNext();
     void findPrevious();
@@ -129,6 +130,8 @@ private:
     void addRecent(const QString &);
     void clearAll();
     void setAllEnabled(bool);
+    void updateLockButton();
+    bool isRecordLocked(const QString &);
     void closeEvent(QCloseEvent *);
     void loadSettings();
     void saveSettings();
@@ -149,11 +152,11 @@ private:
     void moveTableVariable(bool);
     void loadInspector(QListWidgetItem *, bool);
     void exportData(const QString &);
-    inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); };
-    inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); };
-    inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); };
-    inline QString selectedRepair() { return selected_repair; };
-    inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); };
+    inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); }
+    inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); }
+    inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); }
+    inline QString selectedRepair() { return selected_repair; }
+    inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); }
     // VIEW
     QString viewServiceCompany(int);
     QString viewAllCustomers();
@@ -171,6 +174,8 @@ private:
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
 
+    bool database_locked;
+    QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
     bool show_leaked_in_store_in_service_company_view;
     QString selected_repair;

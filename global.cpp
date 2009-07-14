@@ -308,13 +308,16 @@ QString Global::compareValues(double value1, double value2, double tolerance, co
 	}
 }
 
-QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3)
+QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3, bool modify_allowed)
 {
-    QString link = "<a onmouseover=\"Tip('<a href=&quot;%1&quot;>"
-        + QApplication::translate("MainWindow", "View")
-        + "</a> | <a href=&quot;%1/modify&quot;>"
-        + QApplication::translate("MainWindow", "Modify")
-        + "</a>', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\" href=\"%1\">" + text + "</a>";
+    QString link = "<a ";
+    if (modify_allowed)
+        link += "onmouseover=\"Tip('<a href=&quot;%1&quot;>"
+            + QApplication::translate("MainWindow", "View")
+            + "</a> | <a href=&quot;%1/modify&quot;>"
+            + QApplication::translate("MainWindow", "Modify")
+            + "</a>', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\" ";
+    link += "href=\"%1\">" + text + "</a>";
     QString href; QStringList typelist = type.split("/");
     if (typelist.count() > 0) href.append(typelist.at(0) + ":" + l1);
     if (typelist.count() > 1) href.append("/" + typelist.at(1) + ":" + l2);

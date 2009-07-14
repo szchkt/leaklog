@@ -599,6 +599,8 @@
      <addaction name="actionNew_variable"/>
      <addaction name="actionNew_subvariable"/>
     </widget>
+    <addaction name="actionLock"/>
+    <addaction name="separator"/>
     <addaction name="actionService_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
     <addaction name="separator"/>
@@ -685,6 +687,7 @@
    <addaction name="actionFind"/>
    <addaction name="separator"/>
    <addaction name="actionPrint"/>
+   <addaction name="actionLock"/>
   </widget>
   <widget class="QDockWidget" name="dw_browser">
    <property name="features">
@@ -1932,6 +1935,15 @@
    </property>
    <property name="text">
     <string>Printer-friendly version</string>
+   </property>
+  </action>
+  <action name="actionLock">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/unlocked.png</normaloff>:/images/images/unlocked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Lock</string>
    </property>
   </action>
  </widget>

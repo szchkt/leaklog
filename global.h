@@ -42,9 +42,9 @@
 
 #define LEAKLOG_VERSION "0.9.4"
 #define F_LEAKLOG_VERSION 0.904
-#define LEAKLOG_PREVIEW_VERSION 1
-#define DB_VERSION "0.9.3"
-#define F_DB_VERSION 0.903
+#define LEAKLOG_PREVIEW_VERSION 2
+#define DB_VERSION "0.9.4"
+#define F_DB_VERSION 0.904
 
 #define REAL_NUMBER_PRECISION 2
 #define REAL_NUMBER_PRECISION_EXP 100.0
@@ -67,7 +67,7 @@ namespace Global {
     MTDictionary parseExpression(const QString &, QStringList &);
     double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = NULL);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
-    QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString());
+    QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
     // Dictionaries
     MTDictionary get_dict_dbtables();
     MTDictionary get_dict_vartypes();

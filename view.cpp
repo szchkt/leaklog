@@ -536,7 +536,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
             out << "<td>";
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
-            out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
+            out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id, !isRecordLocked(id));
             if (is_nominal) { out << "<b>"; }
             else if (is_repair) { out << "<i>"; }
             out << "</td>";
@@ -569,6 +569,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     StringVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
+    bool locked = isRecordLocked(inspection_date);
     Inspection nom_inspection_record(customer_id, circuit_id, "");
     nom_inspection_record.parents()->insert("nominal", "1");
     StringVariantMap nominal_ins = nom_inspection_record.list();
@@ -577,10 +578,14 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
-    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
-    out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
+    if (!locked) {
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
+        out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
+    }
     if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
-	out << "&nbsp;" << inspection_date << "</a></th></tr>";
+    out << "&nbsp;" << inspection_date;
+    if (!locked) out << "</a>";
+    out << "</th></tr>";
 
     QStringList used_ids = listVariableIds(); // all = false
     Variables vars;
@@ -849,11 +854,12 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "</tr></thead>";
 
 //*** Body ***
-    bool is_nominal, is_repair;
+    bool is_nominal, is_repair; QString inspection_date;
     out << "<tbody>";
     for (int i = 0; i < inspections.count(); ++i) {
         is_nominal = inspections.at(i).value("nominal").toInt();
         is_repair = inspections.at(i).value("repair").toInt();
+        inspection_date = inspections.at(i).value("date").toString();
         out << "<tr class=\"";
         if (is_nominal && table.value("highlight_nominal").toInt()) {
             out << "nominal";
@@ -861,7 +867,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "\"><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspections.at(i).value("date").toString(), customer_id, circuit_id, inspections.at(i).value("date").toString());
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspection_date, customer_id, circuit_id, inspection_date, !isRecordLocked(inspection_date));
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
         out << "</td>";
@@ -874,7 +880,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     subvariable = subvariables.at(s).toMap();
                     compare_nom = subvariable.value("compare_nom").toInt() > 0;
                     if (subvariable.value("value").toString().contains("sum")) {
-                        QString i_year = inspections.at(i).value("date").toString().split(".").first();
+                        QString i_year = inspection_date.split(".").first();
                         if (is_nominal) rowspan = 1;
                         else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
                         else {
@@ -1018,6 +1024,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     QString warnings_html;
     QStringList last_warnings_list, warnings_list, backup_warnings;
     for (int i = 0; i < inspections.count(); ++i) {
+        inspection_date = inspections.at(i).value("date").toString();
         warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspections[i]);
         backup_warnings = warnings_list;
         for (int n = 0; n < warnings_list.count(); ++n) {
@@ -1029,8 +1036,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         if (warnings_list.count()) {
             warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
             warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
-            warnings_html.append(inspections.at(i).value("date").toString() + "\">");
-            warnings_html.append(inspections.at(i).value("date").toString() + "</a>");
+            warnings_html.append(inspection_date + "\">");
+            warnings_html.append(inspection_date + "</a>");
             warnings_html.append("</td><td>");
             warnings_html.append(warnings_list.join(", "));
             warnings_html.append("</td></tr>");
@@ -1184,7 +1191,8 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
             id = repairs.at(i).value("date").toString();
             out << "<tr onclick=\"window.location = 'repair:" << id << "";
             if (highlighted_id == id) {
-                out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+                if (!isRecordLocked(id)) out << "/modify";
+                out << "'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
             } else {
                 out << "'\" style=\"";
             }
