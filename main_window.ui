@@ -601,6 +601,8 @@
     </widget>
     <addaction name="actionLock"/>
     <addaction name="separator"/>
+    <addaction name="actionReport_data"/>
+    <addaction name="separator"/>
     <addaction name="actionService_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
     <addaction name="separator"/>
@@ -1944,6 +1946,14 @@
    </property>
    <property name="text">
     <string>Lock</string>
+   </property>
+  </action>
+  <action name="actionReport_data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Report data to the notified body</string>
    </property>
   </action>
  </widget>

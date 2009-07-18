@@ -21,15 +21,15 @@
 
 QString Global::toString(const QVariant & v) { return v.toString(); }
 
-QString Global::escapeString(QString s)
+QString Global::escapeString(QString s, bool escape_backslash, bool insert_linebreaks)
 {
-    s.replace("\\", "\\\\");
-    s.replace("'", "\\'");
+    if (escape_backslash) s.replace("\\", "\\\\");
     s.replace("&", "&amp;");
     s.replace("\"", "&quot;");
+    s.replace("'", "&#039;");
     s.replace("<", "&lt;");
     s.replace(">", "&gt;");
-    s.replace("\n", "<br>");
+    if (insert_linebreaks) s.replace("\n", "<br>");
     return s;
 }
 
@@ -300,12 +300,12 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
 QString Global::compareValues(double value1, double value2, double tolerance, const QString & bg_class)
 {
     if (value1 < value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
-	} else if (value1 > value2) {
-		return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
-	} else {
-		return "%1";
-	}
+        return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
+    } else if (value1 > value2) {
+        return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
+    } else {
+        return "%1";
+    }
 }
 
 QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3, bool modify_allowed)

@@ -20,7 +20,8 @@ HEADERS      += global.h \
                 mtrecord.h \
                 mtsqlqueryresult.h \
                 mtcheckboxgroup.h \
-                records.h
+                records.h \
+                report_data_controller.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -36,7 +37,8 @@ SOURCES      += global.cpp \
                 mtaddress.cpp \
                 mtrecord.cpp \
                 mtsqlqueryresult.cpp \
-                records.cpp
+                records.cpp \
+                report_data_controller.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser

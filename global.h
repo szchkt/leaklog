@@ -51,7 +51,7 @@
 
 namespace Global {
     QString toString(const QVariant &);
-    QString escapeString(QString);
+    QString escapeString(QString, bool = false, bool = false);
     QString upArrow();
     QString downArrow();
     QString degreeSign();
@@ -207,7 +207,7 @@ class MTWebPage : public QWebPage
     Q_OBJECT
 
 public:
-    MTWebPage(QObject * parent = 0): QWebPage(parent) {};
+    MTWebPage(QObject * parent = 0): QWebPage(parent) {}
 
 protected:
     bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
@@ -217,41 +217,44 @@ class MTVariant
 {
 public:
     enum Type { Default = 0, Address = 128 };
-    MTVariant(Type t = Default, const QVariant & v = QVariant()): v_type(t), v_value(v) {};
+    MTVariant(const QVariant & v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
 
-    inline void setType(Type t) { v_type = t; };
-    inline Type type() const { return v_type; };
-    inline QVariant::Type variantType() const { return v_value.type(); };
-    inline void setValue(const QVariant & v) { v_value = v; };
-    inline QVariant value() const { return v_value; };
+    inline void setType(Type t) { v_type = t; }
+    inline Type type() const { return v_type; }
+    inline QVariant::Type variantType() const { return v_value.type(); }
+    inline void setValue(const QVariant & v) { v_value = v; }
+    inline QVariant value() const { return v_value; }
 
-    QString toString() const {
+    inline QString toString() const {
+        return v_value.toString();
+    }
+    QString toHtml() const {
         switch (v_type) {
             case Address: return MTAddress(v_value.toString()).toHtml(); break;
             case Default: break;
         }
-        return v_value.toString();
-    };
+        return Global::escapeString(v_value.toString());
+    }
 
 private:
-    Type v_type;
     QVariant v_value;
+    Type v_type;
 };
 
 class MTTextStream : public QTextStream
 {
 public:
-    MTTextStream(QString * string, QIODevice::OpenMode openMode = QIODevice::ReadWrite): QTextStream(string, openMode) {};
+    MTTextStream(QString * string, QIODevice::OpenMode openMode = QIODevice::ReadWrite): QTextStream(string, openMode) {}
 
     inline MTTextStream & operator<<(double f) {
         long double ld = (long double)f;
         if (round(ld) == ld) this->QTextStream::operator<<(f);
         else this->QTextStream::operator<<((double)(round(ld * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP));
         return *this;
-    };
-    inline MTTextStream & operator<<(const char * string) { this->QTextStream::operator<<(string); return *this; };
-    inline MTTextStream & operator<<(const QString & string) { this->QTextStream::operator<<(string); return *this; };
-    inline MTTextStream & operator<<(const MTVariant & variant) { this->QTextStream::operator<<(variant.toString()); return *this; };
+    }
+    inline MTTextStream & operator<<(const char * string) { this->QTextStream::operator<<(string); return *this; }
+    inline MTTextStream & operator<<(const QString & string) { this->QTextStream::operator<<(string); return *this; }
+    inline MTTextStream & operator<<(const MTVariant & variant) { this->QTextStream::operator<<(variant.toHtml()); return *this; }
 };
 
 class Highlighter : public QSyntaxHighlighter

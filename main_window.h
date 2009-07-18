@@ -21,6 +21,7 @@
 #include "about_widget.h"
 #include "modify_warning_dialogue.h"
 #include "import_dialogue.h"
+#include "report_data_controller.h"
 
 #include <QCloseEvent>
 #include <QSettings>
@@ -56,6 +57,8 @@ private slots:
     void exportPDF();
     void exportHTML();
     void printLabel();
+    void reportData();
+    void reportDataFinished();
     void enableTools();
     void toggleLocked();
     void find();
@@ -129,7 +132,7 @@ private:
     void paintLabel(const StringVariantMap &, QPainter &, int, int, int, int);
     void addRecent(const QString &);
     void clearAll();
-    void setAllEnabled(bool);
+    void setAllEnabled(bool, bool = false);
     void updateLockButton();
     bool isRecordLocked(const QString &);
     void closeEvent(QCloseEvent *);

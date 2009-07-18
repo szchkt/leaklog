@@ -180,6 +180,7 @@ MainWindow::MainWindow()
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
+    QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
     QObject::connect(actionService_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -243,7 +244,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
-    MTWebPage * page = new MTWebPage(wv_main);
+    MTWebPage * page = new MTWebPage(this);
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     wv_main->setPage(page);
     loadSettings();
@@ -574,6 +575,20 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
     painter.restore();
 }
 
+void MainWindow::reportData()
+{
+    clearSelection();
+    setAllEnabled(false, true);
+    ReportDataController * controller = new ReportDataController(wv_main, frame_current_selection);
+    QObject::connect(controller, SIGNAL(processing(bool)), this, SLOT(setDisabled(bool)));
+    QObject::connect(controller, SIGNAL(destroyed()), this, SLOT(reportDataFinished()));
+}
+
+void MainWindow::reportDataFinished()
+{
+    setAllEnabled(true, true);
+}
+
 void MainWindow::find()
 {
     if (!db.isOpen()) { return; }
@@ -685,17 +700,29 @@ void MainWindow::clearAll()
     years_expanded_in_service_company_view.clear();
 }
 
-void MainWindow::setAllEnabled(bool enable)
+void MainWindow::setAllEnabled(bool enable, bool everything)
 {
+    if (everything) {
+        btn_clear_current_selection->setEnabled(enable);
+        btn_view_level_up->setEnabled(enable);
+        btn_view_level_down->setEnabled(enable);
+        spb_since->setEnabled(enable);
+        actionNew->setEnabled(enable);
+        actionOpen->setEnabled(enable);
+        actionLocal_database->setEnabled(enable);
+        actionRemote_database->setEnabled(enable);
+        actionPrinter_friendly_version->setEnabled(enable);
+    }
+
     actionSave->setEnabled(enable);
     actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
     actionImport_data->setEnabled(enable);
-    actionExport->setEnabled(enable);
-    actionPDF->setEnabled(enable);
-    actionHTML->setEnabled(enable);
-    actionPrint_preview->setEnabled(enable);
-    actionPrint->setEnabled(enable);
+    actionExport->setEnabled(enable || everything);
+    actionPDF->setEnabled(enable || everything);
+    actionHTML->setEnabled(enable || everything);
+    actionPrint_preview->setEnabled(enable || everything);
+    actionPrint->setEnabled(enable || everything);
     actgrp_view->setEnabled(enable);
 
     menuDatabase->setEnabled(enable);
@@ -707,13 +734,15 @@ void MainWindow::setAllEnabled(bool enable)
     tbtn_view->setEnabled(enable);
     tbtn_add->setEnabled(enable);
     tbtn_modify->setEnabled(enable);
-    tbtn_export->setEnabled(enable);
+    tbtn_export->setEnabled(enable || everything);
 
     actionFind->setEnabled(enable);
     actionFind_next->setEnabled(enable);
     actionFind_previous->setEnabled(enable);
 
     actionLock->setEnabled(enable);
+
+    actionReport_data->setEnabled(enable);
 
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
     actionAdd_table->setEnabled(enable);
@@ -746,7 +775,6 @@ void MainWindow::setAllEnabled(bool enable)
     dw_variables->setEnabled(enable);
     dw_tables->setEnabled(enable);
     dw_warnings->setEnabled(enable);
-    stw_main->setCurrentIndex(enable ? 1 : 0);
 }
 
 void MainWindow::updateLockButton()
@@ -807,11 +835,11 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
     actionModify_customer->setEnabled(customer_selected);
-    actionRemove_customer->setEnabled(customer_selected);
+    actionRemove_customer->setEnabled(customer_selected && !database_locked);
     actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
     actionModify_circuit->setEnabled(circuit_selected);
-    actionRemove_circuit->setEnabled(circuit_selected);
+    actionRemove_circuit->setEnabled(circuit_selected && !database_locked);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
     actionModify_inspection->setEnabled(inspection_selected && !record_locked);
@@ -822,17 +850,17 @@ void MainWindow::enableTools()
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
     actionModify_variable->setEnabled(trw_variables->currentIndex().isValid());
-    actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid() && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
+    actionRemove_variable->setEnabled(trw_variables->currentIndex().isValid() && !dict_varnames.contains(trw_variables->currentItem()->text(1)) && !database_locked);
     actionModify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
-    actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
+    actionRemove_table->setEnabled(cb_table_edit->currentIndex() >= 0 && !database_locked);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_remove_variable->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
     actionModify_warning->setEnabled(lw_warnings->currentIndex().isValid());
-    actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
+    actionRemove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000 && !database_locked);
     actionModify_inspector->setEnabled(inspector_selected);
-    actionRemove_inspector->setEnabled(inspector_selected);
+    actionRemove_inspector->setEnabled(inspector_selected && !database_locked);
 }
 
 void MainWindow::toggleLocked()
@@ -843,7 +871,7 @@ void MainWindow::toggleLocked()
         QGridLayout * gl = new QGridLayout(d);
 
         QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), d);
-        lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
         gl->addWidget(lbl, 0, 0, 1, 2);
 
         QString last_date = DBInfoValueForKey("lock_date");
