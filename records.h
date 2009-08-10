@@ -207,14 +207,9 @@ class Inspection : public DBRecord
     Q_OBJECT
 
 public:
-    enum Type { Default = 0, Repair = 1 };
-
-    Inspection(const QString &, const QString &, const QString &, Type = Default);
+    Inspection(const QString &, const QString &, const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
-
-private:
-    Type i_type;
 };
 
 class Repair : public DBRecord

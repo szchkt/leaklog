@@ -50,9 +50,9 @@ QString MainWindow::viewChanged(const QString & view)
         html = viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
     } else if (view == tr("List of customers")) {
         html = viewAllCustomers();
-    } else if (view == tr("Customer information") && selectedCustomer() >= 0) {
+    } else if (view == tr("List of circuits") && selectedCustomer() >= 0) {
         html = viewCustomer(toString(selectedCustomer()));
-    } else if (view == tr("Circuit information") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
+    } else if (view == tr("List of inspections") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
         html = viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
     } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
         html = viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
@@ -66,7 +66,7 @@ QString MainWindow::viewChanged(const QString & view)
         html = viewLeakagesByApplication();
     } else if (view == tr("Agenda")) {
         html = viewAgenda();
-    } else if (view == tr("Customer information") || view == tr("Circuit information") || view == tr("Inspection information") || table_view) {
+    } else if (view == tr("List of circuits") || view == tr("List of inspections") || view == tr("Inspection information") || table_view) {
         if (table_view) {
             view_actions.value(views_list.at(views_list.indexOf(tr("Table of inspections")) - 1))->setChecked(true);
         } else {
@@ -91,7 +91,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int sc_length = QString("service_companies::").length();
     int num_valid = 0; QString attr_value;
-    for (int n = dict_attrnames.indexOfKey("service_companies::certification_num"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("service_companies::"); ++n) {
+    for (int n = dict_attrnames.indexOfKey("service_companies::name"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("service_companies::"); ++n) {
         attr_value = dict_attrnames.key(n).mid(sc_length);
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
         out << "<num_attr>" << num_valid << "</num_attr>";
@@ -175,7 +175,7 @@ QString MainWindow::viewServiceCompany(int since)
     int x = show_leaked_in_store_in_service_company_view ? 0 : 2;
     int year, last_year = 0; bool it = false, bf = false; QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
-    QVector<double> * sum_list;
+    QVector<double> * sum_list = NULL;
     QMapIterator<QString, QVector<QString> > i(data.entries_map);
     i.toBack();
     while (i.hasPrevious()) { i.previous();
@@ -358,7 +358,7 @@ QString MainWindow::viewCustomer(const QString & customer_id)
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id);
-    return dict_html.value(tr("Customer information")).arg(html);
+    return dict_html.value(tr("List of circuits")).arg(html);
 }
 
 QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
@@ -421,7 +421,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         }
         out << "</table>";
     }
-    return dict_html.value(tr("Circuit information")).arg(html);
+    return dict_html.value(tr("List of inspections")).arg(html);
 }
 
 QString MainWindow::viewInspection(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)

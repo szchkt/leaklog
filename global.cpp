@@ -237,7 +237,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
-    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND nominal <> 1");
+    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
     MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
     StringVariantMap circuit_attributes = circuit.list();
     QString value;
@@ -328,7 +328,7 @@ QString Global::toolTipLink(const QString & type, const QString & text, const QS
 MTDictionary Global::get_dict_dbtables()
 {
     MTDictionary dict_dbtables;
-    dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, certification_num TEXT, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
+    dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
@@ -503,7 +503,6 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("circuit::year", QApplication::translate("AttributeNames", "Year of purchase"));
     dict_attrnames.insert("circuit::commissioning", QApplication::translate("AttributeNames", "Date of commissioning"));
     dict_attrnames.insert("circuit::field", QApplication::translate("AttributeNames", "Field of application"));
-    dict_attrnames.insert("service_companies::certification_num", QApplication::translate("AttributeNames", "Certification number:"));
     dict_attrnames.insert("service_companies::name", QApplication::translate("AttributeNames", "Name:"));
     dict_attrnames.insert("service_companies::id", QApplication::translate("ServiceCompany", "ID:"));
     dict_attrnames.insert("service_companies::address", QApplication::translate("AttributeNames", "Address:"));
@@ -725,7 +724,7 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am", "float", tr("kg"), "", false, 0.0);
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am_recy", "float", tr("kg"), "", false, 0.0);
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am_total", "float", tr("kg"), "refr_add_am+refr_add_am_recy", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*sum(refr_add_am_total)/refrigerant_amount", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am_total)-sum(refr_reco)-sum(refr_reco_cust))/refrigerant_amount", false, 0.0);
 
     initVariable(filter, "refr_recovery", "yellow");
     initSubvariable(filter, "refr_recovery", "yellow", "refr_reco", "float", tr("kg"), "", false, 0.0);

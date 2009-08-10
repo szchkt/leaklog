@@ -552,7 +552,7 @@ void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
     }
     enableTools();
     if (refresh) {
-        setView(tr("Customer information"));
+        setView(tr("List of circuits"));
     }
 }
 
@@ -620,7 +620,7 @@ void MainWindow::removeCircuit()
     lw_inspections->clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("Customer information"));
+    setView(tr("List of circuits"));
 }
 
 void MainWindow::loadCircuit(QListWidgetItem * item) { loadCircuit(item, true); }
@@ -645,7 +645,7 @@ void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
     }
     enableTools();
     if (refresh) {
-        setView(tr("Circuit information"));
+        setView(tr("List of inspections"));
     }
 }
 
@@ -654,7 +654,7 @@ void MainWindow::addInspection()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "", Inspection::Default);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QListWidgetItem * item = new QListWidgetItem;
@@ -674,7 +674,7 @@ void MainWindow::modifyInspection()
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
     if (selectedInspection().isEmpty()) { return; }
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection(), Inspection::Default);
+    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         StringVariantMap attributes = record.list("nominal, repair");
@@ -707,7 +707,7 @@ void MainWindow::removeInspection()
     if (item != NULL) { delete item; }
     enableTools();
     this->setWindowModified(true);
-    setView(tr("Circuit information"));
+    setView(tr("List of inspections"));
 }
 
 void MainWindow::loadInspection(QListWidgetItem * item) { loadInspection(item, true); }
@@ -725,95 +725,42 @@ void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
 void MainWindow::addRepair()
 {
     if (!db.isOpen()) { return; }
-    DBRecord * record = NULL;
-    if (selectedCustomer() >= 0 && selectedCircuit() >= 0) {
-        record = new Inspection(toString(selectedCustomer()), toString(selectedCircuit()), "", Inspection::Repair);
-    } else {
-        record = new Repair("");
-    }
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    Repair record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        if (record->table() == "inspections") {
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(record->id());
-            item->setData(Qt::UserRole, record->id());
-            QFont font; font.setItalic(true); item->setFont(font);
-            lw_inspections->addItem(item);
-        }
         this->setWindowModified(true);
         refreshView();
     }
-    delete record;
     delete md;
 }
 
 void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
-    DBRecord * record = NULL;
-    QListWidgetItem * item = NULL;
-    if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
-        item = lw_inspections->highlightedItem();
-        if (item->font().italic()) {
-            record = new Inspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection(), Inspection::Repair);
-        } else { item = NULL; }
-    }
-    if (!record) {
-        if (!selectedRepair().isEmpty()) {
-            record = new Repair(selectedRepair());
-        } else { return; }
-    }
-    ModifyDialogue * md = new ModifyDialogue(record, this);
+    if (selectedRepair().isEmpty()) { return; }
+    Repair record(selectedRepair());
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        if (item) {
-            StringVariantMap attributes = record->list("nominal, repair");
-            item->setText(record->id());
-            item->setData(Qt::UserRole, record->id());
-            QFont font;
-            font.setBold(attributes.value("nominal").toInt());
-            font.setItalic(attributes.value("repair").toInt());
-            item->setFont(font);
-            enableTools();
-        }
         this->setWindowModified(true);
         refreshView();
     }
-    delete record;
     delete md;
 }
 
 void MainWindow::removeRepair()
 {
     if (!db.isOpen()) { return; }
-    MTDictionary parents; QString repair;
-    QListWidgetItem * item = NULL;
-    if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
-        item = lw_inspections->highlightedItem();
-        if (item->font().italic()) {
-            parents.insert("customer", toString(selectedCustomer()));
-            parents.insert("circuit", toString(selectedCircuit()));
-            repair = selectedInspection();
-        }
-    }
-    if (parents.isEmpty()) {
-        if (!selectedRepair().isEmpty()) {
-            repair = selectedRepair();
-        } else { return; }
-    }
+    if (selectedRepair().isEmpty()) { return; }
+    QString repair = selectedRepair();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record(parents.isEmpty() ? "repair" : "inspection", repair, parents);
+    MTRecord record("repair", repair, MTDictionary());
     record.remove();
-    if (parents.isEmpty()) { selected_repair.clear(); }
-    if (item != NULL) { delete item; }
+    selected_repair.clear();
     enableTools();
     this->setWindowModified(true);
-    if (parents.isEmpty()) {
-        setView(tr("List of repairs"));
-    } else {
-        setView(tr("Circuit information"));
-    }
+    setView(tr("List of repairs"));
 }
 
 void MainWindow::loadRepair(const QString & date, bool refresh)

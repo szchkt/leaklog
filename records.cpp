@@ -274,7 +274,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
-    md->setWindowTitle(tr("Cooling circuit"));
+    md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(parents()->value("parent").rightJustified(8, '0')));
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
@@ -315,21 +315,18 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     md->setUsedIds(used_ids);
 }
 
-Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date, Type type):
+Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
 DBRecord("inspections", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit))
-{ i_type = type; }
+{}
 
 void Inspection::initModifyDialogue(ModifyDialogue * md)
 {
-    Type type = i_type;
+    md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection")
+                       .arg(parents()->value("customer").rightJustified(8, '0'))
+                       .arg(parents()->value("circuit").rightJustified(4, '0')));
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
-        if (attributes.value("repair").toInt()) { type = Repair; }
-    }
-    switch (type) {
-        case Repair: md->setWindowTitle(tr("Repair")); break;
-        default: md->setWindowTitle(tr("Inspection")); break;
     }
     bool nominal_allowed = true;
     QStringList used_ids; QSqlQuery query_used_ids;
@@ -350,7 +347,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt(), nominal_allowed);
     md->addInputWidget(chb_nominal);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
-    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, type == Repair, true);
+    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, attributes.value("repair").toInt(), true);
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
@@ -570,7 +567,6 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("certification_num", tr("Certification number:"), md, attributes.value("certification_num").toString()));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "00000000"));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));

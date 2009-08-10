@@ -197,7 +197,7 @@ void ReportDataController::autofill()
 
     ReportData data(year);
     QMap<QString, QVector<double> *>::const_iterator sums_iterator = data.sums_map.constFind(toString(year));
-    QVector<double> * sum_list;
+    QVector<double> * sum_list = NULL;
     QString refrigerant;
     QStringList sums_fieldnames;
     sums_fieldnames << "purchased"

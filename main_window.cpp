@@ -38,10 +38,10 @@ MainWindow::MainWindow()
     dict_html.insert(tr("List of customers"), in.readAll());
     file.close();
     file.setFileName(":/html/customer.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(tr("Customer information"), in.readAll());
+    dict_html.insert(tr("List of circuits"), in.readAll());
     file.close();
     file.setFileName(":/html/circuit.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(tr("Circuit information"), in.readAll());
+    dict_html.insert(tr("List of inspections"), in.readAll());
     file.close();
     file.setFileName(":/html/inspection.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(tr("Inspection information"), in.readAll());
@@ -295,7 +295,7 @@ void MainWindow::executeLink(const QUrl & url)
                         loadCustomer(lw_customers->item(i), path.count() <= 1); break;
                     }
                 }
-            } else if (path.count() <= 1) { setView(tr("Customer information")); }
+            } else if (path.count() <= 1) { setView(tr("List of circuits")); }
         } else if (path.at(0).startsWith("repair:")) {
             id = path.at(0);
             id.remove(0, QString("repair:").length());
@@ -338,7 +338,7 @@ void MainWindow::executeLink(const QUrl & url)
                         loadCircuit(lw_circuits->item(i), path.count() <= 2); break;
                     }
                 }
-            } else if (path.count() <= 2) { setView(tr("Circuit information")); }
+            } else if (path.count() <= 2) { setView(tr("List of inspections")); }
         } else if (path.at(1).startsWith("modify")) {
             if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
             else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
@@ -363,10 +363,7 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
     }
     if (path.count() > 3) {
-        if (path.at(3).startsWith("modify")) {
-            if (path.at(2).startsWith("inspection:")) { modifyInspection(); }
-            else if (path.at(2).startsWith("repair:")) { modifyRepair(); }
-        }
+        if (path.at(3).startsWith("modify")) { modifyInspection(); }
     }
 }
 
@@ -663,9 +660,9 @@ void MainWindow::viewLevelDown()
         QString view = actgrp_view->checkedAction()->text();
         int i = views_list.indexOf(view);
         if (i >= views_list.count() - 1) { return; }
-        if ((view == tr("List of customers") && selectedCustomer() < 0) || (view == tr("Customer information") && selectedCircuit() < 0)) {
+        if ((view == tr("List of customers") && selectedCustomer() < 0) || (view == tr("List of circuits") && selectedCircuit() < 0)) {
             setView(tr("List of repairs"));
-        } else if (view == tr("Circuit information") && selectedInspection().isEmpty()) {
+        } else if (view == tr("List of inspections") && selectedInspection().isEmpty()) {
             setView(tr("Table of inspections"));
         } else {
             view_actions.value(views_list.at(i + 1))->setChecked(true);
@@ -798,36 +795,27 @@ void MainWindow::enableTools()
 {
     bool customer_selected = lw_customers->highlightedRow() >= 0;
     bool circuit_selected = lw_circuits->highlightedRow() >= 0;
-    bool inspection_selected = false;
-    bool repair_selected = !selected_repair.isEmpty();
-    bool circuit_repair_selected = false;
+    bool inspection_selected = lw_inspections->highlightedRow() >= 0;
+    bool repair_selected = !inspection_selected && !selected_repair.isEmpty();
     bool record_locked = false;
-    if (lw_inspections->highlightedRow() >= 0) {
-        if (!lw_inspections->highlightedItem()->font().italic()) {
-            inspection_selected = true;
-            circuit_repair_selected = false;
-        } else {
-            inspection_selected = false;
-            circuit_repair_selected = repair_selected = true;
-        }
-    }
     if (database_locked && (inspection_selected || repair_selected)) {
-        QString date = (circuit_repair_selected || inspection_selected) ?
+        QString date = inspection_selected ?
                        lw_inspections->highlightedItem()->data(Qt::UserRole).toString() : selected_repair;
         if (date < database_lock_date)
             record_locked = true;
     }
     bool inspector_selected = lw_inspectors->highlightedRow() >= 0;
-    lbl_selected_customer->setText(customer_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Customer information")).arg(tr("Customer: %1").arg(lw_customers->highlightedItem()->text())) : QString());
+    lbl_selected_customer->setText(customer_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of circuits")).arg(tr("Customer: %1").arg(lw_customers->highlightedItem()->text())) : QString());
     lbl_selected_customer->setVisible(customer_selected);
     lbl_current_selection_arrow1->setVisible(circuit_selected);
-    lbl_selected_circuit->setText(circuit_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Circuit information")).arg(tr("Circuit: %1").arg(lw_circuits->highlightedItem()->text())) : QString());
+    lbl_selected_circuit->setText(circuit_selected ? QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of inspections")).arg(tr("Circuit: %1").arg(lw_circuits->highlightedItem()->text())) : QString());
     lbl_selected_circuit->setVisible(circuit_selected);
-    lbl_current_selection_arrow2->setVisible(inspection_selected || circuit_repair_selected);
+    lbl_current_selection_arrow2->setVisible(inspection_selected);
     if (inspection_selected) {
-        lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Inspection information")).arg(tr("Inspection: %1").arg(lw_inspections->highlightedItem()->text())));
-    } else if (circuit_repair_selected) {
-        lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of repairs")).arg(tr("Repair: %1").arg(lw_inspections->highlightedItem()->text())));
+        if (!lw_inspections->highlightedItem()->font().italic())
+            lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Inspection information")).arg(tr("Inspection: %1").arg(lw_inspections->highlightedItem()->text())));
+        else
+            lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("Inspection information")).arg(tr("Repair: %1").arg(lw_inspections->highlightedItem()->text())));
     } else if (repair_selected) {
         lbl_selected_inspection->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>").arg(tr("List of repairs")).arg(tr("Repair: %1").arg(selectedRepair())));
     } else {
