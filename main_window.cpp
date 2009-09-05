@@ -874,7 +874,6 @@ void MainWindow::toggleLocked()
         gl->addWidget(lbl, 2, 0);
 
         QLineEdit * password = new QLineEdit(d);
-        password->setText(DBInfoValueForKey("lock_password"));
         gl->addWidget(password, 2, 1);
 
         QDialogButtonBox * bb = new QDialogButtonBox(d);
@@ -888,7 +887,7 @@ void MainWindow::toggleLocked()
 
         database_lock_date = date->date().toString("yyyy.MM.dd");
         setDBInfoValueForKey("lock_date", database_lock_date);
-        setDBInfoValueForKey("lock_password", password->text());
+        setDBInfoValueForKey("lock_password", sha256(password->text()));
         setDBInfoValueForKey("locked", "true");
         database_locked = true;
         updateLockButton();
@@ -902,7 +901,7 @@ void MainWindow::toggleLocked()
                                                  "", &ok);
         if (!ok) return;
 
-        if (password != DBInfoValueForKey("lock_password")) {
+        if (sha256(password) != DBInfoValueForKey("lock_password")) {
             QMessageBox::warning(this, tr("Unlock database - Leaklog"), tr("Wrong password."));
             return;
         }

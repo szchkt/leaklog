@@ -26,6 +26,22 @@
 #include <QLayout>
 #include <QMultiMap>
 
+namespace ENTRIES {
+    enum ENTRIES {
+        LINK = 0, REFRIGERANT,
+        PURCHASED, PURCHASED_RECO, SOLD, SOLD_RECO, REFR_ADD_AM,
+        REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO, REFR_RECO_CUST,
+        REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
+    };
+}
+namespace SUMS {
+    enum SUMS {
+        PURCHASED = 0, PURCHASED_RECO, SOLD, SOLD_RECO, REFR_ADD_AM,
+        REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO, REFR_RECO_CUST,
+        REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
+    };
+}
+
 class ReportData : public QObject
 {
     Q_OBJECT

@@ -126,7 +126,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th colspan=\"3\">" << tr("Added") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Recovered") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     if (show_leaked_in_store_in_service_company_view)
@@ -139,6 +139,8 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Total") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Store") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Customer") << "</td>";
     if (show_leaked_in_store_in_service_company_view) {
         out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";

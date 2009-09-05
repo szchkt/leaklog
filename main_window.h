@@ -22,6 +22,7 @@
 #include "modify_warning_dialogue.h"
 #include "import_dialogue.h"
 #include "report_data_controller.h"
+#include "sha256.h"
 
 #include <QCloseEvent>
 #include <QSettings>

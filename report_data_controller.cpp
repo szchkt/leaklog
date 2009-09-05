@@ -42,7 +42,7 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > & store, QList<int
 ReportData::ReportData(int since)
 {
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
-    QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
+    QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust, refr_rege, refr_disp, leaked, leaked_reco;
     RecordOfRefrigerantManagement refr_man_record("");
     ListOfStringVariantMaps refr_man(refr_man_record.listAll());
     for (int i = 0; i < refr_man.count(); ++i) {
@@ -64,66 +64,67 @@ ReportData::ReportData(int since)
 
         if (year < since) { continue; }
 
-        QVector<QString> entries_list(14);
-        entries_list[0] = QString("recordofrefrigerantmanagement:%1/modify").arg(date);
-        entries_list[1] = refrigerant;
-        entries_list[2] = purchased.toString();
-        entries_list[3] = purchased_reco.toString();
-        entries_list[4] = sold.toString();
-        entries_list[5] = sold_reco.toString();
-        entries_list[10] = refr_rege.toString();
-        entries_list[11] = refr_disp.toString();
-        entries_list[12] = leaked.toString();
-        entries_list[13] = leaked_reco.toString();
+        QVector<QString> entries_list(ENTRIES::COUNT);
+        entries_list[ENTRIES::LINK] = QString("recordofrefrigerantmanagement:%1/modify").arg(date);
+        entries_list[ENTRIES::REFRIGERANT] = refrigerant;
+        entries_list[ENTRIES::PURCHASED] = purchased.toString();
+        entries_list[ENTRIES::PURCHASED_RECO] = purchased_reco.toString();
+        entries_list[ENTRIES::SOLD] = sold.toString();
+        entries_list[ENTRIES::SOLD_RECO] = sold_reco.toString();
+        entries_list[ENTRIES::REFR_REGE] = refr_rege.toString();
+        entries_list[ENTRIES::REFR_DISP] = refr_disp.toString();
+        entries_list[ENTRIES::LEAKED] = leaked.toString();
+        entries_list[ENTRIES::LEAKED_RECO] = leaked_reco.toString();
         entries_map.insert(date, entries_list);
         // ----------------------------------------------------
         if (!sums_map.contains(toString(year))) { sums_map.insert(toString(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
-            sum_list = new QVector<double>(12);
+            sum_list = new QVector<double>(SUMS::COUNT);
             sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
         // ----------------------------------------------------
-        (*sum_list)[0] += purchased.toDouble();
-        (*sum_list)[1] += purchased_reco.toDouble();
-        (*sum_list)[2] += sold.toDouble();
-        (*sum_list)[3] += sold_reco.toDouble();
-        (*sum_list)[8] += refr_rege.toDouble();
-        (*sum_list)[9] += refr_disp.toDouble();
-        (*sum_list)[10] += leaked.toDouble();
-        (*sum_list)[11] += leaked_reco.toDouble();
+        (*sum_list)[SUMS::PURCHASED] += purchased.toDouble();
+        (*sum_list)[SUMS::PURCHASED_RECO] += purchased_reco.toDouble();
+        (*sum_list)[SUMS::SOLD] += sold.toDouble();
+        (*sum_list)[SUMS::SOLD_RECO] += sold_reco.toDouble();
+        (*sum_list)[SUMS::REFR_REGE] += refr_rege.toDouble();
+        (*sum_list)[SUMS::REFR_DISP] += refr_disp.toDouble();
+        (*sum_list)[SUMS::LEAKED] += leaked.toDouble();
+        (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
     MTRecord circuits_record("circuits", "", MTDictionary());
     MultiMapOfStringVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
     MTRecord inspections_record("inspections", "", MTDictionary());
-    ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco"));
+    ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
     Repair repairs_rec("");
-    inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco");
+    inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust");
     for (int i = 0; i < inspections.count(); ++i) {
         refr_add_am = inspections.at(i).value("refr_add_am");
         refr_add_am_recy = inspections.at(i).value("refr_add_am_recy");
         refr_reco = inspections.at(i).value("refr_reco");
+        refr_reco_cust = inspections.at(i).value("refr_reco_cust");
         if (refr_add_am.toDouble() == 0.0 && refr_add_am_recy.toDouble() == 0.0 && refr_reco.toDouble() == 0.0) continue;
 
         date = inspections.at(i).value("date").toString();
         year = date.left(4).toInt();
-        QVector<QString> entries_list(14);
+        QVector<QString> entries_list(ENTRIES::COUNT);
         if (inspections.at(i).contains("customer")) {
-            entries_list[0] = QString("customer:%1/circuit:%2/%3:%4")
-                            .arg(inspections.at(i).value("customer").toString())
-                            .arg(inspections.at(i).value("circuit").toString())
-                            .arg(inspections.at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
-                            .arg(date);
+            entries_list[ENTRIES::LINK] = QString("customer:%1/circuit:%2/%3:%4")
+                                        .arg(inspections.at(i).value("customer").toString())
+                                        .arg(inspections.at(i).value("circuit").toString())
+                                        .arg(inspections.at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
+                                        .arg(date);
             refrigerant = circuits.value(QString("%1::%2")
                             .arg(inspections.at(i).value("customer").toString())
                             .arg(inspections.at(i).value("circuit").toString()))
                             .value("refrigerant").toString();
-            entries_list[1] = refrigerant;
+            entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         } else {
-            entries_list[0] = QString("repair:%1").arg(date);
+            entries_list[ENTRIES::LINK] = QString("repair:%1").arg(date);
             refrigerant = inspections.at(i).value("refrigerant").toString();
-            entries_list[1] = refrigerant;
+            entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         }
 
         addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());
@@ -131,24 +132,26 @@ ReportData::ReportData(int since)
 
         if (year < since) { continue; }
 
-        entries_list[6] = refr_add_am.toString();
-        entries_list[7] = refr_add_am_recy.toString();
-        entries_list[8] = toString(refr_add_am.toDouble() + refr_add_am_recy.toDouble());
-        entries_list[9] = refr_reco.toString();
+        entries_list[ENTRIES::REFR_ADD_AM] = refr_add_am.toString();
+        entries_list[ENTRIES::REFR_ADD_AM_RECY] = refr_add_am_recy.toString();
+        entries_list[ENTRIES::REFR_ADD_AM_TOTAL] = toString(refr_add_am.toDouble() + refr_add_am_recy.toDouble());
+        entries_list[ENTRIES::REFR_RECO] = refr_reco.toString();
+        entries_list[ENTRIES::REFR_RECO_CUST] = refr_reco_cust.toString();
         entries_map.insert(date, entries_list);
         // ----------------------------------------------------
         if (!sums_map.contains(toString(year))) { sums_map.insert(toString(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
-            sum_list = new QVector<double>(12);
+            sum_list = new QVector<double>(SUMS::COUNT);
             sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
         // ----------------------------------------------------
-        (*sum_list)[4] += refr_add_am.toDouble();
-        (*sum_list)[5] += refr_add_am_recy.toDouble();
-        (*sum_list)[6] += refr_add_am.toDouble() + refr_add_am_recy.toDouble();
-        (*sum_list)[7] += refr_reco.toDouble();
+        (*sum_list)[SUMS::REFR_ADD_AM] += refr_add_am.toDouble();
+        (*sum_list)[SUMS::REFR_ADD_AM_RECY] += refr_add_am_recy.toDouble();
+        (*sum_list)[SUMS::REFR_ADD_AM_TOTAL] += refr_add_am.toDouble() + refr_add_am_recy.toDouble();
+        (*sum_list)[SUMS::REFR_RECO] += refr_reco.toDouble();
+        (*sum_list)[SUMS::REFR_RECO_CUST] += refr_reco_cust.toDouble();
     }
 }
 
@@ -208,6 +211,7 @@ void ReportDataController::autofill()
                     << "refr_add_am_recy"
                     << "refr_add_am_total" // [6]
                     << "refr_reco"
+                    << "refr_reco_cust"
                     << "refr_rege"
                     << "refr_disp"
                     << "leaked"
