@@ -57,7 +57,8 @@ private slots:
     void print();
     void exportPDF();
     void exportHTML();
-    void printLabel();
+    void printDetailedLabel();
+    void printLabel(bool = false);
     void reportData();
     void reportDataFinished();
     void enableTools();

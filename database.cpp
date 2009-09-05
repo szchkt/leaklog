@@ -118,7 +118,6 @@ void MainWindow::initTables(bool transaction)
 {
     if (transaction) { db.transaction(); }
 { // (SCOPE)
-    QSqlQuery query;
     StringVariantMap set;
     Table leakages("", "Leakages");
     if (!leakages.exists()) {

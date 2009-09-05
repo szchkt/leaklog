@@ -29,13 +29,16 @@
 class MTAddress
 {
 public:
+    enum AddressFormat { Singleline, Multiline };
+
     MTAddress() {}
     MTAddress(const QString & address) { initWithAddress(address); }
 
     void clear();
     inline void fromString(const QString & address) { initWithAddress(address); }
     QString toString() const;
-    QString toHtml() const;
+    QString toPlainText(AddressFormat = Singleline) const;
+    QString toHtml(AddressFormat = Singleline) const;
 
     inline void setStreet(const QString & street) { a_street = street.simplified(); }
     inline QString street() const { return a_street; }
@@ -68,6 +71,8 @@ public:
 
     void setAddress(const MTAddress & address);
     MTAddress address();
+
+    static QString addressStringFormat(MTAddress::AddressFormat);
 
 private:
     QLineEdit * ae_street;

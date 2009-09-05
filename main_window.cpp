@@ -195,6 +195,7 @@ MainWindow::MainWindow()
     QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
     QObject::connect(actionModify_repair, SIGNAL(triggered()), this, SLOT(modifyRepair()));
     QObject::connect(actionRemove_repair, SIGNAL(triggered()), this, SLOT(removeRepair()));
+    QObject::connect(actionPrint_detailed_label, SIGNAL(triggered()), this, SLOT(printDetailedLabel()));
     QObject::connect(actionPrint_label, SIGNAL(triggered()), this, SLOT(printLabel()));
     QObject::connect(actionNew_variable, SIGNAL(triggered()), this, SLOT(addVariable()));
     QObject::connect(actionNew_subvariable, SIGNAL(triggered()), this, SLOT(addSubvariable()));
@@ -425,16 +426,21 @@ void MainWindow::exportHTML()
     file.close();
 }
 
-void MainWindow::printLabel()
+void MainWindow::printDetailedLabel()
+{
+    printLabel(true);
+}
+
+void MainWindow::printLabel(bool detailed)
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isEmpty()) { return; }
+    if (detailed && selectedCustomer() < 0) { return; }
+    if (detailed && selectedCircuit() < 0) { return; }
+    if (!detailed && selectedInspector() < 0) { return; }
 
     QMap<QString, QCheckBox *> label_positions;
     QDialog * d = new QDialog(this);
-	d->setWindowTitle(tr("Print label - Leaklog"));
+        d->setWindowTitle(detailed ? tr("Print detailed label - Leaklog") : tr("Print label - Leaklog"));
         QGridLayout * gl = new QGridLayout(d);
             QLabel * lbl_print_labels = new QLabel(tr("Choose the position of the label on the paper:"), d);
         gl->addWidget(lbl_print_labels, 0, 0, 1, 2);
@@ -459,24 +465,39 @@ void MainWindow::printLabel()
     }
     if (!ok) { return; }
 
+    QString selected_inspector = toString(selectedInspector());
     StringVariantMap attributes;
-    attributes.insert("id", toString(selectedCustomer()) + "::" + toString(selectedCircuit()));
-    Inspection inspection_record(toString(selectedCustomer()), toString(selectedCircuit()), toString(selectedInspection()));
-    StringVariantMap inspection = inspection_record.list();
-    attributes.insert("date", inspection.value("date").toString());
-    Subvariable refr_add_per("refr_add", "refr_add_per");
-    refr_add_per.next();
-    QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
-    if (!unparsed_expression.isEmpty()) {
-        QStringList var_ids = listVariableIds();
-        attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
+    if (detailed) {
+        attributes.insert("circuit_id", toString(selectedCustomer()).rightJustified(8, '0') + "." + toString(selectedCircuit()).rightJustified(4, '0'));
+        QSqlQuery query;
+        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id ORDER BY date DESC");
+        query.bindValue(":customer_id", selectedCustomer());
+        query.bindValue(":circuit_id", selectedCircuit());
+        query.exec();
+        if (query.next()) {
+            StringVariantMap inspection;
+            for (int i = 0; i < query.record().count(); ++i) {
+                inspection.insert(query.record().fieldName(i), query.value(i));
+            }
+            attributes.insert("date", inspection.value("date").toString());
+            selected_inspector = inspection.value("inspector").toString();
+            Subvariable refr_add_per("refr_add", "refr_add_per");
+            refr_add_per.next();
+            QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
+            if (!unparsed_expression.isEmpty()) {
+                QStringList var_ids = listVariableIds();
+                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
+            }
+        }
+        Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
+        attributes.unite(circuit.list("refrigerant, refrigerant_amount"));
     }
-    Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
-    attributes.unite(circuit.list("refrigerant, refrigerant_amount"));
-    Inspector inspector(inspection.value("inspector").toString());
-    if (inspector.exists()) {
-        attributes.unite(inspector.list("person, company, person_reg_num, company_reg_num"));
-    }
+    Inspector inspector(selected_inspector);
+    if (inspector.exists())
+        attributes.unite(inspector.list("person, person_reg_num"));
+    ServiceCompany service_company(DBInfoValueForKey("default_service_company"));
+    if (service_company.exists())
+        attributes.unite(service_company.list("id, name, address, mail, phone"));
 
     QPrinter * printer = new QPrinter(QPrinter::HighResolution);
     QPrintDialog * dialogue = new QPrintDialog(printer, this);
@@ -489,7 +510,7 @@ void MainWindow::printLabel()
     painter.setRenderHint(QPainter::Antialiasing);
     painter.begin(printer);
     QRect rect = printer->pageRect();
-    int margin = rect.width() / 50;
+    int margin = rect.width() / 33;
     int w = (rect.width() - 4 * margin) / 2;
     int h = (rect.height() - 8 * margin) / 4;
     painter.translate(- margin, - margin);
@@ -507,64 +528,72 @@ void MainWindow::printLabel()
 
 void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
 {
+    bool detailed = attributes.contains("circuit_id");
     painter.save();
-    QPen pen; pen.setWidthF(15.0); painter.setPen(pen);
+    QPen pen; pen.setWidthF(7.0); painter.setPen(pen);
     QFont font; painter.setFont(font);
 #ifdef Q_WS_MAC
-    font.setPointSize(font.pointSize() - 5);
+    font.setPointSize(font.pointSize() - 7);
 #else
-    font.setPointSize(font.pointSize());
+    font.setPointSize(font.pointSize() - 2);
 #endif
     painter.setFont(font);
     int title_h = 3 * h / 14; int m = w / 75; int dm = m * 2;
     painter.drawRect(x, y, w, h);
     painter.drawLine(x, y + title_h, x + w, y + title_h);
-    painter.drawText(m + x, m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Circuit ID"));
+    painter.drawLine(x + (w / 2), y, x + (w / 2), y + title_h);
+    painter.drawText(m + x, m + y, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, tr("Certified company"));
+    painter.drawText(m + x, m + y + 2 * (title_h - dm) / 3, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, MTAddress(attributes.value("address").toString()).toPlainText());
+    painter.drawText(m + x, m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Circuit ID") : tr("3(6) - <30 kg"));
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
-    painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Refrigerant"));
+    painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Refrigerant") : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
-    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Amount of refrigerant"));
+    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Average leakage") : tr("over 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
-    painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of\ninspection"));
-    painter.drawText(m + x + (2 * w / 3), m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of\nthe next\ninspection"));
+    painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
+    painter.drawText(m + x + (2 * w / 3), m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of the next inspection"));
     painter.drawLine(x + (w / 3), y + title_h + (2 * h / 7), x + (2 * w / 3), y + title_h + (2 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (3 * h / 7), x + (2 * w / 3), y + title_h + (3 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (4 * h / 7), x + (2 * w / 3), y + title_h + (4 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (5 * h / 7), x + (2 * w / 3), y + title_h + (5 * h / 7));
-    painter.drawText(m + x + (w / 3), m + y + title_h + (5 * h / 7), w / 6 - dm, h / 14 - dm, Qt::AlignCenter, attributes.value("person_reg_num", QString()).toString());
+    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("person_reg_num").toString());
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
-    painter.drawText(m + x + (w / 2), m + y + title_h + (5 * h / 7), w / 6 - dm, h / 14 - dm, Qt::AlignCenter, attributes.value("company_reg_num", QString()).toString());
+    painter.drawText(m + x + (w / 2), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("id").toString());
     font.setBold(true); painter.setFont(font);
-    painter.drawText(m + x, m + y, w - dm, title_h - dm, Qt::AlignCenter, tr("RECORD OF INSPECTION OF COOLING CIRCUIT\nin accordance with Regulation (EC) No. 842/2006"));
-    painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("id", QString()).toString());
-    painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("refrigerant", QString()).toString());
-    painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("refrigerant_amount", QString()).toString() + " " + tr("kg"));
-    painter.drawText(m + x + (w / 3), y + title_h + (h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("refr_add_per", QString()).toString() + " " + tr("%"));
-    painter.drawText(m + x + (w / 3), y + title_h + (2 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("person", QString()).toString());
-    painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("company", QString()).toString());
-    font.setBold(false); font.setItalic(true); painter.setFont(font);
-    painter.drawText(m + x + (w / 3), m + y + title_h + (h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Average leakage"));
-    painter.drawText(m + x + (w / 3), m + y + title_h + (2 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified person"));
-    painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified company"));
-    painter.drawText(m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company"));
-    pen.setWidthF(7.0);
+    painter.drawText(m + x, m + y + (title_h - dm) / 3, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, attributes.value("name").toString());
+    painter.drawText(m + x + (w / 3), y + title_h + (h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("person").toString());
+    font.setBold(false); painter.setFont(font);
+    painter.drawText(m + x + (w / 2), m + y, w / 2 - dm, title_h - dm, Qt::AlignCenter, tr("Refrigerant leakage inspection\nin accordance with Regulation (EC)\nNo. 842/2006"));
+    painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once a year*") :
+                     attributes.value("circuit_id").toString());
+    painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 6 months*") :
+                     (attributes.value("refrigerant_amount").toString() + " " + tr("kg") + " " + attributes.value("refrigerant").toString()));
+    painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 3 months") :
+                     (attributes.value("refr_add_per").toString() + " " + tr("%")));
+    painter.drawText(m + x + (w / 3), m + y + title_h + (h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified person"));
+    painter.drawText(m + x + (w / 3), m + y + title_h + (2 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Telephone"));
+    painter.drawText(m + x + (w / 3), y + title_h + (2 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("phone").toString());
+    painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("E-mail"));
+    painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("mail").toString());
+    painter.drawText(m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
     painter.restore(); painter.save(); painter.setPen(pen);
     int r = (w / 3 - dm) / 2;
-    QRect circle1o(m + x, y + title_h + (4 * h / 7) - m - r, 2 * r, 2 * r);
+    int c_y = y + title_h + (4 * h / 7) - dm;
+    QRect circle1o(m + x, c_y - r, 2 * r, 2 * r);
     painter.drawEllipse(circle1o);
-    QRect circle1i(m + x + 2 * dm, y + title_h + (4 * h / 7) - m - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
+    QRect circle1i(m + x + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
     painter.drawEllipse(circle1i);
-    QRect circle2o(m + x + 2 * w / 3, y + title_h + (4 * h / 7) - m - r, 2 * r, 2 * r);
+    QRect circle2o(m + x + 2 * w / 3, c_y - r, 2 * r, 2 * r);
     painter.drawEllipse(circle2o);
-    QRect circle2i(m + x + 2 * w / 3 + 2 * dm, y + title_h + (4 * h / 7) - m - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
+    QRect circle2i(m + x + 2 * w / 3 + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
     painter.drawEllipse(circle2i);
-    painter.translate(m + x + r, y + title_h + (4 * h / 7) - m);
+    painter.translate(m + x + r, c_y);
     for (int i = 0; i < 12; ++i) {
         painter.drawLine(0, - r, 0, 2 * dm - r);
         painter.rotate(30.0);
     }
     painter.restore(); painter.save(); painter.setPen(pen);
-    painter.translate(m + x + 2 * w / 3 + r, y + title_h + (4 * h / 7) - m);
+    painter.translate(m + x + 2 * w / 3 + r, c_y);
     for (int i = 0; i < 12; ++i) {
         painter.drawLine(0, - r, 0, 2 * dm - r);
         painter.rotate(30.0);
@@ -834,7 +863,8 @@ void MainWindow::enableTools()
     actionRemove_inspection->setEnabled(inspection_selected && !record_locked);
     actionModify_repair->setEnabled(repair_selected && !record_locked);
     actionRemove_repair->setEnabled(repair_selected && !record_locked);
-    actionPrint_label->setEnabled(inspection_selected);
+    actionPrint_detailed_label->setEnabled(circuit_selected);
+    actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
     actionModify_variable->setEnabled(trw_variables->currentIndex().isValid());

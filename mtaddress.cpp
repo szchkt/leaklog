@@ -35,13 +35,20 @@ QString MTAddress::toString() const
     return address;
 }
 
-QString MTAddress::toHtml() const
+QString MTAddress::toPlainText(MTAddress::AddressFormat format) const
 {
-    QStringList list;
-    if (!a_street.isEmpty()) list << Qt::escape(a_street);
-    if (!a_city.isEmpty()) list << Qt::escape(a_city);
-    if (!a_postal_code.isEmpty()) list << Qt::escape(a_postal_code);
-    return list.join(", ");
+    return MTAddressEdit::addressStringFormat(format).arg(a_street).arg(a_city).arg(a_postal_code);
+}
+
+QString MTAddress::toHtml(MTAddress::AddressFormat format) const
+{
+    if (a_street.isEmpty() && a_city.isEmpty() && a_postal_code.isEmpty())
+        return QString();
+    return MTAddressEdit::addressStringFormat(format)
+            .replace("\n", "<br>")
+            .arg(Qt::escape(a_street))
+            .arg(Qt::escape(a_city))
+            .arg(Qt::escape(a_postal_code));
 }
 
 void MTAddress::initWithAddress(const QString & address) {
@@ -90,4 +97,16 @@ MTAddress MTAddressEdit::address()
     address.setCity(ae_city->text());
     address.setPostalCode(ae_postal_code->text());
     return address;
+}
+
+QString MTAddressEdit::addressStringFormat(MTAddress::AddressFormat format)
+{
+    switch (format) {
+        case MTAddress::Singleline:
+            //: Singleline address format: %1 = street, %2 = city, %3 = postal code
+            return tr("%1, %2 %3");
+        default: break;
+    }
+    //: Multiline address format: %1 = street, %2 = city, %3 = postal code
+    return tr("%1\n%2 %3");
 }

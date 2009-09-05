@@ -566,6 +566,8 @@
     <addaction name="actionModify_circuit"/>
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
+    <addaction name="actionPrint_detailed_label"/>
+    <addaction name="separator"/>
     <addaction name="actionExport_circuit_data"/>
    </widget>
    <widget class="QMenu" name="menuInspection">
@@ -579,8 +581,6 @@
     <addaction name="actionAdd_repair"/>
     <addaction name="actionModify_repair"/>
     <addaction name="actionRemove_repair"/>
-    <addaction name="separator"/>
-    <addaction name="actionPrint_label"/>
     <addaction name="separator"/>
     <addaction name="actionExport_inspection_data"/>
    </widget>
@@ -648,6 +648,8 @@
     <addaction name="actionAdd_inspector"/>
     <addaction name="actionModify_inspector"/>
     <addaction name="actionRemove_inspector"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrint_label"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1786,7 +1788,7 @@
     <string>Ctrl+Alt+Shift+-</string>
    </property>
   </action>
-  <action name="actionPrint_label">
+  <action name="actionPrint_detailed_label">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1795,10 +1797,10 @@
      <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
    </property>
    <property name="text">
-    <string>Print label</string>
+    <string>Print detailed label</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+L</string>
+    <string>Ctrl+Shift+L</string>
    </property>
   </action>
   <action name="actionLocal_database">
@@ -1954,6 +1956,21 @@
    </property>
    <property name="text">
     <string>Report data to the notified body</string>
+   </property>
+  </action>
+  <action name="actionPrint_label">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print label</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
