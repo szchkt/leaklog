@@ -548,7 +548,7 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
     painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Refrigerant") : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
-    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Average leakage") : tr("over 300 kg"));
+    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Average leakage") : tr("above 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
     painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
     painter.drawText(m + x + (2 * w / 3), m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of the next inspection"));
