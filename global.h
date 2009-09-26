@@ -37,12 +37,11 @@
 #include <QHash>
 #include <QTextCharFormat>
 
-#include <memory>
 #include <cmath>
 
 #define LEAKLOG_VERSION "0.9.4"
 #define F_LEAKLOG_VERSION 0.904
-#define LEAKLOG_PREVIEW_VERSION 4
+#define LEAKLOG_PREVIEW_VERSION 5
 #define DB_VERSION "0.9.4"
 #define F_DB_VERSION 0.904
 

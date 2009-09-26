@@ -333,7 +333,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
     dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_add_am_recy NUMERIC, refr_reco NUMERIC, refr_reco_cust NUMERIC, repairman TEXT, arno TEXT");
-    dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, company_reg_num TEXT, phone TEXT");
+    dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
     dict_dbtables.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
@@ -396,8 +396,6 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
     dict_varnames.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
     dict_varnames.insert("bbl_lvl", QApplication::translate("VariableNames", "Bubble/Level"));
-    //dict_varnames.insert("oil_leak", QApplication::translate("VariableNames", "Oil leak"));
-    //dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Leaked"));
     dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil leak"));
     dict_varnames.insert("dir_leak_chk", QApplication::translate("VariableNames", "Direct leak check (location)"));
     dict_varnames.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
@@ -411,8 +409,6 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("refr_recovery", QApplication::translate("VariableNames", "Refrigerant recovery"));
     dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Store"));
     dict_varnames.insert("refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
-    //dict_varnames.insert("refr_recy", QApplication::translate("VariableNames", "Refrigerant recycling"));
-    //dict_varnames.insert("refr_disp", QApplication::translate("VariableNames", "Refrigerant disposal"));
     dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
     dict_varnames.insert("operator", QApplication::translate("VariableNames", "Operator"));
     return dict_varnames;
@@ -518,15 +514,12 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
     dict_attrnames.insert("repairs::refr_reco", QApplication::translate("VariableNames", "Store"));
     dict_attrnames.insert("repairs::refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
-    //dict_attrnames.insert("repairs::refr_recy", QApplication::translate("AttributeNames", "Refrigerant recycling"));
-    //dict_attrnames.insert("repairs::refr_disp", QApplication::translate("AttributeNames", "Refrigerant disposal"));
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     dict_attrnames.insert("inspectors::id", QApplication::translate("AttributeNames", "ID"));
     dict_attrnames.insert("inspectors::person", QApplication::translate("AttributeNames", "Certified person"));
     dict_attrnames.insert("inspectors::person_reg_num", QApplication::translate("AttributeNames", "Person registry number"));
-    dict_attrnames.insert("inspectors::company", QApplication::translate("AttributeNames", "Certified company"));
-    dict_attrnames.insert("inspectors::company_reg_num", QApplication::translate("AttributeNames", "Company registry number"));
+    //dict_attrnames.insert("inspectors::company", QApplication::translate("AttributeNames", "Certified company"));
     dict_attrnames.insert("inspectors::phone", QApplication::translate("AttributeNames", "Phone"));
     dict_attrnames.insert("circuit::disused", QApplication::translate("AttributeNames", "Disused"));
     dict_attrnames.insert("circuit::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
@@ -712,7 +705,6 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "vis_aur_chk", "", "corr_def", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "noise_vibr", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "bbl_lvl", "bool", "", "", false, 0.0);
-    //initSubvariable(filter, "vis_aur_chk", "", "oil_leak", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", "float", tr("kg"), "", false, 0.0);
 
     initVariable(filter, "dir_leak_chk", "green");
@@ -729,8 +721,6 @@ void Variables::initVariables(const QString & filter)
     initVariable(filter, "refr_recovery", "yellow");
     initSubvariable(filter, "refr_recovery", "yellow", "refr_reco", "float", tr("kg"), "", false, 0.0);
     initSubvariable(filter, "refr_recovery", "yellow", "refr_reco_cust", "float", tr("kg"), "", false, 0.0);
-    //initVariable(filter, "refr_recy", "float", tr("kg"), "", false, 0.0, "yellow");
-    //initVariable(filter, "refr_disp", "float", tr("kg"), "", false, 0.0, "yellow");
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");
 }

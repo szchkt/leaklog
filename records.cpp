@@ -542,7 +542,6 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("company", tr("Certified company:"), md, attributes.value("company").toString()));
     md->addInputWidget(new MDLineEdit("person_reg_num", tr("Person registry number:"), md, attributes.value("person_reg_num").toString()));
-    md->addInputWidget(new MDLineEdit("company_reg_num", tr("Company registry number:"), md, attributes.value("company_reg_num").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
