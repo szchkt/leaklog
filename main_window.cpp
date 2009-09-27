@@ -851,6 +851,10 @@ void MainWindow::enableTools()
         lbl_selected_inspection->setText(QString());
     }
     lbl_selected_inspection->setVisible(inspection_selected || repair_selected);
+    view_actions.value(tr("List of circuits"))->setEnabled(customer_selected);
+    view_actions.value(tr("List of inspections"))->setEnabled(circuit_selected);
+    view_actions.value(tr("Inspection information"))->setEnabled(inspection_selected);
+    view_actions.value(tr("Table of inspections"))->setEnabled(circuit_selected);
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);
     actionExport_customer_data->setEnabled(customer_selected);
