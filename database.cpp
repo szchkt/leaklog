@@ -296,23 +296,7 @@ void MainWindow::openDatabase(QString path)
         initDatabase(&db, false);
     }
     initTables(false);
-    QString id; QSqlQuery query;
-    query.exec("SELECT id, company FROM customers");
-    while (query.next()) {
-        id = query.value(0).toString().rightJustified(8, '0');
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(query.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(query.value(1).toString()));
-        item->setData(Qt::UserRole, query.value(0).toString());
-        lw_customers->addItem(item);
-    }
-    query.exec("SELECT id, person FROM inspectors");
-    while (query.next()) {
-        id = query.value(0).toString().rightJustified(4, '0');
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(query.value(1).toString().isEmpty() ? id : tr("%1 (%2)").arg(id).arg(query.value(1).toString()));
-        item->setData(Qt::UserRole, query.value(0).toString());
-        lw_inspectors->addItem(item);
-    }
+    QSqlQuery query;
     Variables variables;
     QString last_id; QTreeWidgetItem * last_item = NULL;
     while (variables.next()) {
@@ -335,7 +319,7 @@ void MainWindow::openDatabase(QString path)
     query.exec("SELECT id FROM tables");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
-        cb_table->addItem(query.value(0).toString());
+        navigation->tableComboBox()->addItem(query.value(0).toString());
     }
     Warnings warnings;
     while (warnings.next()) {
@@ -357,7 +341,7 @@ void MainWindow::openDatabase(QString path)
     stw_main->setCurrentIndex(1);
     enableTools();
     //loadTable(cb_table_edit->currentText());
-    setView(tr("Service company"));
+    navigation->setView(Navigation::ServiceCompany);
 }
 
 void MainWindow::save()
@@ -400,7 +384,6 @@ void MainWindow::closeDatabase(bool save)
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
     db.rollback(); db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
-    selected_repair.clear();
     clearAll(); setAllEnabled(false);
     stw_main->setCurrentIndex(0);
     this->setWindowTitle(tr("Leaklog"));
@@ -462,12 +445,6 @@ void MainWindow::addCustomer()
     Customer record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(8, '0');
-        QString company = record.list("company").value("company").toString();
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(company.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(company));
-        item->setData(Qt::UserRole, record.id());
-        lw_customers->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
@@ -482,11 +459,6 @@ void MainWindow::modifyCustomer()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = toString(selectedCustomer());
     if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(8, '0');
-        QString company = record.list("company").value("company").toString();
-        QListWidgetItem * item = lw_customers->highlightedItem();
-        item->setText(company.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(company));
-        item->setData(Qt::UserRole, record.id());
         if (old_id != record.id()) {
             QSqlQuery update_circuits;
             update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
@@ -509,7 +481,6 @@ void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
-    QListWidgetItem * item = lw_customers->highlightedItem();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -519,39 +490,22 @@ void MainWindow::removeCustomer()
     circuits.remove();
     MTRecord inspections("inspections", "", MTDictionary("customer", toString(selectedCustomer())));
     inspections.remove();
-    if (item != NULL) { delete item; }
-    lw_circuits->clear(); lw_inspections->clear();
+    selected_customer = -1;
+    selected_circuit = -1;
+    selected_inspection.clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of customers"));
+    navigation->setView(Navigation::ListOfCustomers);
 }
 
-void MainWindow::loadCustomer(QListWidgetItem * item) { loadCustomer(item, true); }
-
-void MainWindow::loadCustomer(QListWidgetItem * item, bool refresh)
+void MainWindow::loadCustomer(int customer, bool refresh)
 {
-    if (item == NULL) { return; }
-    if (refresh) { clearSelection(); }
-    lw_customers->highlightItem(item);
-    QSqlQuery query;
-    query.prepare("SELECT company FROM customers WHERE id = :id");
-    query.bindValue(":id", selectedCustomer());
-    query.exec();
-    if (!query.next()) { return; }
-    lw_circuits->clear(); lw_inspections->clear();
-    QSqlQuery circuits;
-    circuits.prepare("SELECT id, name FROM circuits WHERE parent = :parent");
-    circuits.bindValue(":parent", selectedCustomer());
-    circuits.exec();
-    while (circuits.next()) {
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(circuits.value(1).toString().isEmpty() ? circuits.value(0).toString().rightJustified(4, '0') : tr("%1 (%2)").arg(circuits.value(0).toString().rightJustified(4, '0')).arg(circuits.value(1).toString()));
-        item->setData(Qt::UserRole, circuits.value(0).toString());
-        lw_circuits->addItem(item);
-    }
+    if (customer < 0) { return; }
+    selected_customer = customer;
+    selected_customer_company = Customer(toString(customer)).list("company").value("company").toString();
     enableTools();
     if (refresh) {
-        setView(tr("List of circuits"));
+        navigation->setView(Navigation::ListOfCircuits);
     }
 }
 
@@ -562,12 +516,6 @@ void MainWindow::addCircuit()
     Circuit record(toString(selectedCustomer()), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(4, '0');
-        QString name = record.list("name").value("name").toString();
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
-        item->setData(Qt::UserRole, record.id());
-        lw_circuits->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
@@ -583,11 +531,6 @@ void MainWindow::modifyCircuit()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = toString(selectedCircuit());
     if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(4, '0');
-        QString name = record.list("name").value("name").toString();
-        QListWidgetItem * item = lw_circuits->highlightedItem();
-        item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
-        item->setData(Qt::UserRole, record.id());
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
@@ -607,44 +550,28 @@ void MainWindow::removeCircuit()
     if (!db.isOpen()) { return; }
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
-    QListWidgetItem * item = lw_circuits->highlightedItem();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     Circuit record(toString(selectedCustomer()), toString(selectedCircuit()));
     record.remove();
     Inspection inspections(toString(selectedCustomer()), toString(selectedCircuit()), "");
     inspections.remove();
-    if (item != NULL) { delete item; }
-    lw_inspections->clear();
+    selected_circuit = -1;
+    selected_inspection.clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of circuits"));
+    navigation->setView(Navigation::ListOfCircuits);
 }
 
-void MainWindow::loadCircuit(QListWidgetItem * item) { loadCircuit(item, true); }
-
-void MainWindow::loadCircuit(QListWidgetItem * item, bool refresh)
+void MainWindow::loadCircuit(int circuit, bool refresh)
 {
-    if (item == NULL) { return; }
-    lw_circuits->highlightItem(item);
-    lw_inspections->clear();
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "");
-    QFont font;
-    QSqlQuery inspections = record.select("date, nominal, repair");
-    inspections.exec();
-    while (inspections.next()) {
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(inspections.value(0).toString());
-        item->setData(Qt::UserRole, inspections.value(0).toString());
-        font.setBold(inspections.value(1).toInt());
-        font.setItalic(inspections.value(2).toInt());
-        item->setFont(font);
-        lw_inspections->addItem(item);
-    }
+    if (selectedCustomer() < 0) { return; }
+    if (circuit < 0) { return; }
+    selected_circuit = circuit;
     enableTools();
     if (refresh) {
-        setView(tr("List of inspections"));
+        navigation->setView(Navigation::ListOfInspections);
     }
 }
 
@@ -656,11 +583,6 @@ void MainWindow::addInspection()
     Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(record.id());
-        item->setData(Qt::UserRole, record.id());
-        QFont font; font.setBold(record.list("nominal").value("nominal").toInt()); item->setFont(font);
-        lw_inspections->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
@@ -676,14 +598,6 @@ void MainWindow::modifyInspection()
     Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        StringVariantMap attributes = record.list("nominal, repair");
-        QListWidgetItem * item = lw_inspections->highlightedItem();
-        item->setText(record.id());
-        item->setData(Qt::UserRole, record.id());
-        QFont font;
-        font.setBold(attributes.value("nominal").toInt());
-        font.setItalic(attributes.value("repair").toInt());
-        item->setFont(font);
         enableTools();
         this->setWindowModified(true);
         refreshView();
@@ -697,27 +611,27 @@ void MainWindow::removeInspection()
     if (selectedCustomer() < 0) { return; }
     if (selectedCircuit() < 0) { return; }
     if (selectedInspection().isEmpty()) { return; }
-    QListWidgetItem * item = lw_inspections->highlightedItem();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(item->data(Qt::UserRole).toString()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
     record.remove();
-    if (item != NULL) { delete item; }
+    selected_inspection.clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of inspections"));
+    navigation->setView(Navigation::ListOfInspections);
 }
 
-void MainWindow::loadInspection(QListWidgetItem * item) { loadInspection(item, true); }
-
-void MainWindow::loadInspection(QListWidgetItem * item, bool refresh)
+void MainWindow::loadInspection(const QString & inspection, bool refresh)
 {
-    if (item == NULL) { return; }
-    lw_inspections->highlightItem(item);
+    if (selectedCustomer() < 0) { return; }
+    if (selectedCircuit() < 0) { return; }
+    if (inspection.isEmpty()) { return; }
+    selected_inspection = inspection;
+    selected_inspection_is_repair = Inspection(toString(selected_customer), toString(selected_circuit), inspection).list("repair").value("repair").toBool();
     enableTools();
     if (refresh) {
-        setView(tr("Inspection information"));
+        navigation->setView(Navigation::Inspection);
     }
 }
 
@@ -759,17 +673,19 @@ void MainWindow::removeRepair()
     selected_repair.clear();
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of repairs"));
+    navigation->setView(Navigation::ListOfRepairs);
 }
 
 void MainWindow::loadRepair(const QString & date, bool refresh)
 {
     if (date.isEmpty()) { return; }
-    clearSelection(false);
     selected_repair = date;
     enableTools();
     if (refresh) {
-        setView(tr("List of repairs"));
+        if (actionBasic_logbook->isChecked() && navigation->view() == Navigation::ListOfCircuits)
+            refreshView();
+        else
+            navigation->setView(Navigation::ListOfRepairs);
     }
 }
 
@@ -874,7 +790,7 @@ void MainWindow::addTable()
     Table record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        cb_table->addItem(record.id());
+        navigation->tableComboBox()->addItem(record.id());
         cb_table_edit->addItem(record.id());
         this->setWindowModified(true);
         refreshView();
@@ -890,13 +806,13 @@ void MainWindow::modifyTable()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
-        int j = cb_table->currentIndex();
+        int j = navigation->tableComboBox()->currentIndex();
         cb_table_edit->removeItem(i);
-        cb_table->removeItem(i);
+        navigation->tableComboBox()->removeItem(i);
         cb_table_edit->insertItem(i, record.id());
-        cb_table->insertItem(i, record.id());
+        navigation->tableComboBox()->insertItem(i, record.id());
         cb_table_edit->setCurrentIndex(i);
-        cb_table->setCurrentIndex(j);
+        navigation->tableComboBox()->setCurrentIndex(j);
         this->setWindowModified(true);
         refreshView();
     }
@@ -914,7 +830,7 @@ void MainWindow::removeTable()
     record.remove();
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
-    cb_table->removeItem(i);
+    navigation->tableComboBox()->removeItem(i);
     enableTools();
     this->setWindowModified(true);
     refreshView();
@@ -924,7 +840,7 @@ void MainWindow::loadTable(const QString &)
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
-    cb_table->setCurrentIndex(cb_table_edit->currentIndex());
+    navigation->tableComboBox()->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
     Table record(cb_table_edit->currentText());
     StringVariantMap attributes = record.list("variables, sum, avg");
@@ -1155,12 +1071,6 @@ void MainWindow::addInspector()
     Inspector record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(4, '0');
-        QString person = record.list("person").value("person").toString();
-        QListWidgetItem * item = new QListWidgetItem;
-        item->setText(person.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(person));
-        item->setData(Qt::UserRole, record.id());
-        lw_inspectors->addItem(item);
         this->setWindowModified(true);
         refreshView();
     }
@@ -1174,12 +1084,7 @@ void MainWindow::modifyInspector()
     QString old_id = toString(selectedInspector());
     Inspector record(old_id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
-    if (md->exec() == QDialog::Accepted) {
-        QString id = record.id().rightJustified(4, '0');
-        QString person = record.list("person").value("person").toString();
-        QListWidgetItem * item = lw_inspectors->highlightedItem();
-        item->setText(person.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(person));
-        item->setData(Qt::UserRole, record.id());
+    if (md->exec() == QDialog::Accepted) {        
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
@@ -1202,27 +1107,25 @@ void MainWindow::removeInspector()
 {
     if (!db.isOpen()) { return; }
     if (selectedInspector() < 0) { return; }
-    QListWidgetItem * item = lw_inspectors->highlightedItem();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     Inspector record(toString(selectedInspector()));
     record.remove();
-    if (item != NULL) { delete item; }
+    selected_inspector = -1;
     enableTools();
     this->setWindowModified(true);
-    setView(tr("List of inspectors"));
+    navigation->setView(Navigation::ListOfInspectors);
 }
 
-void MainWindow::loadInspector(QListWidgetItem * item) { loadInspector(item, true); }
-
-void MainWindow::loadInspector(QListWidgetItem * item, bool refresh)
+void MainWindow::loadInspector(int inspector, bool refresh)
 {
-    if (item == NULL) { return; }
-    lw_inspections->highlightItem(item);
+    if (inspector < 0) { return; }
+    selected_inspector = inspector;
+    selected_inspector_name = Inspector(toString(inspector)).list("person").value("person").toString();
     enableTools();
     if (refresh) {
-        setView(tr("List of inspectors"));
+        navigation->setView(Navigation::ListOfInspectors);
     }
 }
 
@@ -1434,15 +1337,7 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
                 set.insert(query.record().fieldName(f), query.value(f));
             }
         }
-        Customer record(c_id);
-        if (!record.exists()) {
-            id_justified = c_id.rightJustified(8, '0');
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(set.value("company").toString().isEmpty() ? id_justified : tr("%1 (%2)").arg(id_justified).arg(set.value("company").toString()));
-            item->setData(Qt::UserRole, c_id);
-            lw_customers->addItem(item);
-        }
-        record.update(set);
+        Customer(c_id).update(set);
     }
     for (int cc = 0; cc < id->circuits()->count(); ++cc) {
         if (id->circuits()->item(cc)->checkState() == Qt::Unchecked) { continue; }
@@ -1459,15 +1354,7 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
             }
             set.remove("parent");
         }
-        Circuit record(cc_parent, cc_id);
-        if (toString(selectedCustomer()) == cc_parent && !record.exists()) {
-            QString cc_name = record.list("name").value("name").toString();
-            QListWidgetItem * item = new QListWidgetItem;
-            item->setText(cc_name.isEmpty() ? cc_id.rightJustified(4, '0') : tr("%1 (%2)").arg(cc_id.rightJustified(4, '0')).arg(cc_name));
-            item->setData(Qt::UserRole, cc_id);
-            lw_circuits->addItem(item);
-        }
-        record.update(set);
+        Circuit(cc_parent, cc_id).update(set);
     }
     QStringList inspections_skip_columns; bool skip_parent = false;
     QString current_text; QTreeWidgetItem * item = NULL; QTreeWidgetItem * subitem = NULL;
@@ -1546,22 +1433,7 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
                 }
             }
         }
-        Inspection record(i_customer, i_circuit, i_date);
-        QListWidgetItem * item = NULL;
-        if (toString(selectedCustomer()) == i_customer && toString(selectedCircuit()) == i_circuit && !record.exists()) {
-            item = new QListWidgetItem;
-            item->setText(i_date);
-            item->setData(Qt::UserRole, i_date);
-            lw_inspections->addItem(item);
-        }
-        record.update(set, j == 0);
-        if (item) {
-            StringVariantMap attributes = record.list("nominal, repair");
-            QFont font;
-            font.setBold(attributes.value("nominal").toInt());
-            font.setItalic(attributes.value("repair").toInt());
-            item->setFont(font);
-        }
+        Inspection(i_customer, i_circuit, i_date).update(set, j == 0);
         j++;
     }
 } // END IMPORT

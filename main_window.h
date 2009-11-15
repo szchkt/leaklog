@@ -66,12 +66,7 @@ private slots:
     void find();
     void findNext();
     void findPrevious();
-    void clearSelection(bool = true);
-    void setView(QAction *);
-    void setView(const QString &);
     void refreshView();
-    void viewLevelUp();
-    void viewLevelDown();
     void changeLanguage();
     void languageChanged();
     void checkForUpdates();
@@ -89,15 +84,12 @@ private slots:
     void addCustomer();
     void modifyCustomer();
     void removeCustomer();
-    void loadCustomer(QListWidgetItem *);
     void addCircuit();
     void modifyCircuit();
     void removeCircuit();
-    void loadCircuit(QListWidgetItem *);
     void addInspection();
     void modifyInspection();
     void removeInspection();
-    void loadInspection(QListWidgetItem *);
     void addRepair();
     void modifyRepair();
     void removeRepair();
@@ -120,13 +112,12 @@ private slots:
     void addInspector();
     void modifyInspector();
     void removeInspector();
-    void loadInspector(QListWidgetItem *);
     void exportCustomerData();
     void exportCircuitData();
     void exportInspectionData();
     void importData();
     // VIEW
-    QString viewChanged(const QString &);
+    QString viewChanged(int);
 
 private:
     // UI
@@ -149,27 +140,27 @@ private:
     QString DBInfoValueForKey(const QString &);
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
     void modifyRecordOfRefrigerantManagement(const QString &);
-    void loadCustomer(QListWidgetItem *, bool);
-    void loadCircuit(QListWidgetItem *, bool);
-    void loadInspection(QListWidgetItem *, bool);
+    void loadCustomer(int, bool);
+    void loadCircuit(int, bool);
+    void loadInspection(const QString &, bool);
     void loadRepair(const QString &, bool);
     void addVariable(bool);
     void moveTableVariable(bool);
-    void loadInspector(QListWidgetItem *, bool);
+    void loadInspector(int, bool);
     void exportData(const QString &);
-    inline int selectedCustomer() { return lw_customers->highlightedRow() < 0 ? -1 : lw_customers->highlightedItem()->data(Qt::UserRole).toInt(); }
-    inline int selectedCircuit() { return lw_circuits->highlightedRow() < 0 ? -1 : lw_circuits->highlightedItem()->data(Qt::UserRole).toInt(); }
-    inline QString selectedInspection() { return lw_inspections->highlightedRow() < 0 ? QString() : lw_inspections->highlightedItem()->data(Qt::UserRole).toString(); }
+    inline int selectedCustomer() { return selected_customer; }
+    inline int selectedCircuit() { return selected_circuit; }
+    inline QString selectedInspection() { return selected_inspection; }
     inline QString selectedRepair() { return selected_repair; }
-    inline int selectedInspector() { return lw_inspectors->highlightedRow() < 0 ? -1 : lw_inspectors->highlightedItem()->data(Qt::UserRole).toInt(); }
+    inline int selectedInspector() { return selected_inspector; }
     // VIEW
     QString viewServiceCompany(int);
     QString viewAllCustomers();
     QString viewCustomer(const QString &);
-    QString viewCircuit(const QString &, const QString &);
+    QString viewCircuit(const QString &, const QString &, int);
     QString viewInspection(const QString &, const QString &, const QString &);
     QString viewTable(const QString &, const QString &, const QString &, int);
-    QString viewAllRepairs(const QString &, int);
+    QString viewRepairs(const QString &, int, const QString & = QString());
     QString viewAllInspectors(const QString &);
     QString viewLeakagesByApplication();
     QString viewAgenda();
@@ -179,30 +170,34 @@ private:
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
 
+    int selected_customer;
+    QString selected_customer_company;
+    int selected_circuit;
+    QString selected_inspection;
+    bool selected_inspection_is_repair;
+    QString selected_repair;
+    int selected_inspector;
+    QString selected_inspector_name;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
     bool show_leaked_in_store_in_service_company_view;
-    QString selected_repair;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;
     MTDictionary dict_attrvalues;
     MTDictionary dict_attrnames;
-    MTDictionary dict_html;
+    QMap<Navigation::View, QString> dict_html;
     QMap<QString, MTVariant::Type> dict_fieldtypes;
-    QMap<QString, QAction *> view_actions;
-    QStringList views_list;
     QActionGroup * actgrp_view;
     QAction * actionShow_icons_only;
+    QLabel * lbl_current_selection;
+    QLabel * lbl_selected_repair;
+    QLabel * lbl_selected_inspector;
     QToolButton * tbtn_open;
-    QToolButton * tbtn_view;
     QToolButton * tbtn_add;
     QToolButton * tbtn_modify;
     QToolButton * tbtn_export;
-    QMenu * menu_view;
-    QMenu * menu_add;
-    QMenu * menu_modify;
     QString last_search_keyword;
     QSqlDatabase db;
     QComboBox * cb_lang;

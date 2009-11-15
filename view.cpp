@@ -19,63 +19,70 @@
 
 #include "main_window.h"
 
-QString MainWindow::viewChanged(const QString & view)
+QString MainWindow::viewChanged(int view)
 {
     QString html;
     if (!db.isOpen()) { wv_main->setHtml(html); return html; }
 
-    bool service_company_view = view == tr("Service company");
-    bool repairs_view = view == tr("List of repairs");
-    bool table_view = false; int i = -1;
-    if (actgrp_view->checkedAction()) {
-        lbl_view->setText(actgrp_view->checkedAction()->text());
-        i = views_list.indexOf(actgrp_view->checkedAction()->text());
-        table_view = actgrp_view->checkedAction()->text() == tr("Table of inspections");
-    } else {
-        lbl_view->setText(view);
-        i = views_list.indexOf(view);
-        table_view = view == tr("Table of inspections");
-    }
-    btn_view_level_up->setEnabled(i > 0);
-    btn_view_level_down->setEnabled(i < views_list.count() - 1);
-    if (table_view) { cb_table_edit->setCurrentIndex(cb_table->currentIndex()); }
-    lbl_table->setEnabled(table_view);
-    cb_table->setEnabled(table_view);
-    lbl_since->setEnabled(service_company_view || table_view || repairs_view);
-    spb_since->setEnabled(service_company_view || table_view || repairs_view);
-
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
-    if (service_company_view) {
-        html = viewServiceCompany(spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else if (view == tr("List of customers")) {
-        html = viewAllCustomers();
-    } else if (view == tr("List of circuits") && selectedCustomer() >= 0) {
-        html = viewCustomer(toString(selectedCustomer()));
-    } else if (view == tr("List of inspections") && selectedCustomer() >= 0 && selectedCircuit() >= 0) {
-        html = viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()));
-    } else if (view == tr("Inspection information") && selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
-        html = viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
-    } else if (table_view && selectedCustomer() >= 0 && selectedCircuit() >= 0 && cb_table->currentIndex() >= 0) {
-        html = viewTable(toString(selectedCustomer()), toString(selectedCircuit()), cb_table->currentText(), spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else if (repairs_view) {
-        html = viewAllRepairs(selectedRepair(), spb_since->value() == 1999 ? 0 : spb_since->value());
-    } else if (view == tr("List of inspectors")) {
-        html = viewAllInspectors(toString(selectedInspector()));
-    } else if (view == tr("Leakages by application")) {
-        html = viewLeakagesByApplication();
-    } else if (view == tr("Agenda")) {
-        html = viewAgenda();
-    } else if (view == tr("List of circuits") || view == tr("List of inspections") || view == tr("Inspection information") || table_view) {
-        if (table_view) {
-            view_actions.value(views_list.at(views_list.indexOf(tr("Table of inspections")) - 1))->setChecked(true);
-        } else {
-            view_actions.value(views_list.at(views_list.indexOf(view) - 1))->setChecked(true);
+    bool ok = true;
+    do {
+        navigation->setView(view, false);
+        ok = true;
+        switch (view) {
+            case Navigation::ServiceCompany:
+                html = viewServiceCompany(navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                break;
+            case Navigation::ListOfCustomers:
+                html = viewAllCustomers();
+                break;
+            case Navigation::ListOfCircuits:
+                if (selectedCustomer() >= 0) {
+                    html = viewCustomer(toString(selectedCustomer()));
+                } else {
+                    view = Navigation::ListOfCustomers; ok = false;
+                }
+                break;
+            case Navigation::ListOfInspections:
+                if (selectedCustomer() >= 0 && selectedCircuit() >= 0) {
+                    html = viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                } else {
+                    view = Navigation::ListOfCircuits; ok = false;
+                }
+                break;
+            case Navigation::Inspection:
+                if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
+                    html = viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+                } else {
+                    view = Navigation::ListOfInspections; ok = false;
+                }
+                break;
+            case Navigation::TableOfInspections:
+                cb_table_edit->setCurrentIndex(navigation->tableComboBox()->currentIndex());
+                if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && navigation->tableComboBox()->currentIndex() >= 0) {
+                    html = viewTable(toString(selectedCustomer()), toString(selectedCircuit()), navigation->tableComboBox()->currentText(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                } else {
+                    view = Navigation::ListOfCircuits; ok = false;
+                }
+                break;
+            case Navigation::ListOfRepairs:
+                html = viewRepairs(selectedRepair(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                break;
+            case Navigation::ListOfInspectors:
+                html = viewAllInspectors(toString(selectedInspector()));
+                break;
+            case Navigation::LeakagesByApplication:
+                html = viewLeakagesByApplication();
+                break;
+            case Navigation::Agenda:
+                html = viewAgenda();
+                break;
+            default:
+                view = Navigation::ServiceCompany;
+                break;
         }
-        return viewChanged(actgrp_view->checkedAction()->text());
-    } else if (actgrp_view->checkedAction()) {
-        return viewChanged(actgrp_view->checkedAction()->text());
-    }
+    } while (!ok);
     wv_main->setHtml(html, QUrl("qrc:/html/")); return html;
 }
 
@@ -230,12 +237,15 @@ QString MainWindow::viewServiceCompany(int since)
     }
     out << "</table></td></tr>";
     out << "</table>";
-    return dict_html.value(tr("Service company")).arg(html);
+    return dict_html.value(Navigation::ServiceCompany).arg(html);
 }
 
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)
 {
     Customer all_customers(customer_id);
+    if (customer_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
+        all_customers.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    }
     ListOfStringVariantMaps list(all_customers.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int cu_length = QString("customer::").length();
@@ -274,6 +284,9 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
 void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id)
 {
     Circuit circuits_record(customer_id, circuit_id);
+    if (circuit_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
+        circuits_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    }
     ListOfStringVariantMaps circuits(circuits_record.listAll());
     out << "<table cellspacing=\"0\" style=\"width:100%;\">";
     int cc_length = QString("circuit::").length();
@@ -286,7 +299,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     thead.append("<th>" + dict_attrnames.value("circuit::oil") + "</th>");
     thead.append("</tr>");
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large; background-color: aliceblue;\">";
-    if (circuit_id.isEmpty()) { out << tr("Circuits"); }
+    if (circuit_id.isEmpty()) { out << tr("List of circuits"); }
     else { out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
     out << "</th></tr>";
     out << thead;
@@ -351,79 +364,92 @@ QString MainWindow::viewAllCustomers()
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out);
-    return dict_html.value(tr("List of customers")).arg(html);
+    return dict_html.value(Navigation::ListOfCustomers).arg(html);
 }
 
 QString MainWindow::viewCustomer(const QString & customer_id)
 {
+    if (actionBasic_logbook->isChecked()) {
+        return viewRepairs(selectedRepair(),
+            navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(),
+            customer_id);
+    }
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id);
-    return dict_html.value(tr("List of circuits")).arg(html);
+    return dict_html.value(Navigation::ListOfCircuits).arg(html);
 }
 
-QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id)
+QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id, int year)
 {
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
     Inspection inspection_record(customer_id, circuit_id, "");
-    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
-    if (inspections.count()) {
-        Inspector inspectors_record("");
-        MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
-        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
-        out << tr("Inspections and repairs") << "</a></th></tr>";
-        out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
-        out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
-        out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th>";
-        out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th></tr>";
-        out << "<tr><th>" << dict_varnames.value("refr_add_am") << "</th>";
-        out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th>";
-        out << "<th>" << dict_varnames.value("refr_reco") << "</th>";
-        out << "<th>" << dict_varnames.value("refr_reco_cust") << "</th></tr>";
-        bool is_nominal, is_repair;
-        QString id; QString highlighted_id = selectedInspection();
-        for (int i = 0; i < inspections.count(); ++i) {
-            id = inspections.at(i).value("date").toString();
-            is_nominal = inspections.at(i).value("nominal").toInt();
-            is_repair = inspections.at(i).value("repair").toInt();
-            out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id;
-            out << (is_repair ? "/repair:" : "/inspection:") << id << "'\" style=\"cursor: pointer;";
-            if (id == highlighted_id) {
-                out << " background-color: rgb(242, 248, 255);\">";
-            } else { out << "\">"; }
-            out << "<td>";
-            if (is_nominal) { out << "<b>"; }
-            else if (is_repair) { out << "<i>"; }
-            out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id, !isRecordLocked(id));
-            if (is_nominal) { out << "<b>"; }
-            else if (is_repair) { out << "<i>"; }
-            out << "</td>";
-            out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections.at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << inspections.at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-            out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
-            out << "<td>" << escapeString(inspections.at(i).value("operator").toString()) << "</td>";
-            if (!inspections.at(i).value("rmds").toString().isEmpty()) {
-                out << "<td onmouseover=\"Tip('" << escapeString(inspections.at(i).value("rmds").toString(), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
-            } else {
-                out << "<td></td>";
-            }
-            out << "<td>" << inspections.at(i).value("arno").toString() << "</td>";
-            out << "</tr>";
-        }
-        out << "</table>";
+    if (!navigation->filterKeyword().isEmpty()) {
+        inspection_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    return dict_html.value(tr("List of inspections")).arg(html);
+    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
+    if (year) {
+        for (int i = 0; i < inspections.count();) {
+            if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
+                inspections.removeAt(i);
+            } else { ++i; }
+        }
+    }
+    Inspector inspectors_record("");
+    MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
+    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
+    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
+    out << tr("Inspections and repairs") << "</a></th></tr>";
+    out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
+    out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
+    out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th></tr>";
+    out << "<tr><th>" << dict_varnames.value("refr_add_am") << "</th>";
+    out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th>";
+    out << "<th>" << dict_varnames.value("refr_reco") << "</th>";
+    out << "<th>" << dict_varnames.value("refr_reco_cust") << "</th></tr>";
+    bool is_nominal, is_repair;
+    QString id; QString highlighted_id = selectedInspection();
+    for (int i = 0; i < inspections.count(); ++i) {
+        id = inspections.at(i).value("date").toString();
+        is_nominal = inspections.at(i).value("nominal").toInt();
+        is_repair = inspections.at(i).value("repair").toInt();
+        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id;
+        out << (is_repair ? "/repair:" : "/inspection:") << id << "'\" style=\"cursor: pointer;";
+        if (id == highlighted_id) {
+            out << " background-color: rgb(242, 248, 255);\">";
+        } else { out << "\">"; }
+        out << "<td>";
+        if (is_nominal) { out << "<b>"; }
+        else if (is_repair) { out << "<i>"; }
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id, !isRecordLocked(id));
+        if (is_nominal) { out << "<b>"; }
+        else if (is_repair) { out << "<i>"; }
+        out << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
+        out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
+        out << "<td>" << escapeString(inspections.at(i).value("operator").toString()) << "</td>";
+        if (!inspections.at(i).value("rmds").toString().isEmpty()) {
+            out << "<td onmouseover=\"Tip('" << escapeString(inspections.at(i).value("rmds").toString(), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
+        } else {
+            out << "<td></td>";
+        }
+        out << "<td>" << inspections.at(i).value("arno").toString() << "</td>";
+        out << "</tr>";
+    }
+    out << "</table>";
+    return dict_html.value(Navigation::ListOfInspections).arg(html);
 }
 
 QString MainWindow::viewInspection(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
@@ -545,7 +571,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
         out << "<tr><th style=\"font-size: larger;\">" << tr("Warnings") << "</th></tr>";
         out << "<tr><td>" << warnings_list.join(", ") << "</td></tr></table>";
     }
-    return dict_html.value(tr("Inspection information")).arg(html);
+    return dict_html.value(Navigation::Inspection).arg(html);
 }
 
 QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id, int year)
@@ -918,7 +944,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "</table>";
     }
     QString colours = !actionPrinter_friendly_version->isChecked() ? "<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />" : "";
-    return dict_html.value(tr("Table of inspections")).arg(colours).arg(html);
+    return dict_html.value(Navigation::TableOfInspections).arg(colours).arg(html);
 }
 
 void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
@@ -1020,15 +1046,27 @@ QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString &
     return warnings_list;
 }
 
-QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
+QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const QString & customer_id)
 {
     QString html; MTTextStream out(&html);
-    Repair repairs_record("");
+    MTDictionary parent;
+    if (!customer_id.isEmpty()) {
+        Customer customer(customer_id);
+        parent.insert("customer", customer.list("company").value("company").toString());
+        writeCustomersTable(out, customer_id);
+        out << "<br>";
+    }
+    MTRecord repairs_record("repairs", "", parent);
+    if (!navigation->filterKeyword().isEmpty()) {
+        repairs_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    }
     ListOfStringVariantMaps repairs(repairs_record.listAll());
-    for (int i = 0; i < repairs.count();) {
-        if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
-            repairs.removeAt(i);
-        } else { ++i; }
+    if (year) {
+        for (int i = 0; i < repairs.count();) {
+            if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
+                repairs.removeAt(i);
+            } else { ++i; }
+        }
     }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int re_length = QString("repairs::").length();
@@ -1078,13 +1116,16 @@ QString MainWindow::viewAllRepairs(const QString & highlighted_id, int year)
         }
     }
     out << "</table>";
-    return dict_html.value(tr("List of repairs")).arg(html);
+    return dict_html.value(Navigation::ListOfRepairs).arg(html);
 }
 
 QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; MTTextStream out(&html);
     Inspector inspectors_record("");
+    if (!navigation->filterKeyword().isEmpty()) {
+        inspectors_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    }
     ListOfStringVariantMaps inspectors(inspectors_record.listAll());
     int in_length = QString("inspectors::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -1114,7 +1155,7 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
         out << "<td>" << MTRecord("repairs", "", MTDictionary("repairman", id)).listAll("date").count() << "</td>";
         out << "</tr>";
     }
-    return dict_html.value(tr("List of inspectors")).arg(html);
+    return dict_html.value(Navigation::ListOfInspectors).arg(html);
 }
 
 QString MainWindow::viewLeakagesByApplication()
@@ -1195,7 +1236,7 @@ QString MainWindow::viewLeakagesByApplication()
         }
         out << "<tr></tr></table><br>";
     }
-    return dict_html.value(tr("Leakages by application")).arg(html);
+    return dict_html.value(Navigation::LeakagesByApplication).arg(html);
 }
 
 QString MainWindow::viewAgenda()
@@ -1284,5 +1325,5 @@ QString MainWindow::viewAgenda()
     }
     out << "</table>";
 
-    return dict_html.value(tr("Agenda")).arg(html);
+    return dict_html.value(Navigation::Agenda).arg(html);
 }

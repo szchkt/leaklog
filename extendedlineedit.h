@@ -24,6 +24,7 @@ public:
         xle_btn_clear->setStyleSheet("QToolButton { border: none; padding: 0px; }");
         xle_btn_clear->hide();
         QObject::connect(xle_btn_clear, SIGNAL(clicked()), this, SLOT(clear()));
+        QObject::connect(xle_btn_clear, SIGNAL(clicked()), this, SIGNAL(returnPressed()));
         QObject::connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(setClearButtonVisible(const QString &)));
         QObject::connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(emitExtendedTextChanged(const QString &)));
         int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);

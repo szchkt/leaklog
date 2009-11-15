@@ -21,6 +21,7 @@
 #define LEAKLOG_MAIN_H
 
 #include <QApplication>
+#include <QPointer>
 
 #include "main_window.h"
 
@@ -30,21 +31,20 @@ class MTApplication : public QApplication
 
 public:
     MTApplication(int & argc, char ** argv):
-    QApplication(argc, argv) { init(); };
+    QApplication(argc, argv) {}
     MTApplication(int & argc, char ** argv, bool GUIenabled):
-    QApplication(argc, argv, GUIenabled) { init(); };
+    QApplication(argc, argv, GUIenabled) {}
     MTApplication(int & argc, char ** argv, Type type):
-    QApplication(argc, argv, type) { init(); };
+    QApplication(argc, argv, type) {}
 #ifdef Q_WS_X11
     MTApplication(Display * display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0):
-    QApplication(display, visual, colormap) { init(); };
+    QApplication(display, visual, colormap) {}
     MTApplication(Display * display, int & argc, char ** argv, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0):
-    QApplication(display, argc, argv, visual, colormap) { init(); };
+    QApplication(display, argc, argv, visual, colormap) {}
 #endif
-    void setAppMainWindow(MainWindow * w) { app_main_window = w; };
+    void setAppMainWindow(MainWindow * w) { app_main_window = w; }
 
 protected:
-    void init() { app_main_window = NULL; };
     bool event(QEvent * event) {
         switch (event->type()) {
             case QEvent::FileOpen:
@@ -55,10 +55,10 @@ protected:
             default:
                 return this->QApplication::event(event);
         }
-    };
+    }
 
 private:
-    MainWindow * app_main_window;
+    QPointer<MainWindow> app_main_window;
 };
 
 #endif // LEAKLOG_MAIN_H

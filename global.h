@@ -39,9 +39,9 @@
 
 #include <cmath>
 
-#define LEAKLOG_VERSION "0.9.4"
-#define F_LEAKLOG_VERSION 0.904
-#define LEAKLOG_PREVIEW_VERSION 0
+#define LEAKLOG_VERSION "0.9.5"
+#define F_LEAKLOG_VERSION 0.905
+#define LEAKLOG_PREVIEW_VERSION 1
 #define DB_VERSION "0.9.4"
 #define F_DB_VERSION 0.904
 

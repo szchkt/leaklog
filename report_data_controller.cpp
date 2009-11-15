@@ -164,15 +164,12 @@ ReportData::~ReportData()
     }
 }
 
-ReportDataController::ReportDataController(QWebView * wv, QWidget * parent):
-QObject(parent) {
+ReportDataController::ReportDataController(QWebView * wv, Navigation * parent):
+QObject(parent), navigation(parent) {
     wv_main = wv;
-    btn_autofill = new QPushButton(tr("Autofill"), parent);
-    parent->layout()->addWidget(btn_autofill);
-    QObject::connect(btn_autofill, SIGNAL(clicked()), this, SLOT(autofill()));
-    btn_done = new QPushButton(tr("Done"), parent);
-    parent->layout()->addWidget(btn_done);
-    QObject::connect(btn_done, SIGNAL(clicked()), this, SLOT(done()));
+    navigation->setReportDataGroupBoxVisible(true);
+    QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
+    QObject::connect(navigation->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
     wp_default = wv_main->page();
     wv_main->setPage(new QWebPage(wv_main));
     //: URL to the data report system of the notified body
@@ -257,7 +254,6 @@ void ReportDataController::autofill()
 void ReportDataController::done()
 {
     wv_main->setPage(wp_default);
-    btn_autofill->deleteLater();
-    btn_done->deleteLater();
+    navigation->setReportDataGroupBoxVisible(false);
     deleteLater();
 }

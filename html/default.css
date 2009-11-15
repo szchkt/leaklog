@@ -1,5 +1,8 @@
 body {
-	margin: 0px;
+	margin-top: 0px;
+	margin-bottom: 2px;
+	margin-left: 2px;
+	margin-right: 2px;
 }
 body,td,th {
 	font-family: "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;

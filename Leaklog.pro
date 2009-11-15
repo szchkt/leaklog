@@ -2,7 +2,8 @@ CONFIG       += qt
 TEMPLATE      = app
 FORMS        += main_window.ui \
                 about_widget.ui \
-                import_dialogue.ui
+                import_dialogue.ui \
+                navigation.ui
 HEADERS      += global.h \
                 refrigerants.h \
                 main.h \
@@ -22,7 +23,8 @@ HEADERS      += global.h \
                 mtcheckboxgroup.h \
                 records.h \
                 report_data_controller.h \
-                sha256.h
+                sha256.h \
+                navigation.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -40,7 +42,8 @@ SOURCES      += global.cpp \
                 mtsqlqueryresult.cpp \
                 records.cpp \
                 report_data_controller.cpp \
-                sha256.cpp
+                sha256.cpp \
+                navigation.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser
@@ -57,9 +60,9 @@ RCC_DIR       = .build.win32
 }
 macx {
 ICON          = images/leaklog128.icns
-CONFIG       += x86 ppc
+CONFIG       += x86
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
-QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.4u.sdk
+QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.5.sdk
 }
 unix {
 OBJECTS_DIR   = .build.unix

@@ -44,6 +44,11 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     return *this;
 }
 
+void MTRecord::addFilter(const QString & column, const QString & filter)
+{
+    r_filter.insert(column, filter);
+}
+
 QString MTRecord::idFieldName() const
 {
     if (r_table == "inspections" || r_table == "repairs" || r_table == "refrigerant_management") {
@@ -65,11 +70,15 @@ QSqlQuery MTRecord::select(const QString & fields)
     bool has_id = !r_id.isEmpty();
     QString id_field = idFieldName();
     QString select = "SELECT " + fields + " FROM " + r_table;
-    if (has_id || r_parents.count()) { select.append(" WHERE "); }
+    if (has_id || r_parents.count() || r_filter.count()) { select.append(" WHERE "); }
     if (has_id) { select.append(id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { select.append(" AND "); }
         select.append(r_parents.key(i) + " = :" + r_parents.key(i));
+    }
+    for (int i = 0; i < r_filter.count(); ++i) {
+        if (has_id || r_parents.count() || i) { select.append(" AND "); }
+        select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
     }
     select.append(" ORDER BY " + id_field);
     QSqlQuery query;
@@ -77,6 +86,9 @@ QSqlQuery MTRecord::select(const QString & fields)
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
+    }
+    for (int i = 0; i < r_filter.count(); ++i) {
+        query.bindValue(":" + r_filter.key(i), r_filter.value(i));
     }
     return query;
 }

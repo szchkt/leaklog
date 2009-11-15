@@ -20,6 +20,8 @@
 #ifndef REPORT_DATA_CONTROLLER_H
 #define REPORT_DATA_CONTROLLER_H
 
+#include "navigation.h"
+
 #include <QWebView>
 #include <QWebFrame>
 #include <QPushButton>
@@ -65,7 +67,7 @@ class ReportDataController : public QObject
     Q_OBJECT
 
 public:
-    ReportDataController(QWebView *, QWidget *);
+    ReportDataController(QWebView *, Navigation *);
 
 private slots:
     void autofill();
@@ -77,8 +79,7 @@ signals:
 private:
     QWebView * wv_main;
     QWebPage * wp_default;
-    QPushButton * btn_autofill;
-    QPushButton * btn_done;
+    Navigation * navigation;
 };
 
 #endif // REPORT_DATA_CONTROLLER_H
