@@ -140,6 +140,17 @@ MainWindow::MainWindow()
     lbl_selected_inspector = new QLabel;
     lbl_selected_inspector->setVisible(false);
     statusbar->addWidget(lbl_selected_inspector);
+    btn_clear_selection = new QPushButton(this);
+    btn_clear_selection->setFlat(true);
+    btn_clear_selection->setMaximumSize(18, 18);
+    if (layoutDirection() == Qt::LeftToRight) {
+        btn_clear_selection->setIcon(QIcon(QString::fromUtf8(":/images/images/clear.png")));
+    } else {
+        btn_clear_selection->setIcon(QIcon(QString::fromUtf8(":/images/images/clear_rtl.png")));
+    }
+    btn_clear_selection->setToolTip(tr("Clear current selection"));
+    btn_clear_selection->setVisible(false);
+    statusbar->addWidget(btn_clear_selection);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
@@ -215,6 +226,7 @@ MainWindow::MainWindow()
     QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
     QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
     QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
+    QObject::connect(btn_clear_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(modifyWarning()));
@@ -604,6 +616,22 @@ void MainWindow::findPrevious()
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
 }
 
+void MainWindow::clearSelection(bool refresh)
+{
+    selected_customer = -1;
+    selected_customer_company.clear();
+    selected_circuit = -1;
+    selected_inspection.clear();
+    selected_inspection_is_repair = false;
+    selected_repair.clear();
+    selected_inspector = -1;
+    selected_inspector_name.clear();
+    if (refresh) {
+        enableTools();
+        refreshView();
+    }
+}
+
 void MainWindow::refreshView()
 {
     viewChanged(navigation->view());
@@ -622,14 +650,7 @@ void MainWindow::addRecent(const QString & name)
 
 void MainWindow::clearAll()
 {
-    selected_customer = -1;
-    selected_customer_company.clear();
-    selected_circuit = -1;
-    selected_inspection.clear();
-    selected_inspection_is_repair = false;
-    selected_repair.clear();
-    selected_inspector = -1;
-    selected_inspector_name.clear();
+    clearSelection(false);
     navigation->tableComboBox()->clear();
     cb_table_edit->clear();
     trw_variables->clear();
@@ -778,6 +799,7 @@ void MainWindow::enableTools()
                 .arg(selected_inspector_name)));
     }
     lbl_selected_inspector->setVisible(inspector_selected);
+    btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     navigation->enableTools(customer_selected, circuit_selected, inspection_selected, repair_selected, inspector_selected);
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);

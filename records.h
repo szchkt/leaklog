@@ -179,7 +179,7 @@ class DBRecord : public MTRecord, public Modifiable
 
 public:
     DBRecord();
-    DBRecord(const QString &, const QString &, const MTDictionary &);
+    DBRecord(const QString &, const QString &, const QString &, const MTDictionary &);
 };
 
 class Customer : public DBRecord

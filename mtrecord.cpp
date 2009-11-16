@@ -21,9 +21,10 @@
 
 using namespace Global;
 
-MTRecord::MTRecord(const QString & table, const QString & id, const MTDictionary & parents)
+MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents)
 {
     r_table = table;
+    r_id_field = id_field;
     r_id = id;
     r_parents = parents;
 }
@@ -32,15 +33,19 @@ MTRecord::MTRecord(const MTRecord & other):
 QObject()
 {
     r_table = other.r_table;
+    r_id_field = other.r_id_field;
     r_id = other.r_id;
     r_parents = other.r_parents;
+    r_filter = other.r_filter;
 }
 
 MTRecord & MTRecord::operator=(const MTRecord & other)
 {
     r_table = other.r_table;
+    r_id_field = other.r_id_field;
     r_id = other.r_id;
     r_parents = other.r_parents;
+    r_filter = other.r_filter;
     return *this;
 }
 
@@ -49,18 +54,10 @@ void MTRecord::addFilter(const QString & column, const QString & filter)
     r_filter.insert(column, filter);
 }
 
-QString MTRecord::idFieldName() const
-{
-    if (r_table == "inspections" || r_table == "repairs" || r_table == "refrigerant_management") {
-        return "date";
-    }
-    return "id";
-}
-
 bool MTRecord::exists()
 {
     if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
-    QSqlQuery find_record = select(idFieldName());
+    QSqlQuery find_record = select(r_id_field);
     find_record.exec();
     return find_record.next();
 }
@@ -68,10 +65,9 @@ bool MTRecord::exists()
 QSqlQuery MTRecord::select(const QString & fields)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = idFieldName();
     QString select = "SELECT " + fields + " FROM " + r_table;
     if (has_id || r_parents.count() || r_filter.count()) { select.append(" WHERE "); }
-    if (has_id) { select.append(id_field + " = :_id"); }
+    if (has_id) { select.append(r_id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { select.append(" AND "); }
         select.append(r_parents.key(i) + " = :" + r_parents.key(i));
@@ -80,7 +76,7 @@ QSqlQuery MTRecord::select(const QString & fields)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
     }
-    select.append(" ORDER BY " + id_field);
+    select.append(" ORDER BY " + r_id_field);
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
@@ -150,7 +146,6 @@ MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QStri
 bool MTRecord::update(const StringVariantMap & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
-    QString id_field = idFieldName();
     QString update;
     QMapIterator<QString, QVariant> i(set);
     if (add_columns) {
@@ -170,7 +165,7 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) { update.append(", "); }
         }
-        update.append(" WHERE " + id_field + " = :_id");
+        update.append(" WHERE " + r_id_field + " = :_id");
         for (int p = 0; p < r_parents.count(); ++p) {
             update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
         }
@@ -209,9 +204,9 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
     }
     bool result = query.exec();
     if (has_id) {
-        r_id = set.value(id_field, r_id).toString();
+        r_id = set.value(r_id_field, r_id).toString();
     } else {
-        r_id = set.value(id_field, query.lastInsertId()).toString();
+        r_id = set.value(r_id_field, query.lastInsertId()).toString();
     }
     return result;
 }
@@ -221,7 +216,7 @@ bool MTRecord::remove()
     if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
     bool has_id = !r_id.isEmpty();
     QString remove = "DELETE FROM " + r_table + " WHERE ";
-    if (has_id) { remove.append(idFieldName() + " = :_id"); }
+    if (has_id) { remove.append(r_id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { remove.append(" AND "); }
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));

@@ -66,6 +66,7 @@ private slots:
     void find();
     void findNext();
     void findPrevious();
+    void clearSelection(bool = true);
     void refreshView();
     void changeLanguage();
     void languageChanged();
@@ -194,6 +195,7 @@ private:
     QLabel * lbl_current_selection;
     QLabel * lbl_selected_repair;
     QLabel * lbl_selected_inspector;
+    QPushButton * btn_clear_selection;
     QToolButton * tbtn_open;
     QToolButton * tbtn_add;
     QToolButton * tbtn_modify;

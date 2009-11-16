@@ -164,6 +164,7 @@ QString MainWindow::viewServiceCompany(int since)
     QList<int>::const_iterator y = data.store_years.constEnd();
     while (y != data.store_years.constBegin()) {
         y--;
+        if (*y < since) break;
         store_map = data.store.value(*y);
         store_recovered_map = data.store_recovered.value(*y);
         store_leaked_map = data.store_leaked.value(*y);
@@ -275,7 +276,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
                                        dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
         }
         out << "<td>" << Circuit(id, "").listAll("id").count() << "</td>";
-        out << "<td>" << MTRecord("inspections", "", MTDictionary("customer", id)).listAll("date").count() << "</td>";
+        out << "<td>" << MTRecord("inspections", "date", "", MTDictionary("customer", id)).listAll("date").count() << "</td>";
         out << "</tr>";
     }
     out << "</table>";
@@ -1056,7 +1057,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         writeCustomersTable(out, customer_id);
         out << "<br>";
     }
-    MTRecord repairs_record("repairs", "", parent);
+    MTRecord repairs_record("repairs", "date", "", parent);
     if (!navigation->filterKeyword().isEmpty()) {
         repairs_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
@@ -1070,9 +1071,10 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int re_length = QString("repairs::").length();
-    out << "<tr><th colspan=\"11\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr><tr>";
+    out << "<tr><th colspan=\"12\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr><tr>";
     out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::date") << "</th>";
     out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::customer") << "</th>";
+    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::device") << "</th>";
     out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::field") << "</th>";
     out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant_amount") << "</th>";
@@ -1151,8 +1153,8 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
         for (int n = dict_attrnames.indexOfKey("inspectors::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("inspectors::"); ++n) {
             out << "<td>" << escapeString(inspectors.at(i).value(dict_attrnames.key(n).mid(in_length)).toString()) << "</td>";
         }
-        out << "<td>" << MTRecord("inspections", "", MTDictionary("inspector", id)).listAll("date").count() << "</td>";
-        out << "<td>" << MTRecord("repairs", "", MTDictionary("repairman", id)).listAll("date").count() << "</td>";
+        out << "<td>" << MTRecord("inspections", "date", "", MTDictionary("inspector", id)).listAll("date").count() << "</td>";
+        out << "<td>" << MTRecord("repairs", "date", "", MTDictionary("repairman", id)).listAll("date").count() << "</td>";
         out << "</tr>";
     }
     return dict_html.value(Navigation::ListOfInspectors).arg(html);
@@ -1243,11 +1245,11 @@ QString MainWindow::viewAgenda()
 {
     QString html; MTTextStream out(&html);
 
-    MTRecord inspections_record("inspections", "", MTDictionary());
+    MTRecord inspections_record("inspections", "date", "", MTDictionary());
     ListOfStringVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
-    MTRecord circuits_record("circuits", "", MTDictionary());
+    MTRecord circuits_record("circuits", "id", "", MTDictionary());
     ListOfStringVariantMaps circuits(circuits_record.listAll());
-    MTRecord customers_record("customers", "", MTDictionary());
+    MTRecord customers_record("customers", "id", "", MTDictionary());
     MultiMapOfStringVariantMaps customers(customers_record.mapAll("id", "company"));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";

@@ -238,7 +238,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
-    MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
+    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
     StringVariantMap circuit_attributes = circuit.list();
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
@@ -280,7 +280,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
         } else if (expression.value(i) == "circuit_attribute") {
             value.append(toString(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
-            MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
+            MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.list("refrigerant").value("refrigerant").toString();
             value.append(toString(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0)));
         } else {
@@ -332,7 +332,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_add_am_recy NUMERIC, refr_reco NUMERIC, refr_reco_cust NUMERIC, repairman TEXT, arno TEXT");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_add_am_recy NUMERIC, refr_reco NUMERIC, refr_reco_cust NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -359,9 +359,9 @@ MTDictionary Global::get_dict_vartypes()
 MTDictionary Global::get_dict_varnames()
 {
     MTDictionary dict_varnames;
-    dict_varnames.insert("t", QApplication::translate("VariableNames", "Temperature"));
-    dict_varnames.insert("t_out", QApplication::translate("VariableNames", "out"));
-    dict_varnames.insert("t_in", QApplication::translate("VariableNames", "in"));
+    dict_varnames.insert("t_sec", QApplication::translate("VariableNames", "Temperature sec. medium"));
+    dict_varnames.insert("t_sec_evap_in", QApplication::translate("VariableNames", "evap. in"));
+    dict_varnames.insert("t_sec_cond_in", QApplication::translate("VariableNames", "cond. in"));
     dict_varnames.insert("p_0", QApplication::translate("VariableNames", "Pressure evaporating"));
     dict_varnames.insert("p_c", QApplication::translate("VariableNames", "Pressure condensing"));
     dict_varnames.insert("t_0", QApplication::translate("VariableNames", "Temperature evaporating"));
@@ -507,6 +507,7 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("service_companies::website", QApplication::translate("AttributeNames", "Website:"));
     dict_attrnames.insert("repairs::date", QApplication::translate("AttributeNames", "Date"));
     dict_attrnames.insert("repairs::customer", QApplication::translate("AttributeNames", "Customer"));
+    dict_attrnames.insert("repairs::device", QApplication::translate("AttributeNames", "Device"));
     dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
     dict_attrnames.insert("repairs::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
     dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
@@ -533,7 +534,7 @@ MTDictionary Global::get_dict_attrnames()
 
 QString Global::listRefrigerantsToString()
 {
-    return "R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R404A;R407C;R410A;R502;R507";
+    return "R11;R12;R22;R32;R123;R124;R125;R134a;R143a;R227ea;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R408A;R409A;R409B;R410A;R410B;R414A;R414B;R416A;R417A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R500;R501;R502;R503;R507;R508A;R508B";
 }
 
 MTDictionary Global::listInspectors()
@@ -569,7 +570,7 @@ QStringList Global::listSupportedFunctions()
               << "asin" // (A)      Arc-sine of A. Returns the angle, measured in radians, whose sine is A.
               << "asinh" // (A)     Same as asin() but for hyperbolic sine.
               << "atan" // (A)      Arc-tangent of (A). Returns the angle, measured in radians, whose tangent is (A).
-              << "atan2" // (A,B)	Arc-tangent of A/B. The two main differences to atan() is that it will return the right angle depending on the signs of A and B (atan() can only return values betwen -pi/2 and pi/2), and that the return value of pi/2 and -pi/2 are possible.
+              << "atan2" // (A,B)   Arc-tangent of A/B. The two main differences to atan() is that it will return the right angle depending on the signs of A and B (atan() can only return values betwen -pi/2 and pi/2), and that the return value of pi/2 and -pi/2 are possible.
               << "atanh" // (A)     Same as atan() but for hyperbolic tangent.
               << "ceil" // (A)      Ceiling of A. Returns the smallest integer greater than A. Rounds up to the next higher integer.
               << "cos" // (A)       Cosine of A. Returns the cosine of the angle A, where A is measured in radians.
@@ -578,7 +579,7 @@ QStringList Global::listSupportedFunctions()
               << "csc" // (A)       Cosecant of A (equivalent to 1/sin(A)).
               << "exp" // (A)       Exponential of A. Returns the value of e raised to the power A where e is the base of the natural logarithm, i.e. the non-repeating value approximately equal to 2.71828182846.
               << "floor" // (A)     Floor of A. Returns the largest integer less than A. Rounds down to the next lower integer.
-              << "if" // (A,B,C)	If int(A) differs from 0, the return value of this function is B, else C. Only the parameter which needs to be evaluated is evaluated, the other parameter is skipped.
+              << "if" // (A,B,C)    If int(A) differs from 0, the return value of this function is B, else C. Only the parameter which needs to be evaluated is evaluated, the other parameter is skipped.
               << "int" // (A)       Rounds A to the closest integer. 0.5 is rounded to 1.
               << "log" // (A)       Natural (base e) logarithm of A.
               << "log10" // (A)     Base 10 logarithm of A.
@@ -660,13 +661,13 @@ void Variables::saveResult()
 
 void Variables::initVariables(const QString & filter)
 {
-    initVariable(filter, "t", "");
-    initSubvariable(filter, "t", "", "t_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
-    initSubvariable(filter, "t", "", "t_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initVariable(filter, "t_sec", "mintcream");
+    initSubvariable(filter, "t_sec", "", "t_sec_evap_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", "", "t_sec_cond_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
 
     initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "aliceblue");
     initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
-    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "abs(t_in-p_to_t(p_0))", true, 0.0, "aliceblue");
+    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
     initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
     initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
@@ -676,7 +677,7 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "floralwhite");
     initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
-    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "abs(t_out-p_to_t(p_c))", true, 0.0, "floralwhite");
+    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
     initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
     initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
     initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
@@ -879,7 +880,7 @@ MTSqlQueryResult(db)
     this->enabled_only = enabled_only;
     if (exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""))
         && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
-        MTRecord circuit("circuits", circuit_id, MTDictionary("parent", customer_id));
+        MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
         StringVariantMap circuit_attributes = circuit.list();
         QString circuit_attribute, function, value;
         bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
@@ -1033,8 +1034,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
+            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
         }
     }
     w = "1101";
@@ -1047,8 +1048,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
+            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
         }
     }
     w = "1102";
@@ -1061,8 +1062,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
+            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
         }
     }
     w = "1103";
@@ -1075,8 +1076,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_out-p_to_t(p_c))", ">", "abs(t_out-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_in-p_to_t(p_0))", "<", "abs(t_in-p_to_t(p_0))");
+            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", ">", "abs(t_sec_cond_in-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
         }
     }
     w = "1104";
@@ -1089,8 +1090,8 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
             initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
             initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
             initCondition(map, w, "t_comp_out", "<", "t_comp_out");
-            initCondition(map, w, "abs(t_out-p_to_t(p_c))", "<", "abs(t_out-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_in-p_to_t(p_0))", ">", "abs(t_in-p_to_t(p_0))");
+            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", ">", "abs(t_sec_evap_in-p_to_t(p_0))");
         }
     }
     w = "1200";

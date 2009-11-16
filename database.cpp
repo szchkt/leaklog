@@ -146,11 +146,22 @@ void MainWindow::initTables(bool transaction)
         electrical_parameters.update(set);
         //set.clear();
     }
-    if (DBInfoValueForKey("db_version").toDouble() < 0.903) {
+    double v = DBInfoValueForKey("db_version").toDouble();
+    if (v < 0.903) {
         Table table_of_leakages(tr("Table of leakages"));
         table_of_leakages.remove();
         Table table_of_parameters(tr("Table of parameters"));
         table_of_parameters.remove();
+    } else if (v < 0.905) {
+        QStringList table_vars = pressures_and_temperatures.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
+        if (table_vars.contains("t")) {
+            table_vars.replace(table_vars.indexOf("t"), "t_sec");
+        } else {
+            table_vars.prepend("t_sec");
+        }
+        set.clear();
+        set.insert("variables", table_vars.join(";"));
+        pressures_and_temperatures.update(set);
     }
 } // (SCOPE)
     if (transaction) { db.commit(); }
@@ -488,7 +499,7 @@ void MainWindow::removeCustomer()
     record.remove();
     Circuit circuits(toString(selectedCustomer()), "");
     circuits.remove();
-    MTRecord inspections("inspections", "", MTDictionary("customer", toString(selectedCustomer())));
+    MTRecord inspections("inspections", "date", "", MTDictionary("customer", toString(selectedCustomer())));
     inspections.remove();
     selected_customer = -1;
     selected_circuit = -1;
@@ -668,7 +679,7 @@ void MainWindow::removeRepair()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTRecord record("repair", repair, MTDictionary());
+    Repair record(repair);
     record.remove();
     selected_repair.clear();
     enableTools();
@@ -771,10 +782,10 @@ void MainWindow::removeVariable()
     MTDictionary parents;
     if (subvar) { parents.insert("parent", item->parent()->text(1)); }
     else {
-        MTRecord subvars("subvariables", "", MTDictionary("parent", id));
+        MTRecord subvars("subvariables", "id", "", MTDictionary("parent", id));
         subvars.remove();
     }
-    MTRecord record(subvar ? "subvariable" : "variable", id, parents);
+    MTRecord record(subvar ? "subvariables" : "variables", "id", id, parents);
     record.remove();
     if (item != NULL) { delete item; }
     dropColumn(id, "inspections", &db);
@@ -1055,9 +1066,9 @@ void MainWindow::removeWarning()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     WarningRecord record(item->data(Qt::UserRole).toString());
     record.remove();
-    MTRecord filters("warnings_filters", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    MTRecord filters("warnings_filters", "", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
     filters.remove();
-    MTRecord conditions("warnings_conditions", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
+    MTRecord conditions("warnings_conditions", "", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
     conditions.remove();
     delete item;
     enableTools();

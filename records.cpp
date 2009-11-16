@@ -233,12 +233,12 @@ DBRecord::DBRecord():
 MTRecord()
 {}
 
-DBRecord::DBRecord(const QString & type, const QString & id, const MTDictionary & parents):
-MTRecord(type, id, parents)
+DBRecord::DBRecord(const QString & type, const QString & id_field, const QString & id, const MTDictionary & parents):
+MTRecord(type, id_field, id, parents)
 {}
 
 Customer::Customer(const QString & id):
-DBRecord("customers", id, MTDictionary())
+DBRecord("customers", "id", id, MTDictionary())
 {}
 
 void Customer::initModifyDialogue(ModifyDialogue * md)
@@ -267,7 +267,7 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
 }
 
 Circuit::Circuit(const QString & parent, const QString & id):
-DBRecord("circuits", id, MTDictionary("parent", parent))
+DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
 
 void Circuit::initModifyDialogue(ModifyDialogue * md)
@@ -316,7 +316,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
 }
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
-DBRecord("inspections", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit))
+DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit))
 {}
 
 void Inspection::initModifyDialogue(ModifyDialogue * md)
@@ -411,7 +411,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
 }
 
 Repair::Repair(const QString & date):
-DBRecord("repairs", date, MTDictionary())
+DBRecord("repairs", "date", date, MTDictionary())
 {}
 
 void Repair::initModifyDialogue(ModifyDialogue * md)
@@ -425,6 +425,7 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
     md->addInputWidget(new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString()));
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), get_dict_fields()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors()));
@@ -447,7 +448,7 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
 }
 
 VariableRecord::VariableRecord(Type type, const QString & var_id, const QString & subvar_id):
-DBRecord(type ? "subvariables" : "variables", type ? subvar_id : var_id, type ? MTDictionary("parent", var_id) : MTDictionary())
+DBRecord(type ? "subvariables" : "variables", "id", type ? subvar_id : var_id, type ? MTDictionary("parent", var_id) : MTDictionary())
 { v_type = type; }
 
 void VariableRecord::initModifyDialogue(ModifyDialogue * md)
@@ -503,7 +504,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
 }
 
 Table::Table(const QString & id, const QString & uid):
-DBRecord("tables", id, uid.isEmpty() ? MTDictionary() : MTDictionary("uid", uid))
+DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, MTDictionary())
 {}
 
 void Table::initModifyDialogue(ModifyDialogue * md)
@@ -528,7 +529,7 @@ void Table::initModifyDialogue(ModifyDialogue * md)
 }
 
 Inspector::Inspector(const QString & id):
-DBRecord("inspectors", id, MTDictionary())
+DBRecord("inspectors", "id", id, MTDictionary())
 {}
 
 void Inspector::initModifyDialogue(ModifyDialogue * md)
@@ -556,7 +557,7 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
 }
 
 ServiceCompany::ServiceCompany(const QString & id):
-DBRecord("service_companies", id, MTDictionary())
+DBRecord("service_companies", "id", id, MTDictionary())
 {}
 
 void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
@@ -585,7 +586,7 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
 }
 
 RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & date):
-DBRecord("refrigerant_management", date, MTDictionary())
+DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
 
 void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
@@ -620,7 +621,7 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
 }
 
 WarningRecord::WarningRecord(const QString & id):
-DBRecord("warnings", id, MTDictionary())
+DBRecord("warnings", "id", id, MTDictionary())
 {}
 
 void WarningRecord::initModifyDialogue(ModifyDialogue * md)

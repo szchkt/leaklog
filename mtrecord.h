@@ -43,11 +43,12 @@ class MTRecord : public QObject
 
 public:
     MTRecord() {}
-    MTRecord(const QString &, const QString &, const MTDictionary &);
+    MTRecord(const QString &, const QString &, const QString &, const MTDictionary &);
     MTRecord(const MTRecord &);
     MTRecord & operator=(const MTRecord &);
     void addFilter(const QString &, const QString &);
     inline QString table() const { return r_table; }
+    inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline MTDictionary * parents() { return &r_parents; }
     bool exists();
@@ -58,10 +59,9 @@ public:
     bool update(const StringVariantMap &, bool = false);
     bool remove();
 
-    QString idFieldName() const;
-
 private:
     QString r_table;
+    QString r_id_field;
     QString r_id;
     MTDictionary r_parents;
     MTDictionary r_filter;

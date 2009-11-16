@@ -79,7 +79,7 @@ void ModifyDialogue::save()
     for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         id = (*i)->id();
         value = (*i)->variantValue();
-        if (id == md_record->idFieldName()) {
+        if (id == md_record->idField()) {
             if (value.toString().isEmpty()) {
                 QMessageBox::information(this, tr("Save changes"), tr("Invalid ID."));
                 return;

@@ -94,9 +94,9 @@ ReportData::ReportData(int since)
         (*sum_list)[SUMS::LEAKED] += leaked.toDouble();
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
-    MTRecord circuits_record("circuits", "", MTDictionary());
+    MTRecord circuits_record("circuits", "id", "", MTDictionary());
     MultiMapOfStringVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
-    MTRecord inspections_record("inspections", "", MTDictionary());
+    MTRecord inspections_record("inspections", "date", "", MTDictionary());
     ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
     Repair repairs_rec("");
     inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust");
