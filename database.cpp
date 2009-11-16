@@ -1204,13 +1204,13 @@ void MainWindow::importData()
 {
     if (!db.isOpen()) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
-	if (path.isEmpty()) { return; }
+    if (path.isEmpty()) { return; }
 { // BEGIN IMPORT (SCOPE)
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
     data.setDatabaseName(path);
     if (!data.open()) {
-		QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
-		return;
+        QMessageBox::critical(this, tr("Import data - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(data.lastError().text()));
+        return;
     }
     data.transaction();
     QSqlQuery query(data);

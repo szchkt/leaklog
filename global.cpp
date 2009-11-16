@@ -662,8 +662,8 @@ void Variables::saveResult()
 void Variables::initVariables(const QString & filter)
 {
     initVariable(filter, "t_sec", "mintcream");
-    initSubvariable(filter, "t_sec", "", "t_sec_evap_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
-    initSubvariable(filter, "t_sec", "", "t_sec_cond_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", "mintcream", "t_sec_evap_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", "mintcream", "t_sec_cond_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
 
     initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "aliceblue");
     initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
