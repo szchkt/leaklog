@@ -31,24 +31,42 @@
 
 class ModifyDialogue;
 
+class MTLabel : public QLabel
+{
+    Q_OBJECT
+
+public:
+    MTLabel(const QString & text, QWidget * parent);
+
+    void setAlternativeText(const QString & alt) { altlabeltext = alt; }
+
+public slots:
+    void toggleAlternativeText(bool);
+
+private:
+    QString labeltext;
+    QString altlabeltext;
+};
+
 class MDInputWidget
 {
 public:
     MDInputWidget(const QString &, const QString &, QWidget *, QWidget *);
     virtual ~MDInputWidget() {}
 
-    static QPalette paletteForColour(const QString &);
-    static QLabel * createLabel(QWidget * parent, const QString &);
-
     virtual QVariant variantValue() = 0;
 
     inline QString id() { return iw_id; }
-    inline QLabel * label() { return iw_label; }
+    inline MTLabel * label() { return iw_label; }
     inline QWidget * widget() { return iw_widget; }
+
+protected:
+    static QPalette paletteForColour(const QString &);
+    static MTLabel * createLabel(QWidget * parent, const QString &);
 
 private:
     QString iw_id;
-    QLabel * iw_label;
+    MTLabel * iw_label;
     QWidget * iw_widget;
 };
 
@@ -90,6 +108,9 @@ public:
     MDDoubleSpinBox(const QString &, const QString &, QWidget *, double, double, double, const QString & = QString(), const QString & = QString());
 
     QVariant variantValue();
+
+public slots:
+    void clear() { setValue(0.0); }
 };
 
 class MDComboBox : public QComboBox, public MDInputWidget

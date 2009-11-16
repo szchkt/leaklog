@@ -19,6 +19,20 @@
 
 #include "modify_dialogue.h"
 
+MTLabel::MTLabel(const QString & text, QWidget * parent):
+QLabel(text, parent) {
+    labeltext = text;
+    altlabeltext = text;
+}
+
+void MTLabel::toggleAlternativeText(bool alt)
+{
+    if (alt)
+        setText(altlabeltext);
+    else
+        setText(labeltext);
+}
+
 MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget)
 {
     iw_id = id;
@@ -36,9 +50,9 @@ QPalette MDInputWidget::paletteForColour(const QString & colour)
     return palette;
 }
 
-QLabel * MDInputWidget::createLabel(QWidget * parent, const QString & text)
+MTLabel * MDInputWidget::createLabel(QWidget * parent, const QString & text)
 {
-    QLabel * lbl = new QLabel(text, parent);
+    MTLabel * lbl = new MTLabel(text, parent);
     lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     return lbl;
 }
@@ -351,6 +365,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
+    MDInputWidget * iw = NULL;
     while (query.next()) {
         var_id = query.value("VAR_ID").toString();
         subvar_id = query.value("SUBVAR_ID").toString();
@@ -359,8 +374,12 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
             var_name = tr("%1:").arg(query.value("VAR_NAME").toString());
             var_type = query.value("VAR_TYPE").toString();
             if (var_id == "inspector") {
-                md->addInputWidget(new MDComboBox(var_id, var_name, md,
-                    attributes.value(var_id).toString(), listInspectors(), query.value("VAR_COL_BG").toString()));
+                iw = new MDComboBox(var_id, var_name, md,
+                    attributes.value(var_id).toString(), listInspectors(), query.value("VAR_COL_BG").toString());
+                iw->label()->setAlternativeText(tr("Repairman:"));
+                iw->label()->toggleAlternativeText(chb_repair->isChecked());
+                QObject::connect(chb_repair, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
+                md->addInputWidget(iw);
             } else if (var_type == "int") {
                 md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
                     attributes.value(var_id).toInt(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
@@ -374,9 +393,9 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));
             } else if (var_type == "bool") {
-                MDCheckBox * chb = new MDCheckBox(var_id, "", md, attributes.value(var_id).toInt());
-                chb->label()->setText(var_name);
-                md->addInputWidget(chb);
+                iw = new MDCheckBox(var_id, "", md, attributes.value(var_id).toInt());
+                iw->label()->setText(var_name);
+                md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), "", query.value("VAR_COL_BG").toString()));
@@ -389,8 +408,23 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md, -999999999, 999999999,
                     attributes.value(subvar_id).toInt(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "float") {
-                md->addInputWidget(new MDDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
-                    attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
+                iw = new MDDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
+                    attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
+                if (subvar_id == "refr_add_am") {
+                    iw->label()->setAlternativeText(tr("Refrigerant addition: New charge:"));
+                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
+                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
+                } else if (subvar_id == "refr_add_am_recy") {
+                    if (chb_nominal->isChecked()) {
+                        iw->label()->setDisabled(true);
+                        iw->widget()->setDisabled(true);
+                        ((MDDoubleSpinBox *)iw)->clear();
+                    }
+                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(setDisabled(bool)));
+                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->widget(), SLOT(setDisabled(bool)));
+                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->widget(), SLOT(clear()));
+                }
+                md->addInputWidget(iw);
             } else if (subvar_type == "string") {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));
@@ -398,10 +432,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "bool") {
-                MDCheckBox * chb = new MDCheckBox(subvar_id, query.value("SUBVAR_NAME").toString(), md,
+                iw = new MDCheckBox(subvar_id, query.value("SUBVAR_NAME").toString(), md,
                     attributes.value(subvar_id).toInt());
-                chb->label()->setText(tr("%1:").arg(query.value("VAR_NAME").toString()));
-                md->addInputWidget(chb);
+                iw->label()->setText(tr("%1:").arg(query.value("VAR_NAME").toString()));
+                md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));

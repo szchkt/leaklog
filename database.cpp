@@ -395,7 +395,7 @@ void MainWindow::closeDatabase(bool save)
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
     db.rollback(); db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
     parsed_expressions.clear();
-    clearAll(); setAllEnabled(false);
+    clearAll(); enableTools(); setAllEnabled(false);
     stw_main->setCurrentIndex(0);
     this->setWindowTitle(tr("Leaklog"));
     this->setWindowModified(false);

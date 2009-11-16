@@ -60,6 +60,8 @@ public:
     void setReportDataGroupBoxVisible(bool visible);
     inline QToolButton * autofillButton() const { return tbtn_autofill; }
     inline QToolButton * doneButton() const { return tbtn_done; }
+    inline QLabel * reportYearLabel() const { return lbl_report_year; }
+    inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
 
 public slots:
     // View

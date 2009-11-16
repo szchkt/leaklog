@@ -9,6 +9,9 @@ body,td,th {
 	font-size: small;
 	color: #000000;
 }
+td {
+	padding: 2px;
+}
 @media screen {
 	tbody > tr:hover > td {
 		background-color: rgb(180, 215, 255) !important;

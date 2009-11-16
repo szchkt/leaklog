@@ -132,7 +132,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
-    out << "<th colspan=\"3\">" << tr("Added") << "</th>";
+    out << "<th colspan=\"4\">" << tr("Added") << "</th>";
     out << "<th colspan=\"2\">" << tr("Recovered") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
@@ -143,6 +143,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "New charge") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Total") << "</td>";

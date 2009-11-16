@@ -42,7 +42,7 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > & store, QList<int
 ReportData::ReportData(int since)
 {
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
-    QVariant purchased, purchased_reco, sold, sold_reco, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust, refr_rege, refr_disp, leaked, leaked_reco;
+    QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust, refr_rege, refr_disp, leaked, leaked_reco;
     RecordOfRefrigerantManagement refr_man_record("");
     ListOfStringVariantMaps refr_man(refr_man_record.listAll());
     for (int i = 0; i < refr_man.count(); ++i) {
@@ -105,7 +105,10 @@ ReportData::ReportData(int since)
         refr_add_am_recy = inspections.at(i).value("refr_add_am_recy");
         refr_reco = inspections.at(i).value("refr_reco");
         refr_reco_cust = inspections.at(i).value("refr_reco_cust");
-        if (refr_add_am.toDouble() == 0.0 && refr_add_am_recy.toDouble() == 0.0 && refr_reco.toDouble() == 0.0) continue;
+        if (refr_add_am.toDouble() == 0.0 &&
+            refr_add_am_recy.toDouble() == 0.0 &&
+            refr_reco.toDouble() == 0.0 &&
+            refr_reco_cust.toDouble() == 0.0) continue;
 
         date = inspections.at(i).value("date").toString();
         year = date.left(4).toInt();
@@ -132,6 +135,13 @@ ReportData::ReportData(int since)
 
         if (year < since) { continue; }
 
+        new_charge = 0.0;
+        if (inspections.at(i).contains("nominal") && inspections.at(i).value("nominal").toInt()) {
+            new_charge = refr_add_am;
+            refr_add_am = 0.0;
+        }
+
+        entries_list[ENTRIES::NEW_CHARGE] = new_charge.toString();
         entries_list[ENTRIES::REFR_ADD_AM] = refr_add_am.toString();
         entries_list[ENTRIES::REFR_ADD_AM_RECY] = refr_add_am_recy.toString();
         entries_list[ENTRIES::REFR_ADD_AM_TOTAL] = toString(refr_add_am.toDouble() + refr_add_am_recy.toDouble());
@@ -147,6 +157,7 @@ ReportData::ReportData(int since)
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
         // ----------------------------------------------------
+        (*sum_list)[SUMS::NEW_CHARGE] += new_charge.toDouble();
         (*sum_list)[SUMS::REFR_ADD_AM] += refr_add_am.toDouble();
         (*sum_list)[SUMS::REFR_ADD_AM_RECY] += refr_add_am_recy.toDouble();
         (*sum_list)[SUMS::REFR_ADD_AM_TOTAL] += refr_add_am.toDouble() + refr_add_am_recy.toDouble();
@@ -168,12 +179,44 @@ ReportDataController::ReportDataController(QWebView * wv, Navigation * parent):
 QObject(parent), navigation(parent) {
     wv_main = wv;
     navigation->setReportDataGroupBoxVisible(true);
+    navigation->autofillButton()->setEnabled(false);
+    navigation->reportYearLabel()->setText(tr("Report year: %1").arg(QDate::currentDate().year() - 1));
+    navigation->reportDataProgressBar()->setVisible(false);
     QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
     QObject::connect(navigation->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
     wp_default = wv_main->page();
     wv_main->setPage(new QWebPage(wv_main));
+    QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
+    QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
     //: URL to the data report system of the notified body
     wv_main->load(QUrl::QUrl(tr("http://szchkt.org/cert/")));
+}
+
+int ReportDataController::currentReportYear()
+{
+    int year = QDate::currentDate().year() - 1;
+    QVariant variant = wv_main->page()->mainFrame()->evaluateJavaScript("currentReportYear();");
+    if (!variant.toString().isEmpty())
+        year = variant.toInt();
+
+    return year;
+}
+
+void ReportDataController::updateProgressBar(int progress)
+{
+    navigation->reportDataProgressBar()->setVisible(true);
+    navigation->reportDataProgressBar()->setValue(progress);
+}
+
+void ReportDataController::enableAutofill()
+{
+    QVariant version_required = wv_main->page()->mainFrame()->evaluateJavaScript("minimumLeaklogVersionRequired();");
+    bool valid = !version_required.toString().isEmpty();
+    bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
+    navigation->autofillButton()->setEnabled(valid && sufficient);
+    navigation->autofillButton()->setToolTip((valid && !sufficient) ? tr("A newer version of Leaklog is required.") : QString());
+    if (valid) navigation->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
+    navigation->reportDataProgressBar()->setVisible(false);
 }
 
 void ReportDataController::autofill()
@@ -181,11 +224,7 @@ void ReportDataController::autofill()
     emit processing(true);
     qApp->processEvents();
 
-    QDate current_date = QDate::currentDate();
-    int year = current_date.year();
-    //: Report deadline (month.day with leading zeros)
-    if (current_date < QDate::fromString(QString("%1.%2").arg(current_date.year()).arg(tr("02.01")), "yyyy.MM.dd"))
-        year--;
+    int year = currentReportYear();
 
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
@@ -204,9 +243,10 @@ void ReportDataController::autofill()
                     << "purchased_reco"
                     << "sold"
                     << "sold_reco"
+                    << "new_charge"
                     << "refr_add_am"
                     << "refr_add_am_recy"
-                    << "refr_add_am_total" // [6]
+                    << "refr_add_am_total" // [7]
                     << "refr_reco"
                     << "refr_reco_cust"
                     << "refr_rege"
@@ -220,30 +260,13 @@ void ReportDataController::autofill()
                 out << "addRefrigerantManagementEntry({" << endl;
                 out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
                 for (int j = 0; j < sums_fieldnames.count(); ++j) {
-                    if (j == 6) continue; // "refr_add_am_total"
+                    if (j == 7) continue; // "refr_add_am_total"
                     out << "\t\"" << sums_fieldnames.at(j) << "\": " << sum_list->at(j);
                     if (j == sums_fieldnames.count() - 1) out << endl; else out << "," << endl;
                 }
                 out << "});" << endl;
             }
             ++sums_iterator;
-        }
-    }
-    if (data.store_years.contains(year)) {
-        QStringList list_refrigerants = listRefrigerantsToString().split(";");
-        QMap<QString, double> store_map = data.store.value(year);
-        QMap<QString, double> store_recovered_map = data.store_recovered.value(year);
-        QMap<QString, double> store_leaked_map = data.store_leaked.value(year);
-        for (int i = 0; i < list_refrigerants.count(); ++i) {
-            refrigerant = list_refrigerants.at(i);
-            if (refrigerant.isEmpty()) continue;
-            if (store_map.contains(refrigerant) || store_recovered_map.contains(refrigerant) || store_leaked_map.contains(refrigerant)) {
-                out << "addStoreEntry({" << endl;
-                out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
-                out << "\t\"store_new\": " << store_map.value(refrigerant) << "," << endl;
-                out << "\t\"recovered\": " << store_recovered_map.value(refrigerant) << "," << endl;
-                out << "\t\"leaked\": " << store_leaked_map.value(refrigerant) << endl << "});" << endl;
-            }
         }
     }
 

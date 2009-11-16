@@ -31,16 +31,16 @@
 namespace ENTRIES {
     enum ENTRIES {
         LINK = 0, REFRIGERANT,
-        PURCHASED, PURCHASED_RECO, SOLD, SOLD_RECO, REFR_ADD_AM,
-        REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO, REFR_RECO_CUST,
-        REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
+        PURCHASED, PURCHASED_RECO, SOLD, SOLD_RECO, NEW_CHARGE,
+        REFR_ADD_AM, REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO,
+        REFR_RECO_CUST, REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
     };
 }
 namespace SUMS {
     enum SUMS {
-        PURCHASED = 0, PURCHASED_RECO, SOLD, SOLD_RECO, REFR_ADD_AM,
-        REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO, REFR_RECO_CUST,
-        REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
+        PURCHASED = 0, PURCHASED_RECO, SOLD, SOLD_RECO, NEW_CHARGE,
+        REFR_ADD_AM, REFR_ADD_AM_RECY, REFR_ADD_AM_TOTAL, REFR_RECO,
+        REFR_RECO_CUST, REFR_REGE, REFR_DISP, LEAKED, LEAKED_RECO, COUNT
     };
 }
 
@@ -70,11 +70,16 @@ public:
     ReportDataController(QWebView *, Navigation *);
 
 private slots:
+    void updateProgressBar(int);
+    void enableAutofill();
     void autofill();
     void done();
 
 signals:
     void processing(bool);
+
+protected:
+    int currentReportYear();
 
 private:
     QWebView * wv_main;

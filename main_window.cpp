@@ -670,7 +670,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionOpen->setEnabled(enable);
         actionLocal_database->setEnabled(enable);
         actionRemote_database->setEnabled(enable);
-        actionPrinter_friendly_version->setEnabled(enable);
     }
 
     actionSave->setEnabled(enable);
@@ -682,13 +681,17 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionHTML->setEnabled(enable || everything);
     actionPrint_preview->setEnabled(enable || everything);
     actionPrint->setEnabled(enable || everything);
+    actionPrinter_friendly_version->setEnabled(enable);
     actgrp_view->setEnabled(enable);
 
     menuDatabase->setEnabled(enable);
     menuCustomer->setEnabled(enable);
     menuCooling_circuit->setEnabled(enable);
     menuInspection->setEnabled(enable);
+    menuRepair->setEnabled(enable);
     menuInspector->setEnabled(enable);
+
+    btn_clear_selection->setEnabled(enable);
 
     tbtn_add->setEnabled(enable);
     tbtn_modify->setEnabled(enable);
@@ -703,9 +706,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionReport_data->setEnabled(enable);
     actionModify_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
-
-    tbtn_add_table->setEnabled(enable);
-    tbtn_add_warning->setEnabled(enable);
 
     actionAdd_customer->setEnabled(enable);
     actionAdd_repair->setEnabled(enable);
