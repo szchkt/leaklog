@@ -783,17 +783,17 @@ void MainWindow::enableTools()
             .arg((selected_inspection_is_repair ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
                 .arg(selected_inspection)));
     }
-    lbl_current_selection->setText(current_selection);
+    lbl_current_selection->setText(current_selection + "&nbsp;&nbsp;");
     lbl_current_selection->setVisible(!current_selection.isEmpty());
     if (repair_selected) {
-        lbl_selected_repair->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
+        lbl_selected_repair->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
             .arg(Navigation::ListOfRepairs)
             .arg(tr("<b>Repair:</b> %1")
                 .arg(selectedRepair())));
     }
     lbl_selected_repair->setVisible(repair_selected);
     if (inspector_selected) {
-        lbl_selected_inspector->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
+        lbl_selected_inspector->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
             .arg(Navigation::ListOfInspectors)
             .arg(tr("<b>Inspector:</b> %1")
                 .arg(selected_inspector_name)));
