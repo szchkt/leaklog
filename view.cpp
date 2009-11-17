@@ -1193,7 +1193,6 @@ QString MainWindow::viewLeakagesByApplication()
         map["All::All"][1] += circuits.value(2).toDouble();
     }
     QMutableMapIterator<QString, QVector<double> > iterator(map);
-    QStringList used_fields;
     MTDictionary used_refrigerants;
     while (iterator.hasNext()) { iterator.next();
         if (iterator.value()[1] != 0.0) {
@@ -1205,35 +1204,31 @@ QString MainWindow::viewLeakagesByApplication()
         if (refrigerant != "" && refrigerant != "All") {
             used_refrigerants.insert(refrigerant, dict_attrvalues.value(dict_attrvalues.indexOfKey("refrigerant::" + refrigerant)));
         }
-        if (field != "" && field != "All" && !used_fields.contains(field)) {
-            used_fields << field;
-        }
     }
-    used_fields.sort();
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: large;\">" << tr("Leakages by application") << "</th></tr></table><br>";
     QStringList tables;
     tables << dict_varnames.value("refr_add") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
-        out << "<table><thead><tr><th rowspan=\"2\">" << tables.at(t) << "</th>";
-        out << "<th colspan=\"" << used_fields.count() + 1 << "\">" << tr("Fields") << "</th></tr>";
+        out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tables.at(t) << "</th>";
+        out << "<th colspan=\"5\">" << tr("Fields") << "</th></tr>";
         out << "<tr><th>" << tr("All") << "</th>";
-        for (int i = 0; i < used_fields.count(); ++i) {
-            out << "<th>" << used_fields.at(i) << "</th>";
+        for (int n = dict_attrvalues.indexOfKey("field") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("field::"); ++n) {
+            out << "<th>" << dict_attrvalues.value(n) << "</th>";
         }
         out << "</tr></thead>";
         out << "<tr><th>" << tr("All") << "</th>";
         out << "<td>" << map["All::All"].at(t) << "</td>";
-        for (int n = 0; n < used_fields.count(); ++n) {
-            out << "<td>" << map["All::" + used_fields.at(n)].at(t) << "</td>";
+        for (int n = dict_attrvalues.indexOfKey("field") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("field::"); ++n) {
+            out << "<td>" << map.value("All::" + dict_attrvalues.value(n), QVector<double>(VECTOR_SIZE)).at(t) << "</td>";
         }
         out << "</tr>";
         for (int i = 0; i < used_refrigerants.count(); ++i) {
             out << "<tr><th>" << used_refrigerants.value(i) << "</th>";
             out << "<td>" << map[used_refrigerants.key(i) + "::All"].at(t) << "</td>";
-            for (int n = 0; n < used_fields.count(); ++n) {
-                out << "<td>" << map.value(used_refrigerants.key(i) + "::" + used_fields.at(n), QVector<double>(VECTOR_SIZE)).at(t) << "</td>";
+            for (int n = dict_attrvalues.indexOfKey("field") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("field::"); ++n) {
+                out << "<td>" << map.value(used_refrigerants.key(i) + "::" + dict_attrvalues.value(n), QVector<double>(VECTOR_SIZE)).at(t) << "</td>";
             }
             out << "</tr>";
         }
@@ -1294,7 +1289,8 @@ QString MainWindow::viewAgenda()
             if (last_inspection_date.isEmpty()) continue;
         }
         inspections_map.insert(customer + "::" + circuit, last_inspection_date);
-        if (delay = circuitInspectionInterval(customer, circuit, circuits.at(i).value("inspection_interval").toInt())) {
+        delay = circuitInspectionInterval(customer, circuit, circuits.at(i).value("inspection_interval").toInt());
+        if (delay) {
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"),
                                         customer + "::" + circuit + ";" + circuits.at(i).value("name").toString());
         }

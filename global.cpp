@@ -417,17 +417,18 @@ MTDictionary Global::get_dict_varnames()
 MTDictionary Global::get_dict_fields()
 {
     MTDictionary dict_fields(true);
-    dict_fields.insert(QApplication::translate("AttributeValues", "Car air conditioning"), "car");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Home air conditioning"), "home");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Commercial buildings"), "commercial");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Industrial spaces"), "industrial");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Agricultural air conditioning"), "agricultural");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "refrigeration");
     dict_fields.insert(QApplication::translate("AttributeValues", "Transportation"), "transportation");
     dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "airconditioning");
     dict_fields.insert(QApplication::translate("AttributeValues", "Heat pumps"), "heatpumps");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Other"), "other");
     // OBSOLETE
-    dict_fields.insert(QApplication::translate("AttributeValues", "Home air conditioning"), "lowrise");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "car");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "home");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "commercial");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "industrial");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "agricultural");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "other");
+    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "lowrise");
     dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "highrise");
     dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "institutional");
     return dict_fields;
@@ -449,15 +450,10 @@ MTDictionary Global::get_dict_attrvalues()
 {
     MTDictionary dict_attrvalues;
     dict_attrvalues.insert("field", QApplication::translate("AttributeValues", "Field of application"));
-    dict_attrvalues.insert("field::car", QApplication::translate("AttributeValues", "Car air conditioning"));
-    dict_attrvalues.insert("field::home", QApplication::translate("AttributeValues", "Home air conditioning"));
-    dict_attrvalues.insert("field::commercial", QApplication::translate("AttributeValues", "Commercial buildings"));
-    dict_attrvalues.insert("field::industrial", QApplication::translate("AttributeValues", "Industrial spaces"));
-    dict_attrvalues.insert("field::agricultural", QApplication::translate("AttributeValues", "Agricultural air conditioning"));
+    dict_attrvalues.insert("field::refrigeration", QApplication::translate("AttributeValues", "Refrigeration"));
     dict_attrvalues.insert("field::transportation", QApplication::translate("AttributeValues", "Transportation"));
     dict_attrvalues.insert("field::airconditioning", QApplication::translate("AttributeValues", "Air conditioning"));
     dict_attrvalues.insert("field::heatpumps", QApplication::translate("AttributeValues", "Heat pumps"));
-    dict_attrvalues.insert("field::other", QApplication::translate("AttributeValues", "Other"));
     dict_attrvalues.insert("oil", QApplication::translate("AttributeValues", "Oil"));
     dict_attrvalues.insert("oil::mo", QApplication::translate("AttributeValues", "MO (Mineral oil)"));
     dict_attrvalues.insert("oil::ab", QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)"));
@@ -471,7 +467,13 @@ MTDictionary Global::get_dict_attrvalues()
         dict_attrvalues.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
     }
     // OBSOLETE
-    dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Home air conditioning"));
+    dict_attrvalues.insert("field::car", QApplication::translate("AttributeValues", "Air conditioning"));
+    dict_attrvalues.insert("field::home", QApplication::translate("AttributeValues", "Air conditioning"));
+    dict_attrvalues.insert("field::commercial", QApplication::translate("AttributeValues", "Air conditioning"));
+    dict_attrvalues.insert("field::industrial", QApplication::translate("AttributeValues", "Refrigeration"));
+    dict_attrvalues.insert("field::agricultural", QApplication::translate("AttributeValues", "Air conditioning"));
+    dict_attrvalues.insert("field::other", QApplication::translate("AttributeValues", "Refrigeration"));
+    dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Air conditioning"));
     dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "Air conditioning"));
     dict_attrvalues.insert("field::institutional", QApplication::translate("AttributeValues", "Air conditioning"));
     // --------
