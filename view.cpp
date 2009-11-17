@@ -1242,6 +1242,22 @@ QString MainWindow::viewLeakagesByApplication()
     return dict_html.value(Navigation::LeakagesByApplication).arg(html);
 }
 
+int MainWindow::circuitInspectionInterval(const QString & customer, const QString & circuit, int interval)
+{
+    Warnings warnings(db, true, customer, circuit);
+    int delay = 0, warning_delay = 0, id = 0;
+    while (warnings.next()) {
+        warning_delay = warnings.value("delay").toInt();
+        if (!warning_delay) { continue; }
+        id = warnings.value("id").toInt();
+        if (id >= 1200 && id < 1300) {
+            if (interval) { warning_delay = interval; }
+            if (delay < warning_delay) { delay = warning_delay; }
+        }
+    }
+    return delay;
+}
+
 QString MainWindow::viewAgenda()
 {
     QString html; MTTextStream out(&html);
@@ -1260,7 +1276,7 @@ QString MainWindow::viewAgenda()
     QMap<QString, QString> inspections_map;
     QMultiMap<QString, QString> next_inspections_map;
     QString last_inspection_date, circuit, customer;
-    int delay, warning_delay, id, interval;
+    int delay;
     for (int i = 0; i < circuits.count(); ++i) {
         circuit = circuits.at(i).value("id").toString();
         customer = circuits.at(i).value("parent").toString();
@@ -1278,19 +1294,7 @@ QString MainWindow::viewAgenda()
             if (last_inspection_date.isEmpty()) continue;
         }
         inspections_map.insert(customer + "::" + circuit, last_inspection_date);
-        Warnings warnings(db, true, customer, circuit);
-        delay = 0;
-        while (warnings.next()) {
-            warning_delay = warnings.value("delay").toInt();
-            if (!warning_delay) { continue; }
-            id = warnings.value("id").toInt();
-            if (id >= 1200 && id < 1300) {
-                interval = circuits.at(i).value("inspection_interval").toInt();
-                if (interval) { warning_delay = interval; }
-                if (delay < warning_delay) { delay = warning_delay; }
-            }
-        }
-        if (delay) {
+        if (delay = circuitInspectionInterval(customer, circuit, circuits.at(i).value("inspection_interval").toInt())) {
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"),
                                         customer + "::" + circuit + ";" + circuits.at(i).value("name").toString());
         }

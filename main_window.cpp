@@ -446,8 +446,10 @@ void MainWindow::printLabel(bool detailed)
     StringVariantMap attributes;
     if (detailed) {
         attributes.insert("circuit_id", toString(selectedCustomer()).rightJustified(8, '0') + "." + toString(selectedCircuit()).rightJustified(4, '0'));
+        Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
+        attributes.unite(circuit.list("refrigerant, refrigerant_amount, inspection_interval"));
         QSqlQuery query;
-        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id ORDER BY date DESC");
+        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
         query.bindValue(":customer_id", selectedCustomer());
         query.bindValue(":circuit_id", selectedCircuit());
         query.exec();
@@ -457,6 +459,10 @@ void MainWindow::printLabel(bool detailed)
                 inspection.insert(query.record().fieldName(i), query.value(i));
             }
             attributes.insert("date", inspection.value("date").toString());
+            int delay = circuitInspectionInterval(toString(selectedCustomer()), toString(selectedCircuit()), attributes.value("inspection_interval").toInt());
+            if (delay) {
+                attributes.insert("next_inspection", QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"));
+            }
             selected_inspector = inspection.value("inspector").toString();
             Subvariable refr_add_per("refr_add", "refr_add_per");
             refr_add_per.next();
@@ -466,8 +472,6 @@ void MainWindow::printLabel(bool detailed)
                 attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
             }
         }
-        Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
-        attributes.unite(circuit.list("refrigerant, refrigerant_amount"));
     }
     Inspector inspector(selected_inspector);
     if (inspector.exists())
@@ -525,7 +529,7 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
     painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Refrigerant") : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
-    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Average leakage") : tr("above 300 kg"));
+    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Annual leakage") : tr("above 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
     painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
     painter.drawText(m + x + (2 * w / 3), m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of the next inspection"));
@@ -553,27 +557,52 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
     painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("E-mail"));
     painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("mail").toString());
     painter.drawText(m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
-    painter.restore(); painter.save(); painter.setPen(pen);
     int r = (w / 3 - dm) / 2;
-    int c_y = y + title_h + (4 * h / 7) - dm;
-    QRect circle1o(m + x, c_y - r, 2 * r, 2 * r);
-    painter.drawEllipse(circle1o);
-    QRect circle1i(m + x + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
-    painter.drawEllipse(circle1i);
-    QRect circle2o(m + x + 2 * w / 3, c_y - r, 2 * r, 2 * r);
-    painter.drawEllipse(circle2o);
-    QRect circle2i(m + x + 2 * w / 3 + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
-    painter.drawEllipse(circle2i);
-    painter.translate(m + x + r, c_y);
-    for (int i = 0; i < 12; ++i) {
-        painter.drawLine(0, - r, 0, 2 * dm - r);
-        painter.rotate(30.0);
+    int year = QDate::currentDate().year(), month = 0;
+    int year_next = 0, month_next = 0;
+    if (detailed && attributes.contains("date")) {
+        year = attributes.value("date").toString().left(4).toInt();
+        month = attributes.value("date").toString().mid(5, 2).toInt();
+        if (attributes.contains("next_inspection")) {
+            year_next = attributes.value("next_inspection").toString().left(4).toInt();
+            month_next = attributes.value("next_inspection").toString().mid(5, 2).toInt();
+        }
     }
-    painter.restore(); painter.save(); painter.setPen(pen);
-    painter.translate(m + x + 2 * w / 3 + r, c_y);
-    for (int i = 0; i < 12; ++i) {
-        painter.drawLine(0, - r, 0, 2 * dm - r);
-        painter.rotate(30.0);
+    int c_y = y + title_h + (4 * h / 7) - dm;
+    int c_x[] = { m + x, m + x + 2 * w / 3 };
+    for (int i = 0; i < 2; ++i) {
+        QRect circle_o(c_x[i], c_y - r, 2 * r, 2 * r);
+        painter.drawEllipse(circle_o);
+        QRect circle_i(c_x[i] + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
+        painter.drawEllipse(circle_i);
+        if (!detailed) {
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year).right(2));
+            painter.drawText(c_x[i] + r, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 1).right(2));
+            painter.drawText(c_x[i] + 3 * dm, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 2).right(2));
+            painter.drawText(c_x[i] + r, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 3).right(2));
+        } else if (!i) {
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, toString(year));
+        } else if (year_next) {
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, toString(year_next));
+        }
+    }
+    for (int i = 0; i < 2; ++i) {
+        painter.restore(); painter.save(); painter.setPen(pen);
+        painter.translate(c_x[i] + r, c_y);
+        for (int j = 0; j < 12; ++j) {
+            painter.drawLine(0, - r, 0, 2 * dm - r);
+            if ((!i && month == j + 1) || (i && month_next == j + 1)) {
+                painter.rotate(15.0);
+                painter.save();
+                painter.setPen(QPen(Qt::NoPen));
+                painter.setBrush(QBrush(Qt::black));
+                painter.drawEllipse(QPoint(0, dm - r), m, m);
+                painter.restore();
+                painter.rotate(15.0);
+            } else {
+                painter.rotate(30.0);
+            }
+        }
     }
     painter.restore();
 }
