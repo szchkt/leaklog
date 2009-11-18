@@ -290,7 +290,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
         circuits_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
     ListOfStringVariantMaps circuits(circuits_record.listAll());
-    out << "<table cellspacing=\"0\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int cc_length = QString("circuit::").length();
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = dict_attrnames.indexOfKey("circuit::id"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("circuit::"); ++n) {
@@ -338,7 +338,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     }
     out << "</table>";
     if (show_disused) {
-        out << "<br><table cellspacing=\"0\" style=\"width:100%;\"><tr>";
+        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
         out << "<th colspan=\"5\" style=\"font-size: large;\">" << tr("Disused circuits") << "</th></tr><tr>";
         out << "<th>" << dict_attrnames.value("circuit::id") << "</th>";
         out << "<th>" << dict_attrnames.value("circuit::manufacturer") << "</th>";

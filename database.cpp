@@ -296,6 +296,12 @@ void MainWindow::openDatabase(QString path)
             return;
         }
     } else {
+        QFile file(path);
+        if (!file.exists()) {
+            QMessageBox::critical(this, tr("Open database - Leaklog"), tr("File %1 does not exist.").arg(path));
+            this->setWindowTitle(tr("Leaklog"));
+            return;
+        }
         db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(path);
         if (!db.open()) {
@@ -353,6 +359,9 @@ void MainWindow::openDatabase(QString path)
     enableTools();
     //loadTable(cb_table_edit->currentText());
     navigation->setView(Navigation::ServiceCompany);
+    query.exec("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
+    if (!query.next())
+        QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
 }
 
 void MainWindow::save()
