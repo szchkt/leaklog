@@ -68,6 +68,7 @@ MainWindow::MainWindow()
     selected_inspector = -1;
     database_locked = false;
     show_leaked_in_store_in_service_company_view = false;
+    check_for_updates = true;
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
@@ -941,6 +942,8 @@ void MainWindow::loadSettings()
     this->restoreState(settings.value("window_state").toByteArray(), 0);
     actionShow_icons_only->setChecked(settings.value("toolbar_icons_only", false).toBool());
     showIconsOnly(actionShow_icons_only->isChecked());
+    check_for_updates = settings.value("check_for_updates", true).toBool();
+    if (check_for_updates) checkForUpdates();
 }
 
 void MainWindow::saveSettings()
@@ -1012,12 +1015,17 @@ void MainWindow::httpRequestFinished(bool error)
 {
     httpRequestFinished_start:
     if (error) {
-        switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
-            case 0: // Try again
-                checkForUpdates(); return; break;
-            case 1: // Cancel
-                return; break;
+        if (!check_for_updates) {
+            switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
+                case 0: // Try again
+                    checkForUpdates(); break;
+                case 1: // Cancel
+                    break;
+            }
+        } else {
+            check_for_updates = false;
         }
+        return;
     }
     QString str(http_buffer->data()); QTextStream in(&str);
     if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
@@ -1042,7 +1050,8 @@ void MainWindow::httpRequestFinished(bool error)
     QString release_notes;
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
     if (f_current_ver <= F_LEAKLOG_VERSION) {
-        QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
+        if (!check_for_updates)
+            QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
     } else {
         QString info; QTextStream out(&info);
         out << "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body><p>" << endl;
@@ -1057,6 +1066,7 @@ void MainWindow::httpRequestFinished(bool error)
         out << "</p></body></html>";
         QMessageBox::information(this, tr("Leaklog"), info);
     }
+    check_for_updates = false;
 }
 
 void MainWindow::about()

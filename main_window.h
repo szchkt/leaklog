@@ -205,5 +205,6 @@ private:
     QSqlDatabase db;
     QComboBox * cb_lang;
     QMap<QString, QString> leaklog_i18n;
+    bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;
 };
