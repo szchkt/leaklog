@@ -920,8 +920,9 @@
     <message>
         <location filename="../database.cpp" line="181"/>
         <location filename="../database.cpp" line="295"/>
-        <location filename="../database.cpp" line="303"/>
-        <location filename="../database.cpp" line="400"/>
+        <location filename="../database.cpp" line="302"/>
+        <location filename="../database.cpp" line="309"/>
+        <location filename="../database.cpp" line="409"/>
         <location filename="../main_window.cpp" line="996"/>
         <location filename="../main_window.cpp" line="1015"/>
         <location filename="../main_window.cpp" line="1045"/>
@@ -1011,21 +1012,21 @@
     </message>
     <message>
         <location filename="../database.cpp" line="34"/>
-        <location filename="../database.cpp" line="963"/>
+        <location filename="../database.cpp" line="972"/>
         <location filename="../main_window.cpp" line="1015"/>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="173"/>
-        <location filename="../database.cpp" line="1170"/>
+        <location filename="../database.cpp" line="1179"/>
         <source>untitled.lklg</source>
         <translation>nepomenovany.lklg</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="180"/>
-        <location filename="../database.cpp" line="381"/>
-        <location filename="../database.cpp" line="1178"/>
+        <location filename="../database.cpp" line="390"/>
+        <location filename="../database.cpp" line="1187"/>
         <location filename="../main_window.cpp" line="382"/>
         <source>Cannot write file %1:
 %2.</source>
@@ -1034,43 +1035,53 @@
     </message>
     <message>
         <location filename="../database.cpp" line="294"/>
-        <location filename="../database.cpp" line="302"/>
-        <location filename="../database.cpp" line="1212"/>
+        <location filename="../database.cpp" line="308"/>
+        <location filename="../database.cpp" line="1221"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation>Nemôžem čítať súbor %1:
 %2.</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="338"/>
-        <location filename="../database.cpp" line="938"/>
-        <location filename="../database.cpp" line="1031"/>
-        <location filename="../database.cpp" line="1051"/>
-        <location filename="../database.cpp" line="1225"/>
+        <location filename="../database.cpp" line="301"/>
+        <source>File %1 does not exist.</source>
+        <translation>Súbor %1 neexistuje.</translation>
+    </message>
+    <message>
+        <location filename="../database.cpp" line="344"/>
+        <location filename="../database.cpp" line="947"/>
+        <location filename="../database.cpp" line="1040"/>
+        <location filename="../database.cpp" line="1060"/>
+        <location filename="../database.cpp" line="1234"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="496"/>
+        <location filename="../database.cpp" line="364"/>
+        <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
+        <translation>Mali by ste pridať záznam o kúpe pre každé chladivo na sklade. Môžete tak urobiť kliknutím na tlačidlo &quot;Pridať záznam o nakladaní s chladivom&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../database.cpp" line="505"/>
         <source>Remove customer - Leaklog</source>
         <translation>Odstrániť zákazníka - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="496"/>
+        <location filename="../database.cpp" line="505"/>
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného zákazníka?
 Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="497"/>
-        <location filename="../database.cpp" line="566"/>
-        <location filename="../database.cpp" line="627"/>
-        <location filename="../database.cpp" line="681"/>
-        <location filename="../database.cpp" line="781"/>
-        <location filename="../database.cpp" line="839"/>
-        <location filename="../database.cpp" line="1066"/>
-        <location filename="../database.cpp" line="1123"/>
+        <location filename="../database.cpp" line="506"/>
+        <location filename="../database.cpp" line="575"/>
+        <location filename="../database.cpp" line="636"/>
+        <location filename="../database.cpp" line="690"/>
+        <location filename="../database.cpp" line="790"/>
+        <location filename="../database.cpp" line="848"/>
+        <location filename="../database.cpp" line="1075"/>
+        <location filename="../database.cpp" line="1132"/>
         <source>REMOVE</source>
         <translation>ODSTRÁNIŤ</translation>
     </message>
@@ -1108,7 +1119,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <translation>about:blank</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="915"/>
+        <location filename="../database.cpp" line="924"/>
         <source>Search:</source>
         <translation>Hľadať:</translation>
     </message>
@@ -1129,7 +1140,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <translation>Tabuľka:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="963"/>
+        <location filename="../database.cpp" line="972"/>
         <location filename="../main_window.ui" line="744"/>
         <source>Remove</source>
         <translation>Odstrániť</translation>
@@ -1326,56 +1337,56 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <translation>Panel nástrojov</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="565"/>
+        <location filename="../database.cpp" line="574"/>
         <source>Remove circuit - Leaklog</source>
         <translation>Odstrániť okruh - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="565"/>
+        <location filename="../database.cpp" line="574"/>
         <source>Are you sure you want to remove the selected circuit?
 To remove all data about the circuit &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný okruh?
 Na odstránenie všetkých údajov o okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="626"/>
+        <location filename="../database.cpp" line="635"/>
         <source>Remove inspection - Leaklog</source>
         <translation>Odstrániť kontrolu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="626"/>
+        <location filename="../database.cpp" line="635"/>
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú kontrolu?
 Na odstránenie všetkých údajov o kontrole &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="780"/>
-        <location filename="../database.cpp" line="963"/>
+        <location filename="../database.cpp" line="789"/>
+        <location filename="../database.cpp" line="972"/>
         <source>Remove variable - Leaklog</source>
         <translation>Odstrániť premennú - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="780"/>
+        <location filename="../database.cpp" line="789"/>
         <source>Are you sure you want to remove the selected variable?
 To remove the variable &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú premennú?
 Na odstránenie premennej &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="838"/>
+        <location filename="../database.cpp" line="847"/>
         <source>Remove table - Leaklog</source>
         <translation>Odstrániť tabuľku - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="838"/>
+        <location filename="../database.cpp" line="847"/>
         <source>Are you sure you want to remove the selected table?
 To remove the table &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú tabuľku?
 Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="909"/>
+        <location filename="../database.cpp" line="918"/>
         <source>Add existing variable - Leaklog</source>
         <translation>Pridať existujúcu premennú - Leaklog</translation>
     </message>
@@ -1431,7 +1442,7 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <translation>Upraviť tabuľku</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="963"/>
+        <location filename="../database.cpp" line="972"/>
         <source>Are you sure you want to remove the variable &quot;%1&quot; from the selected table?</source>
         <translation>Naozaj chcete odstrániť premennú &quot;%1&quot; z vybranej tabuľky?</translation>
     </message>
@@ -1454,12 +1465,12 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <translation>Importovať údaje</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1065"/>
+        <location filename="../database.cpp" line="1074"/>
         <source>Remove warning - Leaklog</source>
         <translation>Odstrániť upozornenie - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1065"/>
+        <location filename="../database.cpp" line="1074"/>
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybrané upozornenie?
@@ -1919,7 +1930,7 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
     </message>
     <message>
         <location filename="../database.cpp" line="173"/>
-        <location filename="../database.cpp" line="1170"/>
+        <location filename="../database.cpp" line="1179"/>
         <source>Leaklog Database (*.lklg)</source>
         <translation>Databáza programu Leaklog (*.lklg)</translation>
     </message>
@@ -1927,24 +1938,25 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <location filename="../database.cpp" line="220"/>
         <location filename="../database.cpp" line="221"/>
         <location filename="../database.cpp" line="294"/>
-        <location filename="../database.cpp" line="302"/>
+        <location filename="../database.cpp" line="301"/>
+        <location filename="../database.cpp" line="308"/>
         <location filename="../main_window.cpp" line="254"/>
         <source>Open database - Leaklog</source>
         <translation>Otvoriť databázu - Leaklog</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="221"/>
-        <location filename="../database.cpp" line="1206"/>
+        <location filename="../database.cpp" line="1215"/>
         <source>Leaklog Databases (*.lklg);;All files (*.*)</source>
         <translation>Databázy programu Leaklog (*.lklg);;Všetky súbory (*.*)</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="381"/>
+        <location filename="../database.cpp" line="390"/>
         <source>Save database - Leaklog</source>
         <translation>Uložiť databázu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="395"/>
+        <location filename="../database.cpp" line="404"/>
         <source>Close database - Leaklog</source>
         <translation>Zatvoriť databázu - Leaklog</translation>
     </message>
@@ -1954,18 +1966,18 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Zoznam okruhov</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="780"/>
+        <location filename="../database.cpp" line="789"/>
         <source>Remove subvariable - Leaklog</source>
         <translation>Odstrániť podpremennú - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="867"/>
+        <location filename="../database.cpp" line="876"/>
         <source>None</source>
         <translation>Žiadna</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="868"/>
-        <location filename="../database.cpp" line="888"/>
+        <location filename="../database.cpp" line="877"/>
+        <location filename="../database.cpp" line="897"/>
         <location filename="../view.cpp" line="842"/>
         <source>Sum</source>
         <translation>Spolu</translation>
@@ -1992,13 +2004,13 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Pridať</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1166"/>
+        <location filename="../database.cpp" line="1175"/>
         <source>Export customer data - Leaklog</source>
         <translation>Exportovať údaje o zákazníkovi - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1206"/>
-        <location filename="../database.cpp" line="1212"/>
+        <location filename="../database.cpp" line="1215"/>
+        <location filename="../database.cpp" line="1221"/>
         <source>Import data - Leaklog</source>
         <translation>Importovať údaje - Leaklog</translation>
     </message>
@@ -2161,10 +2173,10 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Stiahnuť zdrojový kód</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1256"/>
-        <location filename="../database.cpp" line="1300"/>
-        <location filename="../database.cpp" line="1396"/>
-        <location filename="../database.cpp" line="1422"/>
+        <location filename="../database.cpp" line="1265"/>
+        <location filename="../database.cpp" line="1309"/>
+        <location filename="../database.cpp" line="1405"/>
+        <location filename="../database.cpp" line="1431"/>
         <location filename="../view.cpp" line="327"/>
         <location filename="../view.cpp" line="537"/>
         <location filename="../view.cpp" line="964"/>
@@ -2172,8 +2184,8 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Áno</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1256"/>
-        <location filename="../database.cpp" line="1300"/>
+        <location filename="../database.cpp" line="1265"/>
+        <location filename="../database.cpp" line="1309"/>
         <location filename="../view.cpp" line="327"/>
         <location filename="../view.cpp" line="537"/>
         <location filename="../view.cpp" line="964"/>
@@ -2181,57 +2193,57 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Nie</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1285"/>
-        <location filename="../database.cpp" line="1328"/>
-        <location filename="../database.cpp" line="1377"/>
-        <location filename="../database.cpp" line="1404"/>
+        <location filename="../database.cpp" line="1294"/>
+        <location filename="../database.cpp" line="1337"/>
+        <location filename="../database.cpp" line="1386"/>
+        <location filename="../database.cpp" line="1413"/>
         <source>Do not import</source>
         <translation>Neimportovať</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1273"/>
-        <location filename="../database.cpp" line="1316"/>
-        <location filename="../database.cpp" line="1380"/>
-        <location filename="../database.cpp" line="1406"/>
+        <location filename="../database.cpp" line="1282"/>
+        <location filename="../database.cpp" line="1325"/>
+        <location filename="../database.cpp" line="1389"/>
+        <location filename="../database.cpp" line="1415"/>
         <source>Import</source>
         <translation>Importovať</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1167"/>
+        <location filename="../database.cpp" line="1176"/>
         <source>Export circuit data - Leaklog</source>
         <translation>Exportovať údaje o okruhu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1168"/>
+        <location filename="../database.cpp" line="1177"/>
         <source>Export inspection data - Leaklog</source>
         <translation>Exportovať údaje o kontrole - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1169"/>
+        <location filename="../database.cpp" line="1178"/>
         <source>Export data - Leaklog</source>
         <translation>Exportovať údaje - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1276"/>
-        <location filename="../database.cpp" line="1319"/>
+        <location filename="../database.cpp" line="1285"/>
+        <location filename="../database.cpp" line="1328"/>
         <source>Use existing and import</source>
         <translation>Použiť existujúcu a importovať</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1278"/>
-        <location filename="../database.cpp" line="1321"/>
-        <location filename="../database.cpp" line="1380"/>
-        <location filename="../database.cpp" line="1406"/>
+        <location filename="../database.cpp" line="1287"/>
+        <location filename="../database.cpp" line="1330"/>
+        <location filename="../database.cpp" line="1389"/>
+        <location filename="../database.cpp" line="1415"/>
         <source>Overwrite and import</source>
         <translation>Prepísať a importovať</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1122"/>
+        <location filename="../database.cpp" line="1131"/>
         <source>Remove inspector - Leaklog</source>
         <translation>Odstrániť kontrolóra - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="1122"/>
+        <location filename="../database.cpp" line="1131"/>
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného kontrolóra?
@@ -2607,12 +2619,12 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Včera</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="680"/>
+        <location filename="../database.cpp" line="689"/>
         <source>Remove repair - Leaklog</source>
         <translation>Odstrániť opravu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="680"/>
+        <location filename="../database.cpp" line="689"/>
         <source>Are you sure you want to remove the selected repair?
 To remove all data about the repair &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú opravu?
@@ -2655,6 +2667,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Odstrániť opravu</translation>
     </message>
     <message>
+        <location filename="../database.cpp" line="364"/>
         <location filename="../view.cpp" line="129"/>
         <source>Refrigerant management</source>
         <translation>Nakladanie s chladivami</translation>
@@ -2737,8 +2750,8 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Sklad</translation>
     </message>
     <message>
-        <location filename="../database.cpp" line="869"/>
-        <location filename="../database.cpp" line="889"/>
+        <location filename="../database.cpp" line="878"/>
+        <location filename="../database.cpp" line="898"/>
         <location filename="../view.cpp" line="843"/>
         <source>Average</source>
         <translation>Priemer</translation>
