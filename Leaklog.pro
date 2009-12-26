@@ -5,6 +5,7 @@ FORMS        += main_window.ui \
                 import_dialogue.ui \
                 navigation.ui
 HEADERS      += global.h \
+                defs.h \
                 refrigerants.h \
                 main.h \
                 main_window.h \
@@ -21,10 +22,18 @@ HEADERS      += global.h \
                 mtrecord.h \
                 mtsqlqueryresult.h \
                 mtcheckboxgroup.h \
+                input_widgets.h \
                 records.h \
+                report_data.h \
                 report_data_controller.h \
                 sha256.h \
-                navigation.h
+                navigation.h \
+                highlighter.h \
+                variables.h \
+                warnings.h \
+                mtvariant.h \
+                mtwebpage.h \
+                mttextstream.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -40,10 +49,16 @@ SOURCES      += global.cpp \
                 mtaddress.cpp \
                 mtrecord.cpp \
                 mtsqlqueryresult.cpp \
+                input_widgets.cpp \
                 records.cpp \
+                report_data.cpp \
                 report_data_controller.cpp \
                 sha256.cpp \
-                navigation.cpp
+                navigation.cpp \
+                highlighter.cpp \
+                variables.cpp \
+                warnings.cpp \
+                mtwebpage.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser

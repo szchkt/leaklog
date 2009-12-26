@@ -87,23 +87,6 @@ void Navigation::connectSlots(QObject * receiver)
     emit viewChanged(view());
 }
 
-QString Navigation::currentView()
-{
-    switch (view()) {
-        case Navigation::ServiceCompany: return tr("Service company"); break;
-        case Navigation::ListOfCustomers: return tr("List of customers"); break;
-        case Navigation::ListOfCircuits: return tr("List of circuits"); break;
-        case Navigation::ListOfInspections: return tr("List of inspections"); break;
-        case Navigation::Inspection: return tr("Inspection details"); break;
-        case Navigation::TableOfInspections: return tr("Table of inspections"); break;
-        case Navigation::ListOfRepairs: return tr("List of repairs"); break;
-        case Navigation::ListOfInspectors: return tr("List of inspectors"); break;
-        case Navigation::LeakagesByApplication: return tr("Leakages by application"); break;
-        case Navigation::Agenda: return tr("Agenda"); break;
-    }
-    return tr("Service company");
-}
-
 Navigation::View Navigation::view()
 {
     if (btngrp_view->checkedId() != -1)

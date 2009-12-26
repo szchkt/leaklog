@@ -20,11 +20,11 @@
 #ifndef MTADDRESS_H
 #define MTADDRESS_H
 
-#include <QStringList>
 #include <QFrame>
-#include <QGridLayout>
-#include <QLineEdit>
-#include <QLabel>
+
+class QStringList;
+class QLabel;
+class QLineEdit;
 
 class MTAddress
 {

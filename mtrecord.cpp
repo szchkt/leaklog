@@ -17,11 +17,16 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
+#include "mtrecord.h"
 #include "global.h"
+
+#include "QSqlQuery"
+#include "QSqlRecord"
 
 using namespace Global;
 
-MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents)
+MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
+QObject()
 {
     r_table = table;
     r_id_field = id_field;

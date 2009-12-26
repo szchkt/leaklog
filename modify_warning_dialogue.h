@@ -21,9 +21,13 @@
 #define MODIFY_WARNING_DIALOGUE_H
 
 #include "modify_dialogue.h"
+#include "mtdictionary.h"
 #include "mtwidgetpalettes.h"
 
-#include <QToolButton>
+class WarningRecord;
+class QComboBox;
+class QLineEdit;
+class QPlainTextEdit;
 
 class AttributeFilters;
 

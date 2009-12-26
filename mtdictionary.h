@@ -17,6 +17,9 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
+#ifndef MTDICTIONARY_H
+#define MTDICTIONARY_H
+
 #include <QStringList>
 
 class MTDictionary
@@ -109,3 +112,5 @@ private:
     QStringList dict_keys;
     QStringList dict_values;
 };
+
+#endif // MTDICTIONARY_H

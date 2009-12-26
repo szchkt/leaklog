@@ -17,7 +17,13 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "main_window.h"
+#include "mtaddress.h"
+
+// Qt::escape()
+#include <QTextDocument>
+#include <QLabel>
+#include <QGridLayout>
+#include <QLineEdit>
 
 void MTAddress::clear()
 {

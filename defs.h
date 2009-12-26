@@ -17,38 +17,21 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef REPORT_DATA_CONTROLLER_H
-#define REPORT_DATA_CONTROLLER_H
+#ifndef DEFS_H
+#define DEFS_H
 
-#include <QObject>
+#define LEAKLOG_VERSION "0.9.6"
+#define F_LEAKLOG_VERSION 0.906
+#define LEAKLOG_PREVIEW_VERSION 1
+#define DB_VERSION "0.9.5"
+#define F_DB_VERSION 0.905
 
-class Navigation;
-class QWebView;
-class QWebPage;
+#define REAL_NUMBER_PRECISION 2
+#define REAL_NUMBER_PRECISION_EXP 100.0L
 
-class ReportDataController : public QObject
-{
-    Q_OBJECT
+#define StringVariantMap QMap<QString, QVariant>
+#define ListOfStringVariantMaps QList<StringVariantMap>
+#define MapOfStringVariantMaps QMap<QString, StringVariantMap>
+#define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
 
-public:
-    ReportDataController(QWebView *, Navigation *);
-
-private slots:
-    void updateProgressBar(int);
-    void enableAutofill();
-    void autofill();
-    void done();
-
-signals:
-    void processing(bool);
-
-protected:
-    int currentReportYear();
-
-private:
-    QWebView * wv_main;
-    QWebPage * wp_default;
-    Navigation * navigation;
-};
-
-#endif // REPORT_DATA_CONTROLLER_H
+#endif // DEFS_H

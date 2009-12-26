@@ -18,6 +18,16 @@
 ********************************************************************/
 
 #include "main_window.h"
+#include "global.h"
+#include "variables.h"
+#include "warnings.h"
+#include "records.h"
+#include "report_data.h"
+#include "mttextstream.h"
+
+#include <QDate>
+
+using namespace Global;
 
 QString MainWindow::viewChanged(int view)
 {
@@ -38,30 +48,30 @@ QString MainWindow::viewChanged(int view)
                 html = viewAllCustomers();
                 break;
             case Navigation::ListOfCircuits:
-                if (selectedCustomer() >= 0) {
-                    html = viewCustomer(toString(selectedCustomer()));
+                if (isCustomerSelected()) {
+                    html = viewCustomer(selectedCustomer());
                 } else {
                     view = Navigation::ListOfCustomers; ok = false;
                 }
                 break;
             case Navigation::ListOfInspections:
-                if (selectedCustomer() >= 0 && selectedCircuit() >= 0) {
-                    html = viewCircuit(toString(selectedCustomer()), toString(selectedCircuit()), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                if (isCustomerSelected() && isCircuitSelected()) {
+                    html = viewCircuit(selectedCustomer(), selectedCircuit(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 } else {
                     view = Navigation::ListOfCircuits; ok = false;
                 }
                 break;
             case Navigation::Inspection:
-                if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && !selectedInspection().isEmpty()) {
-                    html = viewInspection(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+                if (isCustomerSelected() && isCircuitSelected() && isInspectionSelected()) {
+                    html = viewInspection(selectedCustomer(), selectedCircuit(), selectedInspection());
                 } else {
                     view = Navigation::ListOfInspections; ok = false;
                 }
                 break;
             case Navigation::TableOfInspections:
                 cb_table_edit->setCurrentIndex(navigation->tableComboBox()->currentIndex());
-                if (selectedCustomer() >= 0 && selectedCircuit() >= 0 && navigation->tableComboBox()->currentIndex() >= 0) {
-                    html = viewTable(toString(selectedCustomer()), toString(selectedCircuit()), navigation->tableComboBox()->currentText(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                if (isCustomerSelected() && isCircuitSelected() && navigation->tableComboBox()->currentIndex() >= 0) {
+                    html = viewTable(selectedCustomer(), selectedCircuit(), navigation->tableComboBox()->currentText(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 } else {
                     view = Navigation::ListOfCircuits; ok = false;
                 }
@@ -70,7 +80,7 @@ QString MainWindow::viewChanged(int view)
                 html = viewRepairs(selectedRepair(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 break;
             case Navigation::ListOfInspectors:
-                html = viewAllInspectors(toString(selectedInspector()));
+                html = viewAllInspectors(selectedInspector());
                 break;
             case Navigation::LeakagesByApplication:
                 html = viewLeakagesByApplication();
@@ -84,6 +94,41 @@ QString MainWindow::viewChanged(int view)
         }
     } while (!ok);
     wv_main->setHtml(html, QUrl("qrc:/html/")); return html;
+}
+
+QString MainWindow::currentView()
+{
+    QString view = tr("Service company");
+    switch (navigation->view()) {
+        case Navigation::ServiceCompany: view = QApplication::translate("Navigation", "Service company"); break;
+        case Navigation::ListOfCustomers: view = QApplication::translate("Navigation", "List of customers"); break;
+        case Navigation::ListOfCircuits:
+            view = Customer(selectedCustomer()).stringValue("company");
+            break;
+        case Navigation::ListOfInspections:
+            view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
+            view = Customer(selectedCustomer()).stringValue("company")
+                   + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
+                   + " - " + QApplication::translate("Navigation", "List of inspections");
+            break;
+        case Navigation::Inspection:
+            view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
+            view = Customer(selectedCustomer()).stringValue("company")
+                   + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
+                   + " - " + selectedInspection();
+            break;
+        case Navigation::TableOfInspections:
+            view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
+            view = Customer(selectedCustomer()).stringValue("company")
+                   + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
+                   + " - " + QApplication::translate("Navigation", "Table of inspections");
+            break;
+        case Navigation::ListOfRepairs: view = QApplication::translate("Navigation", "List of repairs"); break;
+        case Navigation::ListOfInspectors: view = QApplication::translate("Navigation", "List of inspectors"); break;
+        case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by application"); break;
+        case Navigation::Agenda: view = QApplication::translate("Navigation", "Agenda"); break;
+    }
+    return view;
 }
 
 QString MainWindow::viewServiceCompany(int since)
@@ -103,7 +148,7 @@ QString MainWindow::viewServiceCompany(int since)
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
         out << "<num_attr>" << num_valid << "</num_attr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << dict_attrnames.value(n) << "&nbsp;</td>";
-        out << "<td>" << MTVariant(serv_company.value(attr_value), dict_fieldtypes.value(attr_value)) << "</td></tr>";
+        out << "<td>" << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)) << "</td></tr>";
         num_valid++;
     }
     if (num_valid != 0) {
@@ -196,7 +241,7 @@ QString MainWindow::viewServiceCompany(int since)
             last_year = year;
             out << "<tr><th rowspan=\"<rowspan />\"><a href=\"toggledetailedview:" << year << "\">" << year << "</a></th>";
             int row_count = 0;
-            sums_iterator = data.sums_map.constFind(toString(year));
+            sums_iterator = data.sums_map.constFind(QString::number(year));
             if (++sums_iterator != data.sums_map.constEnd()) {
                 while (sums_iterator != data.sums_map.constEnd() && (sum_list = sums_iterator.value())) {
                     if (row_count) { out << "</tr><tr>"; }
@@ -211,7 +256,7 @@ QString MainWindow::viewServiceCompany(int since)
                 }
             }
             out << "</tr>";
-            html.replace("<rowspan />", toString(row_count));
+            html.replace("<rowspan />", QString::number(row_count));
         }
         if (years_expanded_in_service_company_view.contains(year)) {
             link = i.value().at(0);
@@ -264,7 +309,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     else { out << "<a href=\"customer:" << customer_id << "/modify\">" << tr("Customer") << "</a>"; }
     out << "</th></tr>";
     out << thead;
-    QString id; QString highlighted_id = toString(selectedCustomer());
+    QString id; QString highlighted_id = selectedCustomer();
     for (int i = 0; i < list.count(); ++i) {
         id = list.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'customer:" << id << "'\" style=\"cursor: pointer;";
@@ -274,7 +319,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
         out << "<td>" << toolTipLink("customer", id.rightJustified(8, '0'), id) << "</td>";
         for (int n = dict_attrnames.indexOfKey("customer::id") + 1; n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("customer::"); ++n) {
             out << "<td>" << MTVariant(list.at(i).value(dict_attrnames.key(n).mid(cu_length)),
-                                       dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
+                                       (MTVariant::Type)dict_fieldtypes.value(dict_attrnames.key(n).mid(cu_length))) << "</td>";
         }
         out << "<td>" << Circuit(id, "").listAll("id").count() << "</td>";
         out << "<td>" << MTRecord("inspections", "date", "", MTDictionary("customer", id)).listAll("date").count() << "</td>";
@@ -306,7 +351,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     out << "</th></tr>";
     out << thead;
     QString attr_value; QStringList dict_value; QString id;
-    QString highlighted_id = toString(selectedCircuit());
+    QString highlighted_id = selectedCircuit();
     bool show_disused = false;
     for (int i = 0; i < circuits.count(); ++i) {
         if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt()) { show_disused = true; continue; }
@@ -466,10 +511,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     bool repair = inspection.value("repair").toInt();
     bool locked = isRecordLocked(inspection_date);
     Inspection nom_inspection_record(customer_id, circuit_id, "");
-    nom_inspection_record.parents()->insert("nominal", "1");
+    nom_inspection_record.parents().insert("nominal", "1");
     StringVariantMap nominal_ins = nom_inspection_record.list();
-    Circuit circuit_rec(customer_id, circuit_id);
-    QString circuit_name = circuit_rec.list("name").value("name").toString();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
@@ -516,10 +559,10 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
             expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), used_ids);
         }
         if (expression.count()) {
-            ins_value = toString(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
+            ins_value = QString::number(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
             if (!ok_eval) continue;
             if (compare_nom) {
-                nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
+                nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                 if (!ok_eval) compare_nom = false;
             }
         } else {
@@ -532,7 +575,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
         //if (ins_value.isEmpty()) continue;
         if (var_id == "inspector" && !ins_value.isEmpty()) {
             Inspector inspector(ins_value);
-            ins_value = inspector.list("person").value("person", ins_value).toString();
+            ins_value = inspector.stringValue("person", ins_value);
         } else if (var_type == "bool") {
             ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
         }
@@ -797,11 +840,11 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                         }
                     } else {
                         MTDictionary expression = parseExpression(subvariable.value("value").toString(), used_ids);
-                        ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
+                        ins_value = QString::number(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                         if (!ok_eval) ins_value = "";
                         if (nominal_ins.isEmpty()) compare_nom = false;
                         if (compare_nom) {
-                            nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
+                            nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                             if (!ok_eval) compare_nom = false;
                         }
                     }
@@ -817,17 +860,17 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     }
                 } else {
                     MTDictionary expression = parseExpression(variable.value("value").toString(), used_ids);
-                    ins_value = toString(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
+                    ins_value = QString::number(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
                     if (!ok_eval) ins_value = "";
                     if (nominal_ins.isEmpty()) compare_nom = false;
                     if (compare_nom) {
-                        nom_value = toString(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
+                        nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
                         if (!ok_eval) compare_nom = false;
                     }
                 }
                 if (table_vars.at(n) == "inspector" && !ins_value.isEmpty()) {
                     Inspector inspector(ins_value);
-                    ins_value = inspector.list("person").value("person", ins_value).toString();
+                    ins_value = inspector.stringValue("person", ins_value);
                 }
                 writeTableVarCell(out, variable.value("type").toString(), ins_value, nom_value, variable.value("col_bg").toString(), compare_nom, rowspan, variable.value("tolerance").toDouble());
             }
@@ -1054,7 +1097,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     MTDictionary parent;
     if (!customer_id.isEmpty()) {
         Customer customer(customer_id);
-        parent.insert("customer", customer.list("company").value("company").toString());
+        parent.insert("customer", customer.stringValue("company"));
         writeCustomersTable(out, customer_id);
         out << "<br>";
     }

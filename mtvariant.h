@@ -17,38 +17,40 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef REPORT_DATA_CONTROLLER_H
-#define REPORT_DATA_CONTROLLER_H
+#ifndef MTVARIANT_H
+#define MTVARIANT_H
 
-#include <QObject>
+#include "global.h"
+#include "mtaddress.h"
 
-class Navigation;
-class QWebView;
-class QWebPage;
+#include <QVariant>
 
-class ReportDataController : public QObject
+class MTVariant
 {
-    Q_OBJECT
-
 public:
-    ReportDataController(QWebView *, Navigation *);
+    enum Type { Default = 0, Address = 128 };
+    MTVariant(const QVariant & v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
 
-private slots:
-    void updateProgressBar(int);
-    void enableAutofill();
-    void autofill();
-    void done();
+    inline void setType(Type t) { v_type = t; }
+    inline Type type() const { return v_type; }
+    inline QVariant::Type variantType() const { return v_value.type(); }
+    inline void setValue(const QVariant & v) { v_value = v; }
+    inline QVariant value() const { return v_value; }
 
-signals:
-    void processing(bool);
-
-protected:
-    int currentReportYear();
+    inline QString toString() const {
+        return v_value.toString();
+    }
+    QString toHtml() const {
+        switch (v_type) {
+            case Address: return MTAddress(v_value.toString()).toHtml(); break;
+            case Default: break;
+        }
+        return Global::escapeString(v_value.toString());
+    }
 
 private:
-    QWebView * wv_main;
-    QWebPage * wp_default;
-    Navigation * navigation;
+    QVariant v_value;
+    Type v_type;
 };
 
-#endif // REPORT_DATA_CONTROLLER_H
+#endif // MTVARIANT_H

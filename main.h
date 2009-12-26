@@ -20,10 +20,10 @@
 #ifndef LEAKLOG_MAIN_H
 #define LEAKLOG_MAIN_H
 
+#include "main_window.h"
+
 #include <QApplication>
 #include <QPointer>
-
-#include "main_window.h"
 
 class MTApplication : public QApplication
 {

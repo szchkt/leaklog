@@ -20,16 +20,11 @@
 #ifndef MODIFY_DIALOGUE_H
 #define MODIFY_DIALOGUE_H
 
-#include "records.h"
-
-#include <QTextDocument>
 #include <QDialog>
 #include <QGridLayout>
-#include <QDialogButtonBox>
-#include <QMessageBox>
-#include <QPushButton>
 
-using namespace Global;
+class DBRecord;
+class MDInputWidget;
 
 class ModifyDialogue : public QDialog
 {
@@ -49,16 +44,12 @@ protected:
     ModifyDialogue(QWidget * = NULL);
     void init(DBRecord *);
 
-    inline void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
-    inline int inputWidgetCount() { return md_inputwidgets.count(); }
-    inline void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0) {
-        md_grid_main->addWidget(widget, row, column, alignment);
-    }
-    inline void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0) {
-        md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
-    }
+    void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
+    int inputWidgetCount() { return md_inputwidgets.count(); }
+    void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
+    void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
 
-    inline void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
+    void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
 
     QList<MDInputWidget *> md_inputwidgets;
     DBRecord * md_record;

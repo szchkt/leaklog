@@ -17,9 +17,9 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "global.h"
+#include "mtsqlqueryresult.h"
 
-using namespace Global;
+#include <QSqlRecord>
 
 MTSqlQueryResult::MTSqlQueryResult(const QString & q, QSqlDatabase db)
 {
@@ -72,7 +72,7 @@ void MTSqlQueryResult::saveResult()
     while (_query->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
-            row.insert(toString(i), _query->value(i));
+            row.insert(QString::number(i), _query->value(i));
         }
         _result << row;
     }
@@ -112,7 +112,7 @@ ListOfStringVariantMaps * MTSqlQueryResult::result()
 
 QVariant MTSqlQueryResult::value(int i) const
 {
-    return value(toString(i));
+    return value(QString::number(i));
 }
 
 QVariant MTSqlQueryResult::value(const QString & s) const

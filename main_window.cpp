@@ -18,6 +18,37 @@
 ********************************************************************/
 
 #include "main_window.h"
+#include "global.h"
+#include "records.h"
+#include "report_data_controller.h"
+#include "variables.h"
+#include "mtvariant.h"
+#include "mtwebpage.h"
+#include "about_widget.h"
+#include "sha256.h"
+
+#include <QSettings>
+#include <QTranslator>
+#include <QHttp>
+#include <QBuffer>
+#include <QTextStream>
+#include <QFile>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#include <QPrinter>
+#include <QMessageBox>
+#include <QSqlRecord>
+#include <QSqlError>
+#include <QDate>
+#include <QDateEdit>
+
+using namespace Global;
 
 MainWindow::MainWindow()
 {
@@ -284,7 +315,7 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(0).startsWith("customer:")) {
             id = path.at(0);
             id.remove(0, QString("customer:").length());
-            if (id != toString(selectedCustomer())) {
+            if (id != selectedCustomer()) {
                 loadCustomer(id.toInt(), path.count() <= 1);
             } else if (path.count() <= 1) { navigation->setView(Navigation::ListOfCircuits); }
         } else if (path.at(0).startsWith("repair:")) {
@@ -319,7 +350,7 @@ void MainWindow::executeLink(const QUrl & url)
         if (path.at(1).startsWith("circuit:")) {
             id = path.at(1);
             id.remove(0, QString("circuit:").length());
-            if (id != toString(selectedCircuit())) {
+            if (id != selectedCircuit()) {
                 loadCircuit(id.toInt(), path.count() <= 2);
             } else if (path.count() <= 2) { navigation->setView(Navigation::ListOfInspections); }
         } else if (path.at(1).startsWith("modify")) {
@@ -364,7 +395,7 @@ void MainWindow::print()
 
 void MainWindow::exportPDF()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1-%2.pdf").arg(QFileInfo(db.databaseName()).baseName()).arg(navigation->currentView()), tr("Adobe PDF (*.pdf)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1 - %2.pdf").arg(QFileInfo(db.databaseName()).baseName()).arg(currentView()), tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
     QPrinter printer(QPrinter::HighResolution);
@@ -375,7 +406,7 @@ void MainWindow::exportPDF()
 
 void MainWindow::exportHTML()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"), QString("%1-%2.html").arg(QFileInfo(db.databaseName()).baseName()).arg(navigation->currentView()), tr("Webpage (*.html)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"), QString("%1 - %2.html").arg(QFileInfo(db.databaseName()).baseName()).arg(currentView()), tr("Webpage (*.html)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".html", Qt::CaseInsensitive)) { path.append(".html"); }
     QFile file(path);
@@ -412,9 +443,9 @@ void MainWindow::printDetailedLabel()
 void MainWindow::printLabel(bool detailed)
 {
     if (!db.isOpen()) { return; }
-    if (detailed && selectedCustomer() < 0) { return; }
-    if (detailed && selectedCircuit() < 0) { return; }
-    if (!detailed && selectedInspector() < 0) { return; }
+    if (detailed && !isCustomerSelected()) { return; }
+    if (detailed && !isCircuitSelected()) { return; }
+    if (!detailed && !isInspectorSelected()) { return; }
 
     QMap<QString, QCheckBox *> label_positions;
     QDialog * d = new QDialog(this);
@@ -443,16 +474,16 @@ void MainWindow::printLabel(bool detailed)
     }
     if (!ok) { return; }
 
-    QString selected_inspector = toString(selectedInspector());
+    QString selected_inspector = selectedInspector();
     StringVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", toString(selectedCustomer()).rightJustified(8, '0') + "." + toString(selectedCircuit()).rightJustified(4, '0'));
-        Circuit circuit(toString(selectedCustomer()), toString(selectedCircuit()));
+        attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(4, '0'));
+        Circuit circuit(selectedCustomer(), selectedCircuit());
         attributes.unite(circuit.list("refrigerant, refrigerant_amount, inspection_interval"));
         QSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
-        query.bindValue(":customer_id", selectedCustomer());
-        query.bindValue(":circuit_id", selectedCircuit());
+        query.bindValue(":customer_id", selected_customer);
+        query.bindValue(":circuit_id", selected_circuit);
         query.exec();
         if (query.next()) {
             StringVariantMap inspection;
@@ -460,7 +491,7 @@ void MainWindow::printLabel(bool detailed)
                 inspection.insert(query.record().fieldName(i), query.value(i));
             }
             attributes.insert("date", inspection.value("date").toString());
-            int delay = circuitInspectionInterval(toString(selectedCustomer()), toString(selectedCircuit()), attributes.value("inspection_interval").toInt());
+            int delay = circuitInspectionInterval(selectedCustomer(), selectedCircuit(), attributes.value("inspection_interval").toInt());
             if (delay) {
                 attributes.insert("next_inspection", QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"));
             }
@@ -470,7 +501,7 @@ void MainWindow::printLabel(bool detailed)
             QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
-                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), toString(selectedCustomer()), toString(selectedCircuit())));
+                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), selectedCustomer(), selectedCircuit()));
             }
         }
     }
@@ -577,14 +608,14 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
         QRect circle_i(c_x[i] + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
         painter.drawEllipse(circle_i);
         if (!detailed) {
-            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year).right(2));
-            painter.drawText(c_x[i] + r, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 1).right(2));
-            painter.drawText(c_x[i] + 3 * dm, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 2).right(2));
-            painter.drawText(c_x[i] + r, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, toString(year + 3).right(2));
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year).right(2));
+            painter.drawText(c_x[i] + r, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year + 1).right(2));
+            painter.drawText(c_x[i] + 3 * dm, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year + 2).right(2));
+            painter.drawText(c_x[i] + r, c_y, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year + 3).right(2));
         } else if (!i) {
-            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, toString(year));
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, QString::number(year));
         } else if (year_next) {
-            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, toString(year_next));
+            painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, QString::number(year_next));
         }
     }
     for (int i = 0; i < 2; ++i) {

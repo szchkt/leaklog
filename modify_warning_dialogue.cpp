@@ -18,6 +18,16 @@
 ********************************************************************/
 
 #include "modify_warning_dialogue.h"
+#include "input_widgets.h"
+#include "records.h"
+#include "warnings.h"
+#include "highlighter.h"
+
+#include <QToolButton>
+#include <QMessageBox>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
 
 AttributeFilter::AttributeFilter(AttributeFilters * parent):
 QWidget(parent)

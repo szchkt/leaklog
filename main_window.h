@@ -17,27 +17,21 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
+#include "defs.h"
 #include "ui_main_window.h"
-#include "about_widget.h"
-#include "modify_warning_dialogue.h"
-#include "import_dialogue.h"
-#include "report_data_controller.h"
-#include "sha256.h"
+#include "mtdictionary.h"
 
-#include <QCloseEvent>
-#include <QSettings>
-#include <QTranslator>
-#include <QLocale>
-#include <QFileDialog>
-#include <QInputDialog>
-#include <QBuffer>
-#include <QUrl>
-#include <QPrintPreviewDialog>
-#include <QPrintDialog>
-#include <QPrinter>
-#include <QHttp>
-#include <QBuffer>
-#include <QPainter>
+#include <QSqlDatabase>
+
+class Warnings;
+class MTTextStream;
+class QPushButton;
+class QCloseEvent;
+class QPainter;
+class QUrl;
+class QHttp;
+class QBuffer;
+class QSqlError;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -149,12 +143,18 @@ private:
     void moveTableVariable(bool);
     void loadInspector(int, bool);
     void exportData(const QString &);
-    inline int selectedCustomer() { return selected_customer; }
-    inline int selectedCircuit() { return selected_circuit; }
+    inline bool isCustomerSelected() { return selected_customer >= 0; }
+    inline QString selectedCustomer() { return QString::number(selected_customer); }
+    inline bool isCircuitSelected() { return selected_circuit >= 0; }
+    inline QString selectedCircuit() { return QString::number(selected_circuit); }
+    inline bool isInspectionSelected() { return !selected_inspection.isEmpty(); }
     inline QString selectedInspection() { return selected_inspection; }
+    inline bool isRepairSelected() { return !selected_repair.isEmpty(); }
     inline QString selectedRepair() { return selected_repair; }
-    inline int selectedInspector() { return selected_inspector; }
+    inline bool isInspectorSelected() { return selected_inspector >= 0; }
+    inline QString selectedInspector() { return QString::number(selected_inspector); }
     // VIEW
+    QString currentView();
     QString viewServiceCompany(int);
     QString viewAllCustomers();
     QString viewCustomer(const QString &);
@@ -190,7 +190,7 @@ private:
     MTDictionary dict_attrvalues;
     MTDictionary dict_attrnames;
     QMap<Navigation::View, QString> dict_html;
-    QMap<QString, MTVariant::Type> dict_fieldtypes;
+    QMap<QString, int> dict_fieldtypes;
     QActionGroup * actgrp_view;
     QAction * actionShow_icons_only;
     QLabel * lbl_current_selection;

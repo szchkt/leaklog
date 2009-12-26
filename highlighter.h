@@ -17,38 +17,31 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef REPORT_DATA_CONTROLLER_H
-#define REPORT_DATA_CONTROLLER_H
+#ifndef HIGHLIGHTER_H
+#define HIGHLIGHTER_H
 
-#include <QObject>
+#include <QSyntaxHighlighter>
 
-class Navigation;
-class QWebView;
-class QWebPage;
+class QTextCharFormat;
 
-class ReportDataController : public QObject
+class Highlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    ReportDataController(QWebView *, Navigation *);
-
-private slots:
-    void updateProgressBar(int);
-    void enableAutofill();
-    void autofill();
-    void done();
-
-signals:
-    void processing(bool);
+    Highlighter(QStringList, QTextDocument * = 0);
 
 protected:
-    int currentReportYear();
+    void highlightBlock(const QString &);
 
 private:
-    QWebView * wv_main;
-    QWebPage * wp_default;
-    Navigation * navigation;
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+    QTextCharFormat keywordFormat;
 };
 
-#endif // REPORT_DATA_CONTROLLER_H
+#endif // HIGHLIGHTER_H

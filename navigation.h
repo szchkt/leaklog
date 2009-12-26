@@ -45,7 +45,6 @@ public:
     void connectSlots(QObject *);
 
     // View
-    QString currentView();
     View view();
     void setView(int, bool);
 

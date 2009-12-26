@@ -20,7 +20,7 @@
 #ifndef SHA256_H
 #define SHA256_H
 
-#include <QString>
+class QString;
 
 QString sha256(const QString &);
 

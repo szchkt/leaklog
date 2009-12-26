@@ -23,6 +23,7 @@
 
 #include "sha256.h"
 
+#include <QString>
 #include <QByteArray>
 #include <QVector>
 

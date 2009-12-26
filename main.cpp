@@ -1,7 +1,7 @@
 /******************************************************************************
  *                                  Leaklog                                   *
  * -------------------------------------------------------------------------- *
- * Version:      0.9.5                                                        *
+ * Version:      0.9.6                                                        *
  * Qt version:   4.4.0 or higher required                                     *
  * -------------------------------------------------------------------------- *
  * Leaklog is a leakage control system based on the EU Regulation             *
@@ -14,6 +14,9 @@
  ******************************************************************************/
 
 #include "main.h"
+
+#include <QSettings>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {

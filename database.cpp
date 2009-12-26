@@ -18,6 +18,24 @@
 ********************************************************************/
 
 #include "main_window.h"
+#include "global.h"
+#include "variables.h"
+#include "warnings.h"
+#include "modify_warning_dialogue.h"
+#include "import_dialogue.h"
+#include "records.h"
+#include "mtlistwidget.h"
+
+#include <QMessageBox>
+#include <QFile>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QDialogButtonBox>
+#include <QSqlRecord>
+#include <QSqlError>
+#include <QDateTime>
+
+using namespace Global;
 
 bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
 {
@@ -132,7 +150,7 @@ void MainWindow::initTables(bool transaction)
     if (!pressures_and_temperatures.exists()) {
         set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
-        set.insert("variables", "t;p_0;t_0;delta_t_evap;t_evap_out;t_comp_in;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;t_comp_out");
+        set.insert("variables", "t_sec;p_0;t_0;delta_t_evap;t_evap_out;t_comp_in;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;t_comp_out");
         set.insert("sum", "");
         pressures_and_temperatures.update(set);
         set.clear();
@@ -152,11 +170,11 @@ void MainWindow::initTables(bool transaction)
         table_of_leakages.remove();
         Table table_of_parameters(tr("Table of parameters"));
         table_of_parameters.remove();
-    } else if (v < 0.905) {
-        QStringList table_vars = pressures_and_temperatures.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
+    } else if (v < 0.906) {
+        QStringList table_vars = pressures_and_temperatures.stringValue("variables").split(";", QString::SkipEmptyParts);
         if (table_vars.contains("t")) {
             table_vars.replace(table_vars.indexOf("t"), "t_sec");
-        } else {
+        } else if (!table_vars.contains("t_sec")) {
             table_vars.prepend("t_sec");
         }
         set.clear();
@@ -277,7 +295,7 @@ void MainWindow::openRemote()
     db.setUserName(le_user_name->text());
     db.setPassword(le_password->text());
     if (db.open()) {
-        addRecent("db:QPSQL:" + le_user_name->text() + "@" + le_db_name->text() + "@" + le_server->text() + ":" + toString(spb_port->value()));
+        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(spb_port->value()));
         db.transaction();
         initDatabase(&db, false);
     }
@@ -378,7 +396,7 @@ void MainWindow::saveDatabase(bool compact)
 {
     QStringList errors;
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
-    setDBInfoValueForKey("db_version", toString(F_DB_VERSION));
+    setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
     db.commit();
     if (compact) {
         QSqlQuery query;
@@ -474,10 +492,10 @@ void MainWindow::addCustomer()
 void MainWindow::modifyCustomer()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    Customer record(toString(selectedCustomer()));
+    if (!isCustomerSelected()) { return; }
+    Customer record(selectedCustomer());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
-    QString old_id = toString(selectedCustomer());
+    QString old_id = selectedCustomer();
     if (md->exec() == QDialog::Accepted) {
         if (old_id != record.id()) {
             QSqlQuery update_circuits;
@@ -500,15 +518,15 @@ void MainWindow::modifyCustomer()
 void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
+    if (!isCustomerSelected()) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Customer record(toString(selectedCustomer()));
+    Customer record(selectedCustomer());
     record.remove();
-    Circuit circuits(toString(selectedCustomer()), "");
+    Circuit circuits(selectedCustomer(), "");
     circuits.remove();
-    MTRecord inspections("inspections", "date", "", MTDictionary("customer", toString(selectedCustomer())));
+    MTRecord inspections("inspections", "date", "", MTDictionary("customer", selectedCustomer()));
     inspections.remove();
     selected_customer = -1;
     selected_circuit = -1;
@@ -522,7 +540,7 @@ void MainWindow::loadCustomer(int customer, bool refresh)
 {
     if (customer < 0) { return; }
     selected_customer = customer;
-    selected_customer_company = Customer(toString(customer)).list("company").value("company").toString();
+    selected_customer_company = Customer(QString::number(customer)).stringValue("company");
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfCircuits);
@@ -532,8 +550,8 @@ void MainWindow::loadCustomer(int customer, bool refresh)
 void MainWindow::addCircuit()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    Circuit record(toString(selectedCustomer()), "");
+    if (!isCustomerSelected()) { return; }
+    Circuit record(selectedCustomer(), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -545,16 +563,16 @@ void MainWindow::addCircuit()
 void MainWindow::modifyCircuit()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
-    Circuit record(toString(selectedCustomer()), toString(selectedCircuit()));
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    Circuit record(selectedCustomer(), selectedCircuit());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
-    QString old_id = toString(selectedCircuit());
+    QString old_id = selectedCircuit();
     if (md->exec() == QDialog::Accepted) {
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-            update_inspections.bindValue(":customer_id", selectedCustomer());
+            update_inspections.bindValue(":customer_id", selected_customer);
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
@@ -568,14 +586,14 @@ void MainWindow::modifyCircuit()
 void MainWindow::removeCircuit()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Circuit record(toString(selectedCustomer()), toString(selectedCircuit()));
+    Circuit record(selectedCustomer(), selectedCircuit());
     record.remove();
-    Inspection inspections(toString(selectedCustomer()), toString(selectedCircuit()), "");
+    Inspection inspections(selectedCustomer(), selectedCircuit(), "");
     inspections.remove();
     selected_circuit = -1;
     selected_inspection.clear();
@@ -586,7 +604,7 @@ void MainWindow::removeCircuit()
 
 void MainWindow::loadCircuit(int circuit, bool refresh)
 {
-    if (selectedCustomer() < 0) { return; }
+    if (!isCustomerSelected()) { return; }
     if (circuit < 0) { return; }
     selected_circuit = circuit;
     enableTools();
@@ -598,9 +616,9 @@ void MainWindow::loadCircuit(int circuit, bool refresh)
 void MainWindow::addInspection()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), "");
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    Inspection record(selectedCustomer(), selectedCircuit(), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -612,10 +630,10 @@ void MainWindow::addInspection()
 void MainWindow::modifyInspection()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isEmpty()) { return; }
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (!isInspectionSelected()) { return; }
+    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         enableTools();
@@ -628,13 +646,13 @@ void MainWindow::modifyInspection()
 void MainWindow::removeInspection()
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isEmpty()) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (!isInspectionSelected()) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Inspection record(toString(selectedCustomer()), toString(selectedCircuit()), selectedInspection());
+    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.remove();
     selected_inspection.clear();
     enableTools();
@@ -644,11 +662,11 @@ void MainWindow::removeInspection()
 
 void MainWindow::loadInspection(const QString & inspection, bool refresh)
 {
-    if (selectedCustomer() < 0) { return; }
-    if (selectedCircuit() < 0) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
     selected_inspection = inspection;
-    selected_inspection_is_repair = Inspection(toString(selected_customer), toString(selected_circuit), inspection).list("repair").value("repair").toBool();
+    selected_inspection_is_repair = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool();
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::Inspection);
@@ -659,6 +677,9 @@ void MainWindow::addRepair()
 {
     if (!db.isOpen()) { return; }
     Repair record("");
+    if (isCustomerSelected()) {
+        record.parents().insert("customer", Customer(selectedCustomer()).stringValue("company"));
+    }
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -670,7 +691,7 @@ void MainWindow::addRepair()
 void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
-    if (selectedRepair().isEmpty()) { return; }
+    if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -683,7 +704,7 @@ void MainWindow::modifyRepair()
 void MainWindow::removeRepair()
 {
     if (!db.isOpen()) { return; }
-    if (selectedRepair().isEmpty()) { return; }
+    if (!isRepairSelected()) { return; }
     QString repair = selectedRepair();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
@@ -951,7 +972,7 @@ void MainWindow::addTableVariable()
     }
     if (d->exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
         Table record(cb_table_edit->currentText());
-        QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
+        QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
         StringVariantMap set;
         set.insert("variables", variables.join(";"));
@@ -1010,7 +1031,7 @@ void MainWindow::moveTableVariable(bool up)
     int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
     if (i < 0) { return; }
     Table record(cb_table_edit->currentText());
-    QStringList variables = record.list("variables").value("variables").toString().split(";", QString::SkipEmptyParts);
+    QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);
     if (up) {
         if (i != 0) { i--; } else { i = variables.count(); }
@@ -1100,8 +1121,8 @@ void MainWindow::addInspector()
 void MainWindow::modifyInspector()
 {
     if (!db.isOpen()) { return; }
-    if (selectedInspector() < 0) { return; }
-    QString old_id = toString(selectedInspector());
+    if (!isInspectorSelected()) { return; }
+    QString old_id = selectedInspector();
     Inspector record(old_id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {        
@@ -1126,11 +1147,11 @@ void MainWindow::modifyInspector()
 void MainWindow::removeInspector()
 {
     if (!db.isOpen()) { return; }
-    if (selectedInspector() < 0) { return; }
+    if (!isInspectorSelected()) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Inspector record(toString(selectedInspector()));
+    Inspector record(selectedInspector());
     record.remove();
     selected_inspector = -1;
     enableTools();
@@ -1142,7 +1163,7 @@ void MainWindow::loadInspector(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
     selected_inspector = inspector;
-    selected_inspector_name = Inspector(toString(inspector)).list("person").value("person").toString();
+    selected_inspector_name = Inspector(selectedInspector()).stringValue("person");
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfInspectors);
@@ -1156,21 +1177,21 @@ void MainWindow::exportCustomerData()
 
 void MainWindow::exportCircuitData()
 {
-    if (selectedCircuit() < 0) { return; }
+    if (!isCircuitSelected()) { return; }
     exportData("circuit");
 }
 
 void MainWindow::exportInspectionData()
 {
-    if (selectedCircuit() < 0) { return; }
-    if (selectedInspection().isEmpty()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (!isInspectionSelected()) { return; }
     exportData("inspection");
 }
 
 void MainWindow::exportData(const QString & type)
 {
     if (!db.isOpen()) { return; }
-    if (selectedCustomer() < 0) { return; }
+    if (!isCustomerSelected()) { return; }
     QString title;
     if (type == "customer") { title = tr("Export customer data - Leaklog"); }
     else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }

@@ -17,38 +17,20 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef REPORT_DATA_CONTROLLER_H
-#define REPORT_DATA_CONTROLLER_H
+#ifndef MTWEBPAGE_H
+#define MTWEBPAGE_H
 
-#include <QObject>
+#include <QWebPage>
 
-class Navigation;
-class QWebView;
-class QWebPage;
-
-class ReportDataController : public QObject
+class MTWebPage : public QWebPage
 {
     Q_OBJECT
 
 public:
-    ReportDataController(QWebView *, Navigation *);
-
-private slots:
-    void updateProgressBar(int);
-    void enableAutofill();
-    void autofill();
-    void done();
-
-signals:
-    void processing(bool);
+    MTWebPage(QObject * parent = 0): QWebPage(parent) {}
 
 protected:
-    int currentReportYear();
-
-private:
-    QWebView * wv_main;
-    QWebPage * wp_default;
-    Navigation * navigation;
+    bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
 };
 
-#endif // REPORT_DATA_CONTROLLER_H
+#endif // MTWEBPAGE_H

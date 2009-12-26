@@ -18,6 +18,12 @@
 ********************************************************************/
 
 #include "modify_dialogue.h"
+#include "input_widgets.h"
+#include "records.h"
+
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QMessageBox>
 
 void ModifyDialogue::init(DBRecord * record)
 {
@@ -71,6 +77,16 @@ void ModifyDialogue::setWindowTitle(const QString & title)
     } else {
         this->QDialog::setWindowTitle(title);
     }
+}
+
+void ModifyDialogue::addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment)
+{
+    md_grid_main->addWidget(widget, row, column, alignment);
+}
+
+void ModifyDialogue::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment)
+{
+    md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
 }
 
 void ModifyDialogue::save()

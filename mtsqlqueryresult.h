@@ -22,6 +22,8 @@
 
 #include "mtrecord.h"
 
+#include <QSqlQuery>
+
 class MTSqlQueryResult : public QObject
 {
     Q_OBJECT

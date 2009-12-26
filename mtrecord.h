@@ -20,29 +20,19 @@
 #ifndef MTRECORD_H
 #define MTRECORD_H
 
+#include "defs.h"
 #include "mtdictionary.h"
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QSqlError>
-#include <QSqlField>
-#include <QMultiMap>
+#include <QVariant>
 
-#define StringVariantMap QMap<QString, QVariant>
-
-#define ListOfStringVariantMaps QList<StringVariantMap>
-
-#define MapOfStringVariantMaps QMap<QString, StringVariantMap>
-
-#define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
+class QSqlQuery;
 
 class MTRecord : public QObject
 {
     Q_OBJECT
 
 public:
-    MTRecord() {}
+    MTRecord(): QObject() {}
     MTRecord(const QString &, const QString &, const QString &, const MTDictionary &);
     MTRecord(const MTRecord &);
     MTRecord & operator=(const MTRecord &);
@@ -50,10 +40,16 @@ public:
     inline QString table() const { return r_table; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
-    inline MTDictionary * parents() { return &r_parents; }
+    inline MTDictionary & parents() { return r_parents; }
     bool exists();
     QSqlQuery select(const QString & = "*");
     StringVariantMap list(const QString & = "*");
+    inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
+        return list(field).value(field, default_value);
+    }
+    inline QString stringValue(const QString & field, const QString & default_value = QString()) {
+        return list(field).value(field, default_value).toString();
+    }
     ListOfStringVariantMaps listAll(const QString & = "*");
     MultiMapOfStringVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const StringVariantMap &, bool = false);
