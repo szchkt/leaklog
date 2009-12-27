@@ -100,7 +100,20 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
             query.exec("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')");
         }
     }
-    if (DBInfoValueForKey("db_version").toDouble() < F_DB_VERSION) {
+    double v = DBInfoValueForKey("db_version").toDouble();
+    if (v < 0.906) {
+        query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
+        query.exec("UPDATE inspections SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
+        query.exec("UPDATE repairs SET refr_add_am = 0 WHERE refr_add_am IS NULL");
+        query.exec("UPDATE repairs SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
+        query.exec("UPDATE inspections SET refr_reco = 0 WHERE refr_reco IS NULL");
+        query.exec("UPDATE inspections SET refr_reco_cust = 0 WHERE refr_reco_cust IS NULL");
+        query.exec("UPDATE repairs SET refr_reco = 0 WHERE refr_reco IS NULL");
+        query.exec("UPDATE repairs SET refr_reco_cust = 0 WHERE refr_reco_cust IS NULL");
+        query.exec("UPDATE inspections SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
+        query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
+    }
+    if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
@@ -141,8 +154,8 @@ void MainWindow::initTables(bool transaction)
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_recovery;inspector;operator;rmds;arno");
-        set.insert("sum", "vis_aur_chk;refr_add;refr_recovery");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add;refr_reco");
         leakages.update(set);
         set.clear();
     }
@@ -180,6 +193,14 @@ void MainWindow::initTables(bool transaction)
         set.clear();
         set.insert("variables", table_vars.join(";"));
         pressures_and_temperatures.update(set);
+
+        table_vars = leakages.stringValue("variables").split(";", QString::SkipEmptyParts);
+        if (table_vars.contains("refr_recovery")) {
+            table_vars.replace(table_vars.indexOf("refr_recovery"), "refr_reco");
+            set.clear();
+            set.insert("variables", table_vars.join(";"));
+            leakages.update(set);
+        }
     }
 } // (SCOPE)
     if (transaction) { db.commit(); }

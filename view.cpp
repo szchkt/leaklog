@@ -167,7 +167,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
     out << "<th>" << tr("Recovered in store") << "</th>";
-    out << "<th><a href=\"toggledetailedview:leakedinstore\">" << tr("Leaked in store") << "</a></th></tr>";
+    out << "<th>" << tr("Leaked in store") << "</th></tr>";
     out << "<store />";
     out << "</table></td></tr>";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
@@ -177,27 +177,19 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
-    out << "<th colspan=\"4\">" << tr("Added") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Recovered") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("VariableNames", "New charge") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Added") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
-    if (show_leaked_in_store_in_service_company_view)
-        out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     out << "</tr><tr style=\"background-color: #FBFBFB;\">";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "New charge") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Total") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Store") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Customer") << "</td>";
-    if (show_leaked_in_store_in_service_company_view) {
-        out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
-        out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
-    }
     out << "</tr>";
     ReportData data(since);
     QString store_html; MTTextStream store_out(&store_html);
@@ -228,7 +220,6 @@ QString MainWindow::viewServiceCompany(int since)
         }
     }
     html.replace("<store />", store_html);
-    int x = show_leaked_in_store_in_service_company_view ? 0 : 2;
     int year, last_year = 0; bool it = false, bf = false; QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
     QVector<double> * sum_list = NULL;
@@ -246,7 +237,7 @@ QString MainWindow::viewServiceCompany(int since)
                 while (sums_iterator != data.sums_map.constEnd() && (sum_list = sums_iterator.value())) {
                     if (row_count) { out << "</tr><tr>"; }
                     out << "<th>" << sums_iterator.key().split("::").last() << "</th>";
-                    for (int n = 0; n < sum_list->count() - x; ++n) {
+                    for (int n = 0; n < sum_list->count(); ++n) {
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
                         out << "</th>";
@@ -271,7 +262,7 @@ QString MainWindow::viewServiceCompany(int since)
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
             out << ">" << i.value().at(1) << "</td>";
-            for (int n = 2; n < i.value().count() - x; ++n) {
+            for (int n = 2; n < i.value().count(); ++n) {
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
                 else if (it) out << " style=\"font-style: italic;\"";
@@ -375,7 +366,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
             if (dict_value.count() > 1) { out << "&nbsp;" << dict_value.last(); }
             out << "</td>";
         }
-        out << "<td>" << circuits.at(i).value("refrigerant_amount").toDouble() << "&nbsp;" << tr("kg");
+        out << "<td>" << getCircuitRefrigerantAmount(customer_id, id, circuits.at(i).value("refrigerant_amount").toDouble()) << "&nbsp;" << tr("kg");
         out << " " << circuits.at(i).value("refrigerant").toString() << "</td>";
         out << "<td>" << circuits.at(i).value("oil_amount").toDouble() << "&nbsp;" << tr("kg");
         out << " " << circuits.at(i).value("oil").toString().toUpper() << "</td>";
@@ -438,7 +429,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->filterKeyword().isEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_add_am_recy, refr_reco, refr_reco_cust"));
+    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -452,17 +443,13 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and repairs") << "</a></th></tr>";
-    out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
-    out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
-    out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_varnames.value("inspector") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_varnames.value("operator") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_varnames.value("rmds") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_varnames.value("arno") << "</th></tr>";
-    out << "<tr><th>" << dict_varnames.value("refr_add_am") << "</th>";
-    out << "<th>" << dict_varnames.value("refr_add_am_recy") << "</th>";
+    out << "<tr><th>" << tr("Date") << "</th>";
+    out << "<th>" << dict_varnames.value("refr_add") << "</th>";
     out << "<th>" << dict_varnames.value("refr_reco") << "</th>";
-    out << "<th>" << dict_varnames.value("refr_reco_cust") << "</th></tr>";
+    out << "<th>" << dict_varnames.value("inspector") << "</th>";
+    out << "<th>" << dict_varnames.value("operator") << "</th>";
+    out << "<th>" << dict_varnames.value("rmds") << "</th>";
+    out << "<th>" << dict_varnames.value("arno") << "</th></tr>";
     bool is_nominal, is_repair;
     QString id; QString highlighted_id = selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {
@@ -482,9 +469,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         else if (is_repair) { out << "<i>"; }
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-        out << "<td>" << inspections.at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << tr("kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << tr("kg") << "</td>";
-        out << "<td>" << inspections.at(i).value("refr_reco_cust").toDouble() << "&nbsp;" << tr("kg") << "</td>";
         out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
         out << "<td>" << escapeString(inspections.at(i).value("operator").toString()) << "</td>";
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
@@ -728,7 +713,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "<td>" << circuit_info.value("year").toString() << "</td>";
     out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
     out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
-    out << "<td>" << circuit_info.value("refrigerant_amount").toString() << "&nbsp;" << tr("kg") << "</td>";
+    out << "<td>" << getCircuitRefrigerantAmount(customer_id, circuit_id, circuit_info.value("refrigerant_amount").toDouble()) << "&nbsp;" << tr("kg") << "</td>";
     out << "<td>";
     if (dict_attrvalues.contains("oil::" + circuit_info.value("oil").toString())) {
         out << dict_attrvalues.value("oil::" + circuit_info.value("oil").toString());
@@ -1116,21 +1101,9 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int re_length = QString("repairs::").length();
     out << "<tr><th colspan=\"12\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr><tr>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::date") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::customer") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::device") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::field") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::refrigerant_amount") << "</th>";
-    out << "<th colspan=\"2\">" << dict_varnames.value("refr_add") << "</th>";
-    out << "<th colspan=\"2\">" << dict_varnames.value("refr_recovery") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::repairman") << "</th>";
-    out << "<th rowspan=\"2\">" << dict_attrnames.value("repairs::arno") << "</th>";
-    out << "</tr><tr>";
-    out << "<th>" << dict_attrnames.value("repairs::refr_add_am") << "</th>";
-    out << "<th>" << dict_attrnames.value("repairs::refr_add_am_recy") << "</th>";
-    out << "<th>" << dict_attrnames.value("repairs::refr_reco") << "</th>";
-    out << "<th>" << dict_attrnames.value("repairs::refr_reco_cust") << "</th>";
+    for (int n = dict_attrnames.indexOfKey("repairs::date"); n < dict_attrnames.count() && dict_attrnames.key(n).startsWith("repairs::"); ++n) {
+        out << "<th>" << dict_attrnames.value(n) << "</th>";
+    }
     out << "</tr>";
     if (repairs.count()) {
         QString id, attr_value;
@@ -1211,7 +1184,7 @@ QString MainWindow::viewLeakagesByApplication()
     QStringList keys;
     const int VECTOR_SIZE = 3;
     map["All::All"].resize(VECTOR_SIZE);
-    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.refr_add_am_recy FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent");
+    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent");
     while (inspections.next()) {
         keys.clear();
         keys << inspections.value(0).toString() + "::" + dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + inspections.value(1).toString()));
@@ -1223,17 +1196,19 @@ QString MainWindow::viewLeakagesByApplication()
         }
         map["All::All"][0] += inspections.value(2).toDouble() + inspections.value(3).toDouble();
     }
-    QSqlQuery circuits("SELECT refrigerant, field, refrigerant_amount FROM circuits");
+    QSqlQuery circuits("SELECT parent, id, refrigerant, field, refrigerant_amount FROM circuits");
+    double refrigerant_amount;
     while (circuits.next()) {
+        refrigerant_amount = getCircuitRefrigerantAmount(circuits.value(0).toString(), circuits.value(1).toString(), circuits.value(4).toDouble());
         keys.clear();
-        keys << circuits.value(0).toString() + "::" + dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + circuits.value(1).toString()));
-        keys << circuits.value(0).toString() + "::All";
-        keys << "All::" + dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + circuits.value(1).toString()));
+        keys << circuits.value(2).toString() + "::" + dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + circuits.value(3).toString()));
+        keys << circuits.value(2).toString() + "::All";
+        keys << "All::" + dict_attrvalues.value(dict_attrvalues.indexOfKey("field::" + circuits.value(3).toString()));
         for (int i = 0; i < keys.count(); ++i) {
             if (!map[keys.at(i)].size()) { map[keys.at(i)].resize(VECTOR_SIZE); }
-            map[keys.at(i)][1] += circuits.value(2).toDouble();
+            map[keys.at(i)][1] += refrigerant_amount;
         }
-        map["All::All"][1] += circuits.value(2).toDouble();
+        map["All::All"][1] += refrigerant_amount;
     }
     QMutableMapIterator<QString, QVector<double> > iterator(map);
     MTDictionary used_refrigerants;

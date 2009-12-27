@@ -41,6 +41,7 @@ public:
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline MTDictionary & parents() { return r_parents; }
+    inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
     QSqlQuery select(const QString & = "*");
     StringVariantMap list(const QString & = "*");

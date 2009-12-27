@@ -74,12 +74,14 @@ private slots:
     void tableChanged(int);
 
 signals:
+    // Groups
+    void groupChanged(int);
     // View
     void viewChanged(int);
 
 protected:
     // Groups
-    void toggleVisibleGroup(int);
+    void toggleVisibleGroup(int, bool = true);
     // View
     void updateView();
 

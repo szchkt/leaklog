@@ -174,6 +174,14 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
     }
 }
 
+double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
+{
+    MTDictionary parents("customer", customer_id);
+    parents.insert("circuit", circuit_id);
+    parents.insert("nominal", "1");
+    return refrigerant_amount + MTRecord("inspections", "date", "", parents).value("refr_add_am", 0.0).toDouble();
+}
+
 QMap<QString, MTDictionary> Global::parsed_expressions;
 
 MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids)
@@ -256,40 +264,26 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
         if (expression.value(i) == "id") {
             value.append(QString::number(inspection.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "sum") {
-            QStringList fields;
-            Subvariable subvariable("", expression.key(i));
-            subvariable.next();
-            if (subvariable.count()) {
-                fields << subvariable.value("SUBVAR_VALUE").toString().split("+", QString::SkipEmptyParts);
-            } else {
-                Variable variable(expression.key(i));
-                variable.next();
-                if (variable.count()) {
-                    fields << variable.value("VAR_VALUE").toString().split("+", QString::SkipEmptyParts);
-                }
-            }
-            if (fields.isEmpty()) { fields << expression.key(i); }
             double v = 0.0;
             if (inspection.value("nominal").toInt()) {
-                for (int a = 0; a < fields.count(); ++a) {
-                    v += inspection.value(fields.at(a)).toDouble();
-                }
+                v += inspection.value(expression.key(i)).toDouble();
             } else {
                 QSqlQuery sum_ins;
-                sum_ins.prepare(sum_query.arg(fields.join(", ")).arg(inspection_date.left(4)));
+                sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
                 sum_ins.bindValue(":customer_id", customer_id);
                 sum_ins.bindValue(":circuit_id", circuit_id);
                 if (sum_ins.exec()) {
                     while (sum_ins.next()) {
-                        for (int a = 0; a < fields.count(); ++a) {
-                            v += sum_ins.value(a).toDouble();
-                        }
+                        v += sum_ins.value(0).toDouble();
                     }
                 }
             }
             value.append(QString::number(v));
         } else if (expression.value(i) == "circuit_attribute") {
-            value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
+            double attribute = circuit_attributes.value(expression.key(i)).toDouble();
+            if (expression.key(i) == "refrigerant_amount" && !inspection.value("nominal").toInt())
+                attribute = getCircuitRefrigerantAmount(customer_id, circuit_id, attribute);
+            value.append(QString::number(attribute));
         } else if (expression.value(i) == "p_to_t") {
             MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.stringValue("refrigerant");
@@ -343,7 +337,7 @@ MTDictionary Global::get_dict_dbtables()
     dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
     dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
     dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_add_am_recy NUMERIC, refr_reco NUMERIC, refr_reco_cust NUMERIC, repairman TEXT, arno TEXT");
+    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
     dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, phone TEXT");
     dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
     dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
@@ -413,13 +407,9 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
     dict_varnames.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
     dict_varnames.insert("refr_add", QApplication::translate("VariableNames", "Refrigerant addition"));
-    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "New"));
-    dict_varnames.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
-    dict_varnames.insert("refr_add_am_total", QApplication::translate("VariableNames", "Total"));
-    dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "%"));
-    dict_varnames.insert("refr_recovery", QApplication::translate("VariableNames", "Refrigerant recovery"));
-    dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Store"));
-    dict_varnames.insert("refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
+    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "Amount"));
+    dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
+    dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
     dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
     dict_varnames.insert("operator", QApplication::translate("VariableNames", "Operator"));
     return dict_varnames;
@@ -524,10 +514,8 @@ MTDictionary Global::get_dict_attrnames()
     dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
     dict_attrnames.insert("repairs::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
     dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
-    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("VariableNames", "New"));
-    dict_attrnames.insert("repairs::refr_add_am_recy", QApplication::translate("VariableNames", "Recovered"));
-    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("VariableNames", "Store"));
-    dict_attrnames.insert("repairs::refr_reco_cust", QApplication::translate("VariableNames", "Customer"));
+    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
+    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
     dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
     dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
     dict_attrnames.insert("inspectors::id", QApplication::translate("AttributeNames", "ID"));

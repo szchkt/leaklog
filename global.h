@@ -45,6 +45,7 @@ namespace Global {
     void addColumn(const QString &, const QString &, QSqlDatabase *);
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
+    double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
     double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0);

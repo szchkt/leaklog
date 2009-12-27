@@ -73,7 +73,10 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
-    md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(parents().value("parent").rightJustified(8, '0')));
+    QString customer = Customer(parent("parent")).stringValue("company");
+    if (customer.isEmpty())
+        customer = parent("parent").rightJustified(8, '0');
+    md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(customer));
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
@@ -104,7 +107,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
-    query_used_ids.bindValue(":parent", parents().value("parent"));
+    query_used_ids.bindValue(":parent", parent("parent"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
@@ -120,9 +123,13 @@ DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" <
 
 void Inspection::initModifyDialogue(ModifyDialogue * md)
 {
-    md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection")
-                       .arg(parents().value("customer").rightJustified(8, '0'))
-                       .arg(parents().value("circuit").rightJustified(4, '0')));
+    QString customer = Customer(parent("customer")).stringValue("company");
+    if (customer.isEmpty())
+        customer = parent("customer").rightJustified(8, '0');
+    QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
+    if (circuit.isEmpty())
+        circuit = parent("circuit").rightJustified(4, '0');
+    md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection").arg(customer).arg(circuit));
     StringVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
@@ -131,8 +138,8 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE customer = :customer AND circuit = :circuit" + QString(id().isEmpty() ? "" : " AND date <> :date"));
-    query_used_ids.bindValue(":customer", parents().value("customer"));
-    query_used_ids.bindValue(":circuit", parents().value("circuit"));
+    query_used_ids.bindValue(":customer", parent("customer"));
+    query_used_ids.bindValue(":circuit", parent("circuit"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
@@ -199,15 +206,6 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                     iw->label()->setAlternativeText(tr("Refrigerant addition: New charge:"));
                     iw->label()->toggleAlternativeText(chb_nominal->isChecked());
                     QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
-                } else if (subvar_id == "refr_add_am_recy") {
-                    if (chb_nominal->isChecked()) {
-                        iw->label()->setDisabled(true);
-                        iw->widget()->setDisabled(true);
-                        ((MDDoubleSpinBox *)iw)->clear();
-                    }
-                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(setDisabled(bool)));
-                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->widget(), SLOT(setDisabled(bool)));
-                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->widget(), SLOT(clear()));
                 }
                 md->addInputWidget(iw);
             } else if (subvar_type == "string") {
@@ -254,10 +252,8 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors()));
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md, attributes.value("arno").toString()));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("%1: %2:").arg(tr("Refrigerant addition")).arg(tr("New")), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am_recy", tr("%1: %2:").arg(tr("Refrigerant addition")).arg(tr("Recovered")), md, -999999999.9, 999999999.9, attributes.value("refr_add_am_recy").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("%1: %2:").arg(tr("Refrigerant recovery")).arg(tr("Store")), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_reco_cust", tr("%1: %2:").arg(tr("Refrigerant recovery")).arg(tr("Customer")), md, -999999999.9, 999999999.9, attributes.value("refr_reco_cust").toDouble(), tr("kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), tr("kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), tr("kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(id().isEmpty() ? "" : " date <> :date"));
@@ -283,7 +279,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
     StringVariantMap attributes; bool enable_all = true;
     if (!id().isEmpty()) {
         if (v_type == SUBVARIABLE) {
-            Subvariable query(parents().value("parent"), id());
+            Subvariable query(parent("parent"), id());
             if (query.next()) {
                 attributes.insert("id", query.value("SUBVAR_ID"));
                 attributes.insert("name", query.value("SUBVAR_NAME"));

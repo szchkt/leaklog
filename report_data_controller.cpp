@@ -98,10 +98,7 @@ void ReportDataController::autofill()
                     << "sold_reco"
                     << "new_charge"
                     << "refr_add_am"
-                    << "refr_add_am_recy"
-                    << "refr_add_am_total" // [7]
                     << "refr_reco"
-                    << "refr_reco_cust"
                     << "refr_rege"
                     << "refr_disp"
                     << "leaked"
@@ -113,7 +110,6 @@ void ReportDataController::autofill()
                 out << "addRefrigerantManagementEntry({" << endl;
                 out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
                 for (int j = 0; j < sums_fieldnames.count(); ++j) {
-                    if (j == 7) continue; // "refr_add_am_total"
                     out << "\t\"" << sums_fieldnames.at(j) << "\": " << sum_list->at(j);
                     if (j == sums_fieldnames.count() - 1) out << endl; else out << "," << endl;
                 }

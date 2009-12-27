@@ -64,6 +64,7 @@ void Navigation::restoreDefaults()
 void Navigation::connectSlots(QObject * receiver)
 {
     QObject::connect(this, SIGNAL(viewChanged(int)), receiver, SLOT(viewChanged(int)));
+    QObject::connect(this, SIGNAL(groupChanged(int)), receiver, SLOT(groupChanged(int)));
     QObject::connect(tbtn_modify_service_company, SIGNAL(clicked()), receiver, SLOT(modifyServiceCompany()));
     QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(tbtn_report_data, SIGNAL(clicked()), receiver, SLOT(reportData()));
@@ -104,7 +105,12 @@ void Navigation::updateView()
     bool filter_keyword_visible = true;
     bool filter_since_visible = true;
     bool filter_visible = true;
+    int group = -1;
     switch (btngrp_view->checkedId()) {
+        case Navigation::ServiceCompany:
+            group = 0;
+            filter_keyword_visible = false;
+            break;
         case Navigation::ListOfCustomers:
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "id");
@@ -116,6 +122,7 @@ void Navigation::updateView()
             break;
         case Navigation::ListOfCircuits:
             if (current_group == 1) goto updateView_ListOfRepairs;
+            group = 2;
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit name"), "name");
@@ -131,34 +138,43 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
             break;
         case Navigation::ListOfInspections:
+            group = 2;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
             break;
         case Navigation::ListOfRepairs:
+            group = 1;
             updateView_ListOfRepairs:
             cb_filter_column->addItem(QApplication::translate("Repair", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Repair", "Customer"), "customer");
             cb_filter_column->addItem(QApplication::translate("Repair", "Refrigerant"), "refrigerant");
             break;
         case Navigation::ListOfInspectors:
+            group = 0;
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Inspector", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Person registry number"), "person_reg_num");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
             break;
-        case Navigation::ServiceCompany:
         case Navigation::TableOfInspections:
+            group = 2;
             filter_keyword_visible = false;
             break;
         case Navigation::Inspection:
+            group = 2;
+            filter_visible = false;
+            break;
         case Navigation::LeakagesByApplication:
         case Navigation::Agenda:
         default:
+            group = 0;
             filter_visible = false;
             break;
     }
+    if (group >= 0 && current_group != group)
+        toggleVisibleGroup(group, false);
     cb_filter_column->setVisible(filter_keyword_visible);
     le_filter->setVisible(filter_keyword_visible);
     lbl_filter_since->setVisible(filter_since_visible);
@@ -179,9 +195,9 @@ void Navigation::setView(const QString & v)
 void Navigation::setView(int v, bool emit_signal)
 {
     if (current_view != v) {
-        current_view = (Navigation::View)v;
         btngrp_view->button(v)->setChecked(true);
         updateView();
+        current_view = (Navigation::View)v;
     }
     if (emit_signal) emit viewChanged(v);
 }
@@ -204,10 +220,13 @@ void Navigation::viewDetailedLogbook()
     updateView();
 }
 
-void Navigation::toggleVisibleGroup(int g)
+void Navigation::toggleVisibleGroup(int g, bool emit_signal)
 {
     if (current_group < 3) {
-        default_view_for_group[current_group] = view();
+        default_view_for_group[current_group] = current_view;
+    }
+    if (g < 3 && current_group != g) {
+        emit groupChanged(g);
     }
     current_group = g;
     gb_service_company->setVisible(g == 0);
@@ -220,9 +239,10 @@ void Navigation::toggleVisibleGroup(int g)
     gb_tables->setVisible(g == 2);
     gb_filter->setVisible(g < 3);
     gb_report_data->setVisible(g == 3);
-    if (g < 3) {
-        btngrp_view->button(default_view_for_group[current_group])->setChecked(true);
-        emit viewChanged(default_view_for_group[current_group]);
+    if (emit_signal && g < 3 && current_view != default_view_for_group[current_group]) {
+        current_view = default_view_for_group[current_group];
+        btngrp_view->button(current_view)->setChecked(true);
+        emit viewChanged(current_view);
     }
 }
 

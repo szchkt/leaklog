@@ -142,13 +142,9 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "refr_add", "yellow");
     initSubvariable(filter, "refr_add", "yellow", "refr_add_am", "float", tr("kg"), "", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_am_recy", "float", tr("kg"), "", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_am_total", "float", tr("kg"), "refr_add_am+refr_add_am_recy", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am_total)-sum(refr_reco)-sum(refr_reco_cust))/refrigerant_amount", false, 0.0);
+    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0);
 
-    initVariable(filter, "refr_recovery", "yellow");
-    initSubvariable(filter, "refr_recovery", "yellow", "refr_reco", "float", tr("kg"), "", false, 0.0);
-    initSubvariable(filter, "refr_recovery", "yellow", "refr_reco_cust", "float", tr("kg"), "", false, 0.0);
+    initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");
 }

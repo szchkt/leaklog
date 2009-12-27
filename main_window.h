@@ -62,6 +62,7 @@ private slots:
     void findPrevious();
     void clearSelection(bool = true);
     void refreshView();
+    void groupChanged(int);
     void changeLanguage();
     void languageChanged();
     void checkForUpdates();
@@ -183,7 +184,6 @@ private:
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
-    bool show_leaked_in_store_in_service_company_view;
     MTDictionary dict_dbtables;
     MTDictionary dict_vartypes;
     MTDictionary dict_varnames;

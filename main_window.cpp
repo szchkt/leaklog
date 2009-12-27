@@ -98,7 +98,6 @@ MainWindow::MainWindow()
     selected_inspection_is_repair = false;
     selected_inspector = -1;
     database_locked = false;
-    show_leaked_in_store_in_service_company_view = false;
     check_for_updates = true;
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -331,14 +330,10 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("toggledetailedview:")) {
             id = path.at(0);
             id.remove(0, QString("toggledetailedview:").length());
-            if (id == "leakedinstore") {
-                show_leaked_in_store_in_service_company_view = !show_leaked_in_store_in_service_company_view;
+            if (years_expanded_in_service_company_view.contains(id.toInt())) {
+                years_expanded_in_service_company_view.remove(id.toInt());
             } else {
-                if (years_expanded_in_service_company_view.contains(id.toInt())) {
-                    years_expanded_in_service_company_view.remove(id.toInt());
-                } else {
-                    years_expanded_in_service_company_view << id.toInt();
-                }
+                years_expanded_in_service_company_view << id.toInt();
             }
             refreshView();
         } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {
@@ -480,6 +475,7 @@ void MainWindow::printLabel(bool detailed)
         attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(4, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
         attributes.unite(circuit.list("refrigerant, refrigerant_amount, inspection_interval"));
+        attributes["refrigerant_amount"] = getCircuitRefrigerantAmount(selectedCustomer(), selectedCircuit(), attributes.value("refrigerant_amount", 0.0).toDouble());
         QSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
         query.bindValue(":customer_id", selected_customer);
@@ -696,6 +692,24 @@ void MainWindow::clearSelection(bool refresh)
 void MainWindow::refreshView()
 {
     viewChanged(navigation->view());
+}
+
+void MainWindow::groupChanged(int g)
+{
+    switch (g) {
+        case 0:
+            if (!actionService_company->isChecked())
+                actionService_company->setChecked(true);
+            break;
+        case 1:
+            if (!actionBasic_logbook->isChecked())
+                actionBasic_logbook->setChecked(true);
+            break;
+        case 2:
+            if (!actionDetailed_logbook->isChecked())
+                actionDetailed_logbook->setChecked(true);
+            break;
+    }
 }
 
 void MainWindow::addRecent(const QString & name)
