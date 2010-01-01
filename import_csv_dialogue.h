@@ -17,40 +17,30 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef MTVARIANT_H
-#define MTVARIANT_H
+#ifndef IMPORT_CSV_DIALOGUE_H
+#define IMPORT_CSV_DIALOGUE_H
 
-#include "global.h"
-#include "mtaddress.h"
+#include "ui_import_csv_dialogue.h"
 
-#include <QVariant>
-
-class MTVariant
+class ImportCsvDialogue : public QDialog, private Ui::ImportCsvDialogue
 {
+    Q_OBJECT
+
 public:
-    enum Type { Default = 0, Address = 128 };
-    MTVariant(const QVariant & v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
+    ImportCsvDialogue(const QString & path, QWidget * parent = NULL);
 
-    inline void setType(Type t) { v_type = t; }
-    inline Type type() const { return v_type; }
-    inline QVariant::Type variantType() const { return v_value.type(); }
-    inline void setValue(const QVariant & v) { v_value = v; }
-    inline QVariant value() const { return v_value; }
+    inline QList<QStringList> & fileContent() { return file_content; }
+    inline QString table() const { return cb_table->itemData(cb_table->currentIndex(), Qt::UserRole).toString(); }
+    QMap<QString, int> columnIndexMap();
 
-    inline QString toString() const {
-        return v_value.toString();
-    }
-    QString toHtml() const {
-        switch (v_type) {
-            case Address: return MTAddress(v_value.toString()).toHtml(); break;
-            case Default: break;
-        }
-        return Global::escapeString(v_value.toString());
-    }
+private slots:
+    void load();
+    void loadTableColumns(int);
+    void changeColumnIndex(QTreeWidgetItem *);
 
 private:
-    QVariant v_value;
-    Type v_type;
+    QString file_path;
+    QList<QStringList> file_content;
 };
 
-#endif // MTVARIANT_H
+#endif // IMPORT_CSV_DIALOGUE_H

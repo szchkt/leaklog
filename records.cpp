@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -176,8 +176,14 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
                     attributes.value(var_id).toInt(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (var_type == "float") {
-                md->addInputWidget(new MDDoubleSpinBox(var_id, var_name, md, -999999999.9, 999999999.9,
-                    attributes.value(var_id).toDouble(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
+                iw = new MDDoubleSpinBox(var_id, var_name, md, -999999999.9, 999999999.9,
+                    attributes.value(var_id).toDouble(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
+                if (var_id == "refr_add_am") {
+                    iw->label()->setAlternativeText(tr("New charge:"));
+                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
+                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
+                }
+                md->addInputWidget(iw);
             } else if (var_type == "string") {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), "", query.value("VAR_COL_BG").toString()));
@@ -200,14 +206,8 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md, -999999999, 999999999,
                     attributes.value(subvar_id).toInt(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "float") {
-                iw = new MDDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
-                    attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
-                if (subvar_id == "refr_add_am") {
-                    iw->label()->setAlternativeText(tr("Refrigerant addition: New charge:"));
-                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
-                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
-                }
-                md->addInputWidget(iw);
+                md->addInputWidget(new MDDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
+                    attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "string") {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));

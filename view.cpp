@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -444,7 +444,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and repairs") << "</a></th></tr>";
     out << "<tr><th>" << tr("Date") << "</th>";
-    out << "<th>" << dict_varnames.value("refr_add") << "</th>";
+    out << "<th>" << dict_varnames.value("refr_add_am") << "</th>";
     out << "<th>" << dict_varnames.value("refr_reco") << "</th>";
     out << "<th>" << dict_varnames.value("inspector") << "</th>";
     out << "<th>" << dict_varnames.value("operator") << "</th>";
@@ -796,7 +796,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "</td>";
         for (int n = 0; n < table_vars.count(); ++n) {
             variable = variables.value(table_vars.at(n));
-            bool compare_nom = false; int rowspan = 1; QString ins_value = ""; QString nom_value = ""; bool ok_eval;
+            bool compare_nom = false; int rowspan = 1; QString ins_value; QString nom_value; bool ok_eval;
             subvariables = variable.value("subvariables").toList();
             if (subvariables.count() > 0) {
                 for (int s = 0; s < subvariables.count(); ++s) {
@@ -826,7 +826,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                     } else {
                         MTDictionary expression = parseExpression(subvariable.value("value").toString(), used_ids);
                         ins_value = QString::number(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
-                        if (!ok_eval) ins_value = "";
+                        if (!ok_eval) ins_value.clear();
                         if (nominal_ins.isEmpty()) compare_nom = false;
                         if (compare_nom) {
                             nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
@@ -837,6 +837,21 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                 }
             } else {
                 compare_nom = variable.value("compare_nom").toInt() > 0;
+                if (variable.value("value").toString().contains("sum")) {
+                    QString i_year = inspection_date.split(".").first();
+                    if (is_nominal) rowspan = 1;
+                    else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
+                    else {
+                        int in = i;
+                        for (; in < inspections.count(); ++in) {
+                            if (inspections.at(in).value("nominal").toInt()) in--;
+                            if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
+                                break;
+                            }
+                        }
+                        rowspan = in - i;
+                    }
+                } else rowspan = 1;
                 if (variable.value("value").toString().isEmpty()) {
                     ins_value = inspections.at(i).value(table_vars.at(n)).toString();
                     if (compare_nom) {
@@ -846,7 +861,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                 } else {
                     MTDictionary expression = parseExpression(variable.value("value").toString(), used_ids);
                     ins_value = QString::number(evaluateExpression(inspections[i], expression, customer_id, circuit_id, &ok_eval));
-                    if (!ok_eval) ins_value = "";
+                    if (!ok_eval) ins_value.clear();
                     if (nominal_ins.isEmpty()) compare_nom = false;
                     if (compare_nom) {
                         nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
@@ -1227,7 +1242,7 @@ QString MainWindow::viewLeakagesByApplication()
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: large;\">" << tr("Leakages by application") << "</th></tr></table><br>";
     QStringList tables;
-    tables << dict_varnames.value("refr_add") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
+    tables << dict_varnames.value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
         out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tables.at(t) << "</th>";
         out << "<th colspan=\"5\">" << tr("Fields") << "</th></tr>";

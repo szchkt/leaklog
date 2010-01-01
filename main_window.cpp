@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -250,6 +250,7 @@ MainWindow::MainWindow()
     QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
     QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
     QObject::connect(actionImport_data, SIGNAL(triggered()), this, SLOT(importData()));
+    QObject::connect(actionImport_CSV, SIGNAL(triggered()), this, SLOT(importCSV()));
     QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(modifyVariable()));
@@ -492,9 +493,9 @@ void MainWindow::printLabel(bool detailed)
                 attributes.insert("next_inspection", QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"));
             }
             selected_inspector = inspection.value("inspector").toString();
-            Subvariable refr_add_per("refr_add", "refr_add_per");
+            Variable refr_add_per("refr_add_per");
             refr_add_per.next();
-            QString unparsed_expression = refr_add_per.value("SUBVAR_VALUE").toString();
+            QString unparsed_expression = refr_add_per.value("VAR_VALUE").toString();
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
                 attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), selectedCustomer(), selectedCircuit()));
@@ -751,6 +752,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
     actionImport_data->setEnabled(enable);
+    actionImport_CSV->setEnabled(enable);
     actionExport->setEnabled(enable || everything);
     actionPDF->setEnabled(enable || everything);
     actionHTML->setEnabled(enable || everything);

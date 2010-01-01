@@ -241,6 +241,7 @@
     <addaction name="actionClose"/>
     <addaction name="separator"/>
     <addaction name="actionImport_data"/>
+    <addaction name="actionImport_CSV"/>
     <addaction name="separator"/>
     <addaction name="menuExport"/>
     <addaction name="actionPrint_preview"/>
@@ -1718,6 +1719,21 @@
    </property>
    <property name="statusTip">
     <string>Switch view to detailed logbook</string>
+   </property>
+  </action>
+  <action name="actionImport_CSV">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import CSV</string>
+   </property>
+   <property name="statusTip">
+    <string>Import a CSV (comma-separated values) file</string>
    </property>
   </action>
  </widget>

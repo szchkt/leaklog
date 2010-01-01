@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -23,8 +23,10 @@
 #include "warnings.h"
 #include "modify_warning_dialogue.h"
 #include "import_dialogue.h"
+#include "import_csv_dialogue.h"
 #include "records.h"
 #include "mtlistwidget.h"
+#include "mtaddress.h"
 
 #include <QMessageBox>
 #include <QFile>
@@ -154,8 +156,8 @@ void MainWindow::initTables(bool transaction)
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add;refr_reco;inspector;operator;rmds;arno");
-        set.insert("sum", "vis_aur_chk;refr_add;refr_reco");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco");
         leakages.update(set);
         set.clear();
     }
@@ -184,23 +186,40 @@ void MainWindow::initTables(bool transaction)
         Table table_of_parameters(tr("Table of parameters"));
         table_of_parameters.remove();
     } else if (v < 0.906) {
-        QStringList table_vars = pressures_and_temperatures.stringValue("variables").split(";", QString::SkipEmptyParts);
-        if (table_vars.contains("t")) {
-            table_vars.replace(table_vars.indexOf("t"), "t_sec");
-        } else if (!table_vars.contains("t_sec")) {
-            table_vars.prepend("t_sec");
-        }
         set.clear();
-        set.insert("variables", table_vars.join(";"));
-        pressures_and_temperatures.update(set);
-
-        table_vars = leakages.stringValue("variables").split(";", QString::SkipEmptyParts);
-        if (table_vars.contains("refr_recovery")) {
-            table_vars.replace(table_vars.indexOf("refr_recovery"), "refr_reco");
-            set.clear();
-            set.insert("variables", table_vars.join(";"));
-            leakages.update(set);
+        QStringList variables = pressures_and_temperatures.stringValue("variables").split(";", QString::SkipEmptyParts);
+        if (variables.contains("t")) {
+            variables.replace(variables.indexOf("t"), "t_sec");
+            set.insert("variables", variables.join(";"));
+        } else if (!variables.contains("t_sec")) {
+            variables.prepend("t_sec");
+            set.insert("variables", variables.join(";"));
         }
+        if (!set.isEmpty())
+            pressures_and_temperatures.update(set);
+
+        set.clear();
+        StringVariantMap table_attributes = leakages.list("variables, sum");
+        variables = table_attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
+        QStringList sum = table_attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
+        if (variables.contains("refr_add")) {
+            variables.replace(variables.indexOf("refr_add"), "refr_add_am;refr_add_per");
+            set.insert("variables", variables.join(";"));
+        }
+        if (sum.contains("refr_add")) {
+            sum.replace(sum.indexOf("refr_add"), "refr_add_am;refr_add_per");
+            set.insert("sum", sum.join(";"));
+        }
+        if (variables.contains("refr_recovery")) {
+            variables.replace(variables.indexOf("refr_recovery"), "refr_reco");
+            set.insert("variables", variables.join(";"));
+        }
+        if (sum.contains("refr_recovery")) {
+            sum.replace(sum.indexOf("refr_recovery"), "refr_reco");
+            set.insert("sum", sum.join(";"));
+        }
+        if (!set.isEmpty())
+            leakages.update(set);
     }
 } // (SCOPE)
     if (transaction) { db.commit(); }
@@ -1505,4 +1524,165 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
     QSqlDatabase::removeDatabase("importData");
     this->setWindowModified(true);
     refreshView();
+}
+
+void MainWindow::importCSV()
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), "", tr("CSV files (*.csv);;All files (*.*)"));
+    if (path.isEmpty()) { return; }
+
+    ImportCsvDialogue id(path, this);
+    if (id.exec() == QDialog::Accepted) {
+        QList<QStringList> file_content = id.fileContent();
+        if (!file_content.count())
+            return;
+        QString table = id.table();
+        QMap<QString, int> columns = id.columnIndexMap();
+
+        StringVariantMap set;
+        bool ok; int num_failed = 0;
+        QString string_value, column;
+        QStringList id_columns;
+        QStringList integer_columns;
+        QMap<QString, QStringList> foreign_keys;
+        QStringList text_columns;
+        QStringList numeric_columns;
+        QStringList boolean_columns;
+        QStringList date_columns;
+        QMap<QString, QMap<QString, QString> > select_columns;
+        QMap<QString, QStringList> address_columns;
+
+        if (table == "customers") {
+            id_columns << "id";
+            text_columns << "company" << "contact_person" << "mail" << "phone";
+            address_columns.insert("address", QStringList() << "street" << "city" << "postal_code");
+        } else if (table == "circuits") {
+            id_columns << "id";
+            integer_columns << "parent" << "year" << "inspection_interval";
+            foreign_keys.insert("parent", QStringList() << "customers" << "id");
+            text_columns << "name" << "operation" << "building" << "device" << "manufacturer" << "type" << "sn" << "commissioning";
+            numeric_columns << "refrigerant_amount" << "oil_amount" << "runtime" << "utilisation";
+            boolean_columns << "disused" << "hermetic" << "leak_detector";
+            date_columns << "commissioning";
+            QMap<QString, QString> map;
+            for (int n = dict_attrvalues.indexOfKey("field") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("field::"); ++n) {
+                string_value = dict_attrvalues.key(n).mid(dict_attrvalues.key(n).lastIndexOf(':') + 1);
+                map.insert(string_value, string_value);
+                map.insert(dict_attrvalues.value(n).toLower(), string_value);
+            }
+            select_columns.insert("field", map);
+            map.clear();
+            for (int n = dict_attrvalues.indexOfKey("oil") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("oil::"); ++n) {
+                string_value = dict_attrvalues.key(n).mid(dict_attrvalues.key(n).lastIndexOf(':') + 1);
+                map.insert(string_value, string_value);
+                map.insert(dict_attrvalues.value(n).toLower(), string_value);
+            }
+            select_columns.insert("oil", map);
+            map.clear();
+            QStringList refrigerants(listRefrigerantsToString().split(';'));
+            foreach (string_value, refrigerants)
+                map.insert(string_value.toLower(), string_value);
+            select_columns.insert("refrigerant", map);
+        } else
+            return;
+
+        foreach (QStringList row, file_content) {
+            set.clear();
+            MTDictionary parents;
+
+            ok = true;
+            foreach (column, id_columns) {
+                int id = row.value(columns.value(column, -1)).toInt(&ok);
+                if (!ok)
+                    break;
+                set.insert(column, id);
+            }
+            if (!ok) {
+                num_failed++;
+                continue;
+            }
+
+            foreach (column, integer_columns) {
+                int value = row.value(columns.value(column, -1)).toInt(&ok);
+                if (foreign_keys.contains(column)) {
+                    if (!ok) break;
+                    QStringList foreign_key = foreign_keys.value(column);
+                    MTRecord record(foreign_key.value(0), foreign_key.value(1), QString::number(value), MTDictionary());
+                    if (!record.exists()) {
+                        ok = false;
+                        break;
+                    }
+                    parents.insert(column, QString::number(value));
+                } else {
+                    if (ok)
+                        set.insert(column, value);
+                    else
+                        ok = true;
+                }
+            }
+            if (!ok) {
+                num_failed++;
+                continue;
+            }
+
+            foreach (column, text_columns) {
+                set.insert(column, row.value(columns.value(column, -1)));
+            }
+
+            foreach (column, numeric_columns) {
+                string_value = row.value(columns.value(column, -1)).simplified().remove(' ');
+                if (string_value.contains(',') && !string_value.contains('.'))
+                    string_value.replace(',', '.');
+                while (string_value.count('.') > 1)
+                    string_value.remove(string_value.indexOf('.'), 1);
+                double value = string_value.toDouble(&ok);
+                if (ok)
+                    set.insert(column, value);
+            }
+
+            foreach (column, boolean_columns) {
+                string_value = row.value(columns.value(column, -1)).toLower().simplified().remove(' ');
+                int value = ((string_value.toInt(&ok) && ok) || (!ok &&
+                             (string_value == tr("Yes").toLower() ||
+                             string_value == "yes" || string_value == "true")));
+                set.insert(column, value);
+            }
+
+            foreach (column, date_columns) {
+                string_value = row.value(columns.value(column, -1)).simplified().remove(' ');
+                QDate date_value = QDate::fromString(string_value, "yyyy.MM.dd");
+                if (!date_value.isValid())
+                    date_value = QDate::fromString(string_value, "d.M.yyyy");
+                if (date_value.isValid())
+                    set.insert(column, date_value.toString("yyyy.MM.dd"));
+            }
+
+            QMapIterator<QString, QMap<QString, QString> > iterator1(select_columns);
+            while (iterator1.hasNext()) { iterator1.next();
+                int col = columns.value(iterator1.key(), -1);
+                string_value = row.value(col).toLower().simplified();
+                set.insert(iterator1.key(), iterator1.value().value(string_value));
+            }
+
+            QMapIterator<QString, QStringList> iterator2(address_columns);
+            while (iterator2.hasNext()) { iterator2.next();
+                MTAddress address;
+                address.setStreet(row.value(columns.value(iterator2.value().value(0, "street"), -1)));
+                address.setCity(row.value(columns.value(iterator2.value().value(1, "city"), -1)));
+                address.setPostalCode(row.at(columns.value(iterator2.value().value(2, "postal_code"), -1)));
+                set.insert(iterator2.key(), address.toString());
+            }
+
+            MTRecord record(table, id_columns.value(0), set.value(id_columns.value(0)).toString(), parents);
+            record.update(set);
+        }
+
+        if (num_failed)
+            QMessageBox::critical(this, tr("Import CSV - Leaklog"), tr("Failed to import %1 of %2 records.").arg(num_failed).arg(file_content.count()));
+        else
+            QMessageBox::information(this, tr("Import CSV - Leaklog"), tr("Successfully imported %n record(s).", "", file_content.count()));
+
+        this->setWindowModified(true);
+        refreshView();
+    }
 }

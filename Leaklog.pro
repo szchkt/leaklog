@@ -3,7 +3,8 @@ TEMPLATE      = app
 FORMS        += main_window.ui \
                 about_widget.ui \
                 import_dialogue.ui \
-                navigation.ui
+                navigation.ui \
+                import_csv_dialogue.ui
 HEADERS      += global.h \
                 defs.h \
                 refrigerants.h \
@@ -33,7 +34,8 @@ HEADERS      += global.h \
                 warnings.h \
                 mtvariant.h \
                 mtwebpage.h \
-                mttextstream.h
+                mttextstream.h \
+                import_csv_dialogue.h
 RESOURCES    += resources.qrc \
                 i18n.qrc \
                 html.qrc
@@ -58,13 +60,18 @@ SOURCES      += global.cpp \
                 highlighter.cpp \
                 variables.cpp \
                 warnings.cpp \
-                mtwebpage.cpp
+                mtwebpage.cpp \
+                import_csv_dialogue.cpp
 QT           += network webkit sql
 # QTPLUGIN     += qsqlite qsqlpsql
 # fparser
 HEADERS      += fparser/fpconfig.hh fparser/fptypes.hh fparser/fparser.hh
 SOURCES      += fparser/fpoptimizer.cc fparser/fparser.cc
 DEFINES      += FP_NO_SUPPORT_OPTIMIZER
+# *******
+# csvparser
+HEADERS      += csvparser/mtcsvparser.h
+SOURCES      += csvparser/mtcsvparser.cpp
 # *******
 DESTDIR       = ./
 win32 {

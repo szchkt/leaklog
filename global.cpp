@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -406,8 +406,7 @@ MTDictionary Global::get_dict_varnames()
     dict_varnames.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
     dict_varnames.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
     dict_varnames.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
-    dict_varnames.insert("refr_add", QApplication::translate("VariableNames", "Refrigerant addition"));
-    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "Amount"));
+    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
     dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
     dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
     dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));

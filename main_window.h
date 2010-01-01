@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -112,6 +112,7 @@ private slots:
     void exportCircuitData();
     void exportInspectionData();
     void importData();
+    void importCSV();
     // VIEW
     QString viewChanged(int);
 

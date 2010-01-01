@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2009 Matus & Michal Tomlein
+ Copyright (C) 2008-2010 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -140,11 +140,10 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "dir_leak_chk", "green", "uv_detect", "bool", "", "", false, 0.0);
     initSubvariable(filter, "dir_leak_chk", "green", "bbl_detect", "bool", "", "", false, 0.0);
 
-    initVariable(filter, "refr_add", "yellow");
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_am", "float", tr("kg"), "", false, 0.0);
-    initSubvariable(filter, "refr_add", "yellow", "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0);
-
+    initVariable(filter, "refr_add_am", "float", tr("kg"), "", false, 0.0, "yellow");
     initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");
 }
