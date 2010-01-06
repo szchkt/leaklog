@@ -42,6 +42,7 @@
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
 #include <QPrinter>
+#include <QPainter>
 #include <QMessageBox>
 #include <QSqlRecord>
 #include <QSqlError>
@@ -1096,7 +1097,8 @@ void MainWindow::httpRequestFinished(bool error)
     if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
     QString release_notes;
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
-    if (f_current_ver <= F_LEAKLOG_VERSION) {
+    if ((f_current_ver <= F_LEAKLOG_VERSION && !LEAKLOG_PREVIEW_VERSION) ||
+        (f_current_ver < F_LEAKLOG_VERSION && LEAKLOG_PREVIEW_VERSION)) {
         if (!check_for_updates)
             QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
     } else {

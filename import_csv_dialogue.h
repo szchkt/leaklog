@@ -39,6 +39,8 @@ private slots:
     void changeColumnIndex(QTreeWidgetItem *);
 
 private:
+    void updateHeader();
+
     QString file_path;
     QList<QStringList> file_content;
 };

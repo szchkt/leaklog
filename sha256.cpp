@@ -107,7 +107,7 @@ QVector<quint32> sha256core(QVector<quint32> message, quint32 source_binlength)
     QVector<quint32> W(64);
     quint32 a, b, c, d, e, f, g, h;
     quint32 T1, T2;
-    int new_size = ((source_binlength + 1 + 64 >> 9) << 4) + 16;
+    int new_size = (((source_binlength + 1 + 64) >> 9) << 4) + 16;
     message.resize(new_size);
     message[source_binlength >> 5] |= 0x80 << (24 - source_binlength % 32);
     message[new_size - 1] = source_binlength;

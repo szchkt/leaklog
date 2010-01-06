@@ -92,7 +92,45 @@ void ImportCsvDialogue::load()
         }
     }
 
+    updateHeader();
+
     id_bb->button(QDialogButtonBox::Ok)->setEnabled(true);
+}
+
+void ImportCsvDialogue::updateHeader()
+{
+    bool all_zeros = true;
+    for (int i = 0; i < trw_columns->topLevelItemCount(); ++i) {
+        if (trw_columns->topLevelItem(i)->text(1).toInt() > tw_content->columnCount())
+            trw_columns->topLevelItem(i)->setText(1, "0");
+        if (all_zeros && trw_columns->topLevelItem(i)->text(1).toInt())
+            all_zeros = false;
+    }
+    if (all_zeros) {
+        int count = qMin(tw_content->columnCount(), trw_columns->topLevelItemCount());
+        for (int i = 0; i < count; ++i)
+            trw_columns->topLevelItem(i)->setText(1, QString::number(i + 1));
+    }
+    bool found;
+    for (int c = 0; c < tw_content->columnCount(); ++c) {
+        found = false;
+        for (int i = 0; i < trw_columns->topLevelItemCount(); ++i) {
+            if (trw_columns->topLevelItem(i)->text(1).toInt() == c + 1) {
+                if (tw_content->horizontalHeaderItem(c))
+                    tw_content->horizontalHeaderItem(c)->setText(trw_columns->topLevelItem(i)->text(0));
+                else
+                    tw_content->setHorizontalHeaderItem(c, new QTableWidgetItem(trw_columns->topLevelItem(i)->text(0)));
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            if (tw_content->horizontalHeaderItem(c))
+                tw_content->horizontalHeaderItem(c)->setText(QString::number(c + 1));
+            else
+                tw_content->setHorizontalHeaderItem(c, new QTableWidgetItem(QString::number(c + 1)));
+        }
+    }
 }
 
 QTreeWidgetItem * columnItem(const char * context, const char * text, const QString & data, int & index) {
@@ -140,6 +178,7 @@ void ImportCsvDialogue::loadTableColumns(int index)
         trw_columns->addTopLevelItem(columnItem("Circuit", "Rate of utilisation", "utilisation", i));
         trw_columns->addTopLevelItem(columnItem("Circuit", "Inspection interval", "inspection_interval", i));
     }
+    updateHeader();
 }
 
 void ImportCsvDialogue::changeColumnIndex(QTreeWidgetItem * item)
@@ -148,6 +187,7 @@ void ImportCsvDialogue::changeColumnIndex(QTreeWidgetItem * item)
             QInputDialog::getInt(this, tr("Change column index"),
                                  tr("Index of column %1 (zero if not present):").arg(item->text(0)),
                                  item->text(1).toInt(), 0, tw_content->columnCount())));
+    updateHeader();
 }
 
 QMap<QString, int> ImportCsvDialogue::columnIndexMap()

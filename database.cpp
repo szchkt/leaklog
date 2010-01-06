@@ -1669,7 +1669,7 @@ void MainWindow::importCSV()
                 MTAddress address;
                 address.setStreet(row.value(columns.value(iterator2.value().value(0, "street"), -1)));
                 address.setCity(row.value(columns.value(iterator2.value().value(1, "city"), -1)));
-                address.setPostalCode(row.at(columns.value(iterator2.value().value(2, "postal_code"), -1)));
+                address.setPostalCode(row.value(columns.value(iterator2.value().value(2, "postal_code"), -1)));
                 set.insert(iterator2.key(), address.toString());
             }
 
