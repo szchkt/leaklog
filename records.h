@@ -49,6 +49,8 @@ public:
     Customer(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
 };
 
 class Circuit : public DBRecord
@@ -59,6 +61,9 @@ public:
     Circuit(const QString &, const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+    static int numBasicAttributes();
 };
 
 class Inspection : public DBRecord
@@ -79,6 +84,8 @@ public:
     Repair(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
 };
 
 class VariableRecord : public DBRecord
@@ -114,6 +121,8 @@ public:
     Inspector(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
 };
 
 class ServiceCompany : public DBRecord
@@ -124,6 +133,8 @@ public:
     ServiceCompany(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
 };
 
 class RecordOfRefrigerantManagement : public DBRecord

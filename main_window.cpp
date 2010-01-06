@@ -54,11 +54,6 @@ using namespace Global;
 MainWindow::MainWindow()
 {
     // Dictionaries
-    dict_dbtables = get_dict_dbtables();
-    dict_vartypes = get_dict_vartypes();
-    dict_varnames = get_dict_varnames();
-    dict_attrvalues = get_dict_attrvalues();
-    dict_attrnames = get_dict_attrnames();
     dict_fieldtypes.insert("address", MTVariant::Address);
     // ------------
     // HTML
@@ -578,7 +573,7 @@ void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & pain
     painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once a year*") :
                      attributes.value("circuit_id").toString());
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 6 months*") :
-                     (attributes.value("refrigerant_amount").toString() + " " + tr("kg") + " " + attributes.value("refrigerant").toString()));
+                     (attributes.value("refrigerant_amount").toString() + " " + QApplication::translate("Units", "kg") + " " + attributes.value("refrigerant").toString()));
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 3 months") :
                      (attributes.value("refr_add_per").toString() + " " + tr("%")));
     painter.drawText(m + x + (w / 3), m + y + title_h + (h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified person"));
@@ -894,9 +889,9 @@ void MainWindow::enableTools()
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
-    actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !dict_varnames.contains(trw_variables->currentItem()->text(1)));
+    actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !variableNames().contains(trw_variables->currentItem()->text(1)));
     tbtn_modify_variable->setEnabled(trw_variables->currentIndex().isValid());
-    tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !dict_varnames.contains(trw_variables->currentItem()->text(1)) && !database_locked);
+    tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !variableNames().contains(trw_variables->currentItem()->text(1)) && !database_locked);
     tbtn_modify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_remove_table->setEnabled(cb_table_edit->currentIndex() >= 0 && !database_locked);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);

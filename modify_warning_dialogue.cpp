@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
+#include <QApplication>
 
 AttributeFilter::AttributeFilter(AttributeFilters * parent):
 QWidget(parent)
@@ -53,15 +54,15 @@ void AttributeFilter::remove() { emit removeFilter(this); }
 AttributeFilters::AttributeFilters(QWidget * parent):
 QWidget(parent)
 {
-    af_attributes.insert("hermetic", tr("Hermetically sealed"));
-    af_attributes.insert("year", tr("Year of purchase"));
-    af_attributes.insert("commissioning", tr("Date of commissioning"));
-    af_attributes.insert("refrigerant_amount", tr("Amount of refrigerant"));
-    af_attributes.insert("oil_amount", tr("Amount of oil"));
-    af_attributes.insert("leak_detector", tr("Fixed leakage detector installed"));
-    af_attributes.insert("runtime", tr("Run-time per day"));
-    af_attributes.insert("utilisation", tr("Rate of utilisation"));
-    af_attributes.insert("inspection_interval", tr("Inspection interval"));
+    af_attributes.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
+    af_attributes.insert("year", QApplication::translate("Circuit", "Year of purchase"));
+    af_attributes.insert("commissioning", QApplication::translate("Circuit", "Date of commissioning"));
+    af_attributes.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant"));
+    af_attributes.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil"));
+    af_attributes.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
+    af_attributes.insert("runtime", QApplication::translate("Circuit", "Run-time per day"));
+    af_attributes.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation"));
+    af_attributes.insert("inspection_interval", QApplication::translate("Circuit", "Inspection interval"));
     af_functions << "<";
     af_functions << "<=";
     af_functions << "=";

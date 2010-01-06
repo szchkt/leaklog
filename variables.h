@@ -37,7 +37,6 @@ protected:
     void initVariable(const QString &, const QString &, const QString &);
     void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
 
-    MTDictionary dict_varnames;
     QMultiMap<QString, int> var_indices;
 };
 

@@ -21,13 +21,13 @@
 #include "global.h"
 
 #include <QSet>
+#include <QApplication>
 
 using namespace Global;
 
 Variables::Variables(QSqlDatabase db, bool exec_query):
 MTSqlQueryResult(db)
 {
-    dict_varnames = get_dict_varnames();
     if (exec_query)
         exec("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
 }
@@ -46,7 +46,7 @@ void Variables::saveResult()
     while (query()->next()) {
         row.clear();
         insert = true;
-        if (dict_varnames.contains(query()->value(VAR_ID).toString())) {
+        if (variableNames().contains(query()->value(VAR_ID).toString())) {
             QSet<int> indices = var_indices.values(query()->value(VAR_ID).toString()).toSet();
             indices.unite(var_indices.values(query()->value(SUBVAR_ID).toString()).toSet());
             foreach (int index, indices) {
@@ -89,43 +89,43 @@ void Variables::saveResult()
 void Variables::initVariables(const QString & filter)
 {
     initVariable(filter, "t_sec", "mintcream");
-    initSubvariable(filter, "t_sec", "mintcream", "t_sec_evap_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
-    initSubvariable(filter, "t_sec", "mintcream", "t_sec_cond_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", "mintcream", "t_sec_evap_in", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", "mintcream", "t_sec_cond_in", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
 
-    initVariable(filter, "p_0", "float", tr("Bar"), "", true, 0.0, "aliceblue");
-    initVariable(filter, "t_0", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
-    initVariable(filter, "delta_t_evap", "float", tr("%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
-    initVariable(filter, "t_evap_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
-    initVariable(filter, "t_comp_in", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable(filter, "p_0", "float", QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_0", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
+    initVariable(filter, "delta_t_evap", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
+    initVariable(filter, "t_evap_out", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_comp_in", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
     initVariable(filter, "t_sh", "aliceblue");
-    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_evap", "float", tr("%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
-    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_comp", "float", tr("%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
+    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_evap", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
+    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_comp", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
 
-    initVariable(filter, "p_c", "float", tr("Bar"), "", true, 0.0, "floralwhite");
-    initVariable(filter, "t_c", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
-    initVariable(filter, "delta_t_c", "float", tr("%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
-    initVariable(filter, "t_ev", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
-    initVariable(filter, "t_sc", "float", tr("%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
-    initVariable(filter, "t_comp_out", "float", tr("%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
-    initVariable(filter, "ep_comp", "float", tr("kW"), "", true, 0.0, "");
+    initVariable(filter, "p_c", "float", QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_c", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
+    initVariable(filter, "delta_t_c", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
+    initVariable(filter, "t_ev", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_sc", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
+    initVariable(filter, "t_comp_out", "float", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable(filter, "ep_comp", "float", QApplication::translate("Units", "kW"), "", true, 0.0, "");
 
     initVariable(filter, "ec", "");
-    initSubvariable(filter, "ec", "", "ec_l1", "float", tr("A"), "", true, 0.0);
-    initSubvariable(filter, "ec", "", "ec_l2", "float", tr("A"), "", true, 0.0);
-    initSubvariable(filter, "ec", "", "ec_l3", "float", tr("A"), "", true, 0.0);
+    initSubvariable(filter, "ec", "", "ec_l1", "float", QApplication::translate("Units", "A"), "", true, 0.0);
+    initSubvariable(filter, "ec", "", "ec_l2", "float", QApplication::translate("Units", "A"), "", true, 0.0);
+    initSubvariable(filter, "ec", "", "ec_l3", "float", QApplication::translate("Units", "A"), "", true, 0.0);
 
     initVariable(filter, "ev", "");
-    initSubvariable(filter, "ev", "", "ev_l1", "float", tr("V"), "", true, 0.0);
-    initSubvariable(filter, "ev", "", "ev_l2", "float", tr("V"), "", true, 0.0);
-    initSubvariable(filter, "ev", "", "ev_l3", "float", tr("V"), "", true, 0.0);
+    initSubvariable(filter, "ev", "", "ev_l1", "float", QApplication::translate("Units", "V"), "", true, 0.0);
+    initSubvariable(filter, "ev", "", "ev_l2", "float", QApplication::translate("Units", "V"), "", true, 0.0);
+    initSubvariable(filter, "ev", "", "ev_l3", "float", QApplication::translate("Units", "V"), "", true, 0.0);
 
     initVariable(filter, "ppsw", "");
-    initSubvariable(filter, "ppsw", "", "ppsw_hip", "float", tr("Bar"), "", true, 0.0);
-    initSubvariable(filter, "ppsw", "", "ppsw_lop", "float", tr("Bar"), "", true, 0.0);
-    initSubvariable(filter, "ppsw", "", "ppsw_diff", "float", tr("Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", "", "ppsw_hip", "float", QApplication::translate("Units", "Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", "", "ppsw_lop", "float", QApplication::translate("Units", "Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", "", "ppsw_diff", "float", QApplication::translate("Units", "Bar"), "", true, 0.0);
 
-    initVariable(filter, "sftsw", "float", tr("Bar"), "", true, 0.0, "");
+    initVariable(filter, "sftsw", "float", QApplication::translate("Units", "Bar"), "", true, 0.0, "");
     initVariable(filter, "rmds", "text", "", "", false, 0.0, "");
     initVariable(filter, "arno", "string", "", "", false, 0.0, "");
 
@@ -133,16 +133,16 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "vis_aur_chk", "", "corr_def", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "noise_vibr", "bool", "", "", false, 0.0);
     initSubvariable(filter, "vis_aur_chk", "", "bbl_lvl", "bool", "", "", false, 0.0);
-    initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", "float", tr("kg"), "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", "float", QApplication::translate("Units", "kg"), "", false, 0.0);
 
     initVariable(filter, "dir_leak_chk", "green");
     initSubvariable(filter, "dir_leak_chk", "green", "el_detect", "bool", "", "", false, 0.0);
     initSubvariable(filter, "dir_leak_chk", "green", "uv_detect", "bool", "", "", false, 0.0);
     initSubvariable(filter, "dir_leak_chk", "green", "bbl_detect", "bool", "", "", false, 0.0);
 
-    initVariable(filter, "refr_add_am", "float", tr("kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_reco", "float", tr("kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_add_per", "float", tr("%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_am", "float", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_reco", "float", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_per", "float", QApplication::translate("Units", "%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");
@@ -153,7 +153,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
     if (!filter.isEmpty() && filter != id) { return; }
     StringVariantMap row;
     row.insert("VAR_ID", id);
-    row.insert("VAR_NAME", dict_varnames.value(id));
+    row.insert("VAR_NAME", variableNames().value(id));
     row.insert("VAR_TYPE", type);
     row.insert("VAR_UNIT", unit);
     row.insert("VAR_VALUE", value);
@@ -169,7 +169,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
     if (filter.isEmpty() || filter != id) { return; }
     StringVariantMap row;
     row.insert("VAR_ID", id);
-    row.insert("VAR_NAME", dict_varnames.value(id));
+    row.insert("VAR_NAME", variableNames().value(id));
     row.insert("VAR_COL_BG", col_bg);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
@@ -180,10 +180,10 @@ void Variables::initSubvariable(const QString & filter, const QString & parent, 
     if (!filter.isEmpty() && filter != id) { return; }
     StringVariantMap row;
     row.insert("VAR_ID", parent);
-    row.insert("VAR_NAME", dict_varnames.value(parent));
+    row.insert("VAR_NAME", variableNames().value(parent));
     row.insert("VAR_COL_BG", col_bg);
     row.insert("SUBVAR_ID", id);
-    row.insert("SUBVAR_NAME", dict_varnames.value(id));
+    row.insert("SUBVAR_NAME", variableNames().value(id));
     row.insert("SUBVAR_TYPE", type);
     row.insert("SUBVAR_UNIT", unit);
     row.insert("SUBVAR_VALUE", value);
@@ -215,7 +215,7 @@ void Variable::saveResult()
     while (query()->next()) {
         row.clear();
         insert = true;
-        if (dict_varnames.contains(query()->value(VAR_ID).toString())) {
+        if (variableNames().contains(query()->value(VAR_ID).toString())) {
             int index = var_indices.value(query()->value(VAR_ID).toString(), -1);
             if (index < 0) { insert = true; }
             else {
@@ -270,7 +270,7 @@ void Subvariable::saveResult()
     while (query()->next()) {
         row.clear();
         insert = true;
-        if (dict_varnames.contains(query()->value(SUBVAR_ID).toString())) {
+        if (variableNames().contains(query()->value(SUBVAR_ID).toString())) {
             int index = var_indices.value(query()->value(SUBVAR_ID).toString(), -1);
             if (index < 0) { insert = true; }
             else {

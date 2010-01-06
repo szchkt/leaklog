@@ -52,13 +52,12 @@ namespace Global {
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
     // Dictionaries
-    MTDictionary get_dict_dbtables();
-    MTDictionary get_dict_vartypes();
-    MTDictionary get_dict_varnames();
-    MTDictionary get_dict_fields();
-    MTDictionary get_dict_oils();
-    MTDictionary get_dict_attrvalues();
-    MTDictionary get_dict_attrnames();
+    const MTDictionary & databaseTables();
+    const MTDictionary & variableTypes();
+    const MTDictionary & variableNames();
+    const MTDictionary & fieldsOfApplication();
+    const MTDictionary & oils();
+    const MTDictionary & attributeValues();
     // List
     QString listRefrigerantsToString();
     MTDictionary listInspectors();

@@ -25,6 +25,7 @@
 #include "warnings.h"
 
 #include <QSqlRecord>
+#include <QApplication>
 
 using namespace Global;
 
@@ -65,6 +66,27 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
     md->setUsedIds(used_ids);
 }
 
+class CustomerAttributes
+{
+public:
+    CustomerAttributes() {
+        dict.insert("id", QApplication::translate("Customer", "ID"));
+        dict.insert("company", QApplication::translate("Customer", "Company"));
+        dict.insert("contact_person", QApplication::translate("Customer", "Contact person"));
+        dict.insert("address", QApplication::translate("Customer", "Address"));
+        dict.insert("mail", QApplication::translate("Customer", "E-mail"));
+        dict.insert("phone", QApplication::translate("Customer", "Phone"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Customer::attributes()
+{
+    static CustomerAttributes dict;
+    return dict.dict;
+}
+
 Circuit::Circuit(const QString & parent, const QString & id):
 DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
@@ -95,15 +117,15 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md, attributes.value("sn").toString()));
     md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md, 1900, 2999, attributes.value("year").toInt()));
     md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md, attributes.value("commissioning").toString()));
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), get_dict_fields()));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), tr("kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md, attributes.value("oil").toString(), get_dict_oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), tr("kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md, attributes.value("oil").toString(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md, attributes.value("leak_detector").toInt()));
-    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md, 0.0, 24.0, attributes.value("runtime").toDouble(), tr("hours")));
-    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md, 0.0, 100.0, attributes.value("utilisation").toDouble(), tr("%")));
-    md->addInputWidget(new MDSpinBox("inspection_interval", tr("Inspection interval:"), md, 0, 999999, attributes.value("inspection_interval").toInt(), tr("days")));
+    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md, 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
+    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md, 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
+    md->addInputWidget(new MDSpinBox("inspection_interval", tr("Inspection interval:"), md, 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
@@ -115,6 +137,46 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+class CircuitAttributes
+{
+public:
+    CircuitAttributes() {
+        dict.insert("id", QApplication::translate("Circuit", "ID"));
+        dict.insert("name", QApplication::translate("Circuit", "Circuit name"));
+        dict.insert("operation", QApplication::translate("Circuit", "Place of operation"));
+        dict.insert("building", QApplication::translate("Circuit", "Building"));
+        dict.insert("device", QApplication::translate("Circuit", "Device"));
+        dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
+        dict.insert("manufacturer", QApplication::translate("Circuit", "Manufacturer"));
+        dict.insert("type", QApplication::translate("Circuit", "Type"));
+        dict.insert("sn", QApplication::translate("Circuit", "Serial number"));
+        dict.insert("year", QApplication::translate("Circuit", "Year of purchase"));
+        dict.insert("commissioning", QApplication::translate("Circuit", "Date of commissioning"));
+        dict.insert("field", QApplication::translate("Circuit", "Field of application"));
+        // numBasicAttributes: 12
+        dict.insert("disused", QApplication::translate("Circuit", "Disused"));
+        dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
+        dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant") + "||" + QApplication::translate("Units", "kg"));
+        dict.insert("oil", QApplication::translate("Circuit", "Oil"));
+        dict.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil") + "||" + QApplication::translate("Units", "kg"));
+        dict.insert("runtime", QApplication::translate("Circuit", "Run-time per day") + "||" + QApplication::translate("Units", "hours"));
+        dict.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation") + "||%");
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Circuit::attributes()
+{
+    static CircuitAttributes dict;
+    return dict.dict;
+}
+
+int Circuit::numBasicAttributes()
+{
+    return 12;
 }
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
@@ -247,13 +309,13 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
     md->addInputWidget(new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString()));
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), get_dict_fields()));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors()));
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md, attributes.value("arno").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), tr("kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(id().isEmpty() ? "" : " date <> :date"));
@@ -264,6 +326,31 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+class RepairAttributes
+{
+public:
+    RepairAttributes() {
+        dict.insert("date", QApplication::translate("Repair", "Date"));
+        dict.insert("customer", QApplication::translate("Repair", "Customer"));
+        dict.insert("device", QApplication::translate("Repair", "Device"));
+        dict.insert("field", QApplication::translate("Repair", "Field of application"));
+        dict.insert("refrigerant", QApplication::translate("Repair", "Refrigerant"));
+        dict.insert("refrigerant_amount", QApplication::translate("Repair", "Amount of refrigerant"));
+        dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
+        dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
+        dict.insert("repairman", QApplication::translate("Repair", "Repairman"));
+        dict.insert("arno", QApplication::translate("Repair", "Assembly record No."));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Repair::attributes()
+{
+    static RepairAttributes dict;
+    return dict.dict;
 }
 
 VariableRecord::VariableRecord(Type type, const QString & var_id, const QString & subvar_id):
@@ -302,7 +389,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
                 attributes.insert("col_bg", query.value("VAR_COL_BG"));
             }
         }
-        if (get_dict_varnames().contains(id())) { enable_all = false; }
+        if (variableNames().contains(id())) { enable_all = false; }
     }
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
@@ -313,7 +400,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "", "", enable_all));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), "", "", enable_all));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString(), "", "", enable_all));
-    md->addInputWidget(new MDComboBox("type", tr("Type:"), md, attributes.value("type").toString(), get_dict_vartypes().swapKeysAndValues(), "", enable_all));
+    md->addInputWidget(new MDComboBox("type", tr("Type:"), md, attributes.value("type").toString(), MTDictionary(variableTypes()).swapKeysAndValues(), "", enable_all));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md, attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal one"), md, attributes.value("compare_nom").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md, 0.0, 999999.9, attributes.value("tolerance").toDouble()));
@@ -375,6 +462,26 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     md->setUsedIds(used_ids);
 }
 
+class InspectorAttributes
+{
+public:
+    InspectorAttributes() {
+        dict.insert("id", QApplication::translate("Inspector", "ID"));
+        dict.insert("person", QApplication::translate("Inspector", "Certified person"));
+        dict.insert("person_reg_num", QApplication::translate("Inspector", "Person registry number"));
+        //dict.insert("company", QApplication::translate("Inspector", "Certified company"));
+        dict.insert("phone", QApplication::translate("Inspector", "Phone"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Inspector::attributes()
+{
+    static InspectorAttributes dict;
+    return dict.dict;
+}
+
 ServiceCompany::ServiceCompany(const QString & id):
 DBRecord("service_companies", "id", id, MTDictionary())
 {}
@@ -404,6 +511,27 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
     md->setUsedIds(used_ids);
 }
 
+class ServiceCompanyAttributes
+{
+public:
+    ServiceCompanyAttributes() {
+        dict.insert("name", QApplication::translate("ServiceCompany", "Name:"));
+        dict.insert("id", QApplication::translate("ServiceCompany", "ID:"));
+        dict.insert("address", QApplication::translate("ServiceCompany", "Address:"));
+        dict.insert("phone", QApplication::translate("ServiceCompany", "Phone:"));
+        dict.insert("mail", QApplication::translate("ServiceCompany", "E-mail:"));
+        dict.insert("website", QApplication::translate("ServiceCompany", "Website:"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & ServiceCompany::attributes()
+{
+    static ServiceCompanyAttributes dict;
+    return dict.dict;
+}
+
 RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & date):
 DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
@@ -419,14 +547,14 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md, 0.0, 999999999.9, attributes.value("sold").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md, 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md, 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md, 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md, 0.0, 999999999.9, attributes.value("leaked").toDouble(), tr("kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md, 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), tr("kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md, 0.0, 999999999.9, attributes.value("sold").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md, 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md, 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md, 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md, 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md, 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));

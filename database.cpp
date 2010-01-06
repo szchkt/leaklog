@@ -75,20 +75,20 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 { // (SCOPE)
     QSqlQuery query(*database);
     QStringList tables = database->tables();
-    for (int i = 0; i < dict_dbtables.count(); ++i) {
-        if (!tables.contains(dict_dbtables.key(i))) {
-            query.exec("CREATE TABLE " + dict_dbtables.key(i) + " (" + dict_dbtables.value(i) + ")");
+    for (int i = 0; i < databaseTables().count(); ++i) {
+        if (!tables.contains(databaseTables().key(i))) {
+            query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + databaseTables().value(i) + ")");
         } else {
-            MTDictionary field_names = getTableFieldNames(dict_dbtables.key(i), database);
-            QStringList all_field_names = dict_dbtables.value(i).split(", ");
-            if (dict_dbtables.key(i) == "inspections") {
-                for (int v = 0; v < dict_varnames.count(); ++v) {
-                    all_field_names << dict_varnames.key(v) + " TEXT";
+            MTDictionary field_names = getTableFieldNames(databaseTables().key(i), database);
+            QStringList all_field_names = databaseTables().value(i).split(", ");
+            if (databaseTables().key(i) == "inspections") {
+                for (int v = 0; v < variableNames().count(); ++v) {
+                    all_field_names << variableNames().key(v) + " TEXT";
                 }
             }
             for (int f = 0; f < all_field_names.count(); ++f) {
                 if (!field_names.contains(all_field_names.at(f).split(" ").first())) {
-                    addColumn(all_field_names.at(f), dict_dbtables.key(i), database);
+                    addColumn(all_field_names.at(f), databaseTables().key(i), database);
                 }
             }
         }
@@ -843,7 +843,7 @@ void MainWindow::removeVariable()
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
-    if (dict_varnames.contains(item->text(1))) { return; }
+    if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
     bool ok;
@@ -1321,7 +1321,7 @@ void MainWindow::importData()
             last_item->setText(0, variables.value("VAR_NAME").toString());
             last_item->setText(1, variables.value("VAR_ID").toString());
             last_item->setText(2, variables.value("VAR_UNIT").toString());
-            last_item->setText(3, dict_vartypes.value(variables.value("VAR_TYPE").toString()));
+            last_item->setText(3, variableTypes().value(variables.value("VAR_TYPE").toString()));
             last_item->setText(4, variables.value("VAR_VALUE").toString());
             last_item->setText(5, variables.value("VAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
             last_item->setText(6, variables.value("VAR_TOLERANCE").toString());
@@ -1351,7 +1351,7 @@ void MainWindow::importData()
                     last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            if (!dict_varnames.contains(variables.value("VAR_ID").toString())) {
+            if (!variableNames().contains(variables.value("VAR_ID").toString())) {
                 cb_action->insertItem(0, tr("Do not import"));
                 cb_action->setCurrentIndex(1);
             } else {
@@ -1365,7 +1365,7 @@ void MainWindow::importData()
             subitem->setText(0, variables.value("SUBVAR_NAME").toString());
             subitem->setText(1, variables.value("SUBVAR_ID").toString());
             subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, dict_vartypes.value(variables.value("SUBVAR_TYPE").toString()));
+            subitem->setText(3, variableTypes().value(variables.value("SUBVAR_TYPE").toString()));
             subitem->setText(4, variables.value("SUBVAR_VALUE").toString());
             subitem->setText(5, variables.value("SUBVAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
             subitem->setText(6, variables.value("SUBVAR_TOLERANCE").toString());
@@ -1394,7 +1394,7 @@ void MainWindow::importData()
                     subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
                 }
             }
-            if (!dict_varnames.contains(variables.value("SUBVAR_ID").toString())) {
+            if (!variableNames().contains(variables.value("SUBVAR_ID").toString())) {
                 cb_action->insertItem(0, tr("Do not import"));
                 cb_action->setCurrentIndex(1);
             } else {
@@ -1461,7 +1461,7 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
             set.insert("name", item->text(0));
             set.insert("id", item->text(1));
             set.insert("unit", item->text(2));
-            set.insert("type", dict_vartypes.firstKey(item->text(3)));
+            set.insert("type", variableTypes().firstKey(item->text(3)));
             set.insert("value", item->text(4));
             set.insert("compare_nom", item->text(5) == tr("Yes") ? 1 : 0);
             set.insert("tolerance", item->text(6));
@@ -1487,7 +1487,7 @@ if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
                 set.insert("name", subitem->text(0));
                 set.insert("id", subitem->text(1));
                 set.insert("unit", subitem->text(2));
-                set.insert("type", dict_vartypes.firstKey(subitem->text(3)));
+                set.insert("type", variableTypes().firstKey(subitem->text(3)));
                 set.insert("value", subitem->text(4));
                 set.insert("compare_nom", subitem->text(5) == tr("Yes") ? 1 : 0);
                 set.insert("tolerance", subitem->text(6));
@@ -1565,17 +1565,17 @@ void MainWindow::importCSV()
             boolean_columns << "disused" << "hermetic" << "leak_detector";
             date_columns << "commissioning";
             QMap<QString, QString> map;
-            for (int n = dict_attrvalues.indexOfKey("field") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("field::"); ++n) {
-                string_value = dict_attrvalues.key(n).mid(dict_attrvalues.key(n).lastIndexOf(':') + 1);
+            for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+                string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
                 map.insert(string_value, string_value);
-                map.insert(dict_attrvalues.value(n).toLower(), string_value);
+                map.insert(attributeValues().value(n).toLower(), string_value);
             }
             select_columns.insert("field", map);
             map.clear();
-            for (int n = dict_attrvalues.indexOfKey("oil") + 1; n < dict_attrvalues.count() && dict_attrvalues.key(n).startsWith("oil::"); ++n) {
-                string_value = dict_attrvalues.key(n).mid(dict_attrvalues.key(n).lastIndexOf(':') + 1);
+            for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
+                string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
                 map.insert(string_value, string_value);
-                map.insert(dict_attrvalues.value(n).toLower(), string_value);
+                map.insert(attributeValues().value(n).toLower(), string_value);
             }
             select_columns.insert("oil", map);
             map.clear();

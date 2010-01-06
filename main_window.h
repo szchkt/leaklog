@@ -185,11 +185,6 @@ private:
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
-    MTDictionary dict_dbtables;
-    MTDictionary dict_vartypes;
-    MTDictionary dict_varnames;
-    MTDictionary dict_attrvalues;
-    MTDictionary dict_attrnames;
     QMap<Navigation::View, QString> dict_html;
     QMap<QString, int> dict_fieldtypes;
     QActionGroup * actgrp_view;

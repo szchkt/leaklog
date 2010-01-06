@@ -28,12 +28,16 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
+#undef QT_TRANSLATE_NOOP
+#define QT_TRANSLATE_NOOP(context, sourceText) context, sourceText
+
 ImportCsvDialogue::ImportCsvDialogue(const QString & path, QWidget * parent):
 QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint),
 file_path(path)
 {
     setupUi(this);
     id_bb->button(QDialogButtonBox::Ok)->setEnabled(false);
+    id_bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     tw_content->verticalHeader()->setDefaultSectionSize(20);
     cb_table->addItem(tr("Customers"), "customers");
     cb_table->addItem(tr("Circuits"), "circuits");
@@ -146,37 +150,37 @@ void ImportCsvDialogue::loadTableColumns(int index)
     QString table = cb_table->itemData(index, Qt::UserRole).toString();
     int i = 1;
     if (table == "customers") {
-        trw_columns->addTopLevelItem(columnItem("Customer", "ID", "id", i));
-        trw_columns->addTopLevelItem(columnItem("Customer", "Company", "company", i));
-        trw_columns->addTopLevelItem(columnItem("Customer", "Contact person", "contact_person", i));
-        trw_columns->addTopLevelItem(columnItem("MTAddressEdit", "Street", "street", i));
-        trw_columns->addTopLevelItem(columnItem("MTAddressEdit", "City", "city", i));
-        trw_columns->addTopLevelItem(columnItem("MTAddressEdit", "Postal code", "postal_code", i));
-        trw_columns->addTopLevelItem(columnItem("Customer", "E-mail", "mail", i));
-        trw_columns->addTopLevelItem(columnItem("Customer", "Phone", "phone", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "ID"), "id", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Company"), "company", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Contact person"), "contact_person", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "Street"), "street", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "City"), "city", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "Postal code"), "postal_code", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "E-mail"), "mail", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Phone"), "phone", i));
     } else if (table == "circuits") {
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Customer ID", "parent", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "ID", "id", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Circuit name", "name", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Disused", "disused", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Place of operation", "operation", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Building", "building", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Device", "device", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Hermetically sealed", "hermetic", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Manufacturer", "manufacturer", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Type", "type", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Serial number", "sn", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Year of purchase", "year", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Date of commissioning", "commissioning", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Field of application", "field", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Refrigerant", "refrigerant", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Amount of refrigerant", "refrigerant_amount", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Oil", "oil", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Amount of oil", "oil_amount", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Fixed leakage detector installed", "leak_detector", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Run-time per day", "runtime", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Rate of utilisation", "utilisation", i));
-        trw_columns->addTopLevelItem(columnItem("Circuit", "Inspection interval", "inspection_interval", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Customer ID"), "parent", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "ID"), "id", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Circuit name"), "name", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Disused"), "disused", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Place of operation"), "operation", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Building"), "building", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Device"), "device", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Hermetically sealed"), "hermetic", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Manufacturer"), "manufacturer", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Type"), "type", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Serial number"), "sn", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Year of purchase"), "year", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Date of commissioning"), "commissioning", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Field of application"), "field", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Refrigerant"), "refrigerant", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Amount of refrigerant"), "refrigerant_amount", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Oil"), "oil", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Amount of oil"), "oil_amount", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Fixed leakage detector installed"), "leak_detector", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Run-time per day"), "runtime", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Rate of utilisation"), "utilisation", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Inspection interval"), "inspection_interval", i));
     }
     updateHeader();
 }

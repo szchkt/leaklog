@@ -330,206 +330,208 @@ QString Global::toolTipLink(const QString & type, const QString & text, const QS
     return link.arg(href);
 }
 
-MTDictionary Global::get_dict_dbtables()
+class DatabaseTables
 {
-    MTDictionary dict_dbtables;
-    dict_dbtables.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
-    dict_dbtables.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
-    dict_dbtables.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
-    dict_dbtables.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
-    dict_dbtables.insert("repairs", "date TEXT, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
-    dict_dbtables.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, phone TEXT");
-    dict_dbtables.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
-    dict_dbtables.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
-    dict_dbtables.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
-    dict_dbtables.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
-    dict_dbtables.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
-    dict_dbtables.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-    dict_dbtables.insert("refrigerant_management", "date TEXT, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC");
-    dict_dbtables.insert("db_info", "id TEXT, value TEXT");
-    return dict_dbtables;
-}
-
-MTDictionary Global::get_dict_vartypes()
-{
-    MTDictionary dict_vartypes;
-    dict_vartypes.insert("int", QApplication::translate("VariableTypes", "Integer"));
-    dict_vartypes.insert("float", QApplication::translate("VariableTypes", "Real number"));
-    dict_vartypes.insert("string", QApplication::translate("VariableTypes", "String"));
-    dict_vartypes.insert("text", QApplication::translate("VariableTypes", "Text"));
-    dict_vartypes.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
-    return dict_vartypes;
-}
-
-MTDictionary Global::get_dict_varnames()
-{
-    MTDictionary dict_varnames;
-    dict_varnames.insert("t_sec", QApplication::translate("VariableNames", "Temperature sec. medium"));
-    dict_varnames.insert("t_sec_evap_in", QApplication::translate("VariableNames", "evap. in"));
-    dict_varnames.insert("t_sec_cond_in", QApplication::translate("VariableNames", "cond. in"));
-    dict_varnames.insert("p_0", QApplication::translate("VariableNames", "Pressure evaporating"));
-    dict_varnames.insert("p_c", QApplication::translate("VariableNames", "Pressure condensing"));
-    dict_varnames.insert("t_0", QApplication::translate("VariableNames", "Temperature evaporating"));
-    dict_varnames.insert("t_c", QApplication::translate("VariableNames", "Temperature condensing"));
-    dict_varnames.insert("t_ev", QApplication::translate("VariableNames", "Temperature EV"));
-    dict_varnames.insert("t_evap_out", QApplication::translate("VariableNames", "Temperature evap. out"));
-    dict_varnames.insert("t_comp_in", QApplication::translate("VariableNames", "Temperature comp. in"));
-    dict_varnames.insert("t_sc", QApplication::translate("VariableNames", "Subcooling"));
-    dict_varnames.insert("t_sh", QApplication::translate("VariableNames", "Superheating"));
-    dict_varnames.insert("t_sh_evap", QApplication::translate("VariableNames", "evap."));
-    dict_varnames.insert("t_sh_comp", QApplication::translate("VariableNames", "comp."));
-    dict_varnames.insert("t_comp_out", QApplication::translate("VariableNames", "Temperature discharge"));
-    dict_varnames.insert("delta_t_evap", QApplication::translate("VariableNames", "%1T (evaporating)", 0, QApplication::UnicodeUTF8).arg(delta()));
-    dict_varnames.insert("delta_t_c", QApplication::translate("VariableNames", "%1T (condensing)", 0, QApplication::UnicodeUTF8).arg(delta()));
-    dict_varnames.insert("ep_comp", QApplication::translate("VariableNames", "Comp. el. power input"));
-    dict_varnames.insert("ec", QApplication::translate("VariableNames", "Electric current"));
-    dict_varnames.insert("ec_l1", QApplication::translate("VariableNames", "L1"));
-    dict_varnames.insert("ec_l2", QApplication::translate("VariableNames", "L2"));
-    dict_varnames.insert("ec_l3", QApplication::translate("VariableNames", "L3"));
-    dict_varnames.insert("ev", QApplication::translate("VariableNames", "Electric voltage"));
-    dict_varnames.insert("ev_l1", QApplication::translate("VariableNames", "L1"));
-    dict_varnames.insert("ev_l2", QApplication::translate("VariableNames", "L2"));
-    dict_varnames.insert("ev_l3", QApplication::translate("VariableNames", "L3"));
-    dict_varnames.insert("ppsw", QApplication::translate("VariableNames", "Pneumatic pressure switches"));
-    dict_varnames.insert("ppsw_hip", QApplication::translate("VariableNames", "HiP"));
-    dict_varnames.insert("ppsw_lop", QApplication::translate("VariableNames", "LoP"));
-    dict_varnames.insert("ppsw_diff", QApplication::translate("VariableNames", "Diff"));
-    dict_varnames.insert("sftsw", QApplication::translate("VariableNames", "Safety switch"));
-    dict_varnames.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
-    dict_varnames.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
-    dict_varnames.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
-    dict_varnames.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
-    dict_varnames.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
-    dict_varnames.insert("bbl_lvl", QApplication::translate("VariableNames", "Bubble/Level"));
-    dict_varnames.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil leak"));
-    dict_varnames.insert("dir_leak_chk", QApplication::translate("VariableNames", "Direct leak check (location)"));
-    dict_varnames.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
-    dict_varnames.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
-    dict_varnames.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
-    dict_varnames.insert("refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
-    dict_varnames.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
-    dict_varnames.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
-    dict_varnames.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
-    dict_varnames.insert("operator", QApplication::translate("VariableNames", "Operator"));
-    return dict_varnames;
-}
-
-MTDictionary Global::get_dict_fields()
-{
-    MTDictionary dict_fields(true);
-    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "refrigeration");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Transportation"), "transportation");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "airconditioning");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Heat pumps"), "heatpumps");
-    // OBSOLETE
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "car");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "home");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "commercial");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "industrial");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "agricultural");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Refrigeration"), "other");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "lowrise");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "highrise");
-    dict_fields.insert(QApplication::translate("AttributeValues", "Air conditioning"), "institutional");
-    return dict_fields;
-}
-
-MTDictionary Global::get_dict_oils()
-{
-    MTDictionary dict_oils;
-    dict_oils.insert(QApplication::translate("AttributeValues", "MO (Mineral oil)"), "mo");
-    dict_oils.insert(QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)"), "ab");
-    dict_oils.insert(QApplication::translate("AttributeValues", "POE (Polyolester oil)"), "poe");
-    dict_oils.insert(QApplication::translate("AttributeValues", "PAO (Polyalphaolefin oil)"), "pao");
-    dict_oils.insert(QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"), "pve");
-    dict_oils.insert(QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"), "pag");
-    return dict_oils;
-}
-
-MTDictionary Global::get_dict_attrvalues()
-{
-    MTDictionary dict_attrvalues;
-    dict_attrvalues.insert("field", QApplication::translate("AttributeValues", "Field of application"));
-    dict_attrvalues.insert("field::refrigeration", QApplication::translate("AttributeValues", "Refrigeration"));
-    dict_attrvalues.insert("field::transportation", QApplication::translate("AttributeValues", "Transportation"));
-    dict_attrvalues.insert("field::airconditioning", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::heatpumps", QApplication::translate("AttributeValues", "Heat pumps"));
-    dict_attrvalues.insert("oil", QApplication::translate("AttributeValues", "Oil"));
-    dict_attrvalues.insert("oil::mo", QApplication::translate("AttributeValues", "MO (Mineral oil)"));
-    dict_attrvalues.insert("oil::ab", QApplication::translate("AttributeValues", "AB (Alkylbenzene oil)"));
-    dict_attrvalues.insert("oil::poe", QApplication::translate("AttributeValues", "POE (Polyolester oil)"));
-    dict_attrvalues.insert("oil::pao", QApplication::translate("AttributeValues", "PAO (Polyalphaolefin oil)"));
-    dict_attrvalues.insert("oil::pve", QApplication::translate("AttributeValues", "PVE (Polyvinylether oil)"));
-    dict_attrvalues.insert("oil::pag", QApplication::translate("AttributeValues", "PAG (Polyglycol oil)"));
-    dict_attrvalues.insert("refrigerant", QApplication::translate("AttributeValues", "Refrigerant"));
-    QStringList list_refrigerants = listRefrigerantsToString().split(";");
-    for (int i = 0; i < list_refrigerants.count(); ++i) {
-        dict_attrvalues.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
+public:
+    DatabaseTables() {
+        dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT");
+        dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT");
+        dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER");
+        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER");
+        dict.insert("repairs", "date TEXT, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT");
+        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, company TEXT, person_reg_num TEXT, phone TEXT");
+        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT");
+        dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC");
+        dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT");
+        dict.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER");
+        dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
+        dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
+        dict.insert("refrigerant_management", "date TEXT, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC");
+        dict.insert("db_info", "id TEXT, value TEXT");
     }
-    // OBSOLETE
-    dict_attrvalues.insert("field::car", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::home", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::commercial", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::industrial", QApplication::translate("AttributeValues", "Refrigeration"));
-    dict_attrvalues.insert("field::agricultural", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::other", QApplication::translate("AttributeValues", "Refrigeration"));
-    dict_attrvalues.insert("field::lowrise", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::highrise", QApplication::translate("AttributeValues", "Air conditioning"));
-    dict_attrvalues.insert("field::institutional", QApplication::translate("AttributeValues", "Air conditioning"));
-    // --------
-    return dict_attrvalues;
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::databaseTables()
+{
+    static DatabaseTables dict;
+    return dict.dict;
 }
 
-MTDictionary Global::get_dict_attrnames()
+class VariableTypes
 {
-    MTDictionary dict_attrnames;
-    dict_attrnames.insert("customer::id", QApplication::translate("Customer", "ID"));
-    dict_attrnames.insert("customer::company", QApplication::translate("AttributeNames", "Company"));
-    dict_attrnames.insert("customer::contact_person", QApplication::translate("AttributeNames", "Contact person"));
-    dict_attrnames.insert("customer::address", QApplication::translate("AttributeNames", "Address"));
-    dict_attrnames.insert("customer::mail", QApplication::translate("AttributeNames", "E-mail"));
-    dict_attrnames.insert("customer::phone", QApplication::translate("AttributeNames", "Phone"));
-    dict_attrnames.insert("circuit::id", QApplication::translate("AttributeNames", "ID"));
-    dict_attrnames.insert("circuit::name", QApplication::translate("AttributeNames", "Circuit name"));
-    dict_attrnames.insert("circuit::operation", QApplication::translate("AttributeNames", "Place of operation"));
-    dict_attrnames.insert("circuit::building", QApplication::translate("AttributeNames", "Building"));
-    dict_attrnames.insert("circuit::device", QApplication::translate("AttributeNames", "Device"));
-    dict_attrnames.insert("circuit::hermetic", QApplication::translate("AttributeNames", "Hermetically sealed"));
-    dict_attrnames.insert("circuit::manufacturer", QApplication::translate("AttributeNames", "Manufacturer"));
-    dict_attrnames.insert("circuit::type", QApplication::translate("AttributeNames", "Type"));
-    dict_attrnames.insert("circuit::sn", QApplication::translate("AttributeNames", "Serial number"));
-    dict_attrnames.insert("circuit::year", QApplication::translate("AttributeNames", "Year of purchase"));
-    dict_attrnames.insert("circuit::commissioning", QApplication::translate("AttributeNames", "Date of commissioning"));
-    dict_attrnames.insert("circuit::field", QApplication::translate("AttributeNames", "Field of application"));
-    dict_attrnames.insert("service_companies::name", QApplication::translate("AttributeNames", "Name:"));
-    dict_attrnames.insert("service_companies::id", QApplication::translate("ServiceCompany", "ID:"));
-    dict_attrnames.insert("service_companies::address", QApplication::translate("AttributeNames", "Address:"));
-    dict_attrnames.insert("service_companies::phone", QApplication::translate("AttributeNames", "Phone:"));
-    dict_attrnames.insert("service_companies::mail", QApplication::translate("AttributeNames", "E-mail:"));
-    dict_attrnames.insert("service_companies::website", QApplication::translate("AttributeNames", "Website:"));
-    dict_attrnames.insert("repairs::date", QApplication::translate("AttributeNames", "Date"));
-    dict_attrnames.insert("repairs::customer", QApplication::translate("AttributeNames", "Customer"));
-    dict_attrnames.insert("repairs::device", QApplication::translate("AttributeNames", "Device"));
-    dict_attrnames.insert("repairs::field", QApplication::translate("AttributeNames", "Field of application"));
-    dict_attrnames.insert("repairs::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
-    dict_attrnames.insert("repairs::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant"));
-    dict_attrnames.insert("repairs::refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
-    dict_attrnames.insert("repairs::refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
-    dict_attrnames.insert("repairs::repairman", QApplication::translate("AttributeNames", "Repairman"));
-    dict_attrnames.insert("repairs::arno", QApplication::translate("AttributeNames", "Assembly record No."));
-    dict_attrnames.insert("inspectors::id", QApplication::translate("AttributeNames", "ID"));
-    dict_attrnames.insert("inspectors::person", QApplication::translate("AttributeNames", "Certified person"));
-    dict_attrnames.insert("inspectors::person_reg_num", QApplication::translate("AttributeNames", "Person registry number"));
-    //dict_attrnames.insert("inspectors::company", QApplication::translate("AttributeNames", "Certified company"));
-    dict_attrnames.insert("inspectors::phone", QApplication::translate("AttributeNames", "Phone"));
-    dict_attrnames.insert("circuit::disused", QApplication::translate("AttributeNames", "Disused"));
-    dict_attrnames.insert("circuit::refrigerant", QApplication::translate("AttributeNames", "Refrigerant"));
-    dict_attrnames.insert("circuit::refrigerant_amount", QApplication::translate("AttributeNames", "Amount of refrigerant") + "||" + QApplication::translate("AttributeNames", "kg"));
-    dict_attrnames.insert("circuit::oil", QApplication::translate("AttributeNames", "Oil"));
-    dict_attrnames.insert("circuit::oil_amount", QApplication::translate("AttributeNames", "Amount of oil") + "||" + QApplication::translate("AttributeNames", "kg"));
-    dict_attrnames.insert("circuit::runtime", QApplication::translate("AttributeNames", "Run-time per day") + "||" + QApplication::translate("AttributeNames", "hours"));
-    dict_attrnames.insert("circuit::utilisation", QApplication::translate("AttributeNames", "Rate of utilisation") + "||%");
-    return dict_attrnames;
+public:
+    VariableTypes() {
+        dict.insert("int", QApplication::translate("VariableTypes", "Integer"));
+        dict.insert("float", QApplication::translate("VariableTypes", "Real number"));
+        dict.insert("string", QApplication::translate("VariableTypes", "String"));
+        dict.insert("text", QApplication::translate("VariableTypes", "Text"));
+        dict.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::variableTypes()
+{
+    static VariableTypes dict;
+    return dict.dict;
+}
+
+class VariableNames
+{
+public:
+    VariableNames() {
+        dict.insert("t_sec", QApplication::translate("VariableNames", "Temperature sec. medium"));
+        dict.insert("t_sec_evap_in", QApplication::translate("VariableNames", "evap. in"));
+        dict.insert("t_sec_cond_in", QApplication::translate("VariableNames", "cond. in"));
+        dict.insert("p_0", QApplication::translate("VariableNames", "Pressure evaporating"));
+        dict.insert("p_c", QApplication::translate("VariableNames", "Pressure condensing"));
+        dict.insert("t_0", QApplication::translate("VariableNames", "Temperature evaporating"));
+        dict.insert("t_c", QApplication::translate("VariableNames", "Temperature condensing"));
+        dict.insert("t_ev", QApplication::translate("VariableNames", "Temperature EV"));
+        dict.insert("t_evap_out", QApplication::translate("VariableNames", "Temperature evap. out"));
+        dict.insert("t_comp_in", QApplication::translate("VariableNames", "Temperature comp. in"));
+        dict.insert("t_sc", QApplication::translate("VariableNames", "Subcooling"));
+        dict.insert("t_sh", QApplication::translate("VariableNames", "Superheating"));
+        dict.insert("t_sh_evap", QApplication::translate("VariableNames", "evap."));
+        dict.insert("t_sh_comp", QApplication::translate("VariableNames", "comp."));
+        dict.insert("t_comp_out", QApplication::translate("VariableNames", "Temperature discharge"));
+        dict.insert("delta_t_evap", QApplication::translate("VariableNames", "%1T (evaporating)", 0, QApplication::UnicodeUTF8).arg(Global::delta()));
+        dict.insert("delta_t_c", QApplication::translate("VariableNames", "%1T (condensing)", 0, QApplication::UnicodeUTF8).arg(Global::delta()));
+        dict.insert("ep_comp", QApplication::translate("VariableNames", "Comp. el. power input"));
+        dict.insert("ec", QApplication::translate("VariableNames", "Electric current"));
+        dict.insert("ec_l1", QApplication::translate("VariableNames", "L1"));
+        dict.insert("ec_l2", QApplication::translate("VariableNames", "L2"));
+        dict.insert("ec_l3", QApplication::translate("VariableNames", "L3"));
+        dict.insert("ev", QApplication::translate("VariableNames", "Electric voltage"));
+        dict.insert("ev_l1", QApplication::translate("VariableNames", "L1"));
+        dict.insert("ev_l2", QApplication::translate("VariableNames", "L2"));
+        dict.insert("ev_l3", QApplication::translate("VariableNames", "L3"));
+        dict.insert("ppsw", QApplication::translate("VariableNames", "Pneumatic pressure switches"));
+        dict.insert("ppsw_hip", QApplication::translate("VariableNames", "HiP"));
+        dict.insert("ppsw_lop", QApplication::translate("VariableNames", "LoP"));
+        dict.insert("ppsw_diff", QApplication::translate("VariableNames", "Diff"));
+        dict.insert("sftsw", QApplication::translate("VariableNames", "Safety switch"));
+        dict.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
+        dict.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
+        dict.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
+        dict.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
+        dict.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
+        dict.insert("bbl_lvl", QApplication::translate("VariableNames", "Bubble/Level"));
+        dict.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil leak"));
+        dict.insert("dir_leak_chk", QApplication::translate("VariableNames", "Direct leak check (location)"));
+        dict.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
+        dict.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
+        dict.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
+        dict.insert("refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
+        dict.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
+        dict.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
+        dict.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
+        dict.insert("operator", QApplication::translate("VariableNames", "Operator"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::variableNames()
+{
+    static VariableNames dict;
+    return dict.dict;
+}
+
+class FieldsOfApplication
+{
+public:
+    FieldsOfApplication(): dict(true) {
+        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "refrigeration");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Transportation"), "transportation");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "airconditioning");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Heat pumps"), "heatpumps");
+        // OBSOLETE
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "car");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "home");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "commercial");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "industrial");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "agricultural");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "other");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "lowrise");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "highrise");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "institutional");
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::fieldsOfApplication()
+{
+    static FieldsOfApplication dict;
+    return dict.dict;
+}
+
+class Oils
+{
+public:
+    Oils() {
+        dict.insert(QApplication::translate("Oils", "MO (Mineral oil)"), "mo");
+        dict.insert(QApplication::translate("Oils", "AB (Alkylbenzene oil)"), "ab");
+        dict.insert(QApplication::translate("Oils", "POE (Polyolester oil)"), "poe");
+        dict.insert(QApplication::translate("Oils", "PAO (Polyalphaolefin oil)"), "pao");
+        dict.insert(QApplication::translate("Oils", "PVE (Polyvinylether oil)"), "pve");
+        dict.insert(QApplication::translate("Oils", "PAG (Polyglycol oil)"), "pag");
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::oils()
+{
+    static Oils dict;
+    return dict.dict;
+}
+
+class AttributeValues
+{
+public:
+    AttributeValues() {
+        dict.insert("field", QApplication::translate("FieldsOfApplication", "Field of application"));
+        dict.insert("field::refrigeration", QApplication::translate("FieldsOfApplication", "Refrigeration"));
+        dict.insert("field::transportation", QApplication::translate("FieldsOfApplication", "Transportation"));
+        dict.insert("field::airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
+        dict.insert("oil", QApplication::translate("Oils", "Oil"));
+        dict.insert("oil::mo", QApplication::translate("Oils", "MO (Mineral oil)"));
+        dict.insert("oil::ab", QApplication::translate("Oils", "AB (Alkylbenzene oil)"));
+        dict.insert("oil::poe", QApplication::translate("Oils", "POE (Polyolester oil)"));
+        dict.insert("oil::pao", QApplication::translate("Oils", "PAO (Polyalphaolefin oil)"));
+        dict.insert("oil::pve", QApplication::translate("Oils", "PVE (Polyvinylether oil)"));
+        dict.insert("oil::pag", QApplication::translate("Oils", "PAG (Polyglycol oil)"));
+        dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
+        QStringList list_refrigerants = Global::listRefrigerantsToString().split(";");
+        for (int i = 0; i < list_refrigerants.count(); ++i) {
+            dict.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
+        }
+        // OBSOLETE
+        dict.insert("field::car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::commercial", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::industrial", QApplication::translate("FieldsOfApplication", "Refrigeration"));
+        dict.insert("field::agricultural", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::other", QApplication::translate("FieldsOfApplication", "Refrigeration"));
+        dict.insert("field::lowrise", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::highrise", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("field::institutional", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        // --------
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::attributeValues()
+{
+    static AttributeValues dict;
+    return dict.dict;
 }
 
 QString Global::listRefrigerantsToString()
