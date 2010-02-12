@@ -1232,7 +1232,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     out << "</tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"7\" style=\"font-size: medium; background-color: aliceblue;\">";
-    out << tr("Circuit information") << "</th></tr><tr>";
+    out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
