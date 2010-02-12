@@ -32,7 +32,7 @@ MTSqlQueryResult(db)
     if (exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""))
         && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
         MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-        StringVariantMap circuit_attributes = circuit.list();
+        QVariantMap circuit_attributes = circuit.list();
         QString circuit_attribute, function, value;
         bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
         bool skip = false; int id; QStringList used_ids = listVariableIds();
@@ -91,7 +91,7 @@ void Warnings::saveResult()
     *pos() = -1;
     result()->clear();
     initWarnings(database, result(), 0, -1, enabled_only);
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         if (query()->value(0).toInt() >= 1000) { continue; }
         row.clear();
@@ -102,7 +102,7 @@ void Warnings::saveResult()
     }
 }
 
-void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * map, int type, int id, bool enabled_only)
+void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int type, int id, bool enabled_only)
 {
     QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
     w = "1000";
@@ -305,13 +305,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfStringVariantMaps * ma
     }
 }
 
-void Warnings::initWarning(QSqlDatabase database, ListOfStringVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
+void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
 {
     QSqlQuery query(database);
     query.prepare("SELECT enabled FROM warnings WHERE id = :id");
     query.bindValue(":id", id);
     query.exec();
-    StringVariantMap set;
+    QVariantMap set;
     if (query.next()) {
         if (enabled_only && !query.value(0).toInt()) { return; }
         set.insert("enabled", query.value(0).toInt());
@@ -325,9 +325,9 @@ void Warnings::initWarning(QSqlDatabase database, ListOfStringVariantMaps * map,
     *map << set;
 }
 
-void Warnings::initFilter(ListOfStringVariantMaps * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
+void Warnings::initFilter(ListOfVariantMaps * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
 {
-    StringVariantMap set;
+    QVariantMap set;
     set.insert("parent", parent);
     set.insert("circuit_attribute", circuit_attribute);
     set.insert("function", function);
@@ -335,9 +335,9 @@ void Warnings::initFilter(ListOfStringVariantMaps * map, const QString & parent,
     *map << set;
 }
 
-void Warnings::initCondition(ListOfStringVariantMaps * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
+void Warnings::initCondition(ListOfVariantMaps * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
 {
-    StringVariantMap set;
+    QVariantMap set;
     set.insert("parent", parent);
     set.insert("value_ins", value_ins);
     set.insert("function", function);
@@ -362,7 +362,7 @@ void Warning::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 0, id);
     if (id >= 1000) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -389,7 +389,7 @@ void WarningFilters::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 1, id);
     if (id >= 1000) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -416,7 +416,7 @@ void WarningConditions::saveResult()
     result()->clear();
     Warnings::initWarnings(database, result(), 2, id);
     if (id >= 1000) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {

@@ -31,7 +31,6 @@ class QPainter;
 class QUrl;
 class QHttp;
 class QBuffer;
-class QSqlError;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -119,7 +118,7 @@ private slots:
 private:
     // UI
     QMenu * createPopupMenu();
-    void paintLabel(const StringVariantMap &, QPainter &, int, int, int, int);
+    void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);
     void addRecent(const QString &);
     void clearAll();
     void setAllEnabled(bool, bool = false);
@@ -134,8 +133,6 @@ private:
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
-    QString DBInfoValueForKey(const QString &);
-    QSqlError setDBInfoValueForKey(const QString &, const QString &);
     void modifyRecordOfRefrigerantManagement(const QString &);
     void loadCustomer(int, bool);
     void loadCircuit(int, bool);
@@ -167,8 +164,8 @@ private:
     QString viewAllInspectors(const QString &);
     QString viewLeakagesByApplication();
     QString viewAgenda();
-    QStringList listWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, StringVariantMap &);
-    QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, StringVariantMap &, const QString &, const QString &, int * = NULL);
+    QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
+    QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     int circuitInspectionInterval(const QString &, const QString &, int);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());

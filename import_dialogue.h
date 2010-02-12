@@ -22,84 +22,57 @@
 
 #include "ui_import_dialogue.h"
 
-#include <QHeaderView>
-
 class ImportDialogue : public QDialog, private Ui::ImportDialogue
 {
     Q_OBJECT
 
 public:
-    ImportDialogue(QWidget * parent = NULL):
-    QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint) {
-        setupUi(this);
-        id_trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
-        id_trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(3, QHeaderView::ResizeToContents);
-        //id_trw_variables->header()->setResizeMode(4, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(5, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(6, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(7, QHeaderView::ResizeToContents);
-        id_trw_variables->header()->setResizeMode(8, QHeaderView::ResizeToContents);
-        QObject::connect(id_le_search_customers, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_customers, SLOT(filterItems(QLineEdit *, const QString &)));
-        QObject::connect(id_le_search_circuits, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_circuits, SLOT(filterItems(QLineEdit *, const QString &)));
-        QObject::connect(id_le_search_inspections, SIGNAL(textChanged(QLineEdit *, const QString &)), id_lw_inspections, SLOT(filterItems(QLineEdit *, const QString &)));
-        QObject::connect(id_tbtn_customers_selectall, SIGNAL(clicked()), this, SLOT(selectAllCustomers()));
-        QObject::connect(id_tbtn_circuits_selectall, SIGNAL(clicked()), this, SLOT(selectAllCircuits()));
-        QObject::connect(id_tbtn_inspections_selectall, SIGNAL(clicked()), this, SLOT(selectAllInspections()));
-        QObject::connect(id_tbtn_customers_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllCustomers()));
-        QObject::connect(id_tbtn_circuits_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllCircuits()));
-        QObject::connect(id_tbtn_inspections_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllInspections()));
-        QObject::connect(id_lw_customers, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(showCircuits(QListWidgetItem *)));
-        QObject::connect(id_lw_circuits, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(showInspections(QListWidgetItem *)));
-        item_flags = Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
-    };
-    inline MTListWidget * customers() { return id_lw_customers; };
-    inline MTListWidget * circuits() { return id_lw_circuits; };
-    inline MTListWidget * inspections() { return id_lw_inspections; };
-    inline QTreeWidget * variables() { return id_trw_variables; };
+    ImportDialogue(QWidget * parent = NULL);
+    inline QTreeWidget * newCustomers() { return trw_customers_new; }
+    inline QTreeWidget * modifiedCustomers() { return trw_customers_modified; }
+    inline QTreeWidget * newCircuits() { return trw_circuits_new; }
+    inline QTreeWidget * modifiedCircuits() { return trw_circuits_modified; }
+    inline QTreeWidget * newInspections() { return trw_inspections_new; }
+    inline QTreeWidget * modifiedInspections() { return trw_inspections_modified; }
+    inline QTreeWidget * newRepairs() { return trw_repairs_new; }
+    inline QTreeWidget * modifiedRepairs() { return trw_repairs_modified; }
+    inline QTreeWidget * newRefrigerantManagement() { return trw_refrigerant_management_new; }
+    inline QTreeWidget * modifiedRefrigerantManagement() { return trw_refrigerant_management_modified; }
+    inline QTreeWidget * newInspectors() { return trw_inspectors_new; }
+    inline QTreeWidget * modifiedInspectors() { return trw_inspectors_modified; }
+    inline QTreeWidget * variables() { return trw_variables; }
 
 private slots:
-    void showCircuits(QListWidgetItem * item) {
-        bool hide = item->checkState() == Qt::Unchecked;
-        for (int i = 0; i < id_lw_circuits->count(); ++i) {
-            if (id_lw_circuits->item(i)->data(Qt::UserRole).toString().startsWith(QString("%1::").arg(item->data(Qt::UserRole).toString()))) {
-                id_lw_circuits->item(i)->setHidden(hide);
-                id_lw_circuits->item(i)->setFlags(hide ? item_flags : (item_flags | Qt::ItemIsEnabled));
-                if (hide) { id_lw_circuits->item(i)->setCheckState(Qt::Unchecked); }
-                showInspections(id_lw_circuits->item(i));
-            }
-        }
-    };
-    void showInspections(QListWidgetItem * item) {
-        bool hide = item->checkState() == Qt::Unchecked;
-        for (int i = 0; i < id_lw_inspections->count(); ++i) {
-            if (id_lw_inspections->item(i)->data(Qt::UserRole).toString().startsWith(QString("%1::").arg(item->data(Qt::UserRole).toString()))) {
-                id_lw_inspections->item(i)->setHidden(hide);
-                id_lw_inspections->item(i)->setFlags(hide ? item_flags : (item_flags | Qt::ItemIsEnabled));
-            }
-        }
-    };
-    void selectAllCustomers() { selectAll(customers()); };
-    void selectAllCircuits() { selectAll(circuits()); };
-    void selectAllInspections() { selectAll(inspections()); };
-    void deselectAllCustomers() { deselectAll(customers()); };
-    void deselectAllCircuits() { deselectAll(circuits()); };
-    void deselectAllInspections() { deselectAll(inspections()); };
+    void selectAllNewCustomers() { setCheckState(trw_customers_new, Qt::Checked); }
+    void deselectAllNewCustomers() { setCheckState(trw_customers_new, Qt::Unchecked); }
+    void selectAllModifiedCustomers() { setCheckState(trw_customers_modified, Qt::Checked); }
+    void deselectAllModifiedCustomers() { setCheckState(trw_customers_modified, Qt::Unchecked); }
+    void selectAllNewCircuits() { setCheckState(trw_circuits_new, Qt::Checked); }
+    void deselectAllNewCircuits() { setCheckState(trw_circuits_new, Qt::Unchecked); }
+    void selectAllModifiedCircuits() { setCheckState(trw_circuits_modified, Qt::Checked); }
+    void deselectAllModifiedCircuits() { setCheckState(trw_circuits_modified, Qt::Unchecked); }
+    void selectAllNewInspections() { setCheckState(trw_inspections_new, Qt::Checked); }
+    void deselectAllNewInspections() { setCheckState(trw_inspections_new, Qt::Unchecked); }
+    void selectAllModifiedInspections() { setCheckState(trw_inspections_modified, Qt::Checked); }
+    void deselectAllModifiedInspections() { setCheckState(trw_inspections_modified, Qt::Unchecked); }
+    void selectAllNewRepairs() { setCheckState(trw_repairs_new, Qt::Checked); }
+    void deselectAllNewRepairs() { setCheckState(trw_repairs_new, Qt::Unchecked); }
+    void selectAllModifiedRepairs() { setCheckState(trw_repairs_modified, Qt::Checked); }
+    void deselectAllModifiedRepairs() { setCheckState(trw_repairs_modified, Qt::Unchecked); }
+    void selectAllNewRefrigerantManagement() { setCheckState(trw_refrigerant_management_new, Qt::Checked); }
+    void deselectAllNewRefrigerantManagement() { setCheckState(trw_refrigerant_management_new, Qt::Unchecked); }
+    void selectAllModifiedRefrigerantManagement() { setCheckState(trw_refrigerant_management_modified, Qt::Checked); }
+    void deselectAllModifiedRefrigerantManagement() { setCheckState(trw_refrigerant_management_modified, Qt::Unchecked); }
+    void selectAllNewInspectors() { setCheckState(trw_inspectors_new, Qt::Checked); }
+    void deselectAllNewInspectors() { setCheckState(trw_inspectors_new, Qt::Unchecked); }
+    void selectAllModifiedInspectors() { setCheckState(trw_inspectors_modified, Qt::Checked); }
+    void deselectAllModifiedInspectors() { setCheckState(trw_inspectors_modified, Qt::Unchecked); }
+
+    void customerChanged(QTreeWidgetItem *, int);
+    void circuitChanged(QTreeWidgetItem *, int);
 
 private:
-    void selectAll(MTListWidget * lw) {
-        for (int i = 0; i < lw->count(); ++i) {
-            lw->item(i)->setCheckState(Qt::Checked);
-        }
-    };
-    void deselectAll(MTListWidget * lw) {
-        for (int i = 0; i < lw->count(); ++i) {
-            lw->item(i)->setCheckState(Qt::Unchecked);
-        }
-    };
-
-    QFlags<Qt::ItemFlag> item_flags;
+    void setCheckState(QTreeWidget * trw, Qt::CheckState state);
 };
 
 #endif // IMPORT_DIALOGUE_H

@@ -23,14 +23,11 @@
 #include "defs.h"
 
 class MTDictionary;
-class QString;
 class QStringList;
-class QVariant;
-template<class Key, class T>
-class QMap;
 class QColor;
 class QSqlDatabase;
 class QTextStream;
+class QSqlError;
 
 namespace Global {
     QString escapeString(QString, bool = false, bool = false);
@@ -45,10 +42,12 @@ namespace Global {
     void addColumn(const QString &, const QString &, QSqlDatabase *);
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
+    QString DBInfoValueForKey(const QString &);
+    QSqlError setDBInfoValueForKey(const QString &, const QString &);
     double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
-    double evaluateExpression(StringVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0);
+    double evaluateExpression(QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
     // Dictionaries

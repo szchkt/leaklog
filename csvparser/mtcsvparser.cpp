@@ -30,14 +30,12 @@ bool MTCSVParser::hasNextRow()
 {
     while (skip_lines) {
         QChar c;
-        if (!in->atEnd()) {
-            do {
-                *in >> c;
-                if (c == line_terminator) {
-                    skip_lines--;
-                    break;
-                }
-            } while (!in->atEnd());
+        while (!in->atEnd()) {
+            *in >> c;
+            if (c == line_terminator) {
+                skip_lines--;
+                break;
+            }
         }
     }
     return !in->atEnd();

@@ -91,7 +91,7 @@ void ModifyDialogue::addWidget(QWidget * widget, int fromRow, int fromColumn, in
 
 void ModifyDialogue::save()
 {
-    StringVariantMap values; QString id; QVariant value;
+    QVariantMap values; QString id; QVariant value;
     for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         id = (*i)->id();
         value = (*i)->variantValue();

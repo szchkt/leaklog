@@ -145,6 +145,8 @@ public:
     RecordOfRefrigerantManagement(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
 };
 
 class WarningRecord : public DBRecord

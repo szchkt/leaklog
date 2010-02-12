@@ -41,7 +41,7 @@ void Variables::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables();
-    StringVariantMap row;
+    QVariantMap row;
     QSet<int> updated_indices;
     while (query()->next()) {
         row.clear();
@@ -51,7 +51,7 @@ void Variables::saveResult()
             indices.unite(var_indices.values(query()->value(SUBVAR_ID).toString()).toSet());
             foreach (int index, indices) {
                 insert = false;
-                StringVariantMap _row = result()->at(index);
+                QVariantMap _row = result()->at(index);
                 if (!updated_indices.contains(index)) {
                     updated_indices << index;
                     if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
@@ -151,7 +151,7 @@ void Variables::initVariables(const QString & filter)
 void Variables::initVariable(const QString & filter, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
 {
     if (!filter.isEmpty() && filter != id) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     row.insert("VAR_ID", id);
     row.insert("VAR_NAME", variableNames().value(id));
     row.insert("VAR_TYPE", type);
@@ -167,7 +167,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
 void Variables::initVariable(const QString & filter, const QString & id, const QString & col_bg)
 {
     if (filter.isEmpty() || filter != id) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     row.insert("VAR_ID", id);
     row.insert("VAR_NAME", variableNames().value(id));
     row.insert("VAR_COL_BG", col_bg);
@@ -178,7 +178,7 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
 void Variables::initSubvariable(const QString & filter, const QString & parent, const QString & col_bg, const QString & id, const QString & type, const QString & unit, const QString & value, bool compare_nom, double tolerance)
 {
     if (!filter.isEmpty() && filter != id) { return; }
-    StringVariantMap row;
+    QVariantMap row;
     row.insert("VAR_ID", parent);
     row.insert("VAR_NAME", variableNames().value(parent));
     row.insert("VAR_COL_BG", col_bg);
@@ -211,7 +211,7 @@ void Variable::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables(var_id);
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         row.clear();
         insert = true;
@@ -220,7 +220,7 @@ void Variable::saveResult()
             if (index < 0) { insert = true; }
             else {
                 insert = false;
-                StringVariantMap _row = result()->at(index);
+                QVariantMap _row = result()->at(index);
                 if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
                 if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
                 if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
@@ -266,7 +266,7 @@ void Subvariable::saveResult()
     *pos() = -1;
     result()->clear();
     initVariables(var_id);
-    StringVariantMap row;
+    QVariantMap row;
     while (query()->next()) {
         row.clear();
         insert = true;
@@ -275,7 +275,7 @@ void Subvariable::saveResult()
             if (index < 0) { insert = true; }
             else {
                 insert = false;
-                StringVariantMap _row = result()->at(index);
+                QVariantMap _row = result()->at(index);
                 if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
                 if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
                 if (insert) { result()->replace(index, _row); insert = false; }

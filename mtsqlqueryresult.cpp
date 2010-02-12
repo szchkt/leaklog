@@ -68,7 +68,7 @@ void MTSqlQueryResult::saveResult()
     int n = _query->record().count();
     _pos = -1;
     _result.clear();
-    StringVariantMap row;
+    QVariantMap row;
     while (_query->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
@@ -105,7 +105,7 @@ QSqlRecord MTSqlQueryResult::record() const
     return _query->record();
 }
 
-ListOfStringVariantMaps * MTSqlQueryResult::result()
+ListOfVariantMaps * MTSqlQueryResult::result()
 {
     return &_result;
 }

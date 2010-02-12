@@ -48,6 +48,7 @@ SOURCES      += global.cpp \
                 view.cpp \
                 modify_dialogue.cpp \
                 modify_warning_dialogue.cpp \
+                import_dialogue.cpp \
                 mtaddress.cpp \
                 mtrecord.cpp \
                 mtsqlqueryresult.cpp \
@@ -60,6 +61,7 @@ SOURCES      += global.cpp \
                 highlighter.cpp \
                 variables.cpp \
                 warnings.cpp \
+                mtvariant.cpp \
                 mtwebpage.cpp \
                 import_csv_dialogue.cpp
 QT           += network webkit sql

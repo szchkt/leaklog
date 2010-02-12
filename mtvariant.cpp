@@ -17,29 +17,22 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef MTVARIANT_H
-#define MTVARIANT_H
+#include "mtvariant.h"
+#include "global.h"
+#include "mtaddress.h"
 
-#include <QVariant>
+QString MTVariant::toString() const {
+    switch (v_type) {
+        case Address: return MTAddress(v_value.toString()).toPlainText(); break;
+        case Default: break;
+    }
+    return v_value.toString();
+}
 
-class MTVariant
-{
-public:
-    enum Type { Default = 0, Address = 128 };
-    MTVariant(const QVariant & v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
-
-    inline void setType(Type t) { v_type = t; }
-    inline Type type() const { return v_type; }
-    inline QVariant::Type variantType() const { return v_value.type(); }
-    inline void setValue(const QVariant & v) { v_value = v; }
-    inline QVariant value() const { return v_value; }
-
-    QString toString() const;
-    QString toHtml() const;
-
-private:
-    QVariant v_value;
-    Type v_type;
-};
-
-#endif // MTVARIANT_H
+QString MTVariant::toHtml() const {
+    switch (v_type) {
+        case Address: return MTAddress(v_value.toString()).toHtml(); break;
+        case Default: break;
+    }
+    return Global::escapeString(v_value.toString());
+}

@@ -82,8 +82,8 @@ void ReportDataController::autofill()
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
 
-    ListOfStringVariantMaps inspectors(Inspector("").listAll("person_reg_num"));
-    for (ListOfStringVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
+    ListOfVariantMaps inspectors(Inspector("").listAll("person_reg_num"));
+    for (ListOfVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
         out << "addEmployee({ \"certification_num\": \"" << i->value("person_reg_num").toString().replace("\"", "\\\"") << "\" });" << endl;
     }
 

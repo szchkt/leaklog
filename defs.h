@@ -22,16 +22,28 @@
 
 #define LEAKLOG_VERSION "0.9.6"
 #define F_LEAKLOG_VERSION 0.906
-#define LEAKLOG_PREVIEW_VERSION 2
+#define LEAKLOG_PREVIEW_VERSION 3
 #define DB_VERSION "0.9.6"
 #define F_DB_VERSION 0.906
 
 #define REAL_NUMBER_PRECISION 2
 #define REAL_NUMBER_PRECISION_EXP 100.0L
 
-#define StringVariantMap QMap<QString, QVariant>
-#define ListOfStringVariantMaps QList<StringVariantMap>
-#define MapOfStringVariantMaps QMap<QString, StringVariantMap>
-#define MultiMapOfStringVariantMaps QMultiMap<QString, StringVariantMap>
+class QString;
+class QVariant;
+template<class Key, class T>
+class QMap;
+template<class Key, class T>
+class QMultiMap;
+template<class T>
+class QList;
+
+typedef QMap<QString, QVariant> QVariantMap;
+typedef QList<QVariantMap> ListOfVariantMaps;
+typedef QMap<QString, QVariantMap> MapOfVariantMaps;
+typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
+
+#define QUERY(field) query.value(query.record().indexOf(field))
+#define QUERY_VALUE(query, field) query.value(query.record().indexOf(field))
 
 #endif // DEFS_H

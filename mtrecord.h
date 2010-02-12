@@ -44,16 +44,16 @@ public:
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
     QSqlQuery select(const QString & = "*");
-    StringVariantMap list(const QString & = "*");
+    QVariantMap list(const QString & = "*");
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
         return list(field).value(field, default_value);
     }
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
         return list(field).value(field, default_value).toString();
     }
-    ListOfStringVariantMaps listAll(const QString & = "*");
-    MultiMapOfStringVariantMaps mapAll(const QString &, const QString & = "*");
-    bool update(const StringVariantMap &, bool = false);
+    ListOfVariantMaps listAll(const QString & = "*");
+    MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
+    bool update(const QVariantMap &, bool = false);
     bool remove();
 
 private:

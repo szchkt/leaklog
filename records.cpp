@@ -44,7 +44,7 @@ DBRecord("customers", "id", id, MTDictionary())
 void Customer::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Customer"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
@@ -99,7 +99,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     if (customer.isEmpty())
         customer = parent("parent").rightJustified(8, '0');
     md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(customer));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     } else {
@@ -161,8 +161,10 @@ public:
         dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant") + "||" + QApplication::translate("Units", "kg"));
         dict.insert("oil", QApplication::translate("Circuit", "Oil"));
         dict.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil") + "||" + QApplication::translate("Units", "kg"));
+        dict.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
         dict.insert("runtime", QApplication::translate("Circuit", "Run-time per day") + "||" + QApplication::translate("Units", "hours"));
         dict.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation") + "||%");
+        dict.insert("inspection_interval", QApplication::translate("Circuit", "Inspection interval") + "||" + QApplication::translate("Units", "days"));
     }
 
     MTDictionary dict;
@@ -192,7 +194,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(4, '0');
     md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection").arg(customer).arg(circuit));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
@@ -210,7 +212,11 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
-    md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    if (DBInfoValueForKey("locked") == "true") {
+        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    }
+    md->addInputWidget(date);
     MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md);
     MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt(), nominal_allowed);
     md->addInputWidget(chb_nominal);
@@ -298,7 +304,7 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
     md->setWindowTitle(tr("Repair"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     } else {
@@ -306,7 +312,11 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
             attributes.insert(parents().key(i), parents().value(i));
         }
     }
-    md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    if (DBInfoValueForKey("locked") == "true") {
+        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    }
+    md->addInputWidget(date);
     md->addInputWidget(new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString()));
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
@@ -363,7 +373,7 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
         case SUBVARIABLE: md->setWindowTitle(tr("Subvariable")); break;
         default: md->setWindowTitle(tr("Variable")); break;
     }
-    StringVariantMap attributes; bool enable_all = true;
+    QVariantMap attributes; bool enable_all = true;
     if (!id().isEmpty()) {
         if (v_type == SUBVARIABLE) {
             Subvariable query(parent("parent"), id());
@@ -416,7 +426,7 @@ DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, MTDic
 void Table::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Table"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
@@ -441,7 +451,7 @@ DBRecord("inspectors", "id", id, MTDictionary())
 void Inspector::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Inspector"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
@@ -489,7 +499,7 @@ DBRecord("service_companies", "id", id, MTDictionary())
 void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Service company"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
@@ -541,11 +551,15 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
     md->setWindowTitle(tr("Record of refrigerant management"));
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString()));
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    if (DBInfoValueForKey("locked") == "true") {
+        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    }
+    md->addInputWidget(date);
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
@@ -567,6 +581,31 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     md->setUsedIds(used_ids);
 }
 
+class RecordOfRefrigerantManagementAttributes
+{
+public:
+    RecordOfRefrigerantManagementAttributes() {
+        dict.insert("date", QApplication::translate("RecordOfRefrigerantManagement", "Date"));
+        dict.insert("refrigerant", QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"));
+        dict.insert("purchased", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (new)"));
+        dict.insert("purchased_reco", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (recovered)"));
+        dict.insert("sold", QApplication::translate("RecordOfRefrigerantManagement", "Sold (new)"));
+        dict.insert("sold_reco", QApplication::translate("RecordOfRefrigerantManagement", "Sold (recovered)"));
+        dict.insert("refr_rege", QApplication::translate("RecordOfRefrigerantManagement", "Reclaimed"));
+        dict.insert("refr_disp", QApplication::translate("RecordOfRefrigerantManagement", "Disposed of"));
+        dict.insert("leaked", QApplication::translate("RecordOfRefrigerantManagement", "Leaked (new)"));
+        dict.insert("leaked_reco", QApplication::translate("RecordOfRefrigerantManagement", "Leaked (recovered)"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & RecordOfRefrigerantManagement::attributes()
+{
+    static RecordOfRefrigerantManagementAttributes dict;
+    return dict.dict;
+}
+
 WarningRecord::WarningRecord(const QString & id):
 DBRecord("warnings", "id", id, MTDictionary())
 {}
@@ -574,7 +613,7 @@ DBRecord("warnings", "id", id, MTDictionary())
 void WarningRecord::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Warning"));
-    StringVariantMap attributes; bool enable_all = true;
+    QVariantMap attributes; bool enable_all = true;
     if (!id().isEmpty()) {
         Warning query(id().toInt());
         if (query.next()) {

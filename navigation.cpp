@@ -253,21 +253,21 @@ void Navigation::tableChanged(int)
     }
 }
 
-void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool repair_selected, bool inspector_selected)
+void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected)
 {
     tbtn_modify_inspector->setEnabled(inspector_selected);
     tbtn_remove_inspector->setEnabled(inspector_selected);
     tbtn_modify_customer->setEnabled(customer_selected);
     tbtn_remove_customer->setEnabled(customer_selected);
-    tbtn_modify_repair->setEnabled(repair_selected);
-    tbtn_remove_repair->setEnabled(repair_selected);
+    tbtn_modify_repair->setEnabled(repair_selected && !repair_locked);
+    tbtn_remove_repair->setEnabled(repair_selected && !repair_locked);
     tbtn_view_circuits->setEnabled(customer_selected);
     gb_circuits->setEnabled(customer_selected);
     tbtn_modify_circuit->setEnabled(circuit_selected);
     tbtn_remove_circuit->setEnabled(circuit_selected);
     gb_inspections->setEnabled(circuit_selected);
-    tbtn_modify_inspection->setEnabled(inspection_selected);
-    tbtn_remove_inspection->setEnabled(inspection_selected);
+    tbtn_modify_inspection->setEnabled(inspection_selected && !inspection_locked);
+    tbtn_remove_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_view_inspection->setEnabled(inspection_selected);
     gb_tables->setEnabled(circuit_selected);
 }

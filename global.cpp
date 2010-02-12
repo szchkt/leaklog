@@ -29,6 +29,7 @@
 #include <QNetworkRequest>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QSqlError>
 
 #include <cmath>
 
@@ -174,6 +175,19 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
     }
 }
 
+QString Global::DBInfoValueForKey(const QString & key)
+{
+    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    if (!query.next()) { return QString(); }
+    return query.value(0).toString();
+}
+
+QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value)
+{
+    QSqlQuery query(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key));
+    return query.lastError();
+}
+
 double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
 {
     MTDictionary parents("customer", customer_id);
@@ -252,13 +266,13 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
 
 Refrigerants refrigerants;
 
-double Global::evaluateExpression(StringVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
+double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
 {
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
     MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-    StringVariantMap circuit_attributes = circuit.list();
+    QVariantMap circuit_attributes = circuit.list();
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
@@ -287,7 +301,7 @@ double Global::evaluateExpression(StringVariantMap & inspection, const MTDiction
         } else if (expression.value(i) == "p_to_t") {
             MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.stringValue("refrigerant");
-            value.append(QString::number(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0)));
+            value.append(QString::number(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0 + 1.0)));
         } else {
             value.append(expression.key(i));
         }

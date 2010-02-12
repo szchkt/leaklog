@@ -24,6 +24,7 @@
 #include "records.h"
 #include "report_data.h"
 #include "mttextstream.h"
+#include "mtaddress.h"
 
 #include <QDate>
 
@@ -135,7 +136,7 @@ QString MainWindow::viewServiceCompany(int since)
 {
     QString html; MTTextStream out(&html);
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
-    StringVariantMap serv_company = serv_company_record.list();
+    QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
@@ -219,7 +220,11 @@ QString MainWindow::viewServiceCompany(int since)
         }
     }
     html.replace("<store />", store_html);
-    int year, last_year = 0; bool it = false, bf = false; QString link;
+    bool database_locked = DBInfoValueForKey("locked") == "true";
+    QString lock_date = DBInfoValueForKey("lock_date");
+    int year, last_year = 0;
+    bool it = false, bf = false, link_enabled = true;
+    QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
     QVector<double> * sum_list = NULL;
     QMapIterator<QString, QVector<QString> > i(data.entries_map);
@@ -253,11 +258,15 @@ QString MainWindow::viewServiceCompany(int since)
             bf = link.contains("nominal");
             it = link.startsWith("repair:");
             if (bf) link.remove("nominal");
+            link_enabled = !database_locked || !link.startsWith("record") || i.key() >= lock_date;
             out << "<tr><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
-            out << "><a href=\"" << link << "\">" << i.key() << "</a></td>";
-            out << "<td";
+            out << ">";
+            if (link_enabled) out << "<a href=\"" << link << "\">";
+            out << i.key();
+            if (link_enabled) out << "</a>";
+            out << "</td><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
             out << ">" << i.value().at(1) << "</td>";
@@ -283,7 +292,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     if (customer_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
         all_customers.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps list(all_customers.listAll());
+    ListOfVariantMaps list(all_customers.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Customer::attributes().count(); ++n) {
@@ -323,7 +332,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     if (circuit_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps circuits(circuits_record.listAll());
+    ListOfVariantMaps circuits(circuits_record.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
@@ -426,7 +435,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->filterKeyword().isEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
+    ListOfVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -435,7 +444,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         }
     }
     Inspector inspectors_record("");
-    MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
+    MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
@@ -488,13 +497,13 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
-    StringVariantMap inspection = inspection_record.list();
+    QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
     bool locked = isRecordLocked(inspection_date);
     Inspection nom_inspection_record(customer_id, circuit_id, "");
     nom_inspection_record.parents().insert("nominal", "1");
-    StringVariantMap nominal_ins = nom_inspection_record.list();
+    QVariantMap nominal_ins = nom_inspection_record.list();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
@@ -609,8 +618,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     QStringList used_ids = listVariableIds();
 //*** Map variables ***
     QString last_id;
-    MapOfStringVariantMaps variables; StringVariantMap variable;
-    QList<QVariant> subvariables; StringVariantMap subvariable;
+    MapOfVariantMaps variables; QVariantMap variable;
+    QList<QVariant> subvariables; QVariantMap subvariable;
     while (vars.next()) {
         if (vars.value("VAR_ID").toString() != last_id) {
             if (!last_id.isEmpty()) {
@@ -645,11 +654,11 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     }
 
     Table table_record(table_id);
-    StringVariantMap table = table_record.list();
+    QVariantMap table = table_record.list();
     QStringList table_vars = table.value("variables").toString().split(";", QString::SkipEmptyParts);
 
     Inspection inspection_record(customer_id, circuit_id, "");
-    ListOfStringVariantMaps inspections(inspection_record.listAll());
+    ListOfVariantMaps inspections(inspection_record.listAll());
     QString last_inspection_date, last_entry_date, date;
     for (int i = 0; i < inspections.count(); ++i) {
         date = inspections.at(i).value("date").toString();
@@ -665,7 +674,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             i--;
         }
     }
-    StringVariantMap nominal_ins;
+    QVariantMap nominal_ins;
     for (int i = 0; i < inspections.count(); ++i) {
         if (inspections.at(i).value("nominal").toInt()) {
             nominal_ins = inspections[i];
@@ -675,9 +684,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 
 //*** Top tables ***
     Customer customer(customer_id);
-    StringVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
+    QVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
     Circuit circuit(customer_id, circuit_id);
-    StringVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, runtime, utilisation");
+    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, runtime, utilisation");
     out << "<table><tr><th>" << QApplication::translate("Customer", "ID");
     out << "</th><th>" << QApplication::translate("Customer", "Company");
     out << "</th><th>" << QApplication::translate("Customer", "Contact person");
@@ -1028,11 +1037,11 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
             else { show_warning = false; break; }\
         }
 
-QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, StringVariantMap & nominal_ins, StringVariantMap & inspection)
+QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, QVariantMap & nominal_ins, QVariantMap & inspection)
 {
     QStringList warnings_list;
     Circuit circuit(customer_id, circuit_id);
-    StringVariantMap circuit_attributes = circuit.list();
+    QVariantMap circuit_attributes = circuit.list();
     bool show_warning, ok; QString function;
     int id, num_conditions; double ins_value, nom_value;
     while (warnings.next()) {
@@ -1047,21 +1056,21 @@ QStringList MainWindow::listWarnings(Warnings & warnings, const QString & custom
     return warnings_list;
 }
 
-QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, StringVariantMap & nominal_ins, const QString & last_entry_date, const QString & last_inspection_date, int * delay_out)
+QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, QVariantMap & nominal_ins, const QString & last_entry_date, const QString & last_inspection_date, int * delay_out)
 {
     QStringList warnings_list;
     Circuit circuit(customer_id, circuit_id);
-    StringVariantMap circuit_attributes = circuit.list();
+    QVariantMap circuit_attributes = circuit.list();
     Inspection last_entry_record(customer_id, circuit_id, last_entry_date);
-    StringVariantMap last_entry = last_entry_record.list();
-    StringVariantMap last_inspection;
+    QVariantMap last_entry = last_entry_record.list();
+    QVariantMap last_inspection;
     if (last_inspection_date == last_entry_date) {
         last_inspection = last_entry;
     } else {
         Inspection last_inspection_record(customer_id, circuit_id, last_inspection_date);
         last_inspection = last_inspection_record.list();
     }
-    StringVariantMap * entry;
+    QVariantMap * entry;
     bool show_warning, ok; QString function;
     int id, delay, interval, num_conditions; double ins_value, nom_value;
     while (warnings.next()) {
@@ -1102,7 +1111,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     if (!navigation->filterKeyword().isEmpty()) {
         repairs_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps repairs(repairs_record.listAll());
+    ListOfVariantMaps repairs(repairs_record.listAll());
     if (year) {
         for (int i = 0; i < repairs.count();) {
             if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -1119,7 +1128,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     if (repairs.count()) {
         QString id, attr_value;
         Inspector inspectors_record("");
-        MultiMapOfStringVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
+        MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
         for (int i = 0; i < repairs.count(); ++i) {
             id = repairs.at(i).value("date").toString();
             out << "<tr onclick=\"window.location = 'repair:" << id << "";
@@ -1156,7 +1165,7 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
     if (!navigation->filterKeyword().isEmpty()) {
         inspectors_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
     }
-    ListOfStringVariantMaps inspectors(inspectors_record.listAll());
+    ListOfVariantMaps inspectors(inspectors_record.listAll());
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Inspector::attributes().count(); ++n) {
         thead.append("<th>" + Inspector::attributes().value(n) + "</th>");
@@ -1286,11 +1295,11 @@ QString MainWindow::viewAgenda()
     QString html; MTTextStream out(&html);
 
     MTRecord inspections_record("inspections", "date", "", MTDictionary());
-    ListOfStringVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
+    ListOfVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
     MTRecord circuits_record("circuits", "id", "", MTDictionary());
-    ListOfStringVariantMaps circuits(circuits_record.listAll());
+    ListOfVariantMaps circuits(circuits_record.listAll());
     MTRecord customers_record("customers", "id", "", MTDictionary());
-    MultiMapOfStringVariantMaps customers(customers_record.mapAll("id", "company"));
+    MultiMapOfVariantMaps customers(customers_record.mapAll("id", "company"));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th colspan=\"4\" style=\"font-size: large;\">" << tr("Agenda") << "</th></tr>";

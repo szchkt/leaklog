@@ -94,9 +94,9 @@ QSqlQuery MTRecord::select(const QString & fields)
     return query;
 }
 
-StringVariantMap MTRecord::list(const QString & fields)
+QVariantMap MTRecord::list(const QString & fields)
 {
-    StringVariantMap list;
+    QVariantMap list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
@@ -107,14 +107,14 @@ StringVariantMap MTRecord::list(const QString & fields)
     return list;
 }
 
-ListOfStringVariantMaps MTRecord::listAll(const QString & fields)
+ListOfVariantMaps MTRecord::listAll(const QString & fields)
 {
-    ListOfStringVariantMaps list;
+    ListOfVariantMaps list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
-        StringVariantMap map;
+        QVariantMap map;
         for (int i = 0; i < query.record().count(); ++i) {
             map.insert(query.record().fieldName(i), query.value(i));
         }
@@ -123,9 +123,9 @@ ListOfStringVariantMaps MTRecord::listAll(const QString & fields)
     return list;
 }
 
-MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QString & fields)
+MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
-    MultiMapOfStringVariantMaps map;
+    MultiMapOfVariantMaps map;
     QStringList list_map_to = map_to.split("::");
     QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
     query.setForwardOnly(true);
@@ -136,7 +136,7 @@ MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QStri
         if (indices.last() < 0) { return map; }
     }
     while (query.next()) {
-        StringVariantMap row_map; QStringList list_key;
+        QVariantMap row_map; QStringList list_key;
         for (int i = 0; i < query.record().count(); ++i) {
             row_map.insert(query.record().fieldName(i), query.value(i));
         }
@@ -148,7 +148,7 @@ MultiMapOfStringVariantMaps MTRecord::mapAll(const QString & map_to, const QStri
     return map;
 }
 
-bool MTRecord::update(const StringVariantMap & set, bool add_columns)
+bool MTRecord::update(const QVariantMap & set, bool add_columns)
 {
     bool has_id = !r_id.isEmpty();
     QString update;
@@ -181,8 +181,13 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
             if (i.hasNext() || r_parents.count()) { update.append(", "); }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
+            if (set.contains(r_parents.key(p))) continue;
             update.append(r_parents.key(p));
             if (p < r_parents.count() - 1) { update.append(", "); }
+        }
+        if (!set.contains(r_id_field)) {
+            if (set.count() || r_parents.count()) { update.append(", "); }
+            update.append(r_id_field);
         }
         update.append(") VALUES (");
         i.toFront();
@@ -191,15 +196,21 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
             if (i.hasNext() || r_parents.count()) { update.append(", "); }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
+            if (set.contains(r_parents.key(p))) continue;
             update.append(":_" + r_parents.key(p));
             if (p < r_parents.count() - 1) { update.append(", "); }
+        }
+        if (!set.contains(r_id_field)) {
+            if (set.count() || r_parents.count()) { update.append(", "); }
+            update.append(":_id");
         }
         update.append(")");
     }
     QSqlQuery query;
     query.prepare(update);
-    if (has_id) { query.bindValue(":_id", r_id); }
+    if (has_id || !set.contains(r_id_field)) { query.bindValue(":_id", r_id); }
     for (int p = 0; p < r_parents.count(); ++p) {
+        if (!has_id && set.contains(r_parents.key(p))) continue;
         query.bindValue(":_" + r_parents.key(p), r_parents.value(p));
     }
     i.toFront();
@@ -208,7 +219,7 @@ bool MTRecord::update(const StringVariantMap & set, bool add_columns)
         if (r_parents.contains(i.key())) { r_parents.setValue(i.key(), i.value().toString()); }
     }
     bool result = query.exec();
-    if (has_id) {
+    if (!r_id.isEmpty()) {
         r_id = set.value(r_id_field, r_id).toString();
     } else {
         r_id = set.value(r_id_field, query.lastInsertId()).toString();

@@ -36,14 +36,14 @@ public:
     int warningConditionFunctionCount(int);
     QString warningConditionFunction(int, int);
 
-    static void initWarnings(QSqlDatabase, ListOfStringVariantMaps *, int, int = -1, bool = false);
+    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false);
 
 protected:
     void saveResult();
 
-    static void initWarning(QSqlDatabase, ListOfStringVariantMaps *, const QString &, const QString &, const QString &, int, bool);
-    static void initFilter(ListOfStringVariantMaps *, const QString &, const QString &, const QString &, const QString &);
-    static void initCondition(ListOfStringVariantMaps *, const QString &, const QString &, const QString &, const QString &);
+    static void initWarning(QSqlDatabase, ListOfVariantMaps *, const QString &, const QString &, const QString &, int, bool);
+    static void initFilter(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
+    static void initCondition(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
 
     QSqlDatabase database;
     bool enabled_only;

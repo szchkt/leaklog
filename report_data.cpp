@@ -45,7 +45,7 @@ ReportData::ReportData(int since)
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
     RecordOfRefrigerantManagement refr_man_record("");
-    ListOfStringVariantMaps refr_man(refr_man_record.listAll());
+    ListOfVariantMaps refr_man(refr_man_record.listAll());
     for (int i = 0; i < refr_man.count(); ++i) {
         refrigerant = refr_man.at(i).value("refrigerant").toString();
         purchased = refr_man.at(i).value("purchased");
@@ -96,9 +96,9 @@ ReportData::ReportData(int since)
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
     MTRecord circuits_record("circuits", "id", "", MTDictionary());
-    MultiMapOfStringVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
+    MultiMapOfVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
     MTRecord inspections_record("inspections", "date", "", MTDictionary());
-    ListOfStringVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_reco"));
+    ListOfVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_reco"));
     Repair repairs_rec("");
     inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_reco");
     for (int i = 0; i < inspections.count(); ++i) {

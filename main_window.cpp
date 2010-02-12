@@ -23,6 +23,7 @@
 #include "report_data_controller.h"
 #include "variables.h"
 #include "mtvariant.h"
+#include "mtaddress.h"
 #include "mtwebpage.h"
 #include "about_widget.h"
 #include "sha256.h"
@@ -467,7 +468,7 @@ void MainWindow::printLabel(bool detailed)
     if (!ok) { return; }
 
     QString selected_inspector = selectedInspector();
-    StringVariantMap attributes;
+    QVariantMap attributes;
     if (detailed) {
         attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(4, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
@@ -479,7 +480,7 @@ void MainWindow::printLabel(bool detailed)
         query.bindValue(":circuit_id", selected_circuit);
         query.exec();
         if (query.next()) {
-            StringVariantMap inspection;
+            QVariantMap inspection;
             for (int i = 0; i < query.record().count(); ++i) {
                 inspection.insert(query.record().fieldName(i), query.value(i));
             }
@@ -532,7 +533,7 @@ void MainWindow::printLabel(bool detailed)
     delete printer;
 }
 
-void MainWindow::paintLabel(const StringVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
+void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
 {
     bool detailed = attributes.contains("circuit_id");
     painter.save();
@@ -830,13 +831,13 @@ void MainWindow::enableTools()
     bool customer_selected = selected_customer >= 0;
     bool circuit_selected = selected_circuit >= 0;
     bool inspection_selected = !selected_inspection.isEmpty();
+    bool inspection_locked = false;
+    if (database_locked && inspection_selected && selected_inspection < database_lock_date)
+        inspection_locked = true;
     bool repair_selected = !selected_repair.isEmpty();
-    bool record_locked = false;
-    if (database_locked && (inspection_selected || repair_selected)) {
-        QString date = inspection_selected ? selected_inspection : selected_repair;
-        if (date < database_lock_date)
-            record_locked = true;
-    }
+    bool repair_locked = false;
+    if (database_locked && repair_selected && selected_repair < database_lock_date)
+        repair_locked = true;
     bool inspector_selected = selected_inspector >= 0;
     QString current_selection;
     if (customer_selected)
@@ -873,7 +874,7 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, repair_selected, inspector_selected);
+    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected);
     actionModify_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);
     actionExport_customer_data->setEnabled(customer_selected);
@@ -882,10 +883,10 @@ void MainWindow::enableTools()
     actionRemove_circuit->setEnabled(circuit_selected && !database_locked);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
-    actionModify_inspection->setEnabled(inspection_selected && !record_locked);
-    actionRemove_inspection->setEnabled(inspection_selected && !record_locked);
-    actionModify_repair->setEnabled(repair_selected && !record_locked);
-    actionRemove_repair->setEnabled(repair_selected && !record_locked);
+    actionModify_inspection->setEnabled(inspection_selected && !inspection_locked);
+    actionRemove_inspection->setEnabled(inspection_selected && !inspection_locked);
+    actionModify_repair->setEnabled(repair_selected && !repair_locked);
+    actionRemove_repair->setEnabled(repair_selected && !repair_locked);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);

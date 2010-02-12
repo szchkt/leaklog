@@ -245,7 +245,7 @@ void ModifyWarningDialogue::setWindowTitle(const QString & title)
 
 void ModifyWarningDialogue::save()
 {
-    StringVariantMap values;
+    QVariantMap values;
     if (!md_record->id().isEmpty()) {
         values.insert("id", md_record->id().toInt());
         QSqlQuery delete_filters;

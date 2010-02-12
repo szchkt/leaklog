@@ -47,12 +47,12 @@ public:
 
 protected:
     int * pos();
-    ListOfStringVariantMaps * result();
+    ListOfVariantMaps * result();
     virtual void saveResult();
 
 private:
     QSqlQuery * _query;
-    ListOfStringVariantMaps _result;
+    ListOfVariantMaps _result;
     int _pos;
 };
 
