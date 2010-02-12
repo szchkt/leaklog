@@ -82,9 +82,9 @@ void ReportDataController::autofill()
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
 
-    ListOfVariantMaps inspectors(Inspector("").listAll("person_reg_num"));
+    ListOfVariantMaps inspectors(Inspector("").listAll("id"));
     for (ListOfVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
-        out << "addEmployee({ \"certification_num\": \"" << i->value("person_reg_num").toString().replace("\"", "\\\"") << "\" });" << endl;
+        out << "addEmployee({ \"certification_num\": \"" << i->value("id").toString().rightJustified(4, '0') << "\" });" << endl;
     }
 
     ReportData data(year);

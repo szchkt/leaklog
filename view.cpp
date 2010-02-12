@@ -83,6 +83,13 @@ QString MainWindow::viewChanged(int view)
             case Navigation::ListOfInspectors:
                 html = viewAllInspectors(selectedInspector());
                 break;
+            case Navigation::OperatorReport:
+                if (isCustomerSelected()) {
+                    html = viewOperatorReport(selectedCustomer());
+                } else {
+                    view = Navigation::ListOfCustomers; ok = false;
+                }
+                break;
             case Navigation::LeakagesByApplication:
                 html = viewLeakagesByApplication();
                 break;
@@ -126,6 +133,10 @@ QString MainWindow::currentView()
             break;
         case Navigation::ListOfRepairs: view = QApplication::translate("Navigation", "List of repairs"); break;
         case Navigation::ListOfInspectors: view = QApplication::translate("Navigation", "List of inspectors"); break;
+        case Navigation::OperatorReport:
+            view = QApplication::translate("Navigation", "Operator report")
+                   + " - " + Customer(selectedCustomer()).stringValue("company");
+            break;
         case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by application"); break;
         case Navigation::Agenda: view = QApplication::translate("Navigation", "Agenda"); break;
     }
@@ -138,7 +149,7 @@ QString MainWindow::viewServiceCompany(int since)
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: larger; width:100%; text-align: center;\"><b>";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
     out << tr("Service company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -302,7 +313,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     thead.append("<th>" + tr("Number of circuits") + "</th>");
     thead.append("<th>" + tr("Total number of inspections") + "</th>");
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large; background-color: floralwhite;\">";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium; background-color: floralwhite;\">";
     if (customer_id.isEmpty()) { out << tr("List of customers"); }
     else { out << "<a href=\"customer:" << customer_id << "/modify\">" << tr("Customer") << "</a>"; }
     out << "</th></tr>";
@@ -342,7 +353,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     thead.append("<th>" + Circuit::attributes().value("refrigerant") + "</th>");
     thead.append("<th>" + Circuit::attributes().value("oil") + "</th>");
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large; background-color: aliceblue;\">";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium; background-color: aliceblue;\">";
     if (circuit_id.isEmpty()) { out << tr("List of circuits"); }
     else { out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
     out << "</th></tr>";
@@ -381,7 +392,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     out << "</table>";
     if (show_disused) {
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-        out << "<th colspan=\"5\" style=\"font-size: large;\">" << tr("Disused circuits") << "</th></tr><tr>";
+        out << "<th colspan=\"5\" style=\"font-size: medium;\">" << tr("Disused circuits") << "</th></tr><tr>";
         out << "<th>" << Circuit::attributes().value("id") << "</th>";
         out << "<th>" << Circuit::attributes().value("manufacturer") << "</th>";
         out << "<th>" << Circuit::attributes().value("type") << "</th>";
@@ -446,7 +457,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     Inspector inspectors_record("");
     MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr><th colspan=\"9\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and repairs") << "</a></th></tr>";
     out << "<tr><th>" << tr("Date") << "</th>";
@@ -506,7 +517,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QVariantMap nominal_ins = nom_inspection_record.list();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th colspan=\"4\" style=\"font-size: large; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"4\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     if (!locked) {
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
         out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
@@ -604,7 +615,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QStringList warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspection);
     if (warnings_list.count()) {
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><th style=\"font-size: larger;\">" << tr("Warnings") << "</th></tr>";
+        out << "<tr><th style=\"font-size: medium;\">" << tr("Warnings") << "</th></tr>";
         out << "<tr><td>" << warnings_list.join(", ") << "</td></tr></table>";
     }
     return dict_html.value(Navigation::Inspection).arg(html);
@@ -1120,7 +1131,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         }
     }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr><th colspan=\"12\" style=\"font-size: large;\">" << tr("List of repairs") << "</th></tr><tr>";
+    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
         out << "<th>" << Repair::attributes().value(n) << "</th>";
     }
@@ -1174,7 +1185,7 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
     thead.append("<th>" + tr("Number of inspections") + "</th>");
     thead.append("<th>" + tr("Number of repairs") + "</th>");
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: large;\">" << tr("List of inspectors") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of inspectors") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < inspectors.count(); ++i) {
@@ -1194,6 +1205,72 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
         out << "</tr>";
     }
     return dict_html.value(Navigation::ListOfInspectors).arg(html);
+}
+
+QString MainWindow::viewOperatorReport(const QString & customer_id)
+{
+    QString html; MTTextStream out(&html);
+    Customer customer(customer_id);
+    QVariantMap attributes = customer.list("company, address");
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
+    int year = QDate::currentDate().year();
+    out << tr("Operator report: %1").arg(year) << "</th></tr></table><br>";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th colspan=\"3\">" << tr("Owner information") << "</th></tr><tr>";
+    out << "<th>" << Customer::attributes().value("id") << "</th>";
+    out << "<th>" << Customer::attributes().value("company") << "</th>";
+    out << "<th>" << Customer::attributes().value("address") << "</th>";
+    out << "</tr><tr>";
+    out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
+    out << "<td>" << attributes.value("company").toString() << "</td>";
+    out << "<td>" << MTVariant(attributes.value("address"), MTVariant::Address) << "</td>";
+    out << "</tr><tr><th colspan=\"3\">" << tr("Operator information") << "</th></tr><tr>";
+    out << "<th>" << Customer::attributes().value("id") << "</th>";
+    out << "<th>" << Customer::attributes().value("company") << "</th>";
+    out << "<th>" << Customer::attributes().value("address") << "</th>";
+    out << "</tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><br>";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th colspan=\"7\" style=\"font-size: medium; background-color: aliceblue;\">";
+    out << tr("Circuit information") << "</th></tr><tr>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
+    out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
+    out << "</tr><tr>";
+    out << "<th>" << tr("At the beginning of this year") << "</th>";
+    out << "<th>" << tr("Added") << "</th>";
+    out << "<th>" << tr("Recovered") << "</th>";
+    out << "<th>" << tr("At the end of this year") << "</th>";
+    out << "</tr>";
+    QVariantMap sums;
+    QString filter = QString("%1%").arg(year);
+    Circuit circuits(customer_id, "");
+    ListOfVariantMaps list = circuits.listAll("id, refrigerant, refrigerant_amount, field, operation");
+    for (int i = 0; i < list.count(); ++i) {
+        Inspection inspections(customer_id, list.at(i).value("id").toString(), "");
+        inspections.addFilter("date", filter);
+        sums = inspections.sumAll("refr_add_am, refr_reco");
+        out << "<tr>";
+        out << "<td>" << list.at(i).value("refrigerant").toString() << "</td>";
+        out << "<td>" << fieldsOfApplication().firstKey(list.at(i).value("field").toString()) << "</td>";
+        out << "<td>" << getCircuitRefrigerantAmount(customer_id, list.at(i).value("id").toString(), list.at(i).value("refrigerant_amount").toDouble()) << "</td>";
+        out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
+        out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
+        out << "<td>" << getCircuitRefrigerantAmount(customer_id, list.at(i).value("id").toString(), list.at(i).value("refrigerant_amount").toDouble()) << "</td>";
+        out << "<td>" << list.at(i).value("operation").toString() << "</td>";
+        out << "</tr>";
+    }
+    out << "</table>";
+    if (isInspectorSelected()) {
+        attributes = Inspector(selectedInspector()).list("person, mail, phone");
+        out << "<br><table><tr><td>";
+        out << tr("Person responsible:", "Operator report") << " " << attributes.value("person").toString();
+        out << "<br>" << tr("Phone:") << " " << attributes.value("phone").toString();
+        out << "<br>" << tr("E-mail:") << " " << attributes.value("mail").toString();
+        out << "</td></tr></table>";
+    }
+    return dict_html.value(Navigation::OperatorReport).arg(html);
 }
 
 QString MainWindow::viewLeakagesByApplication()
@@ -1244,7 +1321,7 @@ QString MainWindow::viewLeakagesByApplication()
     }
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-    out << "<th style=\"font-size: large;\">" << tr("Leakages by application") << "</th></tr></table><br>";
+    out << "<th style=\"font-size: medium;\">" << tr("Leakages by application") << "</th></tr></table><br>";
     QStringList tables;
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
@@ -1302,7 +1379,7 @@ QString MainWindow::viewAgenda()
     MultiMapOfVariantMaps customers(customers_record.mapAll("id", "company"));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-    out << "<th colspan=\"4\" style=\"font-size: large;\">" << tr("Agenda") << "</th></tr>";
+    out << "<th colspan=\"4\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
     out << "<tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
     out << "<th>" << tr("Circuit") << "</th><th>" << tr("Last inspection") << "</th></tr>";
     QMap<QString, QString> inspections_map;

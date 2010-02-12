@@ -123,6 +123,20 @@ ListOfVariantMaps MTRecord::listAll(const QString & fields)
     return list;
 }
 
+QVariantMap MTRecord::sumAll(const QString & fields)
+{
+    QVariantMap list;
+    QSqlQuery query = select(fields);
+    query.setForwardOnly(true);
+    query.exec();
+    while (query.next()) {
+        for (int i = 0; i < query.record().count(); ++i) {
+            list[query.record().fieldName(i)] = list[query.record().fieldName(i)].toDouble() + query.value(i).toDouble();
+        }
+    }
+    return list;
+}
+
 MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & fields)
 {
     MultiMapOfVariantMaps map;

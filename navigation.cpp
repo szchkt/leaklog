@@ -42,6 +42,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_repairs, Navigation::ListOfRepairs);
     btngrp_view->addButton(tbtn_view_inspectors);
     btngrp_view->setId(tbtn_view_inspectors, Navigation::ListOfInspectors);
+    btngrp_view->addButton(tbtn_view_operator_report);
+    btngrp_view->setId(tbtn_view_operator_report, Navigation::OperatorReport);
     btngrp_view->addButton(tbtn_view_leakages);
     btngrp_view->setId(tbtn_view_leakages, Navigation::LeakagesByApplication);
     btngrp_view->addButton(tbtn_view_agenda);
@@ -155,7 +157,7 @@ void Navigation::updateView()
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Inspector", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
-            cb_filter_column->addItem(QApplication::translate("Inspector", "Person registry number"), "person_reg_num");
+            cb_filter_column->addItem(QApplication::translate("Inspector", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
             break;
         case Navigation::TableOfInspections:
@@ -166,6 +168,7 @@ void Navigation::updateView()
             group = 2;
             filter_visible = false;
             break;
+        case Navigation::OperatorReport:
         case Navigation::LeakagesByApplication:
         case Navigation::Agenda:
         default:
@@ -232,7 +235,7 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_service_company->setVisible(g == 0);
     gb_statistics->setVisible(g == 0);
     gb_inspectors->setVisible(g == 0);
-    gb_customers->setVisible(g && g < 3);
+    gb_customers->setVisible(g < 3);
     gb_repairs->setVisible(g == 1);
     gb_circuits->setVisible(g == 2);
     gb_inspections->setVisible(g == 2);
@@ -261,6 +264,7 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_customer->setEnabled(customer_selected);
     tbtn_modify_repair->setEnabled(repair_selected && !repair_locked);
     tbtn_remove_repair->setEnabled(repair_selected && !repair_locked);
+    tbtn_view_operator_report->setEnabled(customer_selected);
     tbtn_view_circuits->setEnabled(customer_selected);
     gb_circuits->setEnabled(customer_selected);
     tbtn_modify_circuit->setEnabled(circuit_selected);

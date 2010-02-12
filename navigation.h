@@ -36,6 +36,7 @@ public:
         TableOfInspections,
         ListOfRepairs,
         ListOfInspectors,
+        OperatorReport,
         LeakagesByApplication,
         Agenda
     };

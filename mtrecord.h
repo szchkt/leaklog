@@ -52,6 +52,7 @@ public:
         return list(field).value(field, default_value).toString();
     }
     ListOfVariantMaps listAll(const QString & = "*");
+    QVariantMap sumAll(const QString &);
     MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const QVariantMap &, bool = false);
     bool remove();

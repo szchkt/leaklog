@@ -571,7 +571,10 @@ void MainWindow::loadCustomer(int customer, bool refresh)
     selected_customer_company = Customer(QString::number(customer)).stringValue("company");
     enableTools();
     if (refresh) {
-        navigation->setView(Navigation::ListOfCircuits);
+        if (actionService_company->isChecked())
+            navigation->setView(Navigation::OperatorReport);
+        else
+            navigation->setView(Navigation::ListOfCircuits);
     }
 }
 

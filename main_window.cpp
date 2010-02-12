@@ -83,6 +83,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfInspectors, in.readAll());
     file.close();
+    file.setFileName(":/html/operator_report.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::OperatorReport, in.readAll());
+    file.close();
     file.setFileName(":/html/leakages.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::LeakagesByApplication, in.readAll());
     file.close();
@@ -314,7 +317,12 @@ void MainWindow::executeLink(const QUrl & url)
             id.remove(0, QString("customer:").length());
             if (id != selectedCustomer()) {
                 loadCustomer(id.toInt(), path.count() <= 1);
-            } else if (path.count() <= 1) { navigation->setView(Navigation::ListOfCircuits); }
+            } else if (path.count() <= 1) {
+                if (actionService_company->isChecked())
+                    navigation->setView(Navigation::OperatorReport);
+                else
+                    navigation->setView(Navigation::ListOfCircuits);
+            }
         } else if (path.at(0).startsWith("repair:")) {
             id = path.at(0);
             id.remove(0, QString("repair:").length());
@@ -500,11 +508,16 @@ void MainWindow::printLabel(bool detailed)
         }
     }
     Inspector inspector(selected_inspector);
-    if (inspector.exists())
-        attributes.unite(inspector.list("person, person_reg_num"));
-    ServiceCompany service_company(DBInfoValueForKey("default_service_company"));
-    if (service_company.exists())
-        attributes.unite(service_company.list("id, name, address, mail, phone"));
+    if (inspector.exists()) {
+        attributes.insert("inspector", selected_inspector.rightJustified(4, '0'));
+        attributes.unite(inspector.list("person"));
+    }
+    QString default_service_company = DBInfoValueForKey("default_service_company");
+    ServiceCompany service_company(default_service_company);
+    if (service_company.exists()) {
+        attributes.insert("id", default_service_company.rightJustified(8, '0'));
+        attributes.unite(service_company.list("name, address, mail, phone"));
+    }
 
     QPrinter * printer = new QPrinter(QPrinter::HighResolution);
     QPrintDialog * dialogue = new QPrintDialog(printer, this);
@@ -563,7 +576,7 @@ void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, 
     painter.drawLine(x + (w / 3), y + title_h + (3 * h / 7), x + (2 * w / 3), y + title_h + (3 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (4 * h / 7), x + (2 * w / 3), y + title_h + (4 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (5 * h / 7), x + (2 * w / 3), y + title_h + (5 * h / 7));
-    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("person_reg_num").toString());
+    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("inspector").toString());
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
     painter.drawText(m + x + (w / 2), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("id").toString());
     font.setBold(true); painter.setFont(font);

@@ -457,8 +457,7 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "0000"));
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
-    md->addInputWidget(new MDLineEdit("company", tr("Certified company:"), md, attributes.value("company").toString()));
-    md->addInputWidget(new MDLineEdit("person_reg_num", tr("Person registry number:"), md, attributes.value("person_reg_num").toString()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -478,8 +477,7 @@ public:
     InspectorAttributes() {
         dict.insert("id", QApplication::translate("Inspector", "ID"));
         dict.insert("person", QApplication::translate("Inspector", "Certified person"));
-        dict.insert("person_reg_num", QApplication::translate("Inspector", "Person registry number"));
-        //dict.insert("company", QApplication::translate("Inspector", "Certified company"));
+        dict.insert("mail", QApplication::translate("Inspector", "E-mail"));
         dict.insert("phone", QApplication::translate("Inspector", "Phone"));
     }
 
