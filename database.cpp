@@ -512,7 +512,7 @@ void MainWindow::addCustomer()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadCustomer(record.id().toInt(), true);
     }
     delete md;
 }
@@ -525,6 +525,7 @@ void MainWindow::modifyCustomer()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = selectedCustomer();
     if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
         if (old_id != record.id()) {
             QSqlQuery update_circuits;
             update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
@@ -536,9 +537,10 @@ void MainWindow::modifyCustomer()
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            loadCustomer(record.id().toInt(), true);
+        } else {
+            refreshView();
         }
-        this->setWindowModified(true);
-        refreshView();
     }
     delete md;
 }
@@ -572,7 +574,7 @@ void MainWindow::loadCustomer(int customer, bool refresh)
     enableTools();
     if (refresh) {
         if (actionService_company->isChecked())
-            navigation->setView(Navigation::OperatorReport);
+            navigation->setView(Navigation::ListOfCustomers);
         else
             navigation->setView(Navigation::ListOfCircuits);
     }
@@ -586,7 +588,7 @@ void MainWindow::addCircuit()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadCircuit(record.id().toInt(), true);
     }
     delete md;
 }
@@ -600,6 +602,7 @@ void MainWindow::modifyCircuit()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = selectedCircuit();
     if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
@@ -607,9 +610,10 @@ void MainWindow::modifyCircuit()
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            loadCircuit(record.id().toInt(), true);
+        } else {
+            refreshView();
         }
-        this->setWindowModified(true);
-        refreshView();
     }
     delete md;
 }
@@ -653,7 +657,7 @@ void MainWindow::addInspection()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadInspection(record.id(), true);
     }
     delete md;
 }
@@ -667,9 +671,8 @@ void MainWindow::modifyInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        enableTools();
         this->setWindowModified(true);
-        refreshView();
+        loadInspection(record.id(), true);
     }
     delete md;
 }
@@ -714,7 +717,7 @@ void MainWindow::addRepair()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadRepair(record.id(), true);
     }
     delete md;
 }
@@ -727,7 +730,7 @@ void MainWindow::modifyRepair()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadRepair(record.id(), true);
     }
     delete md;
 }
@@ -1144,7 +1147,7 @@ void MainWindow::addInspector()
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        refreshView();
+        loadInspector(record.id().toInt(), true);
     }
     delete md;
 }
@@ -1156,7 +1159,8 @@ void MainWindow::modifyInspector()
     QString old_id = selectedInspector();
     Inspector record(old_id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
-    if (md->exec() == QDialog::Accepted) {        
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
@@ -1168,9 +1172,10 @@ void MainWindow::modifyInspector()
             update_repairs.bindValue(":old_id", old_id);
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.exec();
+            loadInspector(record.id().toInt(), true);
+        } else {
+            refreshView();
         }
-        this->setWindowModified(true);
-        refreshView();
     }
     delete md;
 }
