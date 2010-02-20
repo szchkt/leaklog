@@ -104,7 +104,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         }
     }
     double v = DBInfoValueForKey("db_version").toDouble();
-    if (v < 0.906) {
+    if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
         query.exec("UPDATE inspections SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
         query.exec("UPDATE repairs SET refr_add_am = 0 WHERE refr_add_am IS NULL");
