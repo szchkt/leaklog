@@ -43,6 +43,7 @@ public:
 
 private slots:
     // UI
+    void showRecentDatabaseContextMenu(const QPoint &);
     void showIconsOnly(bool);
     void about();
     void executeLink(const QUrl &);

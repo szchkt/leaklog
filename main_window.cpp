@@ -49,6 +49,7 @@
 #include <QSqlError>
 #include <QDate>
 #include <QDateEdit>
+#include <QDesktopServices>
 
 using namespace Global;
 
@@ -108,7 +109,6 @@ MainWindow::MainWindow()
     setupUi(this);
     http = new QHttp(this);
     http_buffer = new QBuffer(this);
-    this->setUnifiedTitleAndToolBarOnMac(true);
     tbtn_open = new QToolButton(this);
     tbtn_open->setDefaultAction(actionOpen);
     tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -189,6 +189,7 @@ MainWindow::MainWindow()
     trw_table_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_table_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
     setAllEnabled(false);
     navigation->connectSlots(this);
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
@@ -253,6 +254,7 @@ MainWindow::MainWindow()
     QObject::connect(actionImport_CSV, SIGNAL(triggered()), this, SLOT(importCSV()));
     QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
+    QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(modifyVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
@@ -295,6 +297,27 @@ QMenu * MainWindow::createPopupMenu()
     popup_menu->addSeparator();
     popup_menu->addAction(actionShow_icons_only);
     return popup_menu;
+}
+
+void MainWindow::showRecentDatabaseContextMenu(const QPoint & pos)
+{
+    QListWidgetItem * item = lw_recent_docs->itemAt(pos);
+    if (!item) return;
+    QAction show(tr("Open containing folder"), this);
+    show.setStatusTip(tr("Open the folder which contains this database"));
+    QAction separator(this); separator.setSeparator(true);
+    QAction remove(tr("Remove from list"), this);
+    remove.setStatusTip(tr("Remove the database from the list (the database will not be deleted)"));
+    QList<QAction *> actions;
+    if (!item->text().startsWith("db:"))
+        actions << &show << &separator;
+    actions << &remove;
+    QAction * clicked = QMenu::exec(actions, lw_recent_docs->mapToGlobal(pos));
+    if (clicked == &show) {
+        QDesktopServices::openUrl(QUrl("file://" + QFileInfo(item->text()).absolutePath(), QUrl::TolerantMode));
+    } else if (clicked == &remove) {
+        delete lw_recent_docs->itemAt(pos);
+    }
 }
 
 void MainWindow::showIconsOnly(bool show)
