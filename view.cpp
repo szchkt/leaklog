@@ -300,8 +300,8 @@ QString MainWindow::viewServiceCompany(int since)
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)
 {
     Customer all_customers(customer_id);
-    if (customer_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
-        all_customers.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    if (customer_id.isEmpty() && !navigation->isFilterEmpty()) {
+        all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps list(all_customers.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -340,8 +340,8 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
 void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id)
 {
     Circuit circuits_record(customer_id, circuit_id);
-    if (circuit_id.isEmpty() && !navigation->filterKeyword().isEmpty()) {
-        circuits_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    if (circuit_id.isEmpty() && !navigation->isFilterEmpty()) {
+        circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps circuits(circuits_record.listAll());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
@@ -443,8 +443,8 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
     Inspection inspection_record(customer_id, circuit_id, "");
-    if (!navigation->filterKeyword().isEmpty()) {
-        inspection_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    if (!navigation->isFilterEmpty()) {
+        inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
     if (year) {
@@ -1119,8 +1119,8 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         out << "<br>";
     }
     MTRecord repairs_record("repairs", "date", "", parent);
-    if (!navigation->filterKeyword().isEmpty()) {
-        repairs_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    if (!navigation->isFilterEmpty()) {
+        repairs_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps repairs(repairs_record.listAll());
     if (year) {
@@ -1173,8 +1173,8 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
     QString html; MTTextStream out(&html);
     Inspector inspectors_record("");
-    if (!navigation->filterKeyword().isEmpty()) {
-        inspectors_record.addFilter(navigation->filterColumn(), "%" + navigation->filterKeyword() + "%");
+    if (!navigation->isFilterEmpty()) {
+        inspectors_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps inspectors(inspectors_record.listAll());
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -1374,6 +1374,9 @@ QString MainWindow::viewAgenda()
     MTRecord inspections_record("inspections", "date", "", MTDictionary());
     ListOfVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
     MTRecord circuits_record("circuits", "id", "", MTDictionary());
+    if (!navigation->isFilterEmpty()) {
+        circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
     ListOfVariantMaps circuits(circuits_record.listAll());
     MTRecord customers_record("customers", "id", "", MTDictionary());
     MultiMapOfVariantMaps customers(customers_record.mapAll("id", "company"));

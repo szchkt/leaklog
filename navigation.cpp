@@ -50,6 +50,10 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_agenda, Navigation::Agenda);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
+    QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
+    QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
+    QObject::connect(cb_filter_column, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
+    QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     toggleVisibleGroup(current_group);
     setReportDataGroupBoxVisible(false);
 }
@@ -67,6 +71,7 @@ void Navigation::connectSlots(QObject * receiver)
 {
     QObject::connect(this, SIGNAL(viewChanged(int)), receiver, SLOT(viewChanged(int)));
     QObject::connect(this, SIGNAL(groupChanged(int)), receiver, SLOT(groupChanged(int)));
+    QObject::connect(this, SIGNAL(filterChanged()), receiver, SLOT(refreshView()));
     QObject::connect(tbtn_modify_service_company, SIGNAL(clicked()), receiver, SLOT(modifyServiceCompany()));
     QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(tbtn_report_data, SIGNAL(clicked()), receiver, SLOT(reportData()));
@@ -85,8 +90,6 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_add_inspection, SIGNAL(clicked()), receiver, SLOT(addInspection()));
     QObject::connect(tbtn_modify_inspection, SIGNAL(clicked()), receiver, SLOT(modifyInspection()));
     QObject::connect(tbtn_remove_inspection, SIGNAL(clicked()), receiver, SLOT(removeInspection()));
-    QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), receiver, SLOT(refreshView()));
-    QObject::connect(le_filter, SIGNAL(returnPressed()), receiver, SLOT(refreshView()));
     emit viewChanged(view());
 }
 
@@ -126,6 +129,7 @@ void Navigation::updateView()
             if (current_group == 1) goto updateView_ListOfRepairs;
             group = 2;
             filter_since_visible = false;
+            updateView_ListOfCircuits_CircuitAttributes:
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit name"), "name");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Place of operation"), "operation");
@@ -168,9 +172,14 @@ void Navigation::updateView()
             group = 2;
             filter_visible = false;
             break;
+        case Navigation::Agenda:
+            group = 0;
+            filter_since_visible = false;
+            cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "parent");
+            goto updateView_ListOfCircuits_CircuitAttributes;
+            break;
         case Navigation::OperatorReport:
         case Navigation::LeakagesByApplication:
-        case Navigation::Agenda:
         default:
             group = 0;
             filter_visible = false;
@@ -179,6 +188,7 @@ void Navigation::updateView()
     if (group >= 0 && current_group != group)
         toggleVisibleGroup(group, false);
     cb_filter_column->setVisible(filter_keyword_visible);
+    cb_filter_type->setVisible(filter_keyword_visible);
     le_filter->setVisible(filter_keyword_visible);
     lbl_filter_since->setVisible(filter_since_visible);
     spb_filter_since->setVisible(filter_since_visible);
@@ -256,6 +266,11 @@ void Navigation::tableChanged(int)
     }
 }
 
+void Navigation::emitFilterChanged()
+{
+    if (!isFilterEmpty()) emit filterChanged();
+}
+
 void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected)
 {
     tbtn_modify_inspector->setEnabled(inspector_selected);
@@ -285,4 +300,19 @@ void Navigation::setReportDataGroupBoxVisible(bool visible)
     } else {
         toggleVisibleGroup(last_group);
     }
+}
+
+QString Navigation::filterKeyword() const
+{
+    switch (cb_filter_type->currentIndex()) {
+        // contains
+        case 0: return "%" + le_filter->text() + "%"; break;
+        // is
+        case 1: return le_filter->text(); break;
+        // starts with
+        case 2: return le_filter->text() + "%"; break;
+        // ends with
+        case 3: return "%" + le_filter->text(); break;
+    }
+    return le_filter->text();
 }

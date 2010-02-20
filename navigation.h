@@ -54,7 +54,8 @@ public:
     inline QComboBox * tableComboBox() const { return cb_view_table; }
     inline int filterSinceValue() const { return spb_filter_since->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
-    inline QString filterKeyword() const { return le_filter->text(); }
+    inline bool isFilterEmpty() const { return le_filter->text().isEmpty(); }
+    QString filterKeyword() const;
 
     // Report data
     void setReportDataGroupBoxVisible(bool visible);
@@ -73,12 +74,15 @@ public slots:
 
 private slots:
     void tableChanged(int);
+    void emitFilterChanged();
 
 signals:
     // Groups
     void groupChanged(int);
     // View
     void viewChanged(int);
+    // Widgets
+    void filterChanged();
 
 protected:
     // Groups
