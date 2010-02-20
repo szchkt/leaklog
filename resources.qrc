@@ -1,5 +1,6 @@
 <RCC>
-  <qresource prefix="images" >
+  <qresource prefix="images">
+    <file>images/pdf_landscape.png</file>
     <file>images/logbook_basic.png</file>
     <file>images/logbook_detailed.png</file>
     <file>images/service_company.png</file>

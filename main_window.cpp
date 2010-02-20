@@ -202,7 +202,8 @@ MainWindow::MainWindow()
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
-    QObject::connect(actionPDF, SIGNAL(triggered()), this, SLOT(exportPDF()));
+    QObject::connect(actionPDF_Portrait, SIGNAL(triggered()), this, SLOT(exportPDFPortrait()));
+    QObject::connect(actionPDF_Landscape, SIGNAL(triggered()), this, SLOT(exportPDFLandscape()));
     QObject::connect(actionHTML, SIGNAL(triggered()), this, SLOT(exportHTML()));
     QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
@@ -417,12 +418,23 @@ void MainWindow::print()
     wv_main->print(&printer);
 }
 
-void MainWindow::exportPDF()
+void MainWindow::exportPDFPortrait()
+{
+    exportPDF(QPrinter::Portrait);
+}
+
+void MainWindow::exportPDFLandscape()
+{
+    exportPDF(QPrinter::Landscape);
+}
+
+void MainWindow::exportPDF(int orientation)
 {
     QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1 - %2.pdf").arg(QFileInfo(db.databaseName()).baseName()).arg(currentView()), tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
     QPrinter printer(QPrinter::HighResolution);
+    printer.setOrientation((QPrinter::Orientation)orientation);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(path);
     wv_main->print(&printer);
@@ -787,7 +799,8 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionImport_data->setEnabled(enable);
     actionImport_CSV->setEnabled(enable);
     actionExport->setEnabled(enable || everything);
-    actionPDF->setEnabled(enable || everything);
+    actionPDF_Portrait->setEnabled(enable || everything);
+    actionPDF_Landscape->setEnabled(enable || everything);
     actionHTML->setEnabled(enable || everything);
     actionPrint_preview->setEnabled(enable || everything);
     actionPrint->setEnabled(enable || everything);

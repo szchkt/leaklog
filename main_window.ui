@@ -234,7 +234,8 @@
       <iconset resource="resources.qrc">
        <normaloff>:/images/images/export_html_pdf.png</normaloff>:/images/images/export_html_pdf.png</iconset>
      </property>
-     <addaction name="actionPDF"/>
+     <addaction name="actionPDF_Portrait"/>
+     <addaction name="actionPDF_Landscape"/>
      <addaction name="actionHTML"/>
     </widget>
     <addaction name="actionNew"/>
@@ -1591,13 +1592,13 @@
     <string>Modify</string>
    </property>
   </action>
-  <action name="actionPDF">
+  <action name="actionPDF_Portrait">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/images/images/pdf.png</normaloff>:/images/images/pdf.png</iconset>
    </property>
    <property name="text">
-    <string>PDF</string>
+    <string>PDF (Portrait)</string>
    </property>
    <property name="statusTip">
     <string>Export the current view as a PDF document</string>
@@ -1737,6 +1738,18 @@
    </property>
    <property name="statusTip">
     <string>Import a CSV (comma-separated values) file</string>
+   </property>
+  </action>
+  <action name="actionPDF_Landscape">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/pdf_landscape.png</normaloff>:/images/images/pdf_landscape.png</iconset>
+   </property>
+   <property name="text">
+    <string>PDF (Landscape)</string>
+   </property>
+   <property name="statusTip">
+    <string>Export the current view as a PDF document</string>
    </property>
   </action>
  </widget>

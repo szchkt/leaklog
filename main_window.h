@@ -49,7 +49,8 @@ private slots:
     void executeLink(const QUrl &);
     void printPreview();
     void print();
-    void exportPDF();
+    void exportPDFPortrait();
+    void exportPDFLandscape();
     void exportHTML();
     void printDetailedLabel();
     void printLabel(bool = false);
@@ -120,6 +121,7 @@ private:
     // UI
     QMenu * createPopupMenu();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);
+    void exportPDF(int);
     void addRecent(const QString &);
     void clearAll();
     void setAllEnabled(bool, bool = false);
