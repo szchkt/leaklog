@@ -1428,7 +1428,7 @@ QString MainWindow::viewAgenda()
             default: next_ins = i.key(); break;
         }
         if (days_to < 0) colour = "tomato";
-        else if (days_to == 0) colour = "yellow";
+        else if (days_to < 31) colour = "yellow";
         else colour = "";
         out << "<tr><td class=\"" << colour << "\">" << next_ins << "</td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
@@ -1445,5 +1445,8 @@ QString MainWindow::viewAgenda()
     }
     out << "</table>";
 
-    return dict_html.value(Navigation::Agenda).arg(html);
+    return dict_html.value(Navigation::Agenda)
+            .arg(actionPrinter_friendly_version->isChecked() ? "/*" : "")
+            .arg(actionPrinter_friendly_version->isChecked() ? "*/" : "")
+            .arg(html);
 }
