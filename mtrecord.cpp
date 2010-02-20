@@ -189,33 +189,39 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
             update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
         }
     } else {
+        bool append_comma = false;
         update = "INSERT INTO " + r_table + " (";
         while (i.hasNext()) { i.next();
             update.append(i.key());
-            if (i.hasNext() || r_parents.count()) { update.append(", "); }
+            if (i.hasNext()) { update.append(", "); }
+            else { append_comma = true; }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
             if (set.contains(r_parents.key(p))) continue;
+            if (append_comma) { update.append(", "); }
             update.append(r_parents.key(p));
-            if (p < r_parents.count() - 1) { update.append(", "); }
+            append_comma = true;
         }
         if (!set.contains(r_id_field)) {
-            if (set.count() || r_parents.count()) { update.append(", "); }
+            if (append_comma) { update.append(", "); }
             update.append(r_id_field);
         }
         update.append(") VALUES (");
+        append_comma = false;
         i.toFront();
         while (i.hasNext()) { i.next();
             update.append(":" + i.key());
-            if (i.hasNext() || r_parents.count()) { update.append(", "); }
+            if (i.hasNext()) { update.append(", "); }
+            else { append_comma = true; }
         }
         for (int p = 0; p < r_parents.count(); ++p) {
             if (set.contains(r_parents.key(p))) continue;
+            if (append_comma) { update.append(", "); }
             update.append(":_" + r_parents.key(p));
-            if (p < r_parents.count() - 1) { update.append(", "); }
+            append_comma = true;
         }
         if (!set.contains(r_id_field)) {
-            if (set.count() || r_parents.count()) { update.append(", "); }
+            if (append_comma) { update.append(", "); }
             update.append(":_id");
         }
         update.append(")");
