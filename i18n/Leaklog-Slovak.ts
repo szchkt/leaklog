@@ -193,7 +193,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="163"/>
-        <location filename="../navigation.cpp" line="129"/>
+        <location filename="../navigation.cpp" line="133"/>
         <location filename="../records.cpp" line="146"/>
         <location filename="../view.cpp" line="715"/>
         <source>ID</source>
@@ -201,14 +201,14 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="164"/>
-        <location filename="../navigation.cpp" line="130"/>
+        <location filename="../navigation.cpp" line="134"/>
         <location filename="../records.cpp" line="147"/>
         <source>Circuit name</source>
         <translation>Názov okruhu</translation>
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="166"/>
-        <location filename="../navigation.cpp" line="131"/>
+        <location filename="../navigation.cpp" line="135"/>
         <location filename="../records.cpp" line="148"/>
         <location filename="../view.cpp" line="1239"/>
         <source>Place of operation</source>
@@ -216,21 +216,21 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="167"/>
-        <location filename="../navigation.cpp" line="132"/>
+        <location filename="../navigation.cpp" line="136"/>
         <location filename="../records.cpp" line="149"/>
         <source>Building</source>
         <translation>Budova</translation>
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="168"/>
-        <location filename="../navigation.cpp" line="133"/>
+        <location filename="../navigation.cpp" line="137"/>
         <location filename="../records.cpp" line="150"/>
         <source>Device</source>
         <translation>Zariadenie</translation>
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="170"/>
-        <location filename="../navigation.cpp" line="134"/>
+        <location filename="../navigation.cpp" line="138"/>
         <location filename="../records.cpp" line="152"/>
         <location filename="../view.cpp" line="717"/>
         <source>Manufacturer</source>
@@ -238,7 +238,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="171"/>
-        <location filename="../navigation.cpp" line="135"/>
+        <location filename="../navigation.cpp" line="139"/>
         <location filename="../records.cpp" line="153"/>
         <location filename="../view.cpp" line="718"/>
         <source>Type</source>
@@ -246,7 +246,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="172"/>
-        <location filename="../navigation.cpp" line="136"/>
+        <location filename="../navigation.cpp" line="140"/>
         <location filename="../records.cpp" line="154"/>
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
@@ -254,7 +254,7 @@
     <message>
         <location filename="../import_csv_dialogue.cpp" line="173"/>
         <location filename="../modify_warning_dialogue.cpp" line="58"/>
-        <location filename="../navigation.cpp" line="137"/>
+        <location filename="../navigation.cpp" line="141"/>
         <location filename="../records.cpp" line="155"/>
         <location filename="../view.cpp" line="719"/>
         <source>Year of purchase</source>
@@ -263,7 +263,7 @@
     <message>
         <location filename="../import_csv_dialogue.cpp" line="174"/>
         <location filename="../modify_warning_dialogue.cpp" line="59"/>
-        <location filename="../navigation.cpp" line="138"/>
+        <location filename="../navigation.cpp" line="142"/>
         <location filename="../records.cpp" line="156"/>
         <location filename="../view.cpp" line="720"/>
         <source>Date of commissioning</source>
@@ -279,7 +279,7 @@
     <message>
         <location filename="../global.cpp" line="524"/>
         <location filename="../import_csv_dialogue.cpp" line="176"/>
-        <location filename="../navigation.cpp" line="139"/>
+        <location filename="../navigation.cpp" line="143"/>
         <location filename="../records.cpp" line="160"/>
         <location filename="../view.cpp" line="721"/>
         <location filename="../view.cpp" line="1236"/>
@@ -297,7 +297,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="178"/>
-        <location filename="../navigation.cpp" line="140"/>
+        <location filename="../navigation.cpp" line="144"/>
         <location filename="../records.cpp" line="162"/>
         <location filename="../view.cpp" line="723"/>
         <source>Oil</source>
@@ -342,7 +342,8 @@
     <name>Customer</name>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="153"/>
-        <location filename="../navigation.cpp" line="118"/>
+        <location filename="../navigation.cpp" line="121"/>
+        <location filename="../navigation.cpp" line="178"/>
         <location filename="../records.cpp" line="73"/>
         <location filename="../view.cpp" line="701"/>
         <source>ID</source>
@@ -385,7 +386,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="154"/>
-        <location filename="../navigation.cpp" line="119"/>
+        <location filename="../navigation.cpp" line="122"/>
         <location filename="../records.cpp" line="74"/>
         <location filename="../view.cpp" line="702"/>
         <source>Company</source>
@@ -393,14 +394,14 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="155"/>
-        <location filename="../navigation.cpp" line="120"/>
+        <location filename="../navigation.cpp" line="123"/>
         <location filename="../records.cpp" line="75"/>
         <location filename="../view.cpp" line="703"/>
         <source>Contact person</source>
         <translation>Kontaktná osoba</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="121"/>
+        <location filename="../navigation.cpp" line="124"/>
         <location filename="../records.cpp" line="76"/>
         <location filename="../view.cpp" line="704"/>
         <source>Address</source>
@@ -408,7 +409,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="159"/>
-        <location filename="../navigation.cpp" line="122"/>
+        <location filename="../navigation.cpp" line="125"/>
         <location filename="../records.cpp" line="77"/>
         <location filename="../view.cpp" line="705"/>
         <source>E-mail</source>
@@ -416,7 +417,7 @@
     </message>
     <message>
         <location filename="../import_csv_dialogue.cpp" line="160"/>
-        <location filename="../navigation.cpp" line="123"/>
+        <location filename="../navigation.cpp" line="126"/>
         <location filename="../records.cpp" line="78"/>
         <location filename="../view.cpp" line="706"/>
         <source>Phone</source>
@@ -810,17 +811,17 @@
         <translation>Zákazník: %1 &gt; Chladiaci okruh: %2 &gt; Kontrola</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="144"/>
+        <location filename="../navigation.cpp" line="148"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="145"/>
+        <location filename="../navigation.cpp" line="149"/>
         <source>Operator</source>
         <translation>Prevzal</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="146"/>
+        <location filename="../navigation.cpp" line="150"/>
         <source>Remedies</source>
         <translation>Opatrenia</translation>
     </message>
@@ -863,24 +864,24 @@
         <translation>Osoba s osvedčením</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="158"/>
+        <location filename="../navigation.cpp" line="162"/>
         <location filename="../records.cpp" line="478"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="159"/>
+        <location filename="../navigation.cpp" line="163"/>
         <source>Name</source>
         <translation>Meno</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="160"/>
+        <location filename="../navigation.cpp" line="164"/>
         <location filename="../records.cpp" line="480"/>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="161"/>
+        <location filename="../navigation.cpp" line="165"/>
         <location filename="../records.cpp" line="481"/>
         <source>Phone</source>
         <translation>Telefón</translation>
@@ -952,9 +953,9 @@
         <location filename="../database.cpp" line="368"/>
         <location filename="../database.cpp" line="468"/>
         <location filename="../main_window.cpp" line="1092"/>
-        <location filename="../main_window.cpp" line="1112"/>
-        <location filename="../main_window.cpp" line="1148"/>
-        <location filename="../main_window.cpp" line="1161"/>
+        <location filename="../main_window.cpp" line="1111"/>
+        <location filename="../main_window.cpp" line="1147"/>
+        <location filename="../main_window.cpp" line="1160"/>
         <source>Leaklog</source>
         <translation>Leaklog</translation>
     </message>
@@ -967,7 +968,7 @@
         <location filename="../main_window.ui" line="258"/>
         <location filename="../database.cpp" line="1481"/>
         <location filename="../view.cpp" line="318"/>
-        <location filename="../view.cpp" line="1383"/>
+        <location filename="../view.cpp" line="1386"/>
         <source>Customer</source>
         <translation>Zákazník</translation>
     </message>
@@ -1040,7 +1041,7 @@
     <message>
         <location filename="../database.cpp" line="55"/>
         <location filename="../database.cpp" line="1024"/>
-        <location filename="../main_window.cpp" line="1112"/>
+        <location filename="../main_window.cpp" line="1111"/>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
     </message>
@@ -2141,37 +2142,37 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Stlačiť</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1112"/>
+        <location filename="../main_window.cpp" line="1111"/>
         <source>Failed to check for updates.</source>
         <translation>Nepodarilo sa skontrolovať aktualizácie.</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1112"/>
+        <location filename="../main_window.cpp" line="1111"/>
         <source>&amp;Try again</source>
         <translation>&amp;Skúsiť znovu</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1148"/>
+        <location filename="../main_window.cpp" line="1147"/>
         <source>You are running the latest version of Leaklog.</source>
         <translation>Táto verzia programu Leaklog je aktuálna.</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1152"/>
+        <location filename="../main_window.cpp" line="1151"/>
         <source>Leaklog %1 is available now.</source>
         <translation>Leaklog %1 je teraz dostupný.</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1155"/>
+        <location filename="../main_window.cpp" line="1154"/>
         <source>Download Leaklog %1 for Mac OS X</source>
         <translation>Stiahnuť Leaklog %1 pre Mac OS X</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1157"/>
+        <location filename="../main_window.cpp" line="1156"/>
         <source>Download Leaklog %1 for Windows</source>
         <translation>Stiahnuť Leaklog %1 pre Windows</translation>
     </message>
     <message>
-        <location filename="../main_window.cpp" line="1159"/>
+        <location filename="../main_window.cpp" line="1158"/>
         <source>Download source code</source>
         <translation>Stiahnuť zdrojový kód</translation>
     </message>
@@ -2447,6 +2448,11 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Osoba s osvedčením</translation>
     </message>
     <message>
+        <location filename="../main_window.cpp" line="1104"/>
+        <source>/current-version-en</source>
+        <translation>/current-version</translation>
+    </message>
+    <message>
         <location filename="../main_window.cpp" line="600"/>
         <source>Certified company</source>
         <translation>Certifikovaná firma</translation>
@@ -2597,19 +2603,19 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Druhy nasadenia</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1382"/>
+        <location filename="../view.cpp" line="1385"/>
         <source>Agenda</source>
         <translation>Agenda</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1383"/>
+        <location filename="../view.cpp" line="1386"/>
         <source>Next inspection</source>
         <translation>Nasledujúca kontrola</translation>
     </message>
     <message>
         <location filename="../database.cpp" line="1481"/>
         <location filename="../view.cpp" line="358"/>
-        <location filename="../view.cpp" line="1384"/>
+        <location filename="../view.cpp" line="1387"/>
         <source>Circuit</source>
         <translation>Okruh</translation>
     </message>
@@ -2671,22 +2677,22 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>E-mail:</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1384"/>
+        <location filename="../view.cpp" line="1387"/>
         <source>Last inspection</source>
         <translation>Posledná kontrola</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1423"/>
+        <location filename="../view.cpp" line="1426"/>
         <source>Today</source>
         <translation>Dnes</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1424"/>
+        <location filename="../view.cpp" line="1427"/>
         <source>Tomorrow</source>
         <translation>Zajtra</translation>
     </message>
     <message>
-        <location filename="../view.cpp" line="1422"/>
+        <location filename="../view.cpp" line="1425"/>
         <source>Yesterday</source>
         <translation>Včera</translation>
     </message>
@@ -3336,27 +3342,52 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Všetky</translation>
     </message>
     <message>
-        <location filename="../navigation.ui" line="1623"/>
+        <location filename="../navigation.ui" line="1613"/>
+        <source>Select a filter type</source>
+        <translation>Vyberte typ filtra</translation>
+    </message>
+    <message>
+        <location filename="../navigation.ui" line="1617"/>
+        <source>contains:</source>
+        <translation>obsahuje:</translation>
+    </message>
+    <message>
+        <location filename="../navigation.ui" line="1622"/>
+        <source>is:</source>
+        <translation>je:</translation>
+    </message>
+    <message>
+        <location filename="../navigation.ui" line="1627"/>
+        <source>starts with:</source>
+        <translation>začína na:</translation>
+    </message>
+    <message>
+        <location filename="../navigation.ui" line="1632"/>
+        <source>ends with:</source>
+        <translation>končí na:</translation>
+    </message>
+    <message>
+        <location filename="../navigation.ui" line="1656"/>
         <source>Report data</source>
         <translation>Oznámiť údaje</translation>
     </message>
     <message>
-        <location filename="../navigation.ui" line="1638"/>
+        <location filename="../navigation.ui" line="1671"/>
         <source>Autofill the form with values from the database</source>
         <translation>Automaticky vyplniť formulár hodnotami z databázy</translation>
     </message>
     <message>
-        <location filename="../navigation.ui" line="1641"/>
+        <location filename="../navigation.ui" line="1674"/>
         <source>Autofill</source>
         <translation>Vyplniť</translation>
     </message>
     <message>
-        <location filename="../navigation.ui" line="1657"/>
+        <location filename="../navigation.ui" line="1690"/>
         <source>Finish reporting data</source>
         <translation>Ukončiť oznamovanie údajov</translation>
     </message>
     <message>
-        <location filename="../navigation.ui" line="1660"/>
+        <location filename="../navigation.ui" line="1693"/>
         <source>Done</source>
         <translation>Dokončiť</translation>
     </message>
@@ -3606,19 +3637,19 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="151"/>
+        <location filename="../navigation.cpp" line="155"/>
         <location filename="../records.cpp" line="345"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="152"/>
+        <location filename="../navigation.cpp" line="156"/>
         <location filename="../records.cpp" line="346"/>
         <source>Customer</source>
         <translation>Zákazník</translation>
     </message>
     <message>
-        <location filename="../navigation.cpp" line="153"/>
+        <location filename="../navigation.cpp" line="157"/>
         <location filename="../records.cpp" line="349"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1947</width>
-    <height>157</height>
+    <height>165</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1610,7 +1610,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Select filter type</string>
+         <string>Select a filter type</string>
         </property>
         <item>
          <property name="text">
