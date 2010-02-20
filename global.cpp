@@ -568,6 +568,8 @@ MTDictionary Global::listInspectors()
 QStringList Global::listVariableIds(bool all)
 {
     QStringList ids; bool sub_empty = false;
+    ids << "customer" << "circuit" << "nominal" << "repair";
+    if (all) ids << "date";
     Variables query;
     while (query.next()) {
         sub_empty = query.value("SUBVAR_ID").toString().isEmpty();

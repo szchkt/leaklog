@@ -142,7 +142,7 @@ void Variables::initVariables(const QString & filter)
 
     initVariable(filter, "refr_add_am", "float", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
     initVariable(filter, "refr_reco", "float", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_add_per", "float", QApplication::translate("Units", "%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_per", "float", QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
     initVariable(filter, "inspector", "string", "", "", false, 0.0, "");
     initVariable(filter, "operator", "string", "", "", false, 0.0, "");

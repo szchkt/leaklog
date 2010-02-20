@@ -114,6 +114,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "refrigerant_amount", ">=", "3");
             initFilter(map, w, "refrigerant_amount", "<", "10");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
         }
     }
@@ -126,6 +127,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "refrigerant_amount", ">=", "3");
             initFilter(map, w, "refrigerant_amount", "<", "10");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
         }
     }
@@ -138,6 +140,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "refrigerant_amount", ">=", "10");
             initFilter(map, w, "refrigerant_amount", "<", "100");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
         }
     }
@@ -150,6 +153,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "refrigerant_amount", ">=", "10");
             initFilter(map, w, "refrigerant_amount", "<", "100");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
         }
     }
@@ -161,6 +165,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "commissioning", "<", "2011.07.04");
             initFilter(map, w, "refrigerant_amount", ">=", "100");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
         }
     }
@@ -172,6 +177,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
             initFilter(map, w, "commissioning", ">=", "2011.07.04");
             initFilter(map, w, "refrigerant_amount", ">=", "100");
         } else if (type == 2) {
+            initCondition(map, w, "nominal", "=", "0");
             initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
         }
     }
