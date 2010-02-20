@@ -1101,12 +1101,11 @@ void MainWindow::checkForUpdates()
 {
     delete http_buffer; http_buffer = new QBuffer(this);
     http->setHost("leaklog.sourceforge.net");
-    http->get("/current-version", http_buffer);
+    http->get(tr("/current-version-en"), http_buffer);
 }
 
 void MainWindow::httpRequestFinished(bool error)
 {
-    httpRequestFinished_start:
     if (error) {
         if (!check_for_updates) {
             switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
@@ -1121,25 +1120,25 @@ void MainWindow::httpRequestFinished(bool error)
         return;
     }
     QString str(http_buffer->data()); QTextStream in(&str);
-    if (in.readLine() != "[Leaklog.current-version]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.current-version]") { return httpRequestFinished(true); }
     QString current_ver = in.readLine();
-    if (in.readLine() != "[Leaklog.current-version.float]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.current-version.float]") { return httpRequestFinished(true); }
     double f_current_ver = in.readLine().toDouble();
-    if (in.readLine() != "[Leaklog.download-url.src]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.download-url.src]") { return httpRequestFinished(true); }
     QString src_url = in.readLine();
-    if (in.readLine() != "[Leaklog.download-url.macx]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.download-url.macx]") { return httpRequestFinished(true); }
 #ifdef Q_WS_MAC
     QString macx_url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.download-url.win32]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.download-url.win32]") { return httpRequestFinished(true); }
 #ifdef Q_WS_WIN
     QString win32_url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.release-notes]") { error = true; goto httpRequestFinished_start; }
+    if (in.readLine() != "[Leaklog.release-notes]") { return httpRequestFinished(true); }
     QString release_notes;
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
     if ((f_current_ver <= F_LEAKLOG_VERSION && !LEAKLOG_PREVIEW_VERSION) ||
