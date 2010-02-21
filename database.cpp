@@ -524,8 +524,10 @@ void MainWindow::modifyCustomer()
     Customer record(selectedCustomer());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = selectedCustomer();
+    QString old_company_name = record.stringValue("company");
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
+        QString company_name = record.stringValue("company");
         if (old_id != record.id()) {
             QSqlQuery update_circuits;
             update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
@@ -537,7 +539,20 @@ void MainWindow::modifyCustomer()
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            QSqlQuery update_repairs;
+            update_repairs.prepare("UPDATE repairs SET parent = :new_id, customer = :customer WHERE parent = :old_id");
+            update_repairs.bindValue(":old_id", old_id);
+            update_repairs.bindValue(":new_id", record.id());
+            update_repairs.bindValue(":customer", company_name);
+            update_repairs.exec();
             loadCustomer(record.id().toInt(), true);
+        } else if (old_company_name != company_name) {
+            QSqlQuery update_repairs;
+            update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
+            update_repairs.bindValue(":id", record.id());
+            update_repairs.bindValue(":customer", company_name);
+            update_repairs.exec();
+            refreshView();
         } else {
             refreshView();
         }
@@ -558,9 +573,12 @@ void MainWindow::removeCustomer()
     circuits.remove();
     MTRecord inspections("inspections", "date", "", MTDictionary("customer", selectedCustomer()));
     inspections.remove();
+    MTRecord repairs("repairs", "date", "", MTDictionary("parent", selectedCustomer()));
+    repairs.remove();
     selected_customer = -1;
     selected_circuit = -1;
     selected_inspection.clear();
+    selected_repair.clear();
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfCustomers);
@@ -575,6 +593,8 @@ void MainWindow::loadCustomer(int customer, bool refresh)
     if (refresh) {
         if (actionService_company->isChecked())
             navigation->setView(Navigation::ListOfCustomers);
+        else if (actionBasic_logbook->isChecked())
+            navigation->setView(Navigation::ListOfRepairs);
         else
             navigation->setView(Navigation::ListOfCircuits);
     }
@@ -712,6 +732,7 @@ void MainWindow::addRepair()
     if (!db.isOpen()) { return; }
     Repair record("");
     if (isCustomerSelected()) {
+        record.parents().insert("parent", selectedCustomer());
         record.parents().insert("customer", Customer(selectedCustomer()).stringValue("company"));
     }
     ModifyDialogue * md = new ModifyDialogue(&record, this);

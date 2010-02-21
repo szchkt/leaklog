@@ -342,7 +342,9 @@ void MainWindow::executeLink(const QUrl & url)
             if (id != selectedCustomer()) {
                 loadCustomer(id.toInt(), path.count() <= 1);
             } else if (path.count() <= 1) {
-                if (!actionService_company->isChecked())
+                if (actionBasic_logbook->isChecked())
+                    navigation->setView(Navigation::ListOfRepairs);
+                else if (actionDetailed_logbook->isChecked())
                     navigation->setView(Navigation::ListOfCircuits);
             }
         } else if (path.at(0).startsWith("repair:")) {
@@ -891,13 +893,13 @@ void MainWindow::enableTools()
         current_selection.append(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
             .arg(Navigation::ListOfCircuits)
             .arg(tr("<b>Customer:</b> %1%2")
-                .arg(QString::number(selected_customer).rightJustified(8, '0'))
+                .arg(selectedCustomer().rightJustified(8, '0'))
                 .arg(selected_customer_company.isEmpty() ? "" : QString(" (%1)").arg(selected_customer_company))));
     if (circuit_selected)
         current_selection.append(QString(" &gt; <a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
             .arg(Navigation::ListOfInspections)
             .arg(tr("<b>Circuit:</b> %1")
-                .arg(QString::number(selected_circuit).rightJustified(4, '0'))));
+                .arg(selectedCircuit().rightJustified(4, '0'))));
     if (inspection_selected) {
         current_selection.append(QString(" &gt; <a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
             .arg(Navigation::Inspection)

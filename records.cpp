@@ -313,11 +313,13 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
         }
     }
     MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
-    if (DBInfoValueForKey("locked") == "true") {
+    if (DBInfoValueForKey("locked") == "true")
         date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
-    }
     md->addInputWidget(date);
-    md->addInputWidget(new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString()));
+    MDLineEdit * customer = new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString());
+    if (!attributes.value("parent").toString().isEmpty())
+        customer->setEnabled(false);
+    md->addInputWidget(customer);
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));

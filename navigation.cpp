@@ -126,7 +126,6 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
             break;
         case Navigation::ListOfCircuits:
-            if (current_group == 1) goto updateView_ListOfRepairs;
             group = 2;
             filter_since_visible = false;
             updateView_ListOfCircuits_CircuitAttributes:
@@ -151,10 +150,11 @@ void Navigation::updateView()
             break;
         case Navigation::ListOfRepairs:
             group = 1;
-            updateView_ListOfRepairs:
             cb_filter_column->addItem(QApplication::translate("Repair", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Repair", "Customer"), "customer");
+            cb_filter_column->addItem(QApplication::translate("Repair", "Device"), "device");
             cb_filter_column->addItem(QApplication::translate("Repair", "Refrigerant"), "refrigerant");
+            cb_filter_column->addItem(QApplication::translate("Repair", "Assembly record No."), "arno");
             break;
         case Navigation::ListOfInspectors:
             group = 0;

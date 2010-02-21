@@ -78,7 +78,7 @@ QString MainWindow::viewChanged(int view)
                 }
                 break;
             case Navigation::ListOfRepairs:
-                html = viewRepairs(selectedRepair(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                html = viewRepairs(selectedRepair(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(), isCustomerSelected() ? selectedCustomer() : "");
                 break;
             case Navigation::ListOfInspectors:
                 html = viewAllInspectors(selectedInspector());
@@ -424,11 +424,6 @@ QString MainWindow::viewAllCustomers()
 
 QString MainWindow::viewCustomer(const QString & customer_id)
 {
-    if (actionBasic_logbook->isChecked()) {
-        return viewRepairs(selectedRepair(),
-            navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(),
-            customer_id);
-    }
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
@@ -1113,8 +1108,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     QString html; MTTextStream out(&html);
     MTDictionary parent;
     if (!customer_id.isEmpty()) {
-        Customer customer(customer_id);
-        parent.insert("customer", customer.stringValue("company"));
+        parent.insert("parent", customer_id);
         writeCustomersTable(out, customer_id);
         out << "<br>";
     }
