@@ -116,6 +116,19 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("UPDATE inspections SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
         query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
     }
+    if (v < 0.9061) {
+        Customer customers("");
+        MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
+        QVariantMap set;
+        QSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
+        while (repairs.next()) {
+            if (customer_ids.contains(repairs.value(1).toString())) {
+                Repair repair(repairs.value(0).toString());
+                set.insert("parent", customer_ids.value(repairs.value(1).toString()).value("id"));
+                repair.update(set);
+            }
+        }
+    }
     if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");
