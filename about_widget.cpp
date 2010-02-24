@@ -23,7 +23,7 @@
 AboutWidget::AboutWidget()
 {
     setupUi(this);
-    QObject::connect(btn_close, SIGNAL(released()), this, SLOT(close()));
+    QObject::connect(btn_close, SIGNAL(clicked()), this, SLOT(close()));
     QString about = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">Leaklog</span><br>";
     about.append("<span style=\"font-size:8pt;\">");
     about.append(tr("Version"));
@@ -34,14 +34,15 @@ AboutWidget::AboutWidget()
     about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("This program is distributed under the terms of the GPL v2."));
     about.append("</p><p></p>");
-    about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2010 <span style=\"font-style:italic;\">Matus & Michal Tomlein</span></p>");
+    about.append(QString("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2010 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span><br>%1</p>")
+                 .arg(tr("Slovak Association for Cooling and Air Conditioning Technology")));
     about.append("<p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
     about.append("</p>");
 #ifdef Q_WS_MAC
     about.remove("font-family: sans-serif;");
-    about.replace("font-size:12pt;", "font-size:14pt;");
-    about.replace("font-size:8pt;", "font-size:10pt;");
+    about.replace("font-size:12pt;", "font-size:16pt;");
+    about.replace("font-size:8pt;", "font-size:12pt;");
 #endif
     txb_about->setHtml(about);
     QString about_qt = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">";
@@ -51,14 +52,14 @@ AboutWidget::AboutWidget()
     about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
     about_qt.append(tr("Qt is a C++ toolkit for cross-platform application development."));
     about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about_qt.append(tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE."));
+    about_qt.append(tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux, and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE."));
     about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about_qt.append(tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">www.qtsoftware.com/qt</span> for more information."));
+    about_qt.append(tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">qt.nokia.com</span> for more information."));
     about_qt.append("</p>");
 #ifdef Q_WS_MAC
     about_qt.remove("font-family: sans-serif;");
-    about_qt.replace("font-size:12pt;", "font-size:14pt;");
-    about_qt.replace("font-size:8pt;", "font-size:10pt;");
+    about_qt.replace("font-size:12pt;", "font-size:16pt;");
+    about_qt.replace("font-size:8pt;", "font-size:12pt;");
 #endif
     txb_about_qt->setHtml(about_qt);
 }
