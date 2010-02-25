@@ -23,11 +23,13 @@ Navigation::Navigation(QWidget * parent):
 QWidget(parent)
 {
     default_view_for_group.resize(3);
-    restoreDefaults();
+    restoreDefaults(false);
     setupUi(this);
     btngrp_view = new QButtonGroup(this);
     btngrp_view->addButton(tbtn_view_service_company);
     btngrp_view->setId(tbtn_view_service_company, Navigation::ServiceCompany);
+    btngrp_view->addButton(tbtn_view_refrigerant_management);
+    btngrp_view->setId(tbtn_view_refrigerant_management, Navigation::RefrigerantManagement);
     btngrp_view->addButton(tbtn_view_customers);
     btngrp_view->setId(tbtn_view_customers, Navigation::ListOfCustomers);
     btngrp_view->addButton(tbtn_view_circuits);
@@ -58,10 +60,11 @@ QWidget(parent)
     setReportDataGroupBoxVisible(false);
 }
 
-void Navigation::restoreDefaults()
+void Navigation::restoreDefaults(bool apply)
 {
     current_group = 0;
     current_view = Navigation::ServiceCompany;
+    if (apply) btngrp_view->button(current_view)->setChecked(true);
     default_view_for_group[0] = Navigation::ServiceCompany;
     default_view_for_group[1] = Navigation::ListOfCustomers;
     default_view_for_group[2] = Navigation::ListOfCustomers;
@@ -115,6 +118,13 @@ void Navigation::updateView()
         case Navigation::ServiceCompany:
             group = 0;
             filter_keyword_visible = false;
+            break;
+        case Navigation::RefrigerantManagement:
+            group = 0;
+            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Date"), "date");
+            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner"), "partner");
+            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"), "partner_id");
+            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"), "refrigerant");
             break;
         case Navigation::ListOfCustomers:
             filter_since_visible = false;

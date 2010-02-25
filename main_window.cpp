@@ -63,6 +63,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/service_company.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ServiceCompany, in.readAll());
     file.close();
+    file.setFileName(":/html/refrigerant_management.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::RefrigerantManagement, in.readAll());
+    file.close();
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfCustomers, in.readAll());
     file.close();
@@ -778,8 +781,8 @@ void MainWindow::clearAll()
     trw_table_variables->clear();
     lw_warnings->clear();
     actionService_company->setChecked(true);
-    navigation->viewServiceCompany();
     navigation->restoreDefaults();
+    navigation->viewServiceCompany();
     // ----
     years_expanded_in_service_company_view.clear();
 }

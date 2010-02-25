@@ -74,7 +74,12 @@ MDInputWidget(id, labeltext, parent, this)
 
 QVariant MDLineEdit::variantValue()
 {
-    return text();
+    return text().isEmpty() ? nullvalue : text();
+}
+
+void MDLineEdit::setNullValue(const QVariant & value)
+{
+    nullvalue = value;
 }
 
 MDCheckBox::MDCheckBox(const QString & id, const QString & labeltext, QWidget * parent, bool checked, bool enabled):
@@ -162,7 +167,13 @@ MDInputWidget(id, labeltext, parent, this)
 
 QVariant MDComboBox::variantValue()
 {
-    return cb_items.value(currentText());
+    QString value = cb_items.value(currentText());
+    return value.isEmpty() ? nullvalue : value;
+}
+
+void MDComboBox::setNullValue(const QVariant & value)
+{
+    nullvalue = value;
 }
 
 MDColourComboBox::MDColourComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):

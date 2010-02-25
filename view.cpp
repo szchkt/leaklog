@@ -27,6 +27,7 @@
 #include "mtaddress.h"
 
 #include <QDate>
+#include <QSqlRecord>
 
 using namespace Global;
 
@@ -44,6 +45,9 @@ QString MainWindow::viewChanged(int view)
         switch (view) {
             case Navigation::ServiceCompany:
                 html = viewServiceCompany(navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                break;
+            case Navigation::RefrigerantManagement:
+                html = viewRefrigerantManagement(navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 break;
             case Navigation::ListOfCustomers:
                 html = viewAllCustomers();
@@ -109,6 +113,7 @@ QString MainWindow::currentView()
     QString view = tr("Service company");
     switch (navigation->view()) {
         case Navigation::ServiceCompany: view = QApplication::translate("Navigation", "Service company"); break;
+        case Navigation::RefrigerantManagement: view = QApplication::translate("Navigation", "Refrigerant management"); break;
         case Navigation::ListOfCustomers: view = QApplication::translate("Navigation", "List of customers"); break;
         case Navigation::ListOfCircuits:
             view = Customer(selectedCustomer()).stringValue("company");
@@ -295,6 +300,57 @@ QString MainWindow::viewServiceCompany(int since)
     out << "</table></td></tr>";
     out << "</table>";
     return dict_html.value(Navigation::ServiceCompany).arg(html);
+}
+
+QString MainWindow::viewRefrigerantManagement(int since)
+{
+    QString html; MTTextStream out(&html);
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">";
+    out << tr("Refrigerant management") << "</th></tr>";
+    out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
+    out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    out << "</tr><tr>";
+    out << "<th>" << QApplication::translate("Customer", "Company") << "</th>";
+    out << "<th>" << QApplication::translate("Customer", "ID") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    out << "</tr>";
+    bool database_locked = DBInfoValueForKey("locked") == "true";
+    QString lock_date = DBInfoValueForKey("lock_date");
+    RecordOfRefrigerantManagement records("");
+    if (!navigation->isFilterEmpty()) {
+        records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+    QSqlQuery query = records.select("*", Qt::DescendingOrder);
+    query.setForwardOnly(true);
+    query.exec();
+    QString date;
+    while (query.next()) {
+        date = QUERY("date").toString();
+        if (since && date.left(4).toInt() < since) continue;
+        if (!database_locked || date >= lock_date)
+            out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/modify'\" style=\"cursor: pointer;\">";
+        else
+            out << "<tr>";
+        out << "<td>" << date << "</td>";
+        for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
+            out << "<td>" << QUERY(RecordOfRefrigerantManagement::attributes().key(n)).toString() << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table>";
+    return dict_html.value(Navigation::RefrigerantManagement).arg(html);
 }
 
 void MainWindow::writeCustomersTable(MTTextStream & out, const QString & customer_id)

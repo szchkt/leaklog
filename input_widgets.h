@@ -79,6 +79,11 @@ public:
     MDLineEdit(const QString &, const QString &, QWidget *, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
 
     QVariant variantValue();
+
+    void setNullValue(const QVariant &);
+
+private:
+    QVariant nullvalue;
 };
 
 class MDCheckBox : public MTCheckBox, public MDInputWidget
@@ -123,8 +128,11 @@ public:
 
     QVariant variantValue();
 
+    void setNullValue(const QVariant &);
+
 private:
     MTDictionary cb_items;
+    QVariant nullvalue;
 };
 
 class MDColourComboBox : public MTColourComboBox, public MDInputWidget

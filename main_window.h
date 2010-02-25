@@ -158,6 +158,7 @@ private:
     // VIEW
     QString currentView();
     QString viewServiceCompany(int);
+    QString viewRefrigerantManagement(int);
     QString viewAllCustomers();
     QString viewCustomer(const QString &);
     QString viewCircuit(const QString &, const QString &, int);

@@ -29,6 +29,7 @@ class Navigation : public QWidget, private Ui::Navigation
 public:
     enum View {
         ServiceCompany,
+        RefrigerantManagement,
         ListOfCustomers,
         ListOfCircuits,
         ListOfInspections,
@@ -42,7 +43,7 @@ public:
     };
 
     Navigation(QWidget *);
-    void restoreDefaults();
+    void restoreDefaults(bool = true);
     void connectSlots(QObject *);
 
     // View

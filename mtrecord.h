@@ -43,7 +43,7 @@ public:
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
-    QSqlQuery select(const QString & = "*");
+    QSqlQuery select(const QString & = "*", Qt::SortOrder = Qt::AscendingOrder);
     QVariantMap list(const QString & = "*");
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
         return list(field).value(field, default_value);

@@ -323,14 +323,16 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors()));
+    MDComboBox * repairman = new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors());
+    repairman->setNullValue(QVariant(QVariant::Int));
+    md->addInputWidget(repairman);
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md, attributes.value("arno").toString()));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date FROM repairs WHERE" + QString(id().isEmpty() ? "" : " date <> :date"));
+    query_used_ids.prepare("SELECT date FROM repairs" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
@@ -560,6 +562,10 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
         date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
+    md->addInputWidget(new MDLineEdit("partner", tr("Business partner:"), md, attributes.value("partner").toString()));
+    MDLineEdit * partner_id = new MDLineEdit("partner_id", tr("Business partner (ID):"), md, attributes.value("partner_id").toString(), "00000000");
+    partner_id->setNullValue(QVariant(QVariant::Int));
+    md->addInputWidget(partner_id);
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
@@ -586,6 +592,8 @@ class RecordOfRefrigerantManagementAttributes
 public:
     RecordOfRefrigerantManagementAttributes() {
         dict.insert("date", QApplication::translate("RecordOfRefrigerantManagement", "Date"));
+        dict.insert("partner", QApplication::translate("RecordOfRefrigerantManagement", "Business partner"));
+        dict.insert("partner_id", QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"));
         dict.insert("refrigerant", QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"));
         dict.insert("purchased", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (new)"));
         dict.insert("purchased_reco", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (recovered)"));
