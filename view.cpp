@@ -1415,97 +1415,92 @@ QString MainWindow::viewLeakagesByApplication()
     return dict_html.value(Navigation::LeakagesByApplication).arg(html);
 }
 
-int MainWindow::circuitInspectionInterval(const QString & customer, const QString & circuit, int interval)
-{
-    Warnings warnings(db, true, customer, circuit);
-    int delay = 0, warning_delay = 0, id = 0;
-    while (warnings.next()) {
-        warning_delay = warnings.value("delay").toInt();
-        if (!warning_delay) { continue; }
-        id = warnings.value("id").toInt();
-        if (id >= 1200 && id < 1300) {
-            if (interval) { warning_delay = interval; }
-            if (delay < warning_delay) { delay = warning_delay; }
-        }
-    }
-    return delay;
-}
-
 QString MainWindow::viewAgenda()
 {
     QString html; MTTextStream out(&html);
 
-    MTRecord inspections_record("inspections", "date", "", MTDictionary());
-    ListOfVariantMaps inspections(inspections_record.listAll("date, customer, circuit, nominal, repair"));
+    QMultiMap<QString, QStringList> next_inspections_map;
+    QString last_inspection_date, circuit, customer;
+    int inspection_interval;
+
+    MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
+
     MTRecord circuits_record("circuits", "id", "", MTDictionary());
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps circuits(circuits_record.listAll());
-    MTRecord customers_record("customers", "id", "", MTDictionary());
-    MultiMapOfVariantMaps customers(customers_record.mapAll("id", "company"));
-
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-    out << "<th colspan=\"4\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
-    out << "<tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
-    out << "<th>" << tr("Circuit") << "</th><th>" << tr("Last inspection") << "</th></tr>";
-    QMap<QString, QString> inspections_map;
-    QMultiMap<QString, QString> next_inspections_map;
-    QString last_inspection_date, circuit, customer;
-    int delay;
-    for (int i = 0; i < circuits.count(); ++i) {
-        circuit = circuits.at(i).value("id").toString();
-        customer = circuits.at(i).value("parent").toString();
-        last_inspection_date.clear();
-        for (int j = 0; j < inspections.count(); ++j) {
-            if (inspections.at(j).value("customer").toString() == customer &&
-                inspections.at(j).value("circuit").toString() == circuit &&
-                !inspections.at(j).value("repair").toInt() &&
-                last_inspection_date < inspections.at(j).value("date").toString()) {
-                last_inspection_date = inspections.at(j).value("date").toString();
+    QSqlQuery circuits = circuits_record.select("parent, id, name, operation, commissioning, refrigerant_amount, hermetic, leak_detector, inspection_interval");
+    circuits.setForwardOnly(true);
+    circuits.exec();
+    while (circuits.next()) {
+        inspection_interval = Warnings::circuitInspectionInterval(QUERY_VALUE(circuits, "refrigerant_amount").toDouble(),
+                                                                  QUERY_VALUE(circuits, "hermetic").toInt(),
+                                                                  QUERY_VALUE(circuits, "leak_detector").toInt(),
+                                                                  QUERY_VALUE(circuits, "inspection_interval").toInt());
+        if (inspection_interval) {
+            customer = QUERY_VALUE(circuits, "parent").toString();
+            circuit = QUERY_VALUE(circuits, "id").toString();
+            last_inspection_date.clear();
+            MTDictionary inspections_parents("customer", customer);
+            inspections_parents.insert("circuit", circuit);
+            inspections_parents.insert("repair", "0");
+            QSqlQuery inspections = MTRecord("inspections", "date", "", inspections_parents).select("date", Qt::DescendingOrder);
+            inspections.setForwardOnly(true);
+            if (inspections.exec() && inspections.next()) {
+                last_inspection_date = inspections.value(0).toString();
             }
-        }
-        if (last_inspection_date.isEmpty()) {
-            last_inspection_date = circuits.at(i).value("commissioning").toString();
-            if (last_inspection_date.isEmpty()) continue;
-        }
-        inspections_map.insert(customer + "::" + circuit, last_inspection_date);
-        delay = circuitInspectionInterval(customer, circuit, circuits.at(i).value("inspection_interval").toInt());
-        if (delay) {
-            next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"),
-                                        customer + "::" + circuit + ";" + circuits.at(i).value("name").toString());
+            if (last_inspection_date.isEmpty()) {
+                last_inspection_date = QUERY_VALUE(circuits, "commissioning").toString();
+                if (last_inspection_date.isEmpty()) continue;
+            }
+            next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
+                                            .addDays(inspection_interval).toString("yyyy.MM.dd"),
+                                        QStringList() << customer << circuit
+                                            << QUERY_VALUE(circuits, "name").toString()
+                                            << QUERY_VALUE(circuits, "operation").toString()
+                                            << last_inspection_date);
         }
     }
-    QMapIterator<QString, QString> i(next_inspections_map);
-    QString next_ins, colour, circuit_name;
+
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
+    out << "<th colspan=\"5\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
+    out << "<tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
+    out << "<th>" << tr("Circuit") << "</th><th>" << QApplication::translate("Circuit", "Place of operation") << "</th>";
+    out << "<th>" << tr("Last inspection") << "</th></tr>";
+
+    QString next_inspection, colour, circuit_name, operation;
+    QMapIterator<QString, QStringList> i(next_inspections_map);
     while (i.hasNext()) { i.next();
-        customer = i.value().left(i.value().indexOf("::"));
-        circuit = i.value();
-        circuit.remove(0, circuit.indexOf("::") + 2);
-        circuit_name = circuit.right(circuit.length() - circuit.indexOf(";") - 1);
-        circuit.truncate(circuit.indexOf(";"));
+        customer = i.value().value(0);
+        circuit = i.value().value(1);
+        circuit_name = i.value().value(2);
+        operation = i.value().value(3);
+        last_inspection_date = i.value().value(4);
         int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), "yyyy.MM.dd"));
         switch (days_to) {
-            case -1: next_ins = tr("Yesterday"); break;
-            case 0: next_ins = tr("Today"); break;
-            case 1: next_ins = tr("Tomorrow"); break;
-            default: next_ins = i.key(); break;
+            case -1: next_inspection = tr("Yesterday"); break;
+            case 0: next_inspection = tr("Today"); break;
+            case 1: next_inspection = tr("Tomorrow"); break;
+            default: next_inspection = i.key(); break;
         }
         if (days_to < 0) colour = "tomato";
         else if (days_to < 31) colour = "yellow";
         else colour = "";
-        out << "<tr><td class=\"" << colour << "\">" << next_ins << "</td>";
+        out << "<tr><td class=\"" << colour << "\">" << next_inspection << "</td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
         out << customer.rightJustified(8, '0') << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
         out << circuit.rightJustified(4, '0');
         if (!circuit_name.isEmpty()) { out << " (" << escapeString(circuit_name) << ")"; }
         out << "</a></td>";
-        out << "<td class=\"" << colour << "\"><a ";
-        if (inspections_map.value(customer + "::" + circuit).split("-").count() > 1) {
-            out << "href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:" << inspections_map.value(customer + "::" + circuit) << "\"";
-        }
-        out << ">" << inspections_map.value(customer + "::" + circuit) << "</a></td></tr>";
+        out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
+        out << "<td class=\"" << colour << "\">";
+        if (last_inspection_date.contains("-"))
+            out << "<a href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:"
+                << last_inspection_date << "\">" << last_inspection_date << "</a>";
+        else
+            out << last_inspection_date;
+        out << "</td></tr>";
     }
     out << "</table>";
 

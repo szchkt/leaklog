@@ -311,6 +311,25 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
     }
 }
 
+int Warnings::circuitInspectionInterval(double refrigerant_amount, bool hermetic, bool leak_detector, int interval)
+{
+    int result = 0;
+    if (refrigerant_amount < 30.0) {
+        if (hermetic) {
+            if (refrigerant_amount >= 6.0) result = 365;
+        } else {
+            if (refrigerant_amount >= 3.0) result = 365;
+        }
+    } else if (refrigerant_amount < 300.0) {
+        result = leak_detector ? 365 : 182;
+    } else {
+        result = leak_detector ? 182 : 91;
+    }
+    if (result == 0 || (interval && interval < result))
+        return interval;
+    return result;
+}
+
 void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
 {
     QSqlQuery query(database);

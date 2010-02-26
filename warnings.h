@@ -38,6 +38,8 @@ public:
 
     static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false);
 
+    static int circuitInspectionInterval(double, bool, bool, int = 0);
+
 protected:
     void saveResult();
 

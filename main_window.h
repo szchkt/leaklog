@@ -171,7 +171,6 @@ private:
     QString viewAgenda();
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
-    int circuitInspectionInterval(const QString &, const QString &, int);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());

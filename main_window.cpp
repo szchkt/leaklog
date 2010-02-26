@@ -22,6 +22,7 @@
 #include "records.h"
 #include "report_data_controller.h"
 #include "variables.h"
+#include "warnings.h"
 #include "mtvariant.h"
 #include "mtaddress.h"
 #include "mtwebpage.h"
@@ -518,7 +519,7 @@ void MainWindow::printLabel(bool detailed)
     if (detailed) {
         attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(4, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
-        attributes.unite(circuit.list("refrigerant, refrigerant_amount, inspection_interval"));
+        attributes.unite(circuit.list("refrigerant, refrigerant_amount, hermetic, leak_detector, inspection_interval"));
         attributes["refrigerant_amount"] = getCircuitRefrigerantAmount(selectedCustomer(), selectedCircuit(), attributes.value("refrigerant_amount", 0.0).toDouble());
         QSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
@@ -531,7 +532,10 @@ void MainWindow::printLabel(bool detailed)
                 inspection.insert(query.record().fieldName(i), query.value(i));
             }
             attributes.insert("date", inspection.value("date").toString());
-            int delay = circuitInspectionInterval(selectedCustomer(), selectedCircuit(), attributes.value("inspection_interval").toInt());
+            int delay = Warnings::circuitInspectionInterval(attributes.value("refrigerant_amount").toDouble(),
+                                                            attributes.value("hermetic").toInt(),
+                                                            attributes.value("leak_detector").toInt(),
+                                                            attributes.value("inspection_interval").toInt());
             if (delay) {
                 attributes.insert("next_inspection", QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"));
             }
