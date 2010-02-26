@@ -345,7 +345,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
             out << "<tr>";
         out << "<td>" << date << "</td>";
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
-            out << "<td>" << QUERY(RecordOfRefrigerantManagement::attributes().key(n)).toString() << "</td>";
+            out << "<td>" << MTVariant(QUERY(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
         }
         out << "</tr>";
     }
@@ -539,13 +539,13 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
-        out << "<td>" << escapeString(inspections.at(i).value("operator").toString()) << "</td>";
+        out << "<td>" << MTVariant(inspections.at(i).value("operator")) << "</td>";
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
-            out << "<td onmouseover=\"Tip('" << escapeString(inspections.at(i).value("rmds").toString(), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
+            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
         } else {
             out << "<td></td>";
         }
-        out << "<td>" << inspections.at(i).value("arno").toString() << "</td>";
+        out << "<td>" << MTVariant(inspections.at(i).value("arno")) << "</td>";
         out << "</tr>";
     }
     out << "</table>";
@@ -646,7 +646,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
         if (compare_nom) {
             rows[row].append(compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value));
         } else {
-            rows[row].append(ins_value);
+            rows[row].append(escapeString(ins_value));
         }
         rows[row].append("</td><td valign=\"center\" style=\"border-style: none;\">&nbsp;");
         if (!vars.value("VAR_UNIT").toString().isEmpty()) {
@@ -1064,7 +1064,7 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
 {
     out << "<td class=\"" << bg_class << "\" rowspan=\"" << rowspan << "\"";
     if (var_type == "text" && !ins_value.isEmpty()) {
-        out << "onmouseover=\"Tip('" << escapeString(ins_value, true, true) << "')\" onmouseout=\"UnTip()\"";
+        out << "onmouseover=\"Tip('" << escapeString(escapeString(ins_value), true, true) << "')\" onmouseout=\"UnTip()\"";
     }
     out << ">";
     if (var_type == "text") {
@@ -1172,48 +1172,41 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     if (!navigation->isFilterEmpty()) {
         repairs_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps repairs(repairs_record.listAll());
-    if (year) {
-        for (int i = 0; i < repairs.count();) {
-            if (repairs.at(i).value("date").toString().split(".").first().toInt() < year) {
-                repairs.removeAt(i);
-            } else { ++i; }
-        }
-    }
+    QSqlQuery repairs = repairs_record.select();
+    repairs.setForwardOnly(true);
+    repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
         out << "<th>" << Repair::attributes().value(n) << "</th>";
     }
     out << "</tr>";
-    if (repairs.count()) {
-        QString id, attr_value;
-        Inspector inspectors_record("");
-        MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
-        for (int i = 0; i < repairs.count(); ++i) {
-            id = repairs.at(i).value("date").toString();
-            out << "<tr onclick=\"window.location = 'repair:" << id << "";
-            if (highlighted_id == id) {
-                if (!isRecordLocked(id)) out << "/modify";
-                out << "'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-            } else {
-                out << "'\" style=\"";
-            }
-            out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
-            for (int n = 1; n < Repair::attributes().count(); ++n) {
-                attr_value = repairs.at(i).value(Repair::attributes().key(n)).toString();
-                out << "<td>";
-                if (Repair::attributes().key(n) == "field") {
-                    if (attributeValues().contains("field::" + attr_value)) {
-                        attr_value = attributeValues().value("field::" + attr_value);
-                    }
-                } else if (Repair::attributes().key(n) == "repairman") {
-                    attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
-                }
-                out << escapeString(attr_value) << "</td>";
-            }
-            out << "</tr>";
+    MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
+    QString id, attr_value;
+    while (repairs.next()) {
+        id = QUERY_VALUE(repairs, "date").toString();
+        if (id.split(".").first().toInt() < year) continue;
+        out << "<tr onclick=\"window.location = 'repair:" << id << "";
+        if (highlighted_id == id) {
+            if (!isRecordLocked(id)) out << "/modify";
+            out << "'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+        } else {
+            out << "'\" style=\"";
         }
+        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        for (int n = 1; n < Repair::attributes().count(); ++n) {
+            attr_value = QUERY_VALUE(repairs, Repair::attributes().key(n)).toString();
+            out << "<td>";
+            if (Repair::attributes().key(n) == "field") {
+                if (attributeValues().contains("field::" + attr_value)) {
+                    attr_value = attributeValues().value("field::" + attr_value);
+                }
+            } else if (Repair::attributes().key(n) == "repairman") {
+                attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
+            }
+            out << escapeString(attr_value) << "</td>";
+        }
+        out << "</tr>";
     }
     out << "</table>";
     return dict_html.value(Navigation::ListOfRepairs).arg(html);
@@ -1273,7 +1266,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
     out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
-    out << "<td>" << attributes.value("company").toString() << "</td>";
+    out << "<td>" << MTVariant(attributes.value("company")) << "</td>";
     out << "<td>" << MTVariant(attributes.value("address"), MTVariant::Address) << "</td>";
     out << "</tr><tr><th colspan=\"3\">" << tr("Operator information") << "</th></tr><tr>";
     out << "<th>" << Customer::attributes().value("id") << "</th>";
@@ -1308,16 +1301,16 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
         out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
         out << "<td>" << getCircuitRefrigerantAmount(customer_id, list.at(i).value("id").toString(), list.at(i).value("refrigerant_amount").toDouble()) << "</td>";
-        out << "<td>" << list.at(i).value("operation").toString() << "</td>";
+        out << "<td>" << MTVariant(list.at(i).value("operation")) << "</td>";
         out << "</tr>";
     }
     out << "</table>";
     if (isInspectorSelected()) {
         attributes = Inspector(selectedInspector()).list("person, mail, phone");
         out << "<br><table><tr><td>";
-        out << tr("Person responsible:", "Operator report") << " " << attributes.value("person").toString();
-        out << "<br>" << tr("Phone:") << " " << attributes.value("phone").toString();
-        out << "<br>" << tr("E-mail:") << " " << attributes.value("mail").toString();
+        out << tr("Person responsible:", "Operator report") << " " << MTVariant(attributes.value("person"));
+        out << "<br>" << tr("Phone:") << " " << MTVariant(attributes.value("phone"));
+        out << "<br>" << tr("E-mail:") << " " << MTVariant(attributes.value("mail"));
         out << "</td></tr></table>";
     }
     return dict_html.value(Navigation::OperatorReport).arg(html);
