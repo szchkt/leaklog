@@ -1274,8 +1274,9 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr><th colspan=\"7\" style=\"font-size: medium; background-color: aliceblue;\">";
+    out << "<tr><th colspan=\"8\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "ID") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
@@ -1286,22 +1287,42 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     out << "<th>" << tr("Recovered") << "</th>";
     out << "<th>" << tr("At the end of this year") << "</th>";
     out << "</tr>";
-    QVariantMap sums;
-    QString filter = QString("%1%").arg(year);
-    Circuit circuits(customer_id, "");
-    ListOfVariantMaps list = circuits.listAll("id, refrigerant, refrigerant_amount, field, operation");
-    for (int i = 0; i < list.count(); ++i) {
-        Inspection inspections(customer_id, list.at(i).value("id").toString(), "");
-        inspections.addFilter("date", filter);
+    MTRecord inspections("inspections", "date", "", MTDictionary("customer", customer_id));
+    inspections.parents().insert("nominal", "0");
+    inspections.addFilter("date", QString("%1%").arg(year));
+    MTDictionary nominal_inpection_parents("customer", customer_id);
+    nominal_inpection_parents.insert("nominal", "1");
+    QVariantMap sums; QVariantMap nominal_inspection;
+    double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
+    QString circuit_id;
+    QSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, commissioning");
+    circuits.setForwardOnly(true);
+    circuits.exec();
+    while (circuits.next()) {
+        circuit_id = QUERY_VALUE(circuits, "id").toString();
+
+        inspections.parents().insert("circuit", circuit_id);
         sums = inspections.sumAll("refr_add_am, refr_reco");
-        out << "<tr>";
-        out << "<td>" << list.at(i).value("refrigerant").toString() << "</td>";
-        out << "<td>" << fieldsOfApplication().firstKey(list.at(i).value("field").toString()) << "</td>";
-        out << "<td>" << getCircuitRefrigerantAmount(customer_id, list.at(i).value("id").toString(), list.at(i).value("refrigerant_amount").toDouble()) << "</td>";
+
+        refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
+        nominal_inpection_parents.insert("circuit", circuit_id);
+        nominal_inspection = MTRecord("inspections", "date", "", nominal_inpection_parents).list("date, refr_add_am");
+        refrigerant_amount_end = refrigerant_amount + nominal_inspection.value("refr_add_am", 0.0).toDouble();
+        refrigerant_amount_begin = 0.0;
+        if (QUERY_VALUE(circuits, "commissioning").toString().left(4).toInt() < year)
+            refrigerant_amount_begin += refrigerant_amount;
+        if (nominal_inspection.value("date", "9999").toString().left(4).toInt() < year)
+            refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble();
+
+        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
+        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";
+        out << "<td>" << QUERY_VALUE(circuits, "refrigerant").toString() << "</td>";
+        out << "<td>" << fieldsOfApplication().firstKey(QUERY_VALUE(circuits, "field").toString()) << "</td>";
+        out << "<td>" << refrigerant_amount_begin << "</td>";
         out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
-        out << "<td>" << getCircuitRefrigerantAmount(customer_id, list.at(i).value("id").toString(), list.at(i).value("refrigerant_amount").toDouble()) << "</td>";
-        out << "<td>" << MTVariant(list.at(i).value("operation")) << "</td>";
+        out << "<td>" << refrigerant_amount_end << "</td>";
+        out << "<td>" << MTVariant(QUERY_VALUE(circuits, "operation")) << "</td>";
         out << "</tr>";
     }
     out << "</table>";
