@@ -602,6 +602,8 @@ void MainWindow::loadCustomer(int customer, bool refresh)
     if (customer < 0) { return; }
     selected_customer = customer;
     selected_customer_company = Customer(QString::number(customer)).stringValue("company");
+    selected_circuit = -1;
+    selected_inspection.clear();
     enableTools();
     if (refresh) {
         if (actionService_company->isChecked())
@@ -675,6 +677,7 @@ void MainWindow::loadCircuit(int circuit, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (circuit < 0) { return; }
     selected_circuit = circuit;
+    selected_inspection.clear();
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfInspections);
