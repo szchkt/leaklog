@@ -37,7 +37,6 @@ QObject(parent), navigation(parent) {
     navigation->reportDataProgressBar()->setVisible(false);
     QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
     QObject::connect(navigation->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
-    wp_default = wv_main->page();
     wv_main->setPage(new QWebPage(wv_main));
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
@@ -125,7 +124,6 @@ void ReportDataController::autofill()
 
 void ReportDataController::done()
 {
-    wv_main->setPage(wp_default);
     navigation->setReportDataGroupBoxVisible(false);
     deleteLater();
 }

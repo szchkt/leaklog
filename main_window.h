@@ -120,6 +120,7 @@ private slots:
 private:
     // UI
     QMenu * createPopupMenu();
+    void setDefaultWebPage();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);
     void exportPDF(int);
     void addRecent(const QString &);

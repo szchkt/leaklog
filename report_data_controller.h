@@ -24,7 +24,6 @@
 
 class Navigation;
 class QWebView;
-class QWebPage;
 
 class ReportDataController : public QObject
 {
@@ -47,7 +46,6 @@ protected:
 
 private:
     QWebView * wv_main;
-    QWebPage * wp_default;
     Navigation * navigation;
 };
 

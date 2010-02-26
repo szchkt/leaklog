@@ -272,9 +272,7 @@ MainWindow::MainWindow()
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
-    MTWebPage * page = new MTWebPage(this);
-    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    wv_main->setPage(page);
+    setDefaultWebPage();
 #ifdef Q_WS_MAC
     show();
 #endif
@@ -285,6 +283,13 @@ MainWindow::MainWindow()
 #ifndef Q_WS_MAC
     show();
 #endif
+}
+
+void MainWindow::setDefaultWebPage()
+{
+    MTWebPage * page = new MTWebPage(wv_main);
+    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    wv_main->setPage(page);
 }
 
 void MainWindow::openFile(const QString & file)
@@ -699,6 +704,8 @@ void MainWindow::reportData()
 void MainWindow::reportDataFinished()
 {
     setAllEnabled(true, true);
+    setDefaultWebPage();
+    refreshView();
 }
 
 void MainWindow::find()
