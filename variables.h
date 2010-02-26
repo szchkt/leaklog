@@ -33,9 +33,9 @@ protected:
     virtual void saveResult();
 
     void initVariables(const QString & = QString());
-    void initVariable(const QString &, const QString &, const QString &, const QString &, const QString &, bool, double, const QString &);
+    void initVariable(const QString &, const QString &, const QString &, const QString &, bool, double, const QString &);
     void initVariable(const QString &, const QString &, const QString &);
-    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
+    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
 
     QMultiMap<QString, int> var_indices;
 };

@@ -73,6 +73,13 @@ QString Global::variantTypeToSqlType(int type)
     return "TEXT";
 }
 
+QString Global::variableTypeToSqlType(const QString & type)
+{
+    if (type == "float") return "NUMERIC";
+    else if (type == "int" || type == "bool") return "INTEGER";
+    return "TEXT";
+}
+
 MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
 {
     MTDictionary field_names;
@@ -453,6 +460,62 @@ const MTDictionary & Global::variableNames()
 {
     static VariableNames dict;
     return dict.dict;
+}
+
+class VariableType
+{
+public:
+    VariableType() {
+        dict.insert("t_sec_evap_in", "float");
+        dict.insert("t_sec_cond_in", "float");
+        dict.insert("p_0", "float");
+        dict.insert("p_c", "float");
+        dict.insert("t_0", "float");
+        dict.insert("t_c", "float");
+        dict.insert("t_ev", "float");
+        dict.insert("t_evap_out", "float");
+        dict.insert("t_comp_in", "float");
+        dict.insert("t_sc", "float");
+        dict.insert("t_sh_evap", "float");
+        dict.insert("t_sh_comp", "float");
+        dict.insert("t_comp_out", "float");
+        dict.insert("delta_t_evap", "float");
+        dict.insert("delta_t_c", "float");
+        dict.insert("ep_comp", "float");
+        dict.insert("ec_l1", "float");
+        dict.insert("ec_l2", "float");
+        dict.insert("ec_l3", "float");
+        dict.insert("ev_l1", "float");
+        dict.insert("ev_l2", "float");
+        dict.insert("ev_l3", "float");
+        dict.insert("ppsw_hip", "float");
+        dict.insert("ppsw_lop", "float");
+        dict.insert("ppsw_diff", "float");
+        dict.insert("sftsw", "float");
+        dict.insert("rmds", "text");
+        dict.insert("arno", "string");
+        dict.insert("corr_def", "bool");
+        dict.insert("noise_vibr", "bool");
+        dict.insert("bbl_lvl", "bool");
+        dict.insert("oil_leak_am", "float");
+        dict.insert("el_detect", "bool");
+        dict.insert("uv_detect", "bool");
+        dict.insert("bbl_detect", "bool");
+        dict.insert("refr_add_am", "float");
+        dict.insert("refr_add_per", "float");
+        dict.insert("refr_reco", "float");
+        dict.insert("inspector", "string");
+        dict.insert("operator", "string");
+    }
+
+    QHash<QString, QString> dict;
+};
+
+const QString Global::variableType(const QString & id, bool * ok)
+{
+    static VariableType types;
+    if (ok) *ok = types.dict.contains(id);
+    return types.dict.value(id, "string");
 }
 
 class FieldsOfApplication

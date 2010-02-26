@@ -37,6 +37,7 @@ namespace Global {
     QString delta();
     QColor textColourForBaseColour(const QColor &);
     QString variantTypeToSqlType(int);
+    QString variableTypeToSqlType(const QString &);
     MTDictionary getTableFieldNames(const QString &, QSqlDatabase *);
     void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
     void addColumn(const QString &, const QString &, QSqlDatabase *);
@@ -54,6 +55,7 @@ namespace Global {
     const MTDictionary & databaseTables();
     const MTDictionary & variableTypes();
     const MTDictionary & variableNames();
+    const QString variableType(const QString &, bool * = 0);
     const MTDictionary & fieldsOfApplication();
     const MTDictionary & oils();
     const MTDictionary & attributeValues();

@@ -79,12 +79,23 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
             query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + databaseTables().value(i) + ")");
+            if (databaseTables().key(i) == "inspections") {
+                QString type; bool ok = true;
+                for (int v = 0; v < variableNames().count(); ++v) {
+                    type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (ok)
+                        addColumn(variableNames().key(v) + " " + type, "inspections", database);
+                }
+            }
         } else {
             MTDictionary field_names = getTableFieldNames(databaseTables().key(i), database);
             QStringList all_field_names = databaseTables().value(i).split(", ");
             if (databaseTables().key(i) == "inspections") {
+                QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
-                    all_field_names << variableNames().key(v) + " TEXT";
+                    type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (ok)
+                        all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
             }
             for (int f = 0; f < all_field_names.count(); ++f) {
