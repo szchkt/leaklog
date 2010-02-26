@@ -1720,9 +1720,11 @@ void MainWindow::importData()
     }
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
         QVariantMap set;
+        QSet<QString> fields;
         // Import customers
         trw[0] = id->newCustomers();
         trw[1] = id->modifiedCustomers();
+        fields = QSet<QString>::fromList(databaseTables().value("customers").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int c = 0; c < trw[w]->topLevelItemCount(); ++c) {
                 if (trw[w]->topLevelItem(c)->checkState(0) == Qt::Unchecked) { continue; }
@@ -1733,7 +1735,8 @@ void MainWindow::importData()
                 query.exec();
                 if (query.next()) {
                     for (int f = 0; f < query.record().count(); ++f) {
-                        set.insert(query.record().fieldName(f), query.value(f));
+                        if (fields.contains(query.record().fieldName(f)))
+                            set.insert(query.record().fieldName(f), query.value(f));
                     }
                 }
                 Customer(c_id).update(set);
@@ -1742,6 +1745,7 @@ void MainWindow::importData()
         // Import circuits
         trw[0] = id->newCircuits();
         trw[1] = id->modifiedCircuits();
+        fields = QSet<QString>::fromList(databaseTables().value("circuits").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int cc = 0; cc < trw[w]->topLevelItemCount(); ++cc) {
                 if (trw[w]->topLevelItem(cc)->checkState(0) == Qt::Unchecked) { continue; }
@@ -1754,7 +1758,8 @@ void MainWindow::importData()
                 query.exec();
                 if (query.next()) {
                     for (int f = 0; f < query.record().count(); ++f) {
-                        set.insert(query.record().fieldName(f), query.value(f));
+                        if (fields.contains(query.record().fieldName(f)))
+                            set.insert(query.record().fieldName(f), query.value(f));
                     }
                     set.remove("parent");
                 }
@@ -1850,6 +1855,7 @@ void MainWindow::importData()
         // Import repairs
         trw[0] = id->newRepairs();
         trw[1] = id->modifiedRepairs();
+        fields = QSet<QString>::fromList(databaseTables().value("repairs").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -1860,7 +1866,8 @@ void MainWindow::importData()
                 query.exec();
                 if (query.next()) {
                     for (int f = 0; f < query.record().count(); ++f) {
-                        set.insert(query.record().fieldName(f), query.value(f));
+                        if (fields.contains(query.record().fieldName(f)))
+                            set.insert(query.record().fieldName(f), query.value(f));
                     }
                 }
                 Repair(r_date).update(set);
@@ -1869,6 +1876,7 @@ void MainWindow::importData()
         // Import refrigerant management
         trw[0] = id->newRefrigerantManagement();
         trw[1] = id->modifiedRefrigerantManagement();
+        fields = QSet<QString>::fromList(databaseTables().value("refrigerant_management").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -1879,7 +1887,8 @@ void MainWindow::importData()
                 query.exec();
                 if (query.next()) {
                     for (int f = 0; f < query.record().count(); ++f) {
-                        set.insert(query.record().fieldName(f), query.value(f));
+                        if (fields.contains(query.record().fieldName(f)))
+                            set.insert(query.record().fieldName(f), query.value(f));
                     }
                 }
                 RecordOfRefrigerantManagement(r_date).update(set);
@@ -1888,6 +1897,7 @@ void MainWindow::importData()
         // Import inspectors
         trw[0] = id->newInspectors();
         trw[1] = id->modifiedInspectors();
+        fields = QSet<QString>::fromList(databaseTables().value("inspectors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -1898,7 +1908,8 @@ void MainWindow::importData()
                 query.exec();
                 if (query.next()) {
                     for (int f = 0; f < query.record().count(); ++f) {
-                        set.insert(query.record().fieldName(f), query.value(f));
+                        if (fields.contains(query.record().fieldName(f)))
+                            set.insert(query.record().fieldName(f), query.value(f));
                     }
                 }
                 Inspector(i_id).update(set);
