@@ -13,11 +13,11 @@ td {
 	padding: 2px;
 }
 @media screen {
-	tbody > tr:hover > td {
+	table.highlight > tbody > tr:hover > td {
 		background-color: rgb(180, 215, 255) !important;
 		color: #000000;
 	}
-	tbody > tr:hover > td > table > tbody > tr > td {
+	table.highlight > tbody > tr:hover > td > table > tbody > tr > td {
 		background-color: rgb(180, 215, 255) !important;
 		color: #000000;
 	}

@@ -305,7 +305,7 @@ QString MainWindow::viewServiceCompany(int since)
 QString MainWindow::viewRefrigerantManagement(int since)
 {
     QString html; MTTextStream out(&html);
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">";
     out << tr("Refrigerant management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
@@ -360,7 +360,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps list(all_customers.listAll());
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Customer::attributes().count(); ++n) {
         thead.append("<th>" + Customer::attributes().value(n) + "</th>");
@@ -400,7 +400,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps circuits(circuits_record.listAll());
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
         thead.append("<th>" + Circuit::attributes().value(n).split("||").first() + "</th>");
@@ -447,7 +447,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     }
     out << "</table>";
     if (show_disused) {
-        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
+        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"><tr>";
         out << "<th colspan=\"5\" style=\"font-size: medium;\">" << tr("Disused circuits") << "</th></tr><tr>";
         out << "<th>" << Circuit::attributes().value("id") << "</th>";
         out << "<th>" << Circuit::attributes().value("manufacturer") << "</th>";
@@ -507,7 +507,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     }
     Inspector inspectors_record("");
     MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
-    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and repairs") << "</a></th></tr>";
@@ -1175,7 +1175,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     QSqlQuery repairs = repairs_record.select();
     repairs.setForwardOnly(true);
     repairs.exec();
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
         out << "<th>" << Repair::attributes().value(n) << "</th>";
@@ -1193,7 +1193,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         } else {
             out << "'\" style=\"";
         }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        out << " cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
             attr_value = QUERY_VALUE(repairs, Repair::attributes().key(n)).toString();
             out << "<td>";
@@ -1273,7 +1273,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><br>";
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"8\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "ID") << "</th>";
