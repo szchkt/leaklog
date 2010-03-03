@@ -60,42 +60,47 @@ MainWindow::MainWindow()
     dict_fieldtypes.insert("address", MTVariant::Address);
     // ------------
     // HTML
+#ifdef Q_WS_MAC
+    QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
+#else
+    QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
+#endif
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");
     file.setFileName(":/html/service_company.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ServiceCompany, in.readAll());
+    dict_html.insert(Navigation::ServiceCompany, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/refrigerant_management.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::RefrigerantManagement, in.readAll());
+    dict_html.insert(Navigation::RefrigerantManagement, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfCustomers, in.readAll());
+    dict_html.insert(Navigation::ListOfCustomers, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/customer.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfCircuits, in.readAll());
+    dict_html.insert(Navigation::ListOfCircuits, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/circuit.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfInspections, in.readAll());
+    dict_html.insert(Navigation::ListOfInspections, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/inspection.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::Inspection, in.readAll());
+    dict_html.insert(Navigation::Inspection, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/table.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::TableOfInspections, in.readAll());
+    dict_html.insert(Navigation::TableOfInspections, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/repairs.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfRepairs, in.readAll());
+    dict_html.insert(Navigation::ListOfRepairs, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfInspectors, in.readAll());
+    dict_html.insert(Navigation::ListOfInspectors, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/operator_report.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::OperatorReport, in.readAll());
+    dict_html.insert(Navigation::OperatorReport, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/leakages.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::LeakagesByApplication, in.readAll());
+    dict_html.insert(Navigation::LeakagesByApplication, in.readAll().arg(font));
     file.close();
     file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::Agenda, in.readAll());
+    dict_html.insert(Navigation::Agenda, in.readAll().arg(font));
     file.close();
     // ----
     selected_customer = -1;

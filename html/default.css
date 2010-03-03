@@ -5,8 +5,7 @@ body {
 	margin-right: 2px;
 }
 body,td,th {
-	font-family: "MS Shell Dlg 2", "MS Shell Dlg", "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;
-	font-size: small;
+	font-size: 9pt;
 	color: #000000;
 }
 td {
