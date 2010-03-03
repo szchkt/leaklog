@@ -26,13 +26,8 @@
 using namespace Global;
 
 MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
-QObject()
-{
-    r_table = table;
-    r_id_field = id_field;
-    r_id = id;
-    r_parents = parents;
-}
+QObject(), r_table(table), r_id_field(id_field), r_id(id), r_parents(parents)
+{}
 
 MTRecord::MTRecord(const MTRecord & other):
 QObject()
