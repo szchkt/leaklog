@@ -1450,7 +1450,7 @@
      <property name="title">
       <string>Tables</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_10">
+     <layout class="QVBoxLayout" name="gl_tables">
       <property name="margin">
        <number>6</number>
       </property>

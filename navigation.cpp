@@ -25,7 +25,13 @@ QWidget(parent)
     default_view_for_group.resize(3);
     restoreDefaults(false);
     setupUi(this);
+#ifdef Q_WS_MAC
+    gl_tables->setSpacing(8);
     gl_filter->setSpacing(8);
+#else
+    gl_tables->setSpacing(5);
+    gl_filter->setSpacing(5);
+#endif
     btngrp_view = new QButtonGroup(this);
     btngrp_view->addButton(tbtn_view_service_company);
     btngrp_view->setId(tbtn_view_service_company, Navigation::ServiceCompany);
