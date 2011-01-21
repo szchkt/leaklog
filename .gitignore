@@ -1,0 +1,6 @@
+bin
+build
+*.pro.user*
+Makefile*
+object_script.*
+*.qm
