@@ -1350,7 +1350,7 @@ QString MainWindow::viewLeakagesByApplication()
     QStringList keys;
     const int VECTOR_SIZE = 3;
     map["All::All"].resize(VECTOR_SIZE);
-    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent");
+    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
     while (inspections.next()) {
         keys.clear();
         keys << inspections.value(0).toString() + "::" + attributeValues().value(attributeValues().indexOfKey("field::" + inspections.value(1).toString()));
