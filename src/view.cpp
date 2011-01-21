@@ -971,6 +971,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                         is_in_foot = f_vars.contains(table_vars.at(i));
                         if (subvariable.value("type").toString() != "float" && subvariable.value("type").toString() != "int") is_in_foot = false;
                         out << "<td class=\"" << variable.value("col_bg").toString() << "\">";
+                        bool value_contains_sum = subvariable.value("value").toString().contains(QRegExp("\\bsum\\b"));
+                        bool skip_nominal = subvariable.value("value").toString().startsWith("(1-nominal)*") &&
+                                            inspections.count() && inspections.first().value("nominal").toInt();
                         if (is_in_foot) {
                             double value = 0.0; int num_ins = 0;
                             if (subvariable.value("value").toString().isEmpty()) {
@@ -980,11 +983,10 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                                 }
                             } else {
                                 MTDictionary expression = parseExpression(subvariable.value("value").toString(), used_ids);
-                                for (int ins = 0; ins < inspections.count(); ++ins) {
-                                    if (subvariable.value("value").toString().contains("sum") &&
-                                        ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
-                                        inspections.at(ins-1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
-                                            continue;
+                                for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
+                                    if (value_contains_sum && ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
+                                        inspections.at(ins - 1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
+                                        continue;
                                     num_ins++;
                                     value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
                                 }
@@ -998,15 +1000,23 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                 } else {
                     if (variable.value("type").toString() != "float" && variable.value("type").toString() != "int") is_in_foot = false;
                     out << "<td class=\"" << variable.value("col_bg").toString() << "\">";
+                    bool value_contains_sum = variable.value("value").toString().contains(QRegExp("\\bsum\\b"));
+                    bool skip_nominal = variable.value("value").toString().startsWith("(1-nominal)*") &&
+                                        inspections.count() && inspections.first().value("nominal").toInt();
                     if (is_in_foot) {
-                        double value = 0.0; int num_ins = inspections.count();
+                        double value = 0.0; int num_ins = 0;
                         if (variable.value("value").toString().isEmpty()) {
+                            num_ins = inspections.count();
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
                             MTDictionary expression = parseExpression(variable.value("value").toString(), used_ids);
-                            for (int ins = 0; ins < inspections.count(); ++ins) {
+                            for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
+                                if (value_contains_sum && ins > 0 && !inspections.at(ins - 1).value("nominal").toInt() &&
+                                    inspections.at(ins - 1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
+                                    continue;
+                                num_ins++;
                                 value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
                             }
                         }
