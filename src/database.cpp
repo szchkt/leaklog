@@ -142,6 +142,9 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
     }
+    if (v < 0.907) {
+        query.exec("UPDATE inspections SET outside_interval = repair");
+    }
     if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");

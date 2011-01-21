@@ -226,6 +226,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, attributes.value("repair").toInt(), true);
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
+    md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md, attributes.value("outside_interval").toInt()));
     Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
     MDInputWidget * iw = NULL;
     while (query.next()) {

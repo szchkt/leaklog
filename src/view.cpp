@@ -497,7 +497,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps inspections(inspection_record.listAll("date, nominal, repair, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
+    ListOfVariantMaps inspections(inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -518,12 +518,13 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<th>" << variableNames().value("operator") << "</th>";
     out << "<th>" << variableNames().value("rmds") << "</th>";
     out << "<th>" << variableNames().value("arno") << "</th></tr>";
-    bool is_nominal, is_repair;
+    bool is_nominal, is_repair, is_outside_interval;
     QString id; QString highlighted_id = selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {
         id = inspections.at(i).value("date").toString();
         is_nominal = inspections.at(i).value("nominal").toInt();
         is_repair = inspections.at(i).value("repair").toInt();
+        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id;
         out << (is_repair ? "/repair:" : "/inspection:") << id << "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
@@ -533,6 +534,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
         out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id, !isRecordLocked(id));
+        if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
         out << "</td>";
@@ -845,11 +847,12 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "</tr></thead>";
 
 //*** Body ***
-    bool is_nominal, is_repair; QString inspection_date;
+    bool is_nominal, is_repair, is_outside_interval; QString inspection_date;
     out << "<tbody>";
     for (int i = 0; i < inspections.count(); ++i) {
         is_nominal = inspections.at(i).value("nominal").toInt();
         is_repair = inspections.at(i).value("repair").toInt();
+        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         inspection_date = inspections.at(i).value("date").toString();
         out << "<tr class=\"";
         if (is_nominal && table.value("highlight_nominal").toInt()) {
@@ -859,6 +862,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
         out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspection_date, customer_id, circuit_id, inspection_date, !isRecordLocked(inspection_date));
+        if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
         out << "</td>";
@@ -1042,7 +1046,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             warnings_html.append(warnings_list.join(", "));
             warnings_html.append("</td></tr>");
         }
-        last_warnings_list = backup_warnings;
+        if (!inspections.at(i).value("outside_interval").toInt())
+            last_warnings_list.clear();
+        last_warnings_list << backup_warnings;
     }
     QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, nominal_ins, last_entry_date, last_inspection_date);
     if (delayed_warnings.count()) {
@@ -1443,7 +1449,7 @@ QString MainWindow::viewAgenda()
             last_inspection_date.clear();
             MTDictionary inspections_parents("customer", customer);
             inspections_parents.insert("circuit", circuit);
-            inspections_parents.insert("repair", "0");
+            inspections_parents.insert("outside_interval", "0");
             QSqlQuery inspections = MTRecord("inspections", "date", "", inspections_parents).select("date", Qt::DescendingOrder);
             inspections.setForwardOnly(true);
             if (inspections.exec() && inspections.next()) {
