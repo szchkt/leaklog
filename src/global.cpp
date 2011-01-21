@@ -49,6 +49,8 @@ QString Global::upArrow() { return QString::fromUtf8("\342\206\221"); }
 
 QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 
+QString Global::rightTriangle() { return QString::fromUtf8("\342\226\270"); }
+
 QString Global::degreeSign() { return QString::fromUtf8("\302\260"); }
 
 QString Global::delta() { return QString::fromUtf8("\316\224"); }

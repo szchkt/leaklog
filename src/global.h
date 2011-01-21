@@ -33,6 +33,7 @@ namespace Global {
     QString escapeString(QString, bool = false, bool = false);
     QString upArrow();
     QString downArrow();
+    QString rightTriangle();
     QString degreeSign();
     QString delta();
     QColor textColourForBaseColour(const QColor &);

@@ -835,6 +835,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     menuRepair->setEnabled(enable);
     menuInspector->setEnabled(enable);
 
+    lbl_current_selection->setEnabled(enable);
     btn_clear_selection->setEnabled(enable);
 
     tbtn_add->setEnabled(enable);
@@ -917,12 +918,14 @@ void MainWindow::enableTools()
                 .arg(selectedCustomer().rightJustified(8, '0'))
                 .arg(selected_customer_company.isEmpty() ? "" : QString(" (%1)").arg(selected_customer_company))));
     if (circuit_selected)
-        current_selection.append(QString(" &gt; <a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
+        current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
+            .arg(rightTriangle())
             .arg(Navigation::ListOfInspections)
             .arg(tr("<b>Circuit:</b> %1")
                 .arg(selectedCircuit().rightJustified(4, '0'))));
     if (inspection_selected) {
-        current_selection.append(QString(" &gt; <a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
+        current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
+            .arg(rightTriangle())
             .arg(Navigation::Inspection)
             .arg((selected_inspection_is_repair ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
                 .arg(selected_inspection)));
