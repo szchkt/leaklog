@@ -125,7 +125,9 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md, attributes.value("leak_detector").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md, 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
     md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md, 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
-    md->addInputWidget(new MDSpinBox("inspection_interval", tr("Inspection interval:"), md, 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days")));
+    MDSpinBox * inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md, 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
+    inspection_interval->setSpecialValueText(tr("Automatic"));
+    md->addInputWidget(inspection_interval);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
