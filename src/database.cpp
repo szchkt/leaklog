@@ -1364,7 +1364,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, Qt::Checked);
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
                 item->setData(0, Qt::UserRole, QUERY("id"));
             }
         } else {
@@ -1408,7 +1410,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, Qt::Checked);
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
                 item->setData(0, Qt::UserRole, QUERY("parent"));
                 item->setData(1, Qt::UserRole, QUERY("id"));
             }
@@ -1570,6 +1574,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newInspections());
@@ -1579,6 +1586,7 @@ void MainWindow::importData()
             for (int i = 0; i < variable_names.count(); ++i) {
                 item->setText(i + 3, QUERY(variable_names.key(i)).toString());
             }
+            item->setCheckState(0, Qt::Checked);
         }
         if (item) {
             if (record_locked) {
@@ -1586,7 +1594,6 @@ void MainWindow::importData()
                 item->setDisabled(true);
                 item->setIcon(2, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setCheckState(0, Qt::Checked);
                 item->setData(0, Qt::UserRole, QUERY("customer"));
                 item->setData(1, Qt::UserRole, QUERY("circuit"));
                 item->setData(2, Qt::UserRole, QUERY("date"));
@@ -1622,6 +1629,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRepairs());
@@ -1629,6 +1639,7 @@ void MainWindow::importData()
             for (int i = 1; i < Repair::attributes().count(); ++i) {
                 item->setText(i, QUERY(Repair::attributes().key(i)).toString());
             }
+            item->setCheckState(0, Qt::Checked);
         }
         if (item) {
             if (record_locked) {
@@ -1636,7 +1647,6 @@ void MainWindow::importData()
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setCheckState(0, Qt::Checked);
                 item->setData(0, Qt::UserRole, QUERY("date"));
             }
         }
@@ -1666,6 +1676,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRefrigerantManagement());
@@ -1673,6 +1686,7 @@ void MainWindow::importData()
             for (int i = 1; i < RecordOfRefrigerantManagement::attributes().count(); ++i) {
                 item->setText(i, QUERY(RecordOfRefrigerantManagement::attributes().key(i)).toString());
             }
+            item->setCheckState(0, Qt::Checked);
         }
         if (item) {
             if (record_locked) {
@@ -1680,7 +1694,6 @@ void MainWindow::importData()
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setCheckState(0, Qt::Checked);
                 item->setData(0, Qt::UserRole, QUERY("date"));
             }
         }
@@ -1708,7 +1721,9 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, Qt::Checked);
+                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                if (item->checkState(0) == Qt::Unchecked)
+                    item->setToolTip(0, tr("This record is older than the current record in your database"));
                 item->setData(0, Qt::UserRole, QUERY("id"));
             }
         } else {
