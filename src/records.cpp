@@ -48,7 +48,7 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "00000000"));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
     md->addInputWidget(new MDLineEdit("company", tr("Company:"), md, attributes.value("company").toString()));
     md->addInputWidget(new MDLineEdit("contact_person", tr("Contact person:"), md, attributes.value("contact_person").toString()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
@@ -105,7 +105,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "0000"));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 9999));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDCheckBox("disused", tr("Disused"), md, attributes.value("disused").toInt()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md, attributes.value("operation").toString()));
@@ -257,7 +257,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(iw);
             } else if (var_type == "string") {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
-                    attributes.value(var_id).toString(), "", query.value("VAR_COL_BG").toString()));
+                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString()));
             } else if (var_type == "text") {
                 md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));
@@ -267,7 +267,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
-                    attributes.value(var_id).toString(), "", query.value("VAR_COL_BG").toString()));
+                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString()));
             }
         } else {
             if (!query.value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
@@ -281,7 +281,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                     attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "string") {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));
+                    attributes.value(subvar_id).toString(), 0, query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "text") {
                 md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), query.value("VAR_COL_BG").toString()));
@@ -292,7 +292,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), "", query.value("VAR_COL_BG").toString()));
+                    attributes.value(subvar_id).toString(), 0, query.value("VAR_COL_BG").toString()));
             }
         }
     }
@@ -414,9 +414,9 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
     used_ids << listVariableIds(true);
     if (!id().isEmpty()) { used_ids.removeAll(id()); }
     md->setUsedIds(used_ids);
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "", "", enable_all));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), "", "", enable_all));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString(), "", "", enable_all));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString(), 0, "", enable_all));
     md->addInputWidget(new MDComboBox("type", tr("Type:"), md, attributes.value("type").toString(), MTDictionary(variableTypes()).swapKeysAndValues(), "", enable_all));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md, attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal one"), md, attributes.value("compare_nom").toInt()));
@@ -462,7 +462,7 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "0000"));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 9999));
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
@@ -509,7 +509,7 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), "00000000"));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
@@ -566,7 +566,7 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(date);
     md->addInputWidget(new MDLineEdit("partner", tr("Business partner:"), md, attributes.value("partner").toString()));
-    MDLineEdit * partner_id = new MDLineEdit("partner_id", tr("Business partner (ID):"), md, attributes.value("partner_id").toString(), "00000000");
+    MDLineEdit * partner_id = new MDLineEdit("partner_id", tr("Business partner (ID):"), md, attributes.value("partner_id").toString(), 99999999);
     partner_id->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(partner_id);
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
@@ -638,8 +638,8 @@ void WarningRecord::initModifyDialogue(ModifyDialogue * md)
         enable_all = id().toInt() < 1000;
     }
     md->addInputWidget(new MDCheckBox("enabled", tr("Enabled"), md, attributes.value("enabled").toInt()));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), "", "", enable_all));
-    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString(), "", "", enable_all));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString(), 0, "", enable_all));
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md, 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";

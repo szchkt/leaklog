@@ -61,14 +61,14 @@ MTLabel * MDInputWidget::createLabel(QWidget * parent, const QString & text)
     return lbl;
 }
 
-MDLineEdit::MDLineEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const QString & inputmask, const QString & colour, bool enabled):
+MDLineEdit::MDLineEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, int maxintvalue, const QString & colour, bool enabled):
 QLineEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
     setMinimumSize(150, sizeHint().height());
     setEnabled(enabled);
-    if (!inputmask.isEmpty()) { setInputMask(inputmask); }
+    if (maxintvalue) { setValidator(new QIntValidator(0, maxintvalue, parent)); }
     setText(value);
 }
 

@@ -76,7 +76,7 @@ class MDLineEdit : public QLineEdit, public MDInputWidget
     Q_OBJECT
 
 public:
-    MDLineEdit(const QString &, const QString &, QWidget *, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
+    MDLineEdit(const QString &, const QString &, QWidget *, const QString &, int = 0, const QString & = QString(), bool = true);
 
     QVariant variantValue();
 
