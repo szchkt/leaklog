@@ -20,8 +20,9 @@
 #include "mtrecord.h"
 #include "global.h"
 
-#include "QSqlQuery"
-#include "QSqlRecord"
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QDateTime>
 
 using namespace Global;
 
@@ -177,8 +178,9 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
         update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
             update.append(i.key() + " = :" + i.key());
-            if (i.hasNext()) { update.append(", "); }
+            /*if (i.hasNext())*/ update.append(", ");
         }
+        update.append("date_updated = :date_updated");
         update.append(" WHERE " + r_id_field + " = :_id");
         for (int p = 0; p < r_parents.count(); ++p) {
             update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
@@ -201,7 +203,7 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
             if (append_comma) { update.append(", "); }
             update.append(r_id_field);
         }
-        update.append(") VALUES (");
+        update.append(", date_updated) VALUES (");
         append_comma = false;
         i.toFront();
         while (i.hasNext()) { i.next();
@@ -219,10 +221,11 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
             if (append_comma) { update.append(", "); }
             update.append(":_id");
         }
-        update.append(")");
+        update.append(", :date_updated)");
     }
     QSqlQuery query;
     query.prepare(update);
+    query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
     if (has_id || !set.contains(r_id_field)) { query.bindValue(":_id", r_id); }
     for (int p = 0; p < r_parents.count(); ++p) {
         if (!has_id && set.contains(r_parents.key(p))) continue;
