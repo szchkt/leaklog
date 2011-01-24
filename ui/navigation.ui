@@ -471,7 +471,7 @@
          <string>Service company</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -522,7 +522,7 @@
          <string>Refrigerant management</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -554,7 +554,7 @@
          <string>Add record of refrigerant management</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
         </property>
         <property name="iconSize">
@@ -598,7 +598,7 @@
          <string>List of customers</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -630,7 +630,7 @@
          <string>Add customer</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
         </property>
         <property name="iconSize">
@@ -662,7 +662,7 @@
          <string>Modify customer</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
         </property>
         <property name="iconSize">
@@ -694,7 +694,7 @@
          <string>Remove customer</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
         </property>
         <property name="iconSize">
@@ -741,7 +741,7 @@
          <string>Operator report</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -773,7 +773,7 @@
          <string>Leakages by application</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -805,7 +805,7 @@
          <string>Agenda</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -868,7 +868,7 @@
          <string>List of inspectors</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -900,7 +900,7 @@
          <string>Add inspector</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
         </property>
         <property name="iconSize">
@@ -932,7 +932,7 @@
          <string>Modify inspector</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
         </property>
         <property name="iconSize">
@@ -964,7 +964,7 @@
          <string>Remove inspector</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
         </property>
         <property name="iconSize">
@@ -1008,7 +1008,7 @@
          <string>List of repairs</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -1040,7 +1040,7 @@
          <string>Add repair</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
         </property>
         <property name="iconSize">
@@ -1072,7 +1072,7 @@
          <string>Modify repair</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
         </property>
         <property name="iconSize">
@@ -1104,7 +1104,7 @@
          <string>Remove repair</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/repair_remove.png</normaloff>:/images/images/repair_remove.png</iconset>
         </property>
         <property name="iconSize">
@@ -1151,7 +1151,7 @@
          <string>List of circuits</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -1183,7 +1183,7 @@
          <string>Add circuit</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
         </property>
         <property name="iconSize">
@@ -1215,7 +1215,7 @@
          <string>Modify circuit</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
         </property>
         <property name="iconSize">
@@ -1247,7 +1247,7 @@
          <string>Remove circuit</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
         </property>
         <property name="iconSize">
@@ -1297,7 +1297,7 @@
          <string>List of inspections</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -1329,7 +1329,7 @@
          <string>Add inspection</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
         </property>
         <property name="iconSize">
@@ -1361,7 +1361,7 @@
          <string>Modify inspection</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
         </property>
         <property name="iconSize">
@@ -1393,7 +1393,7 @@
          <string>Remove inspection</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/inspection_remove.png</normaloff>:/images/images/inspection_remove.png</iconset>
         </property>
         <property name="iconSize">
@@ -1422,7 +1422,7 @@
          <string>Inspection details</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -1469,7 +1469,7 @@
          <string>Table of inspections</string>
         </property>
         <property name="icon">
-         <iconset resource="resources.qrc">
+         <iconset resource="../rc/resources.qrc">
           <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
         </property>
         <property name="iconSize">
@@ -1528,9 +1528,6 @@
      </property>
      <layout class="QGridLayout" name="gl_filter">
       <property name="margin">
-       <number>6</number>
-      </property>
-      <property name="spacing">
        <number>6</number>
       </property>
       <item row="0" column="0" colspan="2">
@@ -1739,7 +1736,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../rc/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -15,7 +15,7 @@
    <string>About Leaklog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../rc/resources.qrc">
     <normaloff>:/images/images/help_about.png</normaloff>:/images/images/help_about.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
@@ -46,7 +46,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/images/images/leaklog128.png</pixmap>
+        <pixmap resource="../rc/resources.qrc">:/images/images/leaklog128.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -90,7 +90,7 @@
      </property>
      <widget class="QWidget" name="tab_about">
       <attribute name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../rc/resources.qrc">
         <normaloff>:/images/images/leaklog128.png</normaloff>:/images/images/leaklog128.png</iconset>
       </attribute>
       <attribute name="title">
@@ -107,7 +107,7 @@
      </widget>
      <widget class="QWidget" name="tab_about_qt">
       <attribute name="icon">
-       <iconset resource="resources.qrc">
+       <iconset resource="../rc/resources.qrc">
         <normaloff>:/images/images/qt4.png</normaloff>:/images/images/qt4.png</iconset>
       </attribute>
       <attribute name="title">
@@ -148,7 +148,7 @@
         </sizepolicy>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/images/images/szchkt.png</pixmap>
+        <pixmap resource="../rc/resources.qrc">:/images/images/szchkt.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignBottom|Qt::AlignHCenter</set>
@@ -201,7 +201,7 @@
           <string>Close</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/fileclose.png</normaloff>:/images/images/fileclose.png</iconset>
          </property>
          <property name="iconSize">
@@ -220,7 +220,7 @@
  </widget>
  <layoutdefault spacing="6" margin="6"/>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../rc/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

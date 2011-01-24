@@ -21,7 +21,7 @@
    <string>Leaklog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="../rc/resources.qrc">
     <normaloff>:/images/images/leaklog128.png</normaloff>:/images/images/leaklog128.png</iconset>
   </property>
   <property name="dockOptions">
@@ -121,7 +121,7 @@
            <item>
             <widget class="QLabel" name="lbl_icon">
              <property name="pixmap">
-              <pixmap resource="resources.qrc">:/images/images/leaklog128.png</pixmap>
+              <pixmap resource="../rc/resources.qrc">:/images/images/leaklog128.png</pixmap>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -220,7 +220,7 @@
       <string>Open</string>
      </property>
      <property name="icon">
-      <iconset resource="resources.qrc">
+      <iconset resource="../rc/resources.qrc">
        <normaloff>:/images/images/fileopen.png</normaloff>:/images/images/fileopen.png</iconset>
      </property>
      <addaction name="actionLocal_database"/>
@@ -231,7 +231,7 @@
       <string>Export</string>
      </property>
      <property name="icon">
-      <iconset resource="resources.qrc">
+      <iconset resource="../rc/resources.qrc">
        <normaloff>:/images/images/export_html_pdf.png</normaloff>:/images/images/export_html_pdf.png</iconset>
      </property>
      <addaction name="actionPDF_Portrait"/>
@@ -436,7 +436,7 @@
           <string>Add variable</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
          </property>
          <property name="popupMode">
@@ -465,7 +465,7 @@
           <string>Modify variable</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
          </property>
          <property name="iconSize">
@@ -501,7 +501,7 @@
           <string>Remove variable</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/variable_remove.png</normaloff>:/images/images/variable_remove.png</iconset>
          </property>
          <property name="iconSize">
@@ -562,7 +562,7 @@
           <string>Add table</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/table_add.png</normaloff>:/images/images/table_add.png</iconset>
          </property>
          <property name="iconSize">
@@ -585,7 +585,7 @@
           <string>Modify table</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
          </property>
          <property name="iconSize">
@@ -608,7 +608,7 @@
           <string>Remove table</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/table_remove.png</normaloff>:/images/images/table_remove.png</iconset>
          </property>
         </widget>
@@ -648,7 +648,7 @@
           <string>Add</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
          </property>
          <property name="iconSize">
@@ -690,7 +690,7 @@
           <string>Move the selected variable up</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/up16.png</normaloff>:/images/images/up16.png</iconset>
          </property>
          <property name="iconSize">
@@ -713,7 +713,7 @@
           <string>Move the selected variable down</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/down16.png</normaloff>:/images/images/down16.png</iconset>
          </property>
          <property name="iconSize">
@@ -749,7 +749,7 @@
           <string>Remove</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/variable_remove.png</normaloff>:/images/images/variable_remove.png</iconset>
          </property>
          <property name="iconSize">
@@ -798,7 +798,7 @@
           <string>Add warning</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/warning_add.png</normaloff>:/images/images/warning_add.png</iconset>
          </property>
          <property name="iconSize">
@@ -824,7 +824,7 @@
           <string>Modify warning</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/warning_modify.png</normaloff>:/images/images/warning_modify.png</iconset>
          </property>
          <property name="iconSize">
@@ -857,7 +857,7 @@
           <string>Remove warning</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/warning_remove.png</normaloff>:/images/images/warning_remove.png</iconset>
          </property>
          <property name="iconSize">
@@ -878,7 +878,7 @@
   </widget>
   <action name="actionAbout_Leaklog">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/help_about.png</normaloff>:/images/images/help_about.png</iconset>
    </property>
    <property name="text">
@@ -893,7 +893,7 @@
   </action>
   <action name="actionNew">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/filenew.png</normaloff>:/images/images/filenew.png</iconset>
    </property>
    <property name="text">
@@ -908,7 +908,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/fileopen.png</normaloff>:/images/images/fileopen.png</iconset>
    </property>
    <property name="text">
@@ -920,7 +920,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/filesave.png</normaloff>:/images/images/filesave.png</iconset>
    </property>
    <property name="text">
@@ -938,7 +938,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/fileclose.png</normaloff>:/images/images/fileclose.png</iconset>
    </property>
    <property name="text">
@@ -953,7 +953,7 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/quit.png</normaloff>:/images/images/quit.png</iconset>
    </property>
    <property name="text">
@@ -971,7 +971,7 @@
   </action>
   <action name="actionAdd_customer">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
    </property>
    <property name="text">
@@ -989,7 +989,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
    </property>
    <property name="text">
@@ -1007,7 +1007,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/add.png</normaloff>:/images/images/add.png</iconset>
    </property>
    <property name="text">
@@ -1025,7 +1025,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/remove.png</normaloff>:/images/images/remove.png</iconset>
    </property>
    <property name="text">
@@ -1043,7 +1043,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
    </property>
    <property name="text">
@@ -1061,7 +1061,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspection_remove.png</normaloff>:/images/images/inspection_remove.png</iconset>
    </property>
    <property name="text">
@@ -1104,7 +1104,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/save_and_compact.png</normaloff>:/images/images/save_and_compact.png</iconset>
    </property>
    <property name="text">
@@ -1122,7 +1122,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text">
@@ -1140,7 +1140,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
    </property>
    <property name="text">
@@ -1158,7 +1158,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
    </property>
    <property name="text">
@@ -1176,7 +1176,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/print.png</normaloff>:/images/images/print.png</iconset>
    </property>
    <property name="text">
@@ -1194,7 +1194,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/print_preview.png</normaloff>:/images/images/print_preview.png</iconset>
    </property>
    <property name="text">
@@ -1209,7 +1209,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
@@ -1227,7 +1227,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
@@ -1245,7 +1245,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
@@ -1263,7 +1263,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
    </property>
    <property name="text">
@@ -1278,7 +1278,7 @@
   </action>
   <action name="actionCheck_for_updates">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/software_update.png</normaloff>:/images/images/software_update.png</iconset>
    </property>
    <property name="text">
@@ -1290,7 +1290,7 @@
   </action>
   <action name="actionNew_variable">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
    </property>
    <property name="text">
@@ -1302,7 +1302,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/variable_add.png</normaloff>:/images/images/variable_add.png</iconset>
    </property>
    <property name="text">
@@ -1311,7 +1311,7 @@
   </action>
   <action name="actionFind">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit_find.png</normaloff>:/images/images/edit_find.png</iconset>
    </property>
    <property name="text">
@@ -1326,7 +1326,7 @@
   </action>
   <action name="actionFind_next">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit_find_next.png</normaloff>:/images/images/edit_find_next.png</iconset>
    </property>
    <property name="text">
@@ -1341,7 +1341,7 @@
   </action>
   <action name="actionFind_previous">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit_find_previous.png</normaloff>:/images/images/edit_find_previous.png</iconset>
    </property>
    <property name="text">
@@ -1384,7 +1384,7 @@
   </action>
   <action name="actionChange_language">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/language16.png</normaloff>:/images/images/language16.png</iconset>
    </property>
    <property name="text">
@@ -1407,7 +1407,7 @@
   </action>
   <action name="actionAdd_inspector">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
    </property>
    <property name="text">
@@ -1422,7 +1422,7 @@
   </action>
   <action name="actionModify_inspector">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
    </property>
    <property name="text">
@@ -1437,7 +1437,7 @@
   </action>
   <action name="actionRemove_inspector">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
    </property>
    <property name="text">
@@ -1455,7 +1455,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
    </property>
    <property name="text">
@@ -1470,7 +1470,7 @@
   </action>
   <action name="actionLocal_database">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/local_database.png</normaloff>:/images/images/local_database.png</iconset>
    </property>
    <property name="text">
@@ -1485,7 +1485,7 @@
   </action>
   <action name="actionRemote_database">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/remote_database.png</normaloff>:/images/images/remote_database.png</iconset>
    </property>
    <property name="text">
@@ -1508,7 +1508,7 @@
   </action>
   <action name="actionAdd_repair">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
    </property>
    <property name="text">
@@ -1526,7 +1526,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
    </property>
    <property name="text">
@@ -1544,7 +1544,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/repair_remove.png</normaloff>:/images/images/repair_remove.png</iconset>
    </property>
    <property name="text">
@@ -1567,7 +1567,7 @@
   </action>
   <action name="actionAdd">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/add.png</normaloff>:/images/images/add.png</iconset>
    </property>
    <property name="text">
@@ -1576,7 +1576,7 @@
   </action>
   <action name="actionView">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
    </property>
    <property name="text">
@@ -1585,7 +1585,7 @@
   </action>
   <action name="actionModify">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text">
@@ -1594,7 +1594,7 @@
   </action>
   <action name="actionPDF_Portrait">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/pdf.png</normaloff>:/images/images/pdf.png</iconset>
    </property>
    <property name="text">
@@ -1606,7 +1606,7 @@
   </action>
   <action name="actionHTML">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/html.png</normaloff>:/images/images/html.png</iconset>
    </property>
    <property name="text">
@@ -1618,7 +1618,7 @@
   </action>
   <action name="actionExport">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/export_html_pdf.png</normaloff>:/images/images/export_html_pdf.png</iconset>
    </property>
    <property name="text">
@@ -1638,7 +1638,7 @@
   </action>
   <action name="actionLock">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/unlocked.png</normaloff>:/images/images/unlocked.png</iconset>
    </property>
    <property name="text">
@@ -1664,7 +1664,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
    </property>
    <property name="text">
@@ -1685,7 +1685,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/service_company.png</normaloff>:/images/images/service_company.png</iconset>
    </property>
    <property name="text">
@@ -1700,7 +1700,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/logbook_basic.png</normaloff>:/images/images/logbook_basic.png</iconset>
    </property>
    <property name="text">
@@ -1715,7 +1715,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/logbook_detailed.png</normaloff>:/images/images/logbook_detailed.png</iconset>
    </property>
    <property name="text">
@@ -1730,7 +1730,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
    </property>
    <property name="text">
@@ -1742,7 +1742,7 @@
   </action>
   <action name="actionPDF_Landscape">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/pdf_landscape.png</normaloff>:/images/images/pdf_landscape.png</iconset>
    </property>
    <property name="text">
@@ -1768,7 +1768,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../rc/resources.qrc"/>
  </resources>
  <connections>
   <connection>
