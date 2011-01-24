@@ -90,8 +90,10 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
     return query;
 }
 
-QVariantMap MTRecord::list(const QString & fields)
+QVariantMap MTRecord::list(const QString & fields, bool refresh)
 {
+    if (!refresh && !r_attributes.isEmpty())
+        return r_attributes;
     QVariantMap list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
@@ -101,6 +103,11 @@ QVariantMap MTRecord::list(const QString & fields)
         list.insert(query.record().fieldName(i), query.value(i));
     }
     return list;
+}
+
+void MTRecord::readAttributes()
+{
+    r_attributes = list("*", true);
 }
 
 ListOfVariantMaps MTRecord::listAll(const QString & fields)

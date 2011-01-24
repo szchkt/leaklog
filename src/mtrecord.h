@@ -40,16 +40,19 @@ public:
     inline QString table() const { return r_table; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
+    inline QString & id() { return r_id; }
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
     QSqlQuery select(const QString & = "*", Qt::SortOrder = Qt::AscendingOrder);
-    QVariantMap list(const QString & = "*");
+    QVariantMap list(const QString & = "*", bool = false);
+    void readAttributes();
+    inline QVariantMap & attributes() { return r_attributes; }
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
-        return list(field).value(field, default_value);
+        return r_attributes.isEmpty() ? list(field).value(field, default_value) : r_attributes.value(field, default_value);
     }
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
-        return list(field).value(field, default_value).toString();
+        return r_attributes.isEmpty() ? list(field).value(field, default_value).toString() : r_attributes.value(field, default_value).toString();
     }
     ListOfVariantMaps listAll(const QString & = "*");
     QVariantMap sumAll(const QString &);
@@ -63,6 +66,7 @@ private:
     QString r_id;
     MTDictionary r_parents;
     MTDictionary r_filter;
+    QVariantMap r_attributes;
 };
 
 #endif // MTRECORD_H
