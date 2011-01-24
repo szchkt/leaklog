@@ -589,6 +589,21 @@ void MainWindow::modifyCustomer()
     delete md;
 }
 
+void MainWindow::duplicateCustomer()
+{
+    if (!db.isOpen()) { return; }
+    if (!isCustomerSelected()) { return; }
+    Customer record(selectedCustomer());
+    record.readAttributes();
+    record.id().clear();
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadCustomer(record.id().toInt(), true);
+    }
+    delete md;
+}
+
 void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
@@ -669,6 +684,22 @@ void MainWindow::modifyCircuit()
     delete md;
 }
 
+void MainWindow::duplicateCircuit()
+{
+    if (!db.isOpen()) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    Circuit record(selectedCustomer(), selectedCircuit());
+    record.readAttributes();
+    record.id().clear();
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadCircuit(record.id().toInt(), true);
+    }
+    delete md;
+}
+
 void MainWindow::removeCircuit()
 {
     if (!db.isOpen()) { return; }
@@ -729,6 +760,23 @@ void MainWindow::modifyInspection()
     delete md;
 }
 
+void MainWindow::duplicateInspection()
+{
+    if (!db.isOpen()) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (!isInspectionSelected()) { return; }
+    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    record.readAttributes();
+    record.id().clear();
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadInspection(record.id(), true);
+    }
+    delete md;
+}
+
 void MainWindow::removeInspection()
 {
     if (!db.isOpen()) { return; }
@@ -780,6 +828,24 @@ void MainWindow::modifyRepair()
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadRepair(record.id(), true);
+    }
+    delete md;
+}
+
+void MainWindow::duplicateRepair()
+{
+    if (!db.isOpen()) { return; }
+    if (!isRepairSelected()) { return; }
+    Repair record(selectedRepair());
+    record.readAttributes();
+    record.id().clear();
+    if (!record.stringValue("parent").isEmpty()) {
+        record.parents().insert("parent", record.stringValue("parent"));
+    }
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);

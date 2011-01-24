@@ -45,10 +45,10 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Customer"));
     QVariantMap attributes;
-    if (!id().isEmpty()) {
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999999));
     md->addInputWidget(new MDLineEdit("company", tr("Company:"), md, attributes.value("company").toString()));
     md->addInputWidget(new MDLineEdit("contact_person", tr("Contact person:"), md, attributes.value("contact_person").toString()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
@@ -100,12 +100,12 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         customer = parent("parent").rightJustified(8, '0');
     md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(customer));
     QVariantMap attributes;
-    if (!id().isEmpty()) {
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 9999));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 9999));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDCheckBox("disused", tr("Disused"), md, attributes.value("disused").toInt()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md, attributes.value("operation").toString()));
@@ -197,7 +197,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         circuit = parent("circuit").rightJustified(4, '0');
     md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection").arg(customer).arg(circuit));
     QVariantMap attributes;
-    if (!id().isEmpty()) {
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
     }
     bool nominal_allowed = true;
@@ -214,13 +214,13 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
     if (DBInfoValueForKey("locked") == "true") {
         date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
     MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md);
-    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt(), nominal_allowed);
+    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt() && nominal_allowed, nominal_allowed);
     md->addInputWidget(chb_nominal);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
     MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, attributes.value("repair").toInt(), true);
@@ -308,14 +308,14 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
 
     md->setWindowTitle(tr("Repair"));
     QVariantMap attributes;
-    if (!id().isEmpty()) {
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
     } else {
         for (int i = 0; i < parents().count(); ++i) {
             attributes.insert(parents().key(i), parents().value(i));
         }
     }
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
     if (DBInfoValueForKey("locked") == "true")
         date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
     md->addInputWidget(date);

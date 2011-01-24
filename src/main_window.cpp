@@ -230,15 +230,19 @@ MainWindow::MainWindow()
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
+    QObject::connect(actionDuplicate_customer, SIGNAL(triggered()), this, SLOT(duplicateCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
     QObject::connect(actionAdd_circuit, SIGNAL(triggered()), this, SLOT(addCircuit()));
     QObject::connect(actionModify_circuit, SIGNAL(triggered()), this, SLOT(modifyCircuit()));
+    QObject::connect(actionDuplicate_circuit, SIGNAL(triggered()), this, SLOT(duplicateCircuit()));
     QObject::connect(actionRemove_circuit, SIGNAL(triggered()), this, SLOT(removeCircuit()));
     QObject::connect(actionAdd_inspection, SIGNAL(triggered()), this, SLOT(addInspection()));
     QObject::connect(actionModify_inspection, SIGNAL(triggered()), this, SLOT(modifyInspection()));
+    QObject::connect(actionDuplicate_inspection, SIGNAL(triggered()), this, SLOT(duplicateInspection()));
     QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
     QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
     QObject::connect(actionModify_repair, SIGNAL(triggered()), this, SLOT(modifyRepair()));
+    QObject::connect(actionDuplicate_repair, SIGNAL(triggered()), this, SLOT(duplicateRepair()));
     QObject::connect(actionRemove_repair, SIGNAL(triggered()), this, SLOT(removeRepair()));
     QObject::connect(actionPrint_detailed_label, SIGNAL(triggered()), this, SLOT(printDetailedLabel()));
     QObject::connect(actionPrint_label, SIGNAL(triggered()), this, SLOT(printLabel()));
@@ -858,18 +862,22 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     if (!enable) {
     // menuCustomer
         actionModify_customer->setEnabled(enable);
+        actionDuplicate_customer->setEnabled(enable);
         actionRemove_customer->setEnabled(enable);
     // menuCooling_circuit
         actionAdd_circuit->setEnabled(enable);
         actionModify_circuit->setEnabled(enable);
+        actionDuplicate_circuit->setEnabled(enable);
         actionRemove_circuit->setEnabled(enable);
     // menuInspection
         actionAdd_inspection->setEnabled(enable);
         actionModify_inspection->setEnabled(enable);
+        actionDuplicate_inspection->setEnabled(enable);
         actionRemove_inspection->setEnabled(enable);
         actionPrint_label->setEnabled(enable);
     // menuRepair
         actionModify_repair->setEnabled(enable);
+        actionDuplicate_repair->setEnabled(enable);
         actionRemove_repair->setEnabled(enable);
     // menuInspector
         actionModify_inspector->setEnabled(enable);
@@ -949,16 +957,20 @@ void MainWindow::enableTools()
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected);
     actionModify_customer->setEnabled(customer_selected);
+    actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);
     actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
     actionModify_circuit->setEnabled(circuit_selected);
+    actionDuplicate_circuit->setEnabled(circuit_selected);
     actionRemove_circuit->setEnabled(circuit_selected && !database_locked);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
     actionModify_inspection->setEnabled(inspection_selected && !inspection_locked);
+    actionDuplicate_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected && !inspection_locked);
     actionModify_repair->setEnabled(repair_selected && !repair_locked);
+    actionDuplicate_repair->setEnabled(repair_selected);
     actionRemove_repair->setEnabled(repair_selected && !repair_locked);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);

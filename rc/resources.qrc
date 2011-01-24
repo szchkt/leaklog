@@ -64,5 +64,6 @@
         <file>images/filesave.png</file>
         <file>images/fileclose.png</file>
         <file>images/leaklog128.png</file>
+        <file>images/duplicate.png</file>
     </qresource>
 </RCC>

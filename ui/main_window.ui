@@ -259,6 +259,7 @@
     </property>
     <addaction name="actionAdd_customer"/>
     <addaction name="actionModify_customer"/>
+    <addaction name="actionDuplicate_customer"/>
     <addaction name="actionRemove_customer"/>
     <addaction name="separator"/>
     <addaction name="actionExport_customer_data"/>
@@ -277,6 +278,7 @@
     </property>
     <addaction name="actionAdd_circuit"/>
     <addaction name="actionModify_circuit"/>
+    <addaction name="actionDuplicate_circuit"/>
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_detailed_label"/>
@@ -289,6 +291,7 @@
     </property>
     <addaction name="actionAdd_inspection"/>
     <addaction name="actionModify_inspection"/>
+    <addaction name="actionDuplicate_inspection"/>
     <addaction name="actionRemove_inspection"/>
     <addaction name="separator"/>
     <addaction name="actionExport_inspection_data"/>
@@ -299,6 +302,7 @@
     </property>
     <addaction name="actionAdd_repair"/>
     <addaction name="actionModify_repair"/>
+    <addaction name="actionDuplicate_repair"/>
     <addaction name="actionRemove_repair"/>
    </widget>
    <widget class="QMenu" name="menuDatabase">
@@ -1750,6 +1754,78 @@
    </property>
    <property name="statusTip">
     <string>Export the current view as a PDF document</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_circuit">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate circuit</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected circuit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+D</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_customer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate customer</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected customer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_inspection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate inspection</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected inspection</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_repair">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate repair</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected repair</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+D</string>
    </property>
   </action>
  </widget>
