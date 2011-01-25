@@ -448,12 +448,13 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
     out << "</table>";
     if (show_disused) {
         out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"><tr>";
-        out << "<th colspan=\"5\" style=\"font-size: medium;\">" << tr("Disused circuits") << "</th></tr><tr>";
+        out << "<th colspan=\"6\" style=\"font-size: medium;\">" << tr("Disused circuits") << "</th></tr><tr>";
         out << "<th>" << Circuit::attributes().value("id") << "</th>";
         out << "<th>" << Circuit::attributes().value("manufacturer") << "</th>";
         out << "<th>" << Circuit::attributes().value("type") << "</th>";
         out << "<th>" << Circuit::attributes().value("sn") << "</th>";
-        out << "<th>" << Circuit::attributes().value("commissioning") << "</th></tr>";
+        out << "<th>" << Circuit::attributes().value("commissioning") << "</th>";
+        out << "<th>" << Circuit::attributes().value("decommissioning") << "</th></tr>";
         for (int i = 0; i < circuits.count(); ++i) {
             if (!circuits.at(i).value("disused").toInt()) continue;
             id = circuits.at(i).value("id").toString();
@@ -465,7 +466,8 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
             out << "<td>" << circuits.at(i).value("manufacturer").toString() << "</td>";
             out << "<td>" << circuits.at(i).value("type").toString() << "</td>";
             out << "<td>" << circuits.at(i).value("sn").toString() << "</td>";
-            out << "<td>" << circuits.at(i).value("commissioning").toString() << "</td></tr>";
+            out << "<td>" << circuits.at(i).value("commissioning").toString() << "</td>";
+            out << "<td>" << circuits.at(i).value("decommissioning").toString() << "</td></tr>";
         }
         out << "</table>";
     }
@@ -1310,10 +1312,10 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     MTDictionary nominal_inpection_parents("customer", customer_id);
     nominal_inpection_parents.insert("nominal", "1");
     QVariantMap sums; QVariantMap nominal_inspection;
-    int nominal_inspection_year, commissioning_year;
+    int nominal_inspection_year, commissioning_year, decommissioning_year;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
-    QSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, commissioning");
+    QSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -1324,6 +1326,13 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
 
         commissioning_year = QUERY_VALUE(circuits, "commissioning").toString().left(4).toInt();
         if (commissioning_year > year)
+            continue;
+        decommissioning_year = QUERY_VALUE(circuits, "decommissioning").toString().left(4).toInt();
+        if (QUERY_VALUE(circuits, "disused").toInt() == 0)
+            decommissioning_year = 9999;
+        else if (decommissioning_year == 0)
+            decommissioning_year = QDate::currentDate().year();
+        if (decommissioning_year < year)
             continue;
         refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
         nominal_inpection_parents.insert("circuit", circuit_id);
@@ -1337,6 +1346,8 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
             refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble();
         if (nominal_inspection_year <= year)
             refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble();
+        if (decommissioning_year == year)
+            refrigerant_amount_end = 0.0;
 
         out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";

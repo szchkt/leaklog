@@ -107,7 +107,6 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 9999));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDCheckBox("disused", tr("Disused"), md, attributes.value("disused").toInt()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md, attributes.value("operation").toString()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md, attributes.value("building").toString()));
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
@@ -117,6 +116,12 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md, attributes.value("sn").toString()));
     md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md, 1900, 2999, attributes.value("year").toInt()));
     md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md, attributes.value("commissioning").toString()));
+    MDCheckBox * disused = new MDCheckBox("disused", tr("Disused"), md, attributes.value("disused").toInt());
+    md->addInputWidget(disused);
+    MDDateEdit * decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md, attributes.value("decommissioning").toString());
+    decommissioning->setEnabled(disused->isChecked());
+    QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
+    md->addInputWidget(decommissioning);
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
@@ -159,6 +164,7 @@ public:
         dict.insert("field", QApplication::translate("Circuit", "Field of application"));
         // numBasicAttributes: 12
         dict.insert("disused", QApplication::translate("Circuit", "Disused"));
+        dict.insert("decommissioning", QApplication::translate("Circuit", "Date of decommissioning"));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
         dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant") + "||" + QApplication::translate("Units", "kg"));
         dict.insert("oil", QApplication::translate("Circuit", "Oil"));
