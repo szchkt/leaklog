@@ -1460,7 +1460,7 @@ QString MainWindow::viewAgenda()
 
     MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
 
-    MTRecord circuits_record("circuits", "id", "", MTDictionary());
+    MTRecord circuits_record("circuits", "id", "", MTDictionary("disused", "0"));
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
