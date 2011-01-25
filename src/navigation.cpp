@@ -115,6 +115,8 @@ Navigation::View Navigation::view()
 
 void Navigation::updateView()
 {
+    lbl_filter_since->setText(tr("Since:"));
+    spb_filter_since->setSpecialValueText(tr("All"));
     cb_filter_column->clear();
     le_filter->clear();
     bool filter_keyword_visible = true;
@@ -197,6 +199,11 @@ void Navigation::updateView()
             goto updateView_ListOfCircuits_CircuitAttributes;
             break;
         case Navigation::OperatorReport:
+            group = 0;
+            filter_keyword_visible = false;
+            lbl_filter_since->setText(tr("Year:"));
+            spb_filter_since->setSpecialValueText(tr("Last"));
+            break;
         case Navigation::LeakagesByApplication:
         default:
             group = 0;

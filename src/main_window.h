@@ -171,7 +171,7 @@ private:
     QString viewTable(const QString &, const QString &, const QString &, int);
     QString viewRepairs(const QString &, int, const QString & = QString());
     QString viewAllInspectors(const QString &);
-    QString viewOperatorReport(const QString &);
+    QString viewOperatorReport(const QString &, int);
     QString viewLeakagesByApplication();
     QString viewAgenda();
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);

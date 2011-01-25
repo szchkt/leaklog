@@ -89,7 +89,7 @@ QString MainWindow::viewChanged(int view)
                 break;
             case Navigation::OperatorReport:
                 if (isCustomerSelected()) {
-                    html = viewOperatorReport(selectedCustomer());
+                    html = viewOperatorReport(selectedCustomer(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 } else {
                     view = Navigation::ListOfCustomers; ok = false;
                 }
@@ -1266,14 +1266,15 @@ QString MainWindow::viewAllInspectors(const QString & highlighted_id)
     return dict_html.value(Navigation::ListOfInspectors).arg(html);
 }
 
-QString MainWindow::viewOperatorReport(const QString & customer_id)
+QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
 {
+    if (year == 0)
+        year = QDate::currentDate().year() - 1;
     QString html; MTTextStream out(&html);
     Customer customer(customer_id);
     QVariantMap attributes = customer.list("company, address");
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
-    int year = QDate::currentDate().year();
     out << tr("Operator report: %1").arg(year) << "</th></tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"3\">" << tr("Owner information") << "</th></tr><tr>";
@@ -1309,6 +1310,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
     MTDictionary nominal_inpection_parents("customer", customer_id);
     nominal_inpection_parents.insert("nominal", "1");
     QVariantMap sums; QVariantMap nominal_inspection;
+    int nominal_inspection_year, commissioning_year;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
     QSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, commissioning");
@@ -1320,15 +1322,21 @@ QString MainWindow::viewOperatorReport(const QString & customer_id)
         inspections.parents().insert("circuit", circuit_id);
         sums = inspections.sumAll("refr_add_am, refr_reco");
 
+        commissioning_year = QUERY_VALUE(circuits, "commissioning").toString().left(4).toInt();
+        if (commissioning_year > year)
+            continue;
         refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
         nominal_inpection_parents.insert("circuit", circuit_id);
         nominal_inspection = MTRecord("inspections", "date", "", nominal_inpection_parents).list("date, refr_add_am");
-        refrigerant_amount_end = refrigerant_amount + nominal_inspection.value("refr_add_am", 0.0).toDouble();
+        nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();
         refrigerant_amount_begin = 0.0;
-        if (QUERY_VALUE(circuits, "commissioning").toString().left(4).toInt() < year)
+        refrigerant_amount_end = refrigerant_amount;
+        if (commissioning_year < year)
             refrigerant_amount_begin += refrigerant_amount;
-        if (nominal_inspection.value("date", "9999").toString().left(4).toInt() < year)
+        if (nominal_inspection_year < year)
             refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble();
+        if (nominal_inspection_year <= year)
+            refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble();
 
         out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";
