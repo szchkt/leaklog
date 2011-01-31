@@ -200,8 +200,6 @@ private:
     QLabel * lbl_selected_inspector;
     QPushButton * btn_clear_selection;
     QToolButton * tbtn_open;
-    QToolButton * tbtn_add;
-    QToolButton * tbtn_modify;
     QToolButton * tbtn_export;
     QString last_search_keyword;
     QSqlDatabase db;

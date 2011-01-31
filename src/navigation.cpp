@@ -22,7 +22,7 @@
 Navigation::Navigation(QWidget * parent):
 QWidget(parent)
 {
-    default_view_for_group.resize(3);
+    default_view_for_group.resize(4);
     restoreDefaults(false);
     setupUi(this);
 #ifdef Q_WS_MAC
@@ -57,6 +57,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_leakages, Navigation::LeakagesByApplication);
     btngrp_view->addButton(tbtn_view_agenda);
     btngrp_view->setId(tbtn_view_agenda, Navigation::Agenda);
+    btngrp_view->addButton(tbtn_view_assembly_record_types);
+    btngrp_view->setId(tbtn_view_assembly_record_types, Navigation::ListOfAssemblyRecordTypes);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -75,6 +77,7 @@ void Navigation::restoreDefaults(bool apply)
     default_view_for_group[0] = Navigation::ServiceCompany;
     default_view_for_group[1] = Navigation::ListOfCustomers;
     default_view_for_group[2] = Navigation::ListOfCustomers;
+    default_view_for_group[3] = Navigation::ListOfAssemblyRecordTypes;
 }
 
 void Navigation::connectSlots(QObject * receiver)
@@ -204,6 +207,10 @@ void Navigation::updateView()
             lbl_filter_since->setText(tr("Year:"));
             spb_filter_since->setSpecialValueText(tr("Last"));
             break;
+        case Navigation::ListOfAssemblyRecordTypes:
+            group = 3;
+            filter_visible = false;
+            break;
         case Navigation::LeakagesByApplication:
         default:
             group = 0;
@@ -258,12 +265,18 @@ void Navigation::viewDetailedLogbook()
     updateView();
 }
 
+void Navigation::viewAssemblyRecords()
+{
+    toggleVisibleGroup(3);
+    updateView();
+}
+
 void Navigation::toggleVisibleGroup(int g, bool emit_signal)
 {
-    if (current_group < 3) {
+    if (current_group < 4) {
         default_view_for_group[current_group] = current_view;
     }
-    if (g < 3 && current_group != g) {
+    if (g < 4 && current_group != g) {
         emit groupChanged(g);
     }
     current_group = g;
@@ -275,9 +288,10 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_circuits->setVisible(g == 2);
     gb_inspections->setVisible(g == 2);
     gb_tables->setVisible(g == 2);
-    gb_filter->setVisible(g < 3);
-    gb_report_data->setVisible(g == 3);
-    if (emit_signal && g < 3 && current_view != default_view_for_group[current_group]) {
+    gb_assembly_records->setVisible(g == 3);
+    gb_filter->setVisible(g < 4);
+    gb_report_data->setVisible(g == 4);
+    if (emit_signal && g < 4 && current_view != default_view_for_group[current_group]) {
         current_view = default_view_for_group[current_group];
         btngrp_view->button(current_view)->setChecked(true);
         emit viewChanged(current_view);
@@ -321,7 +335,7 @@ void Navigation::setReportDataGroupBoxVisible(bool visible)
     static int last_group = current_group;
     if (visible) {
         last_group = current_group;
-        toggleVisibleGroup(3);
+        toggleVisibleGroup(4);
     } else {
         toggleVisibleGroup(last_group);
     }

@@ -125,36 +125,11 @@ MainWindow::MainWindow()
     tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_open->setPopupMode(QToolButton::InstantPopup);
     toolBar->insertWidget(actionSave, tbtn_open);
-    tbtn_add = new QToolButton(this);
-    tbtn_add->setDefaultAction(actionAdd);
-    tbtn_add->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    tbtn_add->setPopupMode(QToolButton::InstantPopup);
-    toolBar->insertWidget(actionFind, tbtn_add);
-    tbtn_modify = new QToolButton(this);
-    tbtn_modify->setDefaultAction(actionModify);
-    tbtn_modify->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    tbtn_modify->setPopupMode(QToolButton::InstantPopup);
-    toolBar->insertWidget(actionFind, tbtn_modify);
     tbtn_export = new QToolButton(this);
     tbtn_export->setDefaultAction(actionExport);
     tbtn_export->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_export->setPopupMode(QToolButton::InstantPopup);
     toolBar->insertWidget(actionPrint, tbtn_export);
-    QMenu * menu_add = new QMenu(this);
-    menu_add->addAction(actionAdd_customer);
-    menu_add->addAction(actionAdd_circuit);
-    menu_add->addAction(actionAdd_inspection);
-    menu_add->addAction(actionAdd_repair);
-    menu_add->addAction(actionAdd_inspector);
-    menu_add->addAction(actionAdd_record_of_refrigerant_management);
-    tbtn_add->setMenu(menu_add);
-    QMenu * menu_modify = new QMenu(this);
-    menu_modify->addAction(actionModify_customer);
-    menu_modify->addAction(actionModify_circuit);
-    menu_modify->addAction(actionModify_inspection);
-    menu_modify->addAction(actionModify_repair);
-    menu_modify->addAction(actionModify_inspector);
-    tbtn_modify->setMenu(menu_modify);
     QWidget * spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
@@ -171,6 +146,7 @@ MainWindow::MainWindow()
     actgrp_view->addAction(actionService_company);
     actgrp_view->addAction(actionBasic_logbook);
     actgrp_view->addAction(actionDetailed_logbook);
+    actgrp_view->addAction(actionAssembly_records);
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
     lbl_current_selection = new QLabel;
@@ -223,6 +199,7 @@ MainWindow::MainWindow()
     QObject::connect(actionService_company, SIGNAL(triggered()), navigation, SLOT(viewServiceCompany()));
     QObject::connect(actionBasic_logbook, SIGNAL(triggered()), navigation, SLOT(viewBasicLogbook()));
     QObject::connect(actionDetailed_logbook, SIGNAL(triggered()), navigation, SLOT(viewDetailedLogbook()));
+    QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
@@ -345,8 +322,6 @@ void MainWindow::showIconsOnly(bool show)
 {
     Qt::ToolButtonStyle tbtn_style = show ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon;
     tbtn_open->setToolButtonStyle(tbtn_style);
-    tbtn_add->setToolButtonStyle(tbtn_style);
-    tbtn_modify->setToolButtonStyle(tbtn_style);
     tbtn_export->setToolButtonStyle(tbtn_style);
     toolBar->setToolButtonStyle(tbtn_style);
 }
@@ -842,8 +817,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     lbl_current_selection->setEnabled(enable);
     btn_clear_selection->setEnabled(enable);
 
-    tbtn_add->setEnabled(enable);
-    tbtn_modify->setEnabled(enable);
     tbtn_export->setEnabled(enable || everything);
 
     actionFind->setEnabled(enable);

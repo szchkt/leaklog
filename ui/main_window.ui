@@ -333,6 +333,7 @@
     <addaction name="actionService_company"/>
     <addaction name="actionBasic_logbook"/>
     <addaction name="actionDetailed_logbook"/>
+    <addaction name="actionAssembly_records"/>
     <addaction name="separator"/>
     <addaction name="actionShow_variables"/>
     <addaction name="actionShow_tables"/>
@@ -390,9 +391,9 @@
    <addaction name="actionService_company"/>
    <addaction name="actionBasic_logbook"/>
    <addaction name="actionDetailed_logbook"/>
+   <addaction name="actionAssembly_records"/>
    <addaction name="separator"/>
    <addaction name="actionFind"/>
-   <addaction name="separator"/>
    <addaction name="actionPrint"/>
    <addaction name="actionLock"/>
   </widget>
@@ -1826,6 +1827,21 @@
    </property>
    <property name="shortcut">
     <string>Meta+D</string>
+   </property>
+  </action>
+  <action name="actionAssembly_records">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/fileopen.png</normaloff>:/images/images/fileopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>Assembly records</string>
+   </property>
+   <property name="statusTip">
+    <string>Switch view to assembly records</string>
    </property>
   </action>
  </widget>

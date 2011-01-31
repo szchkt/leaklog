@@ -39,7 +39,8 @@ public:
         ListOfInspectors,
         OperatorReport,
         LeakagesByApplication,
-        Agenda
+        Agenda,
+        ListOfAssemblyRecordTypes
     };
 
     Navigation(QWidget *);
@@ -70,6 +71,7 @@ public slots:
     void viewServiceCompany();
     void viewBasicLogbook();
     void viewDetailedLogbook();
+    void viewAssemblyRecords();
     void setView(int);
     void setView(const QString &);
 
