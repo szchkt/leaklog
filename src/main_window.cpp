@@ -112,6 +112,7 @@ MainWindow::MainWindow()
     selected_circuit = -1;
     selected_inspection_is_repair = false;
     selected_inspector = -1;
+    selected_assembly_record_type = -1;
     database_locked = false;
     check_for_updates = true;
     // i18n
@@ -367,6 +368,10 @@ void MainWindow::executeLink(const QUrl & url)
         } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {
             id = path.at(0);
             id.remove(0, QString("recordofrefrigerantmanagement:").length());
+        } else if (path.at(0).startsWith("assemblyrecordtype:")) {
+            id = path.at(0);
+            id.remove(0, QString("assemblyrecordtype:").length());
+            loadAssemblyRecordType(id.toInt(), path.count() <= 1);
         }
     }
     if (path.count() > 1) {

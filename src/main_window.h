@@ -162,6 +162,8 @@ private:
     inline QString selectedRepair() { return selected_repair; }
     inline bool isInspectorSelected() { return selected_inspector >= 0; }
     inline QString selectedInspector() { return QString::number(selected_inspector); }
+    inline QString selectedAssemblyRecordType() { return QString::number(selected_assembly_record_type); }
+    inline bool isAssemblyRecordTypeSelected() { return selected_assembly_record_type >= 0; }
     // VIEW
     QString currentView();
     QString viewServiceCompany(int);
@@ -177,6 +179,7 @@ private:
     QString viewLeakagesByApplication();
     QString viewAgenda();
     QString viewAllAssemblyRecordTypes();
+    QString viewAssemblyRecordType(const QString &);
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
@@ -193,7 +196,7 @@ private:
     QString selected_repair;
     int selected_inspector;
     QString selected_inspector_name;
-    int selected_assembly_record;
+    int selected_assembly_record_type;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;

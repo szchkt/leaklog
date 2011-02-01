@@ -101,7 +101,10 @@ QString MainWindow::viewChanged(int view)
                 html = viewAgenda();
                 break;
             case Navigation::ListOfAssemblyRecordTypes:
-                html = viewAllAssemblyRecordTypes();
+                if (isAssemblyRecordTypeSelected())
+                    html = viewAssemblyRecordType(selectedAssemblyRecordType());
+                else
+                    html = viewAllAssemblyRecordTypes();
                 break;
             default:
                 view = Navigation::ServiceCompany;
@@ -1589,5 +1592,12 @@ QString MainWindow::viewAllAssemblyRecordTypes()
 {
     QString html; MTTextStream out(&html);
     writeAssemblyRecordTypesTable(out);
+    return dict_html.value(Navigation::ListOfAssemblyRecordTypes).arg(html);
+}
+
+QString MainWindow::viewAssemblyRecordType(const QString & record_id)
+{
+    QString html; MTTextStream out(&html);
+    writeAssemblyRecordTypesTable(out, record_id);
     return dict_html.value(Navigation::ListOfAssemblyRecordTypes).arg(html);
 }

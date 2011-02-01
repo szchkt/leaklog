@@ -2184,7 +2184,7 @@ void MainWindow::addAssemblyRecordType()
 void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
 {
     if (assembly_record < 0) { return; }
-    selected_assembly_record = assembly_record;
+    selected_assembly_record_type = assembly_record;
     //enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordTypes);
