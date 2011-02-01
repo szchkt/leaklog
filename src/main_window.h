@@ -118,6 +118,7 @@ private slots:
     void exportInspectionData();
     void importData();
     void importCSV();
+    void addAssemblyRecordType();
     // VIEW
     QString viewChanged(int);
 
@@ -150,6 +151,7 @@ private:
     void moveTableVariable(bool);
     void loadInspector(int, bool);
     void exportData(const QString &);
+    void loadAssemblyRecordType(int, bool);
     inline bool isCustomerSelected() { return selected_customer >= 0; }
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
@@ -174,11 +176,14 @@ private:
     QString viewOperatorReport(const QString &, int);
     QString viewLeakagesByApplication();
     QString viewAgenda();
+    QString viewAllAssemblyRecordTypes();
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
+    void writeAssemblyRecordTypesTable(MTTextStream &, const QString & = QString());
+
 
     int selected_customer;
     QString selected_customer_company;
@@ -188,6 +193,7 @@ private:
     QString selected_repair;
     int selected_inspector;
     QString selected_inspector_name;
+    int selected_assembly_record;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;

@@ -159,4 +159,16 @@ public:
     void initModifyDialogue(ModifyDialogue *);
 };
 
+class AssemblyRecordType : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    AssemblyRecordType(const QString &);
+
+    void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

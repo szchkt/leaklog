@@ -2168,3 +2168,25 @@ void MainWindow::importCSV()
         refreshView();
     }
 }
+
+void MainWindow::addAssemblyRecordType()
+{
+    if (!db.isOpen()) { return; }
+    AssemblyRecordType record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordType(record.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
+{
+    if (assembly_record < 0) { return; }
+    selected_assembly_record = assembly_record;
+    //enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+    }
+}

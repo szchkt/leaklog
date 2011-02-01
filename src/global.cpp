@@ -370,6 +370,7 @@ public:
         dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT");
+        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }
 

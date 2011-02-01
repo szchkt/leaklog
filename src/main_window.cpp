@@ -104,6 +104,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::Agenda, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/assembly_record_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::ListOfAssemblyRecordTypes, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;

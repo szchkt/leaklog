@@ -66,6 +66,7 @@ protected:
     friend class ServiceCompany;
     friend class RecordOfRefrigerantManagement;
     friend class WarningRecord;
+    friend class AssemblyRecordType;
 };
 
 #endif // MODIFY_DIALOGUE_H

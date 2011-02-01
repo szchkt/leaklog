@@ -100,6 +100,9 @@ QString MainWindow::viewChanged(int view)
             case Navigation::Agenda:
                 html = viewAgenda();
                 break;
+            case Navigation::ListOfAssemblyRecordTypes:
+                html = viewAllAssemblyRecordTypes();
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -144,6 +147,7 @@ QString MainWindow::currentView()
             break;
         case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by application"); break;
         case Navigation::Agenda: view = QApplication::translate("Navigation", "Agenda"); break;
+        case Navigation::ListOfAssemblyRecordTypes: view = QApplication::translate("Navigation", "List of assembly record types"); break;
     }
     return view;
 }
@@ -1543,4 +1547,47 @@ QString MainWindow::viewAgenda()
             .arg(actionPrinter_friendly_version->isChecked() ? "/*" : "")
             .arg(actionPrinter_friendly_version->isChecked() ? "*/" : "")
             .arg(html);
+}
+
+void MainWindow::writeAssemblyRecordTypesTable(MTTextStream & out, const QString & record_id)
+{
+    AssemblyRecordType all_records(record_id);
+    if (record_id.isEmpty() && !navigation->isFilterEmpty()) {
+        all_records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+    ListOfVariantMaps list(all_records.listAll());
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    QString thead = "<tr>"; int thead_colspan = 2;
+    for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
+        thead.append("<th>" + AssemblyRecordType::attributes().value(n) + "</th>");
+        thead_colspan++;
+    }
+    thead.append("</tr>");
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium; background-color: floralwhite;\">";
+    if (record_id.isEmpty()) { out << tr("List of assembly record types"); }
+    else { out << "<a href=\"assemblyrecordtype:" << record_id << "/modify\">" << tr("Assembly record type") << "</a>"; }
+    out << "</th></tr>";
+    out << thead;
+    QString id; QString highlighted_id = selectedCustomer();
+    for (int i = 0; i < list.count(); ++i) {
+        id = list.at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'assemblyrecordtype:" << id << "'\" style=\"cursor: pointer;";
+        if (id == highlighted_id) {
+            out << " background-color: rgb(242, 248, 255);\">";
+        } else { out << "\">"; }
+        out << "<td>" << toolTipLink("assemblyrecordtype", id.rightJustified(8, '0'), id) << "</td>";
+        for (int n = 1; n < AssemblyRecordType::attributes().count(); ++n) {
+            out << "<td>" << MTVariant(list.at(i).value(AssemblyRecordType::attributes().key(n)),
+                                       (MTVariant::Type)dict_fieldtypes.value(AssemblyRecordType::attributes().key(n))) << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table>";
+}
+
+QString MainWindow::viewAllAssemblyRecordTypes()
+{
+    QString html; MTTextStream out(&html);
+    writeAssemblyRecordTypesTable(out);
+    return dict_html.value(Navigation::ListOfAssemblyRecordTypes).arg(html);
 }

@@ -653,3 +653,49 @@ void WarningRecord::initModifyDialogue(ModifyDialogue * md)
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
 }
+
+AssemblyRecordType::AssemblyRecordType(const QString & id):
+DBRecord("assembly_record_types", "id", id, MTDictionary())
+{}
+
+void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
+{
+    md->setWindowTitle(tr("Assembly record type"));
+
+    QVariantMap attributes;
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+        attributes = list();
+    }
+
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString()));
+    QStringList used_ids; QSqlQuery query_used_ids;
+    query_used_ids.setForwardOnly(true);
+    query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
+    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    if (query_used_ids.exec()) {
+        while (query_used_ids.next()) {
+            used_ids << query_used_ids.value(0).toString();
+        }
+    }
+    md->setUsedIds(used_ids);
+}
+
+class AssemblyRecordTypeAttributes
+{
+public:
+    AssemblyRecordTypeAttributes() {
+        dict.insert("id", QApplication::translate("AssemblyRecordType", "ID"));
+        dict.insert("name", QApplication::translate("AssemblyRecordType", "Name"));
+        dict.insert("description", QApplication::translate("AssemblyRecordType", "Description"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & AssemblyRecordType::attributes()
+{
+    static AssemblyRecordTypeAttributes dict;
+    return dict.dict;
+}
