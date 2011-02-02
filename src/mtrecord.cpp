@@ -24,9 +24,6 @@
 #include <QSqlRecord>
 #include <QDateTime>
 
-#include <QSqlError>
-#include <QMessageBox>
-
 using namespace Global;
 
 MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
@@ -80,7 +77,7 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
     }
-    select.append(QString(" ORDER BY %1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+    if (!r_id_field.isEmpty()) select.append(QString(" ORDER BY %1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }

@@ -58,7 +58,7 @@ public:
     QVariantMap sumAll(const QString &);
     MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const QVariantMap &, bool = false);
-    bool remove();
+    virtual bool remove();
 
 private:
     QString r_table;

@@ -107,8 +107,10 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_remove_inspection, SIGNAL(clicked()), receiver, SLOT(removeInspection()));
     QObject::connect(tbtn_add_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordType()));
     QObject::connect(tbtn_modify_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(modifyAssemblyRecordType()));
+    QObject::connect(tbtn_remove_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(removeAssemblyRecordType()));
     QObject::connect(tbtn_modify_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(modifyAssemblyRecordItemType()));
     QObject::connect(tbtn_add_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordItemType()));
+    QObject::connect(tbtn_remove_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(removeAssemblyRecordItemType()));
     emit viewChanged(view());
 }
 
@@ -339,7 +341,9 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_view_inspection->setEnabled(inspection_selected);
     tbtn_modify_assembly_record_type->setEnabled(assembly_record_type_selected);
+    tbtn_remove_assembly_record_type->setEnabled(assembly_record_type_selected);
     tbtn_modify_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
+    tbtn_remove_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
     gb_tables->setEnabled(circuit_selected);
 }
 

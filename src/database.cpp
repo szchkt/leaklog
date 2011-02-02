@@ -2205,6 +2205,22 @@ void MainWindow::modifyAssemblyRecordType()
     delete md;
 }
 
+void MainWindow::removeAssemblyRecordType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordTypeSelected()) { return; }
+    QString sel_record = selectedAssemblyRecordType();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item - Leaklog"), tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    AssemblyRecordType record(sel_record);
+    record.remove();
+    selected_assembly_record_type = -1;
+    enableTools();
+    this->setWindowModified(true);
+    navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+}
+
 void MainWindow::addAssemblyRecordItemType()
 {
     if (!db.isOpen()) { return; }
@@ -2238,4 +2254,20 @@ void MainWindow::modifyAssemblyRecordItemType()
         loadAssemblyRecordItemType(record.id().toInt(), true);
     }
     delete md;
+}
+
+void MainWindow::removeAssemblyRecordItemType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordItemTypeSelected()) { return; }
+    QString sel_record = selectedAssemblyRecordItemType();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item type - Leaklog"), tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    AssemblyRecordItemType record(sel_record);
+    record.remove();
+    selected_assembly_record_item_type = -1;
+    enableTools();
+    this->setWindowModified(true);
+    navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
 }

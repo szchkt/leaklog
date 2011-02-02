@@ -169,6 +169,7 @@ public:
     void initModifyDialogue(ModifyDialogue *);
 
     static const MTDictionary & attributes();
+    bool remove();
 };
 
 class AssemblyRecordItemType : public DBRecord

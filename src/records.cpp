@@ -700,6 +700,12 @@ const MTDictionary & AssemblyRecordType::attributes()
     return dict.dict;
 }
 
+bool AssemblyRecordType::remove()
+{
+    AssemblyRecordTypeItem type_items(id());
+    return type_items.remove() && MTRecord::remove();
+}
+
 AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
 DBRecord("assembly_record_item_types", "id", id, MTDictionary())
 {}

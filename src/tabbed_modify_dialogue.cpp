@@ -55,7 +55,7 @@ ModifyDialogueTab::ModifyDialogueTab(QWidget * parent)
 AssemblyRecordModifyDialogue::AssemblyRecordModifyDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
-    addTab(new AssemblyRecordModifyDialogueTab(md_record->id().toInt()));
+    addTab(new AssemblyRecordModifyDialogueTab(idFieldValue().toInt()));
 }
 
 AssemblyRecordModifyDialogueTab::AssemblyRecordModifyDialogueTab(int record_id, QWidget * parent)
@@ -113,7 +113,6 @@ void AssemblyRecordModifyDialogueTab::init()
         item->setData(0, Qt::UserRole, items.at(i).value("id"));
 
         for (int n = 0; n < used_items.count(); ++n) {
-            int k  = used_items.at(n).value("record_item_id").toInt();
             if (used_items.at(n).value("record_item_id").toInt() == items.at(i).value("id").toInt()) {
                 item->setCheckState(0, Qt::Checked);
                 break;
