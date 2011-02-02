@@ -182,16 +182,13 @@ private:
     QString viewOperatorReport(const QString &, int);
     QString viewLeakagesByApplication();
     QString viewAgenda();
-    QString viewAllAssemblyRecordTypes();
-    QString viewAssemblyRecordType(const QString &);
+    QString viewAllAssemblyRecordTypes(const QString & = QString());
     QString viewAllAssemblyRecordItemTypes(const QString & = QString());
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
-    void writeAssemblyRecordTypesTable(MTTextStream &, const QString & = QString());
-
 
     int selected_customer;
     QString selected_customer_company;

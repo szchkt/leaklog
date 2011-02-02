@@ -2186,7 +2186,7 @@ void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
 {
     if (assembly_record < 0) { return; }
     selected_assembly_record_type = assembly_record;
-    //enableTools();
+    enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordTypes);
     }
@@ -2208,7 +2208,7 @@ void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refre
 {
     if (assembly_record_item < 0) { return; }
     selected_assembly_record_item_type = assembly_record_item;
-    //enableTools();
+    enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
     }

@@ -376,6 +376,10 @@ void MainWindow::executeLink(const QUrl & url)
             id = path.at(0);
             id.remove(0, QString("assemblyrecordtype:").length());
             loadAssemblyRecordType(id.toInt(), path.count() <= 1);
+        } else if (path.at(0).startsWith("assemblyrecorditemtype:")) {
+            id = path.at(0);
+            id.remove(0, QString("assemblyrecorditemtype:").length());
+            loadAssemblyRecordItemType(id.toInt(), path.count() <= 1);
         }
     }
     if (path.count() > 1) {
@@ -940,7 +944,7 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected);
+    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected());
     actionModify_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);

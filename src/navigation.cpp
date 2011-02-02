@@ -319,7 +319,7 @@ void Navigation::emitFilterChanged()
     if (!isFilterEmpty()) emit filterChanged();
 }
 
-void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected)
+void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected)
 {
     tbtn_modify_inspector->setEnabled(inspector_selected);
     tbtn_remove_inspector->setEnabled(inspector_selected);
@@ -336,6 +336,8 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_modify_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_remove_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_view_inspection->setEnabled(inspection_selected);
+    tbtn_modify_assembly_record_type->setEnabled(assembly_record_type_selected);
+    tbtn_modify_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
     gb_tables->setEnabled(circuit_selected);
 }
 
