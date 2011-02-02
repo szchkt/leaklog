@@ -4,6 +4,7 @@
 #include "modify_dialogue.h"
 
 class QTabWidget;
+class QTreeWidget;
 class ModifyDialogueTab;
 
 class TabbedModifyDialogue : public ModifyDialogue
@@ -31,7 +32,7 @@ public:
     ModifyDialogueTab(QWidget * = NULL);
 
     const QString & name() { return tab_name; }
-    virtual void save() = 0;
+    virtual void save(int) = 0;
 
 protected:
     void setName(const QString tab_name) { this->tab_name = tab_name; }
@@ -51,12 +52,13 @@ class AssemblyRecordModifyDialogueTab : public ModifyDialogueTab
 public:
     AssemblyRecordModifyDialogueTab(int, QWidget * = NULL);
 
-    void save();
+    void save(int);
 
 private:
     void init();
 
     int record_id;
+    QTreeWidget * tree;
 };
 
 #endif // TABBED_MODIFY_DIALOGUE_H

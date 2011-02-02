@@ -183,4 +183,14 @@ public:
     static const MTDictionary & attributes();
 };
 
+class AssemblyRecordTypeItem : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    AssemblyRecordTypeItem(const QString &);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

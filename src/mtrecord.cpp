@@ -24,6 +24,9 @@
 #include <QSqlRecord>
 #include <QDateTime>
 
+#include <QSqlError>
+#include <QMessageBox>
+
 using namespace Global;
 
 MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
@@ -206,7 +209,7 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
             update.append(r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field)) {
+        if (!set.contains(r_id_field) && !r_id_field.isEmpty()) {
             if (append_comma) { update.append(", "); }
             update.append(r_id_field);
         }
@@ -224,7 +227,7 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
             update.append(":_" + r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field)) {
+        if (!set.contains(r_id_field) && !r_id_field.isEmpty()) {
             if (append_comma) { update.append(", "); }
             update.append(":_id");
         }
@@ -233,7 +236,7 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
     QSqlQuery query;
     query.prepare(update);
     query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
-    if (has_id || !set.contains(r_id_field)) { query.bindValue(":_id", r_id); }
+    if ((has_id || !set.contains(r_id_field)) && !r_id_field.isEmpty()) { query.bindValue(":_id", r_id); }
     for (int p = 0; p < r_parents.count(); ++p) {
         if (!has_id && set.contains(r_parents.key(p))) continue;
         query.bindValue(":_" + r_parents.key(p), r_parents.value(p));

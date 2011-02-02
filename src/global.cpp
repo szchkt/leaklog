@@ -372,6 +372,7 @@ public:
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT");
         dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, date_updated TEXT");
         dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, date_updated TEXT");
+        dict.insert("assembly_record_type_items", "record_type_id INTEGER, record_item_id INTEGER, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }
 

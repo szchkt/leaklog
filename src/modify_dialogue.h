@@ -51,6 +51,8 @@ protected:
     void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
     void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
 
+    const QVariant idFieldValue();
+
     void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
 
     QList<MDInputWidget *> md_inputwidgets;

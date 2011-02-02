@@ -123,3 +123,13 @@ void ModifyDialogue::save()
     md_record->update(values, true);
     accept();
 }
+
+const QVariant ModifyDialogue::idFieldValue()
+{
+    for (int i = 0; i < md_inputwidgets.count(); ++i) {
+        if (md_inputwidgets.at(i)->id() == "id") {
+            return md_inputwidgets.at(i)->variantValue();
+        }
+    }
+    return QVariant();
+}

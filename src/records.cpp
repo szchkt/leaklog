@@ -751,3 +751,24 @@ const MTDictionary & AssemblyRecordItemType::attributes()
     static AssemblyRecordItemTypeAttributes dict;
     return dict.dict;
 }
+
+AssemblyRecordTypeItem::AssemblyRecordTypeItem(const QString & record_type_id):
+MTRecord("assembly_record_type_items", "", "", MTDictionary("record_type_id", record_type_id))
+{}
+
+class AssemblyRecordTypeItemAttributes
+{
+public:
+    AssemblyRecordTypeItemAttributes() {
+        dict.insert("record_type_id", QApplication::translate("AssemblyRecordTypeItem", "Assembly record type ID"));
+        dict.insert("record_item_id", QApplication::translate("AssemblyRecordTypeItem", "Assembly record item type ID"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & AssemblyRecordTypeItem::attributes()
+{
+    static AssemblyRecordTypeItemAttributes dict;
+    return dict.dict;
+}
