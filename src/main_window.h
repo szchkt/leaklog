@@ -124,6 +124,9 @@ private slots:
     void addAssemblyRecordItemType();
     void modifyAssemblyRecordItemType();
     void removeAssemblyRecordItemType();
+    void addAssemblyRecordItemCategory();
+    void modifyAssemblyRecordItemCategory();
+    void removeAssemblyRecordItemCategory();
     // VIEW
     QString viewChanged(int);
 
@@ -158,6 +161,7 @@ private:
     void exportData(const QString &);
     void loadAssemblyRecordType(int, bool);
     void loadAssemblyRecordItemType(int, bool);
+    void loadAssemblyRecordItemCategory(int, bool);
     inline bool isCustomerSelected() { return selected_customer >= 0; }
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
@@ -171,7 +175,9 @@ private:
     inline QString selectedAssemblyRecordType() { return QString::number(selected_assembly_record_type); }
     inline bool isAssemblyRecordTypeSelected() { return selected_assembly_record_type >= 0; }
     inline bool isAssemblyRecordItemTypeSelected() { return selected_assembly_record_item_type >= 0; }
+    inline bool isAssemblyRecordItemCategorySelected() { return selected_assembly_record_item_category >= 0; }
     inline QString selectedAssemblyRecordItemType() { return QString::number(selected_assembly_record_item_type); }
+    inline QString selectedAssemblyRecordItemCategory() { return QString::number(selected_assembly_record_item_category); }
     // VIEW
     QString currentView();
     QString viewServiceCompany(int);
@@ -188,6 +194,7 @@ private:
     QString viewAgenda();
     QString viewAllAssemblyRecordTypes(const QString & = QString());
     QString viewAllAssemblyRecordItemTypes(const QString & = QString());
+    QString viewAllAssemblyRecordItemCategories(const QString & = QString());
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
@@ -204,6 +211,7 @@ private:
     QString selected_inspector_name;
     int selected_assembly_record_type;
     int selected_assembly_record_item_type;
+    int selected_assembly_record_item_category;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;

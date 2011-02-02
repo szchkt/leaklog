@@ -2271,3 +2271,54 @@ void MainWindow::removeAssemblyRecordItemType()
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
 }
+
+void MainWindow::addAssemblyRecordItemCategory()
+{
+    if (!db.isOpen()) { return; }
+    AssemblyRecordItemCategory record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordItemCategory(record.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::loadAssemblyRecordItemCategory(int assembly_record_item_category, bool refresh)
+{
+    if (assembly_record_item_category < 0) { return; }
+    selected_assembly_record_item_category = assembly_record_item_category;
+    enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
+    }
+}
+
+void MainWindow::modifyAssemblyRecordItemCategory()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordItemCategorySelected()) { return; }
+    AssemblyRecordItemCategory category(selectedAssemblyRecordItemCategory());
+    ModifyDialogue * md = new ModifyDialogue(&category, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordItemCategory(category.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::removeAssemblyRecordItemCategory()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordItemCategorySelected()) { return; }
+    QString sel_category = selectedAssemblyRecordItemCategory();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item category - Leaklog"), tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:").arg(sel_category), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    AssemblyRecordItemCategory category(sel_category);
+    category.remove();
+    selected_assembly_record_item_category = -1;
+    enableTools();
+    this->setWindowModified(true);
+    navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
+}
