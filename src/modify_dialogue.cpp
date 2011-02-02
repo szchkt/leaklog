@@ -35,7 +35,7 @@ void ModifyDialogue::init(DBRecord * record)
     md_grid_main->setHorizontalSpacing(9);
     md_grid_main->setVerticalSpacing(6);
     md_grid_main->setContentsMargins(0, 0, 0, 0);
-    md_vlayout_main->addLayout(md_grid_main);
+    addMainGridLayout(md_vlayout_main);
     QDialogButtonBox * md_bb = new QDialogButtonBox(this);
     md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     md_bb->button(QDialogButtonBox::Save)->setText(tr("Save"));
@@ -44,6 +44,11 @@ void ModifyDialogue::init(DBRecord * record)
     QObject::connect(md_bb, SIGNAL(rejected()), this, SLOT(reject()));
     md_vlayout_main->addWidget(md_bb);
     this->resize(20, 20);
+}
+
+void ModifyDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
+{
+    md_vlayout_main->addLayout(md_grid_main);
 }
 
 ModifyDialogue::ModifyDialogue(QWidget * parent):
@@ -57,6 +62,11 @@ QDialog(parent)
 
     md_record->initModifyDialogue(this);
 
+    layoutInputWidgets();
+}
+
+void ModifyDialogue::layoutInputWidgets()
+{
     int num_cols = md_inputwidgets.count() / 20 + 1;
     int num_rows = md_inputwidgets.count() / num_cols + (md_inputwidgets.count() % num_cols > 0 ? 1 : 0);
     int i = 0;

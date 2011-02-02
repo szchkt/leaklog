@@ -106,6 +106,12 @@ QString MainWindow::viewChanged(int view)
                 else
                     html = viewAllAssemblyRecordTypes();
                 break;
+            case Navigation::ListOfAssemblyRecordItemTypes:
+                if (isAssemblyRecordItemTypeSelected())
+                    html = viewAllAssemblyRecordItemTypes(selectedAssemblyRecordItemType());
+                else
+                    html = viewAllAssemblyRecordItemTypes();
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -151,6 +157,7 @@ QString MainWindow::currentView()
         case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by application"); break;
         case Navigation::Agenda: view = QApplication::translate("Navigation", "Agenda"); break;
         case Navigation::ListOfAssemblyRecordTypes: view = QApplication::translate("Navigation", "List of assembly record types"); break;
+        case Navigation::ListOfAssemblyRecordItemTypes: view = QApplication::translate("Navigation", "List of assembly record item types"); break;
     }
     return view;
 }
@@ -1600,4 +1607,40 @@ QString MainWindow::viewAssemblyRecordType(const QString & record_id)
     QString html; MTTextStream out(&html);
     writeAssemblyRecordTypesTable(out, record_id);
     return dict_html.value(Navigation::ListOfAssemblyRecordTypes).arg(html);
+}
+
+QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_id)
+{
+    QString html; MTTextStream out(&html);
+    AssemblyRecordItemType all_items("");
+    if (!navigation->isFilterEmpty()) {
+        all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+    ListOfVariantMaps items(all_items.listAll());
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    QString thead = "<tr>"; int thead_colspan = 2;
+    for (int n = 0; n < AssemblyRecordItemType::attributes().count(); ++n) {
+        thead.append("<th>" + AssemblyRecordItemType::attributes().value(n) + "</th>");
+        thead_colspan++;
+    }
+    thead.append("</tr>");
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of assembly record item types") << "</th></tr>";
+    out << thead;
+    QString id;
+    for (int i = 0; i < items.count(); ++i) {
+        id = items.at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'assemblyrecorditemtype:" << id << "";
+        if (highlighted_id == id) {
+            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+        } else {
+            out << "'\" style=\"";
+        }
+        out << " cursor: pointer;\"><td><a href=\"\">" << id.rightJustified(4, '0') << "</a></td>";
+        for (int n = 1; n < AssemblyRecordItemType::attributes().count(); ++n) {
+            out << "<td>" << escapeString(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString()) << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table>";
+    return dict_html.value(Navigation::ListOfAssemblyRecordItemTypes).arg(html);
 }

@@ -35,7 +35,8 @@ HEADERS       += src/global.h \
                  src/mtvariant.h \
                  src/mtwebpage.h \
                  src/mttextstream.h \
-                 src/import_csv_dialogue.h
+                 src/import_csv_dialogue.h \
+    src/tabbed_modify_dialogue.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -63,7 +64,8 @@ SOURCES       += src/global.cpp \
                  src/warnings.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
-                 src/import_csv_dialogue.cpp
+                 src/import_csv_dialogue.cpp \
+    src/tabbed_modify_dialogue.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

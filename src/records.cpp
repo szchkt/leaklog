@@ -699,3 +699,55 @@ const MTDictionary & AssemblyRecordType::attributes()
     static AssemblyRecordTypeAttributes dict;
     return dict.dict;
 }
+
+AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
+DBRecord("assembly_record_item_types", "id", id, MTDictionary())
+{}
+
+void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
+{
+    md->setWindowTitle(tr("Assembly record item type"));
+
+    QVariantMap attributes;
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+        attributes = list();
+    }
+
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
+    md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
+    QStringList used_ids; QSqlQuery query_used_ids;
+    query_used_ids.setForwardOnly(true);
+    query_used_ids.prepare("SELECT id FROM assembly_record_item_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
+    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    if (query_used_ids.exec()) {
+        while (query_used_ids.next()) {
+            used_ids << query_used_ids.value(0).toString();
+        }
+    }
+    md->setUsedIds(used_ids);
+}
+
+class AssemblyRecordItemTypeAttributes
+{
+public:
+    AssemblyRecordItemTypeAttributes() {
+        dict.insert("id", QApplication::translate("AssemblyRecordItemType", "ID"));
+        dict.insert("name", QApplication::translate("AssemblyRecordItemType", "Name"));
+        dict.insert("unit", QApplication::translate("AssemblyRecordItemType", "Unit"));
+        dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItemType", "Acquisition price"));
+        dict.insert("list_price", QApplication::translate("AssemblyRecordItemType", "List price"));
+        dict.insert("ean", QApplication::translate("AssemblyRecordItemType", "EAN code"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & AssemblyRecordItemType::attributes()
+{
+    static AssemblyRecordItemTypeAttributes dict;
+    return dict.dict;
+}

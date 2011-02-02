@@ -43,6 +43,8 @@ private slots:
 protected:
     ModifyDialogue(QWidget * = NULL);
     void init(DBRecord *);
+    void layoutInputWidgets();
+    virtual void addMainGridLayout(QVBoxLayout *);
 
     void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
     int inputWidgetCount() { return md_inputwidgets.count(); }
@@ -67,6 +69,7 @@ protected:
     friend class RecordOfRefrigerantManagement;
     friend class WarningRecord;
     friend class AssemblyRecordType;
+    friend class AssemblyRecordItemType;
 };
 
 #endif // MODIFY_DIALOGUE_H

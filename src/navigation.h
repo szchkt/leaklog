@@ -40,7 +40,8 @@ public:
         OperatorReport,
         LeakagesByApplication,
         Agenda,
-        ListOfAssemblyRecordTypes
+        ListOfAssemblyRecordTypes,
+        ListOfAssemblyRecordItemTypes
     };
 
     Navigation(QWidget *);

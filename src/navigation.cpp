@@ -59,6 +59,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_agenda, Navigation::Agenda);
     btngrp_view->addButton(tbtn_view_assembly_record_types);
     btngrp_view->setId(tbtn_view_assembly_record_types, Navigation::ListOfAssemblyRecordTypes);
+    btngrp_view->addButton(tbtn_view_assembly_record_item_types);
+    btngrp_view->setId(tbtn_view_assembly_record_item_types, Navigation::ListOfAssemblyRecordItemTypes);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -104,6 +106,7 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_modify_inspection, SIGNAL(clicked()), receiver, SLOT(modifyInspection()));
     QObject::connect(tbtn_remove_inspection, SIGNAL(clicked()), receiver, SLOT(removeInspection()));
     QObject::connect(tbtn_add_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordType()));
+    QObject::connect(tbtn_add_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordItemType()));
     emit viewChanged(view());
 }
 
@@ -212,6 +215,10 @@ void Navigation::updateView()
             group = 3;
             filter_visible = false;
             break;
+        case Navigation::ListOfAssemblyRecordItemTypes:
+            group = 3;
+            filter_visible = false;
+            break;
         case Navigation::LeakagesByApplication:
         default:
             group = 0;
@@ -290,6 +297,7 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_inspections->setVisible(g == 2);
     gb_tables->setVisible(g == 2);
     gb_assembly_records->setVisible(g == 3);
+    gb_assembly_record_item_types->setVisible(g == 3);
     gb_filter->setVisible(g < 4);
     gb_report_data->setVisible(g == 4);
     if (emit_signal && g < 4 && current_view != default_view_for_group[current_group]) {

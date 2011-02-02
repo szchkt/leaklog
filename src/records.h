@@ -171,4 +171,16 @@ public:
     static const MTDictionary & attributes();
 };
 
+class AssemblyRecordItemType : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    AssemblyRecordItemType(const QString &);
+
+    void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

@@ -22,6 +22,7 @@
 #include "variables.h"
 #include "warnings.h"
 #include "modify_warning_dialogue.h"
+#include "tabbed_modify_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -2173,7 +2174,7 @@ void MainWindow::addAssemblyRecordType()
 {
     if (!db.isOpen()) { return; }
     AssemblyRecordType record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new TabbedModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);
@@ -2188,5 +2189,27 @@ void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
     //enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+    }
+}
+
+void MainWindow::addAssemblyRecordItemType()
+{
+    if (!db.isOpen()) { return; }
+    AssemblyRecordItemType record("");
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordItemType(record.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refresh)
+{
+    if (assembly_record_item < 0) { return; }
+    selected_assembly_record_item_type = assembly_record_item;
+    //enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
     }
 }

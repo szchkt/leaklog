@@ -119,6 +119,7 @@ private slots:
     void importData();
     void importCSV();
     void addAssemblyRecordType();
+    void addAssemblyRecordItemType();
     // VIEW
     QString viewChanged(int);
 
@@ -152,6 +153,7 @@ private:
     void loadInspector(int, bool);
     void exportData(const QString &);
     void loadAssemblyRecordType(int, bool);
+    void loadAssemblyRecordItemType(int, bool);
     inline bool isCustomerSelected() { return selected_customer >= 0; }
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
@@ -164,6 +166,8 @@ private:
     inline QString selectedInspector() { return QString::number(selected_inspector); }
     inline QString selectedAssemblyRecordType() { return QString::number(selected_assembly_record_type); }
     inline bool isAssemblyRecordTypeSelected() { return selected_assembly_record_type >= 0; }
+    inline bool isAssemblyRecordItemTypeSelected() { return selected_assembly_record_item_type >= 0; }
+    inline QString selectedAssemblyRecordItemType() { return QString::number(selected_assembly_record_item_type); }
     // VIEW
     QString currentView();
     QString viewServiceCompany(int);
@@ -180,6 +184,7 @@ private:
     QString viewAgenda();
     QString viewAllAssemblyRecordTypes();
     QString viewAssemblyRecordType(const QString &);
+    QString viewAllAssemblyRecordItemTypes(const QString & = QString());
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
@@ -197,6 +202,7 @@ private:
     int selected_inspector;
     QString selected_inspector_name;
     int selected_assembly_record_type;
+    int selected_assembly_record_item_type;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;

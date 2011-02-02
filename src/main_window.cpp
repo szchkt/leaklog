@@ -107,12 +107,16 @@ MainWindow::MainWindow()
     file.setFileName(":/html/assembly_record_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfAssemblyRecordTypes, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/assembly_record_item_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::ListOfAssemblyRecordItemTypes, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;
     selected_inspection_is_repair = false;
     selected_inspector = -1;
     selected_assembly_record_type = -1;
+    selected_assembly_record_item_type = -1;
     database_locked = false;
     check_for_updates = true;
     // i18n

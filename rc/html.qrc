@@ -16,5 +16,6 @@
         <file>html/colours.css</file>
         <file>html/wz_tooltip.js</file>
         <file>html/assembly_record_types.html</file>
+        <file>html/assembly_record_item_types.html</file>
     </qresource>
 </RCC>
