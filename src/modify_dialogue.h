@@ -37,7 +37,7 @@ public:
 
     inline DBRecord * record() { return md_record; }
 
-private slots:
+protected slots:
     virtual void save();
 
 protected:

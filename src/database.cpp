@@ -2174,7 +2174,7 @@ void MainWindow::addAssemblyRecordType()
 {
     if (!db.isOpen()) { return; }
     AssemblyRecordType record("");
-    ModifyDialogue * md = new TabbedModifyDialogue(&record, this);
+    ModifyDialogue * md = new AssemblyRecordModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);

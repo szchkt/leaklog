@@ -135,7 +135,7 @@ public:
 
     void setWindowTitle(const QString &);
 
-private slots:
+protected slots:
     void save();
 
 private:
