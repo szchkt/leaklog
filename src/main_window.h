@@ -119,7 +119,9 @@ private slots:
     void importData();
     void importCSV();
     void addAssemblyRecordType();
+    void modifyAssemblyRecordType();
     void addAssemblyRecordItemType();
+    void modifyAssemblyRecordItemType();
     // VIEW
     QString viewChanged(int);
 

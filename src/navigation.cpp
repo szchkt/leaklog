@@ -106,6 +106,8 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_modify_inspection, SIGNAL(clicked()), receiver, SLOT(modifyInspection()));
     QObject::connect(tbtn_remove_inspection, SIGNAL(clicked()), receiver, SLOT(removeInspection()));
     QObject::connect(tbtn_add_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordType()));
+    QObject::connect(tbtn_modify_assembly_record_type, SIGNAL(clicked()), receiver, SLOT(modifyAssemblyRecordType()));
+    QObject::connect(tbtn_modify_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(modifyAssemblyRecordItemType()));
     QObject::connect(tbtn_add_assembly_record_item_type, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordItemType()));
     emit viewChanged(view());
 }

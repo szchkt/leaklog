@@ -2192,6 +2192,19 @@ void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
     }
 }
 
+void MainWindow::modifyAssemblyRecordType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordTypeSelected()) { return; }
+    AssemblyRecordType record(selectedAssemblyRecordType());
+    ModifyDialogue * md = new AssemblyRecordModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordType(record.id().toInt(), true);
+    }
+    delete md;
+}
+
 void MainWindow::addAssemblyRecordItemType()
 {
     if (!db.isOpen()) { return; }
@@ -2212,4 +2225,17 @@ void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refre
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
     }
+}
+
+void MainWindow::modifyAssemblyRecordItemType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isAssemblyRecordItemTypeSelected()) { return; }
+    AssemblyRecordItemType record(selectedAssemblyRecordItemType());
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadAssemblyRecordItemType(record.id().toInt(), true);
+    }
+    delete md;
 }
