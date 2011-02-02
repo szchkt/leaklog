@@ -194,4 +194,16 @@ public:
     static const MTDictionary & attributes();
 };
 
+class AssemblyRecordItemCategory : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    AssemblyRecordItemCategory(const QString &);
+
+    void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

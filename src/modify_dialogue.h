@@ -72,6 +72,7 @@ protected:
     friend class WarningRecord;
     friend class AssemblyRecordType;
     friend class AssemblyRecordItemType;
+    friend class AssemblyRecordItemCategory;
 };
 
 #endif // MODIFY_DIALOGUE_H
