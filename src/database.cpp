@@ -738,7 +738,7 @@ void MainWindow::addInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), "");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyInspectionDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -753,7 +753,7 @@ void MainWindow::modifyInspection()
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyInspectionDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);

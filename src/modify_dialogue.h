@@ -43,13 +43,10 @@ protected slots:
 protected:
     ModifyDialogue(QWidget * = NULL);
     void init(DBRecord *);
-    void layoutInputWidgets();
     virtual void addMainGridLayout(QVBoxLayout *);
 
     void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
     int inputWidgetCount() { return md_inputwidgets.count(); }
-    void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
-    void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
 
     const QVariant idFieldValue();
 
@@ -73,6 +70,32 @@ protected:
     friend class AssemblyRecordType;
     friend class AssemblyRecordItemType;
     friend class AssemblyRecordItemCategory;
+};
+
+class ModifyDialogueLayout
+{
+public:
+    ModifyDialogueLayout(QList<MDInputWidget *> *, QGridLayout *);
+
+    virtual void layout();
+    void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
+    void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
+
+protected:
+    QGridLayout * md_grid_main;
+    QList<MDInputWidget *> * md_inputwidgets;
+
+};
+
+class ModifyDialogueColumnLayout : public ModifyDialogueLayout
+{
+public:
+    ModifyDialogueColumnLayout(QList<MDInputWidget *> *, QGridLayout *, int = 20);
+
+    void layout();
+
+private:
+    int rows_in_column;
 };
 
 #endif // MODIFY_DIALOGUE_H

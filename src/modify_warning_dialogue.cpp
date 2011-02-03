@@ -202,29 +202,31 @@ ModifyDialogue(parent)
     record->initModifyDialogue(this);
 
     int r = md_inputwidgets.count();
-    for (int i = 0; i < r; ++i) {
+    /*for (int i = 0; i < r; ++i) {
         addWidget(md_inputwidgets.at(i)->label(), i, 0);
         addWidget(md_inputwidgets.at(i)->widget(), i, 1, 1, 3);
-    }
+    }*/
+    ModifyDialogueLayout md_layout(&md_inputwidgets, md_grid_main);
+    md_layout.layout();
     bool disable_input = md_record->id().toInt() >= 1000;
-    addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
+    md_layout.addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
     QToolButton * tbtn_add_filter = new QToolButton(this);
     tbtn_add_filter->setDisabled(disable_input);
     tbtn_add_filter->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    addWidget(tbtn_add_filter, r, 3);
+    md_layout.addWidget(tbtn_add_filter, r, 3);
     md_filters = new AttributeFilters(this);
     md_filters->setDisabled(disable_input);
     QObject::connect(tbtn_add_filter, SIGNAL(clicked()), md_filters, SLOT(add()));
-    addWidget(md_filters, r + 1, 0, 1, 4);
-    addWidget(new QLabel(tr("Conditions:"), this), r + 2, 0, 1, 3);
+    md_layout.addWidget(md_filters, r + 1, 0, 1, 4);
+    md_layout.addWidget(new QLabel(tr("Conditions:"), this), r + 2, 0, 1, 3);
     QToolButton * tbtn_add_condition = new QToolButton(this);
     tbtn_add_condition->setDisabled(disable_input);
     tbtn_add_condition->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    addWidget(tbtn_add_condition, r + 2, 3);
+    md_layout.addWidget(tbtn_add_condition, r + 2, 3);
     md_conditions = new Conditions(md_used_ids, this);
     md_conditions->setDisabled(disable_input);
     QObject::connect(tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
-    addWidget(md_conditions, r + 3, 0, 1, 4);
+    md_layout.addWidget(md_conditions, r + 3, 0, 1, 4);
     if (!md_record->id().isEmpty()) {
         WarningFilters filters(md_record->id().toInt());
         while (filters.next()) {

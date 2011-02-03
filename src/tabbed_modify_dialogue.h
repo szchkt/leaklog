@@ -5,6 +5,9 @@
 
 class QTabWidget;
 class QTreeWidget;
+class QLineEdit;
+class QComboBox;
+
 class ModifyDialogueTab;
 
 class TabbedModifyDialogue : public ModifyDialogue
@@ -59,6 +62,29 @@ private:
 
     int record_id;
     QTreeWidget * tree;
+};
+
+class MTDictionary;
+
+class ModifyInspectionDialogue : public TabbedModifyDialogue
+{
+public:
+    ModifyInspectionDialogue(DBRecord *, QWidget * = NULL);
+};
+
+class ModifyInspectionDialogueTab : public ModifyDialogueTab
+{
+public:
+    ModifyInspectionDialogueTab(int, QWidget * = NULL);
+
+    void save(int);
+
+private:
+    void init();
+    MTDictionary listAssemblyRecordItemTypes();
+
+    QLineEdit * id_le;
+    QComboBox * assembly_record_type;
 };
 
 #endif // TABBED_MODIFY_DIALOGUE_H

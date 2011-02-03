@@ -1,6 +1,7 @@
 #include "tabbed_modify_dialogue.h"
 
 #include "records.h"
+#include "input_widgets.h"
 
 #include <QTreeWidget>
 #include <QHeaderView>
@@ -17,7 +18,7 @@ TabbedModifyDialogue::TabbedModifyDialogue(DBRecord * record, QWidget * parent)
 
     md_record->initModifyDialogue(this);
 
-    layoutInputWidgets();
+    ModifyDialogueColumnLayout(&md_inputwidgets, md_grid_main).layout();
 }
 
 TabbedModifyDialogue::~TabbedModifyDialogue()
@@ -30,7 +31,7 @@ void TabbedModifyDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
     QWidget * main_form_tab = new QWidget(main_tabw);
     main_form_tab->setLayout(md_grid_main);
 
-    main_tabw->addTab(main_form_tab, tr("Settings"));
+    main_tabw->addTab(main_form_tab, tr("Basic information"));
     md_vlayout_main->addWidget(main_tabw);
 }
 
@@ -120,4 +121,52 @@ void AssemblyRecordModifyDialogueTab::init()
         }
         tree->addTopLevelItem(item);
     }
+}
+
+ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * parent)
+    : TabbedModifyDialogue(record, parent)
+{
+    addTab(new ModifyInspectionDialogueTab(0));
+}
+
+ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, QWidget * parent)
+    : ModifyDialogueTab(parent)
+{
+    setName(tr("Assembly record"));
+
+    init();
+}
+
+void ModifyInspectionDialogueTab::init()
+{
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    setLayout(layout);
+
+    QGridLayout * form_grid = new QGridLayout;
+
+    QList<MDInputWidget *> md_inputwidgets;
+
+    md_inputwidgets << new MDLineEdit("id", tr("Assembly record ID:"), this, "");
+    md_inputwidgets << new MDComboBox("type", tr("Assembly record type:"), this, "", listAssemblyRecordItemTypes());
+
+    ModifyDialogueColumnLayout(&md_inputwidgets, form_grid, 1).layout();
+
+    layout->addLayout(form_grid);
+}
+
+void ModifyInspectionDialogueTab::save(int)
+{
+
+}
+
+MTDictionary ModifyInspectionDialogueTab::listAssemblyRecordItemTypes()
+{
+    AssemblyRecordType types("");
+    ListOfVariantMaps types_list = types.listAll();
+    MTDictionary dict(true);
+
+    for (int i = 0; i < types_list.count(); ++i) {
+        dict.insert(types_list.at(i).value("name").toString(), types_list.at(i).value("id").toString());
+    }
+    return dict;
 }

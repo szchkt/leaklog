@@ -32,9 +32,6 @@ void ModifyDialogue::init(DBRecord * record)
     md_vlayout_main->setSpacing(9);
     md_vlayout_main->setContentsMargins(6, 6, 6, 6);
     md_grid_main = new QGridLayout;
-    md_grid_main->setHorizontalSpacing(9);
-    md_grid_main->setVerticalSpacing(6);
-    md_grid_main->setContentsMargins(0, 0, 0, 0);
     addMainGridLayout(md_vlayout_main);
     QDialogButtonBox * md_bb = new QDialogButtonBox(this);
     md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
@@ -62,22 +59,7 @@ QDialog(parent)
 
     md_record->initModifyDialogue(this);
 
-    layoutInputWidgets();
-}
-
-void ModifyDialogue::layoutInputWidgets()
-{
-    int num_cols = md_inputwidgets.count() / 20 + 1;
-    int num_rows = md_inputwidgets.count() / num_cols + (md_inputwidgets.count() % num_cols > 0 ? 1 : 0);
-    int i = 0;
-    for (int c = 0; c < num_cols; ++c) {
-        for (int r = 0; r < num_rows; ++r) {
-            if (i >= md_inputwidgets.count()) { return; }
-            addWidget(md_inputwidgets.at(i)->label(), r, 2 * c);
-            addWidget(md_inputwidgets.at(i)->widget(), r, (2 * c) + 1);
-            i++;
-        }
-    }
+    ModifyDialogueColumnLayout(&md_inputwidgets, md_grid_main).layout();
 }
 
 void ModifyDialogue::setWindowTitle(const QString & title)
@@ -87,16 +69,6 @@ void ModifyDialogue::setWindowTitle(const QString & title)
     } else {
         this->QDialog::setWindowTitle(title);
     }
-}
-
-void ModifyDialogue::addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment)
-{
-    md_grid_main->addWidget(widget, row, column, alignment);
-}
-
-void ModifyDialogue::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment)
-{
-    md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
 }
 
 void ModifyDialogue::save()
@@ -132,4 +104,53 @@ const QVariant ModifyDialogue::idFieldValue()
         }
     }
     return QVariant();
+}
+
+ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)
+{
+    this->md_inputwidgets = md_inputwidgets;
+    this->md_grid_main = md_grid_main;
+
+    md_grid_main->setHorizontalSpacing(9);
+    md_grid_main->setVerticalSpacing(6);
+    md_grid_main->setContentsMargins(0, 0, 0, 0);
+}
+
+void ModifyDialogueLayout::layout()
+{
+    for (int i = 0; i < md_inputwidgets->count(); ++i) {
+        addWidget(md_inputwidgets->at(i)->label(), i, 0);
+        addWidget(md_inputwidgets->at(i)->widget(), i, 1, 1, 3);
+    }
+}
+
+ModifyDialogueColumnLayout::ModifyDialogueColumnLayout(QList<MDInputWidget *> * inputwidgets, QGridLayout * grid_main, int rows_in_column)
+    : ModifyDialogueLayout(inputwidgets, grid_main)
+{
+    this->rows_in_column = rows_in_column;
+}
+
+void ModifyDialogueColumnLayout::layout()
+{
+    int num_cols = md_inputwidgets->count() / rows_in_column + 1;
+    int num_rows = md_inputwidgets->count() / num_cols + (md_inputwidgets->count() % num_cols > 0 ? 1 : 0);
+    int i = 0;
+    for (int c = 0; c < num_cols; ++c) {
+        for (int r = 0; r < num_rows; ++r) {
+            if (i >= md_inputwidgets->count()) { return; }
+            addWidget(md_inputwidgets->at(i)->label(), r, 2 * c);
+            addWidget(md_inputwidgets->at(i)->widget(), r, (2 * c) + 1);
+            i++;
+        }
+    }
+}
+
+void ModifyDialogueLayout::addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment)
+{
+    md_grid_main->addWidget(widget, row, column, alignment);
+}
+
+void ModifyDialogueLayout::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment)
+{
+    md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
 }
