@@ -98,7 +98,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     QString customer = Customer(parent("parent")).stringValue("company");
     if (customer.isEmpty())
         customer = parent("parent").rightJustified(8, '0');
-    md->setWindowTitle(tr("Customer: %1 > Cooling circuit").arg(customer));
+    md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit").arg(customer).arg(rightTriangle()));
     QVariantMap attributes;
     if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
@@ -201,7 +201,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(4, '0');
-    md->setWindowTitle(tr("Customer: %1 > Cooling circuit: %2 > Inspection").arg(customer).arg(circuit));
+    md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit: %3 > Inspection").arg(customer).arg(rightTriangle()).arg(circuit));
     QVariantMap attributes;
     if (!id().isEmpty() || !this->attributes().isEmpty()) {
         attributes = list();
