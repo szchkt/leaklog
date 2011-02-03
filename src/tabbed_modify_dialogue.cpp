@@ -8,6 +8,7 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QVariantMap>
+#include <QGroupBox>
 
 TabbedModifyDialogue::TabbedModifyDialogue(DBRecord * record, QWidget * parent)
     : ModifyDialogue(parent)
@@ -144,14 +145,51 @@ void ModifyInspectionDialogueTab::init()
 
     QGridLayout * form_grid = new QGridLayout;
 
-    QList<MDInputWidget *> md_inputwidgets;
+    inputwidgets << new MDLineEdit("id", tr("Assembly record ID:"), this, "", 99999999);
+    MDComboBox * type_cb = new MDComboBox("type", tr("Assembly record type:"), this, "", listAssemblyRecordItemTypes());
+    QObject::connect(type_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
+    inputwidgets << type_cb;
 
-    md_inputwidgets << new MDLineEdit("id", tr("Assembly record ID:"), this, "");
-    md_inputwidgets << new MDComboBox("type", tr("Assembly record type:"), this, "", listAssemblyRecordItemTypes());
-
-    ModifyDialogueColumnLayout(&md_inputwidgets, form_grid, 1).layout();
+    ModifyDialogueColumnLayout(&inputwidgets, form_grid, 1).layout();
 
     layout->addLayout(form_grid);
+
+    QGroupBox * items_gb = new QGroupBox(tr("Items"));
+    items_grid = new QGridLayout;
+    items_gb->setLayout(items_grid);
+    layout->addWidget(items_gb);
+
+    loadItemInputWidgets();
+}
+
+int ModifyInspectionDialogueTab::assemblyRecordType()
+{
+    for (int i = 0; i < inputwidgets.count(); ++i) {
+        if (inputwidgets.at(i)->id() == "type") {
+            return inputwidgets.at(i)->variantValue().toInt();
+        }
+    }
+    return -1;
+}
+
+void ModifyInspectionDialogueTab::loadItemInputWidgets()
+{
+    for (int i = 0; i < item_inputwidgets.count(); ++i) {
+        MDInputWidget * w = item_inputwidgets.takeAt(i);
+        delete w->label();
+        delete w;
+    }
+
+    AssemblyRecordTypeItem type_items(QString("%1").arg(assemblyRecordType()));
+    ListOfVariantMaps items_list(type_items.listAll());
+
+    for (int i = 0; i < items_list.count(); ++i) {
+        AssemblyRecordItemType item(items_list.at(i).value("record_item_id").toString());
+        QVariantMap item_map(item.list());
+        item_inputwidgets << new MDLineEdit(item_map.value("id").toString(), item_map.value("name").toString(), this, "", 99999999);
+    }
+
+    ModifyDialogueColumnLayout(&item_inputwidgets, items_grid, 18).layout();
 }
 
 void ModifyInspectionDialogueTab::save(int)

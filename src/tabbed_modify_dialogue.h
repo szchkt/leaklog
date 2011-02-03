@@ -7,8 +7,10 @@ class QTabWidget;
 class QTreeWidget;
 class QLineEdit;
 class QComboBox;
+class QGroupBox;
 
 class ModifyDialogueTab;
+class MTDictionary;
 
 class TabbedModifyDialogue : public ModifyDialogue
 {
@@ -64,8 +66,6 @@ private:
     QTreeWidget * tree;
 };
 
-class MTDictionary;
-
 class ModifyInspectionDialogue : public TabbedModifyDialogue
 {
 public:
@@ -74,15 +74,24 @@ public:
 
 class ModifyInspectionDialogueTab : public ModifyDialogueTab
 {
+    Q_OBJECT
+
 public:
     ModifyInspectionDialogueTab(int, QWidget * = NULL);
 
     void save(int);
 
+private slots:
+    void loadItemInputWidgets();
+
 private:
     void init();
     MTDictionary listAssemblyRecordItemTypes();
+    int assemblyRecordType();
 
+    QGridLayout * items_grid;
+    QList<MDInputWidget *> inputwidgets;
+    QList<MDInputWidget *> item_inputwidgets;
     QLineEdit * id_le;
     QComboBox * assembly_record_type;
 };
