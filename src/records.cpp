@@ -725,6 +725,7 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
     md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
+    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -747,6 +748,7 @@ public:
         dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItemType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("AssemblyRecordItemType", "List price"));
         dict.insert("ean", QApplication::translate("AssemblyRecordItemType", "EAN code"));
+        dict.insert("category_id", QApplication::translate("AssemblyRecordItemType", "Category"));
     }
 
     MTDictionary dict;

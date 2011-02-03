@@ -1611,6 +1611,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of assembly record item types") << "</th></tr>";
     out << thead;
     QString id;
+    MTDictionary categories(listAssemblyRecordItemCategories());
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'assemblyrecorditemtype:" << id << "";
@@ -1621,7 +1622,12 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
         }
         out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < AssemblyRecordItemType::attributes().count(); ++n) {
-            out << "<td>" << escapeString(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString()) << "</td>";
+            out << "<td>";
+            if (AssemblyRecordItemType::attributes().key(n) == "category_id")
+                out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString())));
+            else
+                out << escapeString(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString());
+            out << "</td>";
         }
         out << "</tr>";
     }

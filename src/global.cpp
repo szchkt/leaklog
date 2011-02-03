@@ -371,7 +371,7 @@ public:
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT");
         dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, date_updated TEXT");
-        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, date_updated TEXT");
+        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, category_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_type_items", "record_type_id INTEGER, record_item_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
@@ -632,6 +632,19 @@ MTDictionary Global::listInspectors()
         }
     }
     return inspectors;
+}
+
+MTDictionary Global::listAssemblyRecordItemCategories()
+{
+    MTDictionary categories(QObject::tr("No category"), "-1"); QSqlQuery query;
+    categories.allowDuplicateKeys();
+    query.setForwardOnly(true);
+    if (query.exec("SELECT id, name FROM assembly_record_item_categories")) {
+        while (query.next()) {
+            categories.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+        }
+    }
+    return categories;
 }
 
 QStringList Global::listVariableIds(bool all)
