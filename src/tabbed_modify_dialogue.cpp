@@ -43,10 +43,13 @@ void TabbedModifyDialogue::addTab(ModifyDialogueTab * tab)
 
 void TabbedModifyDialogue::save()
 {
+    ModifyDialogue::save(false);
+
     for (int i = 1; i < main_tabw->count(); ++i) {
         ((ModifyDialogueTab *) main_tabw->widget(i))->save(idFieldValue().toInt());
     }
-    ModifyDialogue::save();
+
+    accept();
 }
 
 ModifyDialogueTab::ModifyDialogueTab(QWidget * parent)
@@ -150,7 +153,7 @@ void ModifyInspectionDialogueTab::init()
 
     QGridLayout * form_grid = new QGridLayout;
     QList<MDInputWidget *> inputwidgets;
-    MDLineEdit * arno_le = new MDLineEdit("ar_type", tr("Assembly record type:"), this, arno_w->text());
+    MDLineEdit * arno_le = new MDLineEdit("arno", tr("Assembly record number:"), this, arno_w->text());
     arno_le->setEnabled(false);
     QObject::connect(arno_w, SIGNAL(textChanged(QString)), arno_le, SLOT(setText(QString)));
     inputwidgets.append(arno_le);

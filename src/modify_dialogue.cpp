@@ -73,6 +73,11 @@ void ModifyDialogue::setWindowTitle(const QString & title)
 
 void ModifyDialogue::save()
 {
+    save(true);
+}
+
+void ModifyDialogue::save(bool call_accept)
+{
     QVariantMap values; QString id; QVariant value;
     for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         id = (*i)->id();
@@ -93,7 +98,8 @@ void ModifyDialogue::save()
         values.insert(id, value);
     }
     md_record->update(values, true);
-    accept();
+
+    if (call_accept) accept();
 }
 
 const QVariant ModifyDialogue::idFieldValue()
