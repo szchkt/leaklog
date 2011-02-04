@@ -76,7 +76,7 @@ void ModifyDialogue::save()
     save(true);
 }
 
-void ModifyDialogue::save(bool call_accept)
+bool ModifyDialogue::save(bool call_accept)
 {
     QVariantMap values; QString id; QVariant value;
     for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
@@ -85,14 +85,14 @@ void ModifyDialogue::save(bool call_accept)
         if (id == md_record->idField()) {
             if (value.toString().isEmpty()) {
                 QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
-                return;
+                return false;
             } else if (md_used_ids.contains(value.toString())) {
                 if (id == "date") {
                     QMessageBox::information(NULL, tr("Save changes"), tr("This date is not available. Please choose a different date."));
                 } else {
                     QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
                 }
-                return;
+                return false;
             }
         }
         values.insert(id, value);
@@ -100,6 +100,7 @@ void ModifyDialogue::save(bool call_accept)
     md_record->update(values, true);
 
     if (call_accept) accept();
+    return true;
 }
 
 const QVariant ModifyDialogue::idFieldValue()

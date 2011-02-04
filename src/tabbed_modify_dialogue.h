@@ -38,6 +38,8 @@ class ModifyDialogueTab : public QWidget
 public:
     ModifyDialogueTab(QWidget * = NULL);
 
+    void setLayout(QLayout *);
+
     const QString & name() { return tab_name; }
     virtual void save(int) = 0;
 

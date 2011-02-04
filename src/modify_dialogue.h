@@ -40,7 +40,7 @@ public:
 
 protected slots:
     virtual void save();
-    void save(bool);
+    bool save(bool);
 
 protected:
     ModifyDialogue(QWidget * = NULL);

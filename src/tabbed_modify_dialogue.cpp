@@ -43,7 +43,7 @@ void TabbedModifyDialogue::addTab(ModifyDialogueTab * tab)
 
 void TabbedModifyDialogue::save()
 {
-    ModifyDialogue::save(false);
+    if (!ModifyDialogue::save(false)) return;
 
     for (int i = 1; i < main_tabw->count(); ++i) {
         ((ModifyDialogueTab *) main_tabw->widget(i))->save(idFieldValue().toInt());
@@ -55,6 +55,12 @@ void TabbedModifyDialogue::save()
 ModifyDialogueTab::ModifyDialogueTab(QWidget * parent)
     : QWidget(parent)
 {
+}
+
+void ModifyDialogueTab::setLayout(QLayout * layout)
+{
+    layout->setContentsMargins(0, 0, 0, 0);
+    QWidget::setLayout(layout);
 }
 
 AssemblyRecordModifyDialogue::AssemblyRecordModifyDialogue(DBRecord * record, QWidget * parent)
