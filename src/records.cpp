@@ -831,7 +831,7 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
 }
 
 AssemblyRecordItem::AssemblyRecordItem(const QString & record_id)
-    : MTRecord("assembly_record_items", "", "", MTDictionary("record_id", record_id))
+    : MTRecord("assembly_record_items", "", "", MTDictionary("arno", record_id))
 {
 }
 

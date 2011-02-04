@@ -199,16 +199,31 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         QVariantMap item_map(item.list());
         QString value;
         for (int n = 0; n < record_items_list.count(); ++n) {
-            if (record_items_list.at(n).value("record_id").toInt() == items_list.at(i).value("record_item_id").toInt()) {
+            if (record_items_list.at(n).value("item_type_id").toInt() == items_list.at(i).value("record_item_id").toInt()) {
                 value = record_items_list.at(n).value("value").toString(); break;
             }
         }
-        item_inputwidgets << new MDLineEdit(item_map.value("id").toString(), item_map.value("name").toString(), this, value, 99999999);
+        item_inputwidgets << new MDLineEdit(item_map.value("id").toString(), item_map.value("name").toString(), this, value);
     }
 
     ModifyDialogueColumnLayout(&item_inputwidgets, items_grid, 18).layout();
 }
 
-void ModifyInspectionDialogueTab::save(int record_id)
+void ModifyInspectionDialogueTab::save(int)
 {
+    QString arno = assemblyRecordId().toString();
+    if (arno.isEmpty())
+        return;
+
+    AssemblyRecordItem record_item(arno);
+    record_item.remove();
+
+    QVariantMap map;
+    map.insert("arno", arno);
+
+    for (int i = 0; i < item_inputwidgets.count(); ++i) {
+        map.insert("item_type_id", item_inputwidgets.at(i)->id());
+        map.insert("value", item_inputwidgets.at(i)->variantValue());
+        record_item.update(map);
+    }
 }
