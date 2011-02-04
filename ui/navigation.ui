@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2351</width>
+    <width>2589</width>
     <height>175</height>
    </rect>
   </property>
@@ -1314,6 +1314,38 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QToolButton" name="tbtn_view_inspection">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>View inspection details</string>
+        </property>
+        <property name="text">
+         <string>Inspection details</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QToolButton" name="tbtn_add_inspection">
         <property name="sizePolicy">
@@ -1337,6 +1369,38 @@
           <width>16</width>
           <height>16</height>
          </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QToolButton" name="tbtn_view_assembly_record">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>View inspection details</string>
+        </property>
+        <property name="text">
+         <string>Assembly record</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -1401,38 +1465,6 @@
           <width>16</width>
           <height>16</height>
          </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="tbtn_view_inspection">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View inspection details</string>
-        </property>
-        <property name="text">
-         <string>Inspection details</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>

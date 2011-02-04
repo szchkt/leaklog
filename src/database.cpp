@@ -2322,3 +2322,16 @@ void MainWindow::removeAssemblyRecordItemCategory()
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
 }
+
+void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
+{
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (inspection.isEmpty()) { return; }
+    selected_inspection = inspection;
+    selected_inspection_is_repair = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool();
+    enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::AssemblyRecord);
+    }
+}

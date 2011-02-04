@@ -18,5 +18,6 @@
         <file>html/assembly_record_types.html</file>
         <file>html/assembly_record_item_types.html</file>
         <file>html/assembly_record_item_categories.html</file>
+        <file>html/assembly_record.html</file>
     </qresource>
 </RCC>

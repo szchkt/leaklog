@@ -113,6 +113,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/assembly_record_item_categories.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfAssemblyRecordItemCategories, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/assembly_record.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::AssemblyRecord, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;
@@ -412,6 +415,12 @@ void MainWindow::executeLink(const QUrl & url)
             if (id != selectedInspection()) {
                 loadInspection(id, path.count() <= 3);
             } else if (path.count() <= 3) { navigation->setView(Navigation::Inspection); }
+        } else if (path.at(2).startsWith("assemblyrecord:")) {
+            id = path.at(2);
+            id.remove(0, id.indexOf(":") + 1);
+            if (id != selectedInspection()) {
+                loadAssemblyRecord(id, path.count() <= 3);
+            } else if (path.count() <= 3) { navigation->setView(Navigation::AssemblyRecord); }
         } else if (path.at(2).startsWith("table")) {
             navigation->setView(Navigation::TableOfInspections);
         } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }

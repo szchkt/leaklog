@@ -109,6 +109,13 @@ QString MainWindow::viewChanged(int view)
             case Navigation::ListOfAssemblyRecordItemCategories:
                 html = viewAllAssemblyRecordItemCategories(selectedAssemblyRecordItemCategory());
                 break;
+            case Navigation::AssemblyRecord:
+                if (isCustomerSelected() && isCircuitSelected() && isInspectionSelected()) {
+                    html = viewAssemblyRecord(selectedCustomer(), selectedCircuit(), selectedInspection());
+                } else {
+                    view = Navigation::ListOfInspections; ok = false;
+                }
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -133,6 +140,7 @@ QString MainWindow::currentView()
                    + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
                    + " - " + QApplication::translate("Navigation", "List of inspections");
             break;
+        case Navigation::AssemblyRecord:
         case Navigation::Inspection:
             view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
             view = Customer(selectedCustomer()).stringValue("company")
@@ -1669,4 +1677,31 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     }
     out << "</table>";
     return dict_html.value(Navigation::ListOfAssemblyRecordItemCategories).arg(html);
+}
+
+QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
+{
+    QString html; MTTextStream out(&html);
+    writeCustomersTable(out, customer_id);
+    out << "<br>";
+    writeCircuitsTable(out, customer_id, circuit_id);
+    Inspection inspection_record(customer_id, circuit_id, inspection_date);
+    QVariantMap inspection = inspection_record.list();
+    bool nominal = inspection.value("nominal").toInt();
+    bool repair = inspection.value("repair").toInt();
+    bool locked = isRecordLocked(inspection_date);
+
+    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
+    out << "<tr><th colspan=\"4\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    if (!locked) {
+        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
+        out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
+    }
+    if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
+    out << "&nbsp;" << inspection_date;
+    if (!locked) out << "</a>";
+    out << "</th></tr>";
+    out << "</table>";
+
+    return dict_html.value(Navigation::AssemblyRecord).arg(html);
 }

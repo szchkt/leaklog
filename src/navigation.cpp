@@ -45,6 +45,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_inspections, Navigation::ListOfInspections);
     btngrp_view->addButton(tbtn_view_inspection);
     btngrp_view->setId(tbtn_view_inspection, Navigation::Inspection);
+    btngrp_view->addButton(tbtn_view_assembly_record);
+    btngrp_view->setId(tbtn_view_assembly_record, Navigation::AssemblyRecord);
     btngrp_view->addButton(tbtn_view_table);
     btngrp_view->setId(tbtn_view_table, Navigation::TableOfInspections);
     btngrp_view->addButton(tbtn_view_repairs);
@@ -233,6 +235,10 @@ void Navigation::updateView()
             group = 3;
             filter_visible = false;
             break;
+        case Navigation::AssemblyRecord:
+            group = 2;
+            filter_visible = false;
+            break;
         case Navigation::LeakagesByApplication:
         default:
             group = 0;
@@ -351,6 +357,7 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_modify_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_remove_inspection->setEnabled(inspection_selected && !inspection_locked);
     tbtn_view_inspection->setEnabled(inspection_selected);
+    tbtn_view_assembly_record->setEnabled(inspection_selected);
     tbtn_modify_assembly_record_type->setEnabled(assembly_record_type_selected);
     tbtn_remove_assembly_record_type->setEnabled(assembly_record_type_selected);
     tbtn_modify_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);

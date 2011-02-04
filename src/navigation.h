@@ -42,7 +42,8 @@ public:
         Agenda,
         ListOfAssemblyRecordTypes,
         ListOfAssemblyRecordItemTypes,
-        ListOfAssemblyRecordItemCategories
+        ListOfAssemblyRecordItemCategories,
+        AssemblyRecord
     };
 
     Navigation(QWidget *);

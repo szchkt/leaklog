@@ -162,6 +162,7 @@ private:
     void loadAssemblyRecordType(int, bool);
     void loadAssemblyRecordItemType(int, bool);
     void loadAssemblyRecordItemCategory(int, bool);
+    void loadAssemblyRecord(const QString &, bool);
     inline bool isCustomerSelected() { return selected_customer >= 0; }
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
@@ -195,6 +196,7 @@ private:
     QString viewAllAssemblyRecordTypes(const QString & = QString());
     QString viewAllAssemblyRecordItemTypes(const QString & = QString());
     QString viewAllAssemblyRecordItemCategories(const QString & = QString());
+    QString viewAssemblyRecord(const QString &, const QString &, const QString &);
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
