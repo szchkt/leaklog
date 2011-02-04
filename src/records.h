@@ -198,6 +198,7 @@ class AssemblyRecordItemCategory : public DBRecord
 {
     Q_OBJECT
 
+public:
     enum DisplayOptions {
         ShowValue = 1,
         ShowListPrice = 2,
@@ -206,7 +207,6 @@ class AssemblyRecordItemCategory : public DBRecord
         ShowTotal = 16
             };
 
-public:
     AssemblyRecordItemCategory(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);

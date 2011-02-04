@@ -821,9 +821,9 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowUnit, tr("Show unit"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
-    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowUnit, tr("Show unit"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
     QStringList used_ids; QSqlQuery query_used_ids;
