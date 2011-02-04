@@ -374,6 +374,7 @@ public:
         dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, category_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_type_items", "record_type_id INTEGER, record_item_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, date_updated TEXT");
+        dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }
 
@@ -443,6 +444,7 @@ public:
         dict.insert("sftsw", QApplication::translate("VariableNames", "Safety switch"));
         dict.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
         dict.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
+        dict.insert("ar_type", QApplication::translate("VariableNames", "Assembly record type"));
         dict.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
         dict.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
         dict.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
@@ -500,6 +502,7 @@ public:
         dict.insert("sftsw", "float");
         dict.insert("rmds", "text");
         dict.insert("arno", "string");
+        dict.insert("ar_type", "integer");
         dict.insert("corr_def", "bool");
         dict.insert("noise_vibr", "bool");
         dict.insert("bbl_lvl", "bool");
@@ -645,6 +648,19 @@ MTDictionary Global::listAssemblyRecordItemCategories()
         }
     }
     return categories;
+}
+
+MTDictionary Global::listAssemblyRecordTypes()
+{
+    MTDictionary dict(QObject::tr("No type"), "-1"); QSqlQuery query;
+    dict.allowDuplicateKeys();
+    query.setForwardOnly(true);
+    if (query.exec("SELECT id, name FROM assembly_record_types")) {
+        while (query.next()) {
+            dict.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+        }
+    }
+    return dict;
 }
 
 QStringList Global::listVariableIds(bool all)

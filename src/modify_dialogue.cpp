@@ -79,13 +79,13 @@ void ModifyDialogue::save()
         value = (*i)->variantValue();
         if (id == md_record->idField()) {
             if (value.toString().isEmpty()) {
-                QMessageBox::information(this, tr("Save changes"), tr("Invalid ID."));
+                QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
                 return;
             } else if (md_used_ids.contains(value.toString())) {
                 if (id == "date") {
-                    QMessageBox::information(this, tr("Save changes"), tr("This date is not available. Please choose a different date."));
+                    QMessageBox::information(NULL, tr("Save changes"), tr("This date is not available. Please choose a different date."));
                 } else {
-                    QMessageBox::information(this, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
+                    QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
                 }
                 return;
             }
@@ -104,6 +104,16 @@ const QVariant ModifyDialogue::idFieldValue()
         }
     }
     return QVariant();
+}
+
+MDInputWidget * ModifyDialogue::inputWidget(const QString id)
+{
+    for (int i = 0; i < md_inputwidgets.count(); ++i) {
+        if (md_inputwidgets.at(i)->id() == id) {
+            return md_inputwidgets.at(i);
+        }
+    }
+    return NULL;
 }
 
 ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)

@@ -128,6 +128,7 @@ void Variables::initVariables(const QString & filter)
     initVariable(filter, "sftsw", QApplication::translate("Units", "Bar"), "", true, 0.0, "");
     initVariable(filter, "rmds", "", "", false, 0.0, "");
     initVariable(filter, "arno", "", "", false, 0.0, "");
+    initVariable(filter, "ar_type", "", "", false, 0.0, "");
 
     initVariable(filter, "vis_aur_chk", "");
     initSubvariable(filter, "vis_aur_chk", "", "corr_def", "", "", false, 0.0);

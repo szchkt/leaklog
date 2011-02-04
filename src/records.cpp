@@ -249,6 +249,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 iw->label()->toggleAlternativeText(chb_repair->isChecked());
                 QObject::connect(chb_repair, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
                 md->addInputWidget(iw);
+            } else if (var_id == "ar_type") {
+                iw = new MDComboBox(var_id, var_name, md,
+                    attributes.value(var_id).toString(), listAssemblyRecordTypes(), query.value("VAR_COL_BG").toString());
+                md->addInputWidget(iw);
             } else if (var_type == "int") {
                 md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
                     attributes.value(var_id).toInt(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
@@ -824,4 +828,27 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+AssemblyRecordItem::AssemblyRecordItem(const QString & record_id)
+    : MTRecord("assembly_record_items", "", "", MTDictionary("record_id", record_id))
+{
+}
+
+class AssemblyRecordItemAttributes
+{
+public:
+    AssemblyRecordItemAttributes() {
+        dict.insert("arno", QApplication::translate("AssemblyRecordItem", "Assembly record number"));
+        dict.insert("item_type_id", QApplication::translate("AssemblyRecordItem", "Record item type ID"));
+        dict.insert("value", QApplication::translate("AssemblyRecordItem", "Value"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & AssemblyRecordItem::attributes()
+{
+    static AssemblyRecordItemAttributes dict;
+    return dict.dict;
 }

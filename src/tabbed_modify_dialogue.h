@@ -10,6 +10,8 @@ class QComboBox;
 class QGroupBox;
 
 class ModifyDialogueTab;
+class MDLineEdit;
+class MDComboBox;
 class MTDictionary;
 
 class TabbedModifyDialogue : public ModifyDialogue
@@ -77,7 +79,7 @@ class ModifyInspectionDialogueTab : public ModifyDialogueTab
     Q_OBJECT
 
 public:
-    ModifyInspectionDialogueTab(int, QWidget * = NULL);
+    ModifyInspectionDialogueTab(int, MDLineEdit *, MDComboBox *, QWidget * = NULL);
 
     void save(int);
 
@@ -87,13 +89,15 @@ private slots:
 private:
     void init();
     MTDictionary listAssemblyRecordItemTypes();
-    int assemblyRecordType();
+    const QVariant assemblyRecordType();
+    const QVariant assemblyRecordId();
 
     QGridLayout * items_grid;
-    QList<MDInputWidget *> inputwidgets;
     QList<MDInputWidget *> item_inputwidgets;
     QLineEdit * id_le;
     QComboBox * assembly_record_type;
+    MDComboBox * ar_type_w;
+    MDLineEdit * arno_w;
 };
 
 #endif // TABBED_MODIFY_DIALOGUE_H

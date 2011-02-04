@@ -183,6 +183,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");
             break;
         case Navigation::ListOfRepairs:
             group = 1;

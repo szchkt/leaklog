@@ -187,7 +187,7 @@ void MainWindow::initTables(bool transaction)
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;inspector;operator;rmds;arno");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;inspector;operator;rmds;arno;ar_type");
         set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco");
         leakages.update(set);
         set.clear();

@@ -127,12 +127,17 @@ void AssemblyRecordModifyDialogueTab::init()
 ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
-    addTab(new ModifyInspectionDialogueTab(0));
+    addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type")));
 }
 
-ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, QWidget * parent)
+ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_pw, MDComboBox * ar_type_pw, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
+    this->ar_type_w = ar_type_pw;
+    this->arno_w = arno_pw;
+
+    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
+
     setName(tr("Assembly record"));
 
     init();
@@ -144,12 +149,15 @@ void ModifyInspectionDialogueTab::init()
     setLayout(layout);
 
     QGridLayout * form_grid = new QGridLayout;
-
-    inputwidgets << new MDLineEdit("id", tr("Assembly record ID:"), this, "", 99999999);
-    MDComboBox * type_cb = new MDComboBox("type", tr("Assembly record type:"), this, "", listAssemblyRecordItemTypes());
-    QObject::connect(type_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
-    inputwidgets << type_cb;
-
+    QList<MDInputWidget *> inputwidgets;
+    MDLineEdit * arno_le = new MDLineEdit("ar_type", tr("Assembly record type:"), this, arno_w->text());
+    arno_le->setEnabled(false);
+    QObject::connect(arno_w, SIGNAL(textChanged(QString)), arno_le, SLOT(setText(QString)));
+    inputwidgets.append(arno_le);
+    MDLineEdit * type_le = new MDLineEdit("ar_type", tr("Assembly record type:"), this, ar_type_w->currentText());
+    type_le->setEnabled(false);
+    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(QString)), type_le, SLOT(setText(QString)));
+    inputwidgets.append(type_le);
     ModifyDialogueColumnLayout(&inputwidgets, form_grid, 1).layout();
 
     layout->addLayout(form_grid);
@@ -162,14 +170,14 @@ void ModifyInspectionDialogueTab::init()
     loadItemInputWidgets();
 }
 
-int ModifyInspectionDialogueTab::assemblyRecordType()
+const QVariant ModifyInspectionDialogueTab::assemblyRecordType()
 {
-    for (int i = 0; i < inputwidgets.count(); ++i) {
-        if (inputwidgets.at(i)->id() == "type") {
-            return inputwidgets.at(i)->variantValue().toInt();
-        }
-    }
-    return -1;
+    return ar_type_w->variantValue();
+}
+
+const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
+{
+    return arno_w->variantValue();
 }
 
 void ModifyInspectionDialogueTab::loadItemInputWidgets()
@@ -180,31 +188,27 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         delete w;
     }
 
-    AssemblyRecordTypeItem type_items(QString("%1").arg(assemblyRecordType()));
+    AssemblyRecordTypeItem type_items(assemblyRecordType().toString());
     ListOfVariantMaps items_list(type_items.listAll());
+
+    AssemblyRecordItem assembly_record_item(assemblyRecordId().toString());
+    ListOfVariantMaps record_items_list(assembly_record_item.listAll());
 
     for (int i = 0; i < items_list.count(); ++i) {
         AssemblyRecordItemType item(items_list.at(i).value("record_item_id").toString());
         QVariantMap item_map(item.list());
-        item_inputwidgets << new MDLineEdit(item_map.value("id").toString(), item_map.value("name").toString(), this, "", 99999999);
+        QString value;
+        for (int n = 0; n < record_items_list.count(); ++n) {
+            if (record_items_list.at(n).value("record_id").toInt() == items_list.at(i).value("record_item_id").toInt()) {
+                value = record_items_list.at(n).value("value").toString(); break;
+            }
+        }
+        item_inputwidgets << new MDLineEdit(item_map.value("id").toString(), item_map.value("name").toString(), this, value, 99999999);
     }
 
     ModifyDialogueColumnLayout(&item_inputwidgets, items_grid, 18).layout();
 }
 
-void ModifyInspectionDialogueTab::save(int)
+void ModifyInspectionDialogueTab::save(int record_id)
 {
-
-}
-
-MTDictionary ModifyInspectionDialogueTab::listAssemblyRecordItemTypes()
-{
-    AssemblyRecordType types("");
-    ListOfVariantMaps types_list = types.listAll();
-    MTDictionary dict(true);
-
-    for (int i = 0; i < types_list.count(); ++i) {
-        dict.insert(types_list.at(i).value("name").toString(), types_list.at(i).value("id").toString());
-    }
-    return dict;
 }

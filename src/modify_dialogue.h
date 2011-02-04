@@ -24,6 +24,7 @@
 #include <QGridLayout>
 
 class DBRecord;
+class MTRecord;
 class MDInputWidget;
 
 class ModifyDialogue : public QDialog
@@ -47,6 +48,7 @@ protected:
 
     void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
     int inputWidgetCount() { return md_inputwidgets.count(); }
+    MDInputWidget * inputWidget(const QString);
 
     const QVariant idFieldValue();
 
@@ -70,6 +72,7 @@ protected:
     friend class AssemblyRecordType;
     friend class AssemblyRecordItemType;
     friend class AssemblyRecordItemCategory;
+    friend class ModifyInspectionDialogueTab;
 };
 
 class ModifyDialogueLayout
