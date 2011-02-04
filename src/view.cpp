@@ -1682,17 +1682,28 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
 QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
 {
     QString html; MTTextStream out(&html);
-    writeCustomersTable(out, customer_id);
-    out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id);
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
     bool locked = isRecordLocked(inspection_date);
 
+    AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
+    QVariantMap ar_type = ar_type_record.list();
+
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
+    out << "<tr><th>" << tr("Assembly record %1").arg(inspection.value("arno").toString()) << "</th></tr>";
+    out << "</table>";
+
+    out << "<h2>" << ar_type.value("name") << "</h2>";
+    out << "<h3>" << ar_type.value("description") << "</h3>";
+
+    writeCustomersTable(out, customer_id);
+    out << "<br>";
+    writeCircuitsTable(out, customer_id, circuit_id);
+
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th colspan=\"4\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     if (!locked) {
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
         out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
@@ -1701,6 +1712,26 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     out << "&nbsp;" << inspection_date;
     if (!locked) out << "</a>";
     out << "</th></tr>";
+
+    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name FROM assembly_record_items"
+                                       " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                                       " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
+                                       " WHERE arno = '%1' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
+                               .arg(inspection.value("arno").toString()));
+    int last_category = -1;
+    int value = 0, name = 1, category_id = 2, category_name = 3;
+    while (categories_query.next()) {
+        if (last_category != categories_query.value(category_id).toInt()) {
+            if (!categories_query.value(category_name).toString().isEmpty())
+                out << "<tr><th colspan=\"2\">" << categories_query.value(category_name).toString() << "</th></tr>";
+            last_category = categories_query.value(category_id).toInt();
+        }
+        out << "<tr>";
+        out << "<td>" << categories_query.value(name).toString() << "</td>";
+        out << "<td>" << categories_query.value(value).toString() << "</td>";
+        out << "</tr>";
+    }
+
     out << "</table>";
 
     return dict_html.value(Navigation::AssemblyRecord).arg(html);
