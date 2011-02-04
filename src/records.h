@@ -198,6 +198,14 @@ class AssemblyRecordItemCategory : public DBRecord
 {
     Q_OBJECT
 
+    enum DisplayOptions {
+        ShowValue = 1,
+        ShowListPrice = 2,
+        ShowAcquisitionPrice = 4,
+        ShowUnit = 8,
+        ShowTotal = 16
+            };
+
 public:
     AssemblyRecordItemCategory(const QString &);
 

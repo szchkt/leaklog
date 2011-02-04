@@ -21,6 +21,8 @@
 #include "highlighter.h"
 #include "global.h"
 
+#include <QVBoxLayout>
+
 using namespace Global;
 
 MTLabel::MTLabel(const QString & text, QWidget * parent):
@@ -257,4 +259,40 @@ MDInputWidget(id, labeltext, parent, this)
 QVariant MDPlainTextEdit::variantValue()
 {
     return toPlainText();
+}
+
+MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString & id, const QString & labeltext, QWidget * parent, int grouped_value):
+QGroupBox(" ", parent),
+MDInputWidget(id, labeltext, parent, this)
+{
+    this->grouped_value = grouped_value;
+    setLayout(new QVBoxLayout(this));
+}
+
+MDGroupedCheckBoxes::~MDGroupedCheckBoxes()
+{
+    for (int i = checkboxes.count() - 1; i >= 0; --i) {
+        delete checkboxes.takeAt(i);
+    }
+}
+
+void MDGroupedCheckBoxes::addCheckBox(int chb_id, const QString & chb_name)
+{
+    MDCheckBox * chb = new MDCheckBox(QString::number(chb_id), chb_name, this, grouped_value & chb_id);
+    checkboxes.append(chb);
+
+    layout()->addWidget(chb);
+}
+
+QVariant MDGroupedCheckBoxes::variantValue()
+{
+    int value = 0;
+
+    for (int i = 0; i < checkboxes.count(); ++i) {
+        if (checkboxes.at(i)->variantValue().toBool()) {
+            value |= checkboxes.at(i)->id().toInt();
+        }
+    }
+
+    return QVariant(value);
 }

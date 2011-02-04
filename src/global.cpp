@@ -373,7 +373,7 @@ public:
         dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, date_updated TEXT");
         dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, category_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_type_items", "record_type_id INTEGER, record_item_id INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, date_updated TEXT");
+        dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, date_updated TEXT");
         dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }

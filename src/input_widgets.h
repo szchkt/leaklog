@@ -31,6 +31,7 @@
 #include <QSpinBox>
 #include <QDateEdit>
 #include <QPlainTextEdit>
+#include <QGroupBox>
 
 class MTLabel : public QLabel
 {
@@ -193,6 +194,23 @@ public:
     MDPlainTextEdit(const QString &, const QString &, QWidget *, const QString &, const QString & = QString(), bool = true);
 
     QVariant variantValue();
+};
+
+class MDGroupedCheckBoxes : public QGroupBox, public MDInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDGroupedCheckBoxes(const QString &, const QString &, QWidget *, int);
+    ~MDGroupedCheckBoxes();
+
+    void addCheckBox(int, const QString &);
+
+    QVariant variantValue();
+
+private:
+    QList<MDCheckBox *> checkboxes;
+    int grouped_value;
 };
 
 #endif // INPUT_WIDGETS_H

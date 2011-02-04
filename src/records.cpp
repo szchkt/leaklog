@@ -796,6 +796,7 @@ public:
     AssemblyRecordItemCategoryAttributes() {
         dict.insert("id", QApplication::translate("AssemblyRecordItemCategory", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordItemCategory", "Name"));
+        dict.insert("display_options", QApplication::translate("AssemblyRecordItemCategory", "Display Options"));
     }
 
     MTDictionary dict;
@@ -818,6 +819,13 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
 
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowUnit, tr("Show unit"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
+    md->addInputWidget(md_display_options);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_categories" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
