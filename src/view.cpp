@@ -1720,52 +1720,54 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
     int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7;
-    int num_columns = 6, i;
+    int num_columns = 6, i, n;
     int colspans[num_columns];
     while (categories_query.next()) {
         if (last_category != categories_query.value(category_id).toInt()) {
             int cat_display_options = categories_query.value(display_options).toInt();
 
             for (i = 1; i < num_columns; ++i) colspans[i] = 0;
-            i = 0; colspans[0] = 1;
-            if (cat_display_options & AssemblyRecordItemCategory::ShowValue) { i = 1; colspans[i] = 1; }
+            i = n = 0; colspans[0] = 1;
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowValue) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (cat_display_options & AssemblyRecordItemCategory::ShowUnit) { i = 2; colspans[i] = 1; }
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowUnit) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (cat_display_options & AssemblyRecordItemCategory::ShowListPrice) { i = 3; colspans[i] = 1; }
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowListPrice) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = 4; colspans[i] = 1; }
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (cat_display_options & AssemblyRecordItemCategory::ShowTotal) { i = 5; colspans[i] = 1; }
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowTotal) { i = n; colspans[i] = 1; }
             else colspans[i]++;
 
+            i = 0;
             out << "<tr>";
-            out << "<th colspan=\"" << colspans[0] << "\">" << categories_query.value(category_name).toString() << "</th>";
-            if (colspans[1])
-                out << "<th colspan=\"" << colspans[1] << "\">" << tr("Value") << "</th>";
-            if (colspans[2])
-                out << "<th colspan=\"" << colspans[2] << "\">" << tr("Unit") << "</th>";
-            if (colspans[3])
-                out << "<th colspan=\"" << colspans[3] << "\">" << tr("List price") << "</th>";
-            if (colspans[4])
-                out << "<th colspan=\"" << colspans[4] << "\">" << tr("Acquisition price") << "</th>";
-            if (colspans[5])
-                out << "<th colspan=\"" << colspans[5] << "\">" << tr("Total") << "</th>";
+            out << "<th colspan=\"" << colspans[i] << "\">" << categories_query.value(category_name).toString() << "</th>";
+            if (colspans[++i])
+                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Value") << "</th>";
+            if (colspans[++i])
+                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Unit") << "</th>";
+            if (colspans[++i])
+                out << "<th colspan=\"" << colspans[i] << "\">" << tr("List price") << "</th>";
+            if (colspans[++i])
+                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Acquisition price") << "</th>";
+            if (colspans[++i])
+                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Total") << "</th>";
             out << "</tr>";
             last_category = categories_query.value(category_id).toInt();
         }
+        i = 0;
         out << "<tr>";
-        out << "<td colspan=\"" << colspans[0] << "\">" << categories_query.value(name).toString() << "</td>";
-        if (colspans[1])
-            out << "<td colspan=\"" << colspans[1] << "\">" << categories_query.value(value).toString() << "</td>";
-        if (colspans[2])
-            out << "<td colspan=\"" << colspans[2] << "\">" << categories_query.value(unit).toString() << "</td>";
-        if (colspans[3])
-            out << "<td colspan=\"" << colspans[3] << "\">" << categories_query.value(list_price).toString() << "</td>";
-        if (colspans[4])
-            out << "<td colspan=\"" << colspans[4] << "\">" << categories_query.value(acquisition_price).toString() << "</td>";
-        if (colspans[5])
-            out << "<td colspan=\"" << colspans[5] << "\">" << (categories_query.value(value).toInt() * categories_query.value(acquisition_price).toInt()) << "</td>";
+        out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(name).toString() << "</td>";
+        if (colspans[++i])
+            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(value).toString() << "</td>";
+        if (colspans[++i])
+            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(unit).toString() << "</td>";
+        if (colspans[++i])
+            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(list_price).toString() << "</td>";
+        if (colspans[++i])
+            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(acquisition_price).toString() << "</td>";
+        if (colspans[++i])
+            out << "<td colspan=\"" << colspans[i] << "\">" << (categories_query.value(value).toInt() * categories_query.value(acquisition_price).toInt()) << "</td>";
         out << "</tr>";
     }
 
