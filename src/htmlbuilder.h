@@ -8,7 +8,13 @@ class HTMLTableRow;
 class HTMLTableCell;
 class HTMLHeaderTableCell;
 
-class HTMLTable
+class HTMLElement
+{
+public:
+    virtual const QString html() = 0;
+};
+
+class HTMLTable : public HTMLElement
 {
 public:
     HTMLTable(const QString & = QString());
@@ -23,7 +29,7 @@ private:
     QString args;
 };
 
-class HTMLTableRow
+class HTMLTableRow : public HTMLElement
 {
 public:
     HTMLTableRow(const QString &);
@@ -39,7 +45,7 @@ private:
     QString args;
 };
 
-class HTMLTableCell
+class HTMLTableCell : public HTMLElement
 {
 public:
     HTMLTableCell(const QString &);
