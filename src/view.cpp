@@ -25,6 +25,7 @@
 #include "report_data.h"
 #include "mttextstream.h"
 #include "mtaddress.h"
+#include "htmlbuilder.h"
 
 #include <QDate>
 #include <QSqlRecord>
@@ -1791,32 +1792,32 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
 {
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr>";
+    HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    HTMLTableRow * _tr = table.addRow();
+    HTMLTableCell * _td;
     if (serv_company.value("image").toInt()) {
         QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data();
         if (!byte_array.isNull()) {
-            out << "<td rowspan=\"3\" width=\"5%\">";
-            out << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
-            out << "</td>";
+            _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
+            *_td << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
         }
     }
-    out << "<th colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\">";
-    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
-    out << tr("Service company") << "</a></th></tr>";
-    out << "<tr>";
+    _td = _tr->addHeaderCell("colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    *_td << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
+    *_td << tr("Service company") << "</a>";
+    _tr = table.addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
-        out << "<th>" << ServiceCompany::attributes().value(n) << "</th>";
+        _td = _tr->addHeaderCell();
+        *_td << ServiceCompany::attributes().value(n);
     }
-    out << "</tr>";
     QString attr_value;
-    out << "<tr>";
+    _tr = table.addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         attr_value = ServiceCompany::attributes().key(n);
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
-        out << "<td>" << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)) << "</td>";
+        _td = _tr->addCell();
+        *_td << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)).toHtml();
     }
-    out << "</tr>";
-    out << "</table>";
+    out << table.html();
 }
