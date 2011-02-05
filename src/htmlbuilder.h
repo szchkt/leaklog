@@ -35,6 +35,7 @@ public:
     inline const QString tagName() { return tag_name; }
 
     HTMLParentElement & operator<<(const QString &);
+    HTMLParentElement & operator<<(HTMLParentElement *);
 
 protected:
     QList<HTMLElement *> children;

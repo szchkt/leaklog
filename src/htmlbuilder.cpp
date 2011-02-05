@@ -14,10 +14,15 @@ HTMLParentElement::~HTMLParentElement()
     }
 }
 
-HTMLParentElement & HTMLParentElement::operator<< (const QString & str)
+HTMLParentElement & HTMLParentElement::operator<<(const QString & str)
 {
     children.append(new HTMLDataElement(str));
+    return *this;
+}
 
+HTMLParentElement & HTMLParentElement::operator<<(HTMLParentElement * child)
+{
+    children.append(child);
     return *this;
 }
 
