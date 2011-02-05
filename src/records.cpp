@@ -674,6 +674,11 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString()));
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
+    md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
+    md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
+    md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
+    md->addInputWidget(md_display_options);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -693,6 +698,7 @@ public:
         dict.insert("id", QApplication::translate("AssemblyRecordType", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordType", "Name"));
         dict.insert("description", QApplication::translate("AssemblyRecordType", "Description"));
+        dict.insert("display_options", QApplication::translate("AssemblyRecordType", "Display options"));
     }
 
     MTDictionary dict;

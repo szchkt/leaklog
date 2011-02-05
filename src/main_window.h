@@ -202,6 +202,7 @@ private:
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
+    void writeServiceCompany(MTTextStream &);
 
     int selected_customer;
     QString selected_customer_company;

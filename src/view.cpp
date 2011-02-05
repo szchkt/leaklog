@@ -1690,6 +1690,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
 
     AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
     QVariantMap ar_type = ar_type_record.list();
+    int type_display_options = ar_type.value("display_options").toInt();
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th>" << tr("Assembly record %1").arg(inspection.value("arno").toString()) << "</th></tr>";
@@ -1698,11 +1699,21 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     out << "<h2>" << ar_type.value("name") << "</h2>";
     out << "<h3>" << ar_type.value("description") << "</h3>";
 
-    writeCustomersTable(out, customer_id);
-    out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id);
+    if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
+        writeServiceCompany(out);
+        out << "<br>";
+    }
 
-    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
+    if (type_display_options & AssemblyRecordType::ShowCustomer) {
+        writeCustomersTable(out, customer_id);
+        out << "<br>";
+    }
+    if (type_display_options & AssemblyRecordType::ShowCircuit) {
+        writeCircuitsTable(out, customer_id, circuit_id);
+        out << "<br>";
+    }
+
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     if (!locked) {
         out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
@@ -1774,4 +1785,29 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     out << "</table>";
 
     return dict_html.value(Navigation::AssemblyRecord).arg(html);
+}
+
+void MainWindow::writeServiceCompany(MTTextStream & out)
+{
+    ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
+    QVariantMap serv_company = serv_company_record.list();
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"5\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
+    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
+    out << tr("Service company") << "</a></b></td></tr>";
+    out << "<tr>";
+    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
+        if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
+        out << "<th>" << ServiceCompany::attributes().value(n) << "</th>";
+    }
+    out << "</tr>";
+    QString attr_value;
+    out << "<tr>";
+    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
+        attr_value = ServiceCompany::attributes().key(n);
+        if (serv_company.value(attr_value).toString().isEmpty()) continue;
+        out << "<td>" << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)) << "</td>";
+    }
+    out << "</tr>";
+    out << "</table>";
 }

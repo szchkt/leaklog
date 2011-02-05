@@ -164,6 +164,12 @@ class AssemblyRecordType : public DBRecord
     Q_OBJECT
 
 public:
+    enum DisplayOptions {
+        ShowServiceCompany = 1,
+        ShowCustomer = 2,
+        ShowCircuit = 4
+            };
+
     AssemblyRecordType(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
