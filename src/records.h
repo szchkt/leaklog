@@ -230,4 +230,14 @@ public:
     static const MTDictionary & attributes();
 };
 
+class File : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    File(const QString &);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

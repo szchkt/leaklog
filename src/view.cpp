@@ -21,7 +21,7 @@
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
-#include "records.h"
+#include "dbfile.h"
 #include "report_data.h"
 #include "mttextstream.h"
 #include "mtaddress.h"
@@ -1792,10 +1792,18 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"5\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
+    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"6\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
     out << tr("Service company") << "</a></b></td></tr>";
     out << "<tr>";
+    if (serv_company.value("image").toInt()) {
+        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data();
+        if (!byte_array.isNull()) {
+            out << "<td rowspan=\"2\" width=\"5%\">";
+            out << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+            out << "</td>";
+        }
+    }
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
         out << "<th>" << ServiceCompany::attributes().value(n) << "</th>";

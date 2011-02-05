@@ -524,6 +524,7 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md, attributes.value("website").toString()));
+    md->addInputWidget(new MDFileChooser("image", tr("Image"), md, attributes.value("image").toInt()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM service_companies" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -864,5 +865,27 @@ public:
 const MTDictionary & AssemblyRecordItem::attributes()
 {
     static AssemblyRecordItemAttributes dict;
+    return dict.dict;
+}
+
+File::File(const QString & file_id):
+MTRecord("files", "id", file_id, MTDictionary())
+{}
+
+class FileAttributes
+{
+public:
+    FileAttributes() {
+        dict.insert("id", QApplication::translate("AssemblyRecordTypeItem", "ID"));
+        dict.insert("file_name", QApplication::translate("AssemblyRecordTypeItem", "File name"));
+        dict.insert("file_data", QApplication::translate("AssemblyRecordTypeItem", "File data"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & File::attributes()
+{
+    static FileAttributes dict;
     return dict.dict;
 }

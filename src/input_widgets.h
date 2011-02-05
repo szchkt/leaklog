@@ -33,6 +33,8 @@
 #include <QPlainTextEdit>
 #include <QGroupBox>
 
+class DBFile;
+
 class MTLabel : public QLabel
 {
     Q_OBJECT
@@ -211,6 +213,23 @@ public:
 private:
     QList<MDCheckBox *> checkboxes;
     int grouped_value;
+};
+
+class MDFileChooser : public QWidget, public MDInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDFileChooser(const QString &, const QString &, QWidget *, int);
+
+    QVariant variantValue();
+
+private slots:
+    void browse();
+
+private:
+    QLabel * name_lbl;
+    DBFile * db_file;
 };
 
 #endif // INPUT_WIDGETS_H

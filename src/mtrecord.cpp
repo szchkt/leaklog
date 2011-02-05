@@ -272,3 +272,8 @@ bool MTRecord::remove()
     if (result) { r_id.clear(); }
     return result;
 }
+
+void MTRecord::setId(const QString & r_id)
+{
+    this->r_id = r_id;
+}
