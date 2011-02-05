@@ -524,7 +524,7 @@ void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md, attributes.value("website").toString()));
-    md->addInputWidget(new MDFileChooser("image", tr("Image"), md, attributes.value("image").toInt()));
+    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md, attributes.value("image").toInt()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM service_companies" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -699,7 +699,6 @@ public:
         dict.insert("id", QApplication::translate("AssemblyRecordType", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordType", "Name"));
         dict.insert("description", QApplication::translate("AssemblyRecordType", "Description"));
-        dict.insert("display_options", QApplication::translate("AssemblyRecordType", "Display options"));
     }
 
     MTDictionary dict;
@@ -803,7 +802,6 @@ public:
     AssemblyRecordItemCategoryAttributes() {
         dict.insert("id", QApplication::translate("AssemblyRecordItemCategory", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordItemCategory", "Name"));
-        dict.insert("display_options", QApplication::translate("AssemblyRecordItemCategory", "Display Options"));
     }
 
     MTDictionary dict;

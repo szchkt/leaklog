@@ -1792,18 +1792,19 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-    out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"6\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
-    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
-    out << tr("Service company") << "</a></b></td></tr>";
     out << "<tr>";
     if (serv_company.value("image").toInt()) {
         QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data();
         if (!byte_array.isNull()) {
-            out << "<td rowspan=\"2\" width=\"5%\">";
+            out << "<td rowspan=\"3\" width=\"5%\">";
             out << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
             out << "</td>";
         }
     }
+    out << "<th colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\">";
+    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
+    out << tr("Service company") << "</a></th></tr>";
+    out << "<tr>";
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
         out << "<th>" << ServiceCompany::attributes().value(n) << "</th>";
