@@ -1759,8 +1759,6 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             i = n = 0; colspans[0] = 1;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowValue) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowUnit) { i = n; colspans[i] = 1; }
-            else colspans[i]++;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowListPrice) { i = n; colspans[i] = 1; }
             else colspans[i]++;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = n; colspans[i] = 1; }
@@ -1774,8 +1772,6 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             if (colspans[++i])
                 *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
             if (colspans[++i])
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Unit");
-            if (colspans[++i])
                 *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
             if (colspans[++i])
                 *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
@@ -1787,9 +1783,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         _tr = table->addRow();
         *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(name).toString();
         if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(value).toString();
-        if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(unit).toString();
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(value).toString() << " " << categories_query.value(unit).toString();
         if (colspans[++i])
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(list_price).toString();
         if (colspans[++i])

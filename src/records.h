@@ -209,8 +209,7 @@ public:
         ShowValue = 1,
         ShowListPrice = 2,
         ShowAcquisitionPrice = 4,
-        ShowUnit = 8,
-        ShowTotal = 16
+        ShowTotal = 8
             };
 
     AssemblyRecordItemCategory(const QString &);
