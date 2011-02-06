@@ -414,38 +414,41 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     out << "</table>";
 }
 
-void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id)
+void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id, int cols_in_row)
 {
     Circuit circuits_record(customer_id, circuit_id);
     if (circuit_id.isEmpty() && !navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps circuits(circuits_record.listAll());
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    QString thead = "<tr>"; int thead_colspan = 2;
+    HTMLDiv div;
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableRow * thead = new HTMLTableRow();
+    int thead_colspan = 2;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
-        thead.append("<th>" + Circuit::attributes().value(n).split("||").first() + "</th>");
+        *(thead->addHeaderCell()) << Circuit::attributes().value(n).split("||").first();
         thead_colspan++;
     }
-    thead.append("<th>" + Circuit::attributes().value("refrigerant") + "</th>");
-    thead.append("<th>" + Circuit::attributes().value("oil") + "</th>");
-    thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium; background-color: aliceblue;\">";
-    if (circuit_id.isEmpty()) { out << tr("List of circuits"); }
-    else { out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
-    out << "</th></tr>";
-    out << thead;
+    *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
+    *(thead->addHeaderCell()) << Circuit::attributes().value("oil") ;
+    HTMLTableRow * _tr = table->addRow();
+    HTMLTableCell * _td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
+    if (circuit_id.isEmpty()) { *_td << tr("List of circuits"); }
+    else { *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
+    *table << thead;
     QString attr_value; QStringList dict_value; QString id;
     QString highlighted_id = selectedCircuit();
     bool show_disused = false;
     for (int i = 0; i < circuits.count(); ++i) {
         if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt()) { show_disused = true; continue; }
         id = circuits.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << id << "'\" style=\"cursor: pointer;";
+        QString tr_attr = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + id + "'\" style=\"cursor: pointer;";
         if (id == highlighted_id) {
-            out << " background-color: rgb(242, 248, 255);\">";
-        } else { out << "\">"; }
-        out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
+            tr_attr.append(" background-color: rgb(242, 248, 255);");
+        }
+        tr_attr.append("\"");
+        _tr = table->addRow(tr_attr);
+        *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id);
         for (int n = 1; n < Circuit::numBasicAttributes(); ++n) {
             dict_value = Circuit::attributes().value(n).split("||");
             attr_value = circuits.at(i).value(Circuit::attributes().key(n)).toString();
@@ -456,42 +459,50 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
             } else if (Circuit::attributes().key(n) == "hermetic") {
                 attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
             }
-            out << "<td>" << escapeString(attr_value);
-            if (dict_value.count() > 1) { out << "&nbsp;" << dict_value.last(); }
-            out << "</td>";
+            _td = _tr->addCell();
+            *_td << escapeString(attr_value);
+            if (dict_value.count() > 1) { *_td << "&nbsp;" << dict_value.last(); }
         }
-        out << "<td>" << getCircuitRefrigerantAmount(customer_id, id, circuits.at(i).value("refrigerant_amount").toDouble()) << "&nbsp;" << QApplication::translate("Units", "kg");
-        out << " " << circuits.at(i).value("refrigerant").toString() << "</td>";
-        out << "<td>" << circuits.at(i).value("oil_amount").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg");
-        out << " " << circuits.at(i).value("oil").toString().toUpper() << "</td>";
-        out << "</tr>";
+        _td = _tr->addCell();
+        *_td << QString::number(getCircuitRefrigerantAmount(customer_id, id, circuits.at(i).value("refrigerant_amount").toDouble())) << "&nbsp;" << QApplication::translate("Units", "kg");
+        *_td << " " << circuits.at(i).value("refrigerant").toString();
+        _td = _tr->addCell();
+        *_td << circuits.at(i).value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
+        *_td << " " << circuits.at(i).value("oil").toString().toUpper();
     }
-    out << "</table>";
+    if (cols_in_row < 0) div << table;
+    else div << table->customHtml(cols_in_row);
     if (show_disused) {
-        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"><tr>";
-        out << "<th colspan=\"6\" style=\"font-size: medium;\">" << tr("Disused circuits") << "</th></tr><tr>";
-        out << "<th>" << Circuit::attributes().value("id") << "</th>";
-        out << "<th>" << Circuit::attributes().value("manufacturer") << "</th>";
-        out << "<th>" << Circuit::attributes().value("type") << "</th>";
-        out << "<th>" << Circuit::attributes().value("sn") << "</th>";
-        out << "<th>" << Circuit::attributes().value("commissioning") << "</th>";
-        out << "<th>" << Circuit::attributes().value("decommissioning") << "</th></tr>";
+        div << "<br>";
+        table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+        _tr = table->addRow();
+        *(_tr->addHeaderCell("colspan=\"6\" style=\"font-size: medium;\"")) << tr("Disused circuits");
+        _tr = table->addRow();
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("id");
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("manufacturer");
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("type");
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("sn");
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("commissioning");
+        *(_tr->addHeaderCell()) << Circuit::attributes().value("decommissioning");
         for (int i = 0; i < circuits.count(); ++i) {
             if (!circuits.at(i).value("disused").toInt()) continue;
             id = circuits.at(i).value("id").toString();
-            out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << id << "'\" style=\"cursor: pointer;";
+            QString tr_attr = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + id + "'\" style=\"cursor: pointer;";
             if (id == highlighted_id) {
-                out << " background-color: rgb(242, 248, 255);\">";
-            } else { out << "\">"; }
-            out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
-            out << "<td>" << circuits.at(i).value("manufacturer").toString() << "</td>";
-            out << "<td>" << circuits.at(i).value("type").toString() << "</td>";
-            out << "<td>" << circuits.at(i).value("sn").toString() << "</td>";
-            out << "<td>" << circuits.at(i).value("commissioning").toString() << "</td>";
-            out << "<td>" << circuits.at(i).value("decommissioning").toString() << "</td></tr>";
+                tr_attr.append(" background-color: rgb(242, 248, 255);");
+            }
+            tr_attr.append("\"");
+            _tr = table->addRow(tr_attr);
+            *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id);
+            *(_tr->addCell()) << circuits.at(i).value("manufacturer").toString();
+            *(_tr->addCell()) << circuits.at(i).value("type").toString();
+            *(_tr->addCell()) << circuits.at(i).value("sn").toString();
+            *(_tr->addCell()) << circuits.at(i).value("commissioning").toString();
+            *(_tr->addCell()) << circuits.at(i).value("decommissioning").toString();
         }
-        out << "</table>";
+        div << table;
     }
+    out << div.html();
 }
 
 QString MainWindow::viewAllCustomers()
@@ -1682,24 +1693,29 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
 
 QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
 {
-    QString html; MTTextStream out(&html);
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
     bool locked = isRecordLocked(inspection_date);
 
+    HTMLDiv div;
+    HTMLTable * table;
+    HTMLTableRow * _tr;
+    HTMLTableCell * _td;
+
     AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
     QVariantMap ar_type = ar_type_record.list();
     int type_display_options = ar_type.value("display_options").toInt();
 
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th>" << tr("Assembly record %1").arg(inspection.value("arno").toString()) << "</th></tr>";
-    out << "</table>";
+    table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    *(table->addRow()->addHeaderCell()) << tr("Assembly record No. %1").arg(inspection.value("arno").toString());
+    div << table;
 
-    out << "<h2>" << ar_type.value("name") << "</h2>";
-    out << "<h3>" << ar_type.value("description") << "</h3>";
+    div << "<h2>" << ar_type.value("name").toString() << "</h2>";
+    div << "<h3>" << ar_type.value("description").toString() << "</h3>";
 
+    QString html; MTTextStream out(&html);
     if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
         writeServiceCompany(out);
         out << "<br>";
@@ -1710,20 +1726,20 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         out << "<br>";
     }
     if (type_display_options & AssemblyRecordType::ShowCircuit) {
-        writeCircuitsTable(out, customer_id, circuit_id);
+        writeCircuitsTable(out, customer_id, circuit_id, 7);
         out << "<br>";
     }
+    div << html;
 
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    _td = table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
-        out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
+        *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
+        *_td << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
     }
-    if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
-    out << "&nbsp;" << inspection_date;
-    if (!locked) out << "</a>";
-    out << "</th></tr>";
+    if (nominal) *_td << tr("Nominal inspection:"); else if (repair) *_td << tr("Repair:"); else *_td << tr("Inspection:");
+    *_td << "&nbsp;" << inspection_date;
+    if (!locked) *_td << "</a>";
 
     QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name, assembly_record_item_categories.display_options, assembly_record_item_types.list_price, assembly_record_item_types.acquisition_price, assembly_record_item_types.unit FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id"
@@ -1734,6 +1750,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7;
     int num_columns = 6, i, n;
     int colspans[num_columns];
+    QString colspan = "colspan=\"%1\"";
     while (categories_query.next()) {
         if (last_category != categories_query.value(category_id).toInt()) {
             int cat_display_options = categories_query.value(display_options).toInt();
@@ -1752,40 +1769,38 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             else colspans[i]++;
 
             i = 0;
-            out << "<tr>";
-            out << "<th colspan=\"" << colspans[i] << "\">" << categories_query.value(category_name).toString() << "</th>";
+            _tr = table->addRow();
+            *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(category_name).toString();
             if (colspans[++i])
-                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Value") << "</th>";
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
             if (colspans[++i])
-                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Unit") << "</th>";
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Unit");
             if (colspans[++i])
-                out << "<th colspan=\"" << colspans[i] << "\">" << tr("List price") << "</th>";
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
             if (colspans[++i])
-                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Acquisition price") << "</th>";
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
             if (colspans[++i])
-                out << "<th colspan=\"" << colspans[i] << "\">" << tr("Total") << "</th>";
-            out << "</tr>";
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total");
             last_category = categories_query.value(category_id).toInt();
         }
         i = 0;
-        out << "<tr>";
-        out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(name).toString() << "</td>";
+        _tr = table->addRow();
+        *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(name).toString();
         if (colspans[++i])
-            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(value).toString() << "</td>";
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(value).toString();
         if (colspans[++i])
-            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(unit).toString() << "</td>";
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(unit).toString();
         if (colspans[++i])
-            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(list_price).toString() << "</td>";
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(list_price).toString();
         if (colspans[++i])
-            out << "<td colspan=\"" << colspans[i] << "\">" << categories_query.value(acquisition_price).toString() << "</td>";
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(acquisition_price).toString();
         if (colspans[++i])
-            out << "<td colspan=\"" << colspans[i] << "\">" << (categories_query.value(value).toInt() * categories_query.value(acquisition_price).toInt()) << "</td>";
-        out << "</tr>";
+            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(categories_query.value(value).toInt() * categories_query.value(acquisition_price).toInt());
     }
 
-    out << "</table>";
+    div << table;
 
-    return dict_html.value(Navigation::AssemblyRecord).arg(html);
+    return dict_html.value(Navigation::AssemblyRecord).arg(div.html());
 }
 
 void MainWindow::writeServiceCompany(MTTextStream & out)
@@ -1809,7 +1824,9 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
         _td = _tr->addHeaderCell();
-        *_td << ServiceCompany::attributes().value(n);
+        QString attr = ServiceCompany::attributes().value(n);
+        attr.chop(1);
+        *_td << attr;
     }
     QString attr_value;
     _tr = table.addRow();

@@ -20,7 +20,7 @@ HTMLParentElement & HTMLParentElement::operator<<(const QString & str)
     return *this;
 }
 
-HTMLParentElement & HTMLParentElement::operator<<(HTMLParentElement * child)
+HTMLParentElement & HTMLParentElement::operator<<(HTMLElement * child)
 {
     children.append(child);
     return *this;
@@ -56,6 +56,25 @@ HTMLParentElement(args)
     tag_name = "table";
 }
 
+const QString HTMLTable::customHtml(int cols_in_row)
+{
+    QString str;
+    QTextStream out(&str);
+
+    out << "<table " << args << ">";
+    bool cols_left = true;
+    int n = 0;
+    while (cols_left) {
+        for (int i = 0; i < children.count(); ++i) {
+            out << ((HTMLTableRow *) children.at(i))->customHtml(n, cols_in_row, cols_left);
+        }
+        n += cols_in_row;
+    }
+    out << "</table>";
+
+    return str;
+}
+
 HTMLTableRow * HTMLTable::addRow(const QString & row_args)
 {
     HTMLTableRow * row = new HTMLTableRow(row_args);
@@ -67,6 +86,22 @@ HTMLTableRow::HTMLTableRow(const QString & args):
 HTMLParentElement(args)
 {
     tag_name = "tr";
+}
+
+const QString HTMLTableRow::customHtml(int n, int cols_in_row, bool & cols_left)
+{
+    QString str;
+    QTextStream out(&str);
+    int i;
+
+    out << "<tr " << args << ">";
+    for (i = n; i < n + cols_in_row && i < children.count(); ++i) {
+        out << children.at(i)->html();
+    }
+    cols_left = i < children.count();
+    out << "</tr>";
+
+    return str;
 }
 
 HTMLTableCell * HTMLTableRow::addCell(const QString & cell_args)

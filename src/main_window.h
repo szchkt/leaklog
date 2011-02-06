@@ -201,7 +201,7 @@ private:
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
-    void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString());
+    void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString(), int = -1);
     void writeServiceCompany(MTTextStream &);
 
     int selected_customer;

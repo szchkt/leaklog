@@ -35,7 +35,7 @@ public:
     inline const QString tagName() { return tag_name; }
 
     HTMLParentElement & operator<<(const QString &);
-    HTMLParentElement & operator<<(HTMLParentElement *);
+    HTMLParentElement & operator<<(HTMLElement *);
 
 protected:
     QList<HTMLElement *> children;
@@ -49,6 +49,8 @@ public:
     HTMLTable(const QString & = QString());
 
     HTMLTableRow * addRow(const QString & = QString());
+
+    const QString customHtml(int);
 };
 
 class HTMLTableRow : public HTMLParentElement
@@ -58,6 +60,8 @@ public:
 
     HTMLTableCell * addCell(const QString & = QString());
     HTMLHeaderTableCell * addHeaderCell(const QString & = QString());
+
+    const QString customHtml(int, int, bool &);
 };
 
 class HTMLTableCell : public HTMLParentElement
