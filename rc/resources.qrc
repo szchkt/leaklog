@@ -65,5 +65,7 @@
         <file>images/fileclose.png</file>
         <file>images/leaklog128.png</file>
         <file>images/duplicate.png</file>
+        <file>images/assembly_record.png</file>
+        <file>images/assembly_records.png</file>
     </qresource>
 </RCC>

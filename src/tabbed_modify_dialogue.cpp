@@ -59,7 +59,7 @@ ModifyDialogueTab::ModifyDialogueTab(QWidget * parent)
 
 void ModifyDialogueTab::setLayout(QLayout * layout)
 {
-    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setContentsMargins(9, 9, 9, 9);
     QWidget::setLayout(layout);
 }
 

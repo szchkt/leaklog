@@ -1835,7 +1835,7 @@
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/fileopen.png</normaloff>:/images/images/fileopen.png</iconset>
+     <normaloff>:/images/images/assembly_records.png</normaloff>:/images/images/assembly_records.png</iconset>
    </property>
    <property name="text">
     <string>Assembly records</string>

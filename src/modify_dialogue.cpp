@@ -30,7 +30,7 @@ void ModifyDialogue::init(DBRecord * record)
     md_record = record;
     QVBoxLayout * md_vlayout_main = new QVBoxLayout(this);
     md_vlayout_main->setSpacing(9);
-    md_vlayout_main->setContentsMargins(6, 6, 6, 6);
+    md_vlayout_main->setContentsMargins(9, 9, 9, 9);
     md_grid_main = new QGridLayout;
     addMainGridLayout(md_vlayout_main);
     QDialogButtonBox * md_bb = new QDialogButtonBox(this);
@@ -130,7 +130,7 @@ ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidg
 
     md_grid_main->setHorizontalSpacing(9);
     md_grid_main->setVerticalSpacing(6);
-    md_grid_main->setContentsMargins(0, 0, 0, 0);
+    md_grid_main->setContentsMargins(9, 9, 9, 9);
 }
 
 void ModifyDialogueLayout::layout()

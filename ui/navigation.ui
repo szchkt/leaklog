@@ -1391,7 +1391,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
+          <normaloff>:/images/images/assembly_record.png</normaloff>:/images/images/assembly_record.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1607,7 +1607,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1639,7 +1639,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+          <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1671,7 +1671,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
+          <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1747,7 +1747,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1779,7 +1779,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+          <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1811,7 +1811,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
+          <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1887,7 +1887,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1919,7 +1919,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+          <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1951,7 +1951,7 @@
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
+          <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
