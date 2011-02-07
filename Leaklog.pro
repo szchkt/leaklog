@@ -38,7 +38,8 @@ HEADERS       += src/global.h \
                  src/import_csv_dialogue.h \
                  src/tabbed_modify_dialogue.h \
                  src/dbfile.h \
-                 src/htmlbuilder.h
+                 src/htmlbuilder.h \
+    src/modifydialoguetable.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -69,7 +70,8 @@ SOURCES       += src/global.cpp \
                  src/import_csv_dialogue.cpp \
                  src/tabbed_modify_dialogue.cpp \
                  src/dbfile.cpp \
-                 src/htmlbuilder.cpp
+                 src/htmlbuilder.cpp \
+    src/modifydialoguetable.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

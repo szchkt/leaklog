@@ -14,6 +14,8 @@ class ModifyDialogueGroupsLayout;
 class MDLineEdit;
 class MDComboBox;
 class MTDictionary;
+class ModifyDialogueTableGroupBox;
+class ModifyDialogueGroupHeaderItem;
 
 class TabbedModifyDialogue : public ModifyDialogue
 {
@@ -107,12 +109,30 @@ class ModifyDialogueGroupsLayout : public QWidget
 public:
     ModifyDialogueGroupsLayout(QWidget *);
 
-    void addWidget(const QString &, MDInputWidget *);
+    void addHeaderItem(int, const QString &, const QString &);
+    void addItem(const QString &, const QString &, const MTDictionary &, int);
+    ModifyDialogueTableGroupBox * createGroup(const QString &, int);
 
 private:
-    QMap<QString, QGroupBox *> * groups;
+    QMap<QString, ModifyDialogueTableGroupBox *> * groups;
+    QList<ModifyDialogueGroupHeaderItem *> header_items;
     QList<MDInputWidget *> item_inputwidgets;
     QVBoxLayout * layout;
+};
+
+class ModifyDialogueGroupHeaderItem
+{
+public:
+    ModifyDialogueGroupHeaderItem(int, const QString &, const QString &);
+
+    int id() { return item_id; }
+    const QString & name() { return item_name; }
+    const QString & fullName() { return item_full_name; }
+
+private:
+    int item_id;
+    QString item_name;
+    QString item_full_name;
 };
 
 #endif // TABBED_MODIFY_DIALOGUE_H
