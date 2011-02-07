@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QMap>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 
 ModifyDialogueTableGroupBox::ModifyDialogueTableGroupBox(const QString &name, const MTDictionary & header, QWidget * parent):
@@ -14,20 +15,19 @@ ModifyDialogueTableGroupBox::ModifyDialogueTableGroupBox(const QString &name, co
     visible_rows = 0;
 
     QVBoxLayout * layout = new QVBoxLayout(this);
-    grid = new QGridLayout(this);
+    grid = new QGridLayout;
     layout->addLayout(grid);
     layout->addLayout(addRowControlsLayout());
-    setLayout(layout);
 
     createHeader();
 }
 
 void ModifyDialogueTableGroupBox::createHeader()
 {
-    grid->addWidget(new QLabel(tr("Name")), 0, 0);
+    grid->addWidget(new QLabel(QString("<b>%1</b>").arg(tr("Name")), 0, 0));
 
     for (int i = 0; i < header.count(); ++i) {
-        grid->addWidget(new QLabel(header.value(i)), visible_rows, i + 1);
+        grid->addWidget(new QLabel(QString("<b>%1</b>").arg(header.value(i))), visible_rows, i + 1);
     }
     visible_rows++;
 }
@@ -50,23 +50,27 @@ QLayout * ModifyDialogueTableGroupBox::addRowControlsLayout()
 
 void ModifyDialogueTableGroupBox::addRow(const QString & name, const MTDictionary & values, bool display)
 {
-    rows.append(new ModifyDialogueTableRow(values, display));
+    ModifyDialogueTableRow * row = new ModifyDialogueTableRow(values, display);
+    QObject::connect(row, SIGNAL(removed(ModifyDialogueTableRow*)), this, SLOT(rowRemoved(ModifyDialogueTableRow*)));
+    rows.append(row);
+
     if (!display) {
-        add_row_cb->addItem(name, rows.last()->itemTypeId());
+        add_row_cb->addItem(name, row->itemTypeId());
     } else {
-        addRow(rows.last(), name);
+        addRow(row, name);
     }
 }
 
 void ModifyDialogueTableGroupBox::addRow(ModifyDialogueTableRow * row, const QString & name)
 {
-    grid->addWidget(new QLabel(name), visible_rows, 0);
+    grid->addWidget(row->label(name), visible_rows, 0);
 
     for (int i = 0; i < header.count(); ++i) {
         QLineEdit * le = new QLineEdit(row->dict().value(header.key(i)));
         row->addWidget(header.key(i), le);
         grid->addWidget(le, visible_rows, i + 1);
     }
+    grid->addWidget(row->removeButton(), visible_rows, header.count() + 1);
     visible_rows++;
 }
 
@@ -88,6 +92,11 @@ void ModifyDialogueTableGroupBox::activateRow()
     add_row_cb->removeItem(add_row_cb->currentIndex());
 }
 
+void ModifyDialogueTableGroupBox::rowRemoved(ModifyDialogueTableRow * row)
+{
+    add_row_cb->addItem(row->name(), row->itemTypeId());
+}
+
 QList<MTDictionary> ModifyDialogueTableGroupBox::allValues()
 {
     QList<MTDictionary> values;
@@ -105,6 +114,8 @@ ModifyDialogueTableRow::ModifyDialogueTableRow(const MTDictionary & values, bool
     this->values = values;
     this->in_table = in_table;
     widgets = new QMap<QString, QLineEdit *>;
+    remove_btn = NULL;
+    lbl = NULL;
 }
 
 void ModifyDialogueTableRow::addWidget(const QString & name, QLineEdit * le)
@@ -125,4 +136,43 @@ const MTDictionary & ModifyDialogueTableRow::dictValues()
 const QString & ModifyDialogueTableRow::itemTypeId()
 {
     return values.value("item_type_id");
+}
+
+void ModifyDialogueTableRow::remove()
+{
+    QMapIterator<QString, QLineEdit *> i(*widgets);
+     while (i.hasNext()) {
+         i.next();
+         delete widgets->take(i.key());
+     }
+     if (lbl) {
+         delete lbl;
+         lbl = NULL;
+     }
+     if (remove_btn) {
+         delete remove_btn;
+         remove_btn = NULL;
+     }
+     setInTable(false);
+
+     emit removed(this);
+}
+
+QLabel * ModifyDialogueTableRow::label(const QString & name)
+{
+    if (!lbl) {
+        lbl = new QLabel(name);
+        row_name = name;
+    }
+    return lbl;
+}
+
+QToolButton * ModifyDialogueTableRow::removeButton()
+{
+    if (!remove_btn) {
+        remove_btn = new QToolButton;
+        remove_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
+        QObject::connect(remove_btn, SIGNAL(clicked()), this, SLOT(remove()));
+    }
+    return remove_btn;
 }

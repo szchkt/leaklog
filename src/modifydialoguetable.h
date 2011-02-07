@@ -4,6 +4,8 @@
 class QGridLayout;
 class QLineEdit;
 class QComboBox;
+class QLabel;
+class QToolButton;
 
 #include <QGroupBox>
 #include <QAction>
@@ -25,6 +27,7 @@ public:
 
 private slots:
     void activateRow();
+    void rowRemoved(ModifyDialogueTableRow *);
 
 private:
     void createHeader();
@@ -38,8 +41,10 @@ private:
     int visible_rows;
 };
 
-class ModifyDialogueTableRow
+class ModifyDialogueTableRow : public QObject
 {
+    Q_OBJECT
+
 public:
     ModifyDialogueTableRow(const MTDictionary &, bool);
 
@@ -51,8 +56,21 @@ public:
     const QString & itemTypeId();
     const MTDictionary & dict() { return values; }
 
+    QToolButton * removeButton();
+    QLabel * label(const QString &);
+    const QString & name() { return row_name; }
+
+private slots:
+    void remove();
+
+signals:
+    void removed(ModifyDialogueTableRow *);
+
 private:
     QMap<QString, QLineEdit *> * widgets;
+    QToolButton * remove_btn;
+    QLabel * lbl;
+    QString row_name;
     MTDictionary values;
     bool in_table;
 };

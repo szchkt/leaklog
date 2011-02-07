@@ -252,11 +252,15 @@ void ModifyInspectionDialogueTab::save(int)
     QVariantMap map;
     map.insert("arno", arno);
 
-    /*for (int i = 0; i < item_inputwidgets.count(); ++i) {
-        map.insert("item_type_id", item_inputwidgets.at(i)->id());
-        map.insert("value", item_inputwidgets.at(i)->variantValue());
+    QList<MTDictionary> record_dicts = groups_layout->allValues();
+
+    for (int i = 0; i < record_dicts.count(); ++i) {
+        map.insert("value", record_dicts.at(i).value("value"));
+        map.insert("item_type_id", record_dicts.at(i).value("item_type_id"));
+        map.insert("acquisition_price", record_dicts.at(i).value("acquisition_price"));
+        map.insert("list_price", record_dicts.at(i).value("list_price"));
         record_item.update(map);
-    }*/
+    }
 }
 
 ModifyDialogueGroupsLayout::ModifyDialogueGroupsLayout(QWidget * parent):
@@ -264,7 +268,6 @@ QWidget(parent)
 {
     layout = new QVBoxLayout(this);
     groups = new QMap<QString, ModifyDialogueTableGroupBox *>;
-    this->setLayout(layout);
 }
 
 void ModifyDialogueGroupsLayout::addHeaderItem(int id, const QString & name, const QString & full_name)
