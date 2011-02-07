@@ -105,15 +105,6 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
             }
         }
     }
-    QStringList db_info_ids;
-    db_info_ids << "created_with" << "date_created" << "saved_with" << "db_version" << "default_service_company"
-            << "lock_date" << "lock_password" << "locked";
-    for (int i = 0; i < db_info_ids.count(); ++i) {
-        query.exec("SELECT value FROM db_info WHERE id = '" + db_info_ids.at(i) + "'");
-        if (!query.next()) {
-            query.exec("INSERT INTO db_info (id) VALUES ('" + db_info_ids.at(i) + "')");
-        }
-    }
     double v = DBInfoValueForKey("db_version").toDouble();
     if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");

@@ -44,7 +44,7 @@ namespace Global {
     void addColumn(const QString &, const QString &, QSqlDatabase *);
     void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
-    QString DBInfoValueForKey(const QString &);
+    QString DBInfoValueForKey(const QString &, const QString & = QString());
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
     double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;

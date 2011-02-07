@@ -184,17 +184,20 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
     }
 }
 
-QString Global::DBInfoValueForKey(const QString & key)
+QString Global::DBInfoValueForKey(const QString & key, const QString & default_value)
 {
     QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
-    if (!query.next()) { return QString(); }
+    if (!query.next())
+        return default_value;
     return query.value(0).toString();
 }
 
 QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value)
 {
-    QSqlQuery query(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key));
-    return query.lastError();
+    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    if (query.next())
+        return QSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key)).lastError();
+    return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
 }
 
 double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
