@@ -47,6 +47,7 @@ MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWid
     iw_id = id;
     iw_label = createLabel(parent, labeltext);
     iw_widget = widget;
+    show = true;
 }
 
 QPalette MDInputWidget::paletteForColour(const QString & colour)

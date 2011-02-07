@@ -64,11 +64,15 @@ public:
     inline MTLabel * label() { return iw_label; }
     inline QWidget * widget() { return iw_widget; }
 
+    bool showInForm() { return show; }
+    void setShowInForm(bool show) { this->show = show; }
+
 protected:
     static QPalette paletteForColour(const QString &);
     static MTLabel * createLabel(QWidget * parent, const QString &);
 
 private:
+    bool show;
     QString iw_id;
     MTLabel * iw_label;
     QWidget * iw_widget;

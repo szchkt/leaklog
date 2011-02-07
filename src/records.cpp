@@ -252,6 +252,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
             } else if (var_id == "ar_type") {
                 iw = new MDComboBox(var_id, var_name, md,
                     attributes.value(var_id).toString(), listAssemblyRecordTypes(), query.value("VAR_COL_BG").toString());
+                iw->setShowInForm(false);
                 md->addInputWidget(iw);
             } else if (var_type == "int") {
                 md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
@@ -266,8 +267,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 }
                 md->addInputWidget(iw);
             } else if (var_type == "string") {
-                md->addInputWidget(new MDLineEdit(var_id, var_name, md,
-                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString()));
+                iw = new MDLineEdit(var_id, var_name, md,
+                                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString());
+                if (var_id == "arno") iw->setShowInForm(false);
+                md->addInputWidget(iw);
             } else if (var_type == "text") {
                 md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
                     attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));

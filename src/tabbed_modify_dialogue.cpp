@@ -141,11 +141,11 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
     addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type")));
 }
 
-ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_pw, MDComboBox * ar_type_pw, QWidget * parent)
+ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
-    this->ar_type_w = ar_type_pw;
-    this->arno_w = arno_pw;
+    this->ar_type_w = ar_type_w;
+    this->arno_w = arno_w;
 
     QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
 
@@ -161,14 +161,10 @@ void ModifyInspectionDialogueTab::init()
 
     QGridLayout * form_grid = new QGridLayout;
     QList<MDInputWidget *> inputwidgets;
-    MDLineEdit * arno_le = new MDLineEdit("arno", tr("Assembly record number:"), this, arno_w->text());
-    arno_le->setEnabled(false);
-    QObject::connect(arno_w, SIGNAL(textChanged(QString)), arno_le, SLOT(setText(QString)));
-    inputwidgets.append(arno_le);
-    MDLineEdit * type_le = new MDLineEdit("ar_type", tr("Assembly record type:"), this, ar_type_w->currentText());
-    type_le->setEnabled(false);
-    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(QString)), type_le, SLOT(setText(QString)));
-    inputwidgets.append(type_le);
+    arno_w->setShowInForm(true);
+    inputwidgets.append(arno_w);
+    ar_type_w->setShowInForm(true);
+    inputwidgets.append(ar_type_w);
     ModifyDialogueColumnLayout(&inputwidgets, form_grid, 1).layout();
 
     layout->addLayout(form_grid);

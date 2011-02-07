@@ -149,12 +149,15 @@ ModifyDialogueColumnLayout::ModifyDialogueColumnLayout(QList<MDInputWidget *> * 
 
 void ModifyDialogueColumnLayout::layout()
 {
-    int num_cols = md_inputwidgets->count() / rows_in_column + 1;
-    int num_rows = md_inputwidgets->count() / num_cols + (md_inputwidgets->count() % num_cols > 0 ? 1 : 0);
+    int count = 0;
+    for (int i = 0; i < md_inputwidgets->count(); ++i) { if (md_inputwidgets->at(i)->showInForm()) count++; }
+    int num_cols = count / rows_in_column + 1;
+    int num_rows = count / num_cols + (count % num_cols > 0 ? 1 : 0);
     int i = 0;
     for (int c = 0; c < num_cols; ++c) {
         for (int r = 0; r < num_rows; ++r) {
             if (i >= md_inputwidgets->count()) { return; }
+            if (!md_inputwidgets->at(i)->showInForm()) { r--; i++; continue; }
             addWidget(md_inputwidgets->at(i)->label(), r, 2 * c);
             addWidget(md_inputwidgets->at(i)->widget(), r, (2 * c) + 1);
             i++;
