@@ -712,8 +712,8 @@ const MTDictionary & AssemblyRecordType::attributes()
 
 bool AssemblyRecordType::remove()
 {
-    AssemblyRecordTypeItem type_items(id());
-    return type_items.remove() && MTRecord::remove();
+    AssemblyRecordTypeCategory type_categories(id());
+    return type_categories.remove() && MTRecord::remove();
 }
 
 AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
@@ -770,24 +770,24 @@ const MTDictionary & AssemblyRecordItemType::attributes()
     return dict.dict;
 }
 
-AssemblyRecordTypeItem::AssemblyRecordTypeItem(const QString & record_type_id):
-MTRecord("assembly_record_type_items", "", "", MTDictionary("record_type_id", record_type_id))
+AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString & record_type_id):
+MTRecord("assembly_record_type_categories", "", "", MTDictionary("record_type_id", record_type_id))
 {}
 
-class AssemblyRecordTypeItemAttributes
+class AssemblyRecordTypeCategoryAttributes
 {
 public:
-    AssemblyRecordTypeItemAttributes() {
-        dict.insert("record_type_id", QApplication::translate("AssemblyRecordTypeItem", "Assembly record type ID"));
-        dict.insert("record_item_id", QApplication::translate("AssemblyRecordTypeItem", "Assembly record item type ID"));
+    AssemblyRecordTypeCategoryAttributes() {
+        dict.insert("record_type_id", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record type ID"));
+        dict.insert("record_category_id", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record category type ID"));
     }
 
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordTypeItem::attributes()
+const MTDictionary & AssemblyRecordTypeCategory::attributes()
 {
-    static AssemblyRecordTypeItemAttributes dict;
+    static AssemblyRecordTypeCategoryAttributes dict;
     return dict.dict;
 }
 

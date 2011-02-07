@@ -10,6 +10,7 @@ class QComboBox;
 class QGroupBox;
 
 class ModifyDialogueTab;
+class ModifyDialogueGroupsLayout;
 class MDLineEdit;
 class MDComboBox;
 class MTDictionary;
@@ -94,12 +95,24 @@ private:
     const QVariant assemblyRecordType();
     const QVariant assemblyRecordId();
 
-    QGridLayout * items_grid;
-    QList<MDInputWidget *> item_inputwidgets;
-    QLineEdit * id_le;
-    QComboBox * assembly_record_type;
+    ModifyDialogueGroupsLayout * groups_layout;
     MDComboBox * ar_type_w;
     MDLineEdit * arno_w;
+};
+
+class ModifyDialogueGroupsLayout : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueGroupsLayout(QWidget *);
+
+    void addWidget(const QString &, MDInputWidget *);
+
+private:
+    QMap<QString, QGroupBox *> * groups;
+    QList<MDInputWidget *> item_inputwidgets;
+    QVBoxLayout * layout;
 };
 
 #endif // TABBED_MODIFY_DIALOGUE_H

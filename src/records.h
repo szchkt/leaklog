@@ -190,12 +190,12 @@ public:
     static const MTDictionary & attributes();
 };
 
-class AssemblyRecordTypeItem : public MTRecord
+class AssemblyRecordTypeCategory : public MTRecord
 {
     Q_OBJECT
 
 public:
-    AssemblyRecordTypeItem(const QString &);
+    AssemblyRecordTypeCategory(const QString &);
 
     static const MTDictionary & attributes();
 };
