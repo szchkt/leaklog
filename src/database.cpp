@@ -587,7 +587,7 @@ void MainWindow::duplicateCustomer()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
-    record.readAttributes();
+    record.readValues();
     record.id().clear();
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -683,7 +683,7 @@ void MainWindow::duplicateCircuit()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
-    record.readAttributes();
+    record.readValues();
     record.id().clear();
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -760,7 +760,7 @@ void MainWindow::duplicateInspection()
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
-    record.readAttributes();
+    record.readValues();
     record.id().clear();
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -834,7 +834,7 @@ void MainWindow::duplicateRepair()
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
-    record.readAttributes();
+    record.readValues();
     record.id().clear();
     if (!record.stringValue("parent").isEmpty()) {
         record.parents().insert("parent", record.stringValue("parent"));

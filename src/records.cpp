@@ -45,7 +45,7 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Customer"));
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999999));
@@ -100,7 +100,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         customer = parent("parent").rightJustified(8, '0');
     md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit").arg(customer).arg(rightTriangle()));
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     } else {
         attributes.insert("year", QDate::currentDate().year());
@@ -203,7 +203,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         circuit = parent("circuit").rightJustified(4, '0');
     md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit: %3 > Inspection").arg(customer).arg(rightTriangle()).arg(circuit));
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
     bool nominal_allowed = true;
@@ -314,7 +314,7 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
 
     md->setWindowTitle(tr("Repair"));
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     } else {
         for (int i = 0; i < parents().count(); ++i) {

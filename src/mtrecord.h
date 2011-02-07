@@ -46,13 +46,13 @@ public:
     bool exists();
     QSqlQuery select(const QString & = "*", Qt::SortOrder = Qt::AscendingOrder);
     QVariantMap list(const QString & = "*", bool = false);
-    void readAttributes();
-    inline QVariantMap & attributes() { return r_attributes; }
+    void readValues();
+    inline QVariantMap & values() { return r_values; }
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
-        return r_attributes.isEmpty() ? list(field).value(field, default_value) : r_attributes.value(field, default_value);
+        return r_values.isEmpty() ? list(field).value(field, default_value) : r_values.value(field, default_value);
     }
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
-        return r_attributes.isEmpty() ? list(field).value(field, default_value).toString() : r_attributes.value(field, default_value).toString();
+        return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
     }
     ListOfVariantMaps listAll(const QString & = "*");
     QVariantMap sumAll(const QString &);
@@ -66,7 +66,7 @@ private:
     QString r_id;
     MTDictionary r_parents;
     MTDictionary r_filter;
-    QVariantMap r_attributes;
+    QVariantMap r_values;
 };
 
 #endif // MTRECORD_H

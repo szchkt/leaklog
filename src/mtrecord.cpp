@@ -38,6 +38,7 @@ QObject()
     r_id = other.r_id;
     r_parents = other.r_parents;
     r_filter = other.r_filter;
+    r_values = other.r_values;
 }
 
 MTRecord & MTRecord::operator=(const MTRecord & other)
@@ -47,6 +48,7 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     r_id = other.r_id;
     r_parents = other.r_parents;
     r_filter = other.r_filter;
+    r_values = other.r_values;
     return *this;
 }
 
@@ -92,8 +94,8 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
 
 QVariantMap MTRecord::list(const QString & fields, bool refresh)
 {
-    if (!refresh && !r_attributes.isEmpty())
-        return r_attributes;
+    if (!refresh && !r_values.isEmpty())
+        return r_values;
     QVariantMap list;
     QSqlQuery query = select(fields);
     query.setForwardOnly(true);
@@ -105,9 +107,9 @@ QVariantMap MTRecord::list(const QString & fields, bool refresh)
     return list;
 }
 
-void MTRecord::readAttributes()
+void MTRecord::readValues()
 {
-    r_attributes = list("*", true);
+    r_values = list("*", true);
 }
 
 ListOfVariantMaps MTRecord::listAll(const QString & fields)
