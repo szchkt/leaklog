@@ -854,6 +854,8 @@ public:
         dict.insert("arno", QApplication::translate("AssemblyRecordItem", "Assembly record number"));
         dict.insert("item_type_id", QApplication::translate("AssemblyRecordItem", "Record item type ID"));
         dict.insert("value", QApplication::translate("AssemblyRecordItem", "Value"));
+        dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItem", "Acquisition price"));
+        dict.insert("list_price", QApplication::translate("AssemblyRecordItem", "List price"));
     }
 
     MTDictionary dict;
@@ -873,9 +875,9 @@ class FileAttributes
 {
 public:
     FileAttributes() {
-        dict.insert("id", QApplication::translate("AssemblyRecordTypeItem", "ID"));
-        dict.insert("file_name", QApplication::translate("AssemblyRecordTypeItem", "File name"));
-        dict.insert("file_data", QApplication::translate("AssemblyRecordTypeItem", "File data"));
+        dict.insert("id", QApplication::translate("File", "ID"));
+        dict.insert("file_name", QApplication::translate("File", "File name"));
+        dict.insert("file_data", QApplication::translate("File", "File data"));
     }
 
     MTDictionary dict;

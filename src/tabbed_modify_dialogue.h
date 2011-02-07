@@ -110,8 +110,10 @@ public:
     ModifyDialogueGroupsLayout(QWidget *);
 
     void addHeaderItem(int, const QString &, const QString &);
-    void addItem(const QString &, const QString &, const MTDictionary &, int);
+    void addItem(const QString &, const QString &, const MTDictionary &, int, bool);
     ModifyDialogueTableGroupBox * createGroup(const QString &, int);
+
+    QList<MTDictionary> allValues();
 
 private:
     QMap<QString, ModifyDialogueTableGroupBox *> * groups;

@@ -204,10 +204,20 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
 
     enum QUERY_RESULTS
     {
-        ID = 0, NAME = 1, ACQUISITION_PRICE = 2, VALUE = 3, CATEGORY_NAME = 4, CATEGORY_ID = 5, DISPLAY_OPTIONS = 6
+        TYPE_ID = 0,
+        NAME = 1,
+        ACQUISITION_PRICE = 2,
+        LIST_PRICE = 3,
+        VALUE = 4,
+        CATEGORY_NAME = 5,
+        CATEGORY_ID = 6,
+        DISPLAY_OPTIONS = 7,
+        ITEM_ACQUISITION_PRICE = 8,
+        ITEM_LIST_PRICE = 9
     };
-    QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price,"
-                                  " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options"
+    QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
+                                  " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price"
                                   " FROM assembly_record_item_types"
                                   " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                   " AND assembly_record_items.arno = '%1'"
@@ -219,9 +229,14 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
     while (items_query.next()) {
         MTDictionary dict;
         dict.setValue("value", items_query.value(VALUE).toString());
-        dict.setValue("acquisition_price", items_query.value(ACQUISITION_PRICE).toString());
-        dict.setValue("list_price", "");
-        groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(), items_query.value(NAME).toString(), dict, items_query.value(DISPLAY_OPTIONS).toInt());
+        dict.setValue("item_type_id", items_query.value(TYPE_ID).toString());
+        dict.setValue("acquisition_price", items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE).toString() : items_query.value(ITEM_ACQUISITION_PRICE).toString());
+        dict.setValue("list_price", items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(LIST_PRICE).toString() : items_query.value(ITEM_LIST_PRICE).toString());
+        groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
+                               items_query.value(NAME).toString(),
+                               dict,
+                               items_query.value(DISPLAY_OPTIONS).toInt(),
+                               !items_query.value(VALUE).isNull());
     }
 }
 
@@ -257,7 +272,7 @@ void ModifyDialogueGroupsLayout::addHeaderItem(int id, const QString & name, con
     header_items.append(new ModifyDialogueGroupHeaderItem(id, name, full_name));
 }
 
-void ModifyDialogueGroupsLayout::addItem(const QString & group_name, const QString & row_name, const MTDictionary & values, int category_display)
+void ModifyDialogueGroupsLayout::addItem(const QString & group_name, const QString & row_name, const MTDictionary & values, int category_display, bool display)
 {
     ModifyDialogueTableGroupBox * group_box;
     if (!groups->contains(group_name)) {
@@ -266,7 +281,7 @@ void ModifyDialogueGroupsLayout::addItem(const QString & group_name, const QStri
         group_box = groups->value(group_name);
     }
 
-    group_box->addRow(row_name, values);
+    group_box->addRow(row_name, values, display);
 }
 
 ModifyDialogueTableGroupBox * ModifyDialogueGroupsLayout::createGroup(const QString & group_name, int display_options)
@@ -281,6 +296,17 @@ ModifyDialogueTableGroupBox * ModifyDialogueGroupsLayout::createGroup(const QStr
     groups->insert(group_name, group_box);
     layout->addWidget(group_box);
     return group_box;
+}
+
+QList<MTDictionary> ModifyDialogueGroupsLayout::allValues()
+{
+    QList<MTDictionary> values;
+
+    foreach (ModifyDialogueTableGroupBox * group_box, *groups) {
+        values.append(group_box->allValues());
+    }
+
+    return values;
 }
 
 ModifyDialogueGroupHeaderItem::ModifyDialogueGroupHeaderItem(int id, const QString & name, const QString & full_name)
