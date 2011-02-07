@@ -236,10 +236,8 @@ QString MainWindow::viewServiceCompany(int since)
         }
     }
     html.replace("<store />", store_html);
-    bool database_locked = DBInfoValueForKey("locked") == "true";
-    QString lock_date = DBInfoValueForKey("lock_date");
     int year, last_year = 0;
-    bool it = false, bf = false, link_enabled = true;
+    bool it = false, bf = false;
     QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
     QVector<double> * sum_list = NULL;
@@ -274,15 +272,12 @@ QString MainWindow::viewServiceCompany(int since)
             bf = link.contains("nominal");
             it = link.startsWith("repair:");
             if (bf) link.remove("nominal");
-            link_enabled = !database_locked || !link.startsWith("record") || i.key() >= lock_date;
             out << "<tr><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
-            out << ">";
-            if (link_enabled) out << "<a href=\"" << link << "\">";
+            out << "><a href=\"" << link << "\">";
             out << i.key();
-            if (link_enabled) out << "</a>";
-            out << "</td><td";
+            out << "</a></td><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
             out << ">" << i.value().at(1) << "</td>";
@@ -326,8 +321,6 @@ QString MainWindow::viewRefrigerantManagement(int since)
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "</tr>";
-    bool database_locked = DBInfoValueForKey("locked") == "true";
-    QString lock_date = DBInfoValueForKey("lock_date");
     RecordOfRefrigerantManagement records("");
     if (!navigation->isFilterEmpty()) {
         records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
@@ -339,10 +332,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
     while (query.next()) {
         date = QUERY("date").toString();
         if (since && date.left(4).toInt() < since) continue;
-        if (!database_locked || date >= lock_date)
-            out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/modify'\" style=\"cursor: pointer;\">";
-        else
-            out << "<tr>";
+        out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/modify'\" style=\"cursor: pointer;\">";
         out << "<td>" << date << "</td>";
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
             out << "<td>" << MTVariant(QUERY(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
@@ -535,7 +525,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "<td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id, !isRecordLocked(id));
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
         if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
@@ -566,20 +556,17 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
-    bool locked = isRecordLocked(inspection_date);
     Inspection nom_inspection_record(customer_id, circuit_id, "");
     nom_inspection_record.parents().insert("nominal", "1");
     QVariantMap nominal_ins = nom_inspection_record.list();
 
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
     out << "<tr><th colspan=\"4\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
-    if (!locked) {
-        out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
-        out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
-    }
+    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
+    out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
     if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
     out << "&nbsp;" << inspection_date;
-    if (!locked) out << "</a>";
+    out << "</a>";
     out << "</th></tr>";
 
     QStringList used_ids = listVariableIds(); // all = false
@@ -863,7 +850,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         out << "\"><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspection_date, customer_id, circuit_id, inspection_date, !isRecordLocked(inspection_date));
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspection_date, customer_id, circuit_id, inspection_date);
         if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
@@ -1206,8 +1193,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         if (id.split(".").first().toInt() < year) continue;
         out << "<tr onclick=\"window.location = 'repair:" << id << "";
         if (highlighted_id == id) {
-            if (!isRecordLocked(id)) out << "/modify";
-            out << "'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }

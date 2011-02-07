@@ -426,8 +426,6 @@ void MainWindow::openDatabase(QString path)
         item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
     }
-    database_lock_date = DBInfoValueForKey("lock_date");
-    database_locked = DBInfoValueForKey("locked") == "true";
     updateLockButton();
 #ifdef Q_WS_MAC
     this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
@@ -491,9 +489,44 @@ void MainWindow::closeDatabase(bool save)
     this->setWindowModified(false);
 }
 
+bool MainWindow::isOperationPermitted(const QString & operation)
+{
+    if (DBInfoValueForKey(operation + "_permitted", "true") != "true") {
+        QMessageBox message(this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIconPixmap(QIcon(QString::fromUtf8(":/images/images/locked.png")).pixmap(32, 32));
+        message.setWindowTitle(tr("Permission denied - Leaklog"));
+        message.setText(tr("This operation is not permitted."));
+        message.setInformativeText(tr("For more information, contact your administrator."));
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return false;
+    }
+    return true;
+}
+
+bool MainWindow::isRecordLocked(const QString & date)
+{
+    if (Global::isRecordLocked(date)) {
+        QMessageBox message(this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIconPixmap(QIcon(QString::fromUtf8(":/images/images/locked.png")).pixmap(32, 32));
+        message.setWindowTitle(tr("Permission denied - Leaklog"));
+        message.setText(tr("This record is locked."));
+        message.setInformativeText(tr("For more information, contact your administrator."));
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return true;
+    }
+    return false;
+}
+
 void MainWindow::modifyServiceCompany()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("edit_service_company")) { return; }
     ServiceCompany record(DBInfoValueForKey("default_service_company"));
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -505,12 +538,16 @@ void MainWindow::modifyServiceCompany()
 
 void MainWindow::addRecordOfRefrigerantManagement()
 {
+    if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_refrigerant_management")) { return; }
     modifyRecordOfRefrigerantManagement("");
 }
 
 void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("edit_refrigerant_management")) { return; }
+    if (!date.isEmpty() && isRecordLocked(date)) { return; }
     RecordOfRefrigerantManagement record(date);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -530,6 +567,7 @@ void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 void MainWindow::addCustomer()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_customer")) { return; }
     Customer record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -543,6 +581,7 @@ void MainWindow::modifyCustomer()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
+    if (!isOperationPermitted("edit_customer")) { return; }
     Customer record(selectedCustomer());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = selectedCustomer();
@@ -586,6 +625,7 @@ void MainWindow::duplicateCustomer()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
+    if (!isOperationPermitted("add_customer")) { return; }
     Customer record(selectedCustomer());
     record.readValues();
     record.id().clear();
@@ -601,6 +641,7 @@ void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
+    if (!isOperationPermitted("remove_customer")) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -643,6 +684,7 @@ void MainWindow::addCircuit()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
+    if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(selectedCustomer(), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -657,6 +699,7 @@ void MainWindow::modifyCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
+    if (!isOperationPermitted("edit_circuit")) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     QString old_id = selectedCircuit();
@@ -682,6 +725,7 @@ void MainWindow::duplicateCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
+    if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
     record.readValues();
     record.id().clear();
@@ -698,6 +742,7 @@ void MainWindow::removeCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
+    if (!isOperationPermitted("remove_circuit")) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -729,6 +774,7 @@ void MainWindow::addInspection()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
+    if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), "");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -744,6 +790,8 @@ void MainWindow::modifyInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
+    if (!isOperationPermitted("edit_inspection")) { return; }
+    if (isRecordLocked(selectedInspection())) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -759,6 +807,7 @@ void MainWindow::duplicateInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
+    if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.readValues();
     record.id().clear();
@@ -776,6 +825,8 @@ void MainWindow::removeInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
+    if (!isOperationPermitted("remove_inspection")) { return; }
+    if (isRecordLocked(selectedInspection())) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -803,6 +854,7 @@ void MainWindow::loadInspection(const QString & inspection, bool refresh)
 void MainWindow::addRepair()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_repair")) { return; }
     Repair record("");
     if (isCustomerSelected()) {
         record.parents().insert("parent", selectedCustomer());
@@ -820,6 +872,8 @@ void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
+    if (!isOperationPermitted("edit_repair")) { return; }
+    if (isRecordLocked(selectedRepair())) { return; }
     Repair record(selectedRepair());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -833,6 +887,7 @@ void MainWindow::duplicateRepair()
 {
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
+    if (!isOperationPermitted("add_repair")) { return; }
     Repair record(selectedRepair());
     record.readValues();
     record.id().clear();
@@ -851,6 +906,8 @@ void MainWindow::removeRepair()
 {
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
+    if (!isOperationPermitted("remove_repair")) { return; }
+    if (isRecordLocked(selectedRepair())) { return; }
     QString repair = selectedRepair();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
@@ -883,6 +940,7 @@ void MainWindow::addSubvariable() { addVariable(true); }
 void MainWindow::addVariable(bool subvar)
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_variable")) { return; }
     QString parent;
     if (subvar) {
         if (trw_variables->currentItem()->parent() != NULL) { return; }
@@ -914,6 +972,7 @@ void MainWindow::modifyVariable()
 {
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("edit_variable")) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
     bool subvar = item->parent() != NULL;
     QString parent;
@@ -948,6 +1007,7 @@ void MainWindow::removeVariable()
 {
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("remove_variable")) { return; }
     QTreeWidgetItem * item = trw_variables->currentItem();
     if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
@@ -974,6 +1034,7 @@ void MainWindow::removeVariable()
 void MainWindow::addTable()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_table")) { return; }
     Table record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -989,6 +1050,7 @@ void MainWindow::modifyTable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
+    if (!isOperationPermitted("edit_table")) { return; }
     Table record(cb_table_edit->currentText());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -1010,6 +1072,7 @@ void MainWindow::removeTable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
+    if (!isOperationPermitted("remove_table")) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -1056,6 +1119,7 @@ void MainWindow::saveTable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
+    if (!isOperationPermitted("edit_table")) { loadTable(cb_table_edit->currentText()); return; }
     Table record(cb_table_edit->currentText());
     QStringList variables, sum, avg; QString value;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
@@ -1077,6 +1141,7 @@ void MainWindow::addTableVariable()
 {
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
+    if (!isOperationPermitted("edit_table")) { return; }
     QStringList used_ids;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
         used_ids << trw_table_variables->topLevelItem(i)->text(1);
@@ -1135,6 +1200,7 @@ void MainWindow::removeTableVariable()
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!trw_table_variables->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("edit_table")) { return; }
     QTreeWidgetItem * item = trw_table_variables->currentItem();
     switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->text(1)), tr("Remove"), tr("Cancel"), 0, 1)) {
         case 0: // Remove
@@ -1174,6 +1240,7 @@ void MainWindow::moveTableVariable(bool up)
     if (!db.isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!trw_table_variables->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("edit_table")) { return; }
     int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
     if (i < 0) { return; }
     Table record(cb_table_edit->currentText());
@@ -1197,6 +1264,7 @@ void MainWindow::moveTableVariable(bool up)
 void MainWindow::addWarning()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_warning")) { return; }
     WarningRecord record("");
     ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -1217,6 +1285,7 @@ void MainWindow::modifyWarning()
 {
     if (!db.isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("edit_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
     WarningRecord record(item->data(Qt::UserRole).toString());
     ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
@@ -1236,6 +1305,7 @@ void MainWindow::removeWarning()
 {
     if (!db.isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("remove_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
@@ -1255,6 +1325,7 @@ void MainWindow::removeWarning()
 void MainWindow::addInspector()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -1268,6 +1339,7 @@ void MainWindow::modifyInspector()
 {
     if (!db.isOpen()) { return; }
     if (!isInspectorSelected()) { return; }
+    if (!isOperationPermitted("edit_inspector")) { return; }
     QString old_id = selectedInspector();
     Inspector record(old_id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
@@ -1296,6 +1368,7 @@ void MainWindow::removeInspector()
 {
     if (!db.isOpen()) { return; }
     if (!isInspectorSelected()) { return; }
+    if (!isOperationPermitted("remove_inspector")) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
@@ -1381,6 +1454,7 @@ void MainWindow::exportData(const QString & type)
 void MainWindow::importData()
 {
     if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("import_data")) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
 { // BEGIN IMPORT (SCOPE)
@@ -1593,8 +1667,6 @@ void MainWindow::importData()
         }
     }
     // Inspections
-    bool database_locked = DBInfoValueForKey("locked") == "true";
-    QString lock_date = DBInfoValueForKey("lock_date");
     bool record_locked;
     QTreeWidget * trw[] = { id->newInspections(), id->modifiedInspections() };
     for (int w = 0; w < 2; ++w) {
@@ -1606,7 +1678,7 @@ void MainWindow::importData()
     query.exec("SELECT inspections.*, customers.company FROM inspections LEFT JOIN customers ON inspections.customer = customers.id ORDER BY inspections.date");
     while (query.next()) {
         id_justified = QUERY("circuit").toString().rightJustified(4, '0');
-        record_locked = database_locked && QUERY("date").toString() < lock_date;
+        record_locked = Global::isRecordLocked(QUERY("date").toString());
         QTreeWidgetItem * item = NULL;
         Inspection inspection(QUERY("customer").toString(), QUERY("circuit").toString(), QUERY("date").toString());
         if (inspection.exists()) {
@@ -1666,7 +1738,7 @@ void MainWindow::importData()
     // Repairs
     query.exec("SELECT * FROM repairs ORDER BY date");
     while (query.next()) {
-        record_locked = database_locked && QUERY("date").toString() < lock_date;
+        record_locked = Global::isRecordLocked(QUERY("date").toString());
         QTreeWidgetItem * item = NULL;
         Repair repair(QUERY("date").toString());
         if (repair.exists()) {
@@ -1713,7 +1785,7 @@ void MainWindow::importData()
     // Refrigerant management
     query.exec("SELECT * FROM refrigerant_management ORDER BY date");
     while (query.next()) {
-        record_locked = database_locked && QUERY("date").toString() < lock_date;
+        record_locked = Global::isRecordLocked(QUERY("date").toString());
         QTreeWidgetItem * item = NULL;
         RecordOfRefrigerantManagement record(QUERY("date").toString());
         if (record.exists()) {
@@ -2003,6 +2075,8 @@ void MainWindow::importData()
 
 void MainWindow::importCSV()
 {
+    if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("import_data")) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), "", tr("CSV files (*.csv);;All files (*.*)"));
     if (path.isEmpty()) { return; }
 

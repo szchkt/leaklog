@@ -221,8 +221,8 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     }
     md->setUsedIds(used_ids);
     MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
-    if (DBInfoValueForKey("locked") == "true") {
-        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    if (isDatabaseLocked()) {
+        date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
     MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md);
@@ -322,8 +322,8 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
         }
     }
     MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
-    if (DBInfoValueForKey("locked") == "true")
-        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    if (isDatabaseLocked())
+        date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     md->addInputWidget(date);
     MDLineEdit * customer = new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString());
     if (!attributes.value("parent").toString().isEmpty())
@@ -567,8 +567,8 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
     MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
-    if (DBInfoValueForKey("locked") == "true") {
-        date->setMinimumDate(QDate::fromString(DBInfoValueForKey("lock_date"), "yyyy.MM.dd"));
+    if (isDatabaseLocked()) {
+        date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
     md->addInputWidget(new MDLineEdit("partner", tr("Business partner:"), md, attributes.value("partner").toString()));

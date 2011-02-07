@@ -131,7 +131,6 @@ private:
     void clearAll();
     void setAllEnabled(bool, bool = false);
     void updateLockButton();
-    bool isRecordLocked(const QString &);
     void closeEvent(QCloseEvent *);
     void loadSettings();
     void saveSettings();
@@ -141,6 +140,8 @@ private:
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
+    bool isOperationPermitted(const QString &);
+    bool isRecordLocked(const QString &);
     void modifyRecordOfRefrigerantManagement(const QString &);
     void loadCustomer(int, bool);
     void loadCircuit(int, bool);
@@ -188,8 +189,6 @@ private:
     QString selected_repair;
     int selected_inspector;
     QString selected_inspector_name;
-    bool database_locked;
-    QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
     QMap<Navigation::View, QString> dict_html;
     QMap<QString, int> dict_fieldtypes;
