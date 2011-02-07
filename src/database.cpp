@@ -146,6 +146,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
     if (v < F_DB_VERSION) {
+        query.exec("DROP INDEX IF EXISTS index_db_info_id");
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
         query.exec("DROP INDEX IF EXISTS index_customers_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
@@ -159,6 +160,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
         query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
         query.exec("DROP INDEX IF EXISTS index_refrigerant_management_id");
+        query.exec("CREATE UNIQUE INDEX index_db_info_id ON db_info (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_service_companies_id ON service_companies (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)");
