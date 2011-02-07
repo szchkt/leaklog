@@ -658,7 +658,8 @@ MTDictionary Global::listAssemblyRecordTypes()
     query.setForwardOnly(true);
     if (query.exec("SELECT id, name FROM assembly_record_types")) {
         while (query.next()) {
-            dict.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+            QString name = QString("%1 - %2").arg(query.value(0).toString()).arg(query.value(1).toString().left(20));
+            dict.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : name, query.value(0).toString());
         }
     }
     return dict;
