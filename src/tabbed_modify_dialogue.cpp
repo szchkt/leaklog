@@ -11,6 +11,7 @@
 #include <QVariantMap>
 #include <QGroupBox>
 #include <QSqlQuery>
+#include <QMessageBox>
 #include <QScrollArea>
 
 TabbedModifyDialogue::TabbedModifyDialogue(DBRecord * record, QWidget * parent)
@@ -154,8 +155,10 @@ ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_
 {
     this->ar_type_w = ar_type_w;
     this->arno_w = arno_w;
+    original_arno = arno_w->text();
 
     QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
+    QObject::connect(arno_w, SIGNAL(editingFinished()), this, SLOT(assemblyRecordNumberChanged()));
 
     setName(tr("Assembly record"));
 
@@ -281,6 +284,16 @@ int ModifyInspectionDialogueTab::saveNewItemType(const MTDictionary & dict)
         item_type.update(map);
     }
     return id;
+}
+
+void ModifyInspectionDialogueTab::assemblyRecordNumberChanged()
+{
+    if (original_arno == arno_w->text()) return;
+
+    QSqlQuery query(QString("SELECT date FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
+    if (query.next()) {
+        QMessageBox::warning(this, tr("Conflict"), tr("Inspection with the same assembly record number already exists."));
+    }
 }
 
 ModifyDialogueGroupsLayout::ModifyDialogueGroupsLayout(QWidget * parent):

@@ -91,6 +91,7 @@ public:
 
 private slots:
     void loadItemInputWidgets();
+    void assemblyRecordNumberChanged();
 
 private:
     void init();
@@ -101,6 +102,7 @@ private:
     ModifyDialogueGroupsLayout * groups_layout;
     MDComboBox * ar_type_w;
     MDLineEdit * arno_w;
+    QString original_arno;
 };
 
 class ModifyDialogueGroupsLayout : public QWidget
