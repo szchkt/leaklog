@@ -406,6 +406,9 @@ void MainWindow::executeLink(const QUrl & url)
             else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
             else if (path.at(0).startsWith("servicecompany:")) { modifyServiceCompany(); }
             else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) { modifyRecordOfRefrigerantManagement(id); }
+            else if (path.at(0).startsWith("assemblyrecordtype:")) { this->modifyAssemblyRecordType(); }
+            else if (path.at(0).startsWith("assemblyrecorditemtype:")) { this->modifyAssemblyRecordItemType(); }
+            else if (path.at(0).startsWith("assemblyrecorditemcategory:")) { this->modifyAssemblyRecordItemCategory(); }
         }
     }
     if (path.count() > 2) {

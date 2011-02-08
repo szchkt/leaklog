@@ -56,7 +56,8 @@ void TabbedModifyDialogue::save()
     if (!ModifyDialogue::save(false)) return;
 
     for (int i = 1; i < main_tabw->count(); ++i) {
-        ((ModifyDialogueTab *) main_tabw->widget(i))->save(idFieldValue().toInt());
+        ((ModifyDialogueTab *) ((QScrollArea *) main_tabw->widget(i))->widget())
+                ->save(idFieldValue().toInt());
     }
 
     accept();
