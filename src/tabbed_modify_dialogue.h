@@ -87,6 +87,7 @@ public:
     ModifyInspectionDialogueTab(int, MDLineEdit *, MDComboBox *, QWidget * = NULL);
 
     void save(int);
+    int saveNewItemType(const MTDictionary &);
 
 private slots:
     void loadItemInputWidgets();
@@ -111,8 +112,8 @@ public:
     ~ModifyDialogueGroupsLayout();
 
     void addHeaderItem(int, const QString &, const QString &);
-    void addItem(const QString &, const QString &, const MTDictionary &, int, bool);
-    ModifyDialogueTableGroupBox * createGroup(const QString &, int);
+    void addItem(const QString &, int, const QString &, const MTDictionary &, int, bool);
+    ModifyDialogueTableGroupBox * createGroup(const QString &, int, int);
 
     QList<MTDictionary> allValues();
 

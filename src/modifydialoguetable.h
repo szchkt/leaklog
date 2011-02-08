@@ -19,7 +19,7 @@ class ModifyDialogueTableGroupBox : public QGroupBox
     Q_OBJECT
 
 public:
-    ModifyDialogueTableGroupBox(const QString &, const MTDictionary &, QWidget *);
+    ModifyDialogueTableGroupBox(const QString &, int, const MTDictionary &, QWidget *);
     ~ModifyDialogueTableGroupBox();
 
     void addRow(const QString &, const MTDictionary &, bool);
@@ -28,7 +28,8 @@ public:
 
 private slots:
     void activateRow();
-    void rowRemoved(ModifyDialogueTableRow *);
+    void rowRemoved(ModifyDialogueTableRow *, bool);
+    void addNewRow();
 
 private:
     void createHeader();
@@ -40,6 +41,8 @@ private:
     MTDictionary header;
     QList<ModifyDialogueTableRow *> rows;
     int visible_rows;
+    int smallest_index;
+    int category_id;
 };
 
 class ModifyDialogueTableRow : public QObject
@@ -66,7 +69,7 @@ private slots:
     void remove(bool = true);
 
 signals:
-    void removed(ModifyDialogueTableRow *);
+    void removed(ModifyDialogueTableRow *, bool);
 
 private:
     QMap<QString, QLineEdit *> * widgets;

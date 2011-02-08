@@ -192,12 +192,6 @@ const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
 
 void ModifyInspectionDialogueTab::loadItemInputWidgets()
 {
-    /*for (int i = 0; i < item_inputwidgets.count(); ++i) {
-        MDInputWidget * w = item_inputwidgets.takeAt(i);
-        delete w->label();
-        delete w;
-    }*/
-
     groups_layout->clear();
 
     enum QUERY_RESULTS
@@ -231,6 +225,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         dict.setValue("acquisition_price", items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE).toString() : items_query.value(ITEM_ACQUISITION_PRICE).toString());
         dict.setValue("list_price", items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(LIST_PRICE).toString() : items_query.value(ITEM_LIST_PRICE).toString());
         groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
+                               items_query.value(CATEGORY_ID).toInt(),
                                items_query.value(NAME).toString(),
                                dict,
                                items_query.value(DISPLAY_OPTIONS).toInt(),
@@ -254,11 +249,30 @@ void ModifyInspectionDialogueTab::save(int)
 
     for (int i = 0; i < record_dicts.count(); ++i) {
         map.insert("value", record_dicts.at(i).value("value"));
-        map.insert("item_type_id", record_dicts.at(i).value("item_type_id"));
+        map.insert("item_type_id", record_dicts.at(i).value("item_type_id").toInt() < 0
+                   ? QVariant(saveNewItemType(record_dicts.at(i))) : record_dicts.at(i).value("item_type_id"));
         map.insert("acquisition_price", record_dicts.at(i).value("acquisition_price"));
         map.insert("list_price", record_dicts.at(i).value("list_price"));
         record_item.update(map);
     }
+}
+
+int ModifyInspectionDialogueTab::saveNewItemType(const MTDictionary & dict)
+{
+    int id = -1;
+    QSqlQuery query("SELECT MAX(id) FROM assembly_record_item_types");
+    if (query.last()) {
+        id = query.value(0).toInt() + 1;
+
+        AssemblyRecordItemType item_type(QString::number(id));
+        QVariantMap map;
+        map.insert("name", dict.value("name"));
+        map.insert("acquisition_price", dict.value("acquisition_price"));
+        map.insert("list_price", dict.value("list_price"));
+        map.insert("category_id", dict.value("category_id"));
+        item_type.update(map);
+    }
+    return id;
 }
 
 ModifyDialogueGroupsLayout::ModifyDialogueGroupsLayout(QWidget * parent):
@@ -280,11 +294,11 @@ void ModifyDialogueGroupsLayout::addHeaderItem(int id, const QString & name, con
     header_items.append(new ModifyDialogueGroupHeaderItem(id, name, full_name));
 }
 
-void ModifyDialogueGroupsLayout::addItem(const QString & group_name, const QString & row_name, const MTDictionary & values, int category_display, bool display)
+void ModifyDialogueGroupsLayout::addItem(const QString & group_name, int category_id, const QString & row_name, const MTDictionary & values, int category_display, bool display)
 {
     ModifyDialogueTableGroupBox * group_box;
     if (!groups->contains(group_name)) {
-        group_box = createGroup(group_name, category_display);
+        group_box = createGroup(group_name, category_id, category_display);
     } else {
         group_box = groups->value(group_name);
     }
@@ -292,7 +306,7 @@ void ModifyDialogueGroupsLayout::addItem(const QString & group_name, const QStri
     group_box->addRow(row_name, values, display);
 }
 
-ModifyDialogueTableGroupBox * ModifyDialogueGroupsLayout::createGroup(const QString & group_name, int display_options)
+ModifyDialogueTableGroupBox * ModifyDialogueGroupsLayout::createGroup(const QString & group_name, int category_id, int display_options)
 {
     MTDictionary dict;
     for (int i = 0; i < header_items.count(); ++i) {
@@ -300,7 +314,7 @@ ModifyDialogueTableGroupBox * ModifyDialogueGroupsLayout::createGroup(const QStr
             dict.insert(header_items.at(i)->name(), header_items.at(i)->fullName());
     }
 
-    ModifyDialogueTableGroupBox * group_box = new ModifyDialogueTableGroupBox(group_name, dict, this);
+    ModifyDialogueTableGroupBox * group_box = new ModifyDialogueTableGroupBox(group_name, category_id, dict, this);
     groups->insert(group_name, group_box);
     layout->addWidget(group_box);
     return group_box;
