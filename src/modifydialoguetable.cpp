@@ -18,8 +18,11 @@ ModifyDialogueTableGroupBox::ModifyDialogueTableGroupBox(const QString &name, in
 
     QVBoxLayout * layout = new QVBoxLayout(this);
     grid = new QGridLayout;
+    grid->setContentsMargins(0, 0, 0, 0);
     layout->addLayout(grid);
     layout->addLayout(addRowControlsLayout());
+    layout->setContentsMargins(9, 9, 9, 9);
+    layout->setSpacing(6);
 
     createHeader();
 }
@@ -47,6 +50,7 @@ void ModifyDialogueTableGroupBox::createHeader()
 QLayout * ModifyDialogueTableGroupBox::addRowControlsLayout()
 {
     QHBoxLayout * layout = new QHBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
     add_row_cb = new QComboBox;
 
     layout->addWidget(add_row_cb);

@@ -11,6 +11,7 @@
 #include <QVariantMap>
 #include <QGroupBox>
 #include <QSqlQuery>
+#include <QScrollArea>
 
 TabbedModifyDialogue::TabbedModifyDialogue(DBRecord * record, QWidget * parent)
     : ModifyDialogue(parent)
@@ -40,7 +41,13 @@ void TabbedModifyDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
 
 void TabbedModifyDialogue::addTab(ModifyDialogueTab * tab)
 {
-    main_tabw->addTab(tab, tab->name());
+    QScrollArea * scroll_area = new QScrollArea;
+    scroll_area->setWidgetResizable(1);
+    scroll_area->setWidget(tab);
+    scroll_area->setFrameStyle(QFrame::NoFrame);
+    scroll_area->setAutoFillBackground(true);
+    scroll_area->setBackgroundRole(QPalette::NoRole);
+    main_tabw->addTab(scroll_area, tab->name());
 }
 
 void TabbedModifyDialogue::save()
@@ -57,6 +64,7 @@ void TabbedModifyDialogue::save()
 ModifyDialogueTab::ModifyDialogueTab(QWidget * parent)
     : QWidget(parent)
 {
+    setAutoFillBackground(false);
 }
 
 void ModifyDialogueTab::setLayout(QLayout * layout)
@@ -279,6 +287,7 @@ ModifyDialogueGroupsLayout::ModifyDialogueGroupsLayout(QWidget * parent):
 QWidget(parent)
 {
     layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     groups = new QMap<QString, ModifyDialogueTableGroupBox *>;
 }
 
