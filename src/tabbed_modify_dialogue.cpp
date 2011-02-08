@@ -198,6 +198,8 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         delete w;
     }*/
 
+    groups_layout->clear();
+
     enum QUERY_RESULTS
     {
         TYPE_ID = 0,
@@ -266,6 +268,13 @@ QWidget(parent)
     groups = new QMap<QString, ModifyDialogueTableGroupBox *>;
 }
 
+ModifyDialogueGroupsLayout::~ModifyDialogueGroupsLayout()
+{
+    clear();
+    delete groups;
+    for (int i = header_items.count() - 1; i >= 0; --i) { delete header_items.takeAt(i); }
+}
+
 void ModifyDialogueGroupsLayout::addHeaderItem(int id, const QString & name, const QString & full_name)
 {
     header_items.append(new ModifyDialogueGroupHeaderItem(id, name, full_name));
@@ -306,6 +315,15 @@ QList<MTDictionary> ModifyDialogueGroupsLayout::allValues()
     }
 
     return values;
+}
+
+void ModifyDialogueGroupsLayout::clear()
+{
+    QMapIterator<QString, ModifyDialogueTableGroupBox *> i(*groups);
+    while (i.hasNext()) {
+        i.next();
+        delete groups->take(i.key());
+    }
 }
 
 ModifyDialogueGroupHeaderItem::ModifyDialogueGroupHeaderItem(int id, const QString & name, const QString & full_name)

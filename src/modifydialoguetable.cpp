@@ -22,6 +22,16 @@ ModifyDialogueTableGroupBox::ModifyDialogueTableGroupBox(const QString &name, co
     createHeader();
 }
 
+ModifyDialogueTableGroupBox::~ModifyDialogueTableGroupBox()
+{
+    for (int i = rows.count() - 1; i >= 0; --i) {
+        delete rows.takeAt(i);
+    }
+
+    delete add_row_cb;
+    delete grid;
+}
+
 void ModifyDialogueTableGroupBox::createHeader()
 {
     grid->addWidget(new QLabel(QString("<b>%1</b>").arg(tr("Name")), 0, 0));
@@ -118,6 +128,12 @@ ModifyDialogueTableRow::ModifyDialogueTableRow(const MTDictionary & values, bool
     lbl = NULL;
 }
 
+ModifyDialogueTableRow::~ModifyDialogueTableRow()
+{
+    remove(false);
+    delete widgets;
+}
+
 void ModifyDialogueTableRow::addWidget(const QString & name, QLineEdit * le)
 {
     widgets->insert(name, le);
@@ -138,9 +154,9 @@ const QString & ModifyDialogueTableRow::itemTypeId()
     return values.value("item_type_id");
 }
 
-void ModifyDialogueTableRow::remove()
+void ModifyDialogueTableRow::remove(bool emit_sig)
 {
-    QMapIterator<QString, QLineEdit *> i(*widgets);
+     QMapIterator<QString, QLineEdit *> i(*widgets);
      while (i.hasNext()) {
          i.next();
          delete widgets->take(i.key());
@@ -155,7 +171,7 @@ void ModifyDialogueTableRow::remove()
      }
      setInTable(false);
 
-     emit removed(this);
+     if (emit_sig) emit removed(this);
 }
 
 QLabel * ModifyDialogueTableRow::label(const QString & name)

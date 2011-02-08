@@ -20,6 +20,7 @@ class ModifyDialogueTableGroupBox : public QGroupBox
 
 public:
     ModifyDialogueTableGroupBox(const QString &, const MTDictionary &, QWidget *);
+    ~ModifyDialogueTableGroupBox();
 
     void addRow(const QString &, const MTDictionary &, bool);
     void addRow(ModifyDialogueTableRow *, const QString &);
@@ -47,6 +48,7 @@ class ModifyDialogueTableRow : public QObject
 
 public:
     ModifyDialogueTableRow(const MTDictionary &, bool);
+    ~ModifyDialogueTableRow();
 
     void addWidget(const QString &, QLineEdit *);
     const MTDictionary & dictValues();
@@ -61,7 +63,7 @@ public:
     const QString & name() { return row_name; }
 
 private slots:
-    void remove();
+    void remove(bool = true);
 
 signals:
     void removed(ModifyDialogueTableRow *);

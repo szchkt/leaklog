@@ -108,6 +108,7 @@ class ModifyDialogueGroupsLayout : public QWidget
 
 public:
     ModifyDialogueGroupsLayout(QWidget *);
+    ~ModifyDialogueGroupsLayout();
 
     void addHeaderItem(int, const QString &, const QString &);
     void addItem(const QString &, const QString &, const MTDictionary &, int, bool);
@@ -115,10 +116,11 @@ public:
 
     QList<MTDictionary> allValues();
 
+    void clear();
+
 private:
     QMap<QString, ModifyDialogueTableGroupBox *> * groups;
     QList<ModifyDialogueGroupHeaderItem *> header_items;
-    QList<MDInputWidget *> item_inputwidgets;
     QVBoxLayout * layout;
 };
 
