@@ -58,7 +58,7 @@ public:
     bool isInTable() { return in_table; }
     void setInTable(bool in_table) { this->in_table = in_table; }
 
-    const QString & itemTypeId();
+    const QString itemTypeId();
     const MTDictionary & dict() { return values; }
 
     QToolButton * removeButton();

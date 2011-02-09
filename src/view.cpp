@@ -1741,7 +1741,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     *_td << "&nbsp;" << inspection_date;
     if (!locked) *_td << "</a>";
 
-    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name, assembly_record_item_categories.display_options, assembly_record_item_types.list_price, assembly_record_item_types.acquisition_price, assembly_record_item_types.unit FROM assembly_record_items"
+    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name, assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_item_types.unit FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
                                        " WHERE arno = '%1' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")

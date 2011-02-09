@@ -186,7 +186,7 @@ const MTDictionary & ModifyDialogueTableRow::dictValues()
     return values;
 }
 
-const QString & ModifyDialogueTableRow::itemTypeId()
+const QString ModifyDialogueTableRow::itemTypeId()
 {
     return values.value("item_type_id");
 }
