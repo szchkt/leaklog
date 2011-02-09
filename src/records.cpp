@@ -740,6 +740,8 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
     md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md, attributes.value("inspection_variable_id").toString(), listAllVariables()));
+    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md, attributes.value("value_data_type").toString(), listDataTypes()));
+
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -763,7 +765,6 @@ public:
         dict.insert("list_price", QApplication::translate("AssemblyRecordItemType", "List price"));
         dict.insert("ean", QApplication::translate("AssemblyRecordItemType", "EAN code"));
         dict.insert("category_id", QApplication::translate("AssemblyRecordItemType", "Category"));
-        dict.insert("inspection_variable_id", QApplication::translate("AssemblyRecordItemType", "Get value from inspection"));
     }
 
     MTDictionary dict;

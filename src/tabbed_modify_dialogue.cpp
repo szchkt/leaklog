@@ -3,6 +3,7 @@
 #include "records.h"
 #include "input_widgets.h"
 #include "modifydialoguetable.h"
+#include "global.h"
 
 #include <QTreeWidget>
 #include <QHeaderView>
@@ -219,11 +220,12 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         DISPLAY_OPTIONS = 7,
         ITEM_ACQUISITION_PRICE = 8,
         ITEM_LIST_PRICE = 9,
-        INSPECTION_VAR = 10
+        INSPECTION_VAR = 10,
+        VALUE_DATA_TYPE = 11
     };
     QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                   " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id"
+                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type"
                                   " FROM assembly_record_item_types"
                                   " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                   " AND assembly_record_items.arno = '%1'"
@@ -233,10 +235,10 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                           .arg(assemblyRecordId().toString())
                           .arg(assemblyRecordType().toString()));
     while (items_query.next()) {
-        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), AssemblyRecordItemType::String, items_query.value(INSPECTION_VAR).toString().isEmpty()));
+        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), items_query.value(VALUE_DATA_TYPE).toInt(), items_query.value(INSPECTION_VAR).toString().isEmpty()));
         cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID)));
-        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), AssemblyRecordItemType::Numeric));
-        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), AssemblyRecordItemType::Numeric));
+        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), Global::Numeric));
+        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), Global::Numeric));
         groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
                                items_query.value(CATEGORY_ID).toInt(),
                                items_query.value(NAME).toString(),

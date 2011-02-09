@@ -66,8 +66,17 @@ namespace Global {
     MTDictionary listAssemblyRecordItemCategories();
     MTDictionary listAssemblyRecordTypes();
     MTDictionary listAllVariables();
+    MTDictionary listDataTypes();
     QStringList listVariableIds(bool = false);
     QStringList listSupportedFunctions();
+    // Data types
+    enum DataTypes {
+        String = 0,
+        Integer = 1,
+        Numeric = 2,
+        Boolean = 3,
+        Text = 4
+    };
 }
 
 #endif // GLOBAL_H

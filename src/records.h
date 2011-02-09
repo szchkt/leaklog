@@ -183,14 +183,6 @@ class AssemblyRecordItemType : public DBRecord
     Q_OBJECT
 
 public:
-    enum DataType {
-        Integer,
-        Numeric,
-        String,
-        Text,
-        Boolean
-            };
-
     AssemblyRecordItemType(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);

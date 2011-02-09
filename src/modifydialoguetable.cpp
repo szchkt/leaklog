@@ -1,6 +1,7 @@
 #include "modifydialoguetable.h"
 
 #include "records.h"
+#include "global.h"
 
 #include <QGridLayout>
 #include <QLineEdit>
@@ -86,21 +87,44 @@ void ModifyDialogueTableGroupBox::addRow(const QString & name, const QMap<QStrin
 
 void ModifyDialogueTableGroupBox::addRow(ModifyDialogueTableRow * row, const QString & name)
 {
-    QLineEdit * le;
+    ARInputWidget * iw;
     if (row->itemTypeId().toInt() < 0) {
-        le = new QLineEdit(row->valuesMap().value("name")->value().toString());
-        row->addWidget("name", le);
-        grid->addWidget(le, visible_rows, 0);
+        iw = new ARLineEdit(row->valuesMap().value("name")->value().toString(), this);
+        row->addWidget("name", iw);
+        grid->addWidget(iw->widget(), visible_rows, 0);
     }
     else grid->addWidget(row->label(name), visible_rows, 0);
 
     ModifyDialogueTableCell * cell;
     for (int i = 0; i < header.count(); ++i) {
         cell = row->valuesMap().value(header.key(i));
-        le = new QLineEdit(cell->value().toString());
-        if (!cell->enabled()) le->setEnabled(false);
-        row->addWidget(header.key(i), le);
-        grid->addWidget(le, visible_rows, i + 1);
+        switch (cell->dataType()) {
+        case Global::Boolean:
+            iw = new ARCheckBox(cell->value().toBool(), this);
+            break;
+
+        case Global::String:
+            iw = new ARLineEdit(cell->value().toString(), this);
+            break;
+
+        case Global::Integer:
+            iw = new ARSpinBox(this);
+            ((ARSpinBox *) iw)->setValue(cell->value().toInt());
+            break;
+
+        case Global::Numeric:
+            iw = new ARDoubleSpinBox(this);
+            ((ARDoubleSpinBox *) iw)->setValue(cell->value().toDouble());
+            break;
+
+        default:
+            iw = NULL;
+            continue;
+            break;
+        }
+        if (!cell->enabled()) iw->widget()->setEnabled(false);
+        row->addWidget(header.key(i), iw);
+        grid->addWidget(iw->widget(), visible_rows, i + 1);
     }
     grid->addWidget(row->removeButton(), visible_rows, header.count() + 1);
     visible_rows++;
@@ -127,10 +151,10 @@ void ModifyDialogueTableGroupBox::activateRow()
 void ModifyDialogueTableGroupBox::addNewRow()
 {
     QMap<QString, ModifyDialogueTableCell *> cells_map;
-    cells_map.insert("value", new ModifyDialogueTableCell(QVariant(), AssemblyRecordItemType::String));
+    cells_map.insert("value", new ModifyDialogueTableCell(QVariant(), Global::String));
     cells_map.insert("item_type_id", new ModifyDialogueTableCell(smallest_index--));
-    cells_map.insert("acquisition_price", new ModifyDialogueTableCell(QVariant(), AssemblyRecordItemType::Numeric));
-    cells_map.insert("list_price", new ModifyDialogueTableCell(QVariant(), AssemblyRecordItemType::Numeric));
+    cells_map.insert("acquisition_price", new ModifyDialogueTableCell(QVariant(), Global::Numeric));
+    cells_map.insert("list_price", new ModifyDialogueTableCell(QVariant(), Global::Numeric));
     cells_map.insert("name", new ModifyDialogueTableCell(tr("New item")));
     cells_map.insert("category_id", new ModifyDialogueTableCell(category_id));
     addRow(tr("New item"), cells_map, true);
@@ -171,7 +195,9 @@ ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogu
 
 ModifyDialogueTableRow::~ModifyDialogueTableRow()
 {
-    remove(false);
+    if (lbl) delete lbl;
+    if (remove_btn) delete remove_btn;
+
     QMapIterator<QString, ModifyDialogueTableCell *> i(values);
     while (i.hasNext()) {
         i.next();
@@ -179,7 +205,7 @@ ModifyDialogueTableRow::~ModifyDialogueTableRow()
     }
 }
 
-void ModifyDialogueTableRow::addWidget(const QString & name, QLineEdit * le)
+void ModifyDialogueTableRow::addWidget(const QString & name, ARInputWidget * le)
 {
     widgets.insert(name, le);
 }
@@ -191,7 +217,7 @@ const MTDictionary ModifyDialogueTableRow::dictValues()
     while (i.hasNext()) {
         i.next();
         if (widgets.contains(i.key())) {
-            dict.setValue(i.key(), widgets.value(i.key())->text());
+            dict.setValue(i.key(), widgets.value(i.key())->variantValue().toString());
         } else {
             dict.setValue(i.key(), i.value()->value().toString());
         }
@@ -206,7 +232,7 @@ const QString ModifyDialogueTableRow::itemTypeId()
 
 void ModifyDialogueTableRow::remove(bool emit_sig)
 {
-     QMapIterator<QString, QLineEdit *> i(widgets);
+     QMapIterator<QString, ARInputWidget *> i(widgets);
      while (i.hasNext()) {
          i.next();
          delete widgets.take(i.key());
