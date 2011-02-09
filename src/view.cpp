@@ -1741,16 +1741,19 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     *_td << "&nbsp;" << inspection_date;
     if (!locked) *_td << "</a>";
 
-    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name, assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_item_types.unit FROM assembly_record_items"
+    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
+                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_item_types.unit,"
+                                       " assembly_record_item_types.inspection_variable_id FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
                                        " WHERE arno = '%1' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
-    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7;
+    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8;
     int num_columns = 6, i, n;
     int colspans[num_columns];
     QString colspan = "colspan=\"%1\"";
+    QString item_value;
     while (categories_query.next()) {
         if (last_category != categories_query.value(category_id).toInt()) {
             int cat_display_options = categories_query.value(display_options).toInt();
@@ -1782,14 +1785,20 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         i = 0;
         _tr = table->addRow();
         *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(name).toString();
-        if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(value).toString() << " " << categories_query.value(unit).toString();
+        if (colspans[++i]) {
+            if (categories_query.value(variable_id).toString().isEmpty()) {
+                item_value = categories_query.value(value).toString();
+            } else {
+                item_value = inspection.value(categories_query.value(variable_id).toString()).toString();
+            }
+            *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(unit).toString();
+        }
         if (colspans[++i])
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(list_price).toString();
         if (colspans[++i])
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(acquisition_price).toString();
         if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(categories_query.value(value).toInt() * categories_query.value(acquisition_price).toInt());
+            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(item_value.toDouble() * categories_query.value(list_price).toDouble());
     }
 
     div << table;

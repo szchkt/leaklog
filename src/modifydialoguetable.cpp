@@ -107,6 +107,10 @@ void ModifyDialogueTableGroupBox::addRow(ModifyDialogueTableRow * row, const QSt
             iw = new ARLineEdit(cell->value().toString(), this);
             break;
 
+        case Global::Text:
+            iw = new ARPlainTextEdit(cell->value().toString(), this);
+            break;
+
         case Global::Integer:
             iw = new ARSpinBox(this);
             ((ARSpinBox *) iw)->setValue(cell->value().toInt());
