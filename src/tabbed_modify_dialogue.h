@@ -16,6 +16,7 @@ class MDComboBox;
 class MTDictionary;
 class ModifyDialogueTableGroupBox;
 class ModifyDialogueGroupHeaderItem;
+class ModifyDialogueTableCell;
 
 class TabbedModifyDialogue : public ModifyDialogue
 {
@@ -114,7 +115,7 @@ public:
     ~ModifyDialogueGroupsLayout();
 
     void addHeaderItem(int, const QString &, const QString &);
-    void addItem(const QString &, int, const QString &, const MTDictionary &, int, bool);
+    void addItem(const QString &, int, const QString &, const QMap<QString, ModifyDialogueTableCell *> &, int, bool);
     ModifyDialogueTableGroupBox * createGroup(const QString &, int, int);
 
     QList<MTDictionary> allValues();

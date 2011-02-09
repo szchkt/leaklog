@@ -371,7 +371,7 @@ public:
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT");
         dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, category_id INTEGER, date_updated TEXT");
+        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price REAL, list_price REAL, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, date_updated TEXT");
         dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, date_updated TEXT");
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, date_updated TEXT");
         dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, date_updated TEXT");
@@ -661,6 +661,24 @@ MTDictionary Global::listAssemblyRecordTypes()
             QString name = QString("%1 - %2").arg(query.value(0).toString()).arg(query.value(1).toString().left(50));
             dict.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : name, query.value(0).toString());
         }
+    }
+    return dict;
+}
+
+MTDictionary Global::listAllVariables()
+{
+    MTDictionary dict("", "");
+    dict.allowDuplicateKeys();
+    Variables query;
+    bool is_subvar;
+    while (query.next()) {
+        is_subvar = !query.value("SUBVAR_ID").toString().isEmpty();
+
+        QString name = is_subvar ? QString("%1: %2").arg(query.value("VAR_NAME").toString()).arg(query.value("SUBVAR_NAME").toString())
+            : query.value("VAR_NAME").toString();
+        QString id = is_subvar ? query.value("SUBVAR_ID").toString() : query.value("VAR_ID").toString();
+
+        dict.insert(name, id);
     }
     return dict;
 }

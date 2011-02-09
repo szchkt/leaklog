@@ -205,6 +205,7 @@ const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
 void ModifyInspectionDialogueTab::loadItemInputWidgets()
 {
     groups_layout->clear();
+    QMap<QString, ModifyDialogueTableCell *> cells_map;
 
     enum QUERY_RESULTS
     {
@@ -217,11 +218,12 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         CATEGORY_ID = 6,
         DISPLAY_OPTIONS = 7,
         ITEM_ACQUISITION_PRICE = 8,
-        ITEM_LIST_PRICE = 9
+        ITEM_LIST_PRICE = 9,
+        INSPECTION_VAR = 10
     };
     QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                   " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price"
+                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id"
                                   " FROM assembly_record_item_types"
                                   " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                   " AND assembly_record_items.arno = '%1'"
@@ -231,17 +233,16 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                           .arg(assemblyRecordId().toString())
                           .arg(assemblyRecordType().toString()));
     while (items_query.next()) {
-        MTDictionary dict;
-        dict.setValue("value", items_query.value(VALUE).toString());
-        dict.setValue("item_type_id", items_query.value(TYPE_ID).toString());
-        dict.setValue("acquisition_price", items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE).toString() : items_query.value(ITEM_ACQUISITION_PRICE).toString());
-        dict.setValue("list_price", items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(LIST_PRICE).toString() : items_query.value(ITEM_LIST_PRICE).toString());
+        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), AssemblyRecordItemType::String, items_query.value(INSPECTION_VAR).toString().isEmpty()));
+        cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID)));
+        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), AssemblyRecordItemType::Numeric));
+        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), AssemblyRecordItemType::Numeric));
         groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
                                items_query.value(CATEGORY_ID).toInt(),
                                items_query.value(NAME).toString(),
-                               dict,
+                               cells_map,
                                items_query.value(DISPLAY_OPTIONS).toInt(),
-                               !items_query.value(VALUE).isNull());
+                               !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull());
     }
 }
 
@@ -317,7 +318,7 @@ void ModifyDialogueGroupsLayout::addHeaderItem(int id, const QString & name, con
     header_items.append(new ModifyDialogueGroupHeaderItem(id, name, full_name));
 }
 
-void ModifyDialogueGroupsLayout::addItem(const QString & group_name, int category_id, const QString & row_name, const MTDictionary & values, int category_display, bool display)
+void ModifyDialogueGroupsLayout::addItem(const QString & group_name, int category_id, const QString & row_name, const QMap<QString, ModifyDialogueTableCell *> & values, int category_display, bool display)
 {
     ModifyDialogueTableGroupBox * group_box;
     if (!groups->contains(group_name)) {

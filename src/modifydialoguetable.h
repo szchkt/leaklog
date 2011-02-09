@@ -1,18 +1,19 @@
 #ifndef MODIFYDIALOGUETABLE_H
 #define MODIFYDIALOGUETABLE_H
 
+#include <QGroupBox>
+#include <QAction>
+
+#include "mtdictionary.h"
+
 class QGridLayout;
 class QLineEdit;
 class QComboBox;
 class QLabel;
 class QToolButton;
 
-#include <QGroupBox>
-#include <QAction>
-
-#include "mtdictionary.h"
-
 class ModifyDialogueTableRow;
+class ModifyDialogueTableCell;
 
 class ModifyDialogueTableGroupBox : public QGroupBox
 {
@@ -22,7 +23,7 @@ public:
     ModifyDialogueTableGroupBox(const QString &, int, const MTDictionary &, QWidget *);
     ~ModifyDialogueTableGroupBox();
 
-    void addRow(const QString &, const MTDictionary &, bool);
+    void addRow(const QString &, const QMap<QString, ModifyDialogueTableCell *> &, bool);
     void addRow(ModifyDialogueTableRow *, const QString &);
     QList<MTDictionary> allValues();
 
@@ -50,16 +51,16 @@ class ModifyDialogueTableRow : public QObject
     Q_OBJECT
 
 public:
-    ModifyDialogueTableRow(const MTDictionary &, bool);
+    ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> &, bool);
     ~ModifyDialogueTableRow();
 
     void addWidget(const QString &, QLineEdit *);
-    const MTDictionary & dictValues();
+    const MTDictionary dictValues();
     bool isInTable() { return in_table; }
     void setInTable(bool in_table) { this->in_table = in_table; }
 
     const QString itemTypeId();
-    const MTDictionary & dict() { return values; }
+    const QMap<QString, ModifyDialogueTableCell *> & valuesMap() { return values; }
 
     QToolButton * removeButton();
     QLabel * label(const QString &);
@@ -72,12 +73,31 @@ signals:
     void removed(ModifyDialogueTableRow *, bool);
 
 private:
-    QMap<QString, QLineEdit *> * widgets;
     QToolButton * remove_btn;
     QLabel * lbl;
     QString row_name;
-    MTDictionary values;
+    QMap<QString, QLineEdit *> widgets;
+    QMap<QString, ModifyDialogueTableCell *> values;
     bool in_table;
+};
+
+class ModifyDialogueTableCell
+{
+public:
+    ModifyDialogueTableCell(const QVariant & _value, int _data_type = -1, bool _enabled = true) {
+        this->_value = _value;
+        this->_data_type = _data_type;
+        this->_enabled = _enabled;
+    }
+
+    const QVariant & value() { return _value; }
+    int dataType() { return _data_type; }
+    bool enabled() { return _enabled; }
+
+private:
+    QVariant _value;
+    int _data_type;
+    bool _enabled;
 };
 
 #endif // MODIFYDIALOGUETABLE_H

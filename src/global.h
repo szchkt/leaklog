@@ -65,6 +65,7 @@ namespace Global {
     MTDictionary listInspectors();
     MTDictionary listAssemblyRecordItemCategories();
     MTDictionary listAssemblyRecordTypes();
+    MTDictionary listAllVariables();
     QStringList listVariableIds(bool = false);
     QStringList listSupportedFunctions();
 }
