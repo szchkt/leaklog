@@ -1642,6 +1642,10 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     bool repair = inspection.value("repair").toInt();
     bool locked = isRecordLocked(inspection_date);
 
+    VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    VariableEvaluation::Variable * variable = NULL;
+    QString nom_value;
+
     HTMLDiv div;
     HTMLTable * table;
     HTMLTableRow * _tr;
@@ -1732,7 +1736,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             if (categories_query.value(variable_id).toString().isEmpty()) {
                 item_value = categories_query.value(value).toString();
             } else {
-                item_value = inspection.value(categories_query.value(variable_id).toString()).toString();
+                item_value = var_evaluation.evaluate(categories_query.value(variable_id).toString(), inspection, nom_value);
             }
             *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(unit).toString();
         }
