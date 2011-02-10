@@ -23,6 +23,7 @@
 #include "warnings.h"
 #include "modify_warning_dialogue.h"
 #include "tabbed_modify_dialogue.h"
+#include "modify_customer_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -552,7 +553,7 @@ void MainWindow::modifyCustomer()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
     QString old_id = selectedCustomer();
     QString old_company_name = record.stringValue("company");
     if (md->exec() == QDialog::Accepted) {

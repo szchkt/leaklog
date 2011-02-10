@@ -239,4 +239,12 @@ public:
     static const MTDictionary & attributes();
 };
 
+class Person : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    Person(const QString & = QString(), const QString & = QString());
+};
+
 #endif // RECORDS_H

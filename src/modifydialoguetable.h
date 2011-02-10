@@ -18,7 +18,8 @@ class QToolButton;
 
 class ModifyDialogueTableRow;
 class ModifyDialogueTableCell;
-class ARInputWidget;
+class ModifyDialogueBasicTableRow;
+class MDTInputWidget;
 
 class ModifyDialogueTableGroupBox : public QGroupBox
 {
@@ -59,7 +60,7 @@ public:
     ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> &, bool);
     ~ModifyDialogueTableRow();
 
-    void addWidget(const QString &, ARInputWidget *);
+    void addWidget(const QString &, MDTInputWidget *);
     const MTDictionary dictValues();
     bool isInTable() { return in_table; }
     void setInTable(bool in_table) { this->in_table = in_table; }
@@ -81,7 +82,7 @@ private:
     QToolButton * remove_btn;
     QLabel * lbl;
     QString row_name;
-    QMap<QString, ARInputWidget *> widgets;
+    QMap<QString, MDTInputWidget *> widgets;
     QMap<QString, ModifyDialogueTableCell *> values;
     bool in_table;
 };
@@ -105,10 +106,55 @@ private:
     bool _enabled;
 };
 
-class ARInputWidget
+class ModifyDialogueBasicTable : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueBasicTable(const MTDictionary &, QWidget *);
+
+    void addRow(const QMap<QString, QVariant> &);
+    QList<MTDictionary> allValues();
+
+private slots:
+    void addNewRow();
+    void rowRemoved(ModifyDialogueBasicTableRow *);
+
+private:
+    MTDictionary header;
+    int visible_rows;
+    QGridLayout * grid;
+    QList<ModifyDialogueBasicTableRow *> rows;
+};
+
+class ModifyDialogueBasicTableRow : public QObject
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueBasicTableRow(const QMap<QString, QVariant> &);
+
+    void addWidget(const QString &, QLineEdit *);
+    MTDictionary dictValues();
+
+    QToolButton * removeButton();
+
+private slots:
+    void remove();
+
+signals:
+    void removed(ModifyDialogueBasicTableRow *);
+
+private:
+    QToolButton * remove_btn;
+    QMap<QString, QLineEdit *> widgets;
+    QMap<QString, QVariant> values;
+};
+
+class MDTInputWidget
 {
 public:
-    ARInputWidget(QWidget * w) { this->w = w; }
+    MDTInputWidget(QWidget * w) { this->w = w; }
 
     virtual QVariant variantValue() = 0;
     QWidget * widget() { return w; }
@@ -117,28 +163,28 @@ private:
     QWidget * w;
 };
 
-class ARLineEdit : public QLineEdit, public ARInputWidget
+class MDTLineEdit : public QLineEdit, public MDTInputWidget
 {
 public:
-    ARLineEdit(const QString & text, QWidget * parent) : QLineEdit(text, parent), ARInputWidget(this) {}
+    MDTLineEdit(const QString & text, QWidget * parent) : QLineEdit(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return text(); }
 };
 
-class ARSpinBox : public QSpinBox, public ARInputWidget
+class MDTSpinBox : public QSpinBox, public MDTInputWidget
 {
 public:
-    ARSpinBox(QWidget * parent) : QSpinBox(parent), ARInputWidget(this) {}
+    MDTSpinBox(QWidget * parent) : QSpinBox(parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return value(); }
 };
 
-class ARDoubleSpinBox : public QDoubleSpinBox, public ARInputWidget
+class MDTDoubleSpinBox : public QDoubleSpinBox, public MDTInputWidget
 {
     Q_OBJECT
 
 public:
-    ARDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), ARInputWidget(this) {}
+    MDTDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return value(); }
 
@@ -146,22 +192,22 @@ public slots:
     void clear() { setValue(0.0); }
 };
 
-class ARPlainTextEdit : public QPlainTextEdit, public ARInputWidget
+class MDTPlainTextEdit : public QPlainTextEdit, public MDTInputWidget
 {
     Q_OBJECT
 
 public:
-    ARPlainTextEdit(const QString & text, QWidget * parent) : QPlainTextEdit(text, parent), ARInputWidget(this) {}
+    MDTPlainTextEdit(const QString & text, QWidget * parent) : QPlainTextEdit(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return this->toPlainText(); }
 };
 
-class ARCheckBox : public QCheckBox, public ARInputWidget
+class MDTCheckBox : public QCheckBox, public MDTInputWidget
 {
     Q_OBJECT
 
 public:
-    ARCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), ARInputWidget(this) { setChecked(checked); }
+    MDTCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
 
     QVariant variantValue() { return this->isChecked(); }
 };

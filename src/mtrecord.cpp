@@ -23,6 +23,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QDateTime>
+#include <QSqlError>
 
 using namespace Global;
 
@@ -244,6 +245,7 @@ bool MTRecord::update(const QVariantMap & set, bool add_columns)
         if (r_parents.contains(i.key())) { r_parents.setValue(i.key(), i.value().toString()); }
     }
     bool result = query.exec();
+    QString a = query.lastError().text();
     if (!r_id.isEmpty()) {
         r_id = set.value(r_id_field, r_id).toString();
     } else {

@@ -359,6 +359,7 @@ public:
     DatabaseTables() {
         dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT");
         dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, contact_person TEXT, address TEXT, mail TEXT, phone TEXT, date_updated TEXT");
+        dict.insert("persons", "id INTEGER PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT");
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT");
         dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT");

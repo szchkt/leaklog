@@ -894,3 +894,7 @@ const MTDictionary & File::attributes()
     static FileAttributes dict;
     return dict.dict;
 }
+
+Person::Person(const QString & person_id, const QString & customer_id):
+MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
+{}
