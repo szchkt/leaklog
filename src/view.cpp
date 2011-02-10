@@ -541,6 +541,8 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     }
     Inspector inspectors_record("");
     MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
+    Person operators_record(QString(), customer_id);
+    MultiMapOfVariantMaps operators(operators_record.mapAll("id", "name"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
@@ -575,7 +577,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
-        out << "<td>" << MTVariant(inspections.at(i).value("operator")) << "</td>";
+        out << "<td>" << escapeString(operators.value(inspections.at(i).value("operator").toString()).value("name", inspections.at(i).value("operator")).toString()) << "</td>";
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
             out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
         } else {
@@ -665,6 +667,9 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
         if (var_id == "inspector" && !ins_value.isEmpty()) {
             Inspector inspector(ins_value);
             ins_value = inspector.stringValue("person", ins_value);
+        } else if (var_id == "operator" && !ins_value.isEmpty()) {
+            if (ins_value.toInt())
+                ins_value = Person(ins_value, customer_id).stringValue("name", ins_value);
         } else if (var_type == "bool") {
             ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
         }

@@ -106,18 +106,20 @@ private:
     bool _enabled;
 };
 
-class ModifyDialogueBasicTable : public QWidget
+class ModifyDialogueBasicTable : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    ModifyDialogueBasicTable(const MTDictionary &, QWidget *);
+    ModifyDialogueBasicTable(const QString &, const MTDictionary &, QWidget *);
 
     void addRow(const QMap<QString, QVariant> &);
     QList<MTDictionary> allValues();
 
-private slots:
+public slots:
     void addNewRow();
+
+private slots:
     void rowRemoved(ModifyDialogueBasicTableRow *);
 
 private:

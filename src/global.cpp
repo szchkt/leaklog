@@ -639,6 +639,18 @@ MTDictionary Global::listInspectors()
     return inspectors;
 }
 
+MTDictionary Global::listOperators(const QString & customer)
+{
+    MTDictionary operators(true); QSqlQuery query;
+    query.setForwardOnly(true);
+    if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1").arg(customer))) {
+        while (query.next()) {
+            operators.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+        }
+    }
+    return operators;
+}
+
 MTDictionary Global::listAssemblyRecordItemCategories()
 {
     MTDictionary categories(QObject::tr("No category"), "-1"); QSqlQuery query;

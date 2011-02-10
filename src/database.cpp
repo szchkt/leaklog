@@ -540,7 +540,7 @@ void MainWindow::addCustomer()
 {
     if (!db.isOpen()) { return; }
     Customer record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCustomer(record.id().toInt(), true);

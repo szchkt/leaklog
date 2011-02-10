@@ -299,13 +299,18 @@ QToolButton * ModifyDialogueTableRow::removeButton()
     return remove_btn;
 }
 
-ModifyDialogueBasicTable::ModifyDialogueBasicTable(const MTDictionary & header, QWidget * parent):
-        QWidget(parent)
+ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const MTDictionary & header, QWidget * parent):
+        QGroupBox(name, parent)
 {
     this->header = header;
     visible_rows = 0;
+    this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
-    grid = new QGridLayout(this);
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    grid = new QGridLayout;
+    layout->addLayout(grid);
+    layout->addStretch();
+    layout->setContentsMargins(6, 6, 6, 6);
     grid->setContentsMargins(0, 0, 0, 0);
 
     for (int i = 0; i < header.count(); ++i) {

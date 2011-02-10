@@ -12,8 +12,8 @@ ModifyCustomerDialogue::ModifyCustomerDialogue(Customer * record, QWidget * pare
     table_header.insert("name", tr("Name"));
     table_header.insert("mail", tr("E-mail"));
     table_header.insert("phone", tr("Phone"));
-    persons_table = new ModifyDialogueBasicTable(table_header, this);
-    md_grid_main->addWidget(persons_table, md_grid_main->rowCount(), 0, 1, 2);
+    persons_table = new ModifyDialogueBasicTable(tr("Contact persons"), table_header, this);
+    md_grid_main->addWidget(persons_table, 0, 2, md_grid_main->rowCount(), 1);
 
     ListOfVariantMaps persons = persons_record.listAll();
     QMap<QString, QVariant> person_data;
@@ -24,11 +24,13 @@ ModifyCustomerDialogue::ModifyCustomerDialogue(Customer * record, QWidget * pare
         person_data.insert("phone", persons.at(i).value("phone"));
         persons_table->addRow(person_data);
     }
+
+    if (!persons.count()) persons_table->addNewRow();
 }
 
 void ModifyCustomerDialogue::save()
 {
-    ModifyDialogue::save(false);
+    if (!ModifyDialogue::save(false)) return;
 
     Person persons_record("", idFieldValue().toString());
     persons_record.remove();

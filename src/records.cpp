@@ -249,6 +249,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 iw->label()->toggleAlternativeText(chb_repair->isChecked());
                 QObject::connect(chb_repair, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
                 md->addInputWidget(iw);
+            } if (var_id == "operator") {
+                iw = new MDComboBox(var_id, var_name, md,
+                    attributes.value(var_id).toString(), listOperators(parent("customer")), query.value("VAR_COL_BG").toString());
+                md->addInputWidget(iw);
             } else if (var_id == "ar_type") {
                 iw = new MDComboBox(var_id, var_name, md,
                     attributes.value(var_id).toString(), listAssemblyRecordTypes(), query.value("VAR_COL_BG").toString());
