@@ -9,7 +9,7 @@
 class QVBoxLayout;
 
 class ModifyDialogueTableCell;
-class ModifyDialogueTableGroupBox;
+class ModifyDialogueAdvancedTable;
 class ModifyDialogueGroupHeaderItem;
 
 class ModifyDialogueGroupsLayout : public QWidget
@@ -20,16 +20,16 @@ public:
     ModifyDialogueGroupsLayout(QWidget *);
     ~ModifyDialogueGroupsLayout();
 
-    void addHeaderItem(int, const QString &, const QString &);
-    void addItem(const QString &, int, const QString &, const QMap<QString, ModifyDialogueTableCell *> &, int, bool);
-    ModifyDialogueTableGroupBox * createGroup(const QString &, int, int);
+    void addHeaderItem(int, const QString &, const QString &, int);
+    void addItem(const QString &, int, QMap<QString, ModifyDialogueTableCell *> &, int, bool);
+    ModifyDialogueAdvancedTable * createGroup(const QString &, int, int);
 
     QList<MTDictionary> allValues();
 
     void clear();
 
 private:
-    QMap<QString, ModifyDialogueTableGroupBox *> * groups;
+    QMap<QString, ModifyDialogueAdvancedTable *> * groups;
     QList<ModifyDialogueGroupHeaderItem *> header_items;
     QVBoxLayout * layout;
 };
@@ -37,16 +37,16 @@ private:
 class ModifyDialogueGroupHeaderItem
 {
 public:
-    ModifyDialogueGroupHeaderItem(int, const QString &, const QString &);
+    ModifyDialogueGroupHeaderItem(int, const QString &, const QString &, int);
 
     int id() { return item_id; }
-    const QString & name() { return item_name; }
-    const QString & fullName() { return item_full_name; }
+    ModifyDialogueTableCell * tableCell();
 
 private:
     int item_id;
     QString item_name;
     QString item_full_name;
+    int data_type;
 };
 
 #endif // MODIFY_DIALOGUE_TABLE_GROUPS_H

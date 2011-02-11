@@ -46,9 +46,10 @@ void ModifyInspectionDialogueTab::init()
     layout->addLayout(form_grid);
 
     groups_layout = new ModifyDialogueGroupsLayout(this);
-    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"));
-    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"));
-    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"));
+    groups_layout->addHeaderItem(-1, "name", tr("Name"), Global::String);
+    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"), Global::String);
+    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
+    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
     layout->addWidget(groups_layout);
 
     layout->addStretch();
@@ -98,13 +99,13 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                           .arg(assemblyRecordId().toString())
                           .arg(assemblyRecordType().toString()));
     while (items_query.next()) {
-        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), items_query.value(VALUE_DATA_TYPE).toInt(), items_query.value(INSPECTION_VAR).toString().isEmpty()));
-        cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID)));
-        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), Global::Numeric));
-        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), Global::Numeric));
+        cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(NAME), "name"));
+        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), "value", items_query.value(VALUE_DATA_TYPE).toInt(), items_query.value(INSPECTION_VAR).toString().isEmpty()));
+        cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
+        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
+        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
         groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
                                items_query.value(CATEGORY_ID).toInt(),
-                               items_query.value(NAME).toString(),
                                cells_map,
                                items_query.value(DISPLAY_OPTIONS).toInt(),
                                !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull());

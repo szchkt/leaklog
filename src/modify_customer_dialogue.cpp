@@ -1,27 +1,40 @@
 #include "modify_customer_dialogue.h"
 
 #include "records.h"
-#include "modifydialoguetable.h"
+#include "modify_dialogue_table.h"
+#include "global.h"
 
 ModifyCustomerDialogue::ModifyCustomerDialogue(Customer * record, QWidget * parent):
         ModifyDialogue(record, parent)
 {
     Person persons_record("", idFieldValue().toString());
 
-    MTDictionary table_header;
-    table_header.insert("name", tr("Name"));
-    table_header.insert("mail", tr("E-mail"));
-    table_header.insert("phone", tr("Phone"));
-    persons_table = new ModifyDialogueBasicTable(tr("Contact persons"), table_header, this);
+    QList<ModifyDialogueTableCell *> cells;
+    ModifyDialogueTableCell * cell = new ModifyDialogueTableCell(tr("Name"), Global::String);
+    cell->setId("name");
+    cells.append(cell);
+    cell = new ModifyDialogueTableCell(tr("E-mail"), Global::String);
+    cell->setId("mail");
+    cells.append(cell);
+    cell = new ModifyDialogueTableCell(tr("Phone"), Global::String);
+    cell->setId("phone");
+    cells.append(cell);
+    persons_table = new ModifyDialogueBasicTable(tr("Contact persons"), cells, this);
     md_grid_main->addWidget(persons_table, 0, 2, md_grid_main->rowCount(), 1);
 
     ListOfVariantMaps persons = persons_record.listAll();
-    QMap<QString, QVariant> person_data;
+    QMap<QString, ModifyDialogueTableCell *> person_data;
 
     for (int i = 0; i < persons.count(); ++i) {
-        person_data.insert("name", persons.at(i).value("name"));
-        person_data.insert("mail", persons.at(i).value("mail"));
-        person_data.insert("phone", persons.at(i).value("phone"));
+        cell = new ModifyDialogueTableCell(persons.at(i).value("name"), Global::String);
+        cell->setId("name");
+        person_data.insert("name", cell);
+        cell = new ModifyDialogueTableCell(persons.at(i).value("mail"), Global::String);
+        cell->setId("mail");
+        person_data.insert("mail", cell);
+        cell = new ModifyDialogueTableCell(persons.at(i).value("phone"), Global::String);
+        cell->setId("phone");
+        person_data.insert("phone", cell);
         persons_table->addRow(person_data);
     }
 

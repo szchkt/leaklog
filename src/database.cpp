@@ -26,6 +26,7 @@
 #include "modify_customer_dialogue.h"
 #include "modify_inspection_dialogue.h"
 #include "modify_assembly_record_dialogue.h"
+#include "modify_circuit_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -655,7 +656,7 @@ void MainWindow::addCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Circuit record(selectedCustomer(), "");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyCircuitDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
@@ -669,7 +670,7 @@ void MainWindow::modifyCircuit()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyCircuitDialogue(&record, this);
     QString old_id = selectedCircuit();
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);

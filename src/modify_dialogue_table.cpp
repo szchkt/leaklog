@@ -11,93 +11,60 @@
 #include <QToolButton>
 #include <QPushButton>
 
-ModifyDialogueTableGroupBox::ModifyDialogueTableGroupBox(const QString &name, int category_id, const MTDictionary & header, QWidget * parent):
+ModifyDialogueTable::ModifyDialogueTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
         QGroupBox(name, parent)
 {
     this->header = header;
-    this->category_id = category_id;
     visible_rows = 0;
-    smallest_index = -1;
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    layout = new QVBoxLayout(this);
     grid = new QGridLayout;
     grid->setContentsMargins(0, 0, 0, 0);
     layout->addLayout(grid);
-    layout->addLayout(addRowControlsLayout());
     layout->setContentsMargins(9, 9, 9, 9);
     layout->setSpacing(6);
 
     createHeader();
 }
 
-ModifyDialogueTableGroupBox::~ModifyDialogueTableGroupBox()
+ModifyDialogueTable::~ModifyDialogueTable()
 {
     for (int i = rows.count() - 1; i >= 0; --i) {
         delete rows.takeAt(i);
     }
 
-    delete add_row_cb;
     delete grid;
 }
 
-void ModifyDialogueTableGroupBox::createHeader()
+void ModifyDialogueTable::createHeader()
 {
-    grid->addWidget(new QLabel(QString("<b>%1</b>").arg(tr("Name")), 0, 0));
-
     for (int i = 0; i < header.count(); ++i) {
-        grid->addWidget(new QLabel(QString("<b>%1</b>").arg(header.value(i))), visible_rows, i + 1);
+        grid->addWidget(new QLabel(QString("<b>%1</b>").arg(header.at(i)->value().toString())), visible_rows, i);
     }
     visible_rows++;
 }
 
-QLayout * ModifyDialogueTableGroupBox::addRowControlsLayout()
-{
-    QHBoxLayout * layout = new QHBoxLayout;
-    layout->setContentsMargins(0, 0, 0, 0);
-    add_row_cb = new QComboBox;
-
-    layout->addWidget(add_row_cb);
-
-    QPushButton * add_btn = new QPushButton(tr("Add"));
-    QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(activateRow()));
-    layout->addWidget(add_btn);
-
-    layout->addStretch();
-
-    QToolButton * add_new_btn = new QToolButton;
-    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    layout->addWidget(add_new_btn);
-
-    return layout;
-}
-
-void ModifyDialogueTableGroupBox::addRow(const QString & name, const QMap<QString, ModifyDialogueTableCell *> & values, bool display)
+void ModifyDialogueTable::addRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool display)
 {
     ModifyDialogueTableRow * row = new ModifyDialogueTableRow(values, display);
-    QObject::connect(row, SIGNAL(removed(ModifyDialogueTableRow*, bool)), this, SLOT(rowRemoved(ModifyDialogueTableRow*, bool)));
+    QObject::connect(row, SIGNAL(removed(ModifyDialogueTableRow*)), this, SLOT(rowRemoved(ModifyDialogueTableRow*)));
     rows.append(row);
 
     if (!display) {
-        add_row_cb->addItem(name, row->itemTypeId());
+        addHiddenRow(row);
     } else {
-        addRow(row, name);
+        addRow(row);
     }
 }
 
-void ModifyDialogueTableGroupBox::addRow(ModifyDialogueTableRow * row, const QString & name)
+void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
 {
     MDTInputWidget * iw;
-    if (row->itemTypeId().toInt() < 0) {
-        iw = new MDTLineEdit(row->valuesMap().value("name")->value().toString(), this);
-        row->addWidget("name", iw);
-        grid->addWidget(iw->widget(), visible_rows, 0);
-    }
-    else grid->addWidget(row->label(name), visible_rows, 0);
 
     ModifyDialogueTableCell * cell;
     for (int i = 0; i < header.count(); ++i) {
-        cell = row->valuesMap().value(header.key(i));
+        cell = row->valuesMap().value(header.at(i)->id());
+        QString a = header.at(i)->id();
 
         switch (cell->dataType()) {
         case Global::Boolean:
@@ -123,52 +90,21 @@ void ModifyDialogueTableGroupBox::addRow(ModifyDialogueTableRow * row, const QSt
             break;
 
         default:
-            iw = NULL;
-            continue;
+            iw = new MDTLabel(cell->value().toString(), this);
             break;
         }
 
         if (!cell->enabled()) iw->widget()->setEnabled(false);
-        row->addWidget(header.key(i), iw);
-        grid->addWidget(iw->widget(), visible_rows, i + 1);
+        row->addWidget(header.at(i)->id(), iw);
+        grid->addWidget(iw->widget(), visible_rows, i);
     }
-    grid->addWidget(row->removeButton(), visible_rows, header.count() + 1);
+    grid->addWidget(row->removeButton(), visible_rows, header.count());
     visible_rows++;
 }
 
-void ModifyDialogueTableGroupBox::activateRow()
+void ModifyDialogueTable::rowRemoved(ModifyDialogueTableRow * row)
 {
-    ModifyDialogueTableRow * row = NULL;
-    QString type_id = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
-
-    for (int i = 0; i < rows.count(); ++i) {
-        if (!rows.at(i)->isInTable() && rows.at(i)->itemTypeId() == type_id) {
-            row = rows.at(i);
-            break;
-        }
-    }
-
-    if (!row) return;
-    row->setInTable(true);
-    addRow(row, add_row_cb->currentText());
-    add_row_cb->removeItem(add_row_cb->currentIndex());
-}
-
-void ModifyDialogueTableGroupBox::addNewRow()
-{
-    QMap<QString, ModifyDialogueTableCell *> cells_map;
-    cells_map.insert("value", new ModifyDialogueTableCell(QVariant(), Global::String));
-    cells_map.insert("item_type_id", new ModifyDialogueTableCell(smallest_index--));
-    cells_map.insert("acquisition_price", new ModifyDialogueTableCell(QVariant(), Global::Numeric));
-    cells_map.insert("list_price", new ModifyDialogueTableCell(QVariant(), Global::Numeric));
-    cells_map.insert("name", new ModifyDialogueTableCell(tr("New item"), Global::String));
-    cells_map.insert("category_id", new ModifyDialogueTableCell(category_id));
-    addRow(tr("New item"), cells_map, true);
-}
-
-void ModifyDialogueTableGroupBox::rowRemoved(ModifyDialogueTableRow * row, bool deleted)
-{
-    if (deleted) {
+    if (row->toBeDeleted()) {
         for (int i = 0; i < rows.count(); ++i) {
             if (rows.at(i) == row) {
                 delete rows.takeAt(i);
@@ -176,10 +112,23 @@ void ModifyDialogueTableGroupBox::rowRemoved(ModifyDialogueTableRow * row, bool 
             }
         }
     }
-    else add_row_cb->addItem(row->name(), row->itemTypeId());
+    else addHiddenRow(row);
 }
 
-QList<MTDictionary> ModifyDialogueTableGroupBox::allValues()
+void ModifyDialogueTable::addNewRow()
+{
+    QMap<QString, ModifyDialogueTableCell *> cells_map;
+    for (int i = 0; i < header.count(); ++i) {
+        cells_map.insert(header.at(i)->id(), new ModifyDialogueTableCell(QVariant(), header.at(i)->dataType()));
+    }
+    QList<ModifyDialogueTableCell *> other_cells = hiddenAttributes();
+    for (int i = 0; i < other_cells.count(); ++i) {
+        cells_map.insert(other_cells.at(i)->id(), other_cells.at(i));
+    }
+    addRow(cells_map, true);
+}
+
+QList<MTDictionary> ModifyDialogueTable::allValues()
 {
     QList<MTDictionary> values;
 
@@ -189,6 +138,73 @@ QList<MTDictionary> ModifyDialogueTableGroupBox::allValues()
     }
 
     return values;
+}
+
+ModifyDialogueAdvancedTable::ModifyDialogueAdvancedTable(const QString &name, int category_id, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
+        ModifyDialogueTable(name, header, parent)
+{
+    this->category_id = category_id;
+    smallest_index = -1;
+
+    layout->addLayout(addRowControlsLayout());
+}
+
+QLayout * ModifyDialogueAdvancedTable::addRowControlsLayout()
+{
+    QHBoxLayout * layout = new QHBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
+    add_row_cb = new QComboBox(this);
+
+    layout->addWidget(add_row_cb);
+
+    QPushButton * add_btn = new QPushButton(tr("Add"));
+    QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(activateRow()));
+    layout->addWidget(add_btn);
+
+    layout->addStretch();
+
+    QToolButton * add_new_btn = new QToolButton;
+    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
+    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
+    layout->addWidget(add_new_btn);
+
+    return layout;
+}
+
+void ModifyDialogueAdvancedTable::addHiddenRow(ModifyDialogueTableRow * row)
+{
+    add_row_cb->addItem(row->value("name"), row->valuesMap().value("item_type_id")->value());
+}
+
+void ModifyDialogueAdvancedTable::activateRow()
+{
+    ModifyDialogueTableRow * row = NULL;
+    QString type_id = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
+
+    for (int i = 0; i < rows.count(); ++i) {
+        if (!rows.at(i)->isInTable() && rows.at(i)->value("item_type_id") == type_id) {
+            row = rows.at(i);
+            break;
+        }
+    }
+
+    if (!row) return;
+    row->setInTable(true);
+    addRow(row);
+    add_row_cb->removeItem(add_row_cb->currentIndex());
+}
+
+QList<ModifyDialogueTableCell *> ModifyDialogueAdvancedTable::hiddenAttributes()
+{
+    QList<ModifyDialogueTableCell *> attrs;
+    ModifyDialogueTableCell * cell = new ModifyDialogueTableCell(category_id);
+    cell->setId("category_id");
+    attrs.append(cell);
+    cell = new ModifyDialogueTableCell(smallest_index--);
+    cell->setId("item_type_id");
+    attrs.append(cell);
+
+    return attrs;
 }
 
 ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool in_table)
@@ -236,7 +252,7 @@ const QString ModifyDialogueTableRow::itemTypeId()
     return values.value("item_type_id")->value().toString();
 }
 
-void ModifyDialogueTableRow::remove(bool emit_sig)
+void ModifyDialogueTableRow::remove()
 {
      QMapIterator<QString, MDTInputWidget *> i(widgets);
      i.toBack();
@@ -276,8 +292,7 @@ void ModifyDialogueTableRow::remove(bool emit_sig)
      }
      setInTable(false);
 
-     if (values.value("item_type_id")->value().toInt() < 0) emit removed(this, true);
-     else if (emit_sig) emit removed(this, false);
+     emit removed(this);
 }
 
 QLabel * ModifyDialogueTableRow::label(const QString & name)
@@ -299,127 +314,23 @@ QToolButton * ModifyDialogueTableRow::removeButton()
     return remove_btn;
 }
 
-ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const MTDictionary & header, QWidget * parent):
-        QGroupBox(name, parent)
+const QString ModifyDialogueTableRow::value(const QString &name)
 {
-    this->header = header;
-    visible_rows = 0;
+    if (values.contains(name))
+        return values.value(name)->value().toString();
+    else
+        return QString();
+}
+
+ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
+        ModifyDialogueTable(name, header, parent)
+{
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    grid = new QGridLayout;
-    layout->addLayout(grid);
     layout->addStretch();
-    layout->setContentsMargins(6, 6, 6, 6);
-    grid->setContentsMargins(0, 0, 0, 0);
-
-    for (int i = 0; i < header.count(); ++i) {
-        grid->addWidget(new QLabel(QString("<b>%1</b>").arg(header.value(i))), visible_rows, i);
-    }
 
     QToolButton * add_btn = new QToolButton;
     add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    grid->addWidget(add_btn, visible_rows, header.count());
-    visible_rows++;
-}
-
-void ModifyDialogueBasicTable::addNewRow()
-{
-    QMap<QString, QVariant> values;
-    for (int i = 0; i < header.count(); ++i) {
-        values.insert(header.key(i), QVariant());
-    }
-    addRow(values);
-}
-
-void ModifyDialogueBasicTable::addRow(const QMap<QString, QVariant> & values)
-{
-    ModifyDialogueBasicTableRow * row = new ModifyDialogueBasicTableRow(values);
-    QObject::connect(row, SIGNAL(removed(ModifyDialogueBasicTableRow*)), this, SLOT(rowRemoved(ModifyDialogueBasicTableRow*)));
-    rows.append(row);
-    QLineEdit * iw;
-
-    for (int i = 0; i < header.count(); ++i) {
-        iw = new QLineEdit(values.value(header.key(i)).toString(), this);
-        if (!iw) continue;
-
-        row->addWidget(header.key(i), iw);
-        grid->addWidget(iw, visible_rows, i);
-    }
-    grid->addWidget(row->removeButton(), visible_rows, header.count());
-    visible_rows++;
-}
-
-void ModifyDialogueBasicTable::rowRemoved(ModifyDialogueBasicTableRow * row)
-{
-    for (int i = 0; i < rows.count(); ++i) {
-        if (rows.at(i) == row) {
-            delete rows.takeAt(i);
-            break;
-        }
-    }
-}
-
-QList<MTDictionary> ModifyDialogueBasicTable::allValues()
-{
-    QList<MTDictionary> values;
-
-    for (int i = 0; i < rows.count(); ++i) {
-        values.append(rows.at(i)->dictValues());
-    }
-
-    return values;
-}
-
-ModifyDialogueBasicTableRow::ModifyDialogueBasicTableRow(const QMap<QString, QVariant> & values)
-{
-    this->values = values;
-    remove_btn = NULL;
-}
-
-void ModifyDialogueBasicTableRow::addWidget(const QString & name, QLineEdit * le)
-{
-    widgets.insert(name, le);
-}
-
-QToolButton * ModifyDialogueBasicTableRow::removeButton()
-{
-    if (!remove_btn) {
-        remove_btn = new QToolButton;
-        remove_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
-        QObject::connect(remove_btn, SIGNAL(clicked()), this, SLOT(remove()));
-    }
-    return remove_btn;
-}
-
-MTDictionary ModifyDialogueBasicTableRow::dictValues()
-{
-    MTDictionary dict;
-    QMapIterator<QString, QVariant> i(values);
-    while (i.hasNext()) {
-        i.next();
-        if (widgets.contains(i.key())) {
-            dict.setValue(i.key(), widgets.value(i.key())->text());
-        } else {
-            dict.setValue(i.key(), i.value().toString());
-        }
-    }
-    return dict;
-}
-
-void ModifyDialogueBasicTableRow::remove()
-{
-    QMapIterator<QString, QLineEdit *> i(widgets);
-    while (i.hasNext()) {
-        i.next();
-        delete widgets.take(i.key());
-    }
-
-     if (remove_btn) {
-         delete remove_btn;
-         remove_btn = NULL;
-     }
-
-     emit removed(this);
+    grid->addWidget(add_btn, 0, header.count());
 }

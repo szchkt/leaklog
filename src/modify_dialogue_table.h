@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QPlainTextEdit>
+#include <QLabel>
 
 #include "mtdictionary.h"
 
@@ -15,41 +16,107 @@ class QGridLayout;
 class QComboBox;
 class QLabel;
 class QToolButton;
+class QVBoxLayout;
 
 class ModifyDialogueTableRow;
 class ModifyDialogueTableCell;
 class ModifyDialogueBasicTableRow;
 class MDTInputWidget;
 
-class ModifyDialogueTableGroupBox : public QGroupBox
+class ModifyDialogueTable : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    ModifyDialogueTableGroupBox(const QString &, int, const MTDictionary &, QWidget *);
-    ~ModifyDialogueTableGroupBox();
+    ModifyDialogueTable(const QString &, const QList<ModifyDialogueTableCell *> &, QWidget *);
+    ~ModifyDialogueTable();
 
-    void addRow(const QString &, const QMap<QString, ModifyDialogueTableCell *> &, bool);
-    void addRow(ModifyDialogueTableRow *, const QString &);
+    void addRow(const QMap<QString, ModifyDialogueTableCell *> &, bool = true);
+    void addRow(ModifyDialogueTableRow *);
     QList<MTDictionary> allValues();
+
+public slots:
+    void addNewRow();
+
+private slots:
+    void rowRemoved(ModifyDialogueTableRow *);
+
+protected:
+    void createHeader();
+    virtual void addHiddenRow(ModifyDialogueTableRow *) = 0;
+    virtual QList<ModifyDialogueTableCell *> hiddenAttributes() = 0;
+
+    QVBoxLayout * layout;
+    QGridLayout * grid;
+
+    QList<ModifyDialogueTableCell *> header;
+    QList<ModifyDialogueTableRow *> rows;
+    int visible_rows;
+};
+
+class ModifyDialogueAdvancedTable : public ModifyDialogueTable
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueAdvancedTable(const QString &, int, const QList<ModifyDialogueTableCell *> &, QWidget *);
 
 private slots:
     void activateRow();
-    void rowRemoved(ModifyDialogueTableRow *, bool);
-    void addNewRow();
 
 private:
-    void createHeader();
     QLayout * addRowControlsLayout();
+    void addHiddenRow(ModifyDialogueTableRow *);
+    QList<ModifyDialogueTableCell *> hiddenAttributes();
 
-    QGridLayout * grid;
     QComboBox * add_row_cb;
 
-    MTDictionary header;
-    QList<ModifyDialogueTableRow *> rows;
-    int visible_rows;
     int smallest_index;
     int category_id;
+};
+
+class ModifyDialogueBasicTable : public ModifyDialogueTable
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueBasicTable(const QString &, const QList<ModifyDialogueTableCell *> &, QWidget *);
+
+private slots:
+    void activateRow() {}
+
+private:
+    void addHiddenRow(ModifyDialogueTableRow *) {}
+    QList<ModifyDialogueTableCell *> hiddenAttributes() { return QList<ModifyDialogueTableCell *>(); }
+};
+
+class ModifyDialogueTableCell
+{
+public:
+    ModifyDialogueTableCell(const QVariant & _value, int _data_type = -1, bool _enabled = true) {
+        this->_value = _value;
+        this->_data_type = _data_type;
+        this->_enabled = _enabled;
+    }
+    ModifyDialogueTableCell(const QVariant & _value, QString _id, int _data_type = -1, bool _enabled = true) {
+        this->_value = _value;
+        this->_id = _id;
+        this->_data_type = _data_type;
+        this->_enabled = _enabled;
+    }
+
+    void setId(const QString & id) { this->_id = id; }
+    const QString & id() { return _id; }
+
+    const QVariant & value() { return _value; }
+    int dataType() { return _data_type; }
+    bool enabled() { return _enabled; }
+
+private:
+    QString _id;
+    QVariant _value;
+    int _data_type;
+    bool _enabled;
 };
 
 class ModifyDialogueTableRow : public QObject
@@ -66,17 +133,20 @@ public:
     void setInTable(bool in_table) { this->in_table = in_table; }
 
     const QString itemTypeId();
+    const QString value(const QString & name);
     const QMap<QString, ModifyDialogueTableCell *> & valuesMap() { return values; }
 
     QToolButton * removeButton();
     QLabel * label(const QString &);
     const QString & name() { return row_name; }
 
+    bool toBeDeleted() { return value("item_type_id").toInt() < 0; }
+
 private slots:
-    void remove(bool = true);
+    void remove();
 
 signals:
-    void removed(ModifyDialogueTableRow *, bool);
+    void removed(ModifyDialogueTableRow *);
 
 private:
     QToolButton * remove_btn;
@@ -85,72 +155,6 @@ private:
     QMap<QString, MDTInputWidget *> widgets;
     QMap<QString, ModifyDialogueTableCell *> values;
     bool in_table;
-};
-
-class ModifyDialogueTableCell
-{
-public:
-    ModifyDialogueTableCell(const QVariant & _value, int _data_type = -1, bool _enabled = true) {
-        this->_value = _value;
-        this->_data_type = _data_type;
-        this->_enabled = _enabled;
-    }
-
-    const QVariant & value() { return _value; }
-    int dataType() { return _data_type; }
-    bool enabled() { return _enabled; }
-
-private:
-    QVariant _value;
-    int _data_type;
-    bool _enabled;
-};
-
-class ModifyDialogueBasicTable : public QGroupBox
-{
-    Q_OBJECT
-
-public:
-    ModifyDialogueBasicTable(const QString &, const MTDictionary &, QWidget *);
-
-    void addRow(const QMap<QString, QVariant> &);
-    QList<MTDictionary> allValues();
-
-public slots:
-    void addNewRow();
-
-private slots:
-    void rowRemoved(ModifyDialogueBasicTableRow *);
-
-private:
-    MTDictionary header;
-    int visible_rows;
-    QGridLayout * grid;
-    QList<ModifyDialogueBasicTableRow *> rows;
-};
-
-class ModifyDialogueBasicTableRow : public QObject
-{
-    Q_OBJECT
-
-public:
-    ModifyDialogueBasicTableRow(const QMap<QString, QVariant> &);
-
-    void addWidget(const QString &, QLineEdit *);
-    MTDictionary dictValues();
-
-    QToolButton * removeButton();
-
-private slots:
-    void remove();
-
-signals:
-    void removed(ModifyDialogueBasicTableRow *);
-
-private:
-    QToolButton * remove_btn;
-    QMap<QString, QLineEdit *> widgets;
-    QMap<QString, QVariant> values;
 };
 
 class MDTInputWidget
@@ -212,6 +216,16 @@ public:
     MDTCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
 
     QVariant variantValue() { return this->isChecked(); }
+};
+
+class MDTLabel : public QLabel, public MDTInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDTLabel(const QString & text, QWidget * parent) : QLabel(text, parent), MDTInputWidget(this) {}
+
+    QVariant variantValue() { return text(); }
 };
 
 #endif // MODIFYDIALOGUETABLE_H
