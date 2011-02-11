@@ -65,6 +65,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_assembly_record_item_types, Navigation::ListOfAssemblyRecordItemTypes);
     btngrp_view->addButton(tbtn_view_assembly_record_item_categories);
     btngrp_view->setId(tbtn_view_assembly_record_item_categories, Navigation::ListOfAssemblyRecordItemCategories);
+    btngrp_view->addButton(tbtn_view_circuit_unit_types);
+    btngrp_view->setId(tbtn_view_circuit_unit_types, Navigation::ListOfCircuitUnitTypes);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -118,6 +120,9 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_modify_assembly_record_item_category, SIGNAL(clicked()), receiver, SLOT(modifyAssemblyRecordItemCategory()));
     QObject::connect(tbtn_add_assembly_record_item_category, SIGNAL(clicked()), receiver, SLOT(addAssemblyRecordItemCategory()));
     QObject::connect(tbtn_remove_assembly_record_item_category, SIGNAL(clicked()), receiver, SLOT(removeAssemblyRecordItemCategory()));
+    QObject::connect(tbtn_add_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(addCircuitUnitType()));
+    QObject::connect(tbtn_remove_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(removeCircuitUnitType()));
+    QObject::connect(tbtn_modify_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(modifyCircuitUnitType()));
     emit viewChanged(view());
 }
 
@@ -239,6 +244,10 @@ void Navigation::updateView()
             group = 2;
             filter_visible = false;
             break;
+        case Navigation::ListOfCircuitUnitTypes:
+            group = 3;
+            filter_visible = false;
+            break;
         case Navigation::LeakagesByApplication:
         default:
             group = 0;
@@ -321,6 +330,7 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_assembly_record_item_categories->setVisible(g == 3);
     gb_filter->setVisible(g < 4);
     gb_report_data->setVisible(g == 4);
+    gb_circuit_unit_types->setVisible(g == 3);
     if (emit_signal && g < 4 && current_view != default_view_for_group[current_group]) {
         current_view = default_view_for_group[current_group];
         btngrp_view->button(current_view)->setChecked(true);
@@ -340,7 +350,7 @@ void Navigation::emitFilterChanged()
     if (!isFilterEmpty()) emit filterChanged();
 }
 
-void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected, bool assembly_record_item_category_selected)
+void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected, bool assembly_record_item_category_selected, bool circuit_unit_type_selected)
 {
     tbtn_modify_inspector->setEnabled(inspector_selected);
     tbtn_remove_inspector->setEnabled(inspector_selected);
@@ -364,6 +374,8 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
     tbtn_modify_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
     tbtn_remove_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
+    tbtn_modify_circuit_unit_type->setEnabled(circuit_unit_type_selected);
+    tbtn_remove_circuit_unit_type->setEnabled(circuit_unit_type_selected);
     gb_tables->setEnabled(circuit_selected);
 }
 

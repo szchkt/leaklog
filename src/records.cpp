@@ -902,3 +902,64 @@ const MTDictionary & File::attributes()
 Person::Person(const QString & person_id, const QString & customer_id):
 MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
 {}
+
+CircuitUnitType::CircuitUnitType(const QString & id):
+DBRecord("circuit_unit_types", "id", id, MTDictionary())
+{}
+
+void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
+{
+    md->setWindowTitle(tr("Assembly record item type"));
+    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary locations;
+    locations.insert(tr("External"), QString::number(CircuitUnitType::External));
+    locations.insert(tr("Internal"), QString::number(CircuitUnitType::Internal));
+
+    QVariantMap attributes;
+    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+        attributes = list();
+    }
+
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md, attributes.value("manufacturer").toString()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md, attributes.value("type").toString()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
+    md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
+
+    QStringList used_ids; QSqlQuery query_used_ids;
+    query_used_ids.setForwardOnly(true);
+    query_used_ids.prepare("SELECT id FROM circuit_unit_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
+    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    if (query_used_ids.exec()) {
+        while (query_used_ids.next()) {
+            used_ids << query_used_ids.value(0).toString();
+        }
+    }
+    md->setUsedIds(used_ids);
+}
+
+class CircuitUnitTypeAttributes
+{
+public:
+    CircuitUnitTypeAttributes() {
+        dict.insert("id", QApplication::translate("CircuitUnitType", "ID"));
+        dict.insert("manufacturer", QApplication::translate("CircuitUnitType", "Manufacturer"));
+        dict.insert("type", QApplication::translate("CircuitUnitType", "Type"));
+        dict.insert("refrigerant", QApplication::translate("CircuitUnitType", "Refrigerant"));
+        dict.insert("refrigerant_amount", QApplication::translate("CircuitUnitType", "Amount of refrigerant"));
+        dict.insert("acquisition_price", QApplication::translate("CircuitUnitType", "Acquisition price"));
+        dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
+        dict.insert("location", QApplication::translate("CircuitUnitType", "Location"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & CircuitUnitType::attributes()
+{
+    static CircuitUnitTypeAttributes dict;
+    return dict.dict;
+}

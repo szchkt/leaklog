@@ -2336,3 +2336,54 @@ void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
         navigation->setView(Navigation::AssemblyRecord);
     }
 }
+
+void MainWindow::addCircuitUnitType()
+{
+    if (!db.isOpen()) { return; }
+    CircuitUnitType unit_type("");
+    ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadCircuitUnitType(unit_type.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::loadCircuitUnitType(int circuit_unit_type, bool refresh)
+{
+    if (circuit_unit_type < 0) { return; }
+    selected_circuit_unit_type = circuit_unit_type;
+    enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::ListOfCircuitUnitTypes);
+    }
+}
+
+void MainWindow::modifyCircuitUnitType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isCircuitUnitTypeSelected()) { return; }
+    CircuitUnitType unit_type(selectedCircuitUnitType());
+    ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
+    if (md->exec() == QDialog::Accepted) {
+        this->setWindowModified(true);
+        loadCircuitUnitType(unit_type.id().toInt(), true);
+    }
+    delete md;
+}
+
+void MainWindow::removeCircuitUnitType()
+{
+    if (!db.isOpen()) { return; }
+    if (!isCircuitUnitTypeSelected()) { return; }
+    QString sel_unit_type = selectedCircuitUnitType();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove circuit unit type - Leaklog"), tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:").arg(sel_unit_type), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    CircuitUnitType unit_type(sel_unit_type);
+    unit_type.remove();
+    selected_circuit_unit_type = -1;
+    enableTools();
+    this->setWindowModified(true);
+    navigation->setView(Navigation::ListOfCircuitUnitTypes);
+}

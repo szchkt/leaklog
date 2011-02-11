@@ -118,6 +118,9 @@ QString MainWindow::viewChanged(int view)
                     view = Navigation::ListOfInspections; ok = false;
                 }
                 break;
+            case Navigation::ListOfCircuitUnitTypes:
+                html = viewAllCircuitUnitTypes(selectedCircuitUnitType());
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -166,6 +169,7 @@ QString MainWindow::currentView()
         case Navigation::ListOfAssemblyRecordTypes: view = QApplication::translate("Navigation", "List of assembly record types"); break;
         case Navigation::ListOfAssemblyRecordItemTypes: view = QApplication::translate("Navigation", "List of assembly record item types"); break;
         case Navigation::ListOfAssemblyRecordItemCategories: view = QApplication::translate("Navigation", "List of assembly record item categories"); break;
+        case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of circuit unit types"); break;
     }
     return view;
 }
@@ -876,7 +880,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         for (int n = 0; n < table_vars.count(); ++n) {
             variable = var_evaluation.variable(table_vars.at(n));
             if (!variable) continue;
-            bool compare_nom = false; int rowspan = 1; QString ins_value; QString nom_value; bool ok_eval;
+            bool compare_nom = false; int rowspan = 1; QString ins_value; QString nom_value;
             QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
             if (subvariables.count() > 0) {
                 for (int s = 0; s < subvariables.count(); ++s) {
@@ -1643,7 +1647,6 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     bool locked = isRecordLocked(inspection_date);
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
-    VariableEvaluation::Variable * variable = NULL;
     QString nom_value;
 
     HTMLDiv div;
@@ -1787,4 +1790,40 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
         *_td << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)).toHtml();
     }
     out << table.html();
+}
+
+QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
+{
+    QString html; MTTextStream out(&html);
+    CircuitUnitType all_items("");
+    if (!navigation->isFilterEmpty()) {
+        all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+    ListOfVariantMaps items(all_items.listAll());
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    QString thead = "<tr>"; int thead_colspan = 2;
+    for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
+        thead.append("<th>" + CircuitUnitType::attributes().value(n) + "</th>");
+        thead_colspan++;
+    }
+    thead.append("</tr>");
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of circuit unit types") << "</th></tr>";
+    out << thead;
+    QString id;
+    for (int i = 0; i < items.count(); ++i) {
+        id = items.at(i).value("id").toString();
+        out << "<tr onclick=\"window.location = 'circuitunittype:" << id << "";
+        if (highlighted_id == id) {
+            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+        } else {
+            out << "'\" style=\"";
+        }
+        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
+            out << "<td>" << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()) << "</td>";
+        }
+        out << "</tr>";
+    }
+    out << "</table>";
+    return dict_html.value(Navigation::ListOfCircuitUnitTypes).arg(html);
 }

@@ -116,6 +116,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/assembly_record.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::AssemblyRecord, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/circuit_unit_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::ListOfCircuitUnitTypes, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;
@@ -124,6 +127,7 @@ MainWindow::MainWindow()
     selected_assembly_record_type = -1;
     selected_assembly_record_item_type = -1;
     selected_assembly_record_item_category = -1;
+    selected_circuit_unit_type = -1;
     database_locked = false;
     check_for_updates = true;
     // i18n
@@ -391,6 +395,10 @@ void MainWindow::executeLink(const QUrl & url)
             id = path.at(0);
             id.remove(0, QString("assemblyrecorditemcategory:").length());
             loadAssemblyRecordItemCategory(id.toInt(), path.count() <= 1);
+        } else if (path.at(0).startsWith("circuitunittype:")) {
+            id = path.at(0);
+            id.remove(0, QString("circuitunittype:").length());
+            loadCircuitUnitType(id.toInt(), path.count() <= 1);
         }
     }
     if (path.count() > 1) {
@@ -409,6 +417,7 @@ void MainWindow::executeLink(const QUrl & url)
             else if (path.at(0).startsWith("assemblyrecordtype:")) { this->modifyAssemblyRecordType(); }
             else if (path.at(0).startsWith("assemblyrecorditemtype:")) { this->modifyAssemblyRecordItemType(); }
             else if (path.at(0).startsWith("assemblyrecorditemcategory:")) { this->modifyAssemblyRecordItemCategory(); }
+            else if (path.at(0).startsWith("circuitunittype:")) { this->modifyCircuitUnitType(); }
         }
     }
     if (path.count() > 2) {
@@ -964,7 +973,7 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected());
+    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected(), isCircuitUnitTypeSelected());
     actionModify_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected && !database_locked);

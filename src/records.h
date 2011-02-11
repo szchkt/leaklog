@@ -247,4 +247,21 @@ public:
     Person(const QString & = QString(), const QString & = QString());
 };
 
+class CircuitUnitType : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    enum Locations {
+        External = 0,
+        Internal = 1
+            };
+
+    CircuitUnitType(const QString &);
+
+    void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

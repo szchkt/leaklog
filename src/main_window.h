@@ -127,6 +127,9 @@ private slots:
     void addAssemblyRecordItemCategory();
     void modifyAssemblyRecordItemCategory();
     void removeAssemblyRecordItemCategory();
+    void addCircuitUnitType();
+    void modifyCircuitUnitType();
+    void removeCircuitUnitType();
     // VIEW
     QString viewChanged(int);
 
@@ -163,6 +166,7 @@ private:
     void loadAssemblyRecordItemType(int, bool);
     void loadAssemblyRecordItemCategory(int, bool);
     void loadAssemblyRecord(const QString &, bool);
+    void loadCircuitUnitType(int, bool);
     inline bool isCustomerSelected() { return selected_customer >= 0; }
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
@@ -179,6 +183,8 @@ private:
     inline bool isAssemblyRecordItemCategorySelected() { return selected_assembly_record_item_category >= 0; }
     inline QString selectedAssemblyRecordItemType() { return QString::number(selected_assembly_record_item_type); }
     inline QString selectedAssemblyRecordItemCategory() { return QString::number(selected_assembly_record_item_category); }
+    inline bool isCircuitUnitTypeSelected() { return selected_circuit_unit_type >= 0; }
+    inline QString selectedCircuitUnitType() { return QString::number(selected_circuit_unit_type); }
     // VIEW
     QString currentView();
     QString viewServiceCompany(int);
@@ -197,6 +203,7 @@ private:
     QString viewAllAssemblyRecordItemTypes(const QString & = QString());
     QString viewAllAssemblyRecordItemCategories(const QString & = QString());
     QString viewAssemblyRecord(const QString &, const QString &, const QString &);
+    QString viewAllCircuitUnitTypes(const QString & = QString());
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
@@ -215,6 +222,7 @@ private:
     int selected_assembly_record_type;
     int selected_assembly_record_item_type;
     int selected_assembly_record_item_category;
+    int selected_circuit_unit_type;
     bool database_locked;
     QString database_lock_date;
     QSet<int> years_expanded_in_service_company_view;
