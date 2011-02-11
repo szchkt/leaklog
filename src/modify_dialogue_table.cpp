@@ -1,4 +1,4 @@
-#include "modifydialoguetable.h"
+#include "modify_dialogue_table.h"
 
 #include "records.h"
 #include "global.h"

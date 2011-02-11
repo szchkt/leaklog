@@ -24,6 +24,8 @@
 #include "modify_warning_dialogue.h"
 #include "tabbed_modify_dialogue.h"
 #include "modify_customer_dialogue.h"
+#include "modify_inspection_dialogue.h"
+#include "modify_assembly_record_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -2175,7 +2177,7 @@ void MainWindow::addAssemblyRecordType()
 {
     if (!db.isOpen()) { return; }
     AssemblyRecordType record("");
-    ModifyDialogue * md = new AssemblyRecordModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);
@@ -2198,7 +2200,7 @@ void MainWindow::modifyAssemblyRecordType()
     if (!db.isOpen()) { return; }
     if (!isAssemblyRecordTypeSelected()) { return; }
     AssemblyRecordType record(selectedAssemblyRecordType());
-    ModifyDialogue * md = new AssemblyRecordModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);

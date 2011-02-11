@@ -39,9 +39,13 @@ HEADERS       += src/global.h \
                  src/tabbed_modify_dialogue.h \
                  src/dbfile.h \
                  src/htmlbuilder.h \
-                 src/modifydialoguetable.h \
+                 src/modify_dialogue_table.h \
                  src/modify_customer_dialogue.h \
-                 src/variable_evaluation.h
+                 src/variable_evaluation.h \
+                 src/modify_circuit_dialogue.h \
+                 src/modify_inspection_dialogue.h \
+                 src/modify_assembly_record_dialogue.h \
+    src/modify_dialogue_table_groups.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -73,9 +77,13 @@ SOURCES       += src/global.cpp \
                  src/tabbed_modify_dialogue.cpp \
                  src/dbfile.cpp \
                  src/htmlbuilder.cpp \
-                 src/modifydialoguetable.cpp \
+                 src/modify_dialogue_table.cpp \
                  src/modify_customer_dialogue.cpp \
-                 src/variable_evaluation.cpp
+                 src/variable_evaluation.cpp \
+                 src/modify_circuit_dialogue.cpp \
+                 src/modify_inspection_dialogue.cpp \
+                 src/modify_assembly_record_dialogue.cpp \
+    src/modify_dialogue_table_groups.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser
