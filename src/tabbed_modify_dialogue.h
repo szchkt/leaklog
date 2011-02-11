@@ -10,13 +10,9 @@ class QComboBox;
 class QGroupBox;
 
 class ModifyDialogueTab;
-class ModifyDialogueGroupsLayout;
 class MDLineEdit;
 class MDComboBox;
 class MTDictionary;
-class ModifyDialogueTableGroupBox;
-class ModifyDialogueGroupHeaderItem;
-class ModifyDialogueTableCell;
 
 class TabbedModifyDialogue : public ModifyDialogue
 {

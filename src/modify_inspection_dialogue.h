@@ -3,6 +3,8 @@
 
 #include "tabbed_modify_dialogue.h"
 
+class ModifyDialogueGroupsLayout;
+
 class ModifyInspectionDialogue : public TabbedModifyDialogue
 {
 public:

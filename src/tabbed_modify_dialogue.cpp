@@ -2,17 +2,9 @@
 
 #include "records.h"
 #include "input_widgets.h"
-#include "modify_dialogue_table.h"
 #include "global.h"
 
-#include <QTreeWidget>
-#include <QHeaderView>
 #include <QTabWidget>
-#include <QLabel>
-#include <QVariantMap>
-#include <QGroupBox>
-#include <QSqlQuery>
-#include <QMessageBox>
 #include <QScrollArea>
 
 TabbedModifyDialogue::TabbedModifyDialogue(DBRecord * record, QWidget * parent)
