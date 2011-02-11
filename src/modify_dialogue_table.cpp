@@ -212,12 +212,10 @@ ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogu
     this->values = values;
     this->in_table = in_table;
     remove_btn = NULL;
-    lbl = NULL;
 }
 
 ModifyDialogueTableRow::~ModifyDialogueTableRow()
 {
-    if (lbl) delete lbl;
     if (remove_btn) delete remove_btn;
 
     QMapIterator<QString, ModifyDialogueTableCell *> i(values);
@@ -280,11 +278,11 @@ void ModifyDialogueTableRow::remove()
          case Global::Numeric:
              delete (MDTDoubleSpinBox *) iw;
              break;
+
+         default:
+             delete (MDTLabel *) iw;
+             break;
          }
-     }
-     if (lbl) {
-         delete lbl;
-         lbl = NULL;
      }
      if (remove_btn) {
          delete remove_btn;
@@ -293,15 +291,6 @@ void ModifyDialogueTableRow::remove()
      setInTable(false);
 
      emit removed(this);
-}
-
-QLabel * ModifyDialogueTableRow::label(const QString & name)
-{
-    if (!lbl) {
-        lbl = new QLabel(name);
-        row_name = name;
-    }
-    return lbl;
 }
 
 QToolButton * ModifyDialogueTableRow::removeButton()

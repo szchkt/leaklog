@@ -137,7 +137,6 @@ public:
     const QMap<QString, ModifyDialogueTableCell *> & valuesMap() { return values; }
 
     QToolButton * removeButton();
-    QLabel * label(const QString &);
     const QString & name() { return row_name; }
 
     bool toBeDeleted() { return value("item_type_id").toInt() < 0; }
@@ -150,7 +149,6 @@ signals:
 
 private:
     QToolButton * remove_btn;
-    QLabel * lbl;
     QString row_name;
     QMap<QString, MDTInputWidget *> widgets;
     QMap<QString, ModifyDialogueTableCell *> values;
