@@ -1849,6 +1849,7 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
     *(_tr->addHeaderCell()) << tr("Circuit units");
     *(_tr->addHeaderCell()) << tr("Manufacturer");
     *(_tr->addHeaderCell()) << tr("Type");
+    *(_tr->addHeaderCell()) << tr("Serial number");
 
     enum QUERY_RESULTS
     {
@@ -1868,6 +1869,7 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
         *(_tr->addCell()) << CircuitUnitType::locationToString(query.value(LOCATION).toInt());
         *(_tr->addCell()) << query.value(MANUFACTURER).toString();
         *(_tr->addCell()) << query.value(TYPE).toString();
+        *(_tr->addCell()) << query.value(SN).toString();
     }
 
     return table;
