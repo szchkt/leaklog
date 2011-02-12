@@ -12,6 +12,7 @@
 ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
+    main_tabw->setTabText(0, tr("Inspection"));
     addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type")));
 }
 

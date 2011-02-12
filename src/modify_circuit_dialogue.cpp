@@ -9,13 +9,14 @@
 ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
+    main_tabw->setTabText(0, tr("Cooling circuit"));
     addTab(new ModifyCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this));
 }
 
 ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
-    setName(tr("Circuit units"));
+    setName(tr("Units"));
     this->customer_id = customer_id;
 
     QGridLayout * grid = new QGridLayout(this);

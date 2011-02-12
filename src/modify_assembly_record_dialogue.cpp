@@ -9,6 +9,7 @@
 ModifyAssemblyRecordDialogue::ModifyAssemblyRecordDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
+    main_tabw->setTabText(0, tr("Assembly record type"));
     addTab(new ModifyAssemblyRecordDialogueTab(idFieldValue().toInt()));
 }
 
@@ -16,7 +17,7 @@ ModifyAssemblyRecordDialogueTab::ModifyAssemblyRecordDialogueTab(int record_id, 
     : ModifyDialogueTab(parent)
 {
     this->record_id = record_id;
-    setName(tr("Assembly record items"));
+    setName(tr("Item categories"));
 
     init();
 }
