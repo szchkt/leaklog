@@ -260,8 +260,17 @@ public:
     CircuitUnitType(const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+    static const QString locationToString(int);
 
     static const MTDictionary & attributes();
+};
+
+class CircuitUnit : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    CircuitUnit(const MTDictionary & = MTDictionary());
 };
 
 #endif // RECORDS_H

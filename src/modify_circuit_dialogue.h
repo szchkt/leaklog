@@ -20,7 +20,7 @@ class ModifyCircuitDialogueUnitsTab : public ModifyDialogueTab
     Q_OBJECT
 
 public:
-    ModifyCircuitDialogueUnitsTab(QWidget * = NULL);
+    ModifyCircuitDialogueUnitsTab(const QString &, const QString &, QWidget * = NULL);
 
     void save(int);
 
@@ -30,13 +30,13 @@ private slots:
     void itemClicked(QTreeWidgetItem*, int);
 
 private:
+    void loadRows(const QString &, const QString &);
     void loadManufacturers();
     void addToTable(ModifyCircuitDialogueTreeItem *);
 
-    const QString location(int);
-
     ModifyCircuitDialogueTable * table;
     QTreeWidget * tree;
+    QString customer_id;
 };
 
 class ModifyCircuitDialogueTable : public ModifyDialogueTable
@@ -63,6 +63,7 @@ public:
     void setManufacturer(const QString & manufacturer) { this->unit_manufacturer = manufacturer; }
     const QString & manufacturer() { return unit_manufacturer; }
     void setUnitType(const QString & type) { this->unit_type = type; }
+    const QString & unitType() { return unit_type; }
     void setIsType(bool is_type) { this->is_type = is_type; }
     bool isType() { return is_type; }
     void setLocation(int loc) { this->unit_location = loc; }

@@ -9,15 +9,17 @@
 ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
-    addTab(new ModifyCircuitDialogueUnitsTab);
+    addTab(new ModifyCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this));
 }
 
-ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(QWidget * parent)
+ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
     setName(tr("Circuit units"));
+    this->customer_id = customer_id;
 
     QGridLayout * grid = new QGridLayout(this);
+
     tree = new QTreeWidget(this);
     tree->setColumnCount(3);
     QStringList header_labels;
@@ -45,10 +47,53 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(QWidget * parent)
     grid->addWidget(table, 0, 1);
 
     loadManufacturers();
+    loadRows(customer_id, circuit_id);
 }
 
-void ModifyCircuitDialogueUnitsTab::save(int)
+void ModifyCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QString & circuit_id)
 {
+    QMap<QString, ModifyDialogueTableCell *> cells;
+
+    enum QUERY_RESULTS
+    {
+        SN = 0,
+        MANUFACTURER = 1,
+        TYPE = 2,
+        LOCATION = 3,
+        UNIT_TYPE_ID = 4
+    };
+    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+                            " FROM circuit_units"
+                            " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                            " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
+                    .arg(customer_id.toInt()).arg(circuit_id.toInt()));
+    while (query.next()) {
+        cells.insert("manufacturer", new ModifyDialogueTableCell(query.value(MANUFACTURER), "manufacturer"));
+        cells.insert("type", new ModifyDialogueTableCell(query.value(TYPE), "type"));
+        cells.insert("unit_type_id", new ModifyDialogueTableCell(query.value(UNIT_TYPE_ID), "unit_type_id"));
+        cells.insert("location", new ModifyDialogueTableCell(CircuitUnitType::locationToString(query.value(LOCATION).toInt()), "location"));
+        cells.insert("sn", new ModifyDialogueTableCell(query.value(SN), "sn", Global::String));
+        table->addRow(cells);
+    }
+}
+
+void ModifyCircuitDialogueUnitsTab::save(int circuit_id)
+{
+    MTDictionary dict;
+    dict.insert("company_id", customer_id);
+    dict.insert("circuit_id", QString::number(circuit_id));
+
+    CircuitUnit unit(dict);
+    unit.remove();
+
+    QList<MTDictionary> values = table->allValues();
+    QVariantMap map;
+
+    for (int i = 0; i < values.count(); ++i) {
+        map.insert("unit_type_id", values.at(i).value("unit_type_id"));
+        map.insert("sn", values.at(i).value("sn"));
+        unit.update(map);
+    }
 }
 
 void ModifyCircuitDialogueUnitsTab::loadManufacturers()
@@ -75,9 +120,10 @@ void ModifyCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * q
     while (query.next()) {
         item = new ModifyCircuitDialogueTreeItem(parent_item);
         item->setText(0, query.value(1).toString());
-        item->setText(1, location(query.value(2).toInt()));
+        item->setText(1, CircuitUnitType::locationToString(query.value(2).toInt()));
         item->setText(2, tr("Add"));
         item->setIcon(2, QIcon(QString::fromUtf8(":/images/images/add16.png")));
+        item->setUnitType(query.value(0).toString());
         item->setManufacturer(parent_item->text(0));
         item->setLocation(query.value(2).toInt());
     }
@@ -104,19 +150,10 @@ void ModifyCircuitDialogueUnitsTab::addToTable(ModifyCircuitDialogueTreeItem * i
     QMap<QString, ModifyDialogueTableCell *> cells;
     cells.insert("manufacturer", new ModifyDialogueTableCell(item->manufacturer(), "manufacturer"));
     cells.insert("type", new ModifyDialogueTableCell(item->text(0), "type"));
-    cells.insert("location", new ModifyDialogueTableCell(location(item->location()), "location"));
+    cells.insert("unit_type_id", new ModifyDialogueTableCell(item->unitType(), "unit_type_id"));
+    cells.insert("location", new ModifyDialogueTableCell(CircuitUnitType::locationToString(item->location()), "location"));
     cells.insert("sn", new ModifyDialogueTableCell(QString(), "sn", Global::String));
     table->addRow(cells);
-}
-
-const QString ModifyCircuitDialogueUnitsTab::location(int num)
-{
-    switch (num) {
-    case CircuitUnitType::External:
-        return tr("External");
-    case CircuitUnitType::Internal:
-        return tr("Internal");
-    }
 }
 
 ModifyCircuitDialogueTable::ModifyCircuitDialogueTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent)

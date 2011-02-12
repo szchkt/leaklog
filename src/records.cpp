@@ -963,3 +963,19 @@ const MTDictionary & CircuitUnitType::attributes()
     static CircuitUnitTypeAttributes dict;
     return dict.dict;
 }
+
+const QString CircuitUnitType::locationToString(int id)
+{
+    switch (id) {
+    case CircuitUnitType::External:
+        return tr("External");
+    case CircuitUnitType::Internal:
+        return tr("Internal");
+    }
+    return QString();
+}
+
+CircuitUnit::CircuitUnit(const MTDictionary & dict)
+    : MTRecord("circuit_units", "", "", dict)
+{
+}

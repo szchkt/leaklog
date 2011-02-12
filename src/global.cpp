@@ -378,7 +378,7 @@ public:
         dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, date_updated TEXT");
         dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT");
         dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount TEXT, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, date_updated TEXT");
-        dict.insert("circuit_units", "id INTEGER PRIMARY KEY, company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, count INTEGER, sn TEXT, date_updated TEXT");
+        dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }
 
