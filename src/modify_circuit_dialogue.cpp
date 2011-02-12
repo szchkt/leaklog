@@ -1,8 +1,10 @@
 #include "modify_circuit_dialogue.h"
 
 #include "global.h"
+#include "records.h"
 
 #include <QSqlQuery>
+#include <QHeaderView>
 
 ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
@@ -17,14 +19,26 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(QWidget * parent)
 
     QGridLayout * grid = new QGridLayout(this);
     tree = new QTreeWidget(this);
-    tree->setHeaderLabel(tr("Available unit types"));
+    tree->setColumnCount(3);
+    QStringList header_labels;
+    header_labels << tr("Available unit types");
+    header_labels << tr("Location");
+    header_labels << tr("Add");
+    tree->setHeaderLabels(header_labels);
+    tree->setSelectionMode(QAbstractItemView::NoSelection);
+    tree->header()->setStretchLastSection(false);
+    tree->header()->setResizeMode(0, QHeaderView::Stretch);
+    tree->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    tree->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     QObject::connect(tree, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(manufacturerItemExpanded(QTreeWidgetItem*)));
-    QObject::connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*)));
+    QObject::connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
+    QObject::connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemClicked(QTreeWidgetItem*, int)));
     grid->addWidget(tree, 0, 0);
 
     QList<ModifyDialogueTableCell *> header;
     header.append(new ModifyDialogueTableCell(tr("Manufacturer"), "manufacturer"));
     header.append(new ModifyDialogueTableCell(tr("Type"), "type"));
+    header.append(new ModifyDialogueTableCell(tr("Location"), "location"));
     header.append(new ModifyDialogueTableCell(tr("Serial number"), "sn"));
 
     table = new ModifyCircuitDialogueTable(tr("Used circuit units"), header, this);
@@ -61,14 +75,26 @@ void ModifyCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * q
     while (query.next()) {
         item = new ModifyCircuitDialogueTreeItem(parent_item);
         item->setText(0, query.value(1).toString());
+        item->setText(1, location(query.value(2).toInt()));
+        item->setText(2, tr("Add"));
+        item->setIcon(2, QIcon(QString::fromUtf8(":/images/images/add16.png")));
         item->setManufacturer(parent_item->text(0));
+        item->setLocation(query.value(2).toInt());
     }
 }
 
-void ModifyCircuitDialogueUnitsTab::itemDoubleClicked(QTreeWidgetItem * qitem)
+void ModifyCircuitDialogueUnitsTab::itemDoubleClicked(QTreeWidgetItem * qitem, int col)
 {
     ModifyCircuitDialogueTreeItem * item = (ModifyCircuitDialogueTreeItem *) qitem;
-    if (!item->isType()) return;
+    if (!item->isType() || col == 2) return;
+
+    addToTable(item);
+}
+
+void ModifyCircuitDialogueUnitsTab::itemClicked(QTreeWidgetItem * qitem, int col)
+{
+    ModifyCircuitDialogueTreeItem * item = (ModifyCircuitDialogueTreeItem *) qitem;
+    if (!item->isType() || col != 2) return;
 
     addToTable(item);
 }
@@ -78,8 +104,19 @@ void ModifyCircuitDialogueUnitsTab::addToTable(ModifyCircuitDialogueTreeItem * i
     QMap<QString, ModifyDialogueTableCell *> cells;
     cells.insert("manufacturer", new ModifyDialogueTableCell(item->manufacturer(), "manufacturer"));
     cells.insert("type", new ModifyDialogueTableCell(item->text(0), "type"));
+    cells.insert("location", new ModifyDialogueTableCell(location(item->location()), "location"));
     cells.insert("sn", new ModifyDialogueTableCell(QString(), "sn", Global::String));
     table->addRow(cells);
+}
+
+const QString ModifyCircuitDialogueUnitsTab::location(int num)
+{
+    switch (num) {
+    case CircuitUnitType::External:
+        return tr("External");
+    case CircuitUnitType::Internal:
+        return tr("Internal");
+    }
 }
 
 ModifyCircuitDialogueTable::ModifyCircuitDialogueTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent)
