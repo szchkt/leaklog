@@ -203,6 +203,9 @@ QList<ModifyDialogueTableCell *> ModifyDialogueAdvancedTable::hiddenAttributes()
     cell = new ModifyDialogueTableCell(smallest_index--);
     cell->setId("item_type_id");
     attrs.append(cell);
+    cell = new ModifyDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes);
+    cell->setId("source");
+    attrs.append(cell);
 
     return attrs;
 }

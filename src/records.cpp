@@ -686,6 +686,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
+    md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -928,6 +929,8 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
     md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
+    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
 
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -953,6 +956,8 @@ public:
         dict.insert("acquisition_price", QApplication::translate("CircuitUnitType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
         dict.insert("location", QApplication::translate("CircuitUnitType", "Location"));
+        dict.insert("unit", QApplication::translate("CircuitUnitType", "Unit"));
+        dict.insert("category_id", QApplication::translate("CircuitUnitType", "Category"));
     }
 
     MTDictionary dict;

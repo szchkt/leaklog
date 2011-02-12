@@ -25,6 +25,7 @@
 
 class Warnings;
 class MTTextStream;
+class HTMLTable;
 class QPushButton;
 class QCloseEvent;
 class QPainter;
@@ -210,6 +211,7 @@ private:
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString(), int = -1);
     void writeServiceCompany(MTTextStream &);
+    HTMLTable * circuitUnitsTable(const QString &, const QString &);
 
     int selected_customer;
     QString selected_customer_company;

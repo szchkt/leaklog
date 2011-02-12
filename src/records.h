@@ -167,7 +167,8 @@ public:
     enum DisplayOptions {
         ShowServiceCompany = 1,
         ShowCustomer = 2,
-        ShowCircuit = 4
+        ShowCircuit = 4,
+        ShowCircuitUnits = 8
             };
 
     AssemblyRecordType(const QString &);
@@ -224,6 +225,11 @@ class AssemblyRecordItem : public MTRecord
     Q_OBJECT
 
 public:
+    enum Source {
+        AssemblyRecordItemTypes = 0,
+        CircuitUnitTypes = 1
+            };
+
     AssemblyRecordItem(const QString &);
 
     static const MTDictionary & attributes();

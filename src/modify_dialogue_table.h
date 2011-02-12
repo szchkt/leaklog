@@ -178,7 +178,7 @@ public:
 class MDTSpinBox : public QSpinBox, public MDTInputWidget
 {
 public:
-    MDTSpinBox(QWidget * parent) : QSpinBox(parent), MDTInputWidget(this) {}
+    MDTSpinBox(QWidget * parent) : QSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999); }
 
     QVariant variantValue() { return value(); }
 };
@@ -188,7 +188,7 @@ class MDTDoubleSpinBox : public QDoubleSpinBox, public MDTInputWidget
     Q_OBJECT
 
 public:
-    MDTDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), MDTInputWidget(this) {}
+    MDTDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999.0); }
 
     QVariant variantValue() { return value(); }
 

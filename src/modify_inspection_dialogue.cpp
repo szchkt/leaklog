@@ -13,14 +13,16 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
     : TabbedModifyDialogue(record, parent)
 {
     main_tabw->setTabText(0, tr("Inspection"));
-    addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type")));
+    addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
 }
 
-ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, QWidget * parent)
+ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
     this->ar_type_w = ar_type_w;
     this->arno_w = arno_w;
+    this->customer_id = customer_id;
+    this->circuit_id = circuit_id;
     original_arno = arno_w->text();
 
     QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
@@ -72,44 +74,105 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
 {
     groups_layout->clear();
     QMap<QString, ModifyDialogueTableCell *> cells_map;
-
-    enum QUERY_RESULTS
     {
-        TYPE_ID = 0,
-        NAME = 1,
-        ACQUISITION_PRICE = 2,
-        LIST_PRICE = 3,
-        VALUE = 4,
-        CATEGORY_NAME = 5,
-        CATEGORY_ID = 6,
-        DISPLAY_OPTIONS = 7,
-        ITEM_ACQUISITION_PRICE = 8,
-        ITEM_LIST_PRICE = 9,
-        INSPECTION_VAR = 10,
-        VALUE_DATA_TYPE = 11
-    };
-    QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
-                                  " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                  " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type"
-                                  " FROM assembly_record_item_types"
-                                  " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
-                                  " AND assembly_record_items.arno = '%1'"
-                                  " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
-                                  " WHERE assembly_record_item_types.category_id IN"
-                                  " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %2)")
-                          .arg(assemblyRecordId().toString())
-                          .arg(assemblyRecordType().toString()));
-    while (items_query.next()) {
-        cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(NAME), "name"));
-        cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), "value", items_query.value(VALUE_DATA_TYPE).toInt(), items_query.value(INSPECTION_VAR).toString().isEmpty()));
-        cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
-        cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
-        cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
-        groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
-                               items_query.value(CATEGORY_ID).toInt(),
-                               cells_map,
-                               items_query.value(DISPLAY_OPTIONS).toInt(),
-                               !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull());
+        enum QUERY_RESULTS
+        {
+            TYPE_ID = 0,
+            NAME = 1,
+            ACQUISITION_PRICE = 2,
+            LIST_PRICE = 3,
+            VALUE = 4,
+            CATEGORY_NAME = 5,
+            CATEGORY_ID = 6,
+            DISPLAY_OPTIONS = 7,
+            ITEM_ACQUISITION_PRICE = 8,
+            ITEM_LIST_PRICE = 9,
+            INSPECTION_VAR = 10,
+            VALUE_DATA_TYPE = 11,
+            ITEM_NAME = 12,
+            ITEM_UNIT = 13,
+            UNIT = 14
+                    };
+        QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
+                                      " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
+                                      " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit"
+                                      " FROM assembly_record_item_types"
+                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                                      " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
+                                      " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
+                                      " WHERE assembly_record_item_types.category_id IN"
+                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %3)")
+                              .arg(assemblyRecordId().toString())
+                              .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
+                              .arg(assemblyRecordType().toString()));
+        while (items_query.next()) {
+            cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(ITEM_NAME).isNull() ? items_query.value(NAME) : items_query.value(ITEM_NAME), "name", Global::String));
+            cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), "value", items_query.value(VALUE_DATA_TYPE).toInt(), items_query.value(INSPECTION_VAR).toString().isEmpty()));
+            cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
+            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
+            cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes, "source"));
+            cells_map.insert("category_id", new ModifyDialogueTableCell(items_query.value(CATEGORY_ID), "category_id"));
+            cells_map.insert("unit", new ModifyDialogueTableCell(items_query.value(ITEM_UNIT).isNull() ? items_query.value(UNIT) : items_query.value(ITEM_UNIT), "unit"));
+            groups_layout->addItem(items_query.value(CATEGORY_NAME).toString(),
+                                   items_query.value(CATEGORY_ID).toInt(),
+                                   cells_map,
+                                   items_query.value(DISPLAY_OPTIONS).toInt(),
+                                   !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull());
+        }
+    }
+    {
+        enum QUERY_RESULTS
+        {
+            TYPE_ID = 0,
+            MANUFACTURER = 1,
+            TYPE = 2,
+            ACQUISITION_PRICE = 3,
+            LIST_PRICE = 4,
+            VALUE = 5,
+            CATEGORY_NAME = 6,
+            CATEGORY_ID = 7,
+            DISPLAY_OPTIONS = 8,
+            ITEM_ACQUISITION_PRICE = 9,
+            ITEM_LIST_PRICE = 10,
+            ITEM_NAME = 11,
+            ITEM_UNIT = 12,
+            UNIT = 13
+                    };
+        QSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
+                                      " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit"
+                                      " FROM circuit_units"
+                                      " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
+                                      " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
+                                      " LEFT JOIN assembly_record_item_categories ON circuit_unit_types.category_id = assembly_record_item_categories.id"
+                                      " WHERE circuit_units.company_id = %3 AND circuit_units.circuit_id = %4 AND assembly_record_item_categories.id IN"
+                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %5)")
+                              .arg(assemblyRecordId().toString())
+                              .arg(AssemblyRecordItem::CircuitUnitTypes)
+                              .arg(customer_id)
+                              .arg(circuit_id)
+                              .arg(assemblyRecordType().toString()));
+        while (units_query.next()) {
+            QString name = units_query.value(ITEM_NAME).isNull() ?
+                           QString("%1 - %2").arg(units_query.value(MANUFACTURER).toString()).arg(units_query.value(TYPE).toString())
+                               : units_query.value(ITEM_NAME).toString();
+            cells_map.insert("name", new ModifyDialogueTableCell(name, "name", Global::String));
+            cells_map.insert("value", new ModifyDialogueTableCell(units_query.value(VALUE).toInt() ? units_query.value(VALUE) : 1, "value", Global::Integer));
+            cells_map.insert("item_type_id", new ModifyDialogueTableCell(units_query.value(TYPE_ID), "item_type_id"));
+            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
+            cells_map.insert("list_price", new ModifyDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::CircuitUnitTypes, "source"));
+            cells_map.insert("category_id", new ModifyDialogueTableCell(units_query.value(CATEGORY_ID), "category_id"));
+            cells_map.insert("unit", new ModifyDialogueTableCell(units_query.value(ITEM_UNIT).isNull() ? units_query.value(UNIT) : units_query.value(ITEM_UNIT), "unit"));
+            groups_layout->addItem(units_query.value(CATEGORY_NAME).toString(),
+                                   units_query.value(CATEGORY_ID).toInt(),
+                                   cells_map,
+                                   units_query.value(DISPLAY_OPTIONS).toInt(),
+                                   !units_query.value(VALUE).isNull() || !units_query.value(ITEM_LIST_PRICE).isNull());
+        }
     }
 }
 
@@ -133,6 +196,10 @@ void ModifyInspectionDialogueTab::save(int)
                    ? QVariant(saveNewItemType(record_dicts.at(i))) : record_dicts.at(i).value("item_type_id"));
         map.insert("acquisition_price", record_dicts.at(i).value("acquisition_price"));
         map.insert("list_price", record_dicts.at(i).value("list_price"));
+        map.insert("name", record_dicts.at(i).value("name"));
+        map.insert("source", record_dicts.at(i).value("source"));
+        map.insert("category_id", record_dicts.at(i).value("category_id"));
+        map.insert("unit", record_dicts.at(i).value("unit"));
         record_item.update(map);
     }
 }

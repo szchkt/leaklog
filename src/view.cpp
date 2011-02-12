@@ -1680,6 +1680,10 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         out << "<br>";
     }
     div << html;
+    if (type_display_options & AssemblyRecordType::ShowCircuitUnits) {
+        div << circuitUnitsTable(customer_id, circuit_id);
+        div << "<br>";
+    }
 
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     _td = table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
@@ -1691,12 +1695,13 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     *_td << "&nbsp;" << inspection_date;
     if (!locked) *_td << "</a>";
 
-    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_item_types.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
-                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_item_types.unit,"
+    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
+                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
                                        " assembly_record_item_types.inspection_variable_id FROM assembly_record_items"
-                                       " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id"
-                                       " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
-                                       " WHERE arno = '%1' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
+                                       " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
+                                       " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
+                                       " WHERE arno = '%2' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
+                               .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
     int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8;
@@ -1810,6 +1815,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of circuit unit types") << "</th></tr>";
     out << thead;
     QString id;
+    MTDictionary categories(listAssemblyRecordItemCategories());
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'circuitunittype:" << id << "";
@@ -1820,10 +1826,46 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         }
         out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
-            out << "<td>" << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()) << "</td>";
+            if (CircuitUnitType::attributes().key(n) == "category_id")
+                out << "<td>" << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()))) << "</td>";
+            else
+                out << "<td>" << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()) << "</td>";
         }
         out << "</tr>";
     }
     out << "</table>";
     return dict_html.value(Navigation::ListOfCircuitUnitTypes).arg(html);
+}
+
+HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QString & circuit_id)
+{
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableRow * _tr;
+
+    _tr = table->addRow();
+    *(_tr->addHeaderCell()) << tr("Circuit units");
+    *(_tr->addHeaderCell()) << tr("Manufacturer");
+    *(_tr->addHeaderCell()) << tr("Type");
+
+    enum QUERY_RESULTS
+    {
+        SN = 0,
+        MANUFACTURER = 1,
+        TYPE = 2,
+        LOCATION = 3,
+        UNIT_TYPE_ID = 4
+    };
+    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+                            " FROM circuit_units"
+                            " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                            " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
+                    .arg(customer_id.toInt()).arg(circuit_id.toInt()));
+    while (query.next()) {
+        _tr = table->addRow();
+        *(_tr->addCell()) << CircuitUnitType::locationToString(query.value(LOCATION).toInt());
+        *(_tr->addCell()) << query.value(MANUFACTURER).toString();
+        *(_tr->addCell()) << query.value(TYPE).toString();
+    }
+
+    return table;
 }
