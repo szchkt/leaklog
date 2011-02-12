@@ -1697,14 +1697,14 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
 
     QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
                                        " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id FROM assembly_record_items"
+                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
                                        " WHERE arno = '%2' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
-    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8;
+    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8, value_data_type = 9;
     int num_columns = 6, i, n;
     int colspans[num_columns];
     QString colspan = "colspan=\"%1\"";
@@ -1742,7 +1742,10 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(name).toString();
         if (colspans[++i]) {
             if (categories_query.value(variable_id).toString().isEmpty()) {
-                item_value = categories_query.value(value).toString();
+                if (categories_query.value(value_data_type).toInt() == Global::Boolean)
+                    item_value = categories_query.value(value).toInt() ? tr("Yes") : tr("No");
+                else
+                    item_value = categories_query.value(value).toString();
             } else {
                 item_value = var_evaluation.evaluate(categories_query.value(variable_id).toString(), inspection, nom_value);
             }

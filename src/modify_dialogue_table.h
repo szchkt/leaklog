@@ -203,7 +203,7 @@ class MDTPlainTextEdit : public QPlainTextEdit, public MDTInputWidget
 public:
     MDTPlainTextEdit(const QString & text, QWidget * parent) : QPlainTextEdit(text, parent), MDTInputWidget(this) {}
 
-    QVariant variantValue() { return this->toPlainText(); }
+    QVariant variantValue() { return toPlainText(); }
 };
 
 class MDTCheckBox : public QCheckBox, public MDTInputWidget
@@ -213,7 +213,7 @@ class MDTCheckBox : public QCheckBox, public MDTInputWidget
 public:
     MDTCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
 
-    QVariant variantValue() { return this->isChecked(); }
+    QVariant variantValue() { return isChecked() ? 1 : 0; }
 };
 
 class MDTLabel : public QLabel, public MDTInputWidget

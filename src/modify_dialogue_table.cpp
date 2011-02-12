@@ -32,6 +32,9 @@ ModifyDialogueTable::~ModifyDialogueTable()
     for (int i = rows.count() - 1; i >= 0; --i) {
         delete rows.takeAt(i);
     }
+    for (int i = header.count() - 1; i >= 0; --i) {
+        delete header.takeAt(i);
+    }
 
     delete grid;
 }
