@@ -97,7 +97,6 @@ void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
             break;
         }
 
-        if (!cell->enabled()) iw->widget()->setEnabled(false);
         row->addWidget(header.at(i)->id(), iw);
         grid->addWidget(iw->widget(), visible_rows, i);
     }

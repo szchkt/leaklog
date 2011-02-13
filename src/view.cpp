@@ -1658,23 +1658,29 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     QVariantMap ar_type = ar_type_record.list();
     int type_display_options = ar_type.value("display_options").toInt();
 
+    if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
+        div << writeServiceCompany();
+        div << "<br>";
+    }
+
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     *(table->addRow()->addHeaderCell()) << tr("Assembly record No. %1").arg(inspection.value("arno").toString());
+    *(table->addRow()->addCell()) << "<h2>" << ar_type.value("name").toString() << "</h2>";
+    *(table->addRow()->addCell()) << "<h3>" << ar_type.value("description").toString() << "</h3>";
     div << table;
-
-    div << "<h2>" << ar_type.value("name").toString() << "</h2>";
-    div << "<h3>" << ar_type.value("description").toString() << "</h3>";
+    div << "<br>";
 
     QString html; MTTextStream out(&html);
-    if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
-        writeServiceCompany(out);
-        out << "<br>";
-    }
 
     if (type_display_options & AssemblyRecordType::ShowCustomer) {
         writeCustomersTable(out, customer_id);
         out << "<br>";
     }
+    if (type_display_options & AssemblyRecordType::ShowCustomerContactPersons) {
+        out << customerContactPersons(customer_id)->html();
+        out << "<br>";
+    }
+
     if (type_display_options & AssemblyRecordType::ShowCircuit) {
         writeCircuitsTable(out, customer_id, circuit_id, 7);
         out << "<br>";
@@ -1705,8 +1711,10 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
     int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8, value_data_type = 9;
-    int num_columns = 6, i, n;
+    int num_columns = 5, i, n;
     int colspans[num_columns];
+    double absolute_total = 0.0;
+    double total;
     QString colspan = "colspan=\"%1\"";
     QString item_value;
     while (categories_query.next()) {
@@ -1755,21 +1763,27 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(list_price).toString();
         if (colspans[++i])
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(acquisition_price).toString();
-        if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(item_value.toDouble() * categories_query.value(list_price).toDouble());
+        if (colspans[++i]) {
+            total = item_value.toDouble() * categories_query.value(list_price).toDouble();
+            absolute_total += total;
+            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
+        }
     }
+    _tr = table->addRow();
+    *(_tr->addHeaderCell(QString("colspan=\"%1\"").arg(num_columns - 1))) << tr("Total");
+    *(_tr->addCell()) << QString::number(absolute_total);
 
     div << table;
 
     return dict_html.value(Navigation::AssemblyRecord).arg(div.html());
 }
 
-void MainWindow::writeServiceCompany(MTTextStream & out)
+HTMLTable * MainWindow::writeServiceCompany()
 {
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
-    HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-    HTMLTableRow * _tr = table.addRow();
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td;
     if (serv_company.value("image").toInt()) {
         QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data();
@@ -1781,7 +1795,7 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
     _td = _tr->addHeaderCell("colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
     *_td << tr("Service company") << "</a>";
-    _tr = table.addRow();
+    _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
         _td = _tr->addHeaderCell();
@@ -1790,14 +1804,14 @@ void MainWindow::writeServiceCompany(MTTextStream & out)
         *_td << attr;
     }
     QString attr_value;
-    _tr = table.addRow();
+    _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         attr_value = ServiceCompany::attributes().key(n);
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
         _td = _tr->addCell();
         *_td << MTVariant(serv_company.value(attr_value), (MTVariant::Type)dict_fieldtypes.value(attr_value)).toHtml();
     }
-    out << table.html();
+    return table;
 }
 
 QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
@@ -1870,6 +1884,28 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
         *(_tr->addCell()) << query.value(MANUFACTURER).toString();
         *(_tr->addCell()) << query.value(TYPE).toString();
         *(_tr->addCell()) << query.value(SN).toString();
+    }
+
+    return table;
+}
+
+HTMLTable * MainWindow::customerContactPersons(const QString & customer_id)
+{
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableRow * _tr;
+
+    _tr = table->addRow();
+    *(_tr->addHeaderCell()) << tr("Contact persons");
+    *(_tr->addHeaderCell()) << tr("E-mail");
+    *(_tr->addHeaderCell()) << tr("Phone");
+
+    Person persons_record(QString(), customer_id);
+    ListOfVariantMaps persons = persons_record.listAll();
+    for (int i = 0; i < persons.count(); ++i) {
+        _tr = table->addRow();
+        *(_tr->addCell()) << persons.at(i).value("name").toString();
+        *(_tr->addCell()) << persons.at(i).value("mail").toString();
+        *(_tr->addCell()) << persons.at(i).value("phone").toString();
     }
 
     return table;

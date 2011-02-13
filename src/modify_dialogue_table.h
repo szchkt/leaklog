@@ -93,16 +93,14 @@ private:
 class ModifyDialogueTableCell
 {
 public:
-    ModifyDialogueTableCell(const QVariant & _value, int _data_type = -1, bool _enabled = true) {
+    ModifyDialogueTableCell(const QVariant & _value, int _data_type = -1) {
         this->_value = _value;
         this->_data_type = _data_type;
-        this->_enabled = _enabled;
     }
-    ModifyDialogueTableCell(const QVariant & _value, QString _id, int _data_type = -1, bool _enabled = true) {
+    ModifyDialogueTableCell(const QVariant & _value, QString _id, int _data_type = -1) {
         this->_value = _value;
         this->_id = _id;
         this->_data_type = _data_type;
-        this->_enabled = _enabled;
     }
 
     void setId(const QString & id) { this->_id = id; }
@@ -110,13 +108,11 @@ public:
 
     const QVariant & value() { return _value; }
     int dataType() { return _data_type; }
-    bool enabled() { return _enabled; }
 
 private:
     QString _id;
     QVariant _value;
     int _data_type;
-    bool _enabled;
 };
 
 class ModifyDialogueTableRow : public QObject

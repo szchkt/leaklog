@@ -50,7 +50,6 @@ void Customer::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999999));
     md->addInputWidget(new MDLineEdit("company", tr("Company:"), md, attributes.value("company").toString()));
-    md->addInputWidget(new MDLineEdit("contact_person", tr("Contact person:"), md, attributes.value("contact_person").toString()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
@@ -72,7 +71,6 @@ public:
     CustomerAttributes() {
         dict.insert("id", QApplication::translate("Customer", "ID"));
         dict.insert("company", QApplication::translate("Customer", "Company"));
-        dict.insert("contact_person", QApplication::translate("Customer", "Contact person"));
         dict.insert("address", QApplication::translate("Customer", "Address"));
         dict.insert("mail", QApplication::translate("Customer", "E-mail"));
         dict.insert("phone", QApplication::translate("Customer", "Phone"));
@@ -685,6 +683,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
+    md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);

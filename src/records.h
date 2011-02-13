@@ -167,8 +167,9 @@ public:
     enum DisplayOptions {
         ShowServiceCompany = 1,
         ShowCustomer = 2,
-        ShowCircuit = 4,
-        ShowCircuitUnits = 8
+        ShowCustomerContactPersons = 4,
+        ShowCircuit = 8,
+        ShowCircuitUnits = 16
             };
 
     AssemblyRecordType(const QString &);
