@@ -83,6 +83,11 @@ QVariant MDLineEdit::variantValue()
     return text().isEmpty() ? nullvalue : text();
 }
 
+void MDLineEdit::setVariantValue(const QVariant & value)
+{
+    setText(value.toString());
+}
+
 void MDLineEdit::setNullValue(const QVariant & value)
 {
     nullvalue = value;
@@ -99,6 +104,11 @@ MDInputWidget(id, "", parent, this)
 QVariant MDCheckBox::variantValue()
 {
     return isChecked() ? 1 : 0;
+}
+
+void MDCheckBox::setVariantValue(const QVariant & value)
+{
+    setChecked(value.toBool());
 }
 
 MDSpinBox::MDSpinBox(const QString & id, const QString & labeltext, QWidget * parent, int minimum, int maximum, int value, const QString & suffix, const QString &
@@ -124,6 +134,11 @@ QVariant MDSpinBox::variantValue()
     return value();
 }
 
+void MDSpinBox::setVariantValue(const QVariant & value)
+{
+    setValue(value.toInt());
+}
+
 MDDoubleSpinBox::MDDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, double value, const QString & suffix, const QString &
 #ifndef Q_WS_MAC
     colour
@@ -145,6 +160,11 @@ MDInputWidget(id, labeltext, parent, this)
 QVariant MDDoubleSpinBox::variantValue()
 {
     return value();
+}
+
+void MDDoubleSpinBox::setVariantValue(const QVariant & value)
+{
+    setValue(value.toDouble());
 }
 
 MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const MTDictionary & items, const QString &
@@ -175,6 +195,16 @@ QVariant MDComboBox::variantValue()
 {
     QString value = cb_items.value(currentText());
     return value.isEmpty() ? nullvalue : value;
+}
+
+void MDComboBox::setVariantValue(const QVariant & value)
+{
+    for (int i = 0; i < count(); ++i) {
+        if (itemText(i) == value.toString()) {
+            setCurrentIndex(i);
+            break;
+        }
+    }
 }
 
 void MDComboBox::setNullValue(const QVariant & value)
@@ -209,6 +239,21 @@ QVariant MDDateTimeEdit::variantValue()
     return dateTime().toString("yyyy.MM.dd-hh:mm");
 }
 
+void MDDateTimeEdit::setVariantValue(const QVariant & value)
+{
+    setDateTime(QDateTime::fromString(value.toString(), "yyyy.MM.dd-hh:mm"));
+}
+
+void MDColourComboBox::setVariantValue(const QVariant & value)
+{
+    for (int i = 0; i < count(); ++i) {
+        if (itemText(i) == value.toString()) {
+            setCurrentIndex(i);
+            break;
+        }
+    }
+}
+
 MDDateEdit::MDDateEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
 QDateEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
@@ -222,6 +267,11 @@ QVariant MDDateEdit::variantValue()
     return date().toString("yyyy.MM.dd");
 }
 
+void MDDateEdit::setVariantValue(const QVariant & value)
+{
+    setDate(QDate::fromString(value.toString(), "yyyy.MM.dd"));
+}
+
 MDAddressEdit::MDAddressEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
 MTAddressEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
@@ -233,6 +283,11 @@ MDInputWidget(id, labeltext, parent, this)
 QVariant MDAddressEdit::variantValue()
 {
     return address().toString();
+}
+
+void MDAddressEdit::setVariantValue(const QVariant & value)
+{
+    setAddress(MTAddress(value.toString()));
 }
 
 MDHighlightedPlainTextEdit::MDHighlightedPlainTextEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const QStringList & ids, bool enabled):
@@ -250,6 +305,11 @@ QVariant MDHighlightedPlainTextEdit::variantValue()
     return toPlainText();
 }
 
+void MDHighlightedPlainTextEdit::setVariantValue(const QVariant & value)
+{
+    setPlainText(value.toString());
+}
+
 MDPlainTextEdit::MDPlainTextEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const QString & colour, bool enabled):
 QPlainTextEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
@@ -263,6 +323,11 @@ MDInputWidget(id, labeltext, parent, this)
 QVariant MDPlainTextEdit::variantValue()
 {
     return toPlainText();
+}
+
+void MDPlainTextEdit::setVariantValue(const QVariant & value)
+{
+    setPlainText(value.toString());
 }
 
 MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString & id, const QString & labeltext, QWidget * parent, int grouped_value):

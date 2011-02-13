@@ -59,6 +59,7 @@ public:
     virtual ~MDInputWidget() {}
 
     virtual QVariant variantValue() = 0;
+    virtual void setVariantValue(const QVariant &) = 0;
 
     inline QString id() { return iw_id; }
     inline MTLabel * label() { return iw_label; }
@@ -86,6 +87,7 @@ public:
     MDLineEdit(const QString &, const QString &, QWidget *, const QString &, int = 0, const QString & = QString(), bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 
     void setNullValue(const QVariant &);
 
@@ -101,6 +103,7 @@ public:
     MDCheckBox(const QString &, const QString &, QWidget *, bool, bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDSpinBox : public QSpinBox, public MDInputWidget
@@ -111,6 +114,7 @@ public:
     MDSpinBox(const QString &, const QString &, QWidget *, int, int, int, const QString & = QString(), const QString & = QString(), bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDDoubleSpinBox : public QDoubleSpinBox, public MDInputWidget
@@ -121,6 +125,7 @@ public:
     MDDoubleSpinBox(const QString &, const QString &, QWidget *, double, double, double, const QString & = QString(), const QString & = QString());
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 
 public slots:
     void clear() { setValue(0.0); }
@@ -134,6 +139,7 @@ public:
     MDComboBox(const QString &, const QString &, QWidget *, const QString &, const MTDictionary &, const QString & = QString(), bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 
     void setNullValue(const QVariant &);
 
@@ -150,6 +156,7 @@ public:
     MDColourComboBox(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDDateTimeEdit : public QDateTimeEdit, public MDInputWidget
@@ -160,6 +167,7 @@ public:
     MDDateTimeEdit(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDDateEdit : public QDateEdit, public MDInputWidget
@@ -170,6 +178,7 @@ public:
     MDDateEdit(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDAddressEdit : public MTAddressEdit, public MDInputWidget
@@ -180,6 +189,7 @@ public:
     MDAddressEdit(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDHighlightedPlainTextEdit : public QPlainTextEdit, public MDInputWidget
@@ -190,6 +200,7 @@ public:
     MDHighlightedPlainTextEdit(const QString &, const QString &, QWidget *, const QString &, const QStringList &, bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDPlainTextEdit : public QPlainTextEdit, public MDInputWidget
@@ -200,6 +211,7 @@ public:
     MDPlainTextEdit(const QString &, const QString &, QWidget *, const QString &, const QString & = QString(), bool = true);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &);
 };
 
 class MDGroupedCheckBoxes : public QGroupBox, public MDInputWidget
@@ -213,6 +225,7 @@ public:
     void addCheckBox(int, const QString &);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &) {}
 
 private:
     QList<MDCheckBox *> checkboxes;
@@ -227,6 +240,7 @@ public:
     MDFileChooser(const QString &, const QString &, QWidget *, int);
 
     QVariant variantValue();
+    void setVariantValue(const QVariant &) {}
 
 private slots:
     void browse();

@@ -11,8 +11,13 @@ class ModifyCircuitDialogueTable;
 
 class ModifyCircuitDialogue : public TabbedModifyDialogue
 {
+    Q_OBJECT
+
 public:
     ModifyCircuitDialogue(DBRecord *, QWidget * = NULL);
+
+private slots:
+    void updateCircuit(MTDictionary);
 };
 
 class ModifyCircuitDialogueUnitsTab : public ModifyDialogueTab
@@ -28,6 +33,9 @@ private slots:
     void manufacturerItemExpanded(QTreeWidgetItem *);
     void itemDoubleClicked(QTreeWidgetItem *, int);
     void itemClicked(QTreeWidgetItem*, int);
+
+signals:
+    void updateCircuit(MTDictionary);
 
 private:
     void loadRows(const QString &, const QString &);
@@ -48,6 +56,10 @@ public:
 
 private slots:
     void activateRow() {}
+    void updateCircuit();
+
+signals:
+    void updateCircuit(MTDictionary);
 
 private:
     void addHiddenRow(ModifyDialogueTableRow *) {}

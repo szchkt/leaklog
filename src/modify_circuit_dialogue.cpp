@@ -2,15 +2,30 @@
 
 #include "global.h"
 #include "records.h"
+#include "mtdictionary.h"
+#include "input_widgets.h"
 
 #include <QSqlQuery>
+#include <QPushButton>
 #include <QHeaderView>
 
 ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
-    addTab(new ModifyCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this));
+    ModifyCircuitDialogueUnitsTab * tab = new ModifyCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    QObject::connect(tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
+    addTab(tab);
+}
+
+void ModifyCircuitDialogue::updateCircuit(MTDictionary dict)
+{
+    MDInputWidget * md;
+    for (int i = 0; i < dict.count(); ++i) {
+        md = inputWidget(dict.key(i));
+        if (md)
+            md->setVariantValue(dict.value(i));
+    }
 }
 
 ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
@@ -45,6 +60,7 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & cus
     header.append(new ModifyDialogueTableCell(tr("Serial number"), "sn"));
 
     table = new ModifyCircuitDialogueTable(tr("Used circuit units"), header, this);
+    QObject::connect(table, SIGNAL(updateCircuit(MTDictionary)), this, SIGNAL(updateCircuit(MTDictionary)));
     grid->addWidget(table, 0, 1);
 
     loadManufacturers();
@@ -161,4 +177,37 @@ ModifyCircuitDialogueTable::ModifyCircuitDialogueTable(const QString & name, con
     : ModifyDialogueTable(name, header, parent)
 {
     layout->addStretch();
+
+    QPushButton * update_circuit_btn = new QPushButton(tr("Update circuit"), this);
+    QObject::connect(update_circuit_btn, SIGNAL(clicked()), this, SLOT(updateCircuit()));
+
+    QHBoxLayout * hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(update_circuit_btn);
+    hlayout->setContentsMargins(0, 0, 0, 0);
+
+    layout->addLayout(hlayout);
+}
+
+void ModifyCircuitDialogueTable::updateCircuit()
+{
+    MTDictionary circuit_vars;
+    double refr_amount = 0;
+
+    for (int i = 0; i < rows.count(); ++i) {
+        CircuitUnitType unit_type_record(rows.at(i)->value("unit_type_id"));
+        QVariantMap unit_type = unit_type_record.list();
+
+        circuit_vars.setValue("refrigerant", unit_type.value("refrigerant").toString());
+        refr_amount += unit_type.value("refrigerant_amount").toDouble();
+
+        if (unit_type.value("location").toInt() == CircuitUnitType::External) {
+            circuit_vars.setValue("manufacturer", unit_type.value("manufacturer").toString());
+            circuit_vars.setValue("type", unit_type.value("type").toString());
+        }
+    }
+
+    circuit_vars.setValue("refrigerant_amount", QString::number(refr_amount));
+
+    updateCircuit(circuit_vars);
 }
