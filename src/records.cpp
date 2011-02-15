@@ -271,7 +271,10 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
             } else if (var_type == "string") {
                 iw = new MDLineEdit(var_id, var_name, md,
                                     attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString());
-                if (var_id == "arno") iw->setShowInForm(false);
+                if (var_id == "arno") {
+                    if (id().isEmpty()) iw->setVariantValue(QString("%1-%2-%3").arg(parent("customer")).arg(parent("circuit")).arg(date->variantValue().toDateTime().toString("yyMMdd")));
+                    iw->setShowInForm(false);
+                }
                 md->addInputWidget(iw);
             } else if (var_type == "text") {
                 md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
