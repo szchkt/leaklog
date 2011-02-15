@@ -192,14 +192,21 @@ ModifyCircuitDialogueTable::ModifyCircuitDialogueTable(const QString & name, con
 void ModifyCircuitDialogueTable::updateCircuit()
 {
     MTDictionary circuit_vars;
+    MTDictionary oils = Global::oils();
     double refr_amount = 0;
+    double oil_amount = 0;
 
     for (int i = 0; i < rows.count(); ++i) {
         CircuitUnitType unit_type_record(rows.at(i)->value("unit_type_id"));
         QVariantMap unit_type = unit_type_record.list();
 
-        circuit_vars.setValue("refrigerant", unit_type.value("refrigerant").toString());
+        if (!unit_type.value("refrigerant").toString().isEmpty())
+            circuit_vars.setValue("refrigerant", unit_type.value("refrigerant").toString());
         refr_amount += unit_type.value("refrigerant_amount").toDouble();
+
+        if (!unit_type.value("oil").toString().isEmpty())
+            circuit_vars.setValue("oil", oils.key(oils.indexOfValue(unit_type.value("oil").toString())));
+        oil_amount += unit_type.value("oil_amount").toDouble();
 
         if (unit_type.value("location").toInt() == CircuitUnitType::External) {
             circuit_vars.setValue("manufacturer", unit_type.value("manufacturer").toString());
@@ -208,6 +215,7 @@ void ModifyCircuitDialogueTable::updateCircuit()
     }
 
     circuit_vars.setValue("refrigerant_amount", QString::number(refr_amount));
+    circuit_vars.setValue("oil_amount", QString::number(oil_amount));
 
     updateCircuit(circuit_vars);
 }

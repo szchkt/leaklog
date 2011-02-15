@@ -1843,10 +1843,14 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         }
         out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
-            if (CircuitUnitType::attributes().key(n) == "category_id")
-                out << "<td>" << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()))) << "</td>";
+            out << "<td>";
+            if (CircuitUnitType::attributes().key(n) == "oil")
+                out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
+            else if (CircuitUnitType::attributes().key(n) == "category_id")
+                out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString())));
             else
-                out << "<td>" << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()) << "</td>";
+                out << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString());
+            out << "</td>";
         }
         out << "</tr>";
     }

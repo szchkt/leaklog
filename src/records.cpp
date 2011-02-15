@@ -928,6 +928,8 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md, attributes.value("type").toString()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md, attributes.value("oil").toString(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
     md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
@@ -955,6 +957,8 @@ public:
         dict.insert("type", QApplication::translate("CircuitUnitType", "Type"));
         dict.insert("refrigerant", QApplication::translate("CircuitUnitType", "Refrigerant"));
         dict.insert("refrigerant_amount", QApplication::translate("CircuitUnitType", "Amount of refrigerant"));
+        dict.insert("oil", QApplication::translate("CircuitUnitType", "Oil"));
+        dict.insert("oil_amount", QApplication::translate("CircuitUnitType", "Amount of oil"));
         dict.insert("acquisition_price", QApplication::translate("CircuitUnitType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
         dict.insert("location", QApplication::translate("CircuitUnitType", "Location"));
