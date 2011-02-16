@@ -2070,6 +2070,28 @@ void MainWindow::importCSV()
             foreach (string_value, refrigerants)
                 map.insert(string_value.toLower(), string_value);
             select_columns.insert("refrigerant", map);
+        } else if (table == "circuit_unit_types") {
+          id_columns << "id";
+          integer_columns << "category_id";
+          numeric_columns << "refrigerant_amount" << "oil_amount" << "acquisition_price" << "list_price";
+          text_columns << "manufacturer" << "type";
+
+          QMap<QString, QString> map;
+          for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
+              string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
+              map.insert(string_value, string_value);
+              map.insert(attributeValues().value(n).toLower(), string_value);
+          }
+          select_columns.insert("oil", map);
+          map.clear();
+          QStringList refrigerants(listRefrigerantsToString().split(';'));
+          foreach (string_value, refrigerants)
+              map.insert(string_value.toLower(), string_value);
+          select_columns.insert("refrigerant", map);
+          map.clear();
+          map.insert("external", QString::number(CircuitUnitType::External));
+          map.insert("internal", QString::number(CircuitUnitType::Internal));
+          select_columns.insert("location", map);
         } else
             return;
 

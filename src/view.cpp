@@ -1844,7 +1844,9 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
-            if (CircuitUnitType::attributes().key(n) == "oil")
+            if (CircuitUnitType::attributes().key(n) == "location")
+                out << CircuitUnitType::locationToString(items.at(i).value("location").toInt());
+            else if (CircuitUnitType::attributes().key(n) == "oil")
                 out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
             else if (CircuitUnitType::attributes().key(n) == "category_id")
                 out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString())));

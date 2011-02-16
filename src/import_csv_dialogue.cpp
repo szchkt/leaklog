@@ -41,6 +41,7 @@ file_path(path)
     tw_content->verticalHeader()->setDefaultSectionSize(20);
     cb_table->addItem(tr("Customers"), "customers");
     cb_table->addItem(tr("Circuits"), "circuits");
+    cb_table->addItem(tr("Circuit unit types"), "circuit_unit_types");
     cb_encoding->addItem(tr("Unicode (UTF-8)"), "UTF-8");
     cb_encoding->addItem(tr("Central European (Windows 1250)"), "CP 1250");
     cb_encoding->addItem(tr("System default"), "System");
@@ -181,6 +182,18 @@ void ImportCsvDialogue::loadTableColumns(int index)
         trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Run-time per day"), "runtime", i));
         trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Rate of utilisation"), "utilisation", i));
         trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Inspection interval"), "inspection_interval", i));
+    } else if (table == "circuit_unit_types") {
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "ID"), "id", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Manufacturer"), "manufacturer", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Type"), "type", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Refrigerant"), "refrigerant", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Amount of refrigerant"), "refrigerant_amount", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Oil"), "oil", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Amount of oil"), "oil_amount", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Acquisition price"), "acquisition_price", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "List price"), "list_price", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Location"), "location", i));
+        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Category ID"), "category_id", i));
     }
     updateHeader();
 }
