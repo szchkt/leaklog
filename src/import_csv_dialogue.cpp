@@ -20,6 +20,8 @@
 #include "import_csv_dialogue.h"
 
 #include "csvparser/mtcsvparser.h"
+#include "mtaddress.h"
+#include "mtrecord.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -27,21 +29,23 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QDate>
 
 #undef QT_TRANSLATE_NOOP
 #define QT_TRANSLATE_NOOP(context, sourceText) context, sourceText
 
-ImportCsvDialogue::ImportCsvDialogue(const QString & path, QWidget * parent):
+ImportCsvDialogue::ImportCsvDialogue(const QString & path, QList<ImportDialogueTable *> & tables, QWidget * parent):
 QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint),
 file_path(path)
 {
     setupUi(this);
+    this->tables = tables;
     id_bb->button(QDialogButtonBox::Ok)->setEnabled(false);
     id_bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     tw_content->verticalHeader()->setDefaultSectionSize(20);
-    cb_table->addItem(tr("Customers"), "customers");
-    cb_table->addItem(tr("Circuits"), "circuits");
-    cb_table->addItem(tr("Circuit unit types"), "circuit_unit_types");
+    for (int i = 0; i < tables.count(); ++i) {
+        cb_table->addItem(tables.at(i)->name(), tables.at(i)->id());
+    }
     cb_encoding->addItem(tr("Unicode (UTF-8)"), "UTF-8");
     cb_encoding->addItem(tr("Central European (Windows 1250)"), "CP 1250");
     cb_encoding->addItem(tr("System default"), "System");
@@ -138,8 +142,8 @@ void ImportCsvDialogue::updateHeader()
     }
 }
 
-QTreeWidgetItem * columnItem(const char * context, const char * text, const QString & data, int & index) {
-    QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << QApplication::translate(context, text) << QString::number(index));
+QTreeWidgetItem * columnItem(const QString & name, const QString & data, int & index) {
+    QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << name << QString::number(index));
     item->setData(0, Qt::UserRole, data);
     index++;
     return item;
@@ -148,53 +152,15 @@ QTreeWidgetItem * columnItem(const char * context, const char * text, const QStr
 void ImportCsvDialogue::loadTableColumns(int index)
 {
     trw_columns->clear();
-    QString table = cb_table->itemData(index, Qt::UserRole).toString();
-    int i = 1;
-    if (table == "customers") {
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "ID"), "id", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Company"), "company", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Contact person"), "contact_person", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "Street"), "street", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "City"), "city", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("MTAddressEdit", "Postal code"), "postal_code", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "E-mail"), "mail", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Customer", "Phone"), "phone", i));
-    } else if (table == "circuits") {
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Customer ID"), "parent", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "ID"), "id", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Circuit name"), "name", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Disused"), "disused", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Place of operation"), "operation", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Building"), "building", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Device"), "device", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Hermetically sealed"), "hermetic", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Manufacturer"), "manufacturer", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Type"), "type", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Serial number"), "sn", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Year of purchase"), "year", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Date of commissioning"), "commissioning", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Field of application"), "field", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Refrigerant"), "refrigerant", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Amount of refrigerant"), "refrigerant_amount", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Oil"), "oil", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Amount of oil"), "oil_amount", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Fixed leakage detector installed"), "leak_detector", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Run-time per day"), "runtime", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Rate of utilisation"), "utilisation", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("Circuit", "Inspection interval"), "inspection_interval", i));
-    } else if (table == "circuit_unit_types") {
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "ID"), "id", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Manufacturer"), "manufacturer", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Type"), "type", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Refrigerant"), "refrigerant", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Amount of refrigerant"), "refrigerant_amount", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Oil"), "oil", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Amount of oil"), "oil_amount", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Acquisition price"), "acquisition_price", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "List price"), "list_price", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Location"), "location", i));
-        trw_columns->addTopLevelItem(columnItem(QT_TRANSLATE_NOOP("CircuitUnitType", "Category ID"), "category_id", i));
+    ImportDialogueTable * table = tables.at(index);
+    current_table = table;
+    if (!table) return;
+
+    int n = 1;
+    for (int i = 0; i < table->count(); ++i) {
+        trw_columns->addTopLevelItem(columnItem(table->at(i)->name(), table->at(i)->id(), n));
     }
+
     updateHeader();
 }
 
@@ -215,4 +181,177 @@ QMap<QString, int> ImportCsvDialogue::columnIndexMap()
                                 trw_columns->topLevelItem(i)->text(1).toInt() - 1);
     }
     return column_index_map;
+}
+
+int ImportCsvDialogue::save()
+{
+    int num_failed = 0;
+    ImportDialogueTableRow * row;
+    foreach (QStringList values, fileContent()) {
+        row = new ImportDialogueTableRow;
+        for (int i = 0; i < current_table->count(); ++i) {
+            int index = trw_columns->topLevelItem(i)->text(1).toInt() - 1;
+            if (index < 0) continue;
+            row->addValue(current_table->at(i), values.at(index));
+        }
+        if (!current_table->save(row)) num_failed++;
+        delete row;
+    }
+    return num_failed;
+}
+
+ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name, const QString & id, int type)
+{
+    ImportDialogueTableColumn * col = new ImportDialogueTableColumn(name, id, type);
+    columns.append(col);
+
+    return col;
+}
+
+ImportDialogueTable * ImportDialogueTable::addChildTable(const QString & name, const QString & id, const QStringList & parent_cols)
+{
+    ImportDialogueTable * table = new ImportDialogueTable(name, id);
+    ImportDialogueTableColumn * col;
+
+    for (int i = 0; i < parent_cols.count(); ++i) {
+        col = NULL;
+        for (int n = 0; n < columns.count(); ++n) {
+            if (columns.at(n)->id() == parent_cols.at(i)) {
+                col = columns.at(n);
+                break;
+            }
+        }
+        if (col) table->addParentColumn(col);
+    }
+
+    child_tables.append(table);
+
+    return table;
+}
+
+void ImportDialogueTable::addParentColumn(ImportDialogueTableColumn * col)
+{
+    parent_columns.append(col);
+}
+
+bool ImportDialogueTable::save(ImportDialogueTableRow * row)
+{
+    QVariantMap set;
+    QString string_value;
+    bool ok = true;
+    int int_value;
+    double numeric_value;
+    QDate date_value;
+    QList<QString> id_columns;
+
+    QString address_street, address_city, address_postal_code;
+
+    for (int i = 0; i < columns.count(); ++i) {
+        if (!row->contains(columns.at(i))) continue;
+
+        switch (columns.at(i)->type()) {
+        case ImportDialogueTableColumn::ID:
+            id_columns.append(columns.at(i)->id());
+            set.insert(columns.at(i)->id(), row->value(columns.at(i)));
+            break;
+
+        case ImportDialogueTableColumn::Integer:
+            int_value = row->value(columns.at(i)).toInt(&ok);
+            /*if (foreign_keys.contains(column)) {
+                if (!ok) break;
+                QStringList foreign_key = foreign_keys.value(column);
+                MTRecord record(foreign_key.value(0), foreign_key.value(1), QString::number(value), MTDictionary());
+                if (!record.exists()) {
+                    ok = false;
+                    break;
+                }
+                parents.insert(column, QString::number(value));
+            } else {*/
+                if (ok)
+                    set.insert(columns.at(i)->id(), int_value);
+                else
+                    ok = true;
+            //}
+            break;
+
+        case ImportDialogueTableColumn::Text:
+            set.insert(columns.at(i)->id(), row->value(columns.at(i)));
+            break;
+
+        case ImportDialogueTableColumn::Numeric:
+            string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
+            if (string_value.contains(',') && !string_value.contains('.'))
+                string_value.replace(',', '.');
+            while (string_value.count('.') > 1)
+                string_value.remove(string_value.indexOf('.'), 1);
+            numeric_value = string_value.toDouble(&ok);
+            if (ok)
+                set.insert(columns.at(i)->id(), numeric_value);
+            break;
+
+        case ImportDialogueTableColumn::Boolean:
+            string_value = row->value(columns.at(i)).toString().toLower().simplified().remove(' ');
+            int_value = ((string_value.toInt(&ok) && ok) || (!ok &&
+                            (string_value == QObject::tr("Yes").toLower() ||
+                         string_value == "yes" || string_value == "true")));
+            set.insert(columns.at(i)->id(), int_value);
+            break;
+
+        case ImportDialogueTableColumn::Date:
+            string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
+            date_value = QDate::fromString(string_value, "yyyy.MM.dd");
+            if (!date_value.isValid())
+                date_value = QDate::fromString(string_value, "d.M.yyyy");
+            if (date_value.isValid())
+                set.insert(columns.at(i)->id(), date_value.toString("yyyy.MM.dd"));
+            break;
+
+        case ImportDialogueTableColumn::Select:
+            string_value = row->value(columns.at(i)).toString().toLower().simplified();
+            set.insert(columns.at(i)->id(), columns.at(i)->selectValue(row->value(columns.at(i)).toString()));
+            break;
+
+        case ImportDialogueTableColumn::AddressCity:
+            address_city = row->value(columns.at(i)).toString();
+            break;
+
+        case ImportDialogueTableColumn::AddressStreet:
+            address_street = row->value(columns.at(i)).toString();
+            break;
+
+        case ImportDialogueTableColumn::AddressPostalCode:
+            address_postal_code = row->value(columns.at(i)).toString();
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if (!address_city.isEmpty() || !address_street.isEmpty() || !address_postal_code.isEmpty()) {
+        MTAddress address;
+        address.setStreet(address_street);
+        address.setCity(address_city);
+        address.setPostalCode(address_postal_code);
+        set.insert("address", address.toString());
+    }
+
+    MTRecord record(id(), id_columns.first(), set.value(id_columns.first()).toString(), MTDictionary());
+    ok = ok && record.update(set);
+
+    for (int i = 0; i < child_tables.count(); ++i) {
+        child_tables.at(i)->save(row);
+    }
+
+    return ok;
+}
+
+QVariant ImportDialogueTableRow::value(ImportDialogueTableColumn * col)
+{
+    return cells.value(col);
+}
+
+void ImportDialogueTableRow::addValue(ImportDialogueTableColumn * key, const QVariant & value)
+{
+    cells.insert(key, value);
 }

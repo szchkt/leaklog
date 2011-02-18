@@ -2018,178 +2018,87 @@ void MainWindow::importCSV()
     QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), "", tr("CSV files (*.csv);;All files (*.*)"));
     if (path.isEmpty()) { return; }
 
-    ImportCsvDialogue id(path, this);
+    QString string_value;
+    QStringList refrigerants(listRefrigerantsToString().split(';'));
+
+    QList<ImportDialogueTable *> tables;
+    ImportDialogueTable * table = new ImportDialogueTable(tr("Customers"), "customers");
+    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("Company"), "company", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("E-mail"), "mail", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Phone"), "phone", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Street"), "street", ImportDialogueTableColumn::AddressStreet);
+    table->addColumn(tr("City"), "city", ImportDialogueTableColumn::AddressCity);
+    table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
+    tables.append(table);
+
+    table = new ImportDialogueTable(tr("Circuits"), "circuits");
+    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("Customer ID"), "customer_id", ImportDialogueTableColumn::Integer);
+    table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Device"), "device", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
+    table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
+    table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
+    table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
+    ImportDialogueTableColumn * col = table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+        string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
+        col->addSelectValue(string_value, string_value);
+        col->addSelectValue(attributeValues().value(n).toLower(), string_value);
+    }
+    col = table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
+    for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
+        string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
+        col->addSelectValue(string_value, string_value);
+        col->addSelectValue(attributeValues().value(n).toLower(), string_value);
+    }
+    col = table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
+    foreach (string_value, refrigerants)
+        col->addSelectValue(string_value.toLower(), string_value);
+    tables.append(table);
+
+    table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
+    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("Category ID"), "category_id", ImportDialogueTableColumn::Integer);
+    table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("List price"), "list_price", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
+    col = table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
+    for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
+        string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
+        col->addSelectValue(string_value, string_value);
+        col->addSelectValue(attributeValues().value(n).toLower(), string_value);
+    }
+    col = table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
+    foreach (string_value, refrigerants)
+        col->addSelectValue(string_value.toLower(), string_value);
+    col = table->addColumn(tr("Location"), "location", ImportDialogueTableColumn::Select);
+    col->addSelectValue("external", QString::number(CircuitUnitType::External));
+    col->addSelectValue("internal", QString::number(CircuitUnitType::Internal));
+    tables.append(table);
+
+    ImportCsvDialogue id(path, tables, this);
     if (id.exec() == QDialog::Accepted) {
-        QList<QStringList> file_content = id.fileContent();
-        if (!file_content.count())
-            return;
-        QString table = id.table();
-        QMap<QString, int> columns = id.columnIndexMap();
-
-        QVariantMap set;
-        bool ok; int num_failed = 0;
-        QString string_value, column;
-        QStringList id_columns;
-        QStringList integer_columns;
-        QMap<QString, QStringList> foreign_keys;
-        QStringList text_columns;
-        QStringList numeric_columns;
-        QStringList boolean_columns;
-        QStringList date_columns;
-        QMap<QString, QMap<QString, QString> > select_columns;
-        QMap<QString, QStringList> address_columns;
-
-        if (table == "customers") {
-            id_columns << "id";
-            text_columns << "company" << "contact_person" << "mail" << "phone";
-            address_columns.insert("address", QStringList() << "street" << "city" << "postal_code");
-        } else if (table == "circuits") {
-            id_columns << "id";
-            integer_columns << "parent" << "year" << "inspection_interval";
-            foreign_keys.insert("parent", QStringList() << "customers" << "id");
-            text_columns << "name" << "operation" << "building" << "device" << "manufacturer" << "type" << "sn" << "commissioning";
-            numeric_columns << "refrigerant_amount" << "oil_amount" << "runtime" << "utilisation";
-            boolean_columns << "disused" << "hermetic" << "leak_detector";
-            date_columns << "commissioning";
-            QMap<QString, QString> map;
-            for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
-                string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
-                map.insert(string_value, string_value);
-                map.insert(attributeValues().value(n).toLower(), string_value);
-            }
-            select_columns.insert("field", map);
-            map.clear();
-            for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
-                string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
-                map.insert(string_value, string_value);
-                map.insert(attributeValues().value(n).toLower(), string_value);
-            }
-            select_columns.insert("oil", map);
-            map.clear();
-            QStringList refrigerants(listRefrigerantsToString().split(';'));
-            foreach (string_value, refrigerants)
-                map.insert(string_value.toLower(), string_value);
-            select_columns.insert("refrigerant", map);
-        } else if (table == "circuit_unit_types") {
-          id_columns << "id";
-          integer_columns << "category_id";
-          numeric_columns << "refrigerant_amount" << "oil_amount" << "acquisition_price" << "list_price";
-          text_columns << "manufacturer" << "type";
-
-          QMap<QString, QString> map;
-          for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
-              string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
-              map.insert(string_value, string_value);
-              map.insert(attributeValues().value(n).toLower(), string_value);
-          }
-          select_columns.insert("oil", map);
-          map.clear();
-          QStringList refrigerants(listRefrigerantsToString().split(';'));
-          foreach (string_value, refrigerants)
-              map.insert(string_value.toLower(), string_value);
-          select_columns.insert("refrigerant", map);
-          map.clear();
-          map.insert("external", QString::number(CircuitUnitType::External));
-          map.insert("internal", QString::number(CircuitUnitType::Internal));
-          select_columns.insert("location", map);
-        } else
-            return;
-
-        foreach (QStringList row, file_content) {
-            set.clear();
-            MTDictionary parents;
-
-            ok = true;
-            foreach (column, id_columns) {
-                int id = row.value(columns.value(column, -1)).toInt(&ok);
-                if (!ok)
-                    break;
-                set.insert(column, id);
-            }
-            if (!ok) {
-                num_failed++;
-                continue;
-            }
-
-            foreach (column, integer_columns) {
-                int value = row.value(columns.value(column, -1)).toInt(&ok);
-                if (foreign_keys.contains(column)) {
-                    if (!ok) break;
-                    QStringList foreign_key = foreign_keys.value(column);
-                    MTRecord record(foreign_key.value(0), foreign_key.value(1), QString::number(value), MTDictionary());
-                    if (!record.exists()) {
-                        ok = false;
-                        break;
-                    }
-                    parents.insert(column, QString::number(value));
-                } else {
-                    if (ok)
-                        set.insert(column, value);
-                    else
-                        ok = true;
-                }
-            }
-            if (!ok) {
-                num_failed++;
-                continue;
-            }
-
-            foreach (column, text_columns) {
-                set.insert(column, row.value(columns.value(column, -1)));
-            }
-
-            foreach (column, numeric_columns) {
-                string_value = row.value(columns.value(column, -1)).simplified().remove(' ');
-                if (string_value.contains(',') && !string_value.contains('.'))
-                    string_value.replace(',', '.');
-                while (string_value.count('.') > 1)
-                    string_value.remove(string_value.indexOf('.'), 1);
-                double value = string_value.toDouble(&ok);
-                if (ok)
-                    set.insert(column, value);
-            }
-
-            foreach (column, boolean_columns) {
-                string_value = row.value(columns.value(column, -1)).toLower().simplified().remove(' ');
-                int value = ((string_value.toInt(&ok) && ok) || (!ok &&
-                             (string_value == tr("Yes").toLower() ||
-                             string_value == "yes" || string_value == "true")));
-                set.insert(column, value);
-            }
-
-            foreach (column, date_columns) {
-                string_value = row.value(columns.value(column, -1)).simplified().remove(' ');
-                QDate date_value = QDate::fromString(string_value, "yyyy.MM.dd");
-                if (!date_value.isValid())
-                    date_value = QDate::fromString(string_value, "d.M.yyyy");
-                if (date_value.isValid())
-                    set.insert(column, date_value.toString("yyyy.MM.dd"));
-            }
-
-            QMapIterator<QString, QMap<QString, QString> > iterator1(select_columns);
-            while (iterator1.hasNext()) { iterator1.next();
-                int col = columns.value(iterator1.key(), -1);
-                string_value = row.value(col).toLower().simplified();
-                set.insert(iterator1.key(), iterator1.value().value(string_value));
-            }
-
-            QMapIterator<QString, QStringList> iterator2(address_columns);
-            while (iterator2.hasNext()) { iterator2.next();
-                MTAddress address;
-                address.setStreet(row.value(columns.value(iterator2.value().value(0, "street"), -1)));
-                address.setCity(row.value(columns.value(iterator2.value().value(1, "city"), -1)));
-                address.setPostalCode(row.value(columns.value(iterator2.value().value(2, "postal_code"), -1)));
-                set.insert(iterator2.key(), address.toString());
-            }
-
-            MTRecord record(table, id_columns.value(0), set.value(id_columns.value(0)).toString(), parents);
-            record.update(set);
-        }
+        int num_failed = id.save();
 
         if (num_failed)
-            QMessageBox::critical(this, tr("Import CSV - Leaklog"), tr("Failed to import %1 of %2 records.").arg(num_failed).arg(file_content.count()));
+            QMessageBox::critical(this, tr("Import CSV - Leaklog"), tr("Failed to import %1 of %2 records.").arg(num_failed).arg(id.fileContent().count()));
         else
-            QMessageBox::information(this, tr("Import CSV - Leaklog"), tr("Successfully imported %n record(s).", "", file_content.count()));
+            QMessageBox::information(this, tr("Import CSV - Leaklog"), tr("Successfully imported %n record(s).", "", id.fileContent().count()));
 
         this->setWindowModified(true);
         refreshView();
