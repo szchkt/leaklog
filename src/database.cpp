@@ -2032,6 +2032,11 @@ void MainWindow::importCSV()
     table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
     tables.append(table);
 
+    table = table->addChildTableTemplate(tr("Contact persons"), "persons", MTDictionary("id", "company_id"), true);
+    table->addColumn(tr("Contact person - name"), "name", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Contact person - e-mail"), "mail", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Contact person - phone"), "phone", ImportDialogueTableColumn::Text);
+
     table = new ImportDialogueTable(tr("Circuits"), "circuits");
     table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Customer ID"), "customer_id", ImportDialogueTableColumn::Integer);

@@ -30,6 +30,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QDate>
+#include <QMenu>
 
 #undef QT_TRANSLATE_NOOP
 #define QT_TRANSLATE_NOOP(context, sourceText) context, sourceText
@@ -53,6 +54,9 @@ file_path(path)
     cb_separator->addItem(tr("Semicolon"), ';');
     cb_separator->addItem(tr("Tab"), '\t');
     loadTableColumns(0);
+    trw_columns->header()->setStretchLastSection(false);
+    trw_columns->header()->setResizeMode(0, QHeaderView::Stretch);
+    trw_columns->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     QObject::connect(btn_reload, SIGNAL(clicked()), this, SLOT(load()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(int)), this, SLOT(loadTableColumns(int)));
     QObject::connect(trw_columns, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(changeColumnIndex(QTreeWidgetItem *)));
@@ -161,6 +165,28 @@ void ImportCsvDialogue::loadTableColumns(int index)
         trw_columns->addTopLevelItem(columnItem(table->at(i)->name(), table->at(i)->id(), n));
     }
 
+    for (int i = 0; i < table->childTablesCount(); ++i) {
+        for (int k = 0; k < table->childTableAt(i)->count(); ++k) {
+            trw_columns->addTopLevelItem(columnItem(table->childTableAt(i)->at(k)->name(), table->childTableAt(i)->at(k)->id(), n));
+        }
+    }
+
+    QMenu * menu = add_linked_table_btn->menu();
+    if (menu) {
+        menu->clear();
+    } else {
+        menu = new QMenu(add_linked_table_btn);
+        add_linked_table_btn->setMenu(menu);
+        add_linked_table_btn->setPopupMode(QToolButton::InstantPopup);
+        QObject::connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(addLinkedTable(QAction*)));
+    }
+
+    for (int i = 0; i < table->childTemplatesCount(); ++i) {
+        QAction * action = new QAction(table->childTemplateAt(i)->name(), menu);
+        action->setData(i);
+        menu->addAction(action);
+    }
+
     updateHeader();
 }
 
@@ -189,15 +215,43 @@ int ImportCsvDialogue::save()
     ImportDialogueTableRow * row;
     foreach (QStringList values, fileContent()) {
         row = new ImportDialogueTableRow;
-        for (int i = 0; i < current_table->count(); ++i) {
+        int i;
+        for (i = 0; i < current_table->count(); ++i) {
             int index = trw_columns->topLevelItem(i)->text(1).toInt() - 1;
             if (index < 0) continue;
             row->addValue(current_table->at(i), values.at(index));
         }
+
+        for (int n = 0; n < current_table->childTablesCount(); ++n) {
+            for (int k = 0; k < current_table->childTableAt(n)->count(); ++k, ++i) {
+                int index = trw_columns->topLevelItem(i)->text(1).toInt() - 1;
+                if (index < 0) continue;
+                row->addValue(current_table->childTableAt(n)->at(k), values.at(index));
+            }
+        }
+
         if (!current_table->save(row)) num_failed++;
+
+        for (int n = 0; n < current_table->childTablesCount(); ++n) {
+            current_table->childTableAt(n)->save(row);
+        }
+
         delete row;
     }
     return num_failed;
+}
+
+void ImportCsvDialogue::addLinkedTable(QAction * action)
+{
+    ImportDialogueTable * table = current_table->addChildTable(action->data().toInt());
+    if (!table) return;
+
+    for (int i = 0; i < table->count(); ++i) {
+        int n = 0;
+        trw_columns->addTopLevelItem(columnItem(table->at(i)->name(), table->at(i)->id(), n));
+    }
+
+    updateHeader();
 }
 
 ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name, const QString & id, int type)
@@ -208,33 +262,33 @@ ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name,
     return col;
 }
 
-ImportDialogueTable * ImportDialogueTable::addChildTable(const QString & name, const QString & id, const QStringList & parent_cols)
+ImportDialogueTableTemplate * ImportDialogueTable::addChildTableTemplate(const QString & name, const QString & id, const MTDictionary & parent_cols, bool generate_id)
 {
-    ImportDialogueTable * table = new ImportDialogueTable(name, id);
-    ImportDialogueTableColumn * col;
+    ImportDialogueTableTemplate * table = new ImportDialogueTableTemplate(name, id, generate_id);
+    table->setParentColumns(parent_cols);
 
-    for (int i = 0; i < parent_cols.count(); ++i) {
-        col = NULL;
-        for (int n = 0; n < columns.count(); ++n) {
-            if (columns.at(n)->id() == parent_cols.at(i)) {
-                col = columns.at(n);
-                break;
-            }
-        }
-        if (col) table->addParentColumn(col);
-    }
+    child_templates.append(table);
 
+    return table;
+}
+
+ImportDialogueTable * ImportDialogueTable::addChildTable(int i)
+{
+    ImportDialogueTableTemplate * table_template = childTemplateAt(i);
+    if (!table_template) return NULL;
+
+    ImportDialogueTable * table = table_template->table();
     child_tables.append(table);
 
     return table;
 }
 
-void ImportDialogueTable::addParentColumn(ImportDialogueTableColumn * col)
+void ImportDialogueTable::addParentColumn(const QString & child, const QString & parent)
 {
-    parent_columns.append(col);
+    parent_columns.setValue(child, parent);
 }
 
-bool ImportDialogueTable::save(ImportDialogueTableRow * row)
+bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_set)
 {
     QVariantMap set;
     QString string_value;
@@ -242,9 +296,9 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row)
     int int_value;
     double numeric_value;
     QDate date_value;
-    QList<QString> id_columns;
+    QStringList id_columns;
 
-    QString address_street, address_city, address_postal_code;
+    MTAddress address;
 
     for (int i = 0; i < columns.count(); ++i) {
         if (!row->contains(columns.at(i))) continue;
@@ -312,15 +366,15 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row)
             break;
 
         case ImportDialogueTableColumn::AddressCity:
-            address_city = row->value(columns.at(i)).toString();
+            address.setCity(row->value(columns.at(i)).toString());
             break;
 
         case ImportDialogueTableColumn::AddressStreet:
-            address_street = row->value(columns.at(i)).toString();
+            address.setStreet(row->value(columns.at(i)).toString());
             break;
 
         case ImportDialogueTableColumn::AddressPostalCode:
-            address_postal_code = row->value(columns.at(i)).toString();
+            address.setPostalCode(row->value(columns.at(i)).toString());
             break;
 
         default:
@@ -328,19 +382,27 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row)
         }
     }
 
-    if (!address_city.isEmpty() || !address_street.isEmpty() || !address_postal_code.isEmpty()) {
-        MTAddress address;
-        address.setStreet(address_street);
-        address.setCity(address_city);
-        address.setPostalCode(address_postal_code);
+    for (int i = 0; i < parent_columns.count(); ++i) {
+        set.insert(parent_columns.value(i), parent_set.value(parent_columns.key(i)));
+    }
+
+    if (!address.city().isEmpty() || !address.street().isEmpty() || !address.postalCode().isEmpty()) {
         set.insert("address", address.toString());
     }
 
+    if (generate_id) {
+        MTRecord record(id(), "id", "", MTDictionary());
+
+        int next_id = record.list("MAX(id) AS max").value("max").toInt() + 1;
+        set.insert("id", QString::number(next_id));
+        id_columns.append("id");
+    }
+
     MTRecord record(id(), id_columns.first(), set.value(id_columns.first()).toString(), MTDictionary());
-    ok = ok && record.update(set);
+    ok = record.update(set) && ok;
 
     for (int i = 0; i < child_tables.count(); ++i) {
-        child_tables.at(i)->save(row);
+        child_tables.at(i)->save(row, set);
     }
 
     return ok;
@@ -354,4 +416,13 @@ QVariant ImportDialogueTableRow::value(ImportDialogueTableColumn * col)
 void ImportDialogueTableRow::addValue(ImportDialogueTableColumn * key, const QVariant & value)
 {
     cells.insert(key, value);
+}
+
+ImportDialogueTable * ImportDialogueTableTemplate::table()
+{
+    ImportDialogueTable * table = new ImportDialogueTableTemplate(name(), id(), generate_id);
+    table->setColumns(columns);
+    table->setParentColumns(parent_columns);
+
+    return table;
 }

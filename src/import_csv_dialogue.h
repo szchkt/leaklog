@@ -22,9 +22,13 @@
 
 #include "ui_import_csv_dialogue.h"
 
+#include "mtdictionary.h"
+
 class ImportDialogueTable;
 class ImportDialogueTableColumn;
 class ImportDialogueTableRow;
+class ImportDialogueTableTemplate;
+class MTAddress;
 
 class ImportCsvDialogue : public QDialog, private Ui::ImportCsvDialogue
 {
@@ -42,6 +46,7 @@ private slots:
     void load();
     void loadTableColumns(int);
     void changeColumnIndex(QTreeWidgetItem *);
+    void addLinkedTable(QAction *);
 
 private:
     void updateHeader();
@@ -55,29 +60,40 @@ private:
 class ImportDialogueTable
 {
 public:
-    ImportDialogueTable(const QString & t_name, const QString & t_id)
-        {  this->t_name = t_name; this->t_id = t_id; }
+    ImportDialogueTable(const QString & t_name, const QString & t_id, bool generate_id = false)
+        {  this->t_name = t_name; this->t_id = t_id; this->generate_id = generate_id; }
 
     const QString & name() { return t_name; }
     const QString & id() { return t_id; }
 
     ImportDialogueTableColumn * addColumn(const QString &, const QString &, int);
-    ImportDialogueTable * addChildTable(const QString &, const QString &, const QStringList &);
+    ImportDialogueTableTemplate * addChildTableTemplate(const QString &, const QString &, const MTDictionary &, bool = false);
+    ImportDialogueTable * addChildTable(int);
 
-    void addParentColumn(ImportDialogueTableColumn *);
+    void addParentColumn(const QString &, const QString &);
+    void setParentColumns(const MTDictionary & other) { this->parent_columns = other; }
+    void setColumns(const QList<ImportDialogueTableColumn *> & columns) { this->columns = columns; }
 
-    bool save(ImportDialogueTableRow *);
+    bool save(ImportDialogueTableRow *, QVariantMap = QVariantMap());
 
     int count() { return columns.count(); }
     ImportDialogueTableColumn * at(int i) { return columns.at(i); }
 
-private:
+    int childTemplatesCount() { return child_templates.count(); }
+    ImportDialogueTableTemplate * childTemplateAt(int i) { return child_templates.at(i); }
+
+    int childTablesCount() { return child_tables.count(); }
+    ImportDialogueTable * childTableAt(int i) { return child_tables.at(i); }
+
+protected:
     QString t_name;
     QString t_id;
+    bool generate_id;
 
     QList<ImportDialogueTableColumn *> columns;
-    QList<ImportDialogueTableColumn *> parent_columns;
+    MTDictionary parent_columns;
     QList<ImportDialogueTable *> child_tables;
+    QList<ImportDialogueTableTemplate *> child_templates;
 };
 
 class ImportDialogueTableColumn
@@ -126,6 +142,15 @@ public:
 
 private:
     QMap<ImportDialogueTableColumn *, QVariant> cells;
+};
+
+class ImportDialogueTableTemplate : public ImportDialogueTable
+{
+public:
+    ImportDialogueTableTemplate(const QString & t_name, const QString & t_id, bool generate_id = false)
+        : ImportDialogueTable(t_name, t_id, generate_id) {}
+
+    ImportDialogueTable * table();
 };
 
 #endif // IMPORT_CSV_DIALOGUE_H

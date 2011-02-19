@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
+    <width>941</width>
     <height>600</height>
    </rect>
   </property>
@@ -148,6 +148,13 @@
    </item>
    <item row="0" column="1">
     <widget class="QComboBox" name="cb_table"/>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QToolButton" name="add_linked_table_btn">
+     <property name="text">
+      <string>Add linked table</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
