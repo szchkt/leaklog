@@ -283,6 +283,14 @@ ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name,
     return col;
 }
 
+ImportDialogueTableColumn * ImportDialogueTable::addForeignKeyColumn(const QString & name, const QString & id, const QString & foreign_key_column, const QString & foreign_key_table)
+{
+    ImportDialogueTableColumn * col = addColumn(name, id, ImportDialogueTableColumn::ForeignKey);
+    col->setForeignKeyColumn(foreign_key_column);
+    col->setForeignKeyTable(foreign_key_table);
+    return col;
+}
+
 void ImportDialogueTable::addColumn(ImportDialogueTableColumn * column)
 {
     columns.append(column);
@@ -325,6 +333,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     QStringList id_columns;
 
     MTAddress address;
+    MTRecord * frecord;
 
     for (int i = 0; i < columns.count(); ++i) {
         if (!row->contains(columns.at(i))) continue;
@@ -335,23 +344,23 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
             set.insert(columns.at(i)->id(), row->value(columns.at(i)));
             break;
 
+        case ImportDialogueTableColumn::ForeignKey:
+            if (!ok) break;
+            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), columns.at(i)->foreignKeyColumn(), row->value(columns.at(i)).toString(), MTDictionary());
+            if (!frecord->exists()) {
+                ok = false;
+                break;
+            }
+            set.insert(columns.at(i)->id(), row->value(columns.at(i)));
+            delete frecord;
+            break;
+
         case ImportDialogueTableColumn::Integer:
             int_value = row->value(columns.at(i)).toInt(&ok);
-            /*if (foreign_keys.contains(column)) {
-                if (!ok) break;
-                QStringList foreign_key = foreign_keys.value(column);
-                MTRecord record(foreign_key.value(0), foreign_key.value(1), QString::number(value), MTDictionary());
-                if (!record.exists()) {
-                    ok = false;
-                    break;
-                }
-                parents.insert(column, QString::number(value));
-            } else {*/
-                if (ok)
-                    set.insert(columns.at(i)->id(), int_value);
-                else
-                    ok = true;
-            //}
+            if (ok)
+                set.insert(columns.at(i)->id(), int_value);
+            else
+                ok = true;
             break;
 
         case ImportDialogueTableColumn::Text:
@@ -367,6 +376,8 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
             numeric_value = string_value.toDouble(&ok);
             if (ok)
                 set.insert(columns.at(i)->id(), numeric_value);
+            else
+                ok = true;
             break;
 
         case ImportDialogueTableColumn::Boolean:
@@ -375,6 +386,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
                             (string_value == QObject::tr("Yes").toLower() ||
                          string_value == "yes" || string_value == "true")));
             set.insert(columns.at(i)->id(), int_value);
+            ok = true;
             break;
 
         case ImportDialogueTableColumn::Date:
@@ -425,10 +437,10 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     }
 
     MTRecord record(id(), id_columns.first(), set.value(id_columns.first()).toString(), MTDictionary());
-    ok = record.update(set) && ok;
+    ok = ok && record.update(set);
 
     for (int i = 0; i < child_tables.count(); ++i) {
-        child_tables.at(i)->save(row, set);
+        ok = ok && child_tables.at(i)->save(row, set);
     }
 
     return ok;

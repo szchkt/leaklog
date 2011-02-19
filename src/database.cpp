@@ -2033,13 +2033,13 @@ void MainWindow::importCSV()
     tables.append(table);
 
     table = table->addChildTableTemplate(tr("Contact persons"), "persons", MTDictionary("id", "company_id"), true);
-    table->addColumn(tr("Contact person - name"), "name", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Contact person - e-mail"), "mail", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Contact person - phone"), "phone", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Contact person name"), "name", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuits"), "circuits");
     table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("Customer ID"), "customer_id", ImportDialogueTableColumn::Integer);
+    table->addForeignKeyColumn(tr("Customer ID"), "parent", "id", "customers");
     table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
@@ -2047,7 +2047,6 @@ void MainWindow::importCSV()
     table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
@@ -2072,6 +2071,11 @@ void MainWindow::importCSV()
     foreach (string_value, refrigerants)
         col->addSelectValue(string_value.toLower(), string_value);
     tables.append(table);
+
+    table = table->addChildTableTemplate(tr("Circuit units"), "circuit_units",
+        MTDictionary(QStringList() << "parent" << "id", QStringList() << "company_id" << "circuit_id"), true);
+    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_id", "id", "circuit_unit_types");
+    table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
     table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);

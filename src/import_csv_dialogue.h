@@ -69,6 +69,7 @@ public:
     const QString & id() { return t_id; }
 
     ImportDialogueTableColumn * addColumn(const QString &, const QString &, int);
+    ImportDialogueTableColumn * addForeignKeyColumn(const QString &, const QString &, const QString &, const QString &);
     void addColumn(ImportDialogueTableColumn *);
     ImportDialogueTableTemplate * addChildTableTemplate(const QString &, const QString &, const MTDictionary &, bool = false);
     ImportDialogueTable * addChildTable(int);
@@ -112,7 +113,8 @@ public:
         Select,
         AddressStreet,
         AddressCity,
-        AddressPostalCode
+        AddressPostalCode,
+        ForeignKey
     };
 
     ImportDialogueTableColumn(const QString & c_name, const QString & c_id, int c_type)
@@ -130,9 +132,17 @@ public:
     const QString selectValue(const QString & key) { return select_vals.value(key, key); }
     const QMap<QString, QString> & selectValues() { return select_vals; }
 
+    void setForeignKeyTable(const QString & table) { this->foreign_key_table = table; }
+    const QString & foreignKeyTable() { return foreign_key_table; }
+    void setForeignKeyColumn(const QString & column) { this->foreign_key_column = column; }
+    const QString & foreignKeyColumn() { return foreign_key_column; }
+
 private:
     QString c_name;
     QString c_id;
+
+    QString foreign_key_table;
+    QString foreign_key_column;
 
     QMap<QString, QString> select_vals;
 
