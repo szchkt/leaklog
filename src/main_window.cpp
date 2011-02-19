@@ -40,6 +40,7 @@
 #include <QInputDialog>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QRadioButton>
 #include <QDialogButtonBox>
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
@@ -128,7 +129,6 @@ MainWindow::MainWindow()
     selected_assembly_record_item_type = -1;
     selected_assembly_record_item_category = -1;
     selected_circuit_unit_type = -1;
-    database_locked = false;
     check_for_updates = true;
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -908,7 +908,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 
 void MainWindow::updateLockButton()
 {
-    if (database_locked) {
+    if (isDatabaseLocked()) {
         actionLock->setIcon(QIcon::QIcon(":/images/images/locked.png"));
         actionLock->setText(tr("Unlock"));
     } else {
@@ -917,24 +917,12 @@ void MainWindow::updateLockButton()
     }
 }
 
-bool MainWindow::isRecordLocked(const QString & date)
-{
-    if (!database_locked) return false;
-    return date < database_lock_date;
-}
-
 void MainWindow::enableTools()
 {
     bool customer_selected = selected_customer >= 0;
     bool circuit_selected = selected_circuit >= 0;
     bool inspection_selected = !selected_inspection.isEmpty();
-    bool inspection_locked = false;
-    if (database_locked && inspection_selected && selected_inspection < database_lock_date)
-        inspection_locked = true;
     bool repair_selected = !selected_repair.isEmpty();
-    bool repair_locked = false;
-    if (database_locked && repair_selected && selected_repair < database_lock_date)
-        repair_locked = true;
     bool inspector_selected = selected_inspector >= 0;
     QString current_selection;
     if (customer_selected)
@@ -973,39 +961,39 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, inspection_locked, repair_selected, repair_locked, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected(), isCircuitUnitTypeSelected());
+    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, repair_selected, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected(), isCircuitUnitTypeSelected());
     actionModify_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
-    actionRemove_customer->setEnabled(customer_selected && !database_locked);
+    actionRemove_customer->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
     actionModify_circuit->setEnabled(circuit_selected);
     actionDuplicate_circuit->setEnabled(circuit_selected);
-    actionRemove_circuit->setEnabled(circuit_selected && !database_locked);
+    actionRemove_circuit->setEnabled(circuit_selected);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
-    actionModify_inspection->setEnabled(inspection_selected && !inspection_locked);
+    actionModify_inspection->setEnabled(inspection_selected);
     actionDuplicate_inspection->setEnabled(inspection_selected);
-    actionRemove_inspection->setEnabled(inspection_selected && !inspection_locked);
-    actionModify_repair->setEnabled(repair_selected && !repair_locked);
+    actionRemove_inspection->setEnabled(inspection_selected);
+    actionModify_repair->setEnabled(repair_selected);
     actionDuplicate_repair->setEnabled(repair_selected);
-    actionRemove_repair->setEnabled(repair_selected && !repair_locked);
+    actionRemove_repair->setEnabled(repair_selected);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !variableNames().contains(trw_variables->currentItem()->text(1)));
     tbtn_modify_variable->setEnabled(trw_variables->currentIndex().isValid());
-    tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !variableNames().contains(trw_variables->currentItem()->text(1)) && !database_locked);
+    tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !variableNames().contains(trw_variables->currentItem()->text(1)));
     tbtn_modify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
-    tbtn_remove_table->setEnabled(cb_table_edit->currentIndex() >= 0 && !database_locked);
+    tbtn_remove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_remove_variable->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_modify_warning->setEnabled(lw_warnings->currentIndex().isValid());
-    tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000 && !database_locked);
+    tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
     actionModify_inspector->setEnabled(inspector_selected);
-    actionRemove_inspector->setEnabled(inspector_selected && !database_locked);
+    actionRemove_inspector->setEnabled(inspector_selected);
 }
 
 void MainWindow::toggleLocked()
@@ -1021,32 +1009,44 @@ void MainWindow::toggleLocked()
 
         QString last_date = DBInfoValueForKey("lock_date");
 
+        QRadioButton * static_lock = new QRadioButton(d);
+        gl->addWidget(static_lock, 1, 0);
+
         QDateEdit * date = new QDateEdit(d);
         date->setDisplayFormat("yyyy.MM.dd");
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, "yyyy.MM.dd"));
         gl->addWidget(date, 1, 1);
 
+        QRadioButton * autolock = new QRadioButton(d);
+        autolock->setChecked(true);
+        gl->addWidget(autolock, 2, 0);
+
+        QSpinBox * days = new QSpinBox(d);
+        days->setSuffix(tr(" days"));
+        days->setRange(0, 99999);
+        days->setValue(7);
+        gl->addWidget(days, 2, 1);
+
         lbl = new QLabel(tr("Password:"), d);
         lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        gl->addWidget(lbl, 2, 0);
+        gl->addWidget(lbl, 3, 0);
 
         QLineEdit * password = new QLineEdit(d);
-        gl->addWidget(password, 2, 1);
+        gl->addWidget(password, 3, 1);
 
         QDialogButtonBox * bb = new QDialogButtonBox(d);
         bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
         QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
         QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
-        gl->addWidget(bb, 3, 0, 1, 2);
+        gl->addWidget(bb, 4, 0, 1, 2);
 
         if (d->exec() != QDialog::Accepted) return;
 
-        database_lock_date = date->date().toString("yyyy.MM.dd");
-        setDBInfoValueForKey("lock_date", database_lock_date);
+        setDBInfoValueForKey("lock_date", date->date().toString("yyyy.MM.dd"));
+        setDBInfoValueForKey("autolock_days", QString::number(days->value()));
         setDBInfoValueForKey("lock_password", sha256(password->text()));
-        setDBInfoValueForKey("locked", "true");
-        database_locked = true;
+        setDBInfoValueForKey("locked", static_lock->isChecked() ? "true" : "auto");
         updateLockButton();
         enableTools();
         this->setWindowModified(true);
@@ -1064,7 +1064,6 @@ void MainWindow::toggleLocked()
         }
 
         setDBInfoValueForKey("locked", "false");
-        database_locked = false;
         updateLockButton();
         enableTools();
         this->setWindowModified(true);

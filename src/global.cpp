@@ -26,6 +26,7 @@
 #include <QSet>
 #include <QVariant>
 #include <QColor>
+#include <QDate>
 #include <QNetworkRequest>
 #include <QSqlRecord>
 #include <QSqlField>
@@ -184,17 +185,44 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
     }
 }
 
-QString Global::DBInfoValueForKey(const QString & key)
+QString Global::DBInfoValueForKey(const QString & key, const QString & default_value)
 {
     QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
-    if (!query.next()) { return QString(); }
+    if (!query.next())
+        return default_value;
     return query.value(0).toString();
 }
 
 QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value)
 {
-    QSqlQuery query(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key));
-    return query.lastError();
+    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    if (query.next())
+        return QSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key)).lastError();
+    return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
+}
+
+int Global::isDatabaseLocked()
+{
+    QString locked = DBInfoValueForKey("locked");
+    if (locked == "true")
+        return 1;
+    if (locked == "auto")
+        return 2;
+    return 0;
+}
+
+QString Global::lockDate()
+{
+    return DBInfoValueForKey("locked") == "auto" ?
+            QDate::currentDate().addDays(-DBInfoValueForKey("autolock_days").toInt()).toString("yyyy.MM.dd") :
+            DBInfoValueForKey("lock_date");
+}
+
+bool Global::isRecordLocked(const QString & date)
+{
+    if (isDatabaseLocked())
+        return date < lockDate();
+    return false;
 }
 
 double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)

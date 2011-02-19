@@ -56,7 +56,7 @@ public:
     void setView(int, bool);
 
     // Widgets
-    void enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool inspection_locked, bool repair_selected, bool repair_locked, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected, bool assembly_record_item_category_selected, bool circuit_unit_type_selected);
+    void enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool repair_selected, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected, bool assembly_record_item_category_selected, bool circuit_unit_type_selected);
     inline QComboBox * tableComboBox() const { return cb_view_table; }
     inline int filterSinceValue() const { return spb_filter_since->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
