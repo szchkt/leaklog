@@ -62,6 +62,13 @@ file_path(path)
     QObject::connect(trw_columns, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(changeColumnIndex(QTreeWidgetItem *)));
 };
 
+ImportCsvDialogue::~ImportCsvDialogue()
+{
+    for (int i = tables.count() - 1; i >= 0; --i) {
+        delete tables.takeAt(i);
+    }
+}
+
 void ImportCsvDialogue::load()
 {
     QString encoding = cb_encoding->itemData(cb_encoding->currentIndex(), Qt::UserRole).toString();
@@ -254,12 +261,31 @@ void ImportCsvDialogue::addLinkedTable(QAction * action)
     updateHeader();
 }
 
+ImportDialogueTable::~ImportDialogueTable()
+{
+    int i;
+    for (i = columns.count() - 1; i >= 0; --i) {
+        delete columns.takeAt(i);
+    }
+    for (i = child_tables.count() - 1; i >= 0; --i) {
+        delete child_tables.takeAt(i);
+    }
+    for (i = child_templates.count() - 1; i >= 0; --i) {
+        delete child_templates.takeAt(i);
+    }
+}
+
 ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name, const QString & id, int type)
 {
     ImportDialogueTableColumn * col = new ImportDialogueTableColumn(name, id, type);
     columns.append(col);
 
     return col;
+}
+
+void ImportDialogueTable::addColumn(ImportDialogueTableColumn * column)
+{
+    columns.append(column);
 }
 
 ImportDialogueTableTemplate * ImportDialogueTable::addChildTableTemplate(const QString & name, const QString & id, const MTDictionary & parent_cols, bool generate_id)
@@ -421,7 +447,9 @@ void ImportDialogueTableRow::addValue(ImportDialogueTableColumn * key, const QVa
 ImportDialogueTable * ImportDialogueTableTemplate::table()
 {
     ImportDialogueTable * table = new ImportDialogueTableTemplate(name(), id(), generate_id);
-    table->setColumns(columns);
+    for (int i = 0; i < columns.count(); ++i) {
+        table->addColumn(new ImportDialogueTableColumn(columns.at(i)));
+    }
     table->setParentColumns(parent_columns);
 
     return table;

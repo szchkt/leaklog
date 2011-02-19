@@ -36,6 +36,7 @@ class ImportCsvDialogue : public QDialog, private Ui::ImportCsvDialogue
 
 public:
     ImportCsvDialogue(const QString & path, QList<ImportDialogueTable *> &, QWidget * parent = NULL);
+    ~ImportCsvDialogue();
 
     inline QList<QStringList> & fileContent() { return file_content; }
     inline QString table() const { return cb_table->itemData(cb_table->currentIndex(), Qt::UserRole).toString(); }
@@ -62,11 +63,13 @@ class ImportDialogueTable
 public:
     ImportDialogueTable(const QString & t_name, const QString & t_id, bool generate_id = false)
         {  this->t_name = t_name; this->t_id = t_id; this->generate_id = generate_id; }
+    ~ImportDialogueTable();
 
     const QString & name() { return t_name; }
     const QString & id() { return t_id; }
 
     ImportDialogueTableColumn * addColumn(const QString &, const QString &, int);
+    void addColumn(ImportDialogueTableColumn *);
     ImportDialogueTableTemplate * addChildTableTemplate(const QString &, const QString &, const MTDictionary &, bool = false);
     ImportDialogueTable * addChildTable(int);
 
@@ -114,6 +117,10 @@ public:
 
     ImportDialogueTableColumn(const QString & c_name, const QString & c_id, int c_type)
         {   this->c_name = c_name; this->c_id = c_id; this->c_type = c_type; }
+    ImportDialogueTableColumn(ImportDialogueTableColumn * other) {
+        this->c_name = other->name(); this->c_id = other->id();
+        this->c_type = other->type(); this->select_vals = other->selectValues();
+    }
 
     const QString & name() { return c_name; }
     const QString & id() { return c_id; }
@@ -121,6 +128,7 @@ public:
 
     void addSelectValue(const QString & key, const QString & value) { select_vals.insert(key, value); }
     const QString selectValue(const QString & key) { return select_vals.value(key, key); }
+    const QMap<QString, QString> & selectValues() { return select_vals; }
 
 private:
     QString c_name;
