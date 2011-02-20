@@ -2165,6 +2165,10 @@ void MainWindow::importCSV()
     col = table->addColumn(tr("Location"), "location", ImportDialogueTableColumn::Select);
     col->addSelectValue("external", QString::number(CircuitUnitType::External));
     col->addSelectValue("internal", QString::number(CircuitUnitType::Internal));
+    table->addColumn(tr("Output"), "output", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Output unit"), "output_unit", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Output at t0/tc"), "output_t0_tc", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Notes"), "notes", ImportDialogueTableColumn::Text);
     tables.append(table);
 
     ImportCsvDialogue id(path, tables, this);

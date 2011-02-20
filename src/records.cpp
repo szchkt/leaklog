@@ -247,7 +247,12 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 iw->label()->toggleAlternativeText(chb_repair->isChecked());
                 QObject::connect(chb_repair, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
                 md->addInputWidget(iw);
-            } if (var_id == "operator") {
+            } else if (var_id == "rmds") {
+                iw = new MDPlainTextEdit(var_id, var_name, md,
+                                         attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString());
+                iw->setShowInForm(false);
+                md->addInputWidget(iw);
+            } else if (var_id == "operator") {
                 iw = new MDComboBox(var_id, var_name, md,
                     attributes.value(var_id).toString(), listOperators(parent("customer")), query.value("VAR_COL_BG").toString());
                 md->addInputWidget(iw);

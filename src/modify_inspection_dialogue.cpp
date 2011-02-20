@@ -13,6 +13,11 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
     : TabbedModifyDialogue(record, parent)
 {
     main_tabw->setTabText(0, tr("Inspection"));
+
+    MDInputWidget * rmds = inputWidget("rmds");
+    md_grid_main->addWidget(rmds->label(), md_grid_main->rowCount(), 0);
+    md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, -1, md_grid_main->columnCount() - 1);
+
     addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
 }
 
@@ -107,7 +112,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                               .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                               .arg(assemblyRecordType().toString()));
         while (items_query.next()) {
-            cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(ITEM_NAME).isNull() ? items_query.value(NAME) : items_query.value(ITEM_NAME), "name", Global::String));
+            cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(ITEM_NAME).isNull() ? items_query.value(NAME) : items_query.value(ITEM_NAME), "name"));
             cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), "value", items_query.value(INSPECTION_VAR).toString().isEmpty() ? items_query.value(VALUE_DATA_TYPE).toInt() : -1));
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
