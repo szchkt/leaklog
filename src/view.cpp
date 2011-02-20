@@ -1836,6 +1836,8 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
                 out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
             else if (CircuitUnitType::attributes().key(n) == "category_id")
                 out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString())));
+            else if (CircuitUnitType::attributes().key(n) == "output")
+                out << escapeString(QString("%1 %2").arg(items.at(i).value("output").toString()).arg(items.at(i).value("output_unit").toString()));
             else
                 out << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString());
             out << "</td>";

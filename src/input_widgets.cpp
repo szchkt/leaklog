@@ -48,6 +48,7 @@ MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWid
     iw_label = createLabel(parent, labeltext);
     iw_widget = widget;
     show = true;
+    skip_save = false;
 }
 
 QPalette MDInputWidget::paletteForColour(const QString & colour)
@@ -398,4 +399,21 @@ void MDFileChooser::browse()
 QVariant MDFileChooser::variantValue()
 {
     return db_file->save();
+}
+
+MDGroupedInputWidgets::MDGroupedInputWidgets(const QString & name, QWidget * parent):
+QFrame(parent),
+MDInputWidget(QString(), name, parent, this)
+{
+    setSkipSave(true);
+    setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+    grid = new QGridLayout(this);
+    grid->setSpacing(6);
+    grid->setContentsMargins(6, 6, 6, 6);
+}
+
+void MDGroupedInputWidgets::addWidget(MDInputWidget * iw)
+{
+    grid->addWidget(iw->label(), grid->rowCount(), 0);
+    grid->addWidget(iw->widget(), grid->rowCount() - 1, 1);
 }

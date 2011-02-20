@@ -80,6 +80,7 @@ bool ModifyDialogue::save(bool call_accept)
 {
     QVariantMap values; QString id; QVariant value;
     for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
+        if ((*i)->skipSave()) continue;
         id = (*i)->id();
         value = (*i)->variantValue();
         if (id == md_record->idField()) {
@@ -121,6 +122,17 @@ MDInputWidget * ModifyDialogue::inputWidget(const QString id)
         }
     }
     return NULL;
+}
+
+void ModifyDialogue::addGroupedInputWidgets(const QString & group_name, const QList<MDInputWidget *> & widgets)
+{
+    MDGroupedInputWidgets * gw = new MDGroupedInputWidgets(group_name, this);
+    addInputWidget(gw);
+    for (int i = 0; i < widgets.count(); ++i) {
+        widgets.at(i)->setShowInForm(false);
+        addInputWidget(widgets.at(i));
+        gw->addWidget(widgets.at(i));
+    }
 }
 
 ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)

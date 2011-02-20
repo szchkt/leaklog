@@ -33,6 +33,8 @@
 #include <QPlainTextEdit>
 #include <QGroupBox>
 
+class QGridLayout;
+
 class DBFile;
 
 class MTLabel : public QLabel
@@ -68,12 +70,16 @@ public:
     bool showInForm() { return show; }
     void setShowInForm(bool show) { this->show = show; }
 
+    bool skipSave() { return skip_save; }
+    void setSkipSave(bool skip) { skip_save = skip; }
+
 protected:
     static QPalette paletteForColour(const QString &);
     static MTLabel * createLabel(QWidget * parent, const QString &);
 
 private:
     bool show;
+    bool skip_save;
     QString iw_id;
     MTLabel * iw_label;
     QWidget * iw_widget;
@@ -248,6 +254,22 @@ private slots:
 private:
     QLabel * name_lbl;
     DBFile * db_file;
+};
+
+class MDGroupedInputWidgets : public QFrame, public MDInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDGroupedInputWidgets(const QString &, QWidget *);
+
+    void addWidget(MDInputWidget *);
+
+    QVariant variantValue() { return QVariant(); }
+    void setVariantValue(const QVariant &) {}
+
+private:
+    QGridLayout * grid;
 };
 
 #endif // INPUT_WIDGETS_H

@@ -48,6 +48,7 @@ protected:
     virtual void addMainGridLayout(QVBoxLayout *);
 
     void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
+    void addGroupedInputWidgets(const QString &, const QList<MDInputWidget*> &);
     int inputWidgetCount() { return md_inputwidgets.count(); }
     MDInputWidget * inputWidget(const QString);
 

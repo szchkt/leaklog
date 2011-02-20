@@ -917,6 +917,9 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     MTDictionary locations;
     locations.insert(tr("External"), QString::number(CircuitUnitType::External));
     locations.insert(tr("Internal"), QString::number(CircuitUnitType::Internal));
+    MTDictionary output_units;
+    output_units.insert("kW", "kW");
+    output_units.insert("m3", "m3");
 
     QVariantMap attributes;
     if (!id().isEmpty() || !this->attributes().isEmpty()) {
@@ -934,7 +937,14 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
     md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
+    QList<MDInputWidget *> gw_list;
+    gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md, 0.0, 999999.9, attributes.value("output").toDouble()));
+    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md, attributes.value("output_unit").toString(), output_units));
+    gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md, 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
+    md->addGroupedInputWidgets(tr("Output"), gw_list);
     md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
+    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md, attributes.value("notes").toString()));
+
 
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -963,7 +973,10 @@ public:
         dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
         dict.insert("location", QApplication::translate("CircuitUnitType", "Location"));
         dict.insert("unit", QApplication::translate("CircuitUnitType", "Unit"));
+        dict.insert("output", QApplication::translate("CircuitUnitType", "Output"));
+        dict.insert("output_t0_tc", QApplication::translate("CircuitUnitType", "Output at t0/tc"));
         dict.insert("category_id", QApplication::translate("CircuitUnitType", "Category"));
+        dict.insert("notes", QApplication::translate("CircuitUnitType", "Notes"));
     }
 
     MTDictionary dict;
