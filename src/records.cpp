@@ -688,7 +688,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md, attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
@@ -848,6 +848,10 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
+    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Position:"), md, QString::number(attributes.value("display_position").toInt()));
+    md_position->addRadioButton(tr("Top"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
+    md_position->addRadioButton(tr("Bottom"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
+    md->addInputWidget(md_position);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_categories" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

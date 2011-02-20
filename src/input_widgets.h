@@ -33,6 +33,7 @@
 #include <QPlainTextEdit>
 #include <QGroupBox>
 
+class QRadioButton;
 class QGridLayout;
 
 class DBFile;
@@ -270,6 +271,22 @@ public:
 
 private:
     QGridLayout * grid;
+};
+
+class MDRadioButtonGroup : public QGroupBox, public MDInputWidget
+{
+    Q_OBJECT
+public:
+    MDRadioButtonGroup(const QString &, const QString &, QWidget *, const QString &);
+
+    void addRadioButton(const QString &, const QString &);
+
+    QVariant variantValue();
+    void setVariantValue(const QVariant &) {}
+
+private:
+    QMap<QRadioButton *, QString> radiobuttons;
+    QString selected;
 };
 
 #endif // INPUT_WIDGETS_H

@@ -25,6 +25,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QRadioButton>
 
 using namespace Global;
 
@@ -336,7 +337,8 @@ QGroupBox(" ", parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     this->grouped_value = grouped_value;
-    setLayout(new QVBoxLayout(this));
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setSpacing(12);
 }
 
 MDGroupedCheckBoxes::~MDGroupedCheckBoxes()
@@ -416,4 +418,30 @@ void MDGroupedInputWidgets::addWidget(MDInputWidget * iw)
 {
     grid->addWidget(iw->label(), grid->rowCount(), 0);
     grid->addWidget(iw->widget(), grid->rowCount() - 1, 1);
+}
+
+MDRadioButtonGroup::MDRadioButtonGroup(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+        QGroupBox(" ", parent),
+        MDInputWidget(id, labeltext, parent, this)
+{
+    this->selected = value;
+    (new QVBoxLayout(this))->setSpacing(12);
+}
+
+void MDRadioButtonGroup::addRadioButton(const QString & name, const QString & value)
+{
+    QRadioButton * radio = new QRadioButton(name, this);
+    radio->setChecked(value == selected);
+    radiobuttons.insert(radio, value);
+    this->layout()->addWidget(radio);
+}
+
+QVariant MDRadioButtonGroup::variantValue()
+{
+    QMapIterator<QRadioButton *, QString> i(radiobuttons);
+    while (i.hasNext()) { i.next();
+        if (i.key()->isChecked())
+            return i.value();
+    }
+    return QVariant();
 }

@@ -213,6 +213,10 @@ public:
         ShowAcquisitionPrice = 4,
         ShowTotal = 8
             };
+    enum DisplayPosition {
+        DisplayAtTop = 0,
+        DisplayAtBottom = 1
+    };
 
     AssemblyRecordItemCategory(const QString &);
 

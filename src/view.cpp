@@ -1636,9 +1636,10 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     QString nom_value;
 
     HTMLDiv div;
-    HTMLTable * table;
+    HTMLTable * table, * top_table;
     HTMLTableRow * _tr;
     HTMLTableCell * _td;
+    QList<HTMLTable *> bottom_tables;
 
     AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
     QVariantMap ar_type = ar_type_record.list();
@@ -1677,8 +1678,8 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         div << "<br>";
     }
 
-    table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
-    _td = table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
+    top_table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
         *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
         *_td << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
@@ -1689,14 +1690,14 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
 
     QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
                                        " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type FROM assembly_record_items"
+                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
                                        " WHERE arno = '%2' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
-    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8, value_data_type = 9;
+    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8, value_data_type = 9, category_position = 10;
     int num_columns = 5, i, n;
     int colspans[num_columns];
     double absolute_total = 0.0;
@@ -1705,6 +1706,13 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     QString item_value;
     while (categories_query.next()) {
         if (last_category != categories_query.value(category_id).toInt()) {
+            if (categories_query.value(category_position).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
+                table = top_table;
+            } else {
+                table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+                bottom_tables.append(table);
+            }
+
             int cat_display_options = categories_query.value(display_options).toInt();
 
             for (i = 1; i < num_columns; ++i) colspans[i] = 0;
@@ -1718,17 +1726,19 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowTotal) { i = n; colspans[i] = 1; }
             else colspans[i]++;
 
-            i = 0;
-            _tr = table->addRow();
-            *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(category_name).toString();
-            if (colspans[++i])
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
-            if (colspans[++i])
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
-            if (colspans[++i])
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
-            if (colspans[++i])
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total");
+            if (categories_query.value(category_position).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
+                i = 0;
+                _tr = table->addRow();
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(category_name).toString();
+                if (colspans[++i])
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
+                if (colspans[++i])
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
+                if (colspans[++i])
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
+                if (colspans[++i])
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total");
+            }
             last_category = categories_query.value(category_id).toInt();
         }
         i = 0;
@@ -1755,11 +1765,15 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
         }
     }
-    _tr = table->addRow();
+    _tr = top_table->addRow();
     *(_tr->addHeaderCell(QString("colspan=\"%1\"").arg(num_columns - 1))) << tr("Total");
     *(_tr->addCell()) << QString::number(absolute_total);
 
-    div << table;
+    div << top_table;
+    for (int i = 0; i < bottom_tables.count(); ++i) {
+        div << "<br>";
+        div << bottom_tables.at(i);
+    }
 
     return dict_html.value(Navigation::AssemblyRecord).arg(div.html());
 }
