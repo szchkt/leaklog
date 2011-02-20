@@ -239,10 +239,6 @@ int ImportCsvDialogue::save()
 
         if (!current_table->save(row)) num_failed++;
 
-        for (int n = 0; n < current_table->childTablesCount(); ++n) {
-            current_table->childTableAt(n)->save(row);
-        }
-
         delete row;
     }
     return num_failed;
@@ -330,7 +326,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     int int_value;
     double numeric_value;
     QDate date_value;
-    QStringList id_columns;
+    QString id_column;
 
     MTAddress address;
     MTRecord * frecord;
@@ -340,7 +336,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
 
         switch (columns.at(i)->type()) {
         case ImportDialogueTableColumn::ID:
-            id_columns.append(columns.at(i)->id());
+            id_column = columns.at(i)->id();
             set.insert(columns.at(i)->id(), row->value(columns.at(i)));
             break;
 
@@ -433,10 +429,10 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
 
         int next_id = record.list("MAX(id) AS max").value("max").toInt() + 1;
         set.insert("id", QString::number(next_id));
-        id_columns.append("id");
+        id_column = "id";
     }
 
-    MTRecord record(id(), id_columns.first(), set.value(id_columns.first()).toString(), MTDictionary());
+    MTRecord record(id(), id_column, set.value(id_column).toString(), MTDictionary());
     ok = ok && record.update(set);
 
     for (int i = 0; i < child_tables.count(); ++i) {

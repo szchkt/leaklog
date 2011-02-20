@@ -122,6 +122,7 @@ public:
     ImportDialogueTableColumn(ImportDialogueTableColumn * other) {
         this->c_name = other->name(); this->c_id = other->id();
         this->c_type = other->type(); this->select_vals = other->selectValues();
+        this->foreign_key_column = other->foreignKeyColumn(); this->foreign_key_table = other->foreignKeyTable();
     }
 
     const QString & name() { return c_name; }
