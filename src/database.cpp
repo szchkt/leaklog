@@ -496,7 +496,7 @@ void MainWindow::closeDatabase(bool save)
 
 bool MainWindow::isOperationPermitted(const QString & operation)
 {
-    if (DBInfoValueForKey(operation + "_permitted", "true") != "true") {
+    if (!Global::isOperationPermitted(operation)) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);

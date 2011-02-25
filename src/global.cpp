@@ -225,6 +225,11 @@ bool Global::isRecordLocked(const QString & date)
     return false;
 }
 
+bool Global::isOperationPermitted(const QString & operation)
+{
+    return DBInfoValueForKey(operation + "_permitted", "true") == "true";
+}
+
 double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
 {
     MTDictionary parents("customer", customer_id);

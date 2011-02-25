@@ -49,6 +49,7 @@ namespace Global {
     int isDatabaseLocked();
     QString lockDate();
     bool isRecordLocked(const QString &);
+    bool isOperationPermitted(const QString &);
     double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
