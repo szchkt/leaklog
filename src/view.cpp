@@ -123,7 +123,7 @@ QString MainWindow::viewChanged(int view)
                 html = viewAllCircuitUnitTypes(selectedCircuitUnitType());
                 break;
             case Navigation::ListOfAssemblyRecords:
-                html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit());
+                html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 break;
             default:
                 view = Navigation::ServiceCompany;
@@ -1721,6 +1721,9 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     int last_category = -1;
     int num_columns = 6, i, n;
     int colspans[num_columns];
+    bool show_list_price = navigation->isAssemblyRecordListPriceChecked(),
+        show_acquisition_price = navigation->isAssemblyRecordAcquisitionPriceChecked(),
+        show_total = navigation->isAssemblyRecordTotalChecked();
     double absolute_total = 0.0, total;
     QString colspan = "colspan=\"%1\"";
     QString item_value;
@@ -1739,13 +1742,13 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             i = n = 0; colspans[0] = 1;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowValue) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = n; colspans[i] = 1; }
+            if (++n && (cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) && show_acquisition_price) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowListPrice) { i = n; colspans[i] = 1; }
+            if (++n && (cat_display_options & AssemblyRecordItemCategory::ShowListPrice) && show_list_price) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowDiscount) { i = n; colspans[i] = 1; }
+            if (++n && (cat_display_options & AssemblyRecordItemCategory::ShowDiscount && show_list_price)) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowTotal) { i = n; colspans[i] = 1; }
+            if (++n && (cat_display_options & AssemblyRecordItemCategory::ShowTotal && show_total)) { i = n; colspans[i] = 1; }
             else colspans[i]++;
 
             if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
@@ -1796,9 +1799,11 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
         }
     }
-    _tr = top_table->addRow();
-    *(_tr->addHeaderCell(QString("colspan=\"%1\"").arg(num_columns - 1))) << tr("Total");
-    *(_tr->addCell()) << QString::number(absolute_total);
+    if (show_total) {
+        _tr = top_table->addRow();
+        *(_tr->addHeaderCell(QString("colspan=\"%1\"").arg(num_columns - 1))) << tr("Total");
+        *(_tr->addCell()) << QString::number(absolute_total);
+    }
 
     div << top_table;
     for (int i = 0; i < bottom_tables.count(); ++i) {
@@ -1950,7 +1955,7 @@ HTMLTable * MainWindow::customerContactPersons(const QString & customer_id)
     return table;
 }
 
-QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QString & circuit_id)
+QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QString & circuit_id, int year)
 {
     HTMLDiv div;
     HTMLTable * table;
@@ -1981,31 +1986,26 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     *(_tr->addHeaderCell()) << tr("Assembly record name");
     *(_tr->addHeaderCell()) << tr("Inspector");
 
-    enum QUERY_RESULTS
-    {
-        CUSTOMER_ID = 0,
-        CIRCUIT_ID = 1,
-        DATE = 2,
-        ARNO = 3,
-        AR_NAME = 4,
-        INSPECTOR = 5
-    };
+    MTDictionary parents;
+    if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
+    if (circuit_id.toInt() >= 0) parents.insert("circuit", circuit_id);
+    MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id",
+                    "inspections.date", "", parents);
+    if (!navigation->isFilterEmpty()) {
+        record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name, inspections.inspector");
 
-    QSqlQuery query(QString("SELECT inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name, inspections.inspector"
-                            " FROM inspections"
-                            " LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
-                            " WHERE inspections.arno != ''%1%2 ORDER BY inspections.date DESC")
-                    .arg(customer_id.toInt() < 0 ? "" : QString(" AND inspections.customer = " + customer_id))
-                    .arg(circuit_id.toInt() < 0 ? "" : QString(" AND inspections.circuit = " + circuit_id)));
-    while (query.next()) {
+    for (int i = 0; i < items.count(); ++i) {
+        if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/inspection:%3/assemblyrecord'\" style=\"cursor: pointer;\"")
-                            .arg(query.value(CUSTOMER_ID).toString())
-                            .arg(query.value(CIRCUIT_ID).toString())
-                            .arg(query.value(DATE).toString()));
-        *(_tr->addCell()) << query.value(DATE).toString();
-        *(_tr->addCell()) << query.value(ARNO).toString();
-        *(_tr->addCell()) << query.value(AR_NAME).toString();
-        *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(query.value(INSPECTOR).toString()));
+                            .arg(items.at(i).value("customer").toString())
+                            .arg(items.at(i).value("circuit").toString())
+                            .arg(items.at(i).value("date").toString()));
+        *(_tr->addCell()) << items.at(i).value("date").toString();
+        *(_tr->addCell()) << items.at(i).value("arno").toString();
+        *(_tr->addCell()) << items.at(i).value("name").toString();
+        *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(items.at(i).value("inspector").toString()));
     }
     div << table;
 

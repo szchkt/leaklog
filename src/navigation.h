@@ -71,6 +71,10 @@ public:
     inline QLabel * reportYearLabel() const { return lbl_report_year; }
     inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
 
+    bool isAssemblyRecordListPriceChecked() { return assembly_record_list_price_chb->isChecked(); }
+    bool isAssemblyRecordAcquisitionPriceChecked() { return assembly_record_acquisition_price_chb->isChecked(); }
+    bool isAssemblyRecordTotalChecked() { return assembly_record_total_chb->isChecked(); }
+
 public slots:
     // View
     void viewServiceCompany();

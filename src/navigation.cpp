@@ -19,6 +19,8 @@
 
 #include "navigation.h"
 
+#include "global.h"
+
 Navigation::Navigation(QWidget * parent):
 QWidget(parent)
 {
@@ -77,6 +79,18 @@ QWidget(parent)
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     toggleVisibleGroup(current_group);
     setReportDataGroupBoxVisible(false);
+    if (!Global::isOperationPermitted("edit_assembly_record_acquisition_price")) {
+        assembly_record_acquisition_price_chb->setEnabled(false);
+        assembly_record_acquisition_price_chb->setChecked(false);
+    }
+    if (!Global::isOperationPermitted("edit_assembly_record_list_price")) {
+        assembly_record_list_price_chb->setEnabled(false);
+        assembly_record_list_price_chb->setChecked(false);
+    }
+    if (!Global::isOperationPermitted("show_assembly_record_total")) {
+        assembly_record_total_chb->setEnabled(false);
+        assembly_record_total_chb->setChecked(false);
+    }
 }
 
 void Navigation::restoreDefaults(bool apply)
@@ -252,6 +266,10 @@ void Navigation::updateView()
             break;
         case Navigation::LeakagesByApplication:
         case Navigation::ListOfAssemblyRecords:
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector ID"), "inspector");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record No."), "arno");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
             group = 2;
             break;
         default:

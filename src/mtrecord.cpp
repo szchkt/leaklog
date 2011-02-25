@@ -91,6 +91,7 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
     for (int i = 0; i < r_filter.count(); ++i) {
         query.bindValue(":" + r_filter.key(i), r_filter.value(i));
     }
+    QString a = query.lastError().text();
     return query;
 }
 
