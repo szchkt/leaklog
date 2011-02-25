@@ -211,7 +211,8 @@ public:
         ShowValue = 1,
         ShowListPrice = 2,
         ShowAcquisitionPrice = 4,
-        ShowTotal = 8
+        ShowDiscount = 8,
+        ShowTotal = 16
             };
     enum DisplayPosition {
         DisplayAtTop = 0,

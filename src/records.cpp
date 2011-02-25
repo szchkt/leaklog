@@ -749,6 +749,7 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
     md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
     md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md, attributes.value("inspection_variable_id").toString(), listAllVariables()));
@@ -775,6 +776,7 @@ public:
         dict.insert("unit", QApplication::translate("AssemblyRecordItemType", "Unit"));
         dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItemType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("AssemblyRecordItemType", "List price"));
+        dict.insert("discount", QApplication::translate("AssemblyRecordItemType", "Discount"));
         dict.insert("ean", QApplication::translate("AssemblyRecordItemType", "EAN code"));
         dict.insert("category_id", QApplication::translate("AssemblyRecordItemType", "Category"));
     }
@@ -844,8 +846,9 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
-    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
+    md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowDiscount, tr("Show discount"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
     MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Position:"), md, QString::number(attributes.value("display_position").toInt()));
@@ -944,6 +947,7 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble()));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble()));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
     md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
     QList<MDInputWidget *> gw_list;
@@ -980,6 +984,7 @@ public:
         dict.insert("oil_amount", QApplication::translate("CircuitUnitType", "Amount of oil"));
         dict.insert("acquisition_price", QApplication::translate("CircuitUnitType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
+        dict.insert("discount", QApplication::translate("CircuitUnitType", "Discount"));
         dict.insert("location", QApplication::translate("CircuitUnitType", "Location"));
         dict.insert("unit", QApplication::translate("CircuitUnitType", "Unit"));
         dict.insert("output", QApplication::translate("CircuitUnitType", "Output"));

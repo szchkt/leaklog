@@ -97,8 +97,10 @@ public:
         this->_value = _value;
         this->_data_type = _data_type;
     }
-    ModifyDialogueTableCell(const QVariant & _value, QString _id, int _data_type = -1) {
+    ModifyDialogueTableCell(const QVariant & _value, const QString & _id, int _data_type = -1, const QString & unit = QString()) {
         this->_value = _value;
+        this->_unit = unit;
+        this->_unit = _unit.prepend(" ");
         this->_id = _id;
         this->_data_type = _data_type;
     }
@@ -108,9 +110,11 @@ public:
 
     const QVariant & value() { return _value; }
     int dataType() { return _data_type; }
+    const QString & unit() { return _unit; }
 
 private:
     QString _id;
+    QString _unit;
     QVariant _value;
     int _data_type;
 };

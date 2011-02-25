@@ -85,11 +85,13 @@ void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
         case Global::Integer:
             iw = new MDTSpinBox(this);
             ((MDTSpinBox *) iw)->setValue(cell->value().toInt());
+            ((MDTDoubleSpinBox *) iw)->setSuffix(cell->unit());
             break;
 
         case Global::Numeric:
             iw = new MDTDoubleSpinBox(this);
             ((MDTDoubleSpinBox *) iw)->setValue(cell->value().toDouble());
+            ((MDTDoubleSpinBox *) iw)->setSuffix(cell->unit());
             break;
 
         default:

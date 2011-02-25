@@ -1688,79 +1688,105 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     *_td << "&nbsp;" << inspection_date;
     if (!locked) *_td << "</a>";
 
+    enum QUERY_RESULTS
+    {
+        VALUE = 0,
+        NAME = 1,
+        CATEGORY_ID = 2,
+        CATEGORY_NAME = 3,
+        DISPLAY_OPTIONS = 4,
+        LIST_PRICE = 5,
+        ACQUISITION_PRICE = 6,
+        UNIT = 7,
+        VARIABLE_ID = 8,
+        VALUE_DATA_TYPE = 9,
+        CATEGORY_POSITION = 10,
+        DISCOUNT = 11
+               };
+
     QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
                                        " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position FROM assembly_record_items"
+                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position, assembly_record_items.discount"
+                                       " FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
                                        " WHERE arno = '%2' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                                .arg(inspection.value("arno").toString()));
     int last_category = -1;
-    int value = 0, name = 1, category_id = 2, category_name = 3, display_options = 4, list_price = 5, acquisition_price = 6, unit = 7, variable_id = 8, value_data_type = 9, category_position = 10;
-    int num_columns = 5, i, n;
+    int num_columns = 6, i, n;
     int colspans[num_columns];
-    double absolute_total = 0.0;
-    double total;
+    double absolute_total = 0.0, total;
     QString colspan = "colspan=\"%1\"";
     QString item_value;
     while (categories_query.next()) {
-        if (last_category != categories_query.value(category_id).toInt()) {
-            if (categories_query.value(category_position).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
+        if (last_category != categories_query.value(CATEGORY_ID).toInt()) {
+            if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
                 table = top_table;
             } else {
                 table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
                 bottom_tables.append(table);
             }
 
-            int cat_display_options = categories_query.value(display_options).toInt();
+            int cat_display_options = categories_query.value(DISPLAY_OPTIONS).toInt();
 
             for (i = 1; i < num_columns; ++i) colspans[i] = 0;
             i = n = 0; colspans[0] = 1;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowValue) { i = n; colspans[i] = 1; }
             else colspans[i]++;
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = n; colspans[i] = 1; }
+            else colspans[i]++;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowListPrice) { i = n; colspans[i] = 1; }
             else colspans[i]++;
-            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowAcquisitionPrice) { i = n; colspans[i] = 1; }
+            if (++n && cat_display_options & AssemblyRecordItemCategory::ShowDiscount) { i = n; colspans[i] = 1; }
             else colspans[i]++;
             if (++n && cat_display_options & AssemblyRecordItemCategory::ShowTotal) { i = n; colspans[i] = 1; }
             else colspans[i]++;
 
-            if (categories_query.value(category_position).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
+            if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
                 i = 0;
                 _tr = table->addRow();
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(category_name).toString();
+                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(CATEGORY_NAME).toString();
                 if (colspans[++i])
                     *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
                 if (colspans[++i])
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
+                if (colspans[++i])
                     *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
                 if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Discount");
                 if (colspans[++i])
                     *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total");
             }
-            last_category = categories_query.value(category_id).toInt();
+            last_category = categories_query.value(CATEGORY_ID).toInt();
         }
-        i = 0;
+        i = 0; total = 0.0;
         _tr = table->addRow();
-        *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(name).toString();
+        *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(NAME).toString();
         if (colspans[++i]) {
-            if (categories_query.value(variable_id).toString().isEmpty()) {
-                if (categories_query.value(value_data_type).toInt() == Global::Boolean)
-                    item_value = categories_query.value(value).toInt() ? tr("Yes") : tr("No");
+            if (categories_query.value(VARIABLE_ID).toString().isEmpty()) {
+                if (categories_query.value(VALUE_DATA_TYPE).toInt() == Global::Boolean)
+                    item_value = categories_query.value(VALUE).toInt() ? tr("Yes") : tr("No");
                 else
-                    item_value = categories_query.value(value).toString();
+                    item_value = categories_query.value(VALUE).toString();
             } else {
-                item_value = var_evaluation.evaluate(categories_query.value(variable_id).toString(), inspection, nom_value);
+                item_value = var_evaluation.evaluate(categories_query.value(VARIABLE_ID).toString(), inspection, nom_value);
             }
-            *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(unit).toString();
+            *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(UNIT).toString();
+            total = item_value.toDouble();
         }
         if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(list_price).toString();
-        if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(acquisition_price).toString();
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(ACQUISITION_PRICE).toString();
         if (colspans[++i]) {
-            total = item_value.toDouble() * categories_query.value(list_price).toDouble();
+            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(LIST_PRICE).toString();
+            total *= categories_query.value(LIST_PRICE).toDouble();
+        }
+        if (colspans[++i]) {
+            double total_discount = categories_query.value(DISCOUNT).toDouble();
+            total *= 1 - total_discount / 100;
+            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total_discount) << " %";
+        }
+        if (colspans[++i]) {
             absolute_total += total;
             *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
         }

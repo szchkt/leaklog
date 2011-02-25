@@ -58,6 +58,7 @@ void ModifyInspectionDialogueTab::init()
     groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"), Global::String);
     groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
     groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
+    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
     layout->addWidget(groups_layout);
 
     layout->addStretch();
@@ -96,12 +97,15 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             VALUE_DATA_TYPE = 11,
             ITEM_NAME = 12,
             ITEM_UNIT = 13,
-            UNIT = 14
+            UNIT = 14,
+            ITEM_DISCOUNT = 15,
+            DISCOUNT = 16
                     };
         QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
-                                      " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit"
+                                      " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit,"
+                                      " assembly_record_items.discount, assembly_record_item_types.discount"
                                       " FROM assembly_record_item_types"
                                       " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                       " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
@@ -117,6 +121,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
             cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("discount", new ModifyDialogueTableCell(items_query.value(ITEM_DISCOUNT).isNull() ? items_query.value(DISCOUNT) : items_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
             cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes, "source"));
             cells_map.insert("category_id", new ModifyDialogueTableCell(items_query.value(CATEGORY_ID), "category_id"));
             cells_map.insert("unit", new ModifyDialogueTableCell(items_query.value(ITEM_UNIT).isNull() ? items_query.value(UNIT) : items_query.value(ITEM_UNIT), "unit"));
@@ -143,11 +148,14 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             ITEM_LIST_PRICE = 10,
             ITEM_NAME = 11,
             ITEM_UNIT = 12,
-            UNIT = 13
+            UNIT = 13,
+            ITEM_DISCOUNT = 14,
+            DISCOUNT = 15
                     };
         QSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit"
+                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit,"
+                                      " assembly_record_items.discount, circuit_unit_types.discount"
                                       " FROM circuit_units"
                                       " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
                                       " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
@@ -169,6 +177,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(units_query.value(TYPE_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new ModifyDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
             cells_map.insert("list_price", new ModifyDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("discount", new ModifyDialogueTableCell(units_query.value(ITEM_DISCOUNT).isNull() ? units_query.value(DISCOUNT) : units_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
             cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::CircuitUnitTypes, "source"));
             cells_map.insert("category_id", new ModifyDialogueTableCell(units_query.value(CATEGORY_ID), "category_id"));
             cells_map.insert("unit", new ModifyDialogueTableCell(units_query.value(ITEM_UNIT).isNull() ? units_query.value(UNIT) : units_query.value(ITEM_UNIT), "unit"));
@@ -205,6 +214,7 @@ void ModifyInspectionDialogueTab::save(int)
         map.insert("source", record_dicts.at(i).value("source"));
         map.insert("category_id", record_dicts.at(i).value("category_id"));
         map.insert("unit", record_dicts.at(i).value("unit"));
+        map.insert("discount", record_dicts.at(i).value("discount"));
         record_item.update(map);
     }
 }
