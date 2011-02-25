@@ -70,16 +70,21 @@ bool MTRecord::exists()
 QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
 {
     bool has_id = !r_id.isEmpty();
+    int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
-    if (has_id || r_parents.count() || r_filter.count()) { select.append(" WHERE "); }
+    if (has_id || r_parents.count() || r_filter.count() || !custom_where.isEmpty()) { select.append(" WHERE "); }
     if (has_id) { select.append(r_id_field + " = :_id"); }
-    for (int i = 0; i < r_parents.count(); ++i) {
+    for (i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { select.append(" AND "); }
         select.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
-    for (int i = 0; i < r_filter.count(); ++i) {
+    for (i = 0; i < r_filter.count(); ++i) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
+    }
+    if (!custom_where.isEmpty()) {
+        if (has_id || r_parents.count() || i) { select.append(" AND "); }
+        select.append(custom_where);
     }
     if (!r_id_field.isEmpty()) select.append(QString(" ORDER BY %1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
     QSqlQuery query;
@@ -91,7 +96,6 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
     for (int i = 0; i < r_filter.count(); ++i) {
         query.bindValue(":" + r_filter.key(i), r_filter.value(i));
     }
-    QString a = query.lastError().text();
     return query;
 }
 

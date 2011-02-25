@@ -60,11 +60,13 @@ public:
     MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const QVariantMap &, bool = false);
     virtual bool remove();
+    void setCustomWhere(const QString & where) { this->custom_where = where; }
 
 private:
     QString r_table;
     QString r_id_field;
     QString r_id;
+    QString custom_where;
     MTDictionary r_parents;
     MTDictionary r_filter;
     QVariantMap r_values;

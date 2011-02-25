@@ -1724,7 +1724,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     bool show_list_price = navigation->isAssemblyRecordListPriceChecked(),
         show_acquisition_price = navigation->isAssemblyRecordAcquisitionPriceChecked(),
         show_total = navigation->isAssemblyRecordTotalChecked();
-    double absolute_total = 0.0, total;
+    double absolute_total = 0.0, total, acquisition_total = 0.0;
     QString colspan = "colspan=\"%1\"";
     QString item_value;
     while (categories_query.next()) {
@@ -1796,13 +1796,22 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         }
         if (colspans[++i]) {
             absolute_total += total;
+            acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
             *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
         }
     }
     if (show_total) {
-        _tr = top_table->addRow();
-        *(_tr->addHeaderCell(QString("colspan=\"%1\"").arg(num_columns - 1))) << tr("Total");
-        *(_tr->addCell()) << QString::number(absolute_total);
+        table = top_table;
+        _tr = table->addRow();
+        *(_tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price)) + " rowspan=\"2\"")) << tr("Total");
+        if (show_acquisition_price)
+            *(_tr->addHeaderCell()) << tr("Acquisition price");
+        *(_tr->addHeaderCell(colspan.arg(3))) << tr("List price");
+
+        _tr = table->addRow();
+        if (show_acquisition_price)
+            *(_tr->addCell()) << QString::number(acquisition_total);
+        *(_tr->addCell(colspan.arg(3))) << QString::number(absolute_total);
     }
 
     div << top_table;
@@ -1978,23 +1987,27 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
 
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     _tr = table->addRow();
-    _td = _tr->addHeaderCell("colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << tr("Assembly records");
     _tr = table->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Assembly record number");
     *(_tr->addHeaderCell()) << tr("Assembly record name");
+    *(_tr->addHeaderCell()) << tr("Customer");
+    *(_tr->addHeaderCell()) << tr("Circuit");
     *(_tr->addHeaderCell()) << tr("Inspector");
 
     MTDictionary parents;
     if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
     if (circuit_id.toInt() >= 0) parents.insert("circuit", circuit_id);
-    MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id",
+    MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
+                    " LEFT JOIN customers ON customers.id = inspections.customer",
                     "inspections.date", "", parents);
+    record.setCustomWhere("arno <> ''");
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name, inspections.inspector");
+    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company");
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
@@ -2004,7 +2017,9 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
                             .arg(items.at(i).value("date").toString()));
         *(_tr->addCell()) << items.at(i).value("date").toString();
         *(_tr->addCell()) << items.at(i).value("arno").toString();
-        *(_tr->addCell()) << items.at(i).value("name").toString();
+        *(_tr->addCell()) << items.at(i).value("record_name").toString();
+        *(_tr->addCell()) << items.at(i).value("company").toString();
+        *(_tr->addCell()) << items.at(i).value("circuit").toString().rightJustified(4, '0');
         *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(items.at(i).value("inspector").toString()));
     }
     div << table;
