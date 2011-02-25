@@ -67,6 +67,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_assembly_record_item_categories, Navigation::ListOfAssemblyRecordItemCategories);
     btngrp_view->addButton(tbtn_view_circuit_unit_types);
     btngrp_view->setId(tbtn_view_circuit_unit_types, Navigation::ListOfCircuitUnitTypes);
+    btngrp_view->addButton(tbtn_view_assembly_records);
+    btngrp_view->setId(tbtn_view_assembly_records, Navigation::ListOfAssemblyRecords);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -249,6 +251,9 @@ void Navigation::updateView()
             filter_visible = false;
             break;
         case Navigation::LeakagesByApplication:
+        case Navigation::ListOfAssemblyRecords:
+            group = 2;
+            break;
         default:
             group = 0;
             filter_visible = false;
@@ -325,7 +330,8 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_circuits->setVisible(g == 2);
     gb_inspections->setVisible(g == 2);
     gb_tables->setVisible(g == 2);
-    gb_assembly_records->setVisible(g == 3);
+    gb_assembly_records->setVisible(g == 2);
+    gb_assembly_record_types->setVisible(g == 3);
     gb_assembly_record_item_types->setVisible(g == 3);
     gb_assembly_record_item_categories->setVisible(g == 3);
     gb_filter->setVisible(g < 4);
@@ -376,6 +382,7 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
     tbtn_modify_circuit_unit_type->setEnabled(circuit_unit_type_selected);
     tbtn_remove_circuit_unit_type->setEnabled(circuit_unit_type_selected);
+    tbtn_view_assembly_records->setEnabled(customer_selected);
     gb_tables->setEnabled(circuit_selected);
 }
 

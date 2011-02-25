@@ -44,7 +44,8 @@ public:
         ListOfAssemblyRecordItemTypes,
         ListOfAssemblyRecordItemCategories,
         AssemblyRecord,
-        ListOfCircuitUnitTypes
+        ListOfCircuitUnitTypes,
+        ListOfAssemblyRecords
     };
 
     Navigation(QWidget *);

@@ -30,6 +30,7 @@
 
 #include <QDate>
 #include <QSqlRecord>
+#include <QSqlError>
 
 using namespace Global;
 
@@ -121,6 +122,9 @@ QString MainWindow::viewChanged(int view)
             case Navigation::ListOfCircuitUnitTypes:
                 html = viewAllCircuitUnitTypes(selectedCircuitUnitType());
                 break;
+            case Navigation::ListOfAssemblyRecords:
+                html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit());
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -170,6 +174,7 @@ QString MainWindow::currentView()
         case Navigation::ListOfAssemblyRecordItemTypes: view = QApplication::translate("Navigation", "List of assembly record item types"); break;
         case Navigation::ListOfAssemblyRecordItemCategories: view = QApplication::translate("Navigation", "List of assembly record item categories"); break;
         case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of circuit unit types"); break;
+        case Navigation::ListOfAssemblyRecords: break;
     }
     return view;
 }
@@ -1943,4 +1948,66 @@ HTMLTable * MainWindow::customerContactPersons(const QString & customer_id)
     }
 
     return table;
+}
+
+QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QString & circuit_id)
+{
+    HTMLDiv div;
+    HTMLTable * table;
+    HTMLTableRow * _tr;
+    HTMLTableCell * _td;
+
+    MTDictionary inspectors = Global::listInspectors();
+
+    QString html; MTTextStream out(&html);
+    if (customer_id.toInt() >= 0) {
+        writeCustomersTable(out, customer_id);
+        out << "<br>";
+    }
+    if (circuit_id.toInt() >= 0) {
+        writeCircuitsTable(out, customer_id, circuit_id);
+        out << "<br>";
+    }
+
+    div << html;
+
+    table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    _tr = table->addRow();
+    _td = _tr->addHeaderCell("colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    *_td << tr("Assembly records");
+    _tr = table->addRow();
+    *(_tr->addHeaderCell()) << tr("Date");
+    *(_tr->addHeaderCell()) << tr("Assembly record number");
+    *(_tr->addHeaderCell()) << tr("Assembly record name");
+    *(_tr->addHeaderCell()) << tr("Inspector");
+
+    enum QUERY_RESULTS
+    {
+        CUSTOMER_ID = 0,
+        CIRCUIT_ID = 1,
+        DATE = 2,
+        ARNO = 3,
+        AR_NAME = 4,
+        INSPECTOR = 5
+    };
+
+    QSqlQuery query(QString("SELECT inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name, inspections.inspector"
+                            " FROM inspections"
+                            " LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
+                            " WHERE inspections.arno != ''%1%2 ORDER BY inspections.date DESC")
+                    .arg(customer_id.toInt() < 0 ? "" : QString(" AND inspections.customer = " + customer_id))
+                    .arg(circuit_id.toInt() < 0 ? "" : QString(" AND inspections.circuit = " + circuit_id)));
+    while (query.next()) {
+        _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/inspection:%3/assemblyrecord'\" style=\"cursor: pointer;\"")
+                            .arg(query.value(CUSTOMER_ID).toString())
+                            .arg(query.value(CIRCUIT_ID).toString())
+                            .arg(query.value(DATE).toString()));
+        *(_tr->addCell()) << query.value(DATE).toString();
+        *(_tr->addCell()) << query.value(ARNO).toString();
+        *(_tr->addCell()) << query.value(AR_NAME).toString();
+        *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(query.value(INSPECTOR).toString()));
+    }
+    div << table;
+
+    return dict_html.value(Navigation::ListOfAssemblyRecords).arg(div.html());
 }

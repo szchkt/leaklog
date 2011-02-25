@@ -120,6 +120,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/circuit_unit_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfCircuitUnitTypes, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/assembly_records.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::ListOfAssemblyRecords, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;
@@ -439,6 +442,7 @@ void MainWindow::executeLink(const QUrl & url)
     }
     if (path.count() > 3) {
         if (path.at(3).startsWith("modify")) { modifyInspection(); }
+        else if (path.at(3).startsWith("assemblyrecord")) { navigation->setView(Navigation::AssemblyRecord); }
     }
 }
 

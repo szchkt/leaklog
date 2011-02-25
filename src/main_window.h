@@ -206,6 +206,7 @@ private:
     QString viewAllAssemblyRecordItemCategories(const QString & = QString());
     QString viewAssemblyRecord(const QString &, const QString &, const QString &);
     QString viewAllCircuitUnitTypes(const QString & = QString());
+    QString viewAllAssemblyRecords(const QString &, const QString &);
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
