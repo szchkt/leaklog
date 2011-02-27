@@ -78,6 +78,8 @@ const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
 
 void ModifyInspectionDialogueTab::loadItemInputWidgets()
 {
+    QString currency = Global::DBInfoValueForKey("currency", "EUR");
+
     groups_layout->clear();
     QMap<QString, ModifyDialogueTableCell *> cells_map;
     {
@@ -119,8 +121,8 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             cells_map.insert("name", new ModifyDialogueTableCell(items_query.value(ITEM_NAME).isNull() ? items_query.value(NAME) : items_query.value(ITEM_NAME), "name"));
             cells_map.insert("value", new ModifyDialogueTableCell(items_query.value(VALUE), "value", items_query.value(INSPECTION_VAR).toString().isEmpty() ? items_query.value(VALUE_DATA_TYPE).toInt() : -1));
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(items_query.value(TYPE_ID), "item_type_id"));
-            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
-            cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(items_query.value(ITEM_ACQUISITION_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
+            cells_map.insert("list_price", new ModifyDialogueTableCell(items_query.value(ITEM_LIST_PRICE).isNull() ? items_query.value(ACQUISITION_PRICE) : items_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));
             cells_map.insert("discount", new ModifyDialogueTableCell(items_query.value(ITEM_DISCOUNT).isNull() ? items_query.value(DISCOUNT) : items_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
             cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes, "source"));
             cells_map.insert("category_id", new ModifyDialogueTableCell(items_query.value(CATEGORY_ID), "category_id"));
@@ -172,11 +174,11 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             QString name = units_query.value(ITEM_NAME).isNull() ?
                            QString("%1 - %2").arg(units_query.value(MANUFACTURER).toString()).arg(units_query.value(TYPE).toString())
                                : units_query.value(ITEM_NAME).toString();
-            cells_map.insert("name", new ModifyDialogueTableCell(name, "name", Global::String));
+            cells_map.insert("name", new ModifyDialogueTableCell(name, "name"));
             cells_map.insert("value", new ModifyDialogueTableCell(units_query.value(VALUE).toInt() ? units_query.value(VALUE) : 1, "value", Global::Integer));
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(units_query.value(TYPE_ID), "item_type_id"));
-            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric));
-            cells_map.insert("list_price", new ModifyDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric));
+            cells_map.insert("acquisition_price", new ModifyDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
+            cells_map.insert("list_price", new ModifyDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));
             cells_map.insert("discount", new ModifyDialogueTableCell(units_query.value(ITEM_DISCOUNT).isNull() ? units_query.value(DISCOUNT) : units_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
             cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::CircuitUnitTypes, "source"));
             cells_map.insert("category_id", new ModifyDialogueTableCell(units_query.value(CATEGORY_ID), "category_id"));

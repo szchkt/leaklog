@@ -1639,6 +1639,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
     QString nom_value;
+    QString currency = DBInfoValueForKey("currency", "EUR");
 
     HTMLDiv div;
     HTMLTable * table, * top_table;
@@ -1758,13 +1759,13 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                 if (colspans[++i])
                     *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
                 if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price");
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price (%1)").arg(currency);
                 if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price");
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price (%1)").arg(currency);
                 if (colspans[++i])
                     *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Discount");
                 if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total");
+                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total (%1)").arg(currency);
             }
             last_category = categories_query.value(CATEGORY_ID).toInt();
         }
@@ -1805,8 +1806,8 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         _tr = table->addRow();
         *(_tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price)) + " rowspan=\"2\"")) << tr("Total");
         if (show_acquisition_price)
-            *(_tr->addHeaderCell()) << tr("Acquisition price");
-        *(_tr->addHeaderCell(colspan.arg(3))) << tr("List price");
+            *(_tr->addHeaderCell()) << tr("Acquisition price (%1)").arg(currency);
+        *(_tr->addHeaderCell(colspan.arg(3))) << tr("List price (%1)").arg(currency);
 
         _tr = table->addRow();
         if (show_acquisition_price)
