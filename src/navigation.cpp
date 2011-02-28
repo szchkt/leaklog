@@ -400,7 +400,6 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
     tbtn_modify_circuit_unit_type->setEnabled(circuit_unit_type_selected);
     tbtn_remove_circuit_unit_type->setEnabled(circuit_unit_type_selected);
-    tbtn_view_assembly_records->setEnabled(customer_selected);
     gb_tables->setEnabled(circuit_selected);
     ar_show_options_widget->setVisible(inspection_selected);
 }

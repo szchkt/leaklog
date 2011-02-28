@@ -1972,14 +1972,16 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     HTMLTableRow * _tr;
     HTMLTableCell * _td;
 
+    bool customer_given = customer_id.toInt() >= 0, circuit_given = circuit_id.toInt() >= 0;
+
     MTDictionary inspectors = Global::listInspectors();
 
     QString html; MTTextStream out(&html);
-    if (customer_id.toInt() >= 0) {
+    if (customer_given) {
         writeCustomersTable(out, customer_id);
         out << "<br>";
     }
-    if (circuit_id.toInt() >= 0) {
+    if (circuit_given) {
         writeCircuitsTable(out, customer_id, circuit_id);
         out << "<br>";
     }
@@ -1988,27 +1990,29 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
 
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     _tr = table->addRow();
-    _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    _td = _tr->addHeaderCell("colspan=\"7\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << tr("Assembly records");
     _tr = table->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Assembly record number");
     *(_tr->addHeaderCell()) << tr("Assembly record name");
-    *(_tr->addHeaderCell()) << tr("Customer");
-    *(_tr->addHeaderCell()) << tr("Circuit");
+    if (!customer_given) *(_tr->addHeaderCell()) << tr("Customer");
+    if (!circuit_given) *(_tr->addHeaderCell()) << tr("Circuit");
     *(_tr->addHeaderCell()) << tr("Inspector");
+    *(_tr->addHeaderCell()) << tr("Operator");
 
     MTDictionary parents;
     if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
     if (circuit_id.toInt() >= 0) parents.insert("circuit", circuit_id);
     MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
-                    " LEFT JOIN customers ON customers.id = inspections.customer",
+                    " LEFT JOIN customers ON customers.id = inspections.customer"
+                    " LEFT JOIN persons ON inspections.operator = persons.id",
                     "inspections.date", "", parents);
     record.setCustomWhere("arno <> ''");
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company");
+    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator");
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
@@ -2019,9 +2023,10 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
         *(_tr->addCell()) << items.at(i).value("date").toString();
         *(_tr->addCell()) << items.at(i).value("arno").toString();
         *(_tr->addCell()) << items.at(i).value("record_name").toString();
-        *(_tr->addCell()) << items.at(i).value("company").toString();
-        *(_tr->addCell()) << items.at(i).value("circuit").toString().rightJustified(4, '0');
+        if (!customer_given) *(_tr->addCell()) << items.at(i).value("company").toString();
+        if (!circuit_given) *(_tr->addCell()) << items.at(i).value("circuit").toString().rightJustified(4, '0');
         *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(items.at(i).value("inspector").toString()));
+        *(_tr->addCell()) << items.at(i).value("operator").toString();
     }
     div << table;
 
