@@ -5,6 +5,7 @@
 #include <QTreeWidgetItem>
 #include <QLabel>
 #include <QHeaderView>
+#include <QSpinBox>
 
 ModifyAssemblyRecordDialogue::ModifyAssemblyRecordDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
@@ -38,6 +39,7 @@ void ModifyAssemblyRecordDialogueTab::save(int record_id)
 
         if (item->checkState(0) == Qt::Checked) {
             map.insert("record_category_id", item->data(0, Qt::UserRole).toInt());
+            map.insert("position", ((QSpinBox *) tree->itemWidget(item, 1))->value());
             used_categories.update(map);
         }
     }
@@ -51,28 +53,30 @@ void ModifyAssemblyRecordDialogueTab::init()
     layout->addWidget(new QLabel(tr("Assembly record categories:")));
 
     tree = new QTreeWidget;
-    tree->header()->hide();
+    tree->setColumnCount(2);
+    tree->setHeaderLabels(QStringList() << tr("Category") << tr("Position"));
+    tree->header()->setResizeMode(0, QHeaderView::Stretch);
+    tree->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     layout->addWidget(tree);
 
-    AssemblyRecordItemCategory categories_record("");
-    ListOfVariantMaps all_categories(categories_record.listAll());
+    MTRecord record(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"
+                    " ON assembly_record_type_categories.record_category_id = assembly_record_item_categories.id"
+                    " AND assembly_record_type_categories.record_type_id = %1").arg(record_id),
+                    "", "", MTDictionary());
 
-    AssemblyRecordTypeCategory used_categories_record(QString("%1").arg(record_id));
-    ListOfVariantMaps used_categories(used_categories_record.listAll());
+    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_type_categories.record_type_id, assembly_record_type_categories.position"));
 
     QTreeWidgetItem * item;
     for (int i = 0; i < all_categories.count(); ++i) {
         item = new QTreeWidgetItem;
         item->setText(0, all_categories.at(i).value("name").toString());
-        item->setCheckState(0, Qt::Unchecked);
         item->setData(0, Qt::UserRole, all_categories.at(i).value("id"));
 
-        for (int n = 0; n < used_categories.count(); ++n) {
-            if (used_categories.at(n).value("record_category_id").toInt() == all_categories.at(i).value("id").toInt()) {
-                item->setCheckState(0, Qt::Checked);
-                break;
-            }
-        }
+        if (!all_categories.at(i).value("record_type_id").isNull()) item->setCheckState(0, Qt::Checked);
+        else item->setCheckState(0, Qt::Unchecked);
         tree->addTopLevelItem(item);
+        QSpinBox * spin_box = new QSpinBox();
+        spin_box->setValue(all_categories.at(i).value("position").toInt());
+        tree->setItemWidget(item, 1, spin_box);
     }
 }

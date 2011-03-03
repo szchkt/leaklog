@@ -1716,9 +1716,11 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                                        " FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
-                                       " WHERE arno = '%2' ORDER BY assembly_record_item_types.category_id, assembly_record_item_types.name")
+                                       " LEFT JOIN assembly_record_type_categories ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id AND assembly_record_type_categories.record_type_id = %3"
+                                       " WHERE arno = '%2' ORDER BY assembly_record_type_categories.position, assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
-                               .arg(inspection.value("arno").toString()));
+                               .arg(inspection.value("arno").toString())
+                               .arg(inspection.value("ar_type").toInt()));
     int last_category = -1;
     int num_columns = 6, i, n;
     int colspans[num_columns];
