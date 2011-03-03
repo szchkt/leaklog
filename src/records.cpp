@@ -853,9 +853,9 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowDiscount, tr("Show discount"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
-    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Position:"), md, QString::number(attributes.value("display_position").toInt()));
-    md_position->addRadioButton(tr("Top"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
-    md_position->addRadioButton(tr("Bottom"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
+    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md, QString::number(attributes.value("display_position").toInt()));
+    md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
+    md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -897,24 +897,6 @@ const MTDictionary & AssemblyRecordItem::attributes()
 File::File(const QString & file_id):
 MTRecord("files", "id", file_id, MTDictionary())
 {}
-
-class FileAttributes
-{
-public:
-    FileAttributes() {
-        dict.insert("id", QApplication::translate("File", "ID"));
-        dict.insert("file_name", QApplication::translate("File", "File name"));
-        dict.insert("file_data", QApplication::translate("File", "File data"));
-    }
-
-    MTDictionary dict;
-};
-
-const MTDictionary & File::attributes()
-{
-    static FileAttributes dict;
-    return dict.dict;
-}
 
 Person::Person(const QString & person_id, const QString & customer_id):
 MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))

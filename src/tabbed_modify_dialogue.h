@@ -35,6 +35,8 @@ protected:
 
 class ModifyDialogueTab : public QWidget
 {
+    Q_OBJECT
+
 public:
     ModifyDialogueTab(QWidget * = NULL);
 

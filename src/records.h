@@ -247,8 +247,6 @@ class File : public MTRecord
 
 public:
     File(const QString &);
-
-    static const MTDictionary & attributes();
 };
 
 class Person : public MTRecord

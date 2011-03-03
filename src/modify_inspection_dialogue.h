@@ -7,6 +7,8 @@ class ModifyDialogueGroupsLayout;
 
 class ModifyInspectionDialogue : public TabbedModifyDialogue
 {
+    Q_OBJECT
+
 public:
     ModifyInspectionDialogue(DBRecord *, QWidget * = NULL);
 };

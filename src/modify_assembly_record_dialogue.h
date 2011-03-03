@@ -5,6 +5,8 @@
 
 class ModifyAssemblyRecordDialogue : public TabbedModifyDialogue
 {
+    Q_OBJECT
+
 public:
     ModifyAssemblyRecordDialogue(DBRecord *, QWidget * = NULL);
 
@@ -12,6 +14,8 @@ public:
 
 class ModifyAssemblyRecordDialogueTab : public ModifyDialogueTab
 {
+    Q_OBJECT
+
 public:
     ModifyAssemblyRecordDialogueTab(int, QWidget * = NULL);
 
