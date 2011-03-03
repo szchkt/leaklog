@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2814</width>
+    <width>2825</width>
     <height>169</height>
    </rect>
   </property>
@@ -1536,7 +1536,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View list of customers</string>
+         <string>View list of assembly record types</string>
         </property>
         <property name="text">
          <string>List of record types</string>
@@ -1568,10 +1568,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Add a new customer</string>
+         <string>Add a new assembly record type</string>
         </property>
         <property name="text">
-         <string>Add assembly record</string>
+         <string>Add record type</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1600,10 +1600,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected customer</string>
+         <string>Modify the selected assembly record type</string>
         </property>
         <property name="text">
-         <string>Modify assembly record</string>
+         <string>Modify record type</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1632,10 +1632,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Remove the selected customer</string>
+         <string>Remove the selected assembly record type</string>
         </property>
         <property name="text">
-         <string>Remove assembly record</string>
+         <string>Remove record type</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1676,7 +1676,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View list of customers</string>
+         <string>View list of assembly record item types</string>
         </property>
         <property name="text">
          <string>List of item types</string>
@@ -1708,7 +1708,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Add a new customer</string>
+         <string>Add a new assembly record item type</string>
         </property>
         <property name="text">
          <string>Add item type</string>
@@ -1740,7 +1740,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected customer</string>
+         <string>Modify the selected assembly record item type</string>
         </property>
         <property name="text">
          <string>Modify item type</string>
@@ -1772,7 +1772,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Remove the selected customer</string>
+         <string>Remove the selected assembly record item type</string>
         </property>
         <property name="text">
          <string>Remove item type</string>
@@ -1816,7 +1816,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View list of customers</string>
+         <string>View list of assembly record item categories</string>
         </property>
         <property name="text">
          <string>List of item categories</string>
@@ -1848,7 +1848,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Add a new customer</string>
+         <string>Add a new assembly record item category</string>
         </property>
         <property name="text">
          <string>Add item category</string>
@@ -1880,7 +1880,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected customer</string>
+         <string>Modify the selected assembly record item category</string>
         </property>
         <property name="text">
          <string>Modify item category</string>
@@ -1912,7 +1912,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Remove the selected customer</string>
+         <string>Remove the selected assembly record item category</string>
         </property>
         <property name="text">
          <string>Remove item category</string>
@@ -1956,7 +1956,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View list of customers</string>
+         <string>View list of circuit unit types</string>
         </property>
         <property name="text">
          <string>List of unit types</string>
@@ -1988,7 +1988,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Add a new customer</string>
+         <string>Add a new circuit unit type</string>
         </property>
         <property name="text">
          <string>Add unit type</string>
@@ -2020,7 +2020,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected customer</string>
+         <string>Modify the selected circuit unit type</string>
         </property>
         <property name="text">
          <string>Modify unit type</string>
@@ -2052,7 +2052,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Remove the selected customer</string>
+         <string>Remove the selected circuit unit type</string>
         </property>
         <property name="text">
          <string>Remove unit type</string>
@@ -2096,7 +2096,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View list of customers</string>
+         <string>View list of assembly records</string>
         </property>
         <property name="text">
          <string>List of assembly records</string>
@@ -2128,7 +2128,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View inspection details</string>
+         <string>View assembly record</string>
         </property>
         <property name="text">
          <string>Assembly record</string>
@@ -2185,6 +2185,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QCheckBox" name="assembly_record_list_price_chb">
+           <property name="statusTip">
+            <string>Show list price on assembly record</string>
+           </property>
            <property name="text">
             <string>List price</string>
            </property>
@@ -2195,6 +2198,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="assembly_record_total_chb">
+           <property name="statusTip">
+            <string>Show total on assembly record</string>
+           </property>
            <property name="text">
             <string>Total</string>
            </property>
@@ -2205,6 +2211,9 @@
          </item>
          <item row="1" column="1">
           <widget class="QCheckBox" name="assembly_record_acquisition_price_chb">
+           <property name="statusTip">
+            <string>Show acquisition price on assembly record</string>
+           </property>
            <property name="text">
             <string>Acquisition price</string>
            </property>
