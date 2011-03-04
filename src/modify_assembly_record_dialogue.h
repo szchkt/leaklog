@@ -20,6 +20,7 @@ public:
     ModifyAssemblyRecordDialogueTab(int, QWidget * = NULL);
 
     void save(int);
+    QWidget * widget() { return this; }
 
 private:
     void init();

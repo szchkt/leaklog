@@ -28,6 +28,7 @@ public:
     ModifyCircuitDialogueUnitsTab(const QString &, const QString &, QWidget * = NULL);
 
     void save(int);
+    QWidget * widget() { return this; }
 
 private slots:
     void manufacturerItemExpanded(QTreeWidgetItem *);

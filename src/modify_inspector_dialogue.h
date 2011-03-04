@@ -22,6 +22,7 @@ public:
     ModifyInspectorDialogueTab(QList<MDInputWidget *>, QWidget * = NULL);
 
     void save(int);
+    QWidget * widget() { return this; }
 
 private:
     void init();

@@ -8,6 +8,7 @@
 #include <QSqlQuery>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QScrollArea>
 
 ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent)
     : TabbedModifyDialogue(record, parent)
@@ -61,7 +62,10 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & cus
 
     table = new ModifyCircuitDialogueTable(tr("Used circuit units"), header, this);
     QObject::connect(table, SIGNAL(updateCircuit(MTDictionary)), this, SIGNAL(updateCircuit(MTDictionary)));
-    grid->addWidget(table, 0, 1);
+
+    QScrollArea * scroll_area = createScrollArea();
+    scroll_area->setWidget(table);
+    grid->addWidget(scroll_area, 0, 1);
 
     loadManufacturers();
     loadRows(customer_id, circuit_id);

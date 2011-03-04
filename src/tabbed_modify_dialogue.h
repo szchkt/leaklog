@@ -8,6 +8,7 @@ class QTreeWidget;
 class QLineEdit;
 class QComboBox;
 class QGroupBox;
+class QScrollArea;
 
 class ModifyDialogueTab;
 class MDLineEdit;
@@ -31,6 +32,7 @@ protected:
     void addTab(ModifyDialogueTab *);
 
     QTabWidget * main_tabw;
+    QList<ModifyDialogueTab *> tabs;
 };
 
 class ModifyDialogueTab : public QWidget
@@ -44,6 +46,9 @@ public:
 
     const QString & name() { return tab_name; }
     virtual void save(int) = 0;
+
+    virtual QWidget * widget();
+    QScrollArea * createScrollArea();
 
 protected:
     void setName(const QString tab_name) { this->tab_name = tab_name; }

@@ -35,22 +35,17 @@ void TabbedModifyDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
 
 void TabbedModifyDialogue::addTab(ModifyDialogueTab * tab)
 {
-    QScrollArea * scroll_area = new QScrollArea;
-    scroll_area->setWidgetResizable(1);
-    scroll_area->setWidget(tab);
-    scroll_area->setFrameStyle(QFrame::NoFrame);
-    scroll_area->setAutoFillBackground(true);
-    scroll_area->setBackgroundRole(QPalette::NoRole);
-    main_tabw->addTab(scroll_area, tab->name());
+    tabs << tab;
+
+    main_tabw->addTab(tab->widget(), tab->name());
 }
 
 void TabbedModifyDialogue::save()
 {
     if (!ModifyDialogue::save(false)) return;
 
-    for (int i = 1; i < main_tabw->count(); ++i) {
-        ((ModifyDialogueTab *) ((QScrollArea *) main_tabw->widget(i))->widget())
-                ->save(idFieldValue().toInt());
+    for (int i = 1; i < tabs.count(); ++i) {
+        tabs.at(i)->save(idFieldValue().toInt());
     }
 
     accept();
@@ -66,4 +61,21 @@ void ModifyDialogueTab::setLayout(QLayout * layout)
 {
     layout->setContentsMargins(9, 9, 9, 9);
     QWidget::setLayout(layout);
+}
+
+QWidget * ModifyDialogueTab::widget()
+{
+    QScrollArea * scroll_area = createScrollArea();
+    scroll_area->setWidget(this);
+    return scroll_area;
+}
+
+QScrollArea * ModifyDialogueTab::createScrollArea()
+{
+    QScrollArea * scroll_area = new QScrollArea;
+    scroll_area->setWidgetResizable(1);
+    scroll_area->setFrameStyle(QFrame::NoFrame);
+    scroll_area->setAutoFillBackground(true);
+    scroll_area->setBackgroundRole(QPalette::NoRole);
+    return scroll_area;
 }
