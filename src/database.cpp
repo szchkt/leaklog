@@ -27,6 +27,7 @@
 #include "modify_inspection_dialogue.h"
 #include "modify_assembly_record_dialogue.h"
 #include "modify_circuit_dialogue.h"
+#include "modify_inspector_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -1332,7 +1333,7 @@ void MainWindow::addInspector()
     if (!db.isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyInspectorDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspector(record.id().toInt(), true);
@@ -1347,7 +1348,7 @@ void MainWindow::modifyInspector()
     if (!isOperationPermitted("edit_inspector")) { return; }
     QString old_id = selectedInspector();
     Inspector record(old_id);
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    ModifyDialogue * md = new ModifyInspectorDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {

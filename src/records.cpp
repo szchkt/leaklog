@@ -480,6 +480,8 @@ DBRecord("inspectors", "id", id, MTDictionary())
 
 void Inspector::initModifyDialogue(ModifyDialogue * md)
 {
+    QString currency = Global::DBInfoValueForKey("currency", "EUR");
+
     md->setWindowTitle(tr("Inspector"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
@@ -489,6 +491,15 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
+    MDInputWidget * iw = new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories());
+    iw->setShowInForm(false);
+    md->addInputWidget(iw);
+    iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    iw->setShowInForm(false);
+    md->addInputWidget(iw);
+    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
+    iw->setShowInForm(false);
+    md->addInputWidget(iw);
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM inspectors" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

@@ -233,7 +233,8 @@ class AssemblyRecordItem : public MTRecord
 public:
     enum Source {
         AssemblyRecordItemTypes = 0,
-        CircuitUnitTypes = 1
+        CircuitUnitTypes = 1,
+        Inspectors = 2
             };
 
     AssemblyRecordItem(const QString &);
