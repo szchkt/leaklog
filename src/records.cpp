@@ -328,7 +328,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
 
 InspectionByInspector::InspectionByInspector(const QString & inspector_id):
 Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
-           " LEFT JOIN circuits ON inspections.circuit = circuits.id", "date", "", MTDictionary("inspector", inspector_id))
+           " LEFT JOIN circuits ON inspections.circuit = circuits.id AND circuits.parent = inspections.customer", "date", "", MTDictionary("inspector", inspector_id))
 {
 }
 
@@ -896,6 +896,11 @@ AssemblyRecordItem::AssemblyRecordItem(const QString & record_id)
 {
 }
 
+AssemblyRecordItem::AssemblyRecordItem(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents)
+    : MTRecord(table, id_column, id, parents)
+{
+}
+
 class AssemblyRecordItemAttributes
 {
 public:
@@ -914,6 +919,12 @@ const MTDictionary & AssemblyRecordItem::attributes()
 {
     static AssemblyRecordItemAttributes dict;
     return dict.dict;
+}
+
+AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString & inspector_id)
+    : AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno", "", "",
+               MTDictionary(QStringList() << "item_type_id" << "source", QStringList() << inspector_id << QString::number(AssemblyRecordItem::Inspectors)))
+{
 }
 
 File::File(const QString & file_id):

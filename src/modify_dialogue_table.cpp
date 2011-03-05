@@ -67,7 +67,6 @@ void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
     ModifyDialogueTableCell * cell;
     for (int i = 0; i < header.count(); ++i) {
         cell = row->valuesMap().value(header.at(i)->id());
-        QString a = header.at(i)->id();
 
         switch (cell->dataType()) {
         case Global::Boolean:

@@ -247,8 +247,17 @@ public:
             };
 
     AssemblyRecordItem(const QString &);
+    AssemblyRecordItem(const QString &, const QString &, const QString &, const MTDictionary &);
 
     static const MTDictionary & attributes();
+};
+
+class AssemblyRecordItemByInspector : public AssemblyRecordItem
+{
+    Q_OBJECT
+
+public:
+    AssemblyRecordItemByInspector(const QString &);
 };
 
 class File : public MTRecord

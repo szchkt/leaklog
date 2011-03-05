@@ -206,7 +206,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             ITEM_NAME = 10,
             ITEM_UNIT = 11,
             ITEM_DISCOUNT = 12
-                    };
+        };
         QSqlQuery inspectors_query(QString("SELECT inspectors.id, inspectors.person, inspectors.acquisition_price, inspectors.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit,"
@@ -228,7 +228,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             cells_map.insert("acquisition_price", new ModifyDialogueTableCell(inspectors_query.value(ITEM_ACQUISITION_PRICE).isNull() ? inspectors_query.value(ACQUISITION_PRICE) : inspectors_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
             cells_map.insert("list_price", new ModifyDialogueTableCell(inspectors_query.value(ITEM_LIST_PRICE).isNull() ? inspectors_query.value(LIST_PRICE) : inspectors_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));
             cells_map.insert("discount", new ModifyDialogueTableCell(inspectors_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
-            cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::CircuitUnitTypes, "source"));
+            cells_map.insert("source", new ModifyDialogueTableCell(AssemblyRecordItem::Inspectors, "source"));
             cells_map.insert("category_id", new ModifyDialogueTableCell(inspectors_query.value(CATEGORY_ID), "category_id"));
             cells_map.insert("unit", new ModifyDialogueTableCell(inspectors_query.value(ITEM_UNIT), "unit"));
             groups_layout->addItem(inspectors_query.value(CATEGORY_NAME).toString(),

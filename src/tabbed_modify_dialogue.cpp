@@ -44,7 +44,7 @@ void TabbedModifyDialogue::save()
 {
     if (!ModifyDialogue::save(false)) return;
 
-    for (int i = 1; i < tabs.count(); ++i) {
+    for (int i = 0; i < tabs.count(); ++i) {
         tabs.at(i)->save(idFieldValue().toInt());
     }
 
