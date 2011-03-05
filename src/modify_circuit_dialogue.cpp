@@ -21,7 +21,7 @@ ModifyCircuitDialogue::ModifyCircuitDialogue(DBRecord * record, QWidget * parent
 
 void ModifyCircuitDialogue::updateCircuit(MTDictionary dict)
 {
-    MDInputWidget * md;
+    MDAbstractInputWidget * md;
     for (int i = 0; i < dict.count(); ++i) {
         md = inputWidget(dict.key(i));
         if (md)

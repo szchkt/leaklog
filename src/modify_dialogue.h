@@ -25,7 +25,7 @@
 
 class DBRecord;
 class MTRecord;
-class MDInputWidget;
+class MDAbstractInputWidget;
 
 class ModifyDialogue : public QDialog
 {
@@ -47,16 +47,16 @@ protected:
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
-    void addInputWidget(MDInputWidget * iw) { md_inputwidgets << iw; }
-    void addGroupedInputWidgets(const QString &, const QList<MDInputWidget*> &);
+    void addInputWidget(MDAbstractInputWidget * iw) { md_inputwidgets << iw; }
+    void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget*> &);
     int inputWidgetCount() { return md_inputwidgets.count(); }
-    MDInputWidget * inputWidget(const QString);
+    MDAbstractInputWidget * inputWidget(const QString);
 
     const QVariant idFieldValue();
 
     void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
 
-    QList<MDInputWidget *> md_inputwidgets;
+    QList<MDAbstractInputWidget *> md_inputwidgets;
     DBRecord * md_record;
     QStringList md_used_ids;
     QGridLayout * md_grid_main;
@@ -81,7 +81,7 @@ protected:
 class ModifyDialogueLayout
 {
 public:
-    ModifyDialogueLayout(QList<MDInputWidget *> *, QGridLayout *);
+    ModifyDialogueLayout(QList<MDAbstractInputWidget *> *, QGridLayout *);
 
     virtual void layout();
     void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
@@ -89,14 +89,14 @@ public:
 
 protected:
     QGridLayout * md_grid_main;
-    QList<MDInputWidget *> * md_inputwidgets;
+    QList<MDAbstractInputWidget *> * md_inputwidgets;
 
 };
 
 class ModifyDialogueColumnLayout : public ModifyDialogueLayout
 {
 public:
-    ModifyDialogueColumnLayout(QList<MDInputWidget *> *, QGridLayout *, int = 20);
+    ModifyDialogueColumnLayout(QList<MDAbstractInputWidget *> *, QGridLayout *, int = 20);
 
     void layout();
 

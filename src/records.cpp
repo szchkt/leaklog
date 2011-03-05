@@ -237,7 +237,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md, attributes.value("outside_interval").toInt()));
     Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
-    MDInputWidget * iw = NULL;
+    MDAbstractInputWidget * iw = NULL;
     while (query.next()) {
         var_id = query.value("VAR_ID").toString();
         subvar_id = query.value("SUBVAR_ID").toString();
@@ -250,7 +250,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                     attributes.value(var_id).toString(), listInspectors(), query.value("VAR_COL_BG").toString());
                 iw->label()->setAlternativeText(tr("Repairman:"));
                 iw->label()->toggleAlternativeText(chb_repair->isChecked());
-                QObject::connect(chb_repair, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
+                iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
                 md->addInputWidget(iw);
             } else if (var_id == "rmds") {
                 iw = new MDPlainTextEdit(var_id, var_name, md,
@@ -270,12 +270,12 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
                     attributes.value(var_id).toInt(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (var_type == "float") {
-                iw = new MDDoubleSpinBox(var_id, var_name, md, -999999999.9, 999999999.9,
-                    attributes.value(var_id).toDouble(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
+                iw = new MDNullableDoubleSpinBox(var_id, var_name, md, -999999999.9, 999999999.9,
+                    attributes.value(var_id), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
                 if (var_id == "refr_add_am") {
                     iw->label()->setAlternativeText(tr("New charge:"));
                     iw->label()->toggleAlternativeText(chb_nominal->isChecked());
-                    QObject::connect(chb_nominal, SIGNAL(toggled(bool)), iw->label(), SLOT(toggleAlternativeText(bool)));
+                    iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
                 }
                 md->addInputWidget(iw);
             } else if (var_type == "string") {
@@ -291,7 +291,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                     attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));
             } else if (var_type == "bool") {
                 iw = new MDCheckBox(var_id, "", md, attributes.value(var_id).toInt());
-                iw->label()->setText(var_name);
+                iw->label()->setLabelText(var_name);
                 md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(var_id, var_name, md,
@@ -305,8 +305,8 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
                 md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md, -999999999, 999999999,
                     attributes.value(subvar_id).toInt(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "float") {
-                md->addInputWidget(new MDDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
-                    attributes.value(subvar_id).toDouble(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
+                md->addInputWidget(new MDNullableDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
+                    attributes.value(subvar_id), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
             } else if (subvar_type == "string") {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
                     attributes.value(subvar_id).toString(), 0, query.value("VAR_COL_BG").toString()));
@@ -316,7 +316,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
             } else if (subvar_type == "bool") {
                 iw = new MDCheckBox(subvar_id, query.value("SUBVAR_NAME").toString(), md,
                     attributes.value(subvar_id).toInt());
-                iw->label()->setText(tr("%1:").arg(query.value("VAR_NAME").toString()));
+                iw->label()->setLabelText(tr("%1:").arg(query.value("VAR_NAME").toString()));
                 md->addInputWidget(iw);
             } else {
                 md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
@@ -502,7 +502,7 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
-    MDInputWidget * iw = new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories());
+    MDAbstractInputWidget * iw = new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories());
     iw->setShowInForm(false);
     md->addInputWidget(iw);
     iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
@@ -969,7 +969,7 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
     md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md, attributes.value("unit").toString()));
-    QList<MDInputWidget *> gw_list;
+    QList<MDAbstractInputWidget *> gw_list;
     gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md, 0.0, 999999.9, attributes.value("output").toDouble()));
     gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md, attributes.value("output_unit").toString(), output_units));
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md, 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));

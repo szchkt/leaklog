@@ -79,7 +79,7 @@ void ModifyDialogue::save()
 bool ModifyDialogue::save(bool call_accept)
 {
     QVariantMap values; QString id; QVariant value;
-    for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
+    for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
         id = (*i)->id();
         value = (*i)->variantValue();
@@ -114,7 +114,7 @@ const QVariant ModifyDialogue::idFieldValue()
     return QVariant();
 }
 
-MDInputWidget * ModifyDialogue::inputWidget(const QString id)
+MDAbstractInputWidget * ModifyDialogue::inputWidget(const QString id)
 {
     for (int i = 0; i < md_inputwidgets.count(); ++i) {
         if (md_inputwidgets.at(i)->id() == id) {
@@ -124,7 +124,7 @@ MDInputWidget * ModifyDialogue::inputWidget(const QString id)
     return NULL;
 }
 
-void ModifyDialogue::addGroupedInputWidgets(const QString & group_name, const QList<MDInputWidget *> & widgets)
+void ModifyDialogue::addGroupedInputWidgets(const QString & group_name, const QList<MDAbstractInputWidget *> & widgets)
 {
     MDGroupedInputWidgets * gw = new MDGroupedInputWidgets(group_name, this);
     addInputWidget(gw);
@@ -135,7 +135,7 @@ void ModifyDialogue::addGroupedInputWidgets(const QString & group_name, const QL
     }
 }
 
-ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)
+ModifyDialogueLayout::ModifyDialogueLayout(QList<MDAbstractInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)
 {
     this->md_inputwidgets = md_inputwidgets;
     this->md_grid_main = md_grid_main;
@@ -148,12 +148,12 @@ ModifyDialogueLayout::ModifyDialogueLayout(QList<MDInputWidget *> * md_inputwidg
 void ModifyDialogueLayout::layout()
 {
     for (int i = 0; i < md_inputwidgets->count(); ++i) {
-        addWidget(md_inputwidgets->at(i)->label(), i, 0);
+        addWidget(md_inputwidgets->at(i)->label()->widget(), i, 0);
         addWidget(md_inputwidgets->at(i)->widget(), i, 1, 1, 3);
     }
 }
 
-ModifyDialogueColumnLayout::ModifyDialogueColumnLayout(QList<MDInputWidget *> * inputwidgets, QGridLayout * grid_main, int rows_in_column)
+ModifyDialogueColumnLayout::ModifyDialogueColumnLayout(QList<MDAbstractInputWidget *> * inputwidgets, QGridLayout * grid_main, int rows_in_column)
     : ModifyDialogueLayout(inputwidgets, grid_main)
 {
     this->rows_in_column = rows_in_column;
@@ -170,7 +170,7 @@ void ModifyDialogueColumnLayout::layout()
         for (int r = 0; r < num_rows; ++r) {
             if (i >= md_inputwidgets->count()) { return; }
             if (!md_inputwidgets->at(i)->showInForm()) { r--; i++; continue; }
-            addWidget(md_inputwidgets->at(i)->label(), r, 2 * c);
+            addWidget(md_inputwidgets->at(i)->label()->widget(), r, 2 * c);
             addWidget(md_inputwidgets->at(i)->widget(), r, (2 * c) + 1);
             i++;
         }

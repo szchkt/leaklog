@@ -23,36 +23,74 @@
 #include "dbfile.h"
 
 #include <QVBoxLayout>
-#include <QPushButton>
 #include <QFileDialog>
 #include <QRadioButton>
 
 using namespace Global;
 
-MTLabel::MTLabel(const QString & text, QWidget * parent):
-QLabel(text, parent) {
+#define BUTTON_STYLE "margin: 4; text-align: right;"
+
+MTLabeledWidget::MTLabeledWidget(const QString & text, QWidget * w)
+{
     labeltext = text;
     altlabeltext = text;
+    this->w = w;
 }
 
-void MTLabel::toggleAlternativeText(bool alt)
+MTLabel::MTLabel(const QString & text, QWidget * parent):
+QLabel(text, parent),
+MTLabeledWidget(text, this)
+{}
+
+MTButtonLabel::MTButtonLabel(const QString & text, QWidget * parent):
+QPushButton(text, parent),
+MTLabeledWidget(text, this)
+{
+    setStyleSheet(QString("QPushButton { %1 }").arg(BUTTON_STYLE));
+
+    QObject::connect(this, SIGNAL(clicked()), this, SLOT(changeState()));
+}
+
+void MTButtonLabel::changeState()
+{
+    toggleChanged();
+    setStyleSheet(QString("QPushButton { %1 %2 }").arg(BUTTON_STYLE).arg(wasChanged() ? "font-weight: bold;" : ""));
+}
+
+void MTLabeledWidget::toggleAlternativeText(bool alt)
 {
     if (alt)
-        setText(altlabeltext);
+        setLabelText(altlabeltext);
     else
-        setText(labeltext);
+        setLabelText(labeltext);
 }
 
-MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget)
+MDAbstractInputWidget::MDAbstractInputWidget(const QString & id, QWidget * widget)
 {
     iw_id = id;
-    iw_label = createLabel(parent, labeltext);
     iw_widget = widget;
     show = true;
     skip_save = false;
 }
 
-QPalette MDInputWidget::paletteForColour(const QString & colour)
+MDNullableInputWidget::MDNullableInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget):
+MDAbstractInputWidget(id, widget)
+{
+    MTButtonLabel * btn = new MTButtonLabel(labeltext, parent);
+    btn->setFlat(true);
+    //btn->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    iw_label = btn;
+}
+
+MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget):
+MDAbstractInputWidget(id, widget)
+{
+    MTLabel * lbl = new MTLabel(labeltext, parent);
+    lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    iw_label = lbl;
+}
+
+QPalette MDAbstractInputWidget::paletteForColour(const QString & colour)
 {
     QPalette palette;
     palette.setColor(QPalette::Active, QPalette::Base, QColor::QColor(colour));
@@ -60,13 +98,6 @@ QPalette MDInputWidget::paletteForColour(const QString & colour)
     palette.setColor(QPalette::Inactive, QPalette::Base, QColor::QColor(colour));
     palette.setColor(QPalette::Inactive, QPalette::Text, textColourForBaseColour(colour));
     return palette;
-}
-
-MTLabel * MDInputWidget::createLabel(QWidget * parent, const QString & text)
-{
-    MTLabel * lbl = new MTLabel(text, parent);
-    lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    return lbl;
 }
 
 MDLineEdit::MDLineEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, int maxintvalue, const QString & colour, bool enabled):
@@ -167,6 +198,50 @@ QVariant MDDoubleSpinBox::variantValue()
 void MDDoubleSpinBox::setVariantValue(const QVariant & value)
 {
     setValue(value.toDouble());
+}
+
+MDNullableDoubleSpinBox::MDNullableDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, const QVariant & value, const QString & suffix, const QString &
+#ifndef Q_WS_MAC
+    colour
+#endif
+    ):
+QDoubleSpinBox(parent),
+MDNullableInputWidget(id, labeltext, parent, this)
+{
+#ifndef Q_WS_MAC
+    if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
+#endif
+    setDecimals(3);
+    setMinimum(minimum);
+    setMaximum(maximum);
+    if (!value.isNull()) {
+        setValue(value.toDouble());
+        ((MTButtonLabel *)label())->changeState();
+    }
+    if (!suffix.isEmpty()) { setSuffix(QString(" %1").arg(suffix)); }
+
+    QObject::connect(this, SIGNAL(editingFinished()), (MTButtonLabel *)label(), SLOT(setChanged()));
+    QObject::connect((MTButtonLabel *)label(), SIGNAL(clicked()), this, SLOT(labelClicked()));
+}
+
+QVariant MDNullableDoubleSpinBox::variantValue()
+{
+    return label()->wasChanged() ? value() : QVariant();
+}
+
+void MDNullableDoubleSpinBox::setVariantValue(const QVariant & value)
+{
+    setValue(value.toDouble());
+}
+
+void MDNullableDoubleSpinBox::labelClicked()
+{
+    if (((MTButtonLabel *)label())->wasChanged()) {
+        setFocus();
+        selectAll();
+    } else {
+        clear();
+    }
 }
 
 MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const MTDictionary & items, const QString &
@@ -414,9 +489,9 @@ MDInputWidget(QString(), name, parent, this)
     grid->setContentsMargins(6, 6, 6, 6);
 }
 
-void MDGroupedInputWidgets::addWidget(MDInputWidget * iw)
+void MDGroupedInputWidgets::addWidget(MDAbstractInputWidget * iw)
 {
-    grid->addWidget(iw->label(), grid->rowCount(), 0);
+    grid->addWidget(iw->label()->widget(), grid->rowCount(), 0);
     grid->addWidget(iw->widget(), grid->rowCount() - 1, 1);
 }
 

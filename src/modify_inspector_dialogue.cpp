@@ -9,7 +9,7 @@ ModifyInspectorDialogue::ModifyInspectorDialogue(DBRecord * record, QWidget * pa
 {
     main_tabw->setTabText(0, tr("Inspector"));
 
-    QList<MDInputWidget *> tab_inputwidgets;
+    QList<MDAbstractInputWidget *> tab_inputwidgets;
     tab_inputwidgets << inputWidget("list_price");
     tab_inputwidgets << inputWidget("acquisition_price");
     tab_inputwidgets << inputWidget("category_id");
@@ -17,7 +17,7 @@ ModifyInspectorDialogue::ModifyInspectorDialogue(DBRecord * record, QWidget * pa
     addTab(new ModifyInspectorDialogueTab(tab_inputwidgets, this));
 }
 
-ModifyInspectorDialogueTab::ModifyInspectorDialogueTab(QList<MDInputWidget *> inputwidgets, QWidget * parent)
+ModifyInspectorDialogueTab::ModifyInspectorDialogueTab(QList<MDAbstractInputWidget *> inputwidgets, QWidget * parent)
     : ModifyDialogueTab(parent)
 {
     setName(tr("Assembly record"));

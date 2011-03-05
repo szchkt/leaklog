@@ -32,40 +32,84 @@
 #include <QDateEdit>
 #include <QPlainTextEdit>
 #include <QGroupBox>
+#include <QPushButton>
 
 class QRadioButton;
 class QGridLayout;
 
 class DBFile;
 
-class MTLabel : public QLabel
+class MTObject
+{
+public:
+    virtual ~MTObject() {}
+
+    bool addConnection(const QObject * sender, const char * signal, const char * method)
+    { return dynamic_cast<QObject *>(this)->connect(sender, signal, method); }
+};
+
+class MTLabeledWidget : public MTObject
+{
+public:
+    MTLabeledWidget(const QString &, QWidget *);
+
+    void setAlternativeText(const QString & alt) { altlabeltext = alt; }
+    QWidget * widget() { return w; }
+
+    virtual void setLabelText(const QString &) = 0;
+
+    bool wasChanged() { return changed; }
+    void toggleChanged() { changed = !changed; }
+
+    void toggleAlternativeText(bool);
+
+protected:
+    QString labeltext;
+    QString altlabeltext;
+    QWidget * w;
+
+    bool changed;
+};
+
+class MTLabel : public QLabel, public MTLabeledWidget
 {
     Q_OBJECT
 
 public:
     MTLabel(const QString & text, QWidget * parent);
 
-    void setAlternativeText(const QString & alt) { altlabeltext = alt; }
+    void setLabelText(const QString & t) { MTLabel::setText(t); }
 
 public slots:
-    void toggleAlternativeText(bool);
-
-private:
-    QString labeltext;
-    QString altlabeltext;
+    void toggleAlternativeText(bool alt) { MTLabeledWidget::toggleAlternativeText(alt); }
 };
 
-class MDInputWidget
+class MTButtonLabel : public QPushButton, public MTLabeledWidget
+{
+    Q_OBJECT
+
+public:
+    MTButtonLabel(const QString & text, QWidget * parent);
+
+    void setLabelText(const QString & t) { QPushButton::setText(t); }
+
+public slots:
+    void toggleAlternativeText(bool alt) { MTLabeledWidget::toggleAlternativeText(alt); }
+    void changeState();
+    void setChanged() { if (!wasChanged()) changeState(); }
+};
+
+class MDAbstractInputWidget
 {
 public:
-    MDInputWidget(const QString &, const QString &, QWidget *, QWidget *);
-    virtual ~MDInputWidget() {}
+    MDAbstractInputWidget(const QString &, QWidget *);
+    virtual ~MDAbstractInputWidget() {}
 
     virtual QVariant variantValue() = 0;
     virtual void setVariantValue(const QVariant &) = 0;
 
     inline QString id() { return iw_id; }
-    inline MTLabel * label() { return iw_label; }
+    inline MTLabeledWidget * label() { return iw_label; }
     inline QWidget * widget() { return iw_widget; }
 
     bool showInForm() { return show; }
@@ -76,14 +120,29 @@ public:
 
 protected:
     static QPalette paletteForColour(const QString &);
-    static MTLabel * createLabel(QWidget * parent, const QString &);
+
+    MTLabeledWidget * iw_label;
 
 private:
     bool show;
     bool skip_save;
     QString iw_id;
-    MTLabel * iw_label;
     QWidget * iw_widget;
+};
+
+class MDNullableInputWidget : public MDAbstractInputWidget
+{
+public:
+    MDNullableInputWidget(const QString &, const QString &, QWidget *, QWidget *);
+
+protected:
+    static QWidget * createLabel(QWidget * parent, const QString &);
+};
+
+class MDInputWidget : public MDAbstractInputWidget
+{
+public:
+    MDInputWidget(const QString &, const QString &, QWidget *, QWidget *);
 };
 
 class MDLineEdit : public QLineEdit, public MDInputWidget
@@ -136,6 +195,23 @@ public:
 
 public slots:
     void clear() { setValue(0.0); }
+};
+
+class MDNullableDoubleSpinBox : public QDoubleSpinBox, public MDNullableInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDNullableDoubleSpinBox(const QString &, const QString &, QWidget *, double, double, const QVariant &, const QString & = QString(), const QString & = QString());
+
+    QVariant variantValue();
+    void setVariantValue(const QVariant &);
+
+public slots:
+    void clear() { setValue(0.0); }
+
+private slots:
+    void labelClicked();
 };
 
 class MDComboBox : public QComboBox, public MDInputWidget
@@ -264,7 +340,7 @@ class MDGroupedInputWidgets : public QFrame, public MDInputWidget
 public:
     MDGroupedInputWidgets(const QString &, QWidget *);
 
-    void addWidget(MDInputWidget *);
+    void addWidget(MDAbstractInputWidget *);
 
     QVariant variantValue() { return QVariant(); }
     void setVariantValue(const QVariant &) {}

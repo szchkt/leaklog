@@ -14,8 +14,8 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
 {
     main_tabw->setTabText(0, tr("Inspection"));
 
-    MDInputWidget * rmds = inputWidget("rmds");
-    md_grid_main->addWidget(rmds->label(), md_grid_main->rowCount(), 0);
+    MDAbstractInputWidget * rmds = inputWidget("rmds");
+    md_grid_main->addWidget(rmds->label()->widget(), md_grid_main->rowCount(), 0);
     md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, -1, md_grid_main->columnCount() - 1);
 
     addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
@@ -44,7 +44,7 @@ void ModifyInspectionDialogueTab::init()
     setLayout(layout);
 
     QGridLayout * form_grid = new QGridLayout;
-    QList<MDInputWidget *> inputwidgets;
+    QList<MDAbstractInputWidget *> inputwidgets;
     arno_w->setShowInForm(true);
     inputwidgets.append(arno_w);
     ar_type_w->setShowInForm(true);
@@ -223,7 +223,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
         while (inspectors_query.next()) {
             QString name = inspectors_query.value(ITEM_NAME).isNull() ? inspectors_query.value(NAME).toString() : inspectors_query.value(ITEM_NAME).toString();
             cells_map.insert("name", new ModifyDialogueTableCell(name, "name"));
-            cells_map.insert("value", new ModifyDialogueTableCell(inspectors_query.value(VALUE).toInt() ? inspectors_query.value(VALUE) : 1, "value", Global::Integer));
+            cells_map.insert("value", new ModifyDialogueTableCell(inspectors_query.value(VALUE).toInt() ? inspectors_query.value(VALUE) : 1, "value", Global::Numeric));
             cells_map.insert("item_type_id", new ModifyDialogueTableCell(inspectors_query.value(INSPECTOR_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new ModifyDialogueTableCell(inspectors_query.value(ITEM_ACQUISITION_PRICE).isNull() ? inspectors_query.value(ACQUISITION_PRICE) : inspectors_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
             cells_map.insert("list_price", new ModifyDialogueTableCell(inspectors_query.value(ITEM_LIST_PRICE).isNull() ? inspectors_query.value(LIST_PRICE) : inspectors_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));

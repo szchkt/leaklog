@@ -19,7 +19,7 @@ class ModifyInspectorDialogueTab : public ModifyDialogueTab
     Q_OBJECT
 
 public:
-    ModifyInspectorDialogueTab(QList<MDInputWidget *>, QWidget * = NULL);
+    ModifyInspectorDialogueTab(QList<MDAbstractInputWidget *>, QWidget * = NULL);
 
     void save(int);
     QWidget * widget() { return this; }
@@ -27,7 +27,7 @@ public:
 private:
     void init();
 
-    QList<MDInputWidget *> inputwidgets;
+    QList<MDAbstractInputWidget *> inputwidgets;
 };
 
 #endif // MODIFY_INSPECTOR_DIALOGUE_H

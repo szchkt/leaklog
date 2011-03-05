@@ -269,7 +269,7 @@ void ModifyWarningDialogue::save()
         }
         values.insert("id", ids.first());
     }
-    for (QList<MDInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
+    for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         values.insert((*i)->id(), (*i)->variantValue());
     }
     md_record->update(values);
