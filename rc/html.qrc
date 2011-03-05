@@ -21,5 +21,6 @@
         <file>html/assembly_record.html</file>
         <file>html/circuit_unit_types.html</file>
         <file>html/assembly_records.html</file>
+        <file>html/inspector.html</file>
     </qresource>
 </RCC>

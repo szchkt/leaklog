@@ -191,6 +191,11 @@ Inspection::Inspection(const QString & customer, const QString & circuit, const 
 DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit))
 {}
 
+Inspection::Inspection(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
+DBRecord(table, id_column, id, parents)
+{
+}
+
 void Inspection::initModifyDialogue(ModifyDialogue * md)
 {
     QString customer = Customer(parent("customer")).stringValue("company");
@@ -319,6 +324,12 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
             }
         }
     }
+}
+
+InspectionByInspector::InspectionByInspector(const QString & inspector_id):
+Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
+           " LEFT JOIN circuits ON inspections.circuit = circuits.id", "date", "", MTDictionary("inspector", inspector_id))
+{
 }
 
 Repair::Repair(const QString & date):

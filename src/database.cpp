@@ -1397,6 +1397,17 @@ void MainWindow::loadInspector(int inspector, bool refresh)
     }
 }
 
+void MainWindow::loadInspectorReport(int inspector, bool refresh)
+{
+    if (inspector < 0) { return; }
+    selected_inspector = inspector;
+    selected_inspector_name = Inspector(selectedInspector()).stringValue("person");
+    enableTools();
+    if (refresh) {
+        navigation->setView(Navigation::Inspector);
+    }
+}
+
 void MainWindow::exportCustomerData()
 {
     exportData("customer");

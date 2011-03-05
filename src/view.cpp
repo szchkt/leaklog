@@ -90,6 +90,9 @@ QString MainWindow::viewChanged(int view)
             case Navigation::ListOfInspectors:
                 html = viewAllInspectors(selectedInspector());
                 break;
+            case Navigation::Inspector:
+                html = viewInspector(selectedInspector());
+                break;
             case Navigation::OperatorReport:
                 if (isCustomerSelected()) {
                     html = viewOperatorReport(selectedCustomer(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
@@ -164,6 +167,7 @@ QString MainWindow::currentView()
             break;
         case Navigation::ListOfRepairs: view = QApplication::translate("Navigation", "List of repairs"); break;
         case Navigation::ListOfInspectors: view = QApplication::translate("Navigation", "List of inspectors"); break;
+        case Navigation::Inspector: view = QApplication::translate("Navigation", "Inspector"); break;
         case Navigation::OperatorReport:
             view = QApplication::translate("Navigation", "Operator report")
                    + " - " + Customer(selectedCustomer()).stringValue("company");
@@ -571,8 +575,8 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         else if (is_repair) { out << "<i>"; }
         out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
         if (is_outside_interval) { out << "*"; }
-        if (is_nominal) { out << "<b>"; }
-        else if (is_repair) { out << "<i>"; }
+        if (is_nominal) { out << "</b>"; }
+        else if (is_repair) { out << "</i>"; }
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
@@ -1202,40 +1206,108 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
 
 QString MainWindow::viewAllInspectors(const QString & highlighted_id)
 {
-    QString html; MTTextStream out(&html);
-    Inspector inspectors_record("");
+    HTMLDiv div;
+    div << writeInspectorsTable(highlighted_id);
+    return dict_html.value(Navigation::ListOfInspectors).arg(div.html());
+}
+
+QString MainWindow::viewInspector(const QString & inspector_id)
+{
+    HTMLDiv div;
+    div << writeInspectorsTable(QString(), inspector_id);
+    div.newLine();
+
+    HTMLTable * table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableRow * _tr;
+    HTMLTableCell * _td;
+    HTMLParentElement * elem;
+
+    *(table->addRow()->addHeaderCell("colspan=\"5\" style=\"font-size: medium;\"")) << tr("Inspections");
+    _tr = table->addRow();
+    *(_tr->addHeaderCell()) << tr("Date");
+    *(_tr->addHeaderCell()) << tr("Customer ID");
+    *(_tr->addHeaderCell()) << tr("Customer");
+    *(_tr->addHeaderCell()) << tr("Circuit ID");
+    *(_tr->addHeaderCell()) << tr("Circuit name");
+
+    InspectionByInspector inspection_record(inspector_id);
+    ListOfVariantMaps inspections(inspection_record.listAll("date, customer, customers.company, circuit, circuits.name AS circuit_name, repair, nominal"));
+
+    bool is_nominal, is_repair, is_outside_interval;
+
+    for (int i = 0; i < inspections.count(); ++i) {
+        QString id = inspections.at(i).value("date").toString();
+        QString customer_id = inspections.at(i).value("customer").toString();
+        QString circuit_id = inspections.at(i).value("circuit").toString();
+        is_nominal = inspections.at(i).value("nominal").toInt();
+        is_repair = inspections.at(i).value("repair").toInt();
+        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+
+        QString inspection_link = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + circuit_id;
+        inspection_link.append((is_repair ? "/repair:" : "/inspection:") + id + "'\" style=\"cursor: pointer;\"");
+
+        _tr = table->addRow(inspection_link);
+        _td = _tr->addCell();
+
+        if (is_nominal) elem = _td->bold();
+        else if (is_repair) elem = _td->italics();
+        else elem = _td;
+        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
+        if (is_outside_interval) { *elem << "*"; }
+
+        *(_tr->addCell()) << inspections.at(i).value("customer").toString();
+        *(_tr->addCell()) << inspections.at(i).value("company").toString();
+        *(_tr->addCell()) << inspections.at(i).value("circuit").toString();
+        *(_tr->addCell()) << inspections.at(i).value("circuit_name").toString();
+    }
+
+    return dict_html.value(Navigation::Inspector).arg(div.html());
+}
+
+HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, const QString & inspector_id)
+{
+    Inspector inspectors_record(inspector_id);
     if (!navigation->isFilterEmpty()) {
         inspectors_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps inspectors(inspectors_record.listAll());
-    QString thead = "<tr>"; int thead_colspan = 2;
+
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableRow * _tr;
+
+    _tr = new HTMLTableRow;
+    int thead_colspan = 2;
     for (int n = 0; n < Inspector::attributes().count(); ++n) {
-        thead.append("<th>" + Inspector::attributes().value(n) + "</th>");
+        *(_tr->addHeaderCell()) << Inspector::attributes().value(n);
         thead_colspan++;
     }
-    thead.append("<th>" + tr("Number of inspections") + "</th>");
-    thead.append("<th>" + tr("Number of repairs") + "</th>");
-    thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of inspectors") << "</th></tr>";
-    out << thead;
-    QString id;
+    *(_tr->addHeaderCell()) << tr("Number of inspections");
+    *(_tr->addHeaderCell()) << tr("Number of repairs");
+
+    *(table->addRow()->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan)))
+            << (inspector_id.isEmpty() ? tr("List of inspectors") : tr("Inspector"));
+    *table << _tr;
+    QString id, tr_attr;
     for (int i = 0; i < inspectors.count(); ++i) {
         id = inspectors.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'inspector:" << id << "";
+        tr_attr = QString("onclick=\"window.location = 'inspector:" + id + "");
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            tr_attr.append("/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;");
         } else {
-            out << "'\" style=\"";
+            tr_attr.append("'\" style=\"");
         }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id.rightJustified(4, '0') << "</a></td>";
+        tr_attr.append(" cursor: pointer;\"");
+        _tr = table->addRow(tr_attr);
+        *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector report") + "')\" onmouseout=\"UnTip()\"")
+                ->link("inspectorreport:" + id)) << id.rightJustified(4, '0');
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
-            out << "<td>" << escapeString(inspectors.at(i).value(Inspector::attributes().key(n)).toString()) << "</td>";
+            *(_tr->addCell()) << escapeString(inspectors.at(i).value(Inspector::attributes().key(n)).toString());
         }
-        out << "<td>" << MTRecord("inspections", "date", "", MTDictionary("inspector", id)).listAll("date").count() << "</td>";
-        out << "<td>" << MTRecord("repairs", "date", "", MTDictionary("repairman", id)).listAll("date").count() << "</td>";
-        out << "</tr>";
+        *(_tr->addCell()) << QString::number(MTRecord("inspections", "date", "", MTDictionary("inspector", id)).listAll("date").count());
+        *(_tr->addCell()) << QString::number(MTRecord("repairs", "date", "", MTDictionary("repairman", id)).listAll("date").count());
     }
-    return dict_html.value(Navigation::ListOfInspectors).arg(html);
+
+    return table;
 }
 
 QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
@@ -1645,7 +1717,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     HTMLTable * table, * top_table;
     HTMLTableRow * _tr;
     HTMLTableCell * _td;
-    QList<HTMLTable *> bottom_tables;
+    HTMLParentElement * elem;
 
     AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
     QVariantMap ar_type = ar_type_record.list();
@@ -1653,15 +1725,14 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
 
     if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
         div << writeServiceCompany();
-        div << "<br>";
+        div.newLine();
     }
 
-    table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     *(table->addRow()->addHeaderCell()) << tr("Assembly record No. %1").arg(inspection.value("arno").toString());
-    *(table->addRow()->addCell()) << "<h2>" << ar_type.value("name").toString() << "</h2>";
-    *(table->addRow()->addCell()) << "<h3>" << ar_type.value("description").toString() << "</h3>";
-    div << table;
-    div << "<br>";
+    *(table->addRow()->addCell()->subHeading()) << ar_type.value("name").toString();
+    *(table->addRow()->addCell()->paragraph()) << ar_type.value("description").toString();
+    div.newLine();
 
     QString html; MTTextStream out(&html);
 
@@ -1681,18 +1752,17 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     div << html;
     if (type_display_options & AssemblyRecordType::ShowCircuitUnits) {
         div << circuitUnitsTable(customer_id, circuit_id);
-        div << "<br>";
+        div.newLine();
     }
 
-    top_table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    top_table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
-        *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
-        *_td << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
-    }
-    if (nominal) *_td << tr("Nominal inspection:"); else if (repair) *_td << tr("Repair:"); else *_td << tr("Inspection:");
-    *_td << "&nbsp;" << inspection_date;
-    if (!locked) *_td << "</a>";
+        elem = _td->link("customer:" + customer_id + "/circuit:" + circuit_id
+                         + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+    } else elem = _td;
+    if (nominal) *elem << tr("Nominal inspection:"); else if (repair) *elem << tr("Repair:"); else *elem << tr("Inspection:");
+    *elem << "&nbsp;" << inspection_date;
 
     enum QUERY_RESULTS
     {
@@ -1735,8 +1805,8 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
                 table = top_table;
             } else {
-                table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
-                bottom_tables.append(table);
+                div.newLine();
+                table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
             }
 
             int cat_display_options = categories_query.value(DISPLAY_OPTIONS).toInt();
@@ -1817,12 +1887,6 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         *(_tr->addCell(colspan.arg(3))) << QString::number(absolute_total);
     }
 
-    div << top_table;
-    for (int i = 0; i < bottom_tables.count(); ++i) {
-        div << "<br>";
-        div << bottom_tables.at(i);
-    }
-
     return dict_html.value(Navigation::AssemblyRecord).arg(div.html());
 }
 
@@ -1841,8 +1905,7 @@ HTMLTable * MainWindow::writeServiceCompany()
         }
     }
     _td = _tr->addHeaderCell("colspan=\"5\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *_td << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
-    *_td << tr("Service company") << "</a>";
+    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/modify")) << tr("Service company");
     _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;

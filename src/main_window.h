@@ -163,6 +163,7 @@ private:
     void addVariable(bool);
     void moveTableVariable(bool);
     void loadInspector(int, bool);
+    void loadInspectorReport(int, bool);
     void exportData(const QString &);
     void loadAssemblyRecordType(int, bool);
     void loadAssemblyRecordItemType(int, bool);
@@ -198,6 +199,7 @@ private:
     QString viewTable(const QString &, const QString &, const QString &, int);
     QString viewRepairs(const QString &, int, const QString & = QString());
     QString viewAllInspectors(const QString &);
+    QString viewInspector(const QString &);
     QString viewOperatorReport(const QString &, int);
     QString viewLeakagesByApplication();
     QString viewAgenda();
@@ -215,6 +217,7 @@ private:
     HTMLTable * writeServiceCompany();
     HTMLTable * circuitUnitsTable(const QString &, const QString &);
     HTMLTable * customerContactPersons(const QString &);
+    HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
 
     int selected_customer;
     QString selected_customer_company;

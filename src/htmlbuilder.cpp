@@ -14,6 +14,62 @@ HTMLParentElement::~HTMLParentElement()
     }
 }
 
+HTMLBold * HTMLParentElement::bold()
+{
+    HTMLBold * b = new HTMLBold();
+    children.append(b);
+    return b;
+}
+
+HTMLItalics * HTMLParentElement::italics()
+{
+    HTMLItalics * i = new HTMLItalics();
+    children.append(i);
+    return i;
+}
+
+HTMLLink * HTMLParentElement::link(const QString & url, const QString & args)
+{
+    HTMLLink * a = new HTMLLink(url, args);
+    children.append(a);
+    return a;
+}
+
+HTMLTable * HTMLParentElement::table(const QString & args)
+{
+    HTMLTable * table = new HTMLTable(args);
+    children.append(table);
+    return table;
+}
+
+HTMLHeading * HTMLParentElement::heading()
+{
+    HTMLHeading * heading = new HTMLHeading();
+    children.append(heading);
+    return heading;
+}
+
+HTMLSubHeading * HTMLParentElement::subHeading()
+{
+    HTMLSubHeading * heading = new HTMLSubHeading();
+    children.append(heading);
+    return heading;
+}
+
+HTMLSubSubHeading * HTMLParentElement::subSubHeading()
+{
+    HTMLSubSubHeading * heading = new HTMLSubSubHeading();
+    children.append(heading);
+    return heading;
+}
+
+HTMLParagraph * HTMLParentElement::paragraph(const QString & args)
+{
+    HTMLParagraph * paragraph = new HTMLParagraph(args);
+    children.append(paragraph);
+    return paragraph;
+}
+
 HTMLParentElement & HTMLParentElement::operator<<(const QString & str)
 {
     children.append(new HTMLDataElement(str));
@@ -134,4 +190,46 @@ HTMLDiv::HTMLDiv(const QString & args):
 HTMLParentElement(args)
 {
     tag_name = "div";
+}
+
+HTMLBold::HTMLBold():
+HTMLParentElement()
+{
+    tag_name = "b";
+}
+
+HTMLItalics::HTMLItalics():
+HTMLParentElement()
+{
+    tag_name = "i";
+}
+
+HTMLLink::HTMLLink(const QString & url, const QString & args):
+HTMLParentElement(QString("href=\"%1\" %2").arg(url).arg(args))
+{
+    tag_name = "a";
+}
+
+HTMLHeading::HTMLHeading():
+HTMLParentElement()
+{
+    tag_name = "h1";
+}
+
+HTMLSubHeading::HTMLSubHeading():
+HTMLParentElement()
+{
+    tag_name = "h2";
+}
+
+HTMLSubSubHeading::HTMLSubSubHeading():
+HTMLParentElement()
+{
+    tag_name = "h3";
+}
+
+HTMLParagraph::HTMLParagraph(const QString & args):
+HTMLParentElement(args)
+{
+    tag_name = "p";
 }

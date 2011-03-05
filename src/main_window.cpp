@@ -96,6 +96,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfInspectors, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/inspector.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::Inspector, in.readAll().arg(font).arg(font_size));
+    file.close();
     file.setFileName(":/html/operator_report.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::OperatorReport, in.readAll().arg(font).arg(font_size));
     file.close();
@@ -372,6 +375,10 @@ void MainWindow::executeLink(const QUrl & url)
             id = path.at(0);
             id.remove(0, QString("inspector:").length());
             loadInspector(id.toInt(), path.count() <= 1);
+        } else if (path.at(0).startsWith("inspectorreport")) {
+            id = path.at(0);
+            id.remove(0, QString("inspectorreport:").length());
+            loadInspectorReport(id.toInt(), path.count() <= 1);
         } else if (path.at(0).startsWith("allcustomers:")) {
             navigation->setView(Navigation::ListOfCustomers);
         } else if (path.at(0).startsWith("toggledetailedview:")) {

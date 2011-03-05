@@ -300,7 +300,7 @@ void Navigation::setView(const QString & v)
 void Navigation::setView(int v, bool emit_signal)
 {
     if (current_view != v) {
-        btngrp_view->button(v)->setChecked(true);
+        if (btngrp_view->button(v)) btngrp_view->button(v)->setChecked(true);
         updateView();
         current_view = (Navigation::View)v;
     }
@@ -357,7 +357,7 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_circuit_unit_types->setVisible(g == 3);
     if (emit_signal && g < 4 && current_view != default_view_for_group[current_group]) {
         current_view = default_view_for_group[current_group];
-        btngrp_view->button(current_view)->setChecked(true);
+        if (btngrp_view->button(current_view)) btngrp_view->button(current_view)->setChecked(true);
         emit viewChanged(current_view);
     }
 }

@@ -72,8 +72,17 @@ class Inspection : public DBRecord
 
 public:
     Inspection(const QString &, const QString &, const QString &);
+    Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
 
     void initModifyDialogue(ModifyDialogue *);
+};
+
+class InspectionByInspector : public Inspection
+{
+    Q_OBJECT
+
+public:
+    InspectionByInspector(const QString &);
 };
 
 class Repair : public DBRecord
