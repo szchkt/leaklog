@@ -58,6 +58,8 @@ private slots:
     void reportDataFinished();
     void enableTools();
     void toggleLocked();
+    void showOperationNotPermittedMessage();
+    void configurePermissions();
     void find();
     void findNext();
     void findPrevious();
@@ -140,7 +142,7 @@ private:
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
-    bool isOperationPermitted(const QString &);
+    bool isOperationPermitted(const QString &, const QString & = QString());
     bool isRecordLocked(const QString &);
     void modifyRecordOfRefrigerantManagement(const QString &);
     void loadCustomer(int, bool);
