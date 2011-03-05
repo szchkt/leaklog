@@ -71,6 +71,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_circuit_unit_types, Navigation::ListOfCircuitUnitTypes);
     btngrp_view->addButton(tbtn_view_assembly_records);
     btngrp_view->setId(tbtn_view_assembly_records, Navigation::ListOfAssemblyRecords);
+    btngrp_view->addButton(tbtn_view_inspector);
+    btngrp_view->setId(tbtn_view_inspector, Navigation::Inspector);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -223,6 +225,12 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
             cb_filter_column->addItem(QApplication::translate("Inspector", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
+            break;
+        case Navigation::Inspector:
+            group = 0;
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
+            cb_filter_column->addItem(QApplication::translate("Inspector", "Customer ID"), "customer");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit ID"), "circuit");
             break;
         case Navigation::TableOfInspections:
             group = 2;
@@ -378,6 +386,7 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
 {
     tbtn_modify_inspector->setEnabled(inspector_selected);
     tbtn_remove_inspector->setEnabled(inspector_selected);
+    tbtn_view_inspector->setEnabled(inspector_selected);
     tbtn_modify_customer->setEnabled(customer_selected);
     tbtn_remove_customer->setEnabled(customer_selected);
     tbtn_modify_repair->setEnabled(repair_selected);

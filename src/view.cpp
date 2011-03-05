@@ -1229,6 +1229,9 @@ QString MainWindow::viewInspector(const QString & inspector_id)
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
     AssemblyRecordItemByInspector ar_item_record(inspector_id);
+    if (!navigation->isFilterEmpty()) {
+        ar_item_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
     ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer, inspections.circuit, inspections.date, assembly_record_items.*"));
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
@@ -1309,6 +1312,9 @@ QString MainWindow::viewInspector(const QString & inspector_id)
     *(_tr->addHeaderCell()) << tr("Circuit name");
 
     InspectionByInspector inspection_record(inspector_id);
+    if (!navigation->isFilterEmpty()) {
+        inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
     ListOfVariantMaps inspections(inspection_record.listAll("date, customer, customers.company, circuit, circuits.name AS circuit_name, repair, nominal"));
 
     for (int i = 0; i < inspections.count(); ++i) {
