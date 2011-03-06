@@ -502,10 +502,7 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
-    MDAbstractInputWidget * iw = new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories());
-    iw->setShowInForm(false);
-    md->addInputWidget(iw);
-    iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    MDInputWidget * iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
     iw = new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
@@ -866,7 +863,10 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
+    if (attributes.value("id").toInt() >= 1000)
+        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999, QString(), false));
+    else
+        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 999));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
@@ -974,7 +974,6 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md, attributes.value("output_unit").toString(), output_units));
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md, 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
     md->addGroupedInputWidgets(tr("Output"), gw_list);
-    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md, attributes.value("notes").toString()));
 
 

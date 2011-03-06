@@ -396,7 +396,7 @@ public:
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT");
         dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT");
-        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, category_id INTEGER, date_updated TEXT");
+        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT");
         dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT");
         dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, date_updated TEXT");
         dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT");
@@ -410,7 +410,7 @@ public:
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT");
         dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, source INTEGER, name TEXT, category_id INTEGER, unit TEXT, discount NUMERIC, date_updated TEXT");
         dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT");
-        dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, category_id INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT");
+        dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT");
         dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
     }

@@ -162,13 +162,14 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                                       " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
                                       " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
                                       " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
-                                      " LEFT JOIN assembly_record_item_categories ON circuit_unit_types.category_id = assembly_record_item_categories.id"
-                                      " WHERE circuit_units.company_id = %3 AND circuit_units.circuit_id = %4 AND assembly_record_item_categories.id IN"
-                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %5)")
+                                      " LEFT JOIN assembly_record_item_categories ON %5 = assembly_record_item_categories.id"
+                                      " WHERE circuit_units.company_id = %3 AND circuit_units.circuit_id = %4 AND %5 IN"
+                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %6)")
                               .arg(assemblyRecordId().toString())
                               .arg(AssemblyRecordItem::CircuitUnitTypes)
                               .arg(customer_id)
                               .arg(circuit_id)
+                              .arg(CIRCUIT_UNITS_CATEGORY_ID)
                               .arg(assemblyRecordType().toString()));
         while (units_query.next()) {
             QString name = units_query.value(ITEM_NAME).isNull() ?
@@ -214,11 +215,12 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                                       " FROM inspectors"
                                       " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = inspectors.id"
                                       " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
-                                      " LEFT JOIN assembly_record_item_categories ON inspectors.category_id = assembly_record_item_categories.id"
-                                      " WHERE inspectors.category_id IN"
-                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %3)")
+                                      " LEFT JOIN assembly_record_item_categories ON %3 = assembly_record_item_categories.id"
+                                      " WHERE %3 IN"
+                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %4)")
                               .arg(assemblyRecordId().toString())
                               .arg(AssemblyRecordItem::Inspectors)
+                              .arg(INSPECTORS_CATEGORY_ID)
                               .arg(assemblyRecordType().toString()));
         while (inspectors_query.next()) {
             QString name = inspectors_query.value(ITEM_NAME).isNull() ? inspectors_query.value(NAME).toString() : inspectors_query.value(ITEM_NAME).toString();

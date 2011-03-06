@@ -253,7 +253,7 @@
     <message>
         <location filename="../../src/records.cpp" line="757"/>
         <source>Get value from inspection:</source>
-        <translation>Získať hodnotu z inšpekcie:</translation>
+        <translation>Získať hodnotu z kontroly:</translation>
     </message>
     <message>
         <location filename="../../src/records.cpp" line="758"/>

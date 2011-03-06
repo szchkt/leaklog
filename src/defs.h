@@ -29,6 +29,9 @@
 #define REAL_NUMBER_PRECISION 2
 #define REAL_NUMBER_PRECISION_EXP 100.0L
 
+#define INSPECTORS_CATEGORY_ID 1000
+#define CIRCUIT_UNITS_CATEGORY_ID 1001
+
 class QString;
 class QVariant;
 template<class Key, class T>

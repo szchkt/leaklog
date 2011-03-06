@@ -142,6 +142,10 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
     if (v < 0.907) {
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
+    if (v < 0.908) {
+        query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
+        query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
+    }
     if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_db_info_id");
         query.exec("DROP INDEX IF EXISTS index_service_companies_id");
