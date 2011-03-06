@@ -361,9 +361,9 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
 QString Global::compareValues(double value1, double value2, double tolerance, const QString & bg_class)
 {
     if (value1 < value2) {
-        return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + upArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
+        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%1";
     } else if (value1 > value2) {
-        return "<table class=\"no_border\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"no_border\" width=\"1%\" align=\"right\" valign=\"center\" style=\"font-size: large; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "font-weight: bold;\">" + downArrow() + "</td><td class=\"no_border " + bg_class + "\" valign=\"center\">%1</td></tr></table>";
+        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%1";
     } else {
         return "%1";
     }

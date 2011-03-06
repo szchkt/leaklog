@@ -214,6 +214,7 @@ private:
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString(), int = -1);
+    QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);
     HTMLTable * writeServiceCompany();
     HTMLTable * circuitUnitsTable(const QString &, const QString &);
     HTMLTable * customerContactPersons(const QString &);

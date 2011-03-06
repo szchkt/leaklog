@@ -599,7 +599,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id);
+    writeCircuitsTable(out, customer_id, circuit_id, 7);
+
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
@@ -608,110 +609,116 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     nom_inspection_record.parents().insert("nominal", "1");
     QVariantMap nominal_ins = nom_inspection_record.list();
 
-    out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\">";
-    out << "<tr><th colspan=\"4\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
-    out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id;
-    out << (repair ? "/repair:" : "/inspection:") << inspection_date << "/modify\">";
-    if (nominal) out << tr("Nominal inspection:"); else if (repair) out << tr("Repair:"); else out << tr("Inspection:");
-    out << "&nbsp;" << inspection_date;
-    out << "</a>";
-    out << "</th></tr>";
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\""),
+        * _table;
+    HTMLTableRow * header_row = table->addRow();
+    HTMLTableRow * table_row = table->addRow();
+    HTMLTableCell * cell;
+    HTMLParentElement * el;
+    HTMLDiv div;
 
-    QStringList used_ids = listVariableIds(); // all = false
+    div << html;
+    div.newLine();
+
+    el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
+            ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+    if (nominal) *el << tr("Nominal inspection:");
+    else if (repair) *el << tr("Repair:");
+    else *el << tr("Inspection:");
+    *el << "&nbsp;" << inspection_date;
+    div.newLine();
+
+    VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    VariableEvaluation::Variable * variable = NULL, * subvariable = NULL;
+
+    var_evaluation.setNominalInspection(nominal_ins);
+
+    Table tables_record("");
+    QSqlQuery tables = tables_record.select("id, variables", Qt::DescendingOrder);
+    tables.setForwardOnly(true);
+    tables.exec();
+
+    QSet<QString> all_variables;
+
     Variables vars;
-    int half = vars.count() % 2 ? (vars.count() / 2 + 1) : (vars.count() / 2);
-    QVector<QString> rows(half); int row = 0;
-    QString var_id, var_type; QString ins_value, nom_value;
-    bool compare_nom = false, ok_eval = true, is_subvar = false;
-    MTDictionary expression; double tolerance = 0.0;
+
     while (vars.next()) {
-        compare_nom = false; ok_eval = true; is_subvar = false;
         if (vars.value("SUBVAR_ID").toString().isEmpty()) {
-            var_id = vars.value("VAR_ID").toString();
-            var_type = vars.value("VAR_TYPE").toString();
-            tolerance = vars.value("VAR_TOLERANCE").toDouble();
-        } else {
-            var_id = vars.value("SUBVAR_ID").toString();
-            var_type = vars.value("SUBVAR_TYPE").toString();
-            tolerance = vars.value("SUBVAR_TOLERANCE").toDouble();
-            is_subvar = true;
+            all_variables << vars.value("VAR_ID").toString();
         }
-        if (!nominal) {
-            if (vars.value("VAR_COMPARE_NOM").toInt()) {
-                compare_nom = true;
-            } else if (vars.value("SUBVAR_COMPARE_NOM").toInt()) {
-                compare_nom = true;
-            }
-        }
-//*** Expressions and values ***
-        expression.clear();
-        if (!vars.value("VAR_VALUE").toString().isEmpty()) {
-            expression = parseExpression(vars.value("VAR_VALUE").toString(), used_ids);
-        } else if (!vars.value("SUBVAR_VALUE").toString().isEmpty()) {
-            expression = parseExpression(vars.value("SUBVAR_VALUE").toString(), used_ids);
-        }
-        if (expression.count()) {
-            ins_value = QString::number(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
-            if (!ok_eval) continue;
-            if (compare_nom) {
-                nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
-                if (!ok_eval) compare_nom = false;
-            }
-        } else {
-            ins_value = inspection.value(var_id).toString();
-            if (compare_nom) {
-                nom_value = nominal_ins.value(var_id).toString();
-                if (nom_value.isEmpty()) compare_nom = false;
-            }
-        }
-        //if (ins_value.isEmpty()) continue;
-        if (var_id == "inspector" && !ins_value.isEmpty()) {
-            Inspector inspector(ins_value);
-            ins_value = inspector.stringValue("person", ins_value);
-        } else if (var_id == "operator" && !ins_value.isEmpty()) {
-            if (ins_value.toInt())
-                ins_value = Person(ins_value, customer_id).stringValue("name", ins_value);
-        } else if (var_type == "bool") {
-            ins_value = ins_value.toInt() ? tr("Yes") : tr("No");
-        }
-        if (row == half) { row = 0; }
-        rows[row].append("<td style=\"text-align: right; width: 25%; border-style: none;\">");
-        if (!is_subvar) {
-            rows[row].append(vars.value("VAR_NAME").toString() + ":");
-        } else {
-            rows[row].append(vars.value("VAR_NAME").toString() + ": " + vars.value("SUBVAR_NAME").toString() + ":");
-        }
-        rows[row].append("</td><td style=\"width: 25%; border-style: none;\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"no_border\" style=\"width: 0%\"><tr><td ");
-        if ((is_subvar && vars.value("SUBVAR_TYPE").toString() != "text") || (!is_subvar && vars.value("VAR_TYPE").toString() != "text"))
-            rows[row].append("align=\"right\"");
-        rows[row].append(" valign=\"center\" style=\"border-style: none;\">");
-        if (compare_nom) {
-            rows[row].append(compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance).arg(ins_value));
-        } else {
-            rows[row].append(escapeString(ins_value));
-        }
-        rows[row].append("</td><td valign=\"center\" style=\"border-style: none;\">&nbsp;");
-        if (!vars.value("VAR_UNIT").toString().isEmpty()) {
-            rows[row].append(vars.value("VAR_UNIT").toString());
-        } else if (!vars.value("SUBVAR_UNIT").toString().isEmpty()) {
-            rows[row].append(vars.value("SUBVAR_UNIT").toString());
-        }
-        rows[row].append("</td></tr></table></td>");
-        row++;
     }
-    for (int i = 0; i < rows.count(); ++i) {
-        out << "<tr>" << rows.at(i) << "</tr>";
+
+    while (tables.next() || all_variables.count()) {
+        QStringList table_vars;
+        cell = header_row->addHeaderCell("width=\"50%\"");
+        if (tables.isValid()) {
+            table_vars = QUERY_VALUE(tables, "variables").toString().split(";");
+            all_variables.subtract(table_vars.toSet());
+            *cell << QUERY_VALUE(tables, "id").toString();
+        }
+        else {
+            table_vars = all_variables.toList();
+            all_variables.clear();
+            *cell << tr("Other");
+        }
+
+        _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
+        HTMLTableRow * _tr;
+
+        for (int n = 0; n < table_vars.count(); ++n) {
+            variable = var_evaluation.variable(table_vars.at(n));
+            if (!variable) continue;
+            bool compare_nom = false; QString ins_value; QString nom_value;
+            QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
+            if (!subvariables.count()) subvariables.append(variable);
+
+            MTDictionary subvar_values;
+
+            for (int s = 0; s < subvariables.count(); ++s) {
+                subvariable = subvariables.at(s);
+                compare_nom = subvariable->compareNom() > 0;
+
+                ins_value = var_evaluation.evaluate(subvariable, inspection, nom_value);
+                if (ins_value.isEmpty() && inspection.value(subvariable->id()).isNull()) {
+                    continue;
+                }
+
+                compare_nom = !nom_value.isEmpty();
+
+                subvar_values.insert(subvariable->name(), tableVarValue(subvariable->type(), ins_value, nom_value, variable->colBg(), compare_nom, subvariable->tolerance(), true)
+                                                     + "&nbsp;" + subvariable->unit());
+            }
+
+            if (!subvar_values.count()) continue;
+
+            _tr = _table->addRow();
+            *(_tr->addCell(QString("rowspan=\"%1\" colspan=\"%2\"")
+                           .arg(subvar_values.count())
+                           .arg(subvariables.count() == 1 ? 2 : 1))) << variable->name();
+
+            for (int i = 0; i < subvar_values.count(); ++i) {
+                if (!_tr) _tr = _table->addRow();
+
+                if (subvar_values.key(i) != variable->name()) *(_tr->addCell()) << subvar_values.key(i);
+                *(_tr->addCell()) << subvar_values.value(i);
+
+                _tr = NULL;
+            }
+        }
     }
-    out << "</table>";
+
+    div << table->customHtml(2);
+
 //*** Warnings ***
     Warnings warnings(db, true, customer_id, circuit_id);
     QStringList warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspection);
     if (warnings_list.count()) {
-        out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
-        out << "<tr><th style=\"font-size: medium;\">" << tr("Warnings") << "</th></tr>";
-        out << "<tr><td>" << warnings_list.join(", ") << "</td></tr></table>";
+        div.newLine();
+        _table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+        *(_table->addRow()->addHeaderCell("style=\"font-size: medium;\"")) << tr("Warnings");
+        *(_table->addRow()->addCell()) << warnings_list.join(", ");
     }
-    return dict_html.value(Navigation::Inspection).arg(html);
+    return dict_html.value(Navigation::Inspection).arg(div.html());
 }
 
 QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id, int year)
@@ -1060,18 +1067,23 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
         out << "onmouseover=\"Tip('" << escapeString(escapeString(ins_value), true, true) << "')\" onmouseout=\"UnTip()\"";
     }
     out << ">";
-    if (var_type == "text") {
-        if (!ins_value.isEmpty()) out << "...";
-    } else if (var_type == "string") {
-        out << escapeString(ins_value);
-    } else if (var_type == "bool") {
-        out << (ins_value.toInt() ? tr("Yes") : tr("No"));
-    } else if (compare_nom && !nom_value.isEmpty()) {
-        out << compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
-    } else {
-        out << ins_value;
-    }
+    out << tableVarValue(var_type, ins_value, nom_value, bg_class, compare_nom, tolerance);
     out << "</td>";
+}
+
+QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, double tolerance, bool expand_text)
+{
+    if (var_type == "text") {
+        if (expand_text) return escapeString(ins_value);
+        if (!ins_value.isEmpty()) return "...";
+    } else if (var_type == "string") {
+        return escapeString(ins_value);
+    } else if (var_type == "bool") {
+        return (ins_value.toInt() ? tr("Yes") : tr("No"));
+    } else if (compare_nom && !nom_value.isEmpty()) {
+        return compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
+    }
+    return ins_value;
 }
 
 #define checkWarningConditions(inspection) \
