@@ -643,9 +643,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     Variables vars;
 
     while (vars.next()) {
-        if (vars.value("SUBVAR_ID").toString().isEmpty()) {
-            all_variables << vars.value("VAR_ID").toString();
-        }
+        all_variables << vars.value("VAR_ID").toString();
     }
 
     while (tables.next() || all_variables.count()) {

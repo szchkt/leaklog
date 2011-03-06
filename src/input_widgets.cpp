@@ -32,6 +32,7 @@ using namespace Global;
 
 MTLabeledWidget::MTLabeledWidget(const QString & text, QWidget * w)
 {
+    changed = false;
     labeltext = text;
     altlabeltext = text;
     this->w = w;
@@ -220,7 +221,7 @@ MDNullableInputWidget(id, labeltext, parent, this)
     }
     if (!suffix.isEmpty()) { setSuffix(QString(" %1").arg(suffix)); }
 
-    QObject::connect(this, SIGNAL(editingFinished()), (MTButtonLabel *)label(), SLOT(setChanged()));
+    QObject::connect(this, SIGNAL(valueChanged(double)), (MTButtonLabel *)label(), SLOT(setChanged()));
     QObject::connect((MTButtonLabel *)label(), SIGNAL(clicked()), this, SLOT(labelClicked()));
 }
 
@@ -240,7 +241,9 @@ void MDNullableDoubleSpinBox::labelClicked()
         setFocus();
         selectAll();
     } else {
+        QObject::disconnect(this, SIGNAL(valueChanged(double)), (MTButtonLabel *)label(), SLOT(setChanged()));
         clear();
+        QObject::connect(this, SIGNAL(valueChanged(double)), (MTButtonLabel *)label(), SLOT(setChanged()));
     }
 }
 
