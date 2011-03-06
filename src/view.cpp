@@ -1802,6 +1802,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     bool locked = isRecordLocked(inspection_date);
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    VariableEvaluation::Variable * variable;
     QString nom_value;
     QString currency = DBInfoValueForKey("currency", "EUR");
 
@@ -1938,15 +1939,18 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(NAME).toString();
         if (colspans[++i]) {
             if (categories_query.value(VARIABLE_ID).toString().isEmpty()) {
+                total = categories_query.value(VALUE).toDouble();
                 if (categories_query.value(VALUE_DATA_TYPE).toInt() == Global::Boolean)
                     item_value = categories_query.value(VALUE).toInt() ? tr("Yes") : tr("No");
                 else
                     item_value = categories_query.value(VALUE).toString();
             } else {
-                item_value = var_evaluation.evaluate(categories_query.value(VARIABLE_ID).toString(), inspection, nom_value);
+                variable = var_evaluation.variable(categories_query.value(VARIABLE_ID).toString());
+                item_value = var_evaluation.evaluate(variable, inspection, nom_value);
+                total = item_value.toDouble();
+                item_value = tableVarValue(variable->type(), item_value, QString(), QString(), false, 0.0, true);
             }
             *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(UNIT).toString();
-            total = item_value.toDouble();
         }
         if (colspans[++i])
             *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(ACQUISITION_PRICE).toString();
