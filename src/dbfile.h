@@ -18,7 +18,8 @@ public:
 
     void setData(const QByteArray & file_data) { this->file_data = file_data;}
     void setFileName(const QString &);
-    void setPixmap(const QPixmap &);
+    void setPixmap(const QString &);
+    void setPixmap(QPixmap &);
 
     int save();
 

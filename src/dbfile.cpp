@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QLabel>
 
+#define IMAGE_MAX_SIZE 640
+
 DBFile::DBFile(int file_id):
 File(QString::number(file_id))
 {
@@ -27,11 +29,26 @@ void DBFile::setFileName(const QString & file_name)
     file_data = file.readAll();
 }
 
-void DBFile::setPixmap(const QPixmap & pixmap)
+void DBFile::setPixmap(const QString & file_name)
+{
+    this->file_name = file_name;
+    if (file_name.isEmpty())
+        return;
+
+    QPixmap pixmap(file_name);
+    if (pixmap.isNull())
+        return;
+
+    setPixmap(pixmap);
+}
+
+void DBFile::setPixmap(QPixmap & pixmap)
 {
     QByteArray bytes;
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
+    if (pixmap.height() > IMAGE_MAX_SIZE || pixmap.width() > IMAGE_MAX_SIZE)
+        pixmap = pixmap.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio);
     pixmap.save(&buffer, "PNG");
     file_data = buffer.data();
 }
@@ -100,7 +117,7 @@ void DBFileChooser::browse()
                                                      tr("Images (*.png *.jpg)"));
     if (!file_name.isNull()) {
         name_lbl->setText(QFileInfo(file_name).fileName());
-        db_file->setFileName(file_name);
+        db_file->setPixmap(file_name);
         changed = true;
     }
 }
