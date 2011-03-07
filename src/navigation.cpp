@@ -73,6 +73,8 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_assembly_records, Navigation::ListOfAssemblyRecords);
     btngrp_view->addButton(tbtn_view_inspector);
     btngrp_view->setId(tbtn_view_inspector, Navigation::Inspector);
+    btngrp_view->addButton(tbtn_view_inspection_images);
+    btngrp_view->setId(tbtn_view_inspection_images, Navigation::InspectionImages);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -280,6 +282,10 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
             group = 2;
             break;
+        case Navigation::InspectionImages:
+            group = 2;
+            filter_visible = false;
+            break;
         default:
             group = 0;
             filter_visible = false;
@@ -409,6 +415,7 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_remove_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
     tbtn_modify_circuit_unit_type->setEnabled(circuit_unit_type_selected);
     tbtn_remove_circuit_unit_type->setEnabled(circuit_unit_type_selected);
+    tbtn_view_inspection_images->setEnabled(inspection_selected);
     gb_tables->setEnabled(circuit_selected);
     ar_show_options_widget->setVisible(inspection_selected);
 }

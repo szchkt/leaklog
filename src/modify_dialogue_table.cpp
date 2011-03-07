@@ -93,6 +93,10 @@ void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
             ((MDTDoubleSpinBox *) iw)->setSuffix(cell->unit());
             break;
 
+        case Global::File:
+            iw = new MDTFileChooser(cell->value().toInt(), this);
+            break;
+
         default:
             iw = new MDTLabel(cell->value().toString(), this);
             break;
@@ -283,6 +287,10 @@ void ModifyDialogueTableRow::remove()
 
          case Global::Numeric:
              delete (MDTDoubleSpinBox *) iw;
+             break;
+
+         case Global::File:
+             delete (MDTFileChooser *) iw;
              break;
 
          default:

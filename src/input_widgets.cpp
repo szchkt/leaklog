@@ -20,7 +20,6 @@
 #include "input_widgets.h"
 #include "highlighter.h"
 #include "global.h"
-#include "dbfile.h"
 
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -448,37 +447,14 @@ QVariant MDGroupedCheckBoxes::variantValue()
 }
 
 MDFileChooser::MDFileChooser(const QString & id, const QString & labeltext, QWidget * parent, int file_id):
-QWidget(parent),
+DBFileChooser(parent, file_id),
 MDInputWidget(id, labeltext, parent, this)
 {
-    db_file = new DBFile(file_id);
-
-    QHBoxLayout * layout = new QHBoxLayout(this);
-
-    name_lbl = new QLabel(tr("Select an image"), this);
-    layout->addWidget(name_lbl);
-
-    QPushButton * browse_btn = new QPushButton(tr("Browse"), this);
-    QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
-    layout->addWidget(browse_btn);
-
-    setLayout(layout);
-}
-
-void MDFileChooser::browse()
-{
-    QString file_name = QFileDialog::getOpenFileName(parentWidget(), tr("Open File"),
-                                                     QDir::homePath(),
-                                                     tr("Images (*.png *.jpg)"));
-    if (!file_name.isNull()) {
-        name_lbl->setText(QFileInfo(file_name).fileName());
-        db_file->setFileName(file_name);
-    }
 }
 
 QVariant MDFileChooser::variantValue()
 {
-    return db_file->save();
+    return DBFileChooser::variantValue();
 }
 
 MDGroupedInputWidgets::MDGroupedInputWidgets(const QString & name, QWidget * parent):

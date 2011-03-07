@@ -80,7 +80,8 @@ namespace Global {
         Integer = 1,
         Numeric = 2,
         Boolean = 3,
-        Text = 4
+        Text = 4,
+        File = 5
     };
 }
 

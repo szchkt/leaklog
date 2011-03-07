@@ -128,6 +128,9 @@ QString MainWindow::viewChanged(int view)
             case Navigation::ListOfAssemblyRecords:
                 html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 break;
+            case Navigation::InspectionImages:
+                html = viewInspectionImages(selectedCustomer(), selectedCircuit(), selectedInspection());
+                break;
             default:
                 view = Navigation::ServiceCompany;
                 break;
@@ -179,6 +182,7 @@ QString MainWindow::currentView()
         case Navigation::ListOfAssemblyRecordItemCategories: view = QApplication::translate("Navigation", "List of assembly record item categories"); break;
         case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of circuit unit types"); break;
         case Navigation::ListOfAssemblyRecords: break;
+        case Navigation::InspectionImages: view = QApplication::translate("Navigation", "Inspection images"); break;
     }
     return view;
 }
@@ -2192,4 +2196,44 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     div << table;
 
     return dict_html.value(Navigation::ListOfAssemblyRecords).arg(div.html());
+}
+
+QString MainWindow::viewInspectionImages(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
+{
+    QString html; MTTextStream out(&html);
+    writeCustomersTable(out, customer_id);
+    out << "<br>";
+    writeCircuitsTable(out, customer_id, circuit_id, 7);
+
+    Inspection inspection_record(customer_id, circuit_id, inspection_date);
+    QVariantMap inspection = inspection_record.list();
+    bool nominal = inspection.value("nominal").toInt();
+    bool repair = inspection.value("repair").toInt();
+
+    HTMLParentElement * el;
+    HTMLDiv div;
+
+    div << html;
+    div.newLine();
+
+    HTMLTable * table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
+         ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+    if (nominal) *el << tr("Nominal inspection:");
+    else if (repair) *el << tr("Repair:");
+    else *el << tr("Inspection:");
+    *el << "&nbsp;" << inspection_date;
+
+    InspectionImage images_record(customer_id, circuit_id, inspection_date);
+    ListOfVariantMaps images = images_record.listAll();
+
+    for (int i = 0; i < images.count(); ++i) {
+        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).data();
+        if (!byte_array.isNull()) {
+            *(table->addRow()->addCell()) << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+        }
+        *(table->addRow()->addCell()) << images.at(i).value("description").toString();
+    }
+
+    return dict_html.value(Navigation::Inspection).arg(div.html());
 }

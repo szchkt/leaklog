@@ -98,11 +98,11 @@ void ModifyCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const 
     }
 }
 
-void ModifyCircuitDialogueUnitsTab::save(int circuit_id)
+void ModifyCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
 {
     MTDictionary dict;
     dict.insert("company_id", customer_id);
-    dict.insert("circuit_id", QString::number(circuit_id));
+    dict.insert("circuit_id", circuit_id.toString());
 
     CircuitUnit unit(dict);
     unit.remove();

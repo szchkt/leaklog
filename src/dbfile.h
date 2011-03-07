@@ -2,8 +2,11 @@
 #define DBFILE_H
 
 class QPixmap;
+class QLabel;
 
 #include "records.h"
+
+#include <QWidget>
 
 class DBFile : public File
 {
@@ -23,6 +26,24 @@ private:
     int file_id;
     QString file_name;
     QByteArray file_data;
+};
+
+class DBFileChooser : public QWidget
+{
+    Q_OBJECT
+
+public:
+    DBFileChooser(QWidget *, int);
+
+    virtual QVariant variantValue();
+
+private slots:
+    void browse();
+
+private:
+    QLabel * name_lbl;
+    DBFile * db_file;
+    bool changed;
 };
 
 #endif // DBFILE_H

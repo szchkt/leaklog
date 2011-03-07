@@ -19,7 +19,7 @@ class ModifyAssemblyRecordDialogueTab : public ModifyDialogueTab
 public:
     ModifyAssemblyRecordDialogueTab(int, QWidget * = NULL);
 
-    void save(int);
+    void save(const QVariant &);
     QWidget * widget() { return this; }
 
 private:

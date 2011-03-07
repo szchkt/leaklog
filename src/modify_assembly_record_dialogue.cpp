@@ -23,9 +23,9 @@ ModifyAssemblyRecordDialogueTab::ModifyAssemblyRecordDialogueTab(int record_id, 
     init();
 }
 
-void ModifyAssemblyRecordDialogueTab::save(int record_id)
+void ModifyAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
 {
-    this->record_id = record_id;
+    this->record_id = record_id_variant.toInt();
 
     AssemblyRecordTypeCategory used_categories(QString("%1").arg(record_id));
     used_categories.remove();

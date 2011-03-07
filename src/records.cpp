@@ -1035,3 +1035,8 @@ CircuitUnit::CircuitUnit(const MTDictionary & dict)
     : MTRecord("circuit_units", "", "", dict)
 {
 }
+
+InspectionImage::InspectionImage(const QString & customer_id, const QString & circuit_id, const QString & inspection_id)
+    : MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit" << "date", QStringList() << customer_id << circuit_id << inspection_id))
+{
+}

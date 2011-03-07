@@ -302,4 +302,12 @@ public:
     CircuitUnit(const MTDictionary & = MTDictionary());
 };
 
+class InspectionImage : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    InspectionImage(const QString &, const QString &, const QString &);
+};
+
 #endif // RECORDS_H

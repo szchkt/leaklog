@@ -24,6 +24,7 @@
 #include "mtcheckboxgroup.h"
 #include "mtaddress.h"
 #include "mtdictionary.h"
+#include "dbfile.h"
 
 #include <QLabel>
 #include <QLineEdit>
@@ -36,8 +37,6 @@
 
 class QRadioButton;
 class QGridLayout;
-
-class DBFile;
 
 class MTObject
 {
@@ -315,7 +314,7 @@ private:
     int grouped_value;
 };
 
-class MDFileChooser : public QWidget, public MDInputWidget
+class MDFileChooser : public DBFileChooser, public MDInputWidget
 {
     Q_OBJECT
 
@@ -324,13 +323,6 @@ public:
 
     QVariant variantValue();
     void setVariantValue(const QVariant &) {}
-
-private slots:
-    void browse();
-
-private:
-    QLabel * name_lbl;
-    DBFile * db_file;
 };
 
 class MDGroupedInputWidgets : public QFrame, public MDInputWidget

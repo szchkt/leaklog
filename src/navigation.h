@@ -46,7 +46,8 @@ public:
         AssemblyRecord,
         ListOfCircuitUnitTypes,
         ListOfAssemblyRecords,
-        Inspector
+        Inspector,
+        InspectionImages
     };
 
     Navigation(QWidget *);

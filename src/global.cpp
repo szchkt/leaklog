@@ -413,6 +413,7 @@ public:
         dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT");
         dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
+        dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT");
     }
 
     MTDictionary dict;

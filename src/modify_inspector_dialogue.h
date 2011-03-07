@@ -21,7 +21,7 @@ class ModifyInspectorDialogueTab : public ModifyDialogueTab
 public:
     ModifyInspectorDialogueTab(QList<MDAbstractInputWidget *>, QWidget * = NULL);
 
-    void save(int);
+    void save(const QVariant &);
     QWidget * widget() { return this; }
 
 private:

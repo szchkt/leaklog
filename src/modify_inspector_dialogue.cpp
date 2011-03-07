@@ -38,6 +38,6 @@ void ModifyInspectorDialogueTab::init()
     setLayout(grid);
 }
 
-void ModifyInspectorDialogueTab::save(int)
+void ModifyInspectorDialogueTab::save(const QVariant &)
 {
 }

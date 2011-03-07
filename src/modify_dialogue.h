@@ -52,7 +52,7 @@ protected:
     int inputWidgetCount() { return md_inputwidgets.count(); }
     MDAbstractInputWidget * inputWidget(const QString);
 
-    const QVariant idFieldValue();
+    virtual const QVariant idFieldValue();
 
     void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
 

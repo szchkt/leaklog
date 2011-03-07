@@ -3,6 +3,10 @@
 #include <QFile>
 #include <QDataStream>
 #include <QPixmap>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QLabel>
 
 DBFile::DBFile(int file_id):
 File(QString::number(file_id))
@@ -48,7 +52,8 @@ bool DBFile::saveData(const QString & file_name)
 int DBFile::save()
 {
     if (file_id <= 0) {
-        QVariantMap max_id_map = list("MAX(id) AS max");
+        File max_file("");
+        QVariantMap max_id_map = max_file.list("MAX(id) AS max");
         file_id = max_id_map.value("max").toInt() + 1;
         File::setId(QString::number(file_id));
     }
@@ -68,4 +73,42 @@ const QByteArray & DBFile::data()
 
     file_data = list().value("data").toByteArray();
     return file_data;
+}
+
+DBFileChooser::DBFileChooser(QWidget * parent, int file_id):
+QWidget(parent)
+{
+    db_file = new DBFile(file_id);
+    changed = false;
+
+    QHBoxLayout * layout = new QHBoxLayout(this);
+
+    name_lbl = new QLabel(tr("Select an image"), this);
+    layout->addWidget(name_lbl);
+
+    QPushButton * browse_btn = new QPushButton(tr("Browse"), this);
+    QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
+    layout->addWidget(browse_btn);
+
+    setLayout(layout);
+}
+
+void DBFileChooser::browse()
+{
+    QString file_name = QFileDialog::getOpenFileName(parentWidget(), tr("Open File"),
+                                                     QDir::homePath(),
+                                                     tr("Images (*.png *.jpg)"));
+    if (!file_name.isNull()) {
+        name_lbl->setText(QFileInfo(file_name).fileName());
+        db_file->setFileName(file_name);
+        changed = true;
+    }
+}
+
+QVariant DBFileChooser::variantValue()
+{
+    if (changed)
+        return db_file->save();
+    else
+        return db_file->id().toInt();
 }

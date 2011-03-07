@@ -11,6 +11,7 @@
 #include <QLabel>
 
 #include "mtdictionary.h"
+#include "dbfile.h"
 
 class QGridLayout;
 class QComboBox;
@@ -224,6 +225,16 @@ public:
     MDTLabel(const QString & text, QWidget * parent) : QLabel(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return text(); }
+};
+
+class MDTFileChooser : public DBFileChooser, public MDTInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDTFileChooser(int value, QWidget * parent) : DBFileChooser(parent, value), MDTInputWidget(this) {}
+
+    QVariant variantValue() { return DBFileChooser::variantValue(); }
 };
 
 #endif // MODIFYDIALOGUETABLE_H

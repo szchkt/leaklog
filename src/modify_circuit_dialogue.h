@@ -27,7 +27,7 @@ class ModifyCircuitDialogueUnitsTab : public ModifyDialogueTab
 public:
     ModifyCircuitDialogueUnitsTab(const QString &, const QString &, QWidget * = NULL);
 
-    void save(int);
+    void save(const QVariant &);
     QWidget * widget() { return this; }
 
 private slots:

@@ -3,6 +3,7 @@
 
 #include "tabbed_modify_dialogue.h"
 
+class ModifyDialogueBasicTable;
 class ModifyDialogueGroupsLayout;
 
 class ModifyInspectionDialogue : public TabbedModifyDialogue
@@ -11,6 +12,9 @@ class ModifyInspectionDialogue : public TabbedModifyDialogue
 
 public:
     ModifyInspectionDialogue(DBRecord *, QWidget * = NULL);
+
+protected:
+    const QVariant idFieldValue();
 };
 
 class ModifyInspectionDialogueTab : public ModifyDialogueTab
@@ -20,7 +24,7 @@ class ModifyInspectionDialogueTab : public ModifyDialogueTab
 public:
     ModifyInspectionDialogueTab(int, MDLineEdit *, MDComboBox *, const QString &, const QString &, QWidget * = NULL);
 
-    void save(int);
+    void save(const QVariant &);
     int saveNewItemType(const MTDictionary &);
 
 private slots:
@@ -39,6 +43,25 @@ private:
     QString original_arno;
     QString customer_id;
     QString circuit_id;
+};
+
+class ModifyInspectionDialogueImagesTab : public ModifyDialogueTab
+{
+    Q_OBJECT
+
+public:
+    ModifyInspectionDialogueImagesTab(const QString &, const QString &, const QString &);
+
+    void save(const QVariant &);
+
+private:
+    void init(const QString &);
+    void loadItemInputWidgets(const QString &);
+
+    QString customer_id;
+    QString circuit_id;
+
+    ModifyDialogueBasicTable * table;
 };
 
 #endif // MODIFY_INSPECTION_DIALOGUE_H

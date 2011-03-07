@@ -126,6 +126,9 @@ MainWindow::MainWindow()
     file.setFileName(":/html/assembly_records.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
     dict_html.insert(Navigation::ListOfAssemblyRecords, in.readAll().arg(font).arg(font_size));
     file.close();
+    file.setFileName(":/html/inspection_images.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
+    dict_html.insert(Navigation::InspectionImages, in.readAll().arg(font).arg(font_size));
+    file.close();
     // ----
     selected_customer = -1;
     selected_circuit = -1;

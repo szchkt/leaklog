@@ -45,7 +45,7 @@ public:
     void setLayout(QLayout *);
 
     const QString & name() { return tab_name; }
-    virtual void save(int) = 0;
+    virtual void save(const QVariant &) = 0;
 
     virtual QWidget * widget();
     QScrollArea * createScrollArea();
