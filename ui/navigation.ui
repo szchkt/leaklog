@@ -990,7 +990,7 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View inspector report</string>
+         <string>View inspector activity</string>
         </property>
         <property name="text">
          <string>Inspector</string>

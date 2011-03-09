@@ -1394,7 +1394,7 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
         }
         tr_attr.append(" cursor: pointer;\"");
         _tr = table->addRow(tr_attr);
-        *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector report") + "')\" onmouseout=\"UnTip()\"")
+        *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector activity") + "')\" onmouseout=\"UnTip()\"")
                 ->link("inspectorreport:" + id)) << id.rightJustified(4, '0');
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
             *(_tr->addCell()) << escapeString(inspectors.at(i).value(Inspector::attributes().key(n)).toString());
