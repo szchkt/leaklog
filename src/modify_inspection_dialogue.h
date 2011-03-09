@@ -28,7 +28,7 @@ public:
     int saveNewItemType(const MTDictionary &);
 
 private slots:
-    void loadItemInputWidgets();
+    void loadItemInputWidgets(bool = false);
     void assemblyRecordNumberChanged();
 
 private:

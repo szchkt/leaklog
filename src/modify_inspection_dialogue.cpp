@@ -73,7 +73,7 @@ void ModifyInspectionDialogueTab::init()
 
     layout->addStretch();
 
-    loadItemInputWidgets();
+    loadItemInputWidgets(true);
 }
 
 const QVariant ModifyInspectionDialogueTab::assemblyRecordType()
@@ -86,7 +86,7 @@ const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
     return arno_w->variantValue();
 }
 
-void ModifyInspectionDialogueTab::loadItemInputWidgets()
+void ModifyInspectionDialogueTab::loadItemInputWidgets(bool initial)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -111,13 +111,14 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
             ITEM_UNIT = 13,
             UNIT = 14,
             ITEM_DISCOUNT = 15,
-            DISCOUNT = 16
+            DISCOUNT = 16,
+            AUTO_SHOW = 17
                     };
         QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
                                       " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit,"
-                                      " assembly_record_items.discount, assembly_record_item_types.discount"
+                                      " assembly_record_items.discount, assembly_record_item_types.discount, assembly_record_item_types.auto_show"
                                       " FROM assembly_record_item_types"
                                       " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
                                       " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
@@ -141,7 +142,7 @@ void ModifyInspectionDialogueTab::loadItemInputWidgets()
                                    items_query.value(CATEGORY_ID).toInt(),
                                    cells_map,
                                    items_query.value(DISPLAY_OPTIONS).toInt(),
-                                   !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull());
+                                   !items_query.value(VALUE).isNull() || !items_query.value(ITEM_LIST_PRICE).isNull() || (items_query.value(AUTO_SHOW).toBool() && !initial));
         }
     }
     {
