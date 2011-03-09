@@ -33,7 +33,7 @@ public:
     ~ModifyDialogueTable();
 
     void addRow(const QMap<QString, ModifyDialogueTableCell *> &, bool = true);
-    void addRow(ModifyDialogueTableRow *);
+    virtual void addRow(ModifyDialogueTableRow *);
     QList<MTDictionary> allValues();
 
 public slots:
@@ -62,8 +62,8 @@ class ModifyDialogueAdvancedTable : public ModifyDialogueTable
 public:
     ModifyDialogueAdvancedTable(const QString &, int, const QList<ModifyDialogueTableCell *> &, QWidget *);
 
-private slots:
-    void activateRow();
+protected slots:
+    virtual void activateRow();
 
 private:
     QLayout * addRowControlsLayout();
@@ -89,6 +89,24 @@ private slots:
 private:
     void addHiddenRow(ModifyDialogueTableRow *) {}
     QList<ModifyDialogueTableCell *> hiddenAttributes() { return QList<ModifyDialogueTableCell *>(); }
+};
+
+class ModifyDialogueTableWithAdjustableTotal : public ModifyDialogueAdvancedTable
+{
+    Q_OBJECT
+
+public:
+    ModifyDialogueTableWithAdjustableTotal(const QString &, int, const QList<ModifyDialogueTableCell *> &, QWidget *);
+
+    void addRow(ModifyDialogueTableRow *);
+
+protected slots:
+    void reloadTotal();
+    void calculatePricesFromTotal();
+    void activateRow();
+
+private:
+    QDoubleSpinBox * total_w;
 };
 
 class ModifyDialogueTableCell
@@ -142,11 +160,18 @@ public:
 
     bool toBeDeleted() { return value("item_type_id").toInt() < 0; }
 
+    double total();
+    double listPrice();
+    double acquisitionOrListPrice();
+    void setListPrice(double);
+    QVariant widgetValue(const QString &);
+
 private slots:
     void remove();
 
 signals:
     void removed(ModifyDialogueTableRow *);
+    void valuesChanged();
 
 private:
     QToolButton * remove_btn;
@@ -162,6 +187,7 @@ public:
     MDTInputWidget(QWidget * w) { this->w = w; }
 
     virtual QVariant variantValue() = 0;
+    virtual void setVariantValue(const QVariant &) = 0;
     QWidget * widget() { return w; }
 
 private:
@@ -174,6 +200,7 @@ public:
     MDTLineEdit(const QString & text, QWidget * parent) : QLineEdit(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return text(); }
+    void setVariantValue(const QVariant & val) { setText(val.toString()); }
 };
 
 class MDTSpinBox : public QSpinBox, public MDTInputWidget
@@ -182,6 +209,7 @@ public:
     MDTSpinBox(QWidget * parent) : QSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999); }
 
     QVariant variantValue() { return value(); }
+    void setVariantValue(const QVariant & val) { setValue(val.toInt()); }
 };
 
 class MDTDoubleSpinBox : public QDoubleSpinBox, public MDTInputWidget
@@ -192,6 +220,7 @@ public:
     MDTDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999.0); }
 
     QVariant variantValue() { return value(); }
+    void setVariantValue(const QVariant & val) { setValue(val.toDouble()); }
 
 public slots:
     void clear() { setValue(0.0); }
@@ -205,6 +234,7 @@ public:
     MDTPlainTextEdit(const QString & text, QWidget * parent) : QPlainTextEdit(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return toPlainText(); }
+    void setVariantValue(const QVariant & val) { setPlainText(val.toString()); }
 };
 
 class MDTCheckBox : public QCheckBox, public MDTInputWidget
@@ -215,6 +245,7 @@ public:
     MDTCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
 
     QVariant variantValue() { return isChecked() ? 1 : 0; }
+    void setVariantValue(const QVariant & val) { setChecked(val.toBool()); }
 };
 
 class MDTLabel : public QLabel, public MDTInputWidget
@@ -225,6 +256,7 @@ public:
     MDTLabel(const QString & text, QWidget * parent) : QLabel(text, parent), MDTInputWidget(this) {}
 
     QVariant variantValue() { return text(); }
+    void setVariantValue(const QVariant & val) { setText(val.toString()); }
 };
 
 class MDTFileChooser : public DBFileChooser, public MDTInputWidget
@@ -235,6 +267,7 @@ public:
     MDTFileChooser(int value, QWidget * parent) : DBFileChooser(parent, value), MDTInputWidget(this) {}
 
     QVariant variantValue() { return DBFileChooser::variantValue(); }
+    void setVariantValue(const QVariant &) {}
 };
 
 #endif // MODIFYDIALOGUETABLE_H

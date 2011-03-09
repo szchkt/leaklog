@@ -46,7 +46,11 @@ ModifyDialogueAdvancedTable * ModifyDialogueGroupsLayout::createGroup(const QStr
         }
     }
 
-    ModifyDialogueAdvancedTable * group_box = new ModifyDialogueAdvancedTable(group_name, category_id, cells, this);
+    ModifyDialogueAdvancedTable * group_box;
+    if (category_id == INSPECTORS_CATEGORY_ID)
+        group_box = new ModifyDialogueTableWithAdjustableTotal(group_name, category_id, cells, this);
+    else
+        group_box = new ModifyDialogueAdvancedTable(group_name, category_id, cells, this);
     groups->insert(group_name, group_box);
     layout->addWidget(group_box);
     return group_box;

@@ -153,6 +153,11 @@ ModifyDialogueAdvancedTable::ModifyDialogueAdvancedTable(const QString &name, in
     this->category_id = category_id;
     smallest_index = -1;
 
+    QToolButton * add_new_btn = new QToolButton;
+    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
+    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
+    grid->addWidget(add_new_btn, 0, header.count());
+
     layout->addLayout(addRowControlsLayout());
 }
 
@@ -169,11 +174,6 @@ QLayout * ModifyDialogueAdvancedTable::addRowControlsLayout()
     layout->addWidget(add_btn);
 
     layout->addStretch();
-
-    QToolButton * add_new_btn = new QToolButton;
-    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    layout->addWidget(add_new_btn);
 
     return layout;
 }
@@ -217,6 +217,75 @@ QList<ModifyDialogueTableCell *> ModifyDialogueAdvancedTable::hiddenAttributes()
     return attrs;
 }
 
+ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
+        ModifyDialogueTable(name, header, parent)
+{
+    this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+
+    layout->addStretch();
+
+    QToolButton * add_btn = new QToolButton;
+    add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
+    QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
+    grid->addWidget(add_btn, 0, header.count());
+}
+
+ModifyDialogueTableWithAdjustableTotal::ModifyDialogueTableWithAdjustableTotal(const QString & name, int category_id, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
+    ModifyDialogueAdvancedTable(name, category_id, header, parent)
+{
+    total_w = new QDoubleSpinBox(this);
+    total_w->setMaximum(99999999.9);
+
+    QLayout * bottom_layout = layout->itemAt(layout->count() - 1)->layout();
+
+    QLabel * lbl = new QLabel(QString("<b>%1</b>").arg(tr("Total list price:")), this);
+    bottom_layout->addWidget(lbl);
+    bottom_layout->addWidget(total_w);
+
+    QObject::connect(total_w, SIGNAL(editingFinished()), this, SLOT(calculatePricesFromTotal()));
+}
+
+void ModifyDialogueTableWithAdjustableTotal::calculatePricesFromTotal()
+{
+   double total = total_w->value();
+   double current_total = 0.0;
+
+   QList<double> list_prices;
+   for (int i = 0; i < rows.count(); ++i) {
+       if (!rows.at(i)->isInTable()) continue;
+       list_prices << rows.at(i)->acquisitionOrListPrice();
+       current_total += list_prices.last() * rows.at(i)->widgetValue("value").toDouble();
+   }
+
+   for (int i = 0; i < list_prices.count(); ++i) {
+       rows.at(i)->setListPrice(list_prices.at(i) * total / current_total);
+   }
+}
+
+void ModifyDialogueTableWithAdjustableTotal::reloadTotal()
+{
+    double current_total = 0.0;
+
+    for (int i = 0; i < rows.count(); ++i) {
+        current_total += rows.at(i)->total();
+    }
+
+    total_w->setValue(current_total);
+}
+
+void ModifyDialogueTableWithAdjustableTotal::activateRow()
+{
+    ModifyDialogueAdvancedTable::activateRow();
+    reloadTotal();
+}
+
+void ModifyDialogueTableWithAdjustableTotal::addRow(ModifyDialogueTableRow * row)
+{
+    QObject::connect(row, SIGNAL(valuesChanged()), this, SLOT(reloadTotal()));
+    ModifyDialogueTable::addRow(row);
+    reloadTotal();
+}
+
 ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool in_table)
 {
     this->values = values;
@@ -235,8 +304,63 @@ ModifyDialogueTableRow::~ModifyDialogueTableRow()
     }
 }
 
+double ModifyDialogueTableRow::total()
+{
+    if (!isInTable() || !widgets.contains("value"))
+        return 0.0;
+    else
+        return widgets.value("value")->variantValue().toDouble() * listPrice();
+}
+
+void ModifyDialogueTableRow::setListPrice(double lp)
+{
+    if (widgets.contains("discount")) {
+        lp *= 1 + widgets.value("discount")->variantValue().toDouble() / 100;
+    }
+    widgets.value("list_price")->setVariantValue(lp);
+}
+
+double ModifyDialogueTableRow::listPrice()
+{
+    double lp = 0.0;
+    if (!widgets.contains("list_price")) return lp;
+    lp = widgets.value("list_price")->variantValue().toDouble();
+
+    if (widgets.contains("discount"))
+        lp *= 1 - widgets.value("discount")->variantValue().toDouble() / 100;
+
+    return lp;
+}
+
+double ModifyDialogueTableRow::acquisitionOrListPrice()
+{
+    if (widgets.contains("acquisition_price"))
+        return widgets.value("acquisition_price")->variantValue().toDouble();
+    else if (widgets.contains("list_price"))
+        return widgets.value("list_price")->variantValue().toDouble();
+    else
+        return 0.0;
+}
+
+QVariant ModifyDialogueTableRow::widgetValue(const QString & col_id)
+{
+    if (widgets.contains(col_id))
+        return widgets.value(col_id)->variantValue();
+    else
+        return QVariant();
+}
+
 void ModifyDialogueTableRow::addWidget(const QString & name, MDTInputWidget * le)
 {
+    if (values.value(name)->dataType() == Global::Numeric) {
+        QObject::connect((MDTDoubleSpinBox *) le, SIGNAL(valueChanged(double)), this, SIGNAL(valuesChanged()));
+    } else if (values.value(name)->dataType() == Global::Integer) {
+        QObject::connect((MDTSpinBox *) le, SIGNAL(valueChanged(int)), this, SIGNAL(valuesChanged()));
+    } else if (values.value(name)->dataType() == Global::String) {
+        QObject::connect((MDTSpinBox *) le, SIGNAL(textEdited(const QString &)), this, SIGNAL(valuesChanged()));
+    } else if (values.value(name)->dataType() == Global::String) {
+        QObject::connect((MDTSpinBox *) le, SIGNAL(textChanged()), this, SIGNAL(valuesChanged()));
+    }
     widgets.insert(name, le);
 }
 
@@ -323,17 +447,4 @@ const QString ModifyDialogueTableRow::value(const QString &name)
         return values.value(name)->value().toString();
     else
         return QString();
-}
-
-ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
-        ModifyDialogueTable(name, header, parent)
-{
-    this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-
-    layout->addStretch();
-
-    QToolButton * add_btn = new QToolButton;
-    add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    grid->addWidget(add_btn, 0, header.count());
 }
