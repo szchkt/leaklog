@@ -67,7 +67,7 @@ namespace Global {
     // List
     QString listRefrigerantsToString();
     MTDictionary listInspectors();
-    MTDictionary listAssemblyRecordItemCategories();
+    MTDictionary listAssemblyRecordItemCategories(bool = false);
     MTDictionary listAssemblyRecordTypes();
     MTDictionary listAllVariables();
     MTDictionary listDataTypes();

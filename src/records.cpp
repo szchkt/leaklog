@@ -773,7 +773,7 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
     md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
     md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
     md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md, attributes.value("auto_show").toBool()));
-    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories()));
+    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories(true)));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md, attributes.value("inspection_variable_id").toString(), listAllVariables()));
     md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md, attributes.value("value_data_type").toString(), listDataTypes()));
 

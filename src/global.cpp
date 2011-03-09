@@ -687,12 +687,13 @@ MTDictionary Global::listOperators(const QString & customer)
     return operators;
 }
 
-MTDictionary Global::listAssemblyRecordItemCategories()
+MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 {
     MTDictionary categories(QObject::tr("No category"), "-1"); QSqlQuery query;
     categories.allowDuplicateKeys();
     query.setForwardOnly(true);
-    if (query.exec("SELECT id, name FROM assembly_record_item_categories")) {
+    if (query.exec(QString("SELECT id, name FROM assembly_record_item_categories%1")
+        .arg(hide_default ? " WHERE id < 1000" : ""))) {
         while (query.next()) {
             categories.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
         }
