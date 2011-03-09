@@ -700,7 +700,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md->setWindowTitle(tr("Assembly record type"));
 
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
 
@@ -761,7 +761,7 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
     md->setWindowTitle(tr("Assembly record item type"));
 
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
 
@@ -860,7 +860,7 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     md->setWindowTitle(tr("Assembly record item category"));
 
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
 
@@ -954,7 +954,7 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
     output_units.insert("m3", "m3");
 
     QVariantMap attributes;
-    if (!id().isEmpty() || !this->attributes().isEmpty()) {
+    if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
 
