@@ -351,14 +351,15 @@ void MainWindow::openRemote()
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         gl->addWidget(bb, 6, 0, 1, 2);
     if (d->exec() != QDialog::Accepted) { return; }
+    int port = spb_port->value() == 0 ? 5432 : spb_port->value();
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName(le_server->text());
-    db.setPort(spb_port->value());
+    db.setPort(port);
     db.setDatabaseName(le_db_name->text());
     db.setUserName(le_user_name->text());
     db.setPassword(le_password->text());
     if (db.open()) {
-        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(spb_port->value()));
+        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(port));
         db.transaction();
         initDatabase(&db, false);
     }
