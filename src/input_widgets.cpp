@@ -47,9 +47,9 @@ MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWid
 QPalette MDInputWidget::paletteForColour(const QString & colour)
 {
     QPalette palette;
-    palette.setColor(QPalette::Active, QPalette::Base, QColor::QColor(colour));
+    palette.setColor(QPalette::Active, QPalette::Base, QColor(colour));
     palette.setColor(QPalette::Active, QPalette::Text, textColourForBaseColour(colour));
-    palette.setColor(QPalette::Inactive, QPalette::Base, QColor::QColor(colour));
+    palette.setColor(QPalette::Inactive, QPalette::Base, QColor(colour));
     palette.setColor(QPalette::Inactive, QPalette::Text, textColourForBaseColour(colour));
     return palette;
 }

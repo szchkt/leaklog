@@ -173,8 +173,8 @@ public:
         this->addItem(QString());
         for (int i = 0; i < colours.count(); ++i) {
             QPixmap pm(16, 16);
-            pm.fill(QColor::QColor(colours.at(i)));
-            this->addItem(QIcon::QIcon(pm), colours.at(i));
+            pm.fill(QColor(colours.at(i)));
+            this->addItem(QIcon(pm), colours.at(i));
         }
     };
 };
