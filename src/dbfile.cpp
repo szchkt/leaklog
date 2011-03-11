@@ -48,7 +48,7 @@ void DBFile::setPixmap(QPixmap & pixmap)
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
     if (pixmap.height() > IMAGE_MAX_SIZE || pixmap.width() > IMAGE_MAX_SIZE)
-        pixmap = pixmap.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio);
+        pixmap = pixmap.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     pixmap.save(&buffer, "PNG");
     file_data = buffer.data();
 }
@@ -114,7 +114,7 @@ void DBFileChooser::browse()
 {
     QString file_name = QFileDialog::getOpenFileName(parentWidget(), tr("Open File"),
                                                      QDir::homePath(),
-                                                     tr("Images (*.png *.jpg)"));
+                                                     "Images (*.png *.jpg)");
     if (!file_name.isNull()) {
         name_lbl->setText(QFileInfo(file_name).fileName());
         db_file->setPixmap(file_name);
