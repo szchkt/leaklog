@@ -57,7 +57,7 @@ namespace Global {
     double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
-    double evaluateExpression(QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0);
+    double evaluateExpression(QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
     // Dictionaries

@@ -114,9 +114,9 @@ QString VariableEvaluation::Variable::evaluate(const QString & customer_id, cons
         }
     } else {
         MTDictionary expression = parseExpression(value(), used_ids);
-        bool ok_eval;
-        ins_value = QString::number(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval));
-        if (!ok_eval) ins_value.clear();
+        bool ok_eval, is_null;
+        ins_value = QString::number(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval, &is_null));
+        if (!ok_eval || is_null) ins_value.clear();
 
         if (nominal_ins.isEmpty()) nom_value.clear();
         else if (compareNom()) {

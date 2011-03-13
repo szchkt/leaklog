@@ -349,8 +349,9 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
 
 Refrigerants refrigerants;
 
-double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok)
+double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok, bool * null_var)
 {
+    if (null_var) *null_var = false;
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
@@ -359,10 +360,12 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
+            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
             value.append(QString::number(inspection.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "sum") {
             double v = 0.0;
             if (inspection.value("nominal").toInt()) {
+                if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
                 v += inspection.value(expression.key(i)).toDouble();
             } else {
                 QSqlQuery sum_ins;

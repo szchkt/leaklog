@@ -681,7 +681,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
                 compare_nom = subvariable->compareNom() > 0;
 
                 ins_value = var_evaluation.evaluate(subvariable, inspection, nom_value);
-                if (ins_value.isEmpty() && inspection.value(subvariable->id()).isNull()) {
+                if (ins_value.isEmpty() && (inspection.value(subvariable->id()).isNull() || ins_value.isNull())) {
                     continue;
                 }
 
