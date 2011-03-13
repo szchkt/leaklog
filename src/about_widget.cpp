@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -34,7 +34,7 @@ AboutWidget::AboutWidget()
     about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("This program is distributed under the terms of the GPL v2."));
     about.append("</p><p></p>");
-    about.append(QString("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2010 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span><br>%1</p>")
+    about.append(QString("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2011 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span><br>%1</p>")
                  .arg(tr("Slovak Association for Cooling and Air Conditioning Technology")));
     about.append("<p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
     about.append(tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));

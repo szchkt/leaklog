@@ -17,17 +17,26 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef ABOUT_WIDGET_H
-#define ABOUT_WIDGET_H
+#ifndef PERMISSIONS_DIALOGUE_H
+#define PERMISSIONS_DIALOGUE_H
 
-#include "ui_about_widget.h"
+#include <QDialog>
+#include <QMap>
 
-class AboutWidget : public QWidget, private Ui::AboutWidget
+class QButtonGroup;
+
+class PermissionsDialogue : public QDialog
 {
     Q_OBJECT
 
 public:
-    AboutWidget();
+    PermissionsDialogue(QWidget * parent = NULL);
+
+protected slots:
+    void save();
+
+protected:
+    QMap<QString, QButtonGroup *> permission_groups;
 };
 
-#endif // ABOUT_WIDGET_H
+#endif // PERMISSIONS_DIALOGUE_H

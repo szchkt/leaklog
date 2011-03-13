@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -41,7 +41,7 @@ QObject(parent), navigation(parent) {
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
     //: URL to the data report system of the notified body
-    wv_main->load(QUrl::QUrl(tr("http://szchkt.org/cert/")));
+    wv_main->load(QUrl(tr("http://szchkt.org/cert/")));
 }
 
 int ReportDataController::currentReportYear()

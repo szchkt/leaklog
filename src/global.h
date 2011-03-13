@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -46,10 +46,14 @@ namespace Global {
     void dropColumn(const QString &, const QString &, QSqlDatabase *);
     QString DBInfoValueForKey(const QString &, const QString & = QString());
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
+    QString currentUser(QSqlDatabase * = 0);
+    bool isCurrentUserAdmin();
+    bool isDatabaseRemote(QSqlDatabase * = 0);
     int isDatabaseLocked();
     QString lockDate();
     bool isRecordLocked(const QString &);
-    bool isOperationPermitted(const QString &);
+    bool isOwnerPermissionApplicable(const QString &);
+    int isOperationPermitted(const QString &, const QString & = QString());
     double getCircuitRefrigerantAmount(const QString &, const QString &, double);
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
@@ -64,6 +68,7 @@ namespace Global {
     const MTDictionary & fieldsOfApplication();
     const MTDictionary & oils();
     const MTDictionary & attributeValues();
+    const MTDictionary & permissions();
     // List
     QString listRefrigerantsToString();
     MTDictionary listInspectors();

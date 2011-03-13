@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -59,6 +59,8 @@ private slots:
     void reportDataFinished();
     void enableTools();
     void toggleLocked();
+    void showOperationNotPermittedMessage();
+    void configurePermissions();
     void find();
     void findNext();
     void findPrevious();
@@ -153,7 +155,7 @@ private:
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
-    bool isOperationPermitted(const QString &);
+    bool isOperationPermitted(const QString &, const QString & = QString());
     bool isRecordLocked(const QString &);
     void modifyRecordOfRefrigerantManagement(const QString &);
     void loadCustomer(int, bool);

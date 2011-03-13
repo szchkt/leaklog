@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -361,14 +361,15 @@ void MainWindow::openRemote()
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         gl->addWidget(bb, 6, 0, 1, 2);
     if (d->exec() != QDialog::Accepted) { return; }
+    int port = spb_port->value() == 0 ? 5432 : spb_port->value();
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName(le_server->text());
-    db.setPort(spb_port->value());
+    db.setPort(port);
     db.setDatabaseName(le_db_name->text());
     db.setUserName(le_user_name->text());
     db.setPassword(le_password->text());
     if (db.open()) {
-        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(spb_port->value()));
+        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(port));
         db.transaction();
         initDatabase(&db, false);
     }
@@ -499,15 +500,19 @@ void MainWindow::closeDatabase(bool save)
     this->setWindowModified(false);
 }
 
-bool MainWindow::isOperationPermitted(const QString & operation)
+bool MainWindow::isOperationPermitted(const QString & operation, const QString & record_owner)
 {
-    if (!Global::isOperationPermitted(operation)) {
+    int permitted = Global::isOperationPermitted(operation, record_owner);
+    if (permitted <= 0) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
         message.setIconPixmap(QIcon(QString::fromUtf8(":/images/images/locked.png")).pixmap(32, 32));
         message.setWindowTitle(tr("Permission denied - Leaklog"));
-        message.setText(tr("This operation is not permitted."));
+        if (permitted == -2)
+            message.setText(tr("This record was created by another user. Operation not permitted."));
+        else
+            message.setText(tr("This operation is not permitted."));
         message.setInformativeText(tr("For more information, contact your administrator."));
         message.addButton(tr("OK"), QMessageBox::AcceptRole);
         message.exec();
@@ -556,9 +561,9 @@ void MainWindow::addRecordOfRefrigerantManagement()
 void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 {
     if (!db.isOpen()) { return; }
-    if (!isOperationPermitted("edit_refrigerant_management")) { return; }
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
     RecordOfRefrigerantManagement record(date);
+    if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list();
@@ -591,8 +596,8 @@ void MainWindow::modifyCustomer()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
-    if (!isOperationPermitted("edit_customer")) { return; }
     Customer record(selectedCustomer());
+    if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
     ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
     QString old_id = selectedCustomer();
     QString old_company_name = record.stringValue("company");
@@ -651,11 +656,11 @@ void MainWindow::removeCustomer()
 {
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
-    if (!isOperationPermitted("remove_customer")) { return; }
+    Customer record(selectedCustomer());
+    if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Customer record(selectedCustomer());
     record.remove();
     Circuit circuits(selectedCustomer(), "");
     circuits.remove();
@@ -709,8 +714,8 @@ void MainWindow::modifyCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
-    if (!isOperationPermitted("edit_circuit")) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
+    if (!isOperationPermitted("edit_circuit", record.stringValue("updated_by"))) { return; }
     ModifyDialogue * md = new ModifyCircuitDialogue(&record, this);
     QString old_id = selectedCircuit();
     if (md->exec() == QDialog::Accepted) {
@@ -752,11 +757,11 @@ void MainWindow::removeCircuit()
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
-    if (!isOperationPermitted("remove_circuit")) { return; }
+    Circuit record(selectedCustomer(), selectedCircuit());
+    if (!isOperationPermitted("remove_circuit", record.stringValue("updated_by"))) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Circuit record(selectedCustomer(), selectedCircuit());
     record.remove();
     Inspection inspections(selectedCustomer(), selectedCircuit(), "");
     inspections.remove();
@@ -800,9 +805,9 @@ void MainWindow::modifyInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
-    if (!isOperationPermitted("edit_inspection")) { return; }
-    if (isRecordLocked(selectedInspection())) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    if (!isOperationPermitted("edit_inspection", record.stringValue("updated_by"))) { return; }
+    if (isRecordLocked(selectedInspection())) { return; }
     ModifyDialogue * md = new ModifyInspectionDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -835,12 +840,12 @@ void MainWindow::removeInspection()
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
-    if (!isOperationPermitted("remove_inspection")) { return; }
+    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    if (!isOperationPermitted("remove_inspection", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedInspection())) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.remove();
     selected_inspection.clear();
     enableTools();
@@ -882,9 +887,9 @@ void MainWindow::modifyRepair()
 {
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
-    if (!isOperationPermitted("edit_repair")) { return; }
-    if (isRecordLocked(selectedRepair())) { return; }
     Repair record(selectedRepair());
+    if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
+    if (isRecordLocked(selectedRepair())) { return; }
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -916,13 +921,13 @@ void MainWindow::removeRepair()
 {
     if (!db.isOpen()) { return; }
     if (!isRepairSelected()) { return; }
-    if (!isOperationPermitted("remove_repair")) { return; }
-    if (isRecordLocked(selectedRepair())) { return; }
     QString repair = selectedRepair();
+    Repair record(repair);
+    if (!isOperationPermitted("remove_repair", record.stringValue("updated_by"))) { return; }
+    if (isRecordLocked(repair)) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    Repair record(repair);
     record.remove();
     selected_repair.clear();
     enableTools();

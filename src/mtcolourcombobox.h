@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -173,8 +173,8 @@ public:
         this->addItem(QString());
         for (int i = 0; i < colours.count(); ++i) {
             QPixmap pm(16, 16);
-            pm.fill(QColor::QColor(colours.at(i)));
-            this->addItem(QIcon::QIcon(pm), colours.at(i));
+            pm.fill(QColor(colours.at(i)));
+            this->addItem(QIcon(pm), colours.at(i));
         }
     };
 };

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -27,6 +27,7 @@
 #include "mtaddress.h"
 #include "mtwebpage.h"
 #include "about_widget.h"
+#include "permissions_dialogue.h"
 #include "sha256.h"
 
 #include <QSettings>
@@ -230,6 +231,7 @@ MainWindow::MainWindow()
     QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
+    QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
     QObject::connect(actionModify_service_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
@@ -883,6 +885,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionFind_previous->setEnabled(enable);
 
     actionLock->setEnabled(enable);
+    actionConfigure_permissions->setEnabled(enable);
 
     actionReport_data->setEnabled(enable);
     actionModify_service_company_information->setEnabled(enable);
@@ -923,10 +926,10 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 void MainWindow::updateLockButton()
 {
     if (isDatabaseLocked()) {
-        actionLock->setIcon(QIcon::QIcon(":/images/images/locked.png"));
+        actionLock->setIcon(QIcon(":/images/images/locked.png"));
         actionLock->setText(tr("Unlock"));
     } else {
-        actionLock->setIcon(QIcon::QIcon(":/images/images/unlocked.png"));
+        actionLock->setIcon(QIcon(":/images/images/unlocked.png"));
         actionLock->setText(tr("Lock"));
     }
 }
@@ -1012,48 +1015,76 @@ void MainWindow::enableTools()
 
 void MainWindow::toggleLocked()
 {
-    if (actionLock->text() == tr("Lock")) {
+    if (!isCurrentUserAdmin()) {
+        showOperationNotPermittedMessage();
+        return;
+    }
+
+    if (!isDatabaseLocked()) {
+        int r = 0;
+
         QDialog * d = new QDialog(this);
         d->setWindowTitle(tr("Lock database - Leaklog"));
         QGridLayout * gl = new QGridLayout(d);
 
         QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), d);
         lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
-        gl->addWidget(lbl, 0, 0, 1, 2);
+        gl->addWidget(lbl, r, 0, 1, 2);
+
+        r++;
 
         QString last_date = DBInfoValueForKey("lock_date");
 
         QRadioButton * static_lock = new QRadioButton(d);
-        gl->addWidget(static_lock, 1, 0);
+        gl->addWidget(static_lock, r, 0);
 
         QDateEdit * date = new QDateEdit(d);
         date->setDisplayFormat("yyyy.MM.dd");
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, "yyyy.MM.dd"));
-        gl->addWidget(date, 1, 1);
+        gl->addWidget(date, r, 1);
+
+        r++;
 
         QRadioButton * autolock = new QRadioButton(d);
         autolock->setChecked(true);
-        gl->addWidget(autolock, 2, 0);
+        gl->addWidget(autolock, r, 0);
 
         QSpinBox * days = new QSpinBox(d);
         days->setSuffix(tr(" days"));
         days->setRange(0, 99999);
         days->setValue(7);
-        gl->addWidget(days, 2, 1);
+        gl->addWidget(days, r, 1);
+
+        r++;
+
+        QLineEdit * admin = NULL;
+        if (isDatabaseRemote()) {
+            lbl = new QLabel(tr("Administrator:"), d);
+            lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+            gl->addWidget(lbl, r, 0);
+
+            admin = new QLineEdit(d);
+            admin->setText(DBInfoValueForKey("admin", currentUser()));
+            gl->addWidget(admin, r, 1);
+
+            r++;
+        }
 
         lbl = new QLabel(tr("Password:"), d);
         lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        gl->addWidget(lbl, 3, 0);
+        gl->addWidget(lbl, r, 0);
 
         QLineEdit * password = new QLineEdit(d);
-        gl->addWidget(password, 3, 1);
+        gl->addWidget(password, r, 1);
+
+        r++;
 
         QDialogButtonBox * bb = new QDialogButtonBox(d);
         bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
         QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
         QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
-        gl->addWidget(bb, 4, 0, 1, 2);
+        gl->addWidget(bb, r, 0, 1, 2);
 
         if (d->exec() != QDialog::Accepted) return;
 
@@ -1061,6 +1092,8 @@ void MainWindow::toggleLocked()
         setDBInfoValueForKey("autolock_days", QString::number(days->value()));
         setDBInfoValueForKey("lock_password", sha256(password->text()));
         setDBInfoValueForKey("locked", static_lock->isChecked() ? "true" : "auto");
+        if (admin)
+            setDBInfoValueForKey("admin", admin->text());
         updateLockButton();
         enableTools();
         this->setWindowModified(true);
@@ -1083,6 +1116,30 @@ void MainWindow::toggleLocked()
         this->setWindowModified(true);
         refreshView();
     }
+}
+
+void MainWindow::showOperationNotPermittedMessage()
+{
+    QMessageBox message(this);
+    message.setWindowModality(Qt::WindowModal);
+    message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+    message.setIconPixmap(QIcon(QString::fromUtf8(":/images/images/locked.png")).pixmap(32, 32));
+    message.setWindowTitle(tr("Permission denied - Leaklog"));
+    message.setText(tr("This operation is not permitted."));
+    message.setInformativeText(tr("For more information, contact your administrator."));
+    message.addButton(tr("OK"), QMessageBox::AcceptRole);
+    message.exec();
+}
+
+void MainWindow::configurePermissions()
+{
+    if (!isCurrentUserAdmin() || (!isDatabaseRemote() && isDatabaseLocked())) {
+        showOperationNotPermittedMessage();
+        return;
+    }
+    PermissionsDialogue d(this);
+    if (d.exec() == QDialog::Accepted)
+        this->setWindowModified(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

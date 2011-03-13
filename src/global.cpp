@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -137,7 +137,7 @@ void Global::addColumn(const QString & column, const QString & table, QSqlDataba
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
 {
-    if (!database->driverName().contains("SQLITE")) {
+    if (isDatabaseRemote(database)) {
         QSqlQuery rename_column(*database);
         rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
@@ -164,7 +164,7 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
 
 void Global::dropColumn(const QString & column, const QString & table, QSqlDatabase * database)
 {
-    if (!database->driverName().contains("SQLITE")) {
+    if (isDatabaseRemote(database)) {
         QSqlQuery drop_column(*database);
         drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
@@ -201,6 +201,26 @@ QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & valu
     return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
 }
 
+QString Global::currentUser(QSqlDatabase * database)
+{
+    return database ?
+            database->userName() :
+            QSqlDatabase::database().userName();
+}
+
+bool Global::isCurrentUserAdmin()
+{
+    QString current_user = currentUser();
+    return DBInfoValueForKey("admin", current_user) == current_user;
+}
+
+bool Global::isDatabaseRemote(QSqlDatabase * database)
+{
+    return database ?
+            !database->driverName().contains("SQLITE") :
+            !QSqlDatabase::database().driverName().contains("SQLITE");
+}
+
 int Global::isDatabaseLocked()
 {
     QString locked = DBInfoValueForKey("locked");
@@ -225,9 +245,30 @@ bool Global::isRecordLocked(const QString & date)
     return false;
 }
 
-bool Global::isOperationPermitted(const QString & operation)
+bool Global::isOwnerPermissionApplicable(const QString & permission)
 {
-    return DBInfoValueForKey(operation + "_permitted", "true") == "true";
+    return (isDatabaseRemote() &&
+            (permission.startsWith("edit_") ||
+             permission.startsWith("remove_")) &&
+            (permission.endsWith("_refrigerant_management") ||
+             permission.endsWith("_customer") ||
+             permission.endsWith("_circuit") ||
+             permission.endsWith("_inspection") ||
+             permission.endsWith("_repair")));
+}
+
+int Global::isOperationPermitted(const QString & operation, const QString & record_owner)
+{
+    if (!isDatabaseLocked())
+        return 4;
+    if (isDatabaseRemote() && isCurrentUserAdmin())
+        return 3;
+    QString permission = DBInfoValueForKey(operation + "_permitted", "true");
+    if (permission == "true")
+        return 1;
+    if (permission == "owner")
+        return record_owner == currentUser() ? 2 : -2;
+    return -1;
 }
 
 double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
@@ -390,30 +431,30 @@ class DatabaseTables
 {
 public:
     DatabaseTables() {
-        dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT");
-        dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, date_updated TEXT");
-        dict.insert("persons", "id INTEGER PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT");
-        dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT");
-        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT");
-        dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT");
-        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT");
-        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT");
-        dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, date_updated TEXT");
-        dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT");
-        dict.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER, date_updated TEXT");
+        dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("persons", "id INTEGER PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-        dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT");
-        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price NUMERIC, list_price NUMERIC, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, value_data_type INTEGER, discount NUMERIC, auto_show INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, position INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT");
-        dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, source INTEGER, name TEXT, category_id INTEGER, unit TEXT, discount NUMERIC, date_updated TEXT");
-        dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT");
-        dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT");
-        dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT");
+        dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price NUMERIC, list_price NUMERIC, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, value_data_type INTEGER, discount NUMERIC, auto_show INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, position INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, source INTEGER, name TEXT, category_id INTEGER, unit TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT, updated_by TEXT");
+        dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
-        dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT");
     }
 
     MTDictionary dict;
@@ -655,6 +696,49 @@ public:
 const MTDictionary & Global::attributeValues()
 {
     static AttributeValues dict;
+    return dict.dict;
+}
+
+class Permissions
+{
+public:
+    Permissions() {
+        dict.insert("edit_service_company", QApplication::translate("Permissions", "Modify service company information"));
+        dict.insert("add_refrigerant_management", QApplication::translate("Permissions", "Add record of refrigerant management"));
+        dict.insert("edit_refrigerant_management", QApplication::translate("Permissions", "Modify record of refrigerant management"));
+        dict.insert("add_customer", QApplication::translate("Permissions", "Add customer"));
+        dict.insert("edit_customer", QApplication::translate("Permissions", "Modify customer"));
+        dict.insert("remove_customer", QApplication::translate("Permissions", "Remove customer"));
+        dict.insert("add_circuit", QApplication::translate("Permissions", "Add circuit"));
+        dict.insert("edit_circuit", QApplication::translate("Permissions", "Modify circuit"));
+        dict.insert("remove_circuit", QApplication::translate("Permissions", "Remove circuit"));
+        dict.insert("add_inspection", QApplication::translate("Permissions", "Add inspection"));
+        dict.insert("edit_inspection", QApplication::translate("Permissions", "Modify inspection"));
+        dict.insert("remove_inspection", QApplication::translate("Permissions", "Remove inspection"));
+        dict.insert("add_repair", QApplication::translate("Permissions", "Add repair"));
+        dict.insert("edit_repair", QApplication::translate("Permissions", "Modify repair"));
+        dict.insert("remove_repair", QApplication::translate("Permissions", "Remove repair"));
+        dict.insert("add_inspector", QApplication::translate("Permissions", "Add inspector"));
+        dict.insert("edit_inspector", QApplication::translate("Permissions", "Modify inspector"));
+        dict.insert("remove_inspector", QApplication::translate("Permissions", "Remove inspector"));
+        dict.insert("add_table", QApplication::translate("Permissions", "Add table"));
+        dict.insert("edit_table", QApplication::translate("Permissions", "Modify table"));
+        dict.insert("remove_table", QApplication::translate("Permissions", "Remove table"));
+        dict.insert("add_variable", QApplication::translate("Permissions", "Add variable"));
+        dict.insert("edit_variable", QApplication::translate("Permissions", "Modify variable"));
+        dict.insert("remove_variable", QApplication::translate("Permissions", "Remove variable"));
+        dict.insert("add_warning", QApplication::translate("Permissions", "Add warning"));
+        dict.insert("edit_warning", QApplication::translate("Permissions", "Modify warning"));
+        dict.insert("remove_warning", QApplication::translate("Permissions", "Remove warning"));
+        dict.insert("import_data", QApplication::translate("Permissions", "Import data"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Global::permissions()
+{
+    static Permissions dict;
     return dict.dict;
 }
 

@@ -36,6 +36,7 @@ HEADERS       += src/global.h \
                  src/mtwebpage.h \
                  src/mttextstream.h \
                  src/import_csv_dialogue.h \
+                 src/permissions_dialogue.h \
                  src/tabbed_modify_dialogue.h \
                  src/dbfile.h \
                  src/htmlbuilder.h \
@@ -45,8 +46,8 @@ HEADERS       += src/global.h \
                  src/modify_circuit_dialogue.h \
                  src/modify_inspection_dialogue.h \
                  src/modify_assembly_record_dialogue.h \
-    src/modify_dialogue_table_groups.h \
-    src/modify_inspector_dialogue.h
+                 src/modify_dialogue_table_groups.h \
+                 src/modify_inspector_dialogue.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -75,6 +76,7 @@ SOURCES       += src/global.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
                  src/import_csv_dialogue.cpp \
+                 src/permissions_dialogue.cpp \
                  src/tabbed_modify_dialogue.cpp \
                  src/dbfile.cpp \
                  src/htmlbuilder.cpp \
@@ -84,8 +86,8 @@ SOURCES       += src/global.cpp \
                  src/modify_circuit_dialogue.cpp \
                  src/modify_inspection_dialogue.cpp \
                  src/modify_assembly_record_dialogue.cpp \
-    src/modify_dialogue_table_groups.cpp \
-    src/modify_inspector_dialogue.cpp
+                 src/modify_dialogue_table_groups.cpp \
+                 src/modify_inspector_dialogue.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

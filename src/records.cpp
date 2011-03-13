@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2010 Matus & Michal Tomlein
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -96,7 +96,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     QString customer = Customer(parent("parent")).stringValue("company");
     if (customer.isEmpty())
         customer = parent("parent").rightJustified(8, '0');
-    md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit").arg(customer).arg(rightTriangle()));
+    md->setWindowTitle(tr("Customer: %2 %1 Cooling circuit").arg(rightTriangle()).arg(customer));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
@@ -204,7 +204,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
     QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(4, '0');
-    md->setWindowTitle(tr("Customer: %1 %2 Cooling circuit: %3 > Inspection").arg(customer).arg(rightTriangle()).arg(circuit));
+    md->setWindowTitle(tr("Customer: %2 %1 Cooling circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();

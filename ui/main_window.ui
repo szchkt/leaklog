@@ -310,6 +310,7 @@
      <string>Database</string>
     </property>
     <addaction name="actionLock"/>
+    <addaction name="actionConfigure_permissions"/>
     <addaction name="separator"/>
     <addaction name="actionReport_data"/>
     <addaction name="separator"/>
@@ -1842,6 +1843,17 @@
    </property>
    <property name="statusTip">
     <string>Switch view to assembly records</string>
+   </property>
+  </action>
+  <action name="actionConfigure_permissions">
+   <property name="text">
+    <string>Configure permissions</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure database access and modification permissions</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
  </widget>
