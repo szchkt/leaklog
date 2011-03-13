@@ -85,9 +85,12 @@ void ModifyInspectionDialogueTab::init()
     groups_layout = new ModifyDialogueGroupsLayout(this);
     groups_layout->addHeaderItem(-1, "name", tr("Name"), Global::String);
     groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"), Global::String);
-    if (Global::isOperationPermitted("access_assembly_record_acquisition_price")) groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
-    if (Global::isOperationPermitted("access_assembly_record_list_price")) groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
-    if (Global::isOperationPermitted("access_assembly_record_list_price")) groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
+    if (Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0)
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
+    if (Global::isOperationPermitted("access_assembly_record_list_price") > 0)
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
+    if (Global::isOperationPermitted("access_assembly_record_list_price") > 0)
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
     layout->addWidget(groups_layout);
 
     layout->addStretch();

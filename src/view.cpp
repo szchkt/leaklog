@@ -1237,8 +1237,8 @@ QString MainWindow::viewInspector(const QString & inspector_id)
     HTMLParentElement * elem;
 
     bool is_nominal, is_repair, is_outside_interval;
-    bool show_acquisition_price = Global::isOperationPermitted("access_assembly_record_acquisition_price");
-    bool show_list_price = Global::isOperationPermitted("access_assembly_record_list_price");
+    bool show_acquisition_price = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
+    bool show_list_price = Global::isOperationPermitted("access_assembly_record_list_price") > 0;
 
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
@@ -1803,7 +1803,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
-    bool locked = isRecordLocked(inspection_date);
+    bool locked = Global::isRecordLocked(inspection_date);
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
     VariableEvaluation::Variable * variable;

@@ -77,18 +77,6 @@ QWidget(parent)
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     toggleVisibleGroup(current_group);
     setReportDataGroupBoxVisible(false);
-    if (!Global::isOperationPermitted("access_assembly_record_acquisition_price")) {
-        assembly_record_acquisition_price_chb->setEnabled(false);
-        assembly_record_acquisition_price_chb->setChecked(false);
-    }
-    if (!Global::isOperationPermitted("access_assembly_record_list_price")) {
-        assembly_record_list_price_chb->setEnabled(false);
-        assembly_record_list_price_chb->setChecked(false);
-    }
-    if (!Global::isOperationPermitted("access_assembly_record_total")) {
-        assembly_record_total_chb->setEnabled(false);
-        assembly_record_total_chb->setChecked(false);
-    }
 }
 
 void Navigation::restoreDefaults(bool apply)
@@ -412,6 +400,17 @@ void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool
     tbtn_view_inspection_images->setEnabled(inspection_selected);
     gb_tables->setEnabled(circuit_selected);
     ar_show_options_widget->setVisible(inspection_selected);
+
+    bool enabled = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
+    assembly_record_acquisition_price_chb->setEnabled(enabled);
+    assembly_record_acquisition_price_chb->setChecked(enabled);
+
+    enabled = Global::isOperationPermitted("access_assembly_record_list_price") > 0;
+    assembly_record_list_price_chb->setEnabled(enabled);
+    assembly_record_list_price_chb->setChecked(enabled);
+
+    assembly_record_total_chb->setEnabled(enabled);
+    assembly_record_total_chb->setChecked(enabled);
 }
 
 void Navigation::setReportDataGroupBoxVisible(bool visible)

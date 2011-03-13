@@ -731,6 +731,8 @@ public:
         dict.insert("edit_warning", QApplication::translate("Permissions", "Modify warning"));
         dict.insert("remove_warning", QApplication::translate("Permissions", "Remove warning"));
         dict.insert("import_data", QApplication::translate("Permissions", "Import data"));
+        dict.insert("access_assembly_record_acquisition_price", QApplication::translate("Permissions", "Access assembly record acquisition prices"));
+        dict.insert("access_assembly_record_list_price", QApplication::translate("Permissions", "Access assembly record list prices"));
     }
 
     MTDictionary dict;

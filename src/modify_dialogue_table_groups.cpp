@@ -58,15 +58,22 @@ void ModifyDialogueGroupsLayout::addItem(const QString & group_name, int categor
 
 ModifyDialogueAdvancedTable * ModifyDialogueGroupsLayout::createGroup(const QString & group_name, int category_id, int display_options)
 {
+    int show_prices = 0;
+
     QList<ModifyDialogueTableCell *> cells;
     for (int i = 0; i < header_items.count(); ++i) {
         if ((display_options & header_items.at(i)->id()) || header_items.at(i)->id() < 0) {
             cells.append(header_items.at(i)->tableCell());
+
+            if ((header_items.at(i)->id() == AssemblyRecordItemCategory::ShowAcquisitionPrice)
+                    || (header_items.at(i)->id() == AssemblyRecordItemCategory::ShowListPrice))
+                show_prices++;
         }
     }
 
     ModifyDialogueAdvancedTable * group_box;
-    if (category_id == INSPECTORS_CATEGORY_ID)
+
+    if (category_id == INSPECTORS_CATEGORY_ID && show_prices > 1)
         group_box = new ModifyDialogueTableWithAdjustableTotal(group_name, category_id, cells, this);
     else
         group_box = new ModifyDialogueAdvancedTable(group_name, category_id, cells, this);
