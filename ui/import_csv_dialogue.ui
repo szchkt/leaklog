@@ -25,62 +25,16 @@
    <property name="spacing">
     <number>12</number>
    </property>
-   <item row="0" column="2">
-    <widget class="QLabel" name="lbl_encoding">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Encoding:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3" colspan="2">
+   <item row="1" column="3" colspan="2">
     <widget class="QComboBox" name="cb_encoding"/>
    </item>
-   <item row="0" column="5">
-    <widget class="QLabel" name="lbl_separator">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Field separator:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
+   <item row="1" column="6">
     <widget class="QComboBox" name="cb_separator"/>
    </item>
-   <item row="0" column="7">
-    <widget class="QLabel" name="lbl_skip_lines">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Number of lines to skip:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="8">
+   <item row="1" column="8">
     <widget class="QSpinBox" name="spb_skip_lines"/>
    </item>
-   <item row="0" column="9">
-    <widget class="QPushButton" name="btn_reload">
-     <property name="text">
-      <string>Reload</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="10">
+   <item row="1" column="10">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -93,7 +47,7 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="1">
     <widget class="QTreeWidget" name="trw_columns">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
@@ -116,14 +70,14 @@
      </column>
     </widget>
    </item>
-   <item row="1" column="2" colspan="10">
+   <item row="2" column="2" colspan="10">
     <widget class="QTableWidget" name="tw_content">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
     </widget>
    </item>
-   <item row="2" column="3" colspan="9">
+   <item row="3" column="3" colspan="9">
     <widget class="QDialogButtonBox" name="id_bb">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -133,7 +87,17 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="1">
+    <widget class="QComboBox" name="cb_table"/>
+   </item>
+   <item row="3" column="1">
+    <widget class="QToolButton" name="add_linked_table_btn">
+     <property name="text">
+      <string>Add linked table</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
     <widget class="QLabel" name="lbl_table">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -146,13 +110,49 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="cb_table"/>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QToolButton" name="add_linked_table_btn">
+   <item row="0" column="3">
+    <widget class="QLabel" name="lbl_encoding">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>Add linked table</string>
+      <string>Encoding:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6">
+    <widget class="QLabel" name="lbl_separator">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Field separator:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="8" colspan="3">
+    <widget class="QLabel" name="lbl_skip_lines">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Number of lines to skip:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="11">
+    <widget class="QPushButton" name="btn_reload">
+     <property name="text">
+      <string>Reload</string>
      </property>
     </widget>
    </item>
