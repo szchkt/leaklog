@@ -2142,6 +2142,7 @@ void MainWindow::importCSV()
     table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
     table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
     table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
+    table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
     table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
     ImportDialogueTableColumn * col = table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
@@ -2167,7 +2168,6 @@ void MainWindow::importCSV()
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
     table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("Category ID"), "category_id", ImportDialogueTableColumn::Integer);
     table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);

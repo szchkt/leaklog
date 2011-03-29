@@ -331,8 +331,13 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     MTAddress address;
     MTRecord * frecord;
 
+    bool all_empty = true;
+
     for (int i = 0; i < columns.count(); ++i) {
         if (!row->contains(columns.at(i))) continue;
+
+        if (row->value(columns.at(i)).isNull()) continue;
+        else all_empty = false;
 
         switch (columns.at(i)->type()) {
         case ImportDialogueTableColumn::ID:
@@ -415,6 +420,8 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
             break;
         }
     }
+
+    if (all_empty) return ok;
 
     for (int i = 0; i < parent_columns.count(); ++i) {
         set.insert(parent_columns.value(i), parent_set.value(parent_columns.key(i)));
