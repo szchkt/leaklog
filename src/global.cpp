@@ -449,7 +449,7 @@ public:
         dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, style INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price NUMERIC, list_price NUMERIC, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, value_data_type INTEGER, discount NUMERIC, auto_show INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, position INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT, updated_by TEXT");
@@ -458,6 +458,7 @@ public:
         dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
         dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
+        dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, updated_by TEXT");
     }
 
     MTDictionary dict;
@@ -831,6 +832,19 @@ MTDictionary Global::listDataTypes()
     dict.insert(QObject::tr("Text"), QString::number(Global::Text));
     dict.insert(QObject::tr("Boolean"), QString::number(Global::Boolean));
     return dict;
+}
+
+MTDictionary Global::listStyles()
+{
+    MTDictionary styles(QObject::tr("No style"), "-1"); QSqlQuery query;
+    styles.allowDuplicateKeys();
+    query.setForwardOnly(true);
+    if (query.exec(QString("SELECT id, name FROM styles"))) {
+        while (query.next()) {
+            styles.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+        }
+    }
+    return styles;
 }
 
 QStringList Global::listVariableIds(bool all)

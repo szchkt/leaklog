@@ -77,6 +77,7 @@ namespace Global {
     MTDictionary listAllVariables();
     MTDictionary listDataTypes();
     MTDictionary listOperators(const QString &);
+    MTDictionary listStyles();
     QStringList listVariableIds(bool = false);
     QStringList listSupportedFunctions();
     // Data types

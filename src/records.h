@@ -310,4 +310,16 @@ public:
     InspectionImage(const QString &, const QString &, const QString &);
 };
 
+class Style : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    Style(const QString & = QString());
+
+    void initModifyDialogue(ModifyDialogue *);
+
+    static const MTDictionary & attributes();
+};
+
 #endif // RECORDS_H

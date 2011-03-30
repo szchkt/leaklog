@@ -339,6 +339,7 @@
     <addaction name="actionShow_variables"/>
     <addaction name="actionShow_tables"/>
     <addaction name="actionShow_warnings"/>
+    <addaction name="actionShow_styles"/>
     <addaction name="separator"/>
     <addaction name="actionPrinter_friendly_version"/>
    </widget>
@@ -871,6 +872,74 @@
            <width>16</width>
            <height>16</height>
           </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_styles">
+   <property name="windowTitle">
+    <string>Styles</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dwc_styles">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QListWidget" name="lw_styles"/>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QToolButton" name="tbtn_add_style">
+         <property name="text">
+          <string>Add style</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../rc/resources.qrc">
+           <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_modify_style">
+         <property name="icon">
+          <iconset resource="../rc/resources.qrc">
+           <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="tbtn_remove_style">
+         <property name="text">
+          <string>Remove style</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../rc/resources.qrc">
+           <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -1856,6 +1925,14 @@
     <enum>QAction::NoRole</enum>
    </property>
   </action>
+  <action name="actionShow_styles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show styles</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="9"/>
  <customwidgets>
@@ -1984,6 +2061,22 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_styles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>dw_styles</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>819</x>
+     <y>614</y>
     </hint>
    </hints>
   </connection>

@@ -133,6 +133,9 @@ private slots:
     void addCircuitUnitType();
     void modifyCircuitUnitType();
     void removeCircuitUnitType();
+    void addStyle();
+    void modifyStyle();
+    void removeStyle();
     // VIEW
     QString viewChanged(int);
 

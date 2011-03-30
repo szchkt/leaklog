@@ -76,6 +76,7 @@ protected:
     friend class AssemblyRecordItemCategory;
     friend class ModifyInspectionDialogueTab;
     friend class CircuitUnitType;
+    friend class Style;
 };
 
 class ModifyDialogueLayout

@@ -24,7 +24,7 @@
 #include <QSqlRecord>
 #include <QDateTime>
 #include <QSqlError>
-#include <QMessageBox>
+#include <QDebug>
 
 using namespace Global;
 
@@ -132,6 +132,7 @@ ListOfVariantMaps MTRecord::listAll(const QString & fields)
         }
         list << map;
     }
+
     return list;
 }
 

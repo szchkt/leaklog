@@ -714,6 +714,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
+    md->addInputWidget(new MDComboBox("style", tr("Page style:"), md, attributes.value("style").toString(), listStyles()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -1040,4 +1041,47 @@ CircuitUnit::CircuitUnit(const MTDictionary & dict)
 InspectionImage::InspectionImage(const QString & customer_id, const QString & circuit_id, const QString & inspection_id)
     : MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit" << "date", QStringList() << customer_id << circuit_id << inspection_id))
 {
+}
+
+Style::Style(const QString & id)
+    : DBRecord("styles", "id", id, MTDictionary())
+{
+}
+
+void Style::initModifyDialogue(ModifyDialogue * md)
+{
+    md->setWindowTitle(tr("Style"));
+    QVariantMap attributes;
+    if (!id().isEmpty()) {
+        attributes = list();
+    }
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
+    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md, attributes.value("content").toString()));
+    QStringList used_ids; QSqlQuery query_used_ids;
+    query_used_ids.setForwardOnly(true);
+    query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
+    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    if (query_used_ids.exec()) {
+        while (query_used_ids.next()) {
+            used_ids << query_used_ids.value(0).toString();
+        }
+    }
+    md->setUsedIds(used_ids);
+}
+
+class StyleAttributes
+{
+public:
+    StyleAttributes() {
+        dict.insert("name", QApplication::translate("CircuitUnitType", "ID"));
+        dict.insert("content", QApplication::translate("CircuitUnitType", "Content"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Style::attributes()
+{
+    static StyleAttributes dict;
+    return dict.dict;
 }

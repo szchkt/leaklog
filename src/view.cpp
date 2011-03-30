@@ -1820,6 +1820,11 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     QVariantMap ar_type = ar_type_record.list();
     int type_display_options = ar_type.value("display_options").toInt();
 
+    QString custom_style;
+    if (ar_type.value("style", -1).toInt() >= 0) {
+        custom_style = Style(ar_type.value("style").toString()).list("content").value("content").toString();
+    }
+
     if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
         div << writeServiceCompany();
         div.newLine();
@@ -1987,7 +1992,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         *(_tr->addCell(colspan.arg(3))) << QString::number(absolute_total);
     }
 
-    return dict_html.value(Navigation::AssemblyRecord).arg(div.html());
+    return dict_html.value(Navigation::AssemblyRecord).arg(div.html()).arg(custom_style);
 }
 
 HTMLTable * MainWindow::writeServiceCompany()

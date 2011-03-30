@@ -165,6 +165,7 @@ MainWindow::MainWindow()
     dw_variables->setVisible(false);
     dw_tables->setVisible(false);
     dw_warnings->setVisible(false);
+    dw_styles->setVisible(false);
     actionOpen->setMenu(menuOpen);
     actionExport->setMenu(menuExport);
     QMenu * menuAdd_variable = new QMenu(this);
@@ -290,6 +291,9 @@ MainWindow::MainWindow()
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
+    QObject::connect(tbtn_add_style, SIGNAL(clicked()), this, SLOT(addStyle()));
+    QObject::connect(tbtn_modify_style, SIGNAL(clicked()), this, SLOT(modifyStyle()));
+    QObject::connect(tbtn_remove_style, SIGNAL(clicked()), this, SLOT(removeStyle()));
     setDefaultWebPage();
 #ifdef Q_WS_MAC
     show();
@@ -921,6 +925,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     dw_variables->setEnabled(enable);
     dw_tables->setEnabled(enable);
     dw_warnings->setEnabled(enable);
+    dw_styles->setEnabled(enable);
 }
 
 void MainWindow::updateLockButton()

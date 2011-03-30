@@ -437,6 +437,14 @@ void MainWindow::openDatabase(QString path)
         item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
     }
+    Style styles_record;
+    ListOfVariantMaps styles = styles_record.listAll("id, name");
+    for (int i = 0; i < styles.count(); ++i) {
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(styles.at(i).value("name").toString());
+        item->setData(Qt::UserRole, styles.at(i).value("id"));
+        lw_styles->addItem(item);
+    }
     updateLockButton();
 #ifdef Q_WS_MAC
     this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
@@ -2439,4 +2447,63 @@ void MainWindow::removeCircuitUnitType()
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfCircuitUnitTypes);
+}
+
+void MainWindow::addStyle()
+{
+    if (!db.isOpen()) { return; }
+    if (!isOperationPermitted("add_style")) { return; }
+
+    QSqlQuery query("SELECT MAX(id) FROM styles");
+    if (!query.last()) return;
+
+    int id = query.value(0).toInt() + 1;
+
+    Style record(QString::number(id));
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        QVariantMap attributes = record.list("id, name");
+        QListWidgetItem * item = new QListWidgetItem;
+        item->setText(attributes.value("name").toString());
+        item->setData(Qt::UserRole, attributes.value("id"));
+        lw_styles->addItem(item);
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::modifyStyle()
+{
+    if (!db.isOpen()) { return; }
+    if (!lw_styles->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("edit_style")) { return; }
+    QListWidgetItem * item = lw_styles->currentItem();
+    Style record(item->data(Qt::UserRole).toString());
+    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    if (md->exec() == QDialog::Accepted) {
+        QVariantMap attributes = record.list("id, name");
+        item->setText(attributes.value("name").toString());
+        item->setData(Qt::UserRole, attributes.value("id"));
+        this->setWindowModified(true);
+        refreshView();
+    }
+    delete md;
+}
+
+void MainWindow::removeStyle()
+{
+    if (!db.isOpen()) { return; }
+    if (!lw_styles->currentIndex().isValid()) { return; }
+    if (!isOperationPermitted("remove_style")) { return; }
+    QListWidgetItem * item = lw_styles->currentItem();
+    bool ok;
+    QString confirmation = QInputDialog::getText(this, tr("Remove style - Leaklog"), tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
+    if (!ok || confirmation != tr("REMOVE")) { return; }
+    Style record(item->data(Qt::UserRole).toString());
+    record.remove();
+    delete item;
+    enableTools();
+    this->setWindowModified(true);
+    refreshView();
 }
