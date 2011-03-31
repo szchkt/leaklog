@@ -144,8 +144,14 @@ const QString HTMLParentElement::html()
     QString str;
     QTextStream out(&str);
 
-    out << "<" << tagName() << " " << args << ">";
+    out << "<" << tagName() << " " << args;
+    if (!id().isEmpty()) out << " id=\"" << id() << "\"";
+    QString classes_str = classesInString();
+    if (!classes_str.isEmpty()) out << " class=\"" << classes_str << "\"";
+    out << ">";
+
     HTMLParent::html(out);
+
     out << "</" << tagName() <<">";
 
     return str;
@@ -250,6 +256,7 @@ HTMLDivTable::HTMLDivTable(const QString & args, int cols_in_row):
 HTMLTable(args, cols_in_row)
 {
     tag_name = "div";
+    addClass("table");
 }
 
 HTMLTableRow * HTMLDivTable::addRow(const QString & row_args)
@@ -263,6 +270,7 @@ HTMLDivTableRow::HTMLDivTableRow(const QString & args):
 HTMLTableRow(args)
 {
     tag_name = "div";
+    addClass("table_row");
 }
 
 HTMLTableCell * HTMLDivTableRow::addCell(const QString & cell_args)
@@ -283,12 +291,14 @@ HTMLDivTableCell::HTMLDivTableCell(const QString & args):
 HTMLTableCell(args)
 {
     tag_name = "div";
+    addClass("table_cell");
 }
 
 HTMLDivHeaderTableCell::HTMLDivHeaderTableCell(const QString & args):
 HTMLHeaderTableCell(args)
 {
     tag_name = "div";
+    addClass("table_header_cell");
 }
 
 HTMLBold::HTMLBold():

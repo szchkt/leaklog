@@ -398,7 +398,9 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     ListOfVariantMaps list(all_customers.listAll());
 
     if (!table)
-        table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+        table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("customers");
+    table->addClass("highlight");
 
     HTMLTableRow * row = new HTMLTableRow();
     int thead_colspan = 2;
@@ -451,7 +453,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     }
     ListOfVariantMaps circuits(circuits_record.listAll());
     HTMLDiv * div = new HTMLDiv();
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("circuits");
+    table->addClass("highlight");
     HTMLTableRow * thead = new HTMLTableRow();
     int thead_colspan = 2;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
@@ -1884,7 +1888,9 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         main->newLine();
     }
 
-    top_table = main->table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    top_table = main->table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    top_table->addClass("items_top_table");
+    top_table->addClass("no_border");
     _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
         elem = _td->link("customer:" + customer_id + "/circuit:" + circuit_id
@@ -1906,12 +1912,14 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         VARIABLE_ID = 8,
         VALUE_DATA_TYPE = 9,
         CATEGORY_POSITION = 10,
-        DISCOUNT = 11
+        DISCOUNT = 11,
+        ITEM_TYPE_ID = 12
                };
 
     QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
                                        " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position, assembly_record_items.discount"
+                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position,"
+                                       " assembly_record_items.discount, assembly_record_item_types.id"
                                        " FROM assembly_record_items"
                                        " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
                                        " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
@@ -1935,7 +1943,9 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                 table = top_table;
             } else {
                 main->newLine();
-                table = main->table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+                table = main->table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+                table->addClass("items_bottom_table");
+                table->addClass("no_border");
             }
 
             int cat_display_options = categories_query.value(DISPLAY_OPTIONS).toInt();
@@ -1956,23 +1966,38 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
                 i = 0;
                 _tr = table->addRow();
-                *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << categories_query.value(CATEGORY_NAME).toString();
-                if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Value");
-                if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Acquisition price (%1)").arg(currency);
-                if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("List price (%1)").arg(currency);
-                if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Discount");
-                if (colspans[++i])
-                    *(_tr->addHeaderCell(colspan.arg(colspans[i]))) << tr("Total (%1)").arg(currency);
+                _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                _td->setId("item_name_label");
+                *_td << categories_query.value(CATEGORY_NAME).toString();
+                if (colspans[++i]) {
+                    _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                    _td->setId("item_value_label");
+                    *_td << tr("Value");
+                } if (colspans[++i]) {
+                    _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                    _td->setId("item_acquisition_price_label");
+                    *_td << tr("Acquisition price (%1)").arg(currency);
+                } if (colspans[++i]) {
+                    _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                    _td->setId("item_list_price_label");
+                    *_td << tr("List price (%1)").arg(currency);
+                } if (colspans[++i]) {
+                    _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                    _td->setId("item_discount_label");
+                    *_td << tr("Discount");
+                } if (colspans[++i]) {
+                    _td = _tr->addHeaderCell(colspan.arg(colspans[i]));
+                    _td->setId("item_total_label");
+                    *_td << tr("Total (%1)").arg(currency);
+                }
             }
             last_category = categories_query.value(CATEGORY_ID).toInt();
         }
         i = 0; total = 0.0;
         _tr = table->addRow();
-        *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(NAME).toString();
+        _td = _tr->addCell(colspan.arg(colspans[i]));
+        _td->setId(QString("item_%1_name").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+        *_td << categories_query.value(NAME).toString();
         if (colspans[++i]) {
             if (categories_query.value(VARIABLE_ID).toString().isEmpty()) {
                 total = categories_query.value(VALUE).toDouble();
@@ -1986,37 +2011,60 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
                 total = item_value.toDouble();
                 item_value = tableVarValue(variable->type(), item_value, QString(), QString(), false, 0.0, true);
             }
-            *(_tr->addCell(colspan.arg(colspans[i]))) << item_value << " " << categories_query.value(UNIT).toString();
+            _td = _tr->addCell(colspan.arg(colspans[i]));
+            *_td << item_value << " " << categories_query.value(UNIT).toString();
+            _td->setId(QString("item_%1_value").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
         }
-        if (colspans[++i])
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(ACQUISITION_PRICE).toString();
         if (colspans[++i]) {
-            *(_tr->addCell(colspan.arg(colspans[i]))) << categories_query.value(LIST_PRICE).toString();
+            _td = _tr->addCell(colspan.arg(colspans[i]));
+            *_td << categories_query.value(ACQUISITION_PRICE).toString();
+            _td->setId(QString("item_%1_acquisition_price").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+        }
+        if (colspans[++i]) {
+            _td = _tr->addCell(colspan.arg(colspans[i]));
+            _td->setId(QString("item_%1_list_price").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            *_td << categories_query.value(LIST_PRICE).toString();
             total *= categories_query.value(LIST_PRICE).toDouble();
         }
         if (colspans[++i]) {
             double total_discount = categories_query.value(DISCOUNT).toDouble();
             total *= 1 - total_discount / 100;
-            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total_discount) << " %";
+            _td = _tr->addCell(colspan.arg(colspans[i]));
+            _td->setId(QString("item_%1_discount").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            *_td << QString::number(total_discount) << " %";
         }
         if (colspans[++i]) {
             absolute_total += total;
             acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
-            *(_tr->addCell(colspan.arg(colspans[i]))) << QString::number(total);
+            _td = _tr->addCell(colspan.arg(colspans[i]));
+            _td->setId(QString("item_%1_total").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            *_td << QString::number(total);
         }
     }
     if (show_total) {
         table = top_table;
         _tr = table->addRow();
-        *(_tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price)) + " rowspan=\"2\"")) << tr("Total");
-        if (show_acquisition_price)
-            *(_tr->addHeaderCell()) << tr("Acquisition price (%1)").arg(currency);
-        *(_tr->addHeaderCell(colspan.arg(3))) << tr("List price (%1)").arg(currency);
+        _td = _tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price)) + " rowspan=\"2\"");
+        _td->setId("total_label");
+        *_td << tr("Total");
+        if (show_acquisition_price) {
+            _td = _tr->addHeaderCell();
+            _td->setId("total_acquisition_price_label");
+            *_td << tr("Acquisition price (%1)").arg(currency);
+        }
+        _td = _tr->addHeaderCell(colspan.arg(3));
+        _td->setId("total_list_price_label");
+        *_td << tr("List price (%1)").arg(currency);
 
         _tr = table->addRow();
-        if (show_acquisition_price)
-            *(_tr->addCell()) << QString::number(acquisition_total);
-        *(_tr->addCell(colspan.arg(3))) << QString::number(absolute_total);
+        if (show_acquisition_price) {
+            _td = _tr->addCell();
+            _td->setId("total_acquisition_price");
+            *_td << QString::number(acquisition_total);
+        }
+        _td = _tr->addCell(colspan.arg(3));
+        _td->setId("total_list_price");
+        *_td << QString::number(absolute_total);
     }
 
     QString ret = dict_html.value(Navigation::AssemblyRecord).arg(main->html()).arg(custom_style);
@@ -2029,6 +2077,7 @@ HTMLTable * MainWindow::writeServiceCompany(HTMLTable * table)
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("service_company");
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td;
     if (serv_company.value("image").toInt()) {
@@ -2109,7 +2158,9 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
 
 HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QString & circuit_id, HTMLTable * table)
 {
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("circuit_units");
+    table->addClass("highlight");
     HTMLTableRow * _tr;
 
     _tr = table->addRow();
@@ -2144,7 +2195,9 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
 
 HTMLTable * MainWindow::customerContactPersons(const QString & customer_id, HTMLTable * table)
 {
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("contact_persons");
+    table->addClass("highlight");
     HTMLTableRow * _tr;
 
     _tr = table->addRow();

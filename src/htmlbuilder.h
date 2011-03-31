@@ -20,8 +20,7 @@
 #ifndef HTMLBUILDER_H
 #define HTMLBUILDER_H
 
-#include <QList>
-#include <QString>
+#include <QStringList>
 
 class HTMLTable;
 class HTMLTableRow;
@@ -87,10 +86,17 @@ public:
     HTMLParentElement(const QString & = QString());
 
     inline const QString tagName() { return tag_name; }
-
     virtual const QString html();
 
+    const QString & id() { return tag_id; }
+    void setId(const QString & tag_id) { this->tag_id = tag_id; }
+    void addClass(const QString & tag_class) { tag_classes.append(tag_class); }
+    const QString classesInString() { return tag_classes.join(" "); }
+    const QStringList & classes() { return tag_classes; }
+
 protected:
+    QString tag_id;
+    QStringList tag_classes;
     QString tag_name;
 };
 
