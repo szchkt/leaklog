@@ -26,6 +26,7 @@
 class Warnings;
 class MTTextStream;
 class HTMLTable;
+class HTMLDiv;
 class QPushButton;
 class QCloseEvent;
 class QPainter;
@@ -219,11 +220,13 @@ private:
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
+    HTMLTable * writeCustomersTable(const QString &, HTMLTable * = NULL);
+    HTMLDiv * writeCircuitsTable(const QString &, const QString &, int, HTMLTable * = NULL);
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString(), int = -1);
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);
-    HTMLTable * writeServiceCompany();
-    HTMLTable * circuitUnitsTable(const QString &, const QString &);
-    HTMLTable * customerContactPersons(const QString &);
+    HTMLTable * writeServiceCompany(HTMLTable * = NULL);
+    HTMLTable * circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
+    HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
 
     int selected_customer;

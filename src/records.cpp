@@ -1057,6 +1057,7 @@ void Style::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md, attributes.value("content").toString()));
+    md->addInputWidget(new MDCheckBox("div_tables", tr("Show tables as div elements"), md, attributes.value("div_tables").toBool()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
