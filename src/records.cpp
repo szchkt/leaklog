@@ -714,7 +714,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
-    md->addInputWidget(new MDComboBox("style", tr("Page style:"), md, attributes.value("style").toString(), listStyles()));
+    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md, attributes.value("style").toString(), listStyles()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -1057,7 +1057,7 @@ void Style::initModifyDialogue(ModifyDialogue * md)
     }
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md, attributes.value("content").toString()));
-    md->addInputWidget(new MDCheckBox("div_tables", tr("Show tables as div elements"), md, attributes.value("div_tables").toBool()));
+    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md, attributes.value("div_tables").toBool()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

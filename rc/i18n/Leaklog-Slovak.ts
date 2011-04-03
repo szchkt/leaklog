@@ -74,22 +74,22 @@
 <context>
     <name>AssemblyRecord</name>
     <message>
-        <location filename="../../src/navigation.cpp" line="273"/>
+        <location filename="../../src/navigation.cpp" line="261"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="274"/>
+        <location filename="../../src/navigation.cpp" line="262"/>
         <source>Inspector ID</source>
         <translation>IČ kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="275"/>
+        <location filename="../../src/navigation.cpp" line="263"/>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="276"/>
+        <location filename="../../src/navigation.cpp" line="264"/>
         <source>Assembly record type ID</source>
         <translation>IČ typu montážneho listu</translation>
     </message>
@@ -97,27 +97,27 @@
 <context>
     <name>AssemblyRecordItem</name>
     <message>
-        <location filename="../../src/records.cpp" line="909"/>
+        <location filename="../../src/records.cpp" line="910"/>
         <source>Assembly record number</source>
         <translation>Číslo montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="910"/>
+        <location filename="../../src/records.cpp" line="911"/>
         <source>Record item type ID</source>
         <translation>IČ typu položky</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="911"/>
+        <location filename="../../src/records.cpp" line="912"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="912"/>
+        <location filename="../../src/records.cpp" line="913"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="913"/>
+        <location filename="../../src/records.cpp" line="914"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
@@ -125,73 +125,73 @@
 <context>
     <name>AssemblyRecordItemCategory</name>
     <message>
-        <location filename="../../src/records.cpp" line="845"/>
+        <location filename="../../src/records.cpp" line="846"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="846"/>
+        <location filename="../../src/records.cpp" line="847"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="860"/>
+        <location filename="../../src/records.cpp" line="861"/>
         <source>Assembly record item category</source>
         <translation>Kategória položiek montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="868"/>
-        <location filename="../../src/records.cpp" line="870"/>
+        <location filename="../../src/records.cpp" line="869"/>
+        <location filename="../../src/records.cpp" line="871"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="871"/>
+        <location filename="../../src/records.cpp" line="872"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="872"/>
+        <location filename="../../src/records.cpp" line="873"/>
         <source>Display Options:</source>
         <translation>Možnosti zobrazenia:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="873"/>
+        <location filename="../../src/records.cpp" line="874"/>
         <source>Show value</source>
         <translation>Zobraziť hodnotu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="874"/>
+        <location filename="../../src/records.cpp" line="875"/>
         <source>Show acquisition price</source>
         <translation>Zobraziť obstarávaciu cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="875"/>
+        <location filename="../../src/records.cpp" line="876"/>
         <source>Show list price</source>
         <translation>Zobraziť cenníkovú cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="876"/>
+        <location filename="../../src/records.cpp" line="877"/>
         <source>Show discount</source>
         <translation>Zobraziť zľavu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="877"/>
+        <location filename="../../src/records.cpp" line="878"/>
         <source>Calculate total</source>
         <translation>Vypočítať celkovú cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="879"/>
+        <location filename="../../src/records.cpp" line="880"/>
         <source>Display:</source>
         <translation>Zobraziť:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="880"/>
+        <location filename="../../src/records.cpp" line="881"/>
         <source>In table</source>
         <translation>V tabuľke</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="881"/>
+        <location filename="../../src/records.cpp" line="882"/>
         <source>Separately</source>
         <translation>Oddelene</translation>
     </message>
@@ -199,102 +199,102 @@
 <context>
     <name>AssemblyRecordItemType</name>
     <message>
-        <location filename="../../src/records.cpp" line="761"/>
+        <location filename="../../src/records.cpp" line="762"/>
         <source>Assembly record item type</source>
         <translation>Typ položky montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="768"/>
+        <location filename="../../src/records.cpp" line="769"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="769"/>
+        <location filename="../../src/records.cpp" line="770"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="770"/>
+        <location filename="../../src/records.cpp" line="771"/>
         <source>Unit:</source>
         <translation>Jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="771"/>
+        <location filename="../../src/records.cpp" line="772"/>
         <source>Acquisition price:</source>
         <translation>Obstarávacia cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="772"/>
+        <location filename="../../src/records.cpp" line="773"/>
         <source>List price:</source>
         <translation>Cenníková cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="773"/>
+        <location filename="../../src/records.cpp" line="774"/>
         <source>Discount:</source>
         <translation>Zľava:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="774"/>
+        <location filename="../../src/records.cpp" line="775"/>
         <source>EAN code:</source>
         <translation>EAN kód:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="775"/>
+        <location filename="../../src/records.cpp" line="776"/>
         <source>Automatically add to assembly record</source>
         <translation>Automaticky pridať do montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="776"/>
+        <location filename="../../src/records.cpp" line="777"/>
         <source>Category:</source>
         <translation>Kategória:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="777"/>
+        <location filename="../../src/records.cpp" line="778"/>
         <source>Get value from inspection:</source>
         <translation>Získať hodnotu z kontroly:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="778"/>
+        <location filename="../../src/records.cpp" line="779"/>
         <source>Data type:</source>
         <translation>Údajový typ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="796"/>
+        <location filename="../../src/records.cpp" line="797"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="797"/>
+        <location filename="../../src/records.cpp" line="798"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="798"/>
+        <location filename="../../src/records.cpp" line="799"/>
         <source>Unit</source>
         <translation>Jednotka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="799"/>
+        <location filename="../../src/records.cpp" line="800"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="800"/>
+        <location filename="../../src/records.cpp" line="801"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="801"/>
+        <location filename="../../src/records.cpp" line="802"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="802"/>
+        <location filename="../../src/records.cpp" line="803"/>
         <source>EAN code</source>
         <translation>EAN kód</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="803"/>
+        <location filename="../../src/records.cpp" line="804"/>
         <source>Category</source>
         <translation>Kategória</translation>
     </message>
@@ -352,17 +352,22 @@
         <translation>Zobraziť jednotky okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="733"/>
+        <location filename="../../src/records.cpp" line="717"/>
+        <source>Visual style:</source>
+        <translation>Vzhľad:</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="734"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="734"/>
+        <location filename="../../src/records.cpp" line="735"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="735"/>
+        <location filename="../../src/records.cpp" line="736"/>
         <source>Description</source>
         <translation>Popis</translation>
     </message>
@@ -370,12 +375,12 @@
 <context>
     <name>AssemblyRecordTypeCategory</name>
     <message>
-        <location filename="../../src/records.cpp" line="823"/>
+        <location filename="../../src/records.cpp" line="824"/>
         <source>Assembly record type ID</source>
         <translation>IČ typu montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="824"/>
+        <location filename="../../src/records.cpp" line="825"/>
         <source>Assembly record category type ID</source>
         <translation>IČ typu kategórie položiek montážneho listu</translation>
     </message>
@@ -513,114 +518,114 @@
         <translation>Interval kontrol:</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="188"/>
+        <location filename="../../src/navigation.cpp" line="176"/>
         <location filename="../../src/records.cpp" line="151"/>
-        <location filename="../../src/view.cpp" line="781"/>
-        <location filename="../../src/view.cpp" line="1436"/>
+        <location filename="../../src/view.cpp" line="806"/>
+        <location filename="../../src/view.cpp" line="1461"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="189"/>
+        <location filename="../../src/navigation.cpp" line="177"/>
         <location filename="../../src/records.cpp" line="152"/>
         <source>Circuit name</source>
         <translation>Názov okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="190"/>
+        <location filename="../../src/navigation.cpp" line="178"/>
         <location filename="../../src/records.cpp" line="153"/>
-        <location filename="../../src/view.cpp" line="1440"/>
-        <location filename="../../src/view.cpp" line="1641"/>
+        <location filename="../../src/view.cpp" line="1465"/>
+        <location filename="../../src/view.cpp" line="1666"/>
         <source>Place of operation</source>
         <translation>Miesto prevádzky</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="191"/>
+        <location filename="../../src/navigation.cpp" line="179"/>
         <location filename="../../src/records.cpp" line="154"/>
         <source>Building</source>
         <translation>Budova</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="192"/>
+        <location filename="../../src/navigation.cpp" line="180"/>
         <location filename="../../src/records.cpp" line="155"/>
         <source>Device</source>
         <translation>Zariadenie</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="193"/>
+        <location filename="../../src/navigation.cpp" line="181"/>
         <location filename="../../src/records.cpp" line="157"/>
-        <location filename="../../src/view.cpp" line="783"/>
+        <location filename="../../src/view.cpp" line="808"/>
         <source>Manufacturer</source>
         <translation>Výrobca</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="194"/>
+        <location filename="../../src/navigation.cpp" line="182"/>
         <location filename="../../src/records.cpp" line="158"/>
-        <location filename="../../src/view.cpp" line="784"/>
+        <location filename="../../src/view.cpp" line="809"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="195"/>
+        <location filename="../../src/navigation.cpp" line="183"/>
         <location filename="../../src/records.cpp" line="159"/>
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="229"/>
+        <location filename="../../src/navigation.cpp" line="217"/>
         <source>Circuit ID</source>
         <translation>Číslo zariadenia</translation>
     </message>
     <message>
         <location filename="../../src/modify_warning_dialogue.cpp" line="58"/>
-        <location filename="../../src/navigation.cpp" line="196"/>
+        <location filename="../../src/navigation.cpp" line="184"/>
         <location filename="../../src/records.cpp" line="160"/>
-        <location filename="../../src/view.cpp" line="785"/>
+        <location filename="../../src/view.cpp" line="810"/>
         <source>Year of purchase</source>
         <translation>Rok zakúpenia</translation>
     </message>
     <message>
         <location filename="../../src/modify_warning_dialogue.cpp" line="59"/>
-        <location filename="../../src/navigation.cpp" line="197"/>
+        <location filename="../../src/navigation.cpp" line="185"/>
         <location filename="../../src/records.cpp" line="161"/>
-        <location filename="../../src/view.cpp" line="786"/>
+        <location filename="../../src/view.cpp" line="811"/>
         <source>Date of commissioning</source>
         <translation>Dátum uvedenia do prevádzky</translation>
     </message>
     <message>
         <location filename="../../src/records.cpp" line="162"/>
-        <location filename="../../src/view.cpp" line="1438"/>
+        <location filename="../../src/view.cpp" line="1463"/>
         <source>Field of application</source>
         <translation>Druh nasadenia</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="675"/>
-        <location filename="../../src/navigation.cpp" line="198"/>
+        <location filename="../../src/global.cpp" line="680"/>
+        <location filename="../../src/navigation.cpp" line="186"/>
         <location filename="../../src/records.cpp" line="166"/>
-        <location filename="../../src/view.cpp" line="787"/>
-        <location filename="../../src/view.cpp" line="1437"/>
+        <location filename="../../src/view.cpp" line="812"/>
+        <location filename="../../src/view.cpp" line="1462"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
     </message>
     <message>
         <location filename="../../src/modify_warning_dialogue.cpp" line="60"/>
         <location filename="../../src/records.cpp" line="167"/>
-        <location filename="../../src/view.cpp" line="788"/>
-        <location filename="../../src/view.cpp" line="1439"/>
+        <location filename="../../src/view.cpp" line="813"/>
+        <location filename="../../src/view.cpp" line="1464"/>
         <source>Amount of refrigerant</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="199"/>
+        <location filename="../../src/navigation.cpp" line="187"/>
         <location filename="../../src/records.cpp" line="168"/>
-        <location filename="../../src/view.cpp" line="789"/>
+        <location filename="../../src/view.cpp" line="814"/>
         <source>Oil</source>
         <translation>Olej</translation>
     </message>
     <message>
         <location filename="../../src/modify_warning_dialogue.cpp" line="61"/>
         <location filename="../../src/records.cpp" line="169"/>
-        <location filename="../../src/view.cpp" line="790"/>
+        <location filename="../../src/view.cpp" line="815"/>
         <source>Amount of oil</source>
         <translation>Množstvo oleja</translation>
     </message>
@@ -643,7 +648,7 @@
         <translation>Interval kontrol</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="782"/>
+        <location filename="../../src/view.cpp" line="807"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
@@ -651,192 +656,198 @@
 <context>
     <name>CircuitUnitType</name>
     <message>
-        <location filename="../../src/records.cpp" line="947"/>
+        <location filename="../../src/records.cpp" line="948"/>
         <source>Assembly record item type</source>
         <translation>Typ položky montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="950"/>
-        <location filename="../../src/records.cpp" line="1028"/>
+        <location filename="../../src/records.cpp" line="951"/>
+        <location filename="../../src/records.cpp" line="1029"/>
         <source>External</source>
         <translation>Externá</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="951"/>
-        <location filename="../../src/records.cpp" line="1030"/>
+        <location filename="../../src/records.cpp" line="952"/>
+        <location filename="../../src/records.cpp" line="1031"/>
         <source>Internal</source>
         <translation>Interná</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="961"/>
+        <location filename="../../src/records.cpp" line="962"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="962"/>
+        <location filename="../../src/records.cpp" line="963"/>
         <source>Manufacturer:</source>
         <translation>Výrobca:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="963"/>
+        <location filename="../../src/records.cpp" line="964"/>
         <source>Type:</source>
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="964"/>
+        <location filename="../../src/records.cpp" line="965"/>
         <source>Refrigerant:</source>
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="965"/>
+        <location filename="../../src/records.cpp" line="966"/>
         <source>Amount of refrigerant:</source>
         <translation>Množstvo chladiva:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="966"/>
+        <location filename="../../src/records.cpp" line="967"/>
         <source>Oil:</source>
         <translation>Olej:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="967"/>
+        <location filename="../../src/records.cpp" line="968"/>
         <source>Amount of oil:</source>
         <translation>Množstvo oleja:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="968"/>
+        <location filename="../../src/records.cpp" line="969"/>
         <source>Acquisition price:</source>
         <translation>Obstarávacia cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="969"/>
+        <location filename="../../src/records.cpp" line="970"/>
         <source>List price:</source>
         <translation>Cenníková cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="970"/>
+        <location filename="../../src/records.cpp" line="971"/>
         <source>Discount:</source>
         <translation>Zľava:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="971"/>
+        <location filename="../../src/records.cpp" line="972"/>
         <source>Location:</source>
         <translation>Poloha:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="972"/>
+        <location filename="../../src/records.cpp" line="973"/>
         <source>Unit of measure:</source>
         <translation>Merná jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="974"/>
+        <location filename="../../src/records.cpp" line="975"/>
         <source>Value:</source>
         <translation>Hodnota:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="975"/>
+        <location filename="../../src/records.cpp" line="976"/>
         <source>Unit:</source>
         <translation>Jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="976"/>
+        <location filename="../../src/records.cpp" line="977"/>
         <source>At t0/tc:</source>
         <translation>Pri t0/tk:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="977"/>
-        <location filename="../../src/records.cpp" line="1009"/>
+        <location filename="../../src/records.cpp" line="978"/>
+        <location filename="../../src/records.cpp" line="1010"/>
         <source>Output</source>
         <translation>Výkon</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="978"/>
+        <location filename="../../src/records.cpp" line="979"/>
         <source>Notes:</source>
         <translation>Poznámky:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="997"/>
+        <location filename="../../src/records.cpp" line="998"/>
+        <location filename="../../src/records.cpp" line="1077"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="998"/>
+        <location filename="../../src/records.cpp" line="999"/>
         <source>Manufacturer</source>
         <translation>Výrobca</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="999"/>
+        <location filename="../../src/records.cpp" line="1000"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1000"/>
+        <location filename="../../src/records.cpp" line="1001"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1001"/>
+        <location filename="../../src/records.cpp" line="1002"/>
         <source>Amount of refrigerant</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1002"/>
+        <location filename="../../src/records.cpp" line="1003"/>
         <source>Oil</source>
         <translation>Olej</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1003"/>
+        <location filename="../../src/records.cpp" line="1004"/>
         <source>Amount of oil</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1004"/>
+        <location filename="../../src/records.cpp" line="1005"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1005"/>
+        <location filename="../../src/records.cpp" line="1006"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1006"/>
+        <location filename="../../src/records.cpp" line="1007"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1007"/>
+        <location filename="../../src/records.cpp" line="1008"/>
         <source>Location</source>
         <translation>Poloha</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1008"/>
+        <location filename="../../src/records.cpp" line="1009"/>
         <source>Unit of measure</source>
         <translation>Merná jednotka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1010"/>
+        <location filename="../../src/records.cpp" line="1011"/>
         <source>Output at t0/tc</source>
         <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1011"/>
+        <location filename="../../src/records.cpp" line="1012"/>
         <source>Category</source>
         <translation>Kategória</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1012"/>
+        <location filename="../../src/records.cpp" line="1013"/>
         <source>Notes</source>
         <translation>Poznámky</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="1078"/>
+        <source>Content</source>
+        <translation>Obsah</translation>
     </message>
 </context>
 <context>
     <name>Customer</name>
     <message>
-        <location filename="../../src/navigation.cpp" line="177"/>
-        <location filename="../../src/navigation.cpp" line="242"/>
+        <location filename="../../src/navigation.cpp" line="165"/>
+        <location filename="../../src/navigation.cpp" line="230"/>
         <location filename="../../src/records.cpp" line="72"/>
         <location filename="../../src/view.cpp" line="355"/>
-        <location filename="../../src/view.cpp" line="767"/>
+        <location filename="../../src/view.cpp" line="792"/>
         <source>ID</source>
         <translation>IČO</translation>
     </message>
@@ -871,37 +882,37 @@
         <translation>Telefón:</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="178"/>
+        <location filename="../../src/navigation.cpp" line="166"/>
         <location filename="../../src/records.cpp" line="73"/>
         <location filename="../../src/view.cpp" line="354"/>
-        <location filename="../../src/view.cpp" line="768"/>
+        <location filename="../../src/view.cpp" line="793"/>
         <source>Company</source>
         <translation>Firma</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="179"/>
-        <location filename="../../src/view.cpp" line="769"/>
+        <location filename="../../src/navigation.cpp" line="167"/>
+        <location filename="../../src/view.cpp" line="794"/>
         <source>Contact person</source>
         <translation>Kontaktná osoba</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="180"/>
+        <location filename="../../src/navigation.cpp" line="168"/>
         <location filename="../../src/records.cpp" line="74"/>
-        <location filename="../../src/view.cpp" line="770"/>
+        <location filename="../../src/view.cpp" line="795"/>
         <source>Address</source>
         <translation>Adresa</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="181"/>
+        <location filename="../../src/navigation.cpp" line="169"/>
         <location filename="../../src/records.cpp" line="75"/>
-        <location filename="../../src/view.cpp" line="771"/>
+        <location filename="../../src/view.cpp" line="796"/>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="182"/>
+        <location filename="../../src/navigation.cpp" line="170"/>
         <location filename="../../src/records.cpp" line="76"/>
-        <location filename="../../src/view.cpp" line="772"/>
+        <location filename="../../src/view.cpp" line="797"/>
         <source>Phone</source>
         <translation>Telefón</translation>
     </message>
@@ -909,17 +920,17 @@
 <context>
     <name>DBFileChooser</name>
     <message>
-        <location filename="../../src/dbfile.cpp" line="103"/>
+        <location filename="../../src/dbfile.cpp" line="122"/>
         <source>Select an image</source>
         <translation>Vyberte obrázok</translation>
     </message>
     <message>
-        <location filename="../../src/dbfile.cpp" line="106"/>
+        <location filename="../../src/dbfile.cpp" line="125"/>
         <source>Browse</source>
         <translation>Hľadať</translation>
     </message>
     <message>
-        <location filename="../../src/dbfile.cpp" line="115"/>
+        <location filename="../../src/dbfile.cpp" line="134"/>
         <source>Open File</source>
         <translation>Otvoriť súbor</translation>
     </message>
@@ -927,49 +938,49 @@
 <context>
     <name>FieldsOfApplication</name>
     <message>
-        <location filename="../../src/global.cpp" line="613"/>
-        <location filename="../../src/global.cpp" line="621"/>
-        <location filename="../../src/global.cpp" line="623"/>
-        <location filename="../../src/global.cpp" line="664"/>
-        <location filename="../../src/global.cpp" line="684"/>
-        <location filename="../../src/global.cpp" line="686"/>
+        <location filename="../../src/global.cpp" line="618"/>
+        <location filename="../../src/global.cpp" line="626"/>
+        <location filename="../../src/global.cpp" line="628"/>
+        <location filename="../../src/global.cpp" line="669"/>
+        <location filename="../../src/global.cpp" line="689"/>
+        <location filename="../../src/global.cpp" line="691"/>
         <source>Refrigeration</source>
         <translation>Chladenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="614"/>
-        <location filename="../../src/global.cpp" line="665"/>
+        <location filename="../../src/global.cpp" line="619"/>
+        <location filename="../../src/global.cpp" line="670"/>
         <source>Transportation</source>
         <translation>Prepravné chladenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="615"/>
-        <location filename="../../src/global.cpp" line="618"/>
-        <location filename="../../src/global.cpp" line="619"/>
         <location filename="../../src/global.cpp" line="620"/>
-        <location filename="../../src/global.cpp" line="622"/>
+        <location filename="../../src/global.cpp" line="623"/>
         <location filename="../../src/global.cpp" line="624"/>
         <location filename="../../src/global.cpp" line="625"/>
-        <location filename="../../src/global.cpp" line="626"/>
-        <location filename="../../src/global.cpp" line="666"/>
-        <location filename="../../src/global.cpp" line="681"/>
-        <location filename="../../src/global.cpp" line="682"/>
-        <location filename="../../src/global.cpp" line="683"/>
-        <location filename="../../src/global.cpp" line="685"/>
+        <location filename="../../src/global.cpp" line="627"/>
+        <location filename="../../src/global.cpp" line="629"/>
+        <location filename="../../src/global.cpp" line="630"/>
+        <location filename="../../src/global.cpp" line="631"/>
+        <location filename="../../src/global.cpp" line="671"/>
+        <location filename="../../src/global.cpp" line="686"/>
         <location filename="../../src/global.cpp" line="687"/>
         <location filename="../../src/global.cpp" line="688"/>
-        <location filename="../../src/global.cpp" line="689"/>
+        <location filename="../../src/global.cpp" line="690"/>
+        <location filename="../../src/global.cpp" line="692"/>
+        <location filename="../../src/global.cpp" line="693"/>
+        <location filename="../../src/global.cpp" line="694"/>
         <source>Air conditioning</source>
         <translation>Klimatizácia</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="616"/>
-        <location filename="../../src/global.cpp" line="667"/>
+        <location filename="../../src/global.cpp" line="621"/>
+        <location filename="../../src/global.cpp" line="672"/>
         <source>Heat pumps</source>
         <translation>Tepelné čerpadlá</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="663"/>
+        <location filename="../../src/global.cpp" line="668"/>
         <source>Field of application</source>
         <translation>Druh nasadenia</translation>
     </message>
@@ -983,42 +994,42 @@
         <translation>Importovať CSV - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="37"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="122"/>
         <source>Encoding:</source>
         <translation>Kódovanie:</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="53"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="135"/>
         <source>Field separator:</source>
         <translation>Oddeľovač polí:</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="69"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="148"/>
         <source>Number of lines to skip:</source>
         <translation>Počet riadkov, ktoré sa majú preskočiť:</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="79"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="155"/>
         <source>Reload</source>
         <translation>Načítať</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="109"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="63"/>
         <source>Column</source>
         <translation>Stĺpec</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="114"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="68"/>
         <source>Index</source>
         <translation>Číslo</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="145"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="109"/>
         <source>Table:</source>
         <translation>Tabuľka:</translation>
     </message>
     <message>
-        <location filename="../../ui/import_csv_dialogue.ui" line="155"/>
+        <location filename="../../ui/import_csv_dialogue.ui" line="96"/>
         <source>Add linked table</source>
         <translation>Pridať previazanú tabuľku</translation>
     </message>
@@ -1264,12 +1275,12 @@
 <context>
     <name>Inspection</name>
     <message>
-        <location filename="../../src/database.cpp" line="1596"/>
+        <location filename="../../src/database.cpp" line="1604"/>
         <source>Nominal</source>
         <translation>Nominálna</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1597"/>
+        <location filename="../../src/database.cpp" line="1605"/>
         <location filename="../../src/records.cpp" line="235"/>
         <source>Repair</source>
         <translation>Oprava</translation>
@@ -1311,28 +1322,28 @@
         <translation>Nominálna kontrola</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="203"/>
-        <location filename="../../src/navigation.cpp" line="227"/>
+        <location filename="../../src/navigation.cpp" line="191"/>
+        <location filename="../../src/navigation.cpp" line="215"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="204"/>
+        <location filename="../../src/navigation.cpp" line="192"/>
         <source>Operator</source>
         <translation>Prevzal</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="205"/>
+        <location filename="../../src/navigation.cpp" line="193"/>
         <source>Remedies</source>
         <translation>Opatrenia</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="206"/>
+        <location filename="../../src/navigation.cpp" line="194"/>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="207"/>
+        <location filename="../../src/navigation.cpp" line="195"/>
         <source>Assembly record type</source>
         <translation>Typ montážneho listu</translation>
     </message>
@@ -1385,30 +1396,30 @@
         <translation>Osoba s osvedčením</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="220"/>
+        <location filename="../../src/navigation.cpp" line="208"/>
         <location filename="../../src/records.cpp" line="527"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="221"/>
+        <location filename="../../src/navigation.cpp" line="209"/>
         <source>Name</source>
         <translation>Meno</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="222"/>
+        <location filename="../../src/navigation.cpp" line="210"/>
         <location filename="../../src/records.cpp" line="529"/>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="223"/>
+        <location filename="../../src/navigation.cpp" line="211"/>
         <location filename="../../src/records.cpp" line="530"/>
         <source>Phone</source>
         <translation>Telefón</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="228"/>
+        <location filename="../../src/navigation.cpp" line="216"/>
         <source>Customer ID</source>
         <translation>IČO zákazníka</translation>
     </message>
@@ -1462,11 +1473,11 @@
         <location filename="../../src/database.cpp" line="387"/>
         <location filename="../../src/database.cpp" line="394"/>
         <location filename="../../src/database.cpp" line="401"/>
-        <location filename="../../src/database.cpp" line="499"/>
-        <location filename="../../src/main_window.cpp" line="1216"/>
-        <location filename="../../src/main_window.cpp" line="1235"/>
-        <location filename="../../src/main_window.cpp" line="1271"/>
-        <location filename="../../src/main_window.cpp" line="1284"/>
+        <location filename="../../src/database.cpp" line="507"/>
+        <location filename="../../src/main_window.cpp" line="1221"/>
+        <location filename="../../src/main_window.cpp" line="1240"/>
+        <location filename="../../src/main_window.cpp" line="1276"/>
+        <location filename="../../src/main_window.cpp" line="1289"/>
         <source>Leaklog</source>
         <translation>Leaklog</translation>
     </message>
@@ -1477,11 +1488,11 @@
     </message>
     <message>
         <location filename="../../ui/main_window.ui" line="258"/>
-        <location filename="../../src/database.cpp" line="1700"/>
-        <location filename="../../src/view.cpp" line="403"/>
-        <location filename="../../src/view.cpp" line="1324"/>
-        <location filename="../../src/view.cpp" line="1640"/>
-        <location filename="../../src/view.cpp" line="2164"/>
+        <location filename="../../src/database.cpp" line="1708"/>
+        <location filename="../../src/view.cpp" line="417"/>
+        <location filename="../../src/view.cpp" line="1349"/>
+        <location filename="../../src/view.cpp" line="1665"/>
+        <location filename="../../src/view.cpp" line="2251"/>
         <source>Customer</source>
         <translation>Zákazník</translation>
     </message>
@@ -1491,53 +1502,53 @@
         <translation>Pomoc</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="891"/>
+        <location filename="../../ui/main_window.ui" line="960"/>
         <source>About Leaklog</source>
         <translation>O programe Leaklog</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="906"/>
+        <location filename="../../ui/main_window.ui" line="975"/>
         <source>New</source>
         <translation>Nový</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="912"/>
+        <location filename="../../ui/main_window.ui" line="981"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../../ui/main_window.ui" line="220"/>
-        <location filename="../../ui/main_window.ui" line="921"/>
+        <location filename="../../ui/main_window.ui" line="990"/>
         <source>Open</source>
         <translation>Otvoriť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1489"/>
+        <location filename="../../ui/main_window.ui" line="1558"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="933"/>
+        <location filename="../../ui/main_window.ui" line="1002"/>
         <source>Save</source>
         <translation>Uložiť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="939"/>
+        <location filename="../../ui/main_window.ui" line="1008"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="951"/>
+        <location filename="../../ui/main_window.ui" line="1020"/>
         <source>Close</source>
         <translation>Zatvoriť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="957"/>
+        <location filename="../../ui/main_window.ui" line="1026"/>
         <source>Ctrl+W</source>
         <translation>Ctrl+W</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="966"/>
+        <location filename="../../ui/main_window.ui" line="1035"/>
         <source>Quit</source>
         <translation>Koniec</translation>
     </message>
@@ -1553,8 +1564,8 @@
     </message>
     <message>
         <location filename="../../src/database.cpp" line="61"/>
-        <location filename="../../src/database.cpp" line="1220"/>
-        <location filename="../../src/main_window.cpp" line="1235"/>
+        <location filename="../../src/database.cpp" line="1228"/>
+        <location filename="../../src/main_window.cpp" line="1240"/>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
     </message>
@@ -1565,15 +1576,15 @@
     </message>
     <message>
         <location filename="../../src/database.cpp" line="264"/>
-        <location filename="../../src/database.cpp" line="1447"/>
+        <location filename="../../src/database.cpp" line="1455"/>
         <source>untitled.lklg</source>
         <translation>nepomenovany.lklg</translation>
     </message>
     <message>
         <location filename="../../src/database.cpp" line="271"/>
-        <location filename="../../src/database.cpp" line="480"/>
-        <location filename="../../src/database.cpp" line="1455"/>
-        <location filename="../../src/main_window.cpp" line="506"/>
+        <location filename="../../src/database.cpp" line="488"/>
+        <location filename="../../src/database.cpp" line="1463"/>
+        <location filename="../../src/main_window.cpp" line="510"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation>Nemôžem zapisovať do súboru %1:
@@ -1582,7 +1593,7 @@
     <message>
         <location filename="../../src/database.cpp" line="386"/>
         <location filename="../../src/database.cpp" line="400"/>
-        <location filename="../../src/database.cpp" line="1490"/>
+        <location filename="../../src/database.cpp" line="1498"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation>Nemôžem čítať súbor %1:
@@ -1595,322 +1606,343 @@
     </message>
     <message>
         <location filename="../../src/database.cpp" line="436"/>
-        <location filename="../../src/database.cpp" line="1194"/>
-        <location filename="../../src/database.cpp" line="1290"/>
-        <location filename="../../src/database.cpp" line="1311"/>
+        <location filename="../../src/database.cpp" line="1202"/>
+        <location filename="../../src/database.cpp" line="1298"/>
+        <location filename="../../src/database.cpp" line="1319"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="454"/>
+        <location filename="../../src/database.cpp" line="462"/>
         <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
         <translation>Mali by ste pridať záznam o kúpe pre každé chladivo na sklade. Môžete tak urobiť kliknutím na tlačidlo &quot;Pridať záznam o nakladaní s chladivom&quot;.</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="511"/>
-        <location filename="../../src/database.cpp" line="531"/>
-        <location filename="../../src/main_window.cpp" line="1127"/>
+        <location filename="../../src/database.cpp" line="519"/>
+        <location filename="../../src/database.cpp" line="539"/>
+        <location filename="../../src/main_window.cpp" line="1132"/>
         <source>Permission denied - Leaklog</source>
         <translation>Prístup zamietnutý - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="515"/>
-        <location filename="../../src/main_window.cpp" line="1128"/>
+        <location filename="../../src/database.cpp" line="523"/>
+        <location filename="../../src/main_window.cpp" line="1133"/>
         <source>This operation is not permitted.</source>
         <translation>Táto operácia nie je povolená.</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="516"/>
-        <location filename="../../src/database.cpp" line="533"/>
-        <location filename="../../src/main_window.cpp" line="1129"/>
+        <location filename="../../src/database.cpp" line="524"/>
+        <location filename="../../src/database.cpp" line="541"/>
+        <location filename="../../src/main_window.cpp" line="1134"/>
         <source>For more information, contact your administrator.</source>
         <translation>Pre viac informácii kontaktujte svojho administrátora</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="517"/>
-        <location filename="../../src/database.cpp" line="534"/>
-        <location filename="../../src/main_window.cpp" line="1130"/>
+        <location filename="../../src/database.cpp" line="525"/>
+        <location filename="../../src/database.cpp" line="542"/>
+        <location filename="../../src/main_window.cpp" line="1135"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="532"/>
+        <location filename="../../src/database.cpp" line="540"/>
         <source>This record is locked.</source>
         <translation>Tento záznam je zamknutý.</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="662"/>
+        <location filename="../../src/database.cpp" line="670"/>
         <source>Remove customer - Leaklog</source>
         <translation>Odstrániť zákazníka - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="662"/>
+        <location filename="../../src/database.cpp" line="670"/>
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného zákazníka?
 Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="663"/>
-        <location filename="../../src/database.cpp" line="764"/>
-        <location filename="../../src/database.cpp" line="848"/>
-        <location filename="../../src/database.cpp" line="930"/>
-        <location filename="../../src/database.cpp" line="1032"/>
-        <location filename="../../src/database.cpp" line="1093"/>
-        <location filename="../../src/database.cpp" line="1327"/>
-        <location filename="../../src/database.cpp" line="1389"/>
-        <location filename="../../src/database.cpp" line="2251"/>
-        <location filename="../../src/database.cpp" line="2302"/>
-        <location filename="../../src/database.cpp" line="2353"/>
-        <location filename="../../src/database.cpp" line="2417"/>
+        <location filename="../../src/database.cpp" line="671"/>
+        <location filename="../../src/database.cpp" line="772"/>
+        <location filename="../../src/database.cpp" line="856"/>
+        <location filename="../../src/database.cpp" line="938"/>
+        <location filename="../../src/database.cpp" line="1040"/>
+        <location filename="../../src/database.cpp" line="1101"/>
+        <location filename="../../src/database.cpp" line="1335"/>
+        <location filename="../../src/database.cpp" line="1397"/>
+        <location filename="../../src/database.cpp" line="2277"/>
+        <location filename="../../src/database.cpp" line="2328"/>
+        <location filename="../../src/database.cpp" line="2379"/>
+        <location filename="../../src/database.cpp" line="2443"/>
+        <location filename="../../src/database.cpp" line="2502"/>
         <source>REMOVE</source>
         <translation>ODSTRÁNIŤ</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1528"/>
-        <location filename="../../src/database.cpp" line="1574"/>
-        <location filename="../../src/database.cpp" line="1736"/>
-        <location filename="../../src/database.cpp" line="1791"/>
-        <location filename="../../src/database.cpp" line="1838"/>
-        <location filename="../../src/database.cpp" line="1883"/>
+        <location filename="../../src/database.cpp" line="1536"/>
+        <location filename="../../src/database.cpp" line="1582"/>
+        <location filename="../../src/database.cpp" line="1744"/>
+        <location filename="../../src/database.cpp" line="1799"/>
+        <location filename="../../src/database.cpp" line="1846"/>
+        <location filename="../../src/database.cpp" line="1891"/>
         <source>This record is older than the current record in your database</source>
         <translation>Tento záznam je starší ako aktuálny záznam vo vašej databáze</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1650"/>
+        <location filename="../../src/database.cpp" line="1658"/>
         <source>%1: %2</source>
         <translation>%1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2106"/>
-        <location filename="../../src/database.cpp" line="2200"/>
-        <location filename="../../src/database.cpp" line="2202"/>
+        <location filename="../../src/database.cpp" line="2114"/>
+        <location filename="../../src/database.cpp" line="2226"/>
+        <location filename="../../src/database.cpp" line="2228"/>
         <source>Import CSV - Leaklog</source>
         <translation>Importovať CSV - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2106"/>
+        <location filename="../../src/database.cpp" line="2114"/>
         <source>CSV files (*.csv);;All files (*.*)</source>
         <translation>Súbory CSV (*.csv);;Všetky súbory (*.*)</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2113"/>
+        <location filename="../../src/database.cpp" line="2121"/>
         <source>Customers</source>
         <translation>Zákazníci</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2115"/>
+        <location filename="../../src/database.cpp" line="2123"/>
         <source>Company</source>
         <translation>Firma</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2117"/>
-        <location filename="../../src/view.cpp" line="2119"/>
+        <location filename="../../src/database.cpp" line="2125"/>
+        <location filename="../../src/view.cpp" line="2206"/>
         <source>Phone</source>
         <translation>Telefón</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2118"/>
+        <location filename="../../src/database.cpp" line="2126"/>
         <source>Street</source>
         <translation>Ulica</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2119"/>
+        <location filename="../../src/database.cpp" line="2127"/>
         <source>City</source>
         <translation>Mesto</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2120"/>
+        <location filename="../../src/database.cpp" line="2128"/>
         <source>Postal code</source>
         <translation>PSČ</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2123"/>
-        <location filename="../../src/view.cpp" line="2117"/>
+        <location filename="../../src/database.cpp" line="2131"/>
+        <location filename="../../src/view.cpp" line="2204"/>
         <source>Contact persons</source>
         <translation>Kontaktné osoby</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2124"/>
+        <location filename="../../src/database.cpp" line="2132"/>
         <source>Contact person name</source>
         <translation>Meno kontaktnej osoby</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2125"/>
+        <location filename="../../src/database.cpp" line="2133"/>
         <source>Contact person e-mail</source>
         <translation>E-mail kontaktnej osoby</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2126"/>
+        <location filename="../../src/database.cpp" line="2134"/>
         <source>Contact person phone</source>
         <translation>Telefón kontaktnej osoby</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2128"/>
+        <location filename="../../src/database.cpp" line="2136"/>
         <source>Circuits</source>
         <translation>Okruhy</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2130"/>
-        <location filename="../../src/view.cpp" line="1255"/>
-        <location filename="../../src/view.cpp" line="1323"/>
+        <location filename="../../src/database.cpp" line="2138"/>
+        <location filename="../../src/view.cpp" line="1280"/>
+        <location filename="../../src/view.cpp" line="1348"/>
         <source>Customer ID</source>
         <translation>IČO zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2131"/>
+        <location filename="../../src/database.cpp" line="2139"/>
+        <location filename="../../src/database.cpp" line="2205"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2132"/>
+        <location filename="../../src/database.cpp" line="2140"/>
         <source>Place of operation</source>
         <translation>Miesto prevádzky</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2133"/>
+        <location filename="../../src/database.cpp" line="2141"/>
         <source>Building</source>
         <translation>Budova</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2134"/>
+        <location filename="../../src/database.cpp" line="2142"/>
         <source>Device</source>
         <translation>Zariadenie</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2135"/>
-        <location filename="../../src/database.cpp" line="2175"/>
-        <location filename="../../src/view.cpp" line="2083"/>
+        <location filename="../../src/database.cpp" line="2143"/>
+        <location filename="../../src/database.cpp" line="2183"/>
+        <location filename="../../src/view.cpp" line="2168"/>
         <source>Manufacturer</source>
         <translation>Výrobca</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2136"/>
-        <location filename="../../src/database.cpp" line="2176"/>
-        <location filename="../../src/view.cpp" line="2084"/>
+        <location filename="../../src/database.cpp" line="2144"/>
+        <location filename="../../src/database.cpp" line="2184"/>
+        <location filename="../../src/view.cpp" line="2169"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2137"/>
-        <location filename="../../src/view.cpp" line="2085"/>
+        <location filename="../../src/database.cpp" line="2145"/>
+        <location filename="../../src/view.cpp" line="2170"/>
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2138"/>
-        <location filename="../../src/database.cpp" line="2171"/>
+        <location filename="../../src/database.cpp" line="2146"/>
+        <location filename="../../src/database.cpp" line="2179"/>
         <source>Amount of refrigerant</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2139"/>
-        <location filename="../../src/database.cpp" line="2172"/>
+        <location filename="../../src/database.cpp" line="2147"/>
+        <location filename="../../src/database.cpp" line="2180"/>
         <source>Amount of oil</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2140"/>
+        <location filename="../../src/database.cpp" line="2148"/>
         <source>Run-time per day</source>
         <translation>Denná pracovná doba</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2141"/>
+        <location filename="../../src/database.cpp" line="2149"/>
         <source>Rate of utilisation</source>
         <translation>Stupeň zaťaženia</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2142"/>
+        <location filename="../../src/database.cpp" line="2150"/>
         <source>Disused</source>
         <translation>Vyradený</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2143"/>
+        <location filename="../../src/database.cpp" line="2151"/>
         <source>Hermetically sealed</source>
         <translation>Hermeticky uzavretý</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2144"/>
+        <location filename="../../src/database.cpp" line="2152"/>
         <source>Fixed leakage detector installed</source>
         <translation>Zabudovaný detektor únikov</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2145"/>
+        <location filename="../../src/database.cpp" line="2153"/>
+        <source>Year of purchase</source>
+        <translation>Rok zakúpenia</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2154"/>
         <source>Date of commissioning</source>
         <translation>Dátum uvedenia do prevádzky</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2146"/>
+        <location filename="../../src/database.cpp" line="2155"/>
         <source>Field of application</source>
         <translation>Druh nasadenia</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2152"/>
-        <location filename="../../src/database.cpp" line="2177"/>
+        <location filename="../../src/database.cpp" line="2161"/>
+        <location filename="../../src/database.cpp" line="2185"/>
         <source>Oil</source>
         <translation>Olej</translation>
     </message>
     <message>
+        <location filename="../../src/database.cpp" line="2501"/>
+        <source>Remove style - Leaklog</source>
+        <translation>Odstrániť vzhľad - Leaklog</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2501"/>
+        <source>Are you sure you want to remove the selected style?
+To remove the style &quot;%1&quot; type REMOVE and confirm:</source>
+        <translation>Naozaj chcete odstrániť vybraný vzhľad?
+Na odstránenie vzhľadu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+    </message>
+    <message>
         <location filename="../../src/database.cpp" line="147"/>
-        <location filename="../../src/database.cpp" line="2163"/>
-        <location filename="../../src/view.cpp" line="2082"/>
+        <location filename="../../src/database.cpp" line="2172"/>
+        <location filename="../../src/view.cpp" line="2167"/>
         <source>Circuit units</source>
         <translation>Jednotky okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2165"/>
+        <location filename="../../src/database.cpp" line="2174"/>
         <source>Unit type ID</source>
         <translation>IČ typu jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2166"/>
+        <location filename="../../src/database.cpp" line="2175"/>
         <source>Unit serial number</source>
         <translation>Sériové číslo jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2168"/>
+        <location filename="../../src/database.cpp" line="2177"/>
         <source>Circuit unit types</source>
         <translation>Typy jednotiek okruhov</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2170"/>
+        <location filename="../../src/database.cpp" line="2218"/>
         <source>Category ID</source>
         <translation>IČ kategórie</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2173"/>
-        <location filename="../../src/view.cpp" line="1260"/>
+        <location filename="../../src/database.cpp" line="2181"/>
+        <location filename="../../src/database.cpp" line="2207"/>
+        <location filename="../../src/view.cpp" line="1285"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2174"/>
-        <location filename="../../src/view.cpp" line="1262"/>
+        <location filename="../../src/database.cpp" line="2182"/>
+        <location filename="../../src/database.cpp" line="2208"/>
+        <location filename="../../src/view.cpp" line="1287"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2186"/>
+        <location filename="../../src/database.cpp" line="2194"/>
         <source>Location</source>
         <translation>Poloha</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2189"/>
+        <location filename="../../src/database.cpp" line="2197"/>
         <source>Output</source>
         <translation>Výkon</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2190"/>
+        <location filename="../../src/database.cpp" line="2198"/>
         <source>Output unit</source>
         <translation>Jednotka výkonu</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2191"/>
+        <location filename="../../src/database.cpp" line="2199"/>
         <source>Output at t0/tc</source>
         <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2192"/>
+        <location filename="../../src/database.cpp" line="2200"/>
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
@@ -1920,17 +1952,62 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="513"/>
+        <location filename="../../src/database.cpp" line="521"/>
         <source>This record was created by another user. Operation not permitted.</source>
         <translation>Tento záznam bol vytvorený iným používateľom. Operácia nepovolená.</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2200"/>
+        <location filename="../../src/database.cpp" line="2203"/>
+        <source>Assembly record item types</source>
+        <translation>Typy položiek montážneho listu</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2210"/>
+        <source>EAN code</source>
+        <translation>EAN kód</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2211"/>
+        <source>Data type</source>
+        <translation>Údajový typ</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2212"/>
+        <source>string</source>
+        <translation>reťazec</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2213"/>
+        <source>integer</source>
+        <translation>celé číslo</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2214"/>
+        <source>numeric</source>
+        <translation>reálne číslo</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2215"/>
+        <source>text</source>
+        <translation>text</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2216"/>
+        <source>boolean</source>
+        <translation>áno/nie</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2217"/>
+        <source>Automatically add to assembly record</source>
+        <translation>Automaticky pridať do montážneho listu</translation>
+    </message>
+    <message>
+        <location filename="../../src/database.cpp" line="2226"/>
         <source>Failed to import %1 of %2 records.</source>
         <translation>Nepodarilo sa importovať %1 z %2 záznamov.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/database.cpp" line="2202"/>
+        <location filename="../../src/database.cpp" line="2228"/>
         <source>Successfully imported %n record(s).</source>
         <translation>
             <numerusform>%n záznam úspešne importovaný.</numerusform>
@@ -1939,59 +2016,60 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         </translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2250"/>
+        <location filename="../../src/database.cpp" line="2276"/>
         <source>Remove assembly record item - Leaklog</source>
         <translation>Odstrániť položku montážneho listu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2250"/>
+        <location filename="../../src/database.cpp" line="2276"/>
         <source>Are you sure you want to remove the selected assembly record type?
 To remove all data about the record &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ montážneho listu?
 Na odstránenie všetkých údajov o type montážneho listu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2301"/>
+        <location filename="../../src/database.cpp" line="2327"/>
         <source>Remove assembly record item type - Leaklog</source>
         <translation>Odstrániť typ položky montážneho listu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2301"/>
+        <location filename="../../src/database.cpp" line="2327"/>
         <source>Are you sure you want to remove the selected assembly record item type?
 To remove all data about the record item &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ položky montážneho listu?
 Na odstránenie všetkých údajov o type položky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2352"/>
+        <location filename="../../src/database.cpp" line="2378"/>
         <source>Remove assembly record item category - Leaklog</source>
         <translation>Odstrániť kategóriu položiek montážneho listu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2352"/>
+        <location filename="../../src/database.cpp" line="2378"/>
         <source>Are you sure you want to remove the selected assembly record item category?
 To remove all data about the item category &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú kategóriu položiek montážneho listu?
 Na odstránenie všetkých údajov o kategórii &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2416"/>
+        <location filename="../../src/database.cpp" line="2442"/>
         <source>Remove circuit unit type - Leaklog</source>
         <translation>Odstrániť typ jednotky okruhu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2416"/>
+        <location filename="../../src/database.cpp" line="2442"/>
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ jednotky okruhu?
 Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="419"/>
-        <location filename="../../ui/main_window.ui" line="636"/>
-        <location filename="../../src/database.cpp" line="2114"/>
-        <location filename="../../src/database.cpp" line="2129"/>
-        <location filename="../../src/database.cpp" line="2169"/>
+        <location filename="../../ui/main_window.ui" line="420"/>
+        <location filename="../../ui/main_window.ui" line="637"/>
+        <location filename="../../src/database.cpp" line="2122"/>
+        <location filename="../../src/database.cpp" line="2137"/>
+        <location filename="../../src/database.cpp" line="2178"/>
+        <location filename="../../src/database.cpp" line="2204"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
@@ -2006,8 +2084,8 @@ Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíš
         <translation>Kontrola</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="969"/>
-        <location filename="../../src/main_window.cpp" line="1147"/>
+        <location filename="../../ui/main_window.ui" line="1038"/>
+        <location filename="../../src/main_window.cpp" line="1152"/>
         <source>Quit Leaklog</source>
         <translation>Ukončiť Leaklog</translation>
     </message>
@@ -2017,85 +2095,85 @@ Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíš
         <translation>about:blank</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1171"/>
+        <location filename="../../src/database.cpp" line="1179"/>
         <source>Search:</source>
         <translation>Hľadať:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="403"/>
+        <location filename="../../ui/main_window.ui" line="404"/>
         <source>Variables</source>
         <translation>Premenné</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="414"/>
-        <location filename="../../ui/main_window.ui" line="631"/>
+        <location filename="../../ui/main_window.ui" line="415"/>
+        <location filename="../../ui/main_window.ui" line="632"/>
         <source>Variable name</source>
         <translation>Meno premennej</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="552"/>
+        <location filename="../../ui/main_window.ui" line="553"/>
         <source>Table:</source>
         <translation>Tabuľka:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="755"/>
-        <location filename="../../src/database.cpp" line="1220"/>
+        <location filename="../../ui/main_window.ui" line="756"/>
+        <location filename="../../src/database.cpp" line="1228"/>
         <source>Remove</source>
         <translation>Odstrániť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="972"/>
+        <location filename="../../ui/main_window.ui" line="1041"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="984"/>
+        <location filename="../../ui/main_window.ui" line="1053"/>
         <source>Add customer</source>
         <translation>Pridať zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1002"/>
+        <location filename="../../ui/main_window.ui" line="1071"/>
         <source>Remove customer</source>
         <translation>Odstrániť zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1020"/>
+        <location filename="../../ui/main_window.ui" line="1089"/>
         <source>Add circuit</source>
         <translation>Pridať okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1026"/>
+        <location filename="../../ui/main_window.ui" line="1095"/>
         <source>Ctrl+Alt++</source>
         <translation>Ctrl+Alt++</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1038"/>
+        <location filename="../../ui/main_window.ui" line="1107"/>
         <source>Remove circuit</source>
         <translation>Odstrániť okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1044"/>
+        <location filename="../../ui/main_window.ui" line="1113"/>
         <source>Ctrl+Alt+-</source>
         <translation>Ctrl+Alt+-</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1056"/>
+        <location filename="../../ui/main_window.ui" line="1125"/>
         <source>Add inspection</source>
         <translation>Pridať kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1282"/>
+        <location filename="../../ui/main_window.ui" line="1351"/>
         <source>Ctrl+I</source>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1074"/>
+        <location filename="../../ui/main_window.ui" line="1143"/>
         <source>Remove inspection</source>
         <translation>Odstrániť kontrolu</translation>
     </message>
     <message>
         <location filename="../../ui/main_window.ui" line="231"/>
-        <location filename="../../ui/main_window.ui" line="1631"/>
+        <location filename="../../ui/main_window.ui" line="1700"/>
         <source>Export</source>
         <translation>Exportovať</translation>
     </message>
@@ -2105,196 +2183,197 @@ Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíš
         <translation>Oprava</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="439"/>
+        <location filename="../../ui/main_window.ui" line="440"/>
         <source>Create a new variable</source>
         <translation>Vytvoriť novú premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="442"/>
+        <location filename="../../ui/main_window.ui" line="443"/>
         <source>Add variable</source>
         <translation>Pridať premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="468"/>
+        <location filename="../../ui/main_window.ui" line="469"/>
         <source>Modify the selected variable</source>
         <translation>Upraviť vybranú premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="504"/>
+        <location filename="../../ui/main_window.ui" line="505"/>
         <source>Remove the selected variable</source>
         <translation>Odstrániť vybranú premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="507"/>
+        <location filename="../../ui/main_window.ui" line="508"/>
         <source>Remove variable</source>
         <translation>Odstrániť premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="562"/>
-        <location filename="../../ui/main_window.ui" line="568"/>
+        <location filename="../../ui/main_window.ui" line="563"/>
+        <location filename="../../ui/main_window.ui" line="569"/>
         <source>Add table</source>
         <translation>Pridať tabuľku</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="608"/>
-        <location filename="../../ui/main_window.ui" line="614"/>
+        <location filename="../../ui/main_window.ui" line="609"/>
+        <location filename="../../ui/main_window.ui" line="615"/>
         <source>Remove table</source>
         <translation>Odstrániť tabuľku</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1099"/>
-        <location filename="../../ui/main_window.ui" line="1102"/>
+        <location filename="../../ui/main_window.ui" line="1168"/>
+        <location filename="../../ui/main_window.ui" line="1171"/>
         <source>Show variables</source>
         <translation>Zobraziť premenné</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1123"/>
+        <location filename="../../ui/main_window.ui" line="1192"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1135"/>
+        <location filename="../../ui/main_window.ui" line="1204"/>
         <source>Modify circuit</source>
         <translation>Upraviť okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1141"/>
+        <location filename="../../ui/main_window.ui" line="1210"/>
         <source>Ctrl+Alt+*</source>
         <translation>Ctrl+Alt+*</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1153"/>
+        <location filename="../../ui/main_window.ui" line="1222"/>
         <source>Modify customer</source>
         <translation>Upraviť zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1171"/>
+        <location filename="../../ui/main_window.ui" line="1240"/>
         <source>Modify inspection</source>
         <translation>Upraviť kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1189"/>
-        <location filename="../../src/main_window.cpp" line="472"/>
+        <location filename="../../ui/main_window.ui" line="1258"/>
+        <location filename="../../src/main_window.cpp" line="476"/>
         <source>Print</source>
         <translation>Tlačiť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1195"/>
+        <location filename="../../ui/main_window.ui" line="1264"/>
         <source>Ctrl+P</source>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1207"/>
+        <location filename="../../ui/main_window.ui" line="1276"/>
         <source>Print preview</source>
         <translation>Náhľad tlače</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="424"/>
+        <location filename="../../ui/main_window.ui" line="425"/>
+        <location filename="../../src/database.cpp" line="2206"/>
         <source>Unit</source>
         <translation>Jednotka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="465"/>
-        <location filename="../../ui/main_window.ui" line="471"/>
+        <location filename="../../ui/main_window.ui" line="466"/>
+        <location filename="../../ui/main_window.ui" line="472"/>
         <source>Modify variable</source>
         <translation>Upraviť premennú</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1222"/>
+        <location filename="../../ui/main_window.ui" line="1291"/>
         <source>Export customer data</source>
         <translation>Exportovať údaje o zákazníkovi</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1240"/>
+        <location filename="../../ui/main_window.ui" line="1309"/>
         <source>Export circuit data</source>
         <translation>Exportovať údaje o okruhu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1258"/>
+        <location filename="../../ui/main_window.ui" line="1327"/>
         <source>Export inspection data</source>
         <translation>Exportovať údaje o kontrole</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1291"/>
+        <location filename="../../ui/main_window.ui" line="1360"/>
         <source>Check for updates</source>
         <translation>Skontrolovať aktualizácie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1303"/>
+        <location filename="../../ui/main_window.ui" line="1372"/>
         <source>New variable</source>
         <translation>Nová premenná</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1315"/>
+        <location filename="../../ui/main_window.ui" line="1384"/>
         <source>New subvariable</source>
         <translation>Nová podpremenná</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="372"/>
+        <location filename="../../ui/main_window.ui" line="373"/>
         <source>Tool bar</source>
         <translation>Panel nástrojov</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="763"/>
+        <location filename="../../src/database.cpp" line="771"/>
         <source>Remove circuit - Leaklog</source>
         <translation>Odstrániť okruh - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="763"/>
+        <location filename="../../src/database.cpp" line="771"/>
         <source>Are you sure you want to remove the selected circuit?
 To remove all data about the circuit &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný okruh?
 Na odstránenie všetkých údajov o okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="847"/>
+        <location filename="../../src/database.cpp" line="855"/>
         <source>Remove inspection - Leaklog</source>
         <translation>Odstrániť kontrolu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="847"/>
+        <location filename="../../src/database.cpp" line="855"/>
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú kontrolu?
 Na odstránenie všetkých údajov o kontrole &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1031"/>
-        <location filename="../../src/database.cpp" line="1220"/>
+        <location filename="../../src/database.cpp" line="1039"/>
+        <location filename="../../src/database.cpp" line="1228"/>
         <source>Remove variable - Leaklog</source>
         <translation>Odstrániť premennú - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1031"/>
+        <location filename="../../src/database.cpp" line="1039"/>
         <source>Are you sure you want to remove the selected variable?
 To remove the variable &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú premennú?
 Na odstránenie premennej &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1092"/>
+        <location filename="../../src/database.cpp" line="1100"/>
         <source>Remove table - Leaklog</source>
         <translation>Odstrániť tabuľku - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1092"/>
+        <location filename="../../src/database.cpp" line="1100"/>
         <source>Are you sure you want to remove the selected table?
 To remove the table &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú tabuľku?
 Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1165"/>
+        <location filename="../../src/database.cpp" line="1173"/>
         <source>Add existing variable - Leaklog</source>
         <translation>Pridať existujúcu premennú - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="762"/>
+        <location filename="../../src/main_window.cpp" line="766"/>
         <source>Find - Leaklog</source>
         <translation>Nájsť - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="762"/>
+        <location filename="../../src/main_window.cpp" line="766"/>
         <source>Find:</source>
         <translation>Nájsť:</translation>
     </message>
@@ -2304,625 +2383,645 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <translation>Upraviť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1324"/>
+        <location filename="../../ui/main_window.ui" line="1393"/>
         <source>Find</source>
         <translation>Nájsť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1330"/>
+        <location filename="../../ui/main_window.ui" line="1399"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1339"/>
+        <location filename="../../ui/main_window.ui" line="1408"/>
         <source>Find next</source>
         <translation>Nájsť nasledujúci</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1345"/>
+        <location filename="../../ui/main_window.ui" line="1414"/>
         <source>Ctrl+G</source>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1354"/>
+        <location filename="../../ui/main_window.ui" line="1423"/>
         <source>Find previous</source>
         <translation>Nájsť predchádzajúci</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1360"/>
+        <location filename="../../ui/main_window.ui" line="1429"/>
         <source>Ctrl+Shift+G</source>
         <translation>Ctrl+Shift+G</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="585"/>
-        <location filename="../../ui/main_window.ui" line="591"/>
+        <location filename="../../ui/main_window.ui" line="586"/>
+        <location filename="../../ui/main_window.ui" line="592"/>
         <source>Modify table</source>
         <translation>Upraviť tabuľku</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1220"/>
+        <location filename="../../src/database.cpp" line="1228"/>
         <source>Are you sure you want to remove the variable &quot;%1&quot; from the selected table?</source>
         <translation>Naozaj chcete odstrániť premennú &quot;%1&quot; z vybranej tabuľky?</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1567"/>
-        <location filename="../../src/view.cpp" line="1572"/>
+        <location filename="../../src/view.cpp" line="1592"/>
+        <location filename="../../src/view.cpp" line="1597"/>
         <source>All</source>
         <translation>Všetky</translation>
     </message>
     <message>
         <location filename="../../ui/main_window.ui" line="332"/>
-        <location filename="../../ui/main_window.ui" line="1589"/>
-        <location filename="../../src/global.cpp" line="418"/>
+        <location filename="../../ui/main_window.ui" line="1658"/>
+        <location filename="../../src/global.cpp" line="422"/>
         <source>View</source>
         <translation>Zobraziť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1276"/>
+        <location filename="../../ui/main_window.ui" line="1345"/>
         <source>Import data</source>
         <translation>Importovať údaje</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1326"/>
+        <location filename="../../src/database.cpp" line="1334"/>
         <source>Remove warning - Leaklog</source>
         <translation>Odstrániť upozornenie - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1326"/>
+        <location filename="../../src/database.cpp" line="1334"/>
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybrané upozornenie?
 Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="534"/>
+        <location filename="../../ui/main_window.ui" line="535"/>
         <source>Tables</source>
         <translation>Tabuľky</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="565"/>
+        <location filename="../../ui/main_window.ui" line="566"/>
         <source>Create a new table</source>
         <translation>Vytvoriť novú tabuľku</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="588"/>
+        <location filename="../../ui/main_window.ui" line="589"/>
         <source>Modify the selected table</source>
         <translation>Upraviť vybranú tabuľku</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="611"/>
+        <location filename="../../ui/main_window.ui" line="612"/>
         <source>Remove the selected table</source>
         <translation>Odstrániť vybranú tabuľku</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="651"/>
+        <location filename="../../ui/main_window.ui" line="652"/>
         <source>Add a variable to the selected table</source>
         <translation>Pridať premennú do vybranej tabuľky</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="693"/>
+        <location filename="../../ui/main_window.ui" line="694"/>
         <source>Move up</source>
         <translation>Posunúť hore</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="696"/>
+        <location filename="../../ui/main_window.ui" line="697"/>
         <source>Move the selected variable up</source>
         <translation>Posunúť vybranú premennú hore</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="716"/>
+        <location filename="../../ui/main_window.ui" line="717"/>
         <source>Move down</source>
         <translation>Posunúť dole</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="719"/>
+        <location filename="../../ui/main_window.ui" line="720"/>
         <source>Move the selected variable down</source>
         <translation>Posunúť vybranú premennú dole</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="752"/>
+        <location filename="../../ui/main_window.ui" line="753"/>
         <source>Remove the selected variable from the table</source>
         <translation>Odstrániť vybranú premennú z tabuľky</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="782"/>
-        <location filename="../../src/view.cpp" line="720"/>
-        <location filename="../../src/view.cpp" line="1057"/>
+        <location filename="../../ui/main_window.ui" line="783"/>
+        <location filename="../../src/view.cpp" line="745"/>
+        <location filename="../../src/view.cpp" line="1082"/>
         <source>Warnings</source>
         <translation>Upozornenia</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="801"/>
+        <location filename="../../ui/main_window.ui" line="802"/>
         <source>Create a new warning</source>
         <translation>Vytvoriť nové upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="827"/>
+        <location filename="../../ui/main_window.ui" line="828"/>
         <source>Modify the selected warning</source>
         <translation>Upraviť vybrané upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="860"/>
+        <location filename="../../ui/main_window.ui" line="861"/>
         <source>Remove the selected warning</source>
         <translation>Odstrániť vybrané upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="894"/>
+        <location filename="../../ui/main_window.ui" line="888"/>
+        <source>Styles</source>
+        <translation>Vzhľady</translation>
+    </message>
+    <message>
+        <location filename="../../ui/main_window.ui" line="903"/>
+        <source>Add style</source>
+        <translation>Pridať vzhľad</translation>
+    </message>
+    <message>
+        <location filename="../../ui/main_window.ui" line="938"/>
+        <source>Remove style</source>
+        <translation>Odstrániť vzhľad</translation>
+    </message>
+    <message>
+        <location filename="../../ui/main_window.ui" line="963"/>
         <source>Information about Leaklog</source>
         <translation>Informácie o programe Leaklog</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="909"/>
+        <location filename="../../ui/main_window.ui" line="978"/>
         <source>Create a new database</source>
         <translation>Vytvoriť novú databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="936"/>
+        <location filename="../../ui/main_window.ui" line="1005"/>
         <source>Save changes</source>
         <translation>Uložiť zmeny</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="954"/>
+        <location filename="../../ui/main_window.ui" line="1023"/>
         <source>Close the database</source>
         <translation>Zatvoriť databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="987"/>
+        <location filename="../../ui/main_window.ui" line="1056"/>
         <source>Add a new customer</source>
         <translation>Pridať nového zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="990"/>
+        <location filename="../../ui/main_window.ui" line="1059"/>
         <source>Ctrl++</source>
         <translation>Ctrl++</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1005"/>
+        <location filename="../../ui/main_window.ui" line="1074"/>
         <source>Remove the selected customer</source>
         <translation>Odstrániť vybraného zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1008"/>
+        <location filename="../../ui/main_window.ui" line="1077"/>
         <source>Ctrl+-</source>
         <translation>Ctrl+-</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1023"/>
+        <location filename="../../ui/main_window.ui" line="1092"/>
         <source>Add a new circuit to the selected customer</source>
         <translation>Pridať nový okruh vybranému zákazníkovi</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1041"/>
+        <location filename="../../ui/main_window.ui" line="1110"/>
         <source>Remove the selected circuit</source>
         <translation>Odstrániť vybraný okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1059"/>
+        <location filename="../../ui/main_window.ui" line="1128"/>
         <source>Add a new inspection to the selected circuit</source>
         <translation>Pridať novú kontrolu vybraného okruhu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1062"/>
+        <location filename="../../ui/main_window.ui" line="1131"/>
         <source>Ctrl+Shift++</source>
         <translation>Ctrl+Shift++</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1077"/>
+        <location filename="../../ui/main_window.ui" line="1146"/>
         <source>Remove the selected inspection</source>
         <translation>Odstrániť vybranú kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1080"/>
+        <location filename="../../ui/main_window.ui" line="1149"/>
         <source>Ctrl+Shift+-</source>
         <translation>Ctrl+Shift+-</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1088"/>
+        <location filename="../../ui/main_window.ui" line="1157"/>
         <source>Show browser</source>
         <translation>Zobraziť prehľad</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1091"/>
+        <location filename="../../ui/main_window.ui" line="1160"/>
         <source>Ctrl+Alt+B</source>
         <translation>Ctrl+Alt+P</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1105"/>
+        <location filename="../../ui/main_window.ui" line="1174"/>
         <source>Ctrl+Alt+V</source>
         <translation>Ctrl+Alt+V</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1120"/>
+        <location filename="../../ui/main_window.ui" line="1189"/>
         <source>Save changes and compact the database</source>
         <translation>Uložiť zmeny a stlačiť databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1138"/>
+        <location filename="../../ui/main_window.ui" line="1207"/>
         <source>Modify the selected circuit</source>
         <translation>Upraviť vybraný okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1156"/>
+        <location filename="../../ui/main_window.ui" line="1225"/>
         <source>Modify the selected customer</source>
         <translation>Upraviť vybraného zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1159"/>
+        <location filename="../../ui/main_window.ui" line="1228"/>
         <source>Ctrl+*</source>
         <translation>Ctrl+*</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1174"/>
+        <location filename="../../ui/main_window.ui" line="1243"/>
         <source>Modify the selected inspection</source>
         <translation>Upraviť vybranú kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1177"/>
+        <location filename="../../ui/main_window.ui" line="1246"/>
         <source>Ctrl+Shift+*</source>
         <translation>Ctrl+Shift+*</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1192"/>
+        <location filename="../../ui/main_window.ui" line="1261"/>
         <source>Print the current view</source>
         <translation>Tlačiť aktuálny pohľad</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1210"/>
+        <location filename="../../ui/main_window.ui" line="1279"/>
         <source>Display a print preview of the current view</source>
         <translation>Zobraziť náhľad tlače aktuálneho pohľadu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1225"/>
+        <location filename="../../ui/main_window.ui" line="1294"/>
         <source>Export all data of the selected customer</source>
         <translation>Exportovať všetky údaje o vybranom zákazníkovi</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1228"/>
+        <location filename="../../ui/main_window.ui" line="1297"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1243"/>
+        <location filename="../../ui/main_window.ui" line="1312"/>
         <source>Export all data of the selected circuit</source>
         <translation>Exportovať všetky údaje o vybranom okruhu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1246"/>
+        <location filename="../../ui/main_window.ui" line="1315"/>
         <source>Ctrl+Alt+E</source>
         <translation>Ctrl+Alt+E</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1261"/>
+        <location filename="../../ui/main_window.ui" line="1330"/>
         <source>Export all data of the selected inspection</source>
         <translation>Exportovať všetky údaje o vybranej kontrole</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1264"/>
+        <location filename="../../ui/main_window.ui" line="1333"/>
         <source>Ctrl+Shift+E</source>
         <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1279"/>
+        <location filename="../../ui/main_window.ui" line="1348"/>
         <source>Import data from another database file</source>
         <translation>Importovať údaje z iného databázového súboru</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1294"/>
+        <location filename="../../ui/main_window.ui" line="1363"/>
         <source>Check for Leaklog updates on-line</source>
         <translation>Skontrolovať dostupnosť aktualizácií programu Leaklog</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1327"/>
+        <location filename="../../ui/main_window.ui" line="1396"/>
         <source>Search for a word in the current view</source>
         <translation>Vyhľadať slovo v aktuálnom pohľade</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1342"/>
+        <location filename="../../ui/main_window.ui" line="1411"/>
         <source>Find the next occurrence of the searched word</source>
         <translation>Nájsť ďalší výskyt hľadaného slova</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1357"/>
+        <location filename="../../ui/main_window.ui" line="1426"/>
         <source>Find the previous occurrence of the searched word</source>
         <translation>Nájsť predchádzajúci výskyt hľadaného slova</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1368"/>
-        <location filename="../../ui/main_window.ui" line="1371"/>
+        <location filename="../../ui/main_window.ui" line="1437"/>
+        <location filename="../../ui/main_window.ui" line="1440"/>
         <source>Show tables</source>
         <translation>Zobraziť tabuľky</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1374"/>
+        <location filename="../../ui/main_window.ui" line="1443"/>
         <source>Ctrl+Alt+T</source>
         <translation>Ctrl+Alt+T</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1382"/>
-        <location filename="../../ui/main_window.ui" line="1385"/>
+        <location filename="../../ui/main_window.ui" line="1451"/>
+        <location filename="../../ui/main_window.ui" line="1454"/>
         <source>Show warnings</source>
         <translation>Zobraziť upozornenia</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1388"/>
+        <location filename="../../ui/main_window.ui" line="1457"/>
         <source>Ctrl+Alt+W</source>
         <translation>Ctrl+Alt+U</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1607"/>
+        <location filename="../../ui/main_window.ui" line="1676"/>
         <source>PDF (Portrait)</source>
         <translation>PDF (na výšku)</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1680"/>
+        <location filename="../../ui/main_window.ui" line="1749"/>
         <source>Print labels for the selected inspector</source>
         <translation>Tlačiť štítky pre vybraného kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1701"/>
+        <location filename="../../ui/main_window.ui" line="1770"/>
         <source>Switch view to service company</source>
         <translation>Zmeniť pohľad na servisnú organizáciu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1713"/>
+        <location filename="../../ui/main_window.ui" line="1782"/>
         <source>Basic logbook</source>
         <translation>Jednoduchý záznamník</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1716"/>
+        <location filename="../../ui/main_window.ui" line="1785"/>
         <source>Switch view to basic logbook</source>
         <translation>Zmeniť pohľad na jednoduchý záznamník</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1728"/>
+        <location filename="../../ui/main_window.ui" line="1797"/>
         <source>Detailed logbook</source>
         <translation>Podrobný záznamník</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1731"/>
+        <location filename="../../ui/main_window.ui" line="1800"/>
         <source>Switch view to detailed logbook</source>
         <translation>Zmeniť pohľad na podrobný záznamník</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1743"/>
+        <location filename="../../ui/main_window.ui" line="1812"/>
         <source>Import CSV</source>
         <translation>Importovať CSV</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1746"/>
+        <location filename="../../ui/main_window.ui" line="1815"/>
         <source>Import a CSV (comma-separated values) file</source>
         <translation>Importovať súbor CSV (čiarkou oddelené hodnoty)</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1755"/>
+        <location filename="../../ui/main_window.ui" line="1824"/>
         <source>PDF (Landscape)</source>
         <translation>PDF (na šírku)</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1770"/>
+        <location filename="../../ui/main_window.ui" line="1839"/>
         <source>Duplicate circuit</source>
         <translation>Duplikovať okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1773"/>
+        <location filename="../../ui/main_window.ui" line="1842"/>
         <source>Duplicate the selected circuit</source>
         <translation>Duplikovať vybraný okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1776"/>
+        <location filename="../../ui/main_window.ui" line="1845"/>
         <source>Ctrl+Alt+D</source>
         <translation>Ctrl+Alt+D</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1788"/>
+        <location filename="../../ui/main_window.ui" line="1857"/>
         <source>Duplicate customer</source>
         <translation>Duplikovať zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1791"/>
+        <location filename="../../ui/main_window.ui" line="1860"/>
         <source>Duplicate the selected customer</source>
         <translation>Duplikovať vybraného zákazníka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1794"/>
+        <location filename="../../ui/main_window.ui" line="1863"/>
         <source>Ctrl+D</source>
         <translation>Ctrl+D</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1806"/>
+        <location filename="../../ui/main_window.ui" line="1875"/>
         <source>Duplicate inspection</source>
         <translation>Duplikovať kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1809"/>
+        <location filename="../../ui/main_window.ui" line="1878"/>
         <source>Duplicate the selected inspection</source>
         <translation>Duplikovať vybranú kontrolu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1812"/>
+        <location filename="../../ui/main_window.ui" line="1881"/>
         <source>Ctrl+Shift+D</source>
         <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1824"/>
+        <location filename="../../ui/main_window.ui" line="1893"/>
         <source>Duplicate repair</source>
         <translation>Duplikovať opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1827"/>
+        <location filename="../../ui/main_window.ui" line="1896"/>
         <source>Duplicate the selected repair</source>
         <translation>Duplikovať vybranú opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1830"/>
+        <location filename="../../ui/main_window.ui" line="1899"/>
         <source>Meta+D</source>
         <translation>Meta+D</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1842"/>
-        <location filename="../../src/view.cpp" line="1252"/>
-        <location filename="../../src/view.cpp" line="2159"/>
+        <location filename="../../ui/main_window.ui" line="1911"/>
+        <location filename="../../src/view.cpp" line="1277"/>
+        <location filename="../../src/view.cpp" line="2246"/>
         <source>Assembly records</source>
         <translation>Montážne listy</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1845"/>
+        <location filename="../../ui/main_window.ui" line="1914"/>
         <source>Switch view to assembly records</source>
         <translation>Zmeniť pohľad na montážne listy</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1850"/>
+        <location filename="../../ui/main_window.ui" line="1919"/>
         <source>Configure permissions</source>
         <translation>Nastaviť prístupové práva</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1853"/>
+        <location filename="../../ui/main_window.ui" line="1922"/>
         <source>Configure database access and modification permissions</source>
         <translation>Nastaviť práva na prístup a zmeny v databáze</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="804"/>
+        <location filename="../../ui/main_window.ui" line="1933"/>
+        <source>Show styles</source>
+        <translation>Zobraziť vzhľady</translation>
+    </message>
+    <message>
+        <location filename="../../ui/main_window.ui" line="805"/>
         <source>Add warning</source>
         <translation>Pridať upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="824"/>
-        <location filename="../../ui/main_window.ui" line="830"/>
+        <location filename="../../ui/main_window.ui" line="825"/>
+        <location filename="../../ui/main_window.ui" line="831"/>
         <source>Modify warning</source>
         <translation>Upraviť upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="863"/>
+        <location filename="../../ui/main_window.ui" line="864"/>
         <source>Remove warning</source>
         <translation>Odstrániť upozornenie</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1400"/>
+        <location filename="../../ui/main_window.ui" line="1469"/>
         <source>Change the interface language</source>
         <translation>Zmeniť jazyk prostredia</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1423"/>
+        <location filename="../../ui/main_window.ui" line="1492"/>
         <source>Add a new inspector</source>
         <translation>Pridať nového kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1438"/>
+        <location filename="../../ui/main_window.ui" line="1507"/>
         <source>Modify the selected inspector</source>
         <translation>Upraviť vybraného kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1453"/>
+        <location filename="../../ui/main_window.ui" line="1522"/>
         <source>Remove the selected inspector</source>
         <translation>Odstrániť vybraného kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1468"/>
+        <location filename="../../ui/main_window.ui" line="1537"/>
         <source>Print detailed label</source>
         <translation>Tlačiť podrobný štítok</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1471"/>
+        <location filename="../../ui/main_window.ui" line="1540"/>
         <source>Print a detailed label for the selected circuit</source>
         <translation>Tlačiť podrobný štítok pre vybraný okruh</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1474"/>
+        <location filename="../../ui/main_window.ui" line="1543"/>
         <source>Ctrl+Shift+L</source>
         <translation>Ctrl+Shift+L</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1486"/>
+        <location filename="../../ui/main_window.ui" line="1555"/>
         <source>Open a database file</source>
         <translation>Otvoriť databázový súbor</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1501"/>
+        <location filename="../../ui/main_window.ui" line="1570"/>
         <source>Connect to a remote database server</source>
         <translation>Pripojiť sa k vzdialenému databázovému serveru</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1509"/>
-        <location filename="../../ui/main_window.ui" line="1512"/>
+        <location filename="../../ui/main_window.ui" line="1578"/>
+        <location filename="../../ui/main_window.ui" line="1581"/>
         <source>Modify service company information</source>
         <translation>Upraviť informácie o servisnej organizácii</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1524"/>
+        <location filename="../../ui/main_window.ui" line="1593"/>
         <source>Add a new repair</source>
         <translation>Pridať novú opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1542"/>
+        <location filename="../../ui/main_window.ui" line="1611"/>
         <source>Modify the selected repair</source>
         <translation>Upraviť vybranú opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1560"/>
+        <location filename="../../ui/main_window.ui" line="1629"/>
         <source>Remove the selected repair</source>
         <translation>Odstrániť vybranú opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1610"/>
-        <location filename="../../ui/main_window.ui" line="1758"/>
+        <location filename="../../ui/main_window.ui" line="1679"/>
+        <location filename="../../ui/main_window.ui" line="1827"/>
         <source>Export the current view as a PDF document</source>
         <translation>Exportovať aktuálny pohľad ako PDF dokument</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1619"/>
+        <location filename="../../ui/main_window.ui" line="1688"/>
         <source>HTML Webpage</source>
         <translation>HTML Webová stránka</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1622"/>
+        <location filename="../../ui/main_window.ui" line="1691"/>
         <source>Export the current view as an HTML document</source>
         <translation>Exportovať aktuálny pohľad ako HTML dokument</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1639"/>
+        <location filename="../../ui/main_window.ui" line="1708"/>
         <source>Printer-friendly version</source>
         <translation>Verzia pre tlač</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1642"/>
+        <location filename="../../ui/main_window.ui" line="1711"/>
         <source>Display a printer-friendly version of the current view</source>
         <translation>Zobraziť aktuálny pohľad spôsobom vhodným pre tlač</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1654"/>
+        <location filename="../../ui/main_window.ui" line="1723"/>
         <source>Lock the database</source>
         <translation>Zamknúť databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1662"/>
-        <location filename="../../ui/main_window.ui" line="1665"/>
+        <location filename="../../ui/main_window.ui" line="1731"/>
+        <location filename="../../ui/main_window.ui" line="1734"/>
         <source>Report data to the notified body</source>
         <translation>Oznámiť údaje certifikačnému orgánu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="629"/>
-        <location filename="../../src/view.cpp" line="1861"/>
-        <location filename="../../src/view.cpp" line="2222"/>
+        <location filename="../../src/view.cpp" line="654"/>
+        <location filename="../../src/view.cpp" line="1899"/>
+        <location filename="../../src/view.cpp" line="2309"/>
         <source>Nominal inspection:</source>
         <translation>Nominálna kontrola:</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="631"/>
-        <location filename="../../src/view.cpp" line="1861"/>
-        <location filename="../../src/view.cpp" line="2224"/>
+        <location filename="../../src/view.cpp" line="656"/>
+        <location filename="../../src/view.cpp" line="1899"/>
+        <location filename="../../src/view.cpp" line="2311"/>
         <source>Inspection:</source>
         <translation>Kontrola:</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1700"/>
+        <location filename="../../src/database.cpp" line="1708"/>
         <location filename="../../src/view.cpp" line="231"/>
         <location filename="../../src/view.cpp" line="345"/>
-        <location filename="../../src/view.cpp" line="558"/>
-        <location filename="../../src/view.cpp" line="813"/>
-        <location filename="../../src/view.cpp" line="1057"/>
-        <location filename="../../src/view.cpp" line="1254"/>
-        <location filename="../../src/view.cpp" line="1322"/>
-        <location filename="../../src/view.cpp" line="2161"/>
+        <location filename="../../src/view.cpp" line="583"/>
+        <location filename="../../src/view.cpp" line="838"/>
+        <location filename="../../src/view.cpp" line="1082"/>
+        <location filename="../../src/view.cpp" line="1279"/>
+        <location filename="../../src/view.cpp" line="1347"/>
+        <location filename="../../src/view.cpp" line="2248"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
@@ -2935,7 +3034,7 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
     </message>
     <message>
         <location filename="../../src/database.cpp" line="264"/>
-        <location filename="../../src/database.cpp" line="1447"/>
+        <location filename="../../src/database.cpp" line="1455"/>
         <source>Leaklog Database (*.lklg)</source>
         <translation>Databáza programu Leaklog (*.lklg)</translation>
     </message>
@@ -2945,45 +3044,45 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <location filename="../../src/database.cpp" line="386"/>
         <location filename="../../src/database.cpp" line="393"/>
         <location filename="../../src/database.cpp" line="400"/>
-        <location filename="../../src/main_window.cpp" line="316"/>
+        <location filename="../../src/main_window.cpp" line="320"/>
         <source>Open database - Leaklog</source>
         <translation>Otvoriť databázu - Leaklog</translation>
     </message>
     <message>
         <location filename="../../src/database.cpp" line="312"/>
-        <location filename="../../src/database.cpp" line="1484"/>
+        <location filename="../../src/database.cpp" line="1492"/>
         <source>Leaklog Databases (*.lklg);;All files (*.*)</source>
         <translation>Databázy programu Leaklog (*.lklg);;Všetky súbory (*.*)</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="480"/>
+        <location filename="../../src/database.cpp" line="488"/>
         <source>Save database - Leaklog</source>
         <translation>Uložiť databázu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="494"/>
+        <location filename="../../src/database.cpp" line="502"/>
         <source>Close database - Leaklog</source>
         <translation>Zatvoriť databázu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="444"/>
+        <location filename="../../src/view.cpp" line="469"/>
         <source>List of circuits</source>
         <translation>Zoznam okruhov</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1031"/>
+        <location filename="../../src/database.cpp" line="1039"/>
         <source>Remove subvariable - Leaklog</source>
         <translation>Odstrániť podpremennú - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1121"/>
+        <location filename="../../src/database.cpp" line="1129"/>
         <source>None</source>
         <translation>Žiadna</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1122"/>
-        <location filename="../../src/database.cpp" line="1143"/>
-        <location filename="../../src/view.cpp" line="942"/>
+        <location filename="../../src/database.cpp" line="1130"/>
+        <location filename="../../src/database.cpp" line="1151"/>
+        <location filename="../../src/view.cpp" line="967"/>
         <source>Sum</source>
         <translation>Spolu</translation>
     </message>
@@ -2998,38 +3097,38 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Databáza</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="641"/>
+        <location filename="../../ui/main_window.ui" line="642"/>
         <source>Foot</source>
         <translation>Päta</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="654"/>
-        <location filename="../../ui/main_window.ui" line="1580"/>
+        <location filename="../../ui/main_window.ui" line="655"/>
+        <location filename="../../ui/main_window.ui" line="1649"/>
         <source>Add</source>
         <translation>Pridať</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1443"/>
+        <location filename="../../src/database.cpp" line="1451"/>
         <source>Export customer data - Leaklog</source>
         <translation>Exportovať údaje o zákazníkovi - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1484"/>
-        <location filename="../../src/database.cpp" line="1490"/>
+        <location filename="../../src/database.cpp" line="1492"/>
+        <location filename="../../src/database.cpp" line="1498"/>
         <source>Import data - Leaklog</source>
         <translation>Importovať údaje - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2116"/>
-        <location filename="../../src/main_window.cpp" line="690"/>
-        <location filename="../../src/view.cpp" line="2118"/>
+        <location filename="../../src/database.cpp" line="2124"/>
+        <location filename="../../src/main_window.cpp" line="694"/>
+        <location filename="../../src/view.cpp" line="2205"/>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="2158"/>
-        <location filename="../../src/database.cpp" line="2183"/>
-        <location filename="../../src/main_window.cpp" line="663"/>
+        <location filename="../../src/database.cpp" line="2167"/>
+        <location filename="../../src/database.cpp" line="2191"/>
+        <location filename="../../src/main_window.cpp" line="667"/>
         <location filename="../../src/view.cpp" line="222"/>
         <location filename="../../src/view.cpp" line="232"/>
         <location filename="../../src/view.cpp" line="347"/>
@@ -3037,7 +3136,7 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Chladivo</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="686"/>
+        <location filename="../../src/main_window.cpp" line="690"/>
         <source>%</source>
         <translation>%</translation>
     </message>
@@ -3057,313 +3156,313 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Tabuľka parametrov</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1397"/>
-        <location filename="../../src/main_window.cpp" line="1185"/>
+        <location filename="../../ui/main_window.ui" line="1466"/>
+        <location filename="../../src/main_window.cpp" line="1190"/>
         <source>Change language</source>
         <translation>Zmeniť jazyk</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1187"/>
+        <location filename="../../src/main_window.cpp" line="1192"/>
         <source>Change language - Leaklog</source>
         <translation>Zmeniť jazyk - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1192"/>
+        <location filename="../../src/main_window.cpp" line="1197"/>
         <source>Select your preferred language</source>
         <translation>Vyberte váš jazyk</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1216"/>
+        <location filename="../../src/main_window.cpp" line="1221"/>
         <source>You need to restart Leaklog for the changes to apply.</source>
         <translation>Aby sa zmeny prejavili, je potrebné reštartovať Leaklog.</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1117"/>
+        <location filename="../../ui/main_window.ui" line="1186"/>
         <source>Compact</source>
         <translation>Stlačiť</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1235"/>
+        <location filename="../../src/main_window.cpp" line="1240"/>
         <source>Failed to check for updates.</source>
         <translation>Nepodarilo sa skontrolovať aktualizácie.</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1235"/>
+        <location filename="../../src/main_window.cpp" line="1240"/>
         <source>&amp;Try again</source>
         <translation>&amp;Skúsiť znovu</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1271"/>
+        <location filename="../../src/main_window.cpp" line="1276"/>
         <source>You are running the latest version of Leaklog.</source>
         <translation>Táto verzia programu Leaklog je aktuálna.</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1275"/>
+        <location filename="../../src/main_window.cpp" line="1280"/>
         <source>Leaklog %1 is available now.</source>
         <translation>Leaklog %1 je teraz dostupný.</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1278"/>
+        <location filename="../../src/main_window.cpp" line="1283"/>
         <source>Download Leaklog %1 for Mac OS X</source>
         <translation>Stiahnuť Leaklog %1 pre Mac OS X</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1280"/>
+        <location filename="../../src/main_window.cpp" line="1285"/>
         <source>Download Leaklog %1 for Windows</source>
         <translation>Stiahnuť Leaklog %1 pre Windows</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1282"/>
+        <location filename="../../src/main_window.cpp" line="1287"/>
         <source>Download source code</source>
         <translation>Stiahnuť zdrojový kód</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1610"/>
-        <location filename="../../src/database.cpp" line="1658"/>
-        <location filename="../../src/database.cpp" line="1971"/>
-        <location filename="../../src/database.cpp" line="1997"/>
-        <location filename="../../src/view.cpp" line="468"/>
-        <location filename="../../src/view.cpp" line="1084"/>
-        <location filename="../../src/view.cpp" line="1948"/>
+        <location filename="../../src/database.cpp" line="1618"/>
+        <location filename="../../src/database.cpp" line="1666"/>
+        <location filename="../../src/database.cpp" line="1979"/>
+        <location filename="../../src/database.cpp" line="2005"/>
+        <location filename="../../src/view.cpp" line="493"/>
+        <location filename="../../src/view.cpp" line="1109"/>
+        <location filename="../../src/view.cpp" line="2005"/>
         <source>Yes</source>
         <translation>Áno</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1610"/>
-        <location filename="../../src/database.cpp" line="1658"/>
-        <location filename="../../src/view.cpp" line="468"/>
-        <location filename="../../src/view.cpp" line="1084"/>
-        <location filename="../../src/view.cpp" line="1948"/>
+        <location filename="../../src/database.cpp" line="1618"/>
+        <location filename="../../src/database.cpp" line="1666"/>
+        <location filename="../../src/view.cpp" line="493"/>
+        <location filename="../../src/view.cpp" line="1109"/>
+        <location filename="../../src/view.cpp" line="2005"/>
         <source>No</source>
         <translation>Nie</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1639"/>
-        <location filename="../../src/database.cpp" line="1686"/>
-        <location filename="../../src/database.cpp" line="1952"/>
-        <location filename="../../src/database.cpp" line="1979"/>
+        <location filename="../../src/database.cpp" line="1647"/>
+        <location filename="../../src/database.cpp" line="1694"/>
+        <location filename="../../src/database.cpp" line="1960"/>
+        <location filename="../../src/database.cpp" line="1987"/>
         <source>Do not import</source>
         <translation>Neimportovať</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1627"/>
-        <location filename="../../src/database.cpp" line="1674"/>
-        <location filename="../../src/database.cpp" line="1955"/>
-        <location filename="../../src/database.cpp" line="1981"/>
+        <location filename="../../src/database.cpp" line="1635"/>
+        <location filename="../../src/database.cpp" line="1682"/>
+        <location filename="../../src/database.cpp" line="1963"/>
+        <location filename="../../src/database.cpp" line="1989"/>
         <source>Import</source>
         <translation>Importovať</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1444"/>
+        <location filename="../../src/database.cpp" line="1452"/>
         <source>Export circuit data - Leaklog</source>
         <translation>Exportovať údaje o okruhu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1445"/>
+        <location filename="../../src/database.cpp" line="1453"/>
         <source>Export inspection data - Leaklog</source>
         <translation>Exportovať údaje o kontrole - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1446"/>
+        <location filename="../../src/database.cpp" line="1454"/>
         <source>Export data - Leaklog</source>
         <translation>Exportovať údaje - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1630"/>
-        <location filename="../../src/database.cpp" line="1677"/>
+        <location filename="../../src/database.cpp" line="1638"/>
+        <location filename="../../src/database.cpp" line="1685"/>
         <source>Use existing and import</source>
         <translation>Použiť existujúcu a importovať</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1632"/>
-        <location filename="../../src/database.cpp" line="1679"/>
-        <location filename="../../src/database.cpp" line="1955"/>
-        <location filename="../../src/database.cpp" line="1981"/>
+        <location filename="../../src/database.cpp" line="1640"/>
+        <location filename="../../src/database.cpp" line="1687"/>
+        <location filename="../../src/database.cpp" line="1963"/>
+        <location filename="../../src/database.cpp" line="1989"/>
         <source>Overwrite and import</source>
         <translation>Prepísať a importovať</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1388"/>
+        <location filename="../../src/database.cpp" line="1396"/>
         <source>Remove inspector - Leaklog</source>
         <translation>Odstrániť kontrolóra - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1388"/>
+        <location filename="../../src/database.cpp" line="1396"/>
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného kontrolóra?
 Na odstránenie všetkých údajov o kontrolórovi &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="347"/>
-        <location filename="../../src/view.cpp" line="1384"/>
-        <location filename="../../src/view.cpp" line="2166"/>
+        <location filename="../../ui/main_window.ui" line="348"/>
+        <location filename="../../src/view.cpp" line="1409"/>
+        <location filename="../../src/view.cpp" line="2253"/>
         <source>Inspector</source>
         <translation>Kontrolór</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1408"/>
+        <location filename="../../ui/main_window.ui" line="1477"/>
         <source>Show inspectors</source>
         <translation>Zobraziť kontrolórov</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1411"/>
+        <location filename="../../ui/main_window.ui" line="1480"/>
         <source>Ctrl+Alt+I</source>
         <translation>Ctrl+Alt+K</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1420"/>
+        <location filename="../../ui/main_window.ui" line="1489"/>
         <source>Add inspector</source>
         <translation>Pridať kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1426"/>
+        <location filename="../../ui/main_window.ui" line="1495"/>
         <source>Ctrl+Alt+Shift++</source>
         <translation>Ctrl+Alt+Shift++</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1435"/>
+        <location filename="../../ui/main_window.ui" line="1504"/>
         <source>Modify inspector</source>
         <translation>Upraviť kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1441"/>
+        <location filename="../../ui/main_window.ui" line="1510"/>
         <source>Ctrl+Alt+Shift+*</source>
         <translation>Ctrl+Alt+Shift+*</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1450"/>
+        <location filename="../../ui/main_window.ui" line="1519"/>
         <source>Remove inspector</source>
         <translation>Odstrániť kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1456"/>
+        <location filename="../../ui/main_window.ui" line="1525"/>
         <source>Ctrl+Alt+Shift+-</source>
         <translation>Ctrl+Alt+Shift+-</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="489"/>
+        <location filename="../../src/main_window.cpp" line="493"/>
         <source>Export PDF - Leaklog</source>
         <translation>Exportovať PDF - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="489"/>
+        <location filename="../../src/main_window.cpp" line="493"/>
         <source>Adobe PDF (*.pdf)</source>
         <translation>Adobe PDF (*.pdf)</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="501"/>
-        <location filename="../../src/main_window.cpp" line="506"/>
+        <location filename="../../src/main_window.cpp" line="505"/>
+        <location filename="../../src/main_window.cpp" line="510"/>
         <source>Export HTML - Leaklog</source>
         <translation>Exportovať HTML - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="501"/>
+        <location filename="../../src/main_window.cpp" line="505"/>
         <source>Webpage (*.html)</source>
         <translation>Webová stránka (*.html)</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="544"/>
+        <location filename="../../src/main_window.cpp" line="548"/>
         <source>Print label - Leaklog</source>
         <translation>Tlačiť štítok - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="544"/>
+        <location filename="../../src/main_window.cpp" line="548"/>
         <source>Print detailed label - Leaklog</source>
         <translation>Tlačiť podrobný štítok - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="546"/>
+        <location filename="../../src/main_window.cpp" line="550"/>
         <source>Choose the position of the label on the paper:</source>
         <translation>Vyberte umiestnenie štítku na papieri:</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="551"/>
+        <location filename="../../src/main_window.cpp" line="555"/>
         <source>Row %1 Column %2</source>
         <translation>Riadok %1 Stĺpec %2</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1677"/>
-        <location filename="../../src/main_window.cpp" line="618"/>
+        <location filename="../../ui/main_window.ui" line="1746"/>
+        <location filename="../../src/main_window.cpp" line="622"/>
         <source>Print label</source>
         <translation>Tlačiť štítok</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="661"/>
-        <location filename="../../src/view.cpp" line="1256"/>
-        <location filename="../../src/view.cpp" line="1325"/>
+        <location filename="../../src/main_window.cpp" line="665"/>
+        <location filename="../../src/view.cpp" line="1281"/>
+        <location filename="../../src/view.cpp" line="1350"/>
         <source>Circuit ID</source>
         <translation>Číslo zariadenia</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="661"/>
+        <location filename="../../src/main_window.cpp" line="665"/>
         <source>3(6) - &lt;30 kg</source>
         <translation>3(6) - &lt;30 kg</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="663"/>
+        <location filename="../../src/main_window.cpp" line="667"/>
         <source>30 - &lt;300 kg</source>
         <translation>30 - &lt;300 kg</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="665"/>
+        <location filename="../../src/main_window.cpp" line="669"/>
         <source>above 300 kg</source>
         <translation>nad 300 kg</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="665"/>
+        <location filename="../../src/main_window.cpp" line="669"/>
         <source>Annual leakage</source>
         <translation>Ročný únik</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="688"/>
+        <location filename="../../src/main_window.cpp" line="692"/>
         <source>Telephone</source>
         <translation>Telefón</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="692"/>
+        <location filename="../../src/main_window.cpp" line="696"/>
         <source>Registry number of
 person and company ID</source>
         <translation>Číslo osvedčenia
 osoby a IČO firmy</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="198"/>
+        <location filename="../../src/main_window.cpp" line="199"/>
         <source>Clear current selection</source>
         <translation>Vynulovať aktuálny výber</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="334"/>
+        <location filename="../../src/main_window.cpp" line="338"/>
         <source>Open containing folder</source>
         <translation>Otvoriť nadradený priečinok</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="335"/>
+        <location filename="../../src/main_window.cpp" line="339"/>
         <source>Open the folder which contains this database</source>
         <translation>Otvoriť priečinok, ktorý obsahuje túto databázu</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="337"/>
+        <location filename="../../src/main_window.cpp" line="341"/>
         <source>Remove from list</source>
         <translation>Odstrániť zo zoznamu</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="338"/>
+        <location filename="../../src/main_window.cpp" line="342"/>
         <source>Remove the database from the list (the database will not be deleted)</source>
         <translation>Odstrániť databázu zo zoznamu (databáza nebude vymazaná)</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="667"/>
+        <location filename="../../src/main_window.cpp" line="671"/>
         <source>Date of inspection</source>
         <translation>Dátum vykonania kontroly</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="668"/>
+        <location filename="../../src/main_window.cpp" line="672"/>
         <source>Date of the next inspection</source>
         <translation>Dátum nasledujúcej kontroly</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="680"/>
+        <location filename="../../src/main_window.cpp" line="684"/>
         <source>Refrigerant leakage inspection
 in accordance with Regulation (EC)
 No. 842/2006</source>
@@ -3372,106 +3471,106 @@ Nariadenia (ES) č. 842/2006 a zákona
 č. 286/2009 Z.z. a vyhl. 314/2009 Z.z.</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="681"/>
+        <location filename="../../src/main_window.cpp" line="685"/>
         <source>once a year*</source>
         <translation>raz za rok*</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="683"/>
+        <location filename="../../src/main_window.cpp" line="687"/>
         <source>once in 6 months*</source>
         <translation>raz za 6 mesiacov*</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="685"/>
+        <location filename="../../src/main_window.cpp" line="689"/>
         <source>once in 3 months</source>
         <translation>raz za 3 mesiace</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="687"/>
+        <location filename="../../src/main_window.cpp" line="691"/>
         <source>Certified person</source>
         <translation>Osoba s osvedčením</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1053"/>
+        <location filename="../../src/main_window.cpp" line="1058"/>
         <source> days</source>
         <translation> dní</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1062"/>
+        <location filename="../../src/main_window.cpp" line="1067"/>
         <source>Administrator:</source>
         <translation>Administrátor:</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1228"/>
+        <location filename="../../src/main_window.cpp" line="1233"/>
         <source>/current-version-en</source>
         <translation>/current-version</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="659"/>
+        <location filename="../../src/main_window.cpp" line="663"/>
         <source>Certified company</source>
         <translation>Certifikovaná firma</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="930"/>
+        <location filename="../../src/main_window.cpp" line="935"/>
         <source>Unlock</source>
         <translation>Odomknúť</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1651"/>
-        <location filename="../../src/main_window.cpp" line="933"/>
-        <location filename="../../src/main_window.cpp" line="1084"/>
+        <location filename="../../ui/main_window.ui" line="1720"/>
+        <location filename="../../src/main_window.cpp" line="938"/>
+        <location filename="../../src/main_window.cpp" line="1089"/>
         <source>Lock</source>
         <translation>Zamknúť</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="948"/>
+        <location filename="../../src/main_window.cpp" line="953"/>
         <source>&lt;b&gt;Customer:&lt;/b&gt; %1%2</source>
         <translation>&lt;b&gt;Zákazník:&lt;/b&gt; %1%2</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="955"/>
+        <location filename="../../src/main_window.cpp" line="960"/>
         <source>&lt;b&gt;Circuit:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Okruh:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="961"/>
-        <location filename="../../src/main_window.cpp" line="969"/>
+        <location filename="../../src/main_window.cpp" line="966"/>
+        <location filename="../../src/main_window.cpp" line="974"/>
         <source>&lt;b&gt;Repair:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Oprava:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="961"/>
+        <location filename="../../src/main_window.cpp" line="966"/>
         <source>&lt;b&gt;Inspection:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Kontrola:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="976"/>
+        <location filename="../../src/main_window.cpp" line="981"/>
         <source>&lt;b&gt;Inspector:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Kontrolór:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1027"/>
+        <location filename="../../src/main_window.cpp" line="1032"/>
         <source>Lock database - Leaklog</source>
         <translation>Zamknúť databázu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1030"/>
+        <location filename="../../src/main_window.cpp" line="1035"/>
         <source>Lock inspections and repairs older than:</source>
         <translation>Zamknúť kontroly a opravy staršie ako:</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1103"/>
-        <location filename="../../src/main_window.cpp" line="1109"/>
+        <location filename="../../src/main_window.cpp" line="1108"/>
+        <location filename="../../src/main_window.cpp" line="1114"/>
         <source>Unlock database - Leaklog</source>
         <translation>Odomknúť databázu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="1109"/>
+        <location filename="../../src/main_window.cpp" line="1114"/>
         <source>Wrong password.</source>
         <translation>Nesprávne heslo.</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1683"/>
+        <location filename="../../ui/main_window.ui" line="1752"/>
         <source>Ctrl+L</source>
         <translation>Ctrl+L</translation>
     </message>
@@ -3519,23 +3618,23 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <location filename="../../src/database.cpp" line="352"/>
-        <location filename="../../src/main_window.cpp" line="1073"/>
-        <location filename="../../src/main_window.cpp" line="1104"/>
+        <location filename="../../src/main_window.cpp" line="1078"/>
+        <location filename="../../src/main_window.cpp" line="1109"/>
         <source>Password:</source>
         <translation>Heslo:</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1483"/>
+        <location filename="../../ui/main_window.ui" line="1552"/>
         <source>Local database</source>
         <translation>Lokálnu databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1498"/>
+        <location filename="../../ui/main_window.ui" line="1567"/>
         <source>Remote database</source>
         <translation>Vzdialenú databázu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1504"/>
+        <location filename="../../ui/main_window.ui" line="1573"/>
         <source>Ctrl+Shift+O</source>
         <translation>Ctrl+Shift+O</translation>
     </message>
@@ -3545,36 +3644,36 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Načítava sa...</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1397"/>
+        <location filename="../../src/view.cpp" line="1422"/>
         <source>View inspector activity</source>
         <translation>Zobraziť aktivitu kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1435"/>
+        <location filename="../../src/view.cpp" line="1460"/>
         <source>Circuit information</source>
         <comment>Operator report</comment>
         <translation>Údaje o okruhoch</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1566"/>
+        <location filename="../../src/view.cpp" line="1591"/>
         <source>Fields</source>
         <translation>Druhy nasadenia</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1639"/>
+        <location filename="../../src/view.cpp" line="1664"/>
         <source>Agenda</source>
         <translation>Agenda</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1640"/>
+        <location filename="../../src/view.cpp" line="1665"/>
         <source>Next inspection</source>
         <translation>Nasledujúca kontrola</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1700"/>
-        <location filename="../../src/view.cpp" line="445"/>
-        <location filename="../../src/view.cpp" line="1641"/>
-        <location filename="../../src/view.cpp" line="2165"/>
+        <location filename="../../src/database.cpp" line="1708"/>
+        <location filename="../../src/view.cpp" line="470"/>
+        <location filename="../../src/view.cpp" line="1666"/>
+        <location filename="../../src/view.cpp" line="2252"/>
         <source>Circuit</source>
         <translation>Okruh</translation>
     </message>
@@ -3597,209 +3696,210 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Regenerované</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="664"/>
+        <location filename="../../src/view.cpp" line="689"/>
         <source>Other</source>
         <translation>Iné</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1257"/>
+        <location filename="../../src/view.cpp" line="1282"/>
         <source>Assembly record</source>
         <translation>Montážny list</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1326"/>
+        <location filename="../../src/view.cpp" line="1351"/>
         <source>Circuit name</source>
         <translation>Názov okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1418"/>
+        <location filename="../../src/view.cpp" line="1443"/>
         <source>Operator report: %1</source>
         <translation>Oznámenie prevádzkovateľa: %1</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1420"/>
+        <location filename="../../src/view.cpp" line="1445"/>
         <source>Owner information</source>
         <translation>Údaje o vlastníkovi</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1428"/>
+        <location filename="../../src/view.cpp" line="1453"/>
         <source>Operator information</source>
         <translation>Údaje o prevádzkovateľovi</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1442"/>
+        <location filename="../../src/view.cpp" line="1467"/>
         <source>At the beginning of this year</source>
         <translation>Na začiatku roka</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1445"/>
+        <location filename="../../src/view.cpp" line="1470"/>
         <source>At the end of this year</source>
         <translation>Na konci roka</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1505"/>
+        <location filename="../../src/view.cpp" line="1530"/>
         <source>Person responsible:</source>
         <comment>Operator report</comment>
         <translation>Vybavuje:</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1506"/>
+        <location filename="../../src/view.cpp" line="1531"/>
         <source>Phone:</source>
         <translation>Telefón:</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1507"/>
+        <location filename="../../src/view.cpp" line="1532"/>
         <source>E-mail:</source>
         <translation>E-mail:</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1642"/>
+        <location filename="../../src/view.cpp" line="1667"/>
         <source>Last inspection</source>
         <translation>Posledná kontrola</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1655"/>
+        <location filename="../../src/view.cpp" line="1680"/>
         <source>Today</source>
         <translation>Dnes</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1656"/>
+        <location filename="../../src/view.cpp" line="1681"/>
         <source>Tomorrow</source>
         <translation>Zajtra</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1701"/>
+        <location filename="../../src/view.cpp" line="1726"/>
         <source>List of assembly record types</source>
         <translation>Zoznam typov montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1737"/>
+        <location filename="../../src/view.cpp" line="1762"/>
         <source>List of assembly record item types</source>
         <translation>Zoznam typov položiek montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1779"/>
+        <location filename="../../src/view.cpp" line="1804"/>
         <source>List of assembly record item categories</source>
         <translation>Zoznam kategórií položiek montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1829"/>
+        <location filename="../../src/view.cpp" line="1865"/>
         <source>Assembly record No. %1</source>
         <translation>Montážny list číslo %1</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1258"/>
-        <location filename="../../src/view.cpp" line="1929"/>
+        <location filename="../../src/view.cpp" line="1283"/>
+        <location filename="../../src/view.cpp" line="1975"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1931"/>
-        <location filename="../../src/view.cpp" line="1981"/>
+        <location filename="../../src/view.cpp" line="1979"/>
+        <location filename="../../src/view.cpp" line="2053"/>
         <source>Acquisition price (%1)</source>
         <translation>Obstarávacia cena (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1933"/>
-        <location filename="../../src/view.cpp" line="1982"/>
+        <location filename="../../src/view.cpp" line="1983"/>
+        <location filename="../../src/view.cpp" line="2057"/>
         <source>List price (%1)</source>
         <translation>Cenníková cena (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1263"/>
-        <location filename="../../src/view.cpp" line="1935"/>
+        <location filename="../../src/database.cpp" line="2209"/>
+        <location filename="../../src/view.cpp" line="1288"/>
+        <location filename="../../src/view.cpp" line="1987"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1937"/>
+        <location filename="../../src/view.cpp" line="1991"/>
         <source>Total (%1)</source>
         <translation>Celkom (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1264"/>
-        <location filename="../../src/view.cpp" line="1311"/>
-        <location filename="../../src/view.cpp" line="1979"/>
+        <location filename="../../src/view.cpp" line="1289"/>
+        <location filename="../../src/view.cpp" line="1336"/>
+        <location filename="../../src/view.cpp" line="2049"/>
         <source>Total</source>
         <translation>Celkom</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="2043"/>
+        <location filename="../../src/view.cpp" line="2126"/>
         <source>List of circuit unit types</source>
         <translation>Zoznam typov jednotiek okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="2162"/>
+        <location filename="../../src/view.cpp" line="2249"/>
         <source>Assembly record number</source>
         <translation>Číslo montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="2163"/>
+        <location filename="../../src/view.cpp" line="2250"/>
         <source>Assembly record name</source>
         <translation>Názov montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="2167"/>
+        <location filename="../../src/view.cpp" line="2254"/>
         <source>Operator</source>
         <translation>Prevzal</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1654"/>
+        <location filename="../../src/view.cpp" line="1679"/>
         <source>Yesterday</source>
         <translation>Včera</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="929"/>
+        <location filename="../../src/database.cpp" line="937"/>
         <source>Remove repair - Leaklog</source>
         <translation>Odstrániť opravu - Leaklog</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="929"/>
+        <location filename="../../src/database.cpp" line="937"/>
         <source>Are you sure you want to remove the selected repair?
 To remove all data about the repair &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú opravu?
 Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1186"/>
+        <location filename="../../src/view.cpp" line="1211"/>
         <source>List of repairs</source>
         <translation>Zoznam opráv</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1698"/>
+        <location filename="../../ui/main_window.ui" line="1767"/>
         <location filename="../../src/view.cpp" line="144"/>
         <location filename="../../src/view.cpp" line="198"/>
-        <location filename="../../src/view.cpp" line="2008"/>
+        <location filename="../../src/view.cpp" line="2091"/>
         <source>Service company</source>
         <translation>Servisná organizácia</translation>
     </message>
     <message>
-        <location filename="../../src/main_window.cpp" line="179"/>
+        <location filename="../../src/main_window.cpp" line="180"/>
         <source>Show icons only</source>
         <translation>Zobraziť len ikony</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="429"/>
+        <location filename="../../ui/main_window.ui" line="430"/>
         <source>Tolerance</source>
         <translation>Tolerancia</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1521"/>
+        <location filename="../../ui/main_window.ui" line="1590"/>
         <source>Add repair</source>
         <translation>Pridať opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1539"/>
+        <location filename="../../ui/main_window.ui" line="1608"/>
         <source>Modify repair</source>
         <translation>Upraviť opravu</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1557"/>
+        <location filename="../../ui/main_window.ui" line="1626"/>
         <source>Remove repair</source>
         <translation>Odstrániť opravu</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="454"/>
+        <location filename="../../src/database.cpp" line="462"/>
         <location filename="../../src/view.cpp" line="229"/>
         <location filename="../../src/view.cpp" line="344"/>
         <source>Refrigerant management</source>
@@ -3819,13 +3919,13 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <location filename="../../src/view.cpp" line="236"/>
-        <location filename="../../src/view.cpp" line="1443"/>
+        <location filename="../../src/view.cpp" line="1468"/>
         <source>Added</source>
         <translation>Doplnené</translation>
     </message>
     <message>
         <location filename="../../src/view.cpp" line="237"/>
-        <location filename="../../src/view.cpp" line="1444"/>
+        <location filename="../../src/view.cpp" line="1469"/>
         <source>Recovered</source>
         <translation>Zhodnotené</translation>
     </message>
@@ -3836,47 +3936,47 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Zničené</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="487"/>
+        <location filename="../../src/view.cpp" line="512"/>
         <source>Disused circuits</source>
         <translation>Vyradené okruhy</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1527"/>
+        <location filename="../../ui/main_window.ui" line="1596"/>
         <source>Meta++</source>
         <translation>Meta++</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1545"/>
+        <location filename="../../ui/main_window.ui" line="1614"/>
         <source>Meta+*</source>
         <translation>Meta+*</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1563"/>
+        <location filename="../../ui/main_window.ui" line="1632"/>
         <source>Meta+-</source>
         <translation>Meta+-</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1568"/>
-        <location filename="../../ui/main_window.ui" line="1571"/>
+        <location filename="../../ui/main_window.ui" line="1637"/>
+        <location filename="../../ui/main_window.ui" line="1640"/>
         <source>Add record of refrigerant management</source>
         <translation>Pridať záznam o nakladaní s chladivom</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="557"/>
-        <location filename="../../src/view.cpp" line="1320"/>
+        <location filename="../../src/view.cpp" line="582"/>
+        <location filename="../../src/view.cpp" line="1345"/>
         <source>Inspections and repairs</source>
         <translation>Kontroly a opravy</translation>
     </message>
     <message>
-        <location filename="../../ui/main_window.ui" line="1598"/>
-        <location filename="../../src/global.cpp" line="420"/>
+        <location filename="../../ui/main_window.ui" line="1667"/>
+        <location filename="../../src/global.cpp" line="424"/>
         <source>Modify</source>
         <translation>Upraviť</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="630"/>
-        <location filename="../../src/view.cpp" line="1861"/>
-        <location filename="../../src/view.cpp" line="2223"/>
+        <location filename="../../src/view.cpp" line="655"/>
+        <location filename="../../src/view.cpp" line="1899"/>
+        <location filename="../../src/view.cpp" line="2310"/>
         <source>Repair:</source>
         <translation>Oprava:</translation>
     </message>
@@ -3886,24 +3986,24 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Sklad</translation>
     </message>
     <message>
-        <location filename="../../src/database.cpp" line="1123"/>
-        <location filename="../../src/database.cpp" line="1144"/>
-        <location filename="../../src/view.cpp" line="943"/>
+        <location filename="../../src/database.cpp" line="1131"/>
+        <location filename="../../src/database.cpp" line="1152"/>
+        <location filename="../../src/view.cpp" line="968"/>
         <source>Average</source>
         <translation>Priemer</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="402"/>
+        <location filename="../../src/view.cpp" line="416"/>
         <source>List of customers</source>
         <translation>Zoznam zákazníkov</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="398"/>
+        <location filename="../../src/view.cpp" line="411"/>
         <source>Number of circuits</source>
         <translation>Počet okruhov</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="399"/>
+        <location filename="../../src/view.cpp" line="412"/>
         <source>Total number of inspections</source>
         <translation>Celkový počet kontrol</translation>
     </message>
@@ -3918,17 +4018,17 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Zhodnotené na sklade</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1384"/>
+        <location filename="../../src/view.cpp" line="1409"/>
         <source>List of inspectors</source>
         <translation>Zoznam kontrolórov</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1380"/>
+        <location filename="../../src/view.cpp" line="1405"/>
         <source>Number of inspections</source>
         <translation>Počet kontrol</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1381"/>
+        <location filename="../../src/view.cpp" line="1406"/>
         <source>Number of repairs</source>
         <translation>Počet opráv</translation>
     </message>
@@ -3948,12 +4048,12 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Elektrické parametre</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1561"/>
+        <location filename="../../src/view.cpp" line="1586"/>
         <source>Leakages by application</source>
         <translation>Úniky podľa nasadenia</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1563"/>
+        <location filename="../../src/view.cpp" line="1588"/>
         <source>Amount of refrigerant in circuits</source>
         <translation>Množstvo chladiva v okruhoch</translation>
     </message>
@@ -3968,7 +4068,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Chcete uložiť tieto zmeny?</translation>
     </message>
     <message>
-        <location filename="../../src/view.cpp" line="1563"/>
+        <location filename="../../src/view.cpp" line="1588"/>
         <source>Percentage of leakage by application</source>
         <translation>Percento úniku podľa nasadenia</translation>
     </message>
@@ -3976,7 +4076,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyAssemblyRecordDialogue</name>
     <message>
-        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="13"/>
+        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="32"/>
         <source>Assembly record type</source>
         <translation>Typ montážneho listu</translation>
     </message>
@@ -3984,22 +4084,22 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyAssemblyRecordDialogueTab</name>
     <message>
-        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="21"/>
+        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="40"/>
         <source>Item categories</source>
         <translation>Kategórie položiek</translation>
     </message>
     <message>
-        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="53"/>
+        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="72"/>
         <source>Assembly record categories:</source>
         <translation>Kategórie montážneho listu:</translation>
     </message>
     <message>
-        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="57"/>
+        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="76"/>
         <source>Category</source>
         <translation>Kategória</translation>
     </message>
     <message>
-        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="57"/>
+        <location filename="../../src/modify_assembly_record_dialogue.cpp" line="76"/>
         <source>Position</source>
         <translation>Pozícia</translation>
     </message>
@@ -4007,7 +4107,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyCircuitDialogue</name>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="16"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="35"/>
         <source>Cooling circuit</source>
         <translation>Chladiaci okruh</translation>
     </message>
@@ -4015,7 +4115,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyCircuitDialogueTable</name>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="185"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="212"/>
         <source>Update circuit</source>
         <translation>Aktualizovať okruh</translation>
     </message>
@@ -4023,44 +4123,44 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyCircuitDialogueUnitsTab</name>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="35"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="54"/>
         <source>Units</source>
         <translation>Jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="43"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="62"/>
         <source>Available unit types</source>
         <translation>Dostupné typy jednotiek</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="44"/>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="60"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="63"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="79"/>
         <source>Location</source>
         <translation>Poloha</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="45"/>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="145"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="64"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="172"/>
         <source>Add</source>
         <translation>Pridať</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="58"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="77"/>
         <source>Manufacturer</source>
         <translation>Výrobca</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="59"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="78"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="61"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="80"/>
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
     </message>
     <message>
-        <location filename="../../src/modify_circuit_dialogue.cpp" line="63"/>
+        <location filename="../../src/modify_circuit_dialogue.cpp" line="82"/>
         <source>Used circuit units</source>
         <translation>Použité jednotky okruhov</translation>
     </message>
@@ -4068,22 +4168,22 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyCustomerDialogue</name>
     <message>
-        <location filename="../../src/modify_customer_dialogue.cpp" line="13"/>
+        <location filename="../../src/modify_customer_dialogue.cpp" line="32"/>
         <source>Name</source>
         <translation>Meno</translation>
     </message>
     <message>
-        <location filename="../../src/modify_customer_dialogue.cpp" line="16"/>
+        <location filename="../../src/modify_customer_dialogue.cpp" line="35"/>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
     <message>
-        <location filename="../../src/modify_customer_dialogue.cpp" line="19"/>
+        <location filename="../../src/modify_customer_dialogue.cpp" line="38"/>
         <source>Phone</source>
         <translation>Telefón</translation>
     </message>
     <message>
-        <location filename="../../src/modify_customer_dialogue.cpp" line="22"/>
+        <location filename="../../src/modify_customer_dialogue.cpp" line="41"/>
         <source>Contact persons</source>
         <translation>Kontaktné osoby</translation>
     </message>
@@ -4131,7 +4231,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyDialogueAdvancedTable</name>
     <message>
-        <location filename="../../src/modify_dialogue_table.cpp" line="172"/>
+        <location filename="../../src/modify_dialogue_table.cpp" line="192"/>
         <source>Add</source>
         <translation>Pridať</translation>
     </message>
@@ -4139,7 +4239,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyDialogueTableWithAdjustableTotal</name>
     <message>
-        <location filename="../../src/modify_dialogue_table.cpp" line="241"/>
+        <location filename="../../src/modify_dialogue_table.cpp" line="261"/>
         <source>Total list price:</source>
         <translation>Celková cenníková cena:</translation>
     </message>
@@ -4147,7 +4247,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectionDialogue</name>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="15"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="34"/>
         <source>Inspection</source>
         <translation>Kontrola</translation>
     </message>
@@ -4155,18 +4255,18 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectionDialogueImagesTab</name>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="318"/>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="334"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="341"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="357"/>
         <source>Images</source>
         <translation>Obrázky</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="328"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="351"/>
         <source>Description</source>
         <translation>Popis</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="331"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="354"/>
         <source>Image</source>
         <translation>Obrázok</translation>
     </message>
@@ -4174,42 +4274,42 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectionDialogueTab</name>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="46"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="65"/>
         <source>Assembly record</source>
         <translation>Montážny list</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="67"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="86"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="68"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="87"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="69"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="89"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="70"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="91"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="71"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="93"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="309"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="332"/>
         <source>Conflict</source>
         <translation>Konflikt</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="309"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="332"/>
         <source>Inspection with the same assembly record number already exists.</source>
         <translation>Kontrola s rovnakým číslom montážneho listu už existuje.</translation>
     </message>
@@ -4217,7 +4317,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectorDialogue</name>
     <message>
-        <location filename="../../src/modify_inspector_dialogue.cpp" line="10"/>
+        <location filename="../../src/modify_inspector_dialogue.cpp" line="29"/>
         <source>Inspector</source>
         <translation>Kontrolór</translation>
     </message>
@@ -4225,7 +4325,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectorDialogueTab</name>
     <message>
-        <location filename="../../src/modify_inspector_dialogue.cpp" line="22"/>
+        <location filename="../../src/modify_inspector_dialogue.cpp" line="41"/>
         <source>Assembly record</source>
         <translation>Montážny list</translation>
     </message>
@@ -4878,7 +4978,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <location filename="../../ui/navigation.ui" line="2332"/>
-        <location filename="../../src/navigation.cpp" line="155"/>
+        <location filename="../../src/navigation.cpp" line="143"/>
         <source>Since:</source>
         <translation>Od roku:</translation>
     </message>
@@ -4889,7 +4989,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <location filename="../../ui/navigation.ui" line="2351"/>
-        <location filename="../../src/navigation.cpp" line="156"/>
+        <location filename="../../src/navigation.cpp" line="144"/>
         <source>All</source>
         <translation>Všetky</translation>
     </message>
@@ -4944,12 +5044,12 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Dokončiť</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="248"/>
+        <location filename="../../src/navigation.cpp" line="236"/>
         <source>Year:</source>
         <translation>Rok:</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="249"/>
+        <location filename="../../src/navigation.cpp" line="237"/>
         <source>Last</source>
         <translation>Posledný</translation>
     </message>
@@ -4977,43 +5077,43 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>Oils</name>
     <message>
-        <location filename="../../src/global.cpp" line="642"/>
-        <location filename="../../src/global.cpp" line="669"/>
+        <location filename="../../src/global.cpp" line="647"/>
+        <location filename="../../src/global.cpp" line="674"/>
         <source>MO (Mineral oil)</source>
         <translation>MO (Minerálny olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="643"/>
-        <location filename="../../src/global.cpp" line="670"/>
+        <location filename="../../src/global.cpp" line="648"/>
+        <location filename="../../src/global.cpp" line="675"/>
         <source>AB (Alkylbenzene oil)</source>
         <translation>AB (Alkylbenzénový olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="644"/>
-        <location filename="../../src/global.cpp" line="671"/>
+        <location filename="../../src/global.cpp" line="649"/>
+        <location filename="../../src/global.cpp" line="676"/>
         <source>POE (Polyolester oil)</source>
         <translation>POE (Polyesterový olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="645"/>
-        <location filename="../../src/global.cpp" line="672"/>
+        <location filename="../../src/global.cpp" line="650"/>
+        <location filename="../../src/global.cpp" line="677"/>
         <source>PAO (Polyalphaolefin oil)</source>
         <translation>PAO (Polyalfaolefinový olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="646"/>
-        <location filename="../../src/global.cpp" line="673"/>
+        <location filename="../../src/global.cpp" line="651"/>
+        <location filename="../../src/global.cpp" line="678"/>
         <source>PVE (Polyvinylether oil)</source>
         <translation>PVE (Polyvinyléterový olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="647"/>
-        <location filename="../../src/global.cpp" line="674"/>
+        <location filename="../../src/global.cpp" line="652"/>
+        <location filename="../../src/global.cpp" line="679"/>
         <source>PAG (Polyglycol oil)</source>
         <translation>PAG (Polyglykolový olej)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="668"/>
+        <location filename="../../src/global.cpp" line="673"/>
         <source>Oil</source>
         <translation>Olej</translation>
     </message>
@@ -5021,144 +5121,154 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>Permissions</name>
     <message>
-        <location filename="../../src/global.cpp" line="706"/>
+        <location filename="../../src/global.cpp" line="711"/>
         <source>Modify service company information</source>
         <translation>Upraviť informácie o servisnej organizácii</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="707"/>
+        <location filename="../../src/global.cpp" line="712"/>
         <source>Add record of refrigerant management</source>
         <translation>Pridať záznam o nakladaní s chladivom</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="708"/>
+        <location filename="../../src/global.cpp" line="713"/>
         <source>Modify record of refrigerant management</source>
         <translation>Upraviť záznam o nakladaní s chladivom</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="709"/>
+        <location filename="../../src/global.cpp" line="714"/>
         <source>Add customer</source>
         <translation>Pridať zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="710"/>
+        <location filename="../../src/global.cpp" line="715"/>
         <source>Modify customer</source>
         <translation>Upraviť zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="711"/>
+        <location filename="../../src/global.cpp" line="716"/>
         <source>Remove customer</source>
         <translation>Odstrániť zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="712"/>
+        <location filename="../../src/global.cpp" line="717"/>
         <source>Add circuit</source>
         <translation>Pridať okruh</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="713"/>
+        <location filename="../../src/global.cpp" line="718"/>
         <source>Modify circuit</source>
         <translation>Upraviť okruh</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="714"/>
+        <location filename="../../src/global.cpp" line="719"/>
         <source>Remove circuit</source>
         <translation>Odstrániť okruh</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="715"/>
+        <location filename="../../src/global.cpp" line="720"/>
         <source>Add inspection</source>
         <translation>Pridať kontrolu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="716"/>
+        <location filename="../../src/global.cpp" line="721"/>
         <source>Modify inspection</source>
         <translation>Upraviť kontrolu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="717"/>
+        <location filename="../../src/global.cpp" line="722"/>
         <source>Remove inspection</source>
         <translation>Odstrániť kontrolu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="718"/>
+        <location filename="../../src/global.cpp" line="723"/>
         <source>Add repair</source>
         <translation>Pridať opravu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="719"/>
+        <location filename="../../src/global.cpp" line="724"/>
         <source>Modify repair</source>
         <translation>Upraviť opravu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="720"/>
+        <location filename="../../src/global.cpp" line="725"/>
         <source>Remove repair</source>
         <translation>Odstrániť opravu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="721"/>
+        <location filename="../../src/global.cpp" line="726"/>
         <source>Add inspector</source>
         <translation>Pridať kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="722"/>
+        <location filename="../../src/global.cpp" line="727"/>
         <source>Modify inspector</source>
         <translation>Upraviť kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="723"/>
+        <location filename="../../src/global.cpp" line="728"/>
         <source>Remove inspector</source>
         <translation>Odstrániť kontrolóra</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="724"/>
+        <location filename="../../src/global.cpp" line="729"/>
         <source>Add table</source>
         <translation>Pridať tabuľku</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="725"/>
+        <location filename="../../src/global.cpp" line="730"/>
         <source>Modify table</source>
         <translation>Upraviť tabuľku</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="726"/>
+        <location filename="../../src/global.cpp" line="731"/>
         <source>Remove table</source>
         <translation>Odstrániť tabuľku</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="727"/>
+        <location filename="../../src/global.cpp" line="732"/>
         <source>Add variable</source>
         <translation>Pridať premennú</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="728"/>
+        <location filename="../../src/global.cpp" line="733"/>
         <source>Modify variable</source>
         <translation>Upraviť premennú</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="729"/>
+        <location filename="../../src/global.cpp" line="734"/>
         <source>Remove variable</source>
         <translation>Odstrániť premennú</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="730"/>
+        <location filename="../../src/global.cpp" line="735"/>
         <source>Add warning</source>
         <translation>Pridať upozornenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="731"/>
+        <location filename="../../src/global.cpp" line="736"/>
         <source>Modify warning</source>
         <translation>Upraviť upozornenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="732"/>
+        <location filename="../../src/global.cpp" line="737"/>
         <source>Remove warning</source>
         <translation>Odstrániť upozornenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="733"/>
+        <location filename="../../src/global.cpp" line="738"/>
         <source>Import data</source>
         <translation>Importovať údaje</translation>
+    </message>
+    <message>
+        <location filename="../../src/global.cpp" line="739"/>
+        <source>Access assembly record acquisition prices</source>
+        <translation>Pristupovať k obstarávacím cenám na montážnych listoch</translation>
+    </message>
+    <message>
+        <location filename="../../src/global.cpp" line="740"/>
+        <source>Access assembly record list prices</source>
+        <translation>Pristupovať k cenníkovým cenám na montážnych listoch</translation>
     </message>
 </context>
 <context>
@@ -5207,42 +5317,47 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../src/global.cpp" line="776"/>
+        <location filename="../../src/global.cpp" line="783"/>
         <source>No category</source>
         <translation>Žiadna kategória</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="790"/>
+        <location filename="../../src/global.cpp" line="797"/>
         <source>No type</source>
         <translation>Žiadny typ</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="823"/>
+        <location filename="../../src/global.cpp" line="830"/>
         <source>String</source>
         <translation>Reťazec</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="824"/>
+        <location filename="../../src/global.cpp" line="831"/>
         <source>Integer</source>
         <translation>Celé číslo</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="825"/>
+        <location filename="../../src/global.cpp" line="832"/>
         <source>Real number</source>
         <translation>Reálne číslo</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="826"/>
+        <location filename="../../src/global.cpp" line="833"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="827"/>
+        <location filename="../../src/global.cpp" line="834"/>
         <source>Boolean</source>
         <translation>Áno/Nie</translation>
     </message>
     <message>
-        <location filename="../../src/import_csv_dialogue.cpp" line="382"/>
+        <location filename="../../src/global.cpp" line="840"/>
+        <source>Default</source>
+        <translation>Východzí</translation>
+    </message>
+    <message>
+        <location filename="../../src/import_csv_dialogue.cpp" line="387"/>
         <source>Yes</source>
         <translation>Áno</translation>
     </message>
@@ -5315,26 +5430,26 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Uniknuté (zhodnotené):</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="170"/>
+        <location filename="../../src/navigation.cpp" line="158"/>
         <location filename="../../src/records.cpp" line="640"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="171"/>
+        <location filename="../../src/navigation.cpp" line="159"/>
         <location filename="../../src/records.cpp" line="641"/>
         <location filename="../../src/view.cpp" line="346"/>
         <source>Business partner</source>
         <translation>Obchodný partner</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="172"/>
+        <location filename="../../src/navigation.cpp" line="160"/>
         <location filename="../../src/records.cpp" line="642"/>
         <source>Business partner (ID)</source>
         <translation>IČO obchodného partnera</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="173"/>
+        <location filename="../../src/navigation.cpp" line="161"/>
         <location filename="../../src/records.cpp" line="643"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
@@ -5438,7 +5553,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Zhodnotenie chladiva:</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="213"/>
+        <location filename="../../src/navigation.cpp" line="201"/>
         <location filename="../../src/records.cpp" line="388"/>
         <source>Device</source>
         <translation>Zariadenie</translation>
@@ -5469,25 +5584,25 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Opravár</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="215"/>
+        <location filename="../../src/navigation.cpp" line="203"/>
         <location filename="../../src/records.cpp" line="395"/>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="211"/>
+        <location filename="../../src/navigation.cpp" line="199"/>
         <location filename="../../src/records.cpp" line="386"/>
         <source>Date</source>
         <translation>Dátum</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="212"/>
+        <location filename="../../src/navigation.cpp" line="200"/>
         <location filename="../../src/records.cpp" line="387"/>
         <source>Customer</source>
         <translation>Zákazník</translation>
     </message>
     <message>
-        <location filename="../../src/navigation.cpp" line="214"/>
+        <location filename="../../src/navigation.cpp" line="202"/>
         <location filename="../../src/records.cpp" line="390"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
@@ -5563,9 +5678,32 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
 </context>
 <context>
+    <name>Style</name>
+    <message>
+        <location filename="../../src/records.cpp" line="1053"/>
+        <source>Style</source>
+        <translation>Vzhľad</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="1058"/>
+        <source>Name:</source>
+        <translation>Názov:</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="1059"/>
+        <source>Style:</source>
+        <translation>Vzhľad:</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="1060"/>
+        <source>Use div elements instead of tables</source>
+        <translation>Použiť div elementy namiesto tabuliek</translation>
+    </message>
+</context>
+<context>
     <name>TabbedModifyDialogue</name>
     <message>
-        <location filename="../../src/tabbed_modify_dialogue.cpp" line="32"/>
+        <location filename="../../src/tabbed_modify_dialogue.cpp" line="51"/>
         <source>Basic information</source>
         <translation>Základné informácie</translation>
     </message>
@@ -5591,7 +5729,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>Units</name>
     <message>
-        <location filename="../../src/main_window.cpp" line="684"/>
+        <location filename="../../src/main_window.cpp" line="688"/>
         <location filename="../../src/records.cpp" line="125"/>
         <location filename="../../src/records.cpp" line="127"/>
         <location filename="../../src/records.cpp" line="167"/>
@@ -5607,17 +5745,17 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <location filename="../../src/records.cpp" line="621"/>
         <location filename="../../src/records.cpp" line="622"/>
         <location filename="../../src/records.cpp" line="623"/>
-        <location filename="../../src/records.cpp" line="965"/>
-        <location filename="../../src/records.cpp" line="967"/>
+        <location filename="../../src/records.cpp" line="966"/>
+        <location filename="../../src/records.cpp" line="968"/>
         <location filename="../../src/variables.cpp" line="137"/>
         <location filename="../../src/variables.cpp" line="144"/>
         <location filename="../../src/variables.cpp" line="145"/>
-        <location filename="../../src/view.cpp" line="475"/>
-        <location filename="../../src/view.cpp" line="478"/>
-        <location filename="../../src/view.cpp" line="585"/>
-        <location filename="../../src/view.cpp" line="586"/>
-        <location filename="../../src/view.cpp" line="799"/>
-        <location filename="../../src/view.cpp" line="805"/>
+        <location filename="../../src/view.cpp" line="500"/>
+        <location filename="../../src/view.cpp" line="503"/>
+        <location filename="../../src/view.cpp" line="610"/>
+        <location filename="../../src/view.cpp" line="611"/>
+        <location filename="../../src/view.cpp" line="824"/>
+        <location filename="../../src/view.cpp" line="830"/>
         <source>kg</source>
         <translation>kg</translation>
     </message>
@@ -5694,205 +5832,205 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Nová náplň</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="503"/>
+        <location filename="../../src/global.cpp" line="508"/>
         <source>Subcooling</source>
         <translation>Podchladenie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="504"/>
+        <location filename="../../src/global.cpp" line="509"/>
         <source>Superheating</source>
         <translation>Prehriatie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="505"/>
+        <location filename="../../src/global.cpp" line="510"/>
         <source>evap.</source>
         <translation>výp.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="506"/>
+        <location filename="../../src/global.cpp" line="511"/>
         <source>comp.</source>
         <translation>komp.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="496"/>
+        <location filename="../../src/global.cpp" line="501"/>
         <source>Pressure evaporating</source>
         <translation>Výparný tlak</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="493"/>
+        <location filename="../../src/global.cpp" line="498"/>
         <source>Temperature sec. medium</source>
         <translation>Teplota sek. média</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="494"/>
+        <location filename="../../src/global.cpp" line="499"/>
         <source>evap. in</source>
         <translation>výp. vst.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="495"/>
+        <location filename="../../src/global.cpp" line="500"/>
         <source>cond. in</source>
         <translation>kond. vst.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="497"/>
+        <location filename="../../src/global.cpp" line="502"/>
         <source>Pressure condensing</source>
         <translation>Kondenzačný tlak</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="498"/>
+        <location filename="../../src/global.cpp" line="503"/>
         <source>Temperature evaporating</source>
         <translation>Výparná teplota</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="499"/>
+        <location filename="../../src/global.cpp" line="504"/>
         <source>Temperature condensing</source>
         <translation>Kondenzačná teplota</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="500"/>
+        <location filename="../../src/global.cpp" line="505"/>
         <source>Temperature EV</source>
         <translation>Teplota pred EV</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="501"/>
+        <location filename="../../src/global.cpp" line="506"/>
         <source>Temperature evap. out</source>
         <translation>Teplota za výp.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="502"/>
+        <location filename="../../src/global.cpp" line="507"/>
         <source>Temperature comp. in</source>
         <translation>Teplota pred komp.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="507"/>
+        <location filename="../../src/global.cpp" line="512"/>
         <source>Temperature discharge</source>
         <translation>Teplota výtlačná</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="510"/>
+        <location filename="../../src/global.cpp" line="515"/>
         <source>Comp. el. power input</source>
         <translation>Príkon komp.</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="511"/>
+        <location filename="../../src/global.cpp" line="516"/>
         <source>Electric current</source>
         <translation>Prúd</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="512"/>
-        <location filename="../../src/global.cpp" line="516"/>
+        <location filename="../../src/global.cpp" line="517"/>
+        <location filename="../../src/global.cpp" line="521"/>
         <source>L1</source>
         <translation>L1</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="513"/>
-        <location filename="../../src/global.cpp" line="517"/>
+        <location filename="../../src/global.cpp" line="518"/>
+        <location filename="../../src/global.cpp" line="522"/>
         <source>L2</source>
         <translation>L2</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="514"/>
-        <location filename="../../src/global.cpp" line="518"/>
+        <location filename="../../src/global.cpp" line="519"/>
+        <location filename="../../src/global.cpp" line="523"/>
         <source>L3</source>
         <translation>L3</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="515"/>
+        <location filename="../../src/global.cpp" line="520"/>
         <source>Electric voltage</source>
         <translation>Napätie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="519"/>
+        <location filename="../../src/global.cpp" line="524"/>
         <source>Pneumatic pressure switches</source>
         <translation>Presostaty</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="520"/>
+        <location filename="../../src/global.cpp" line="525"/>
         <source>HiP</source>
         <translation>VT</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="521"/>
+        <location filename="../../src/global.cpp" line="526"/>
         <source>LoP</source>
         <translation>NT</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="522"/>
+        <location filename="../../src/global.cpp" line="527"/>
         <source>Diff</source>
         <translation>Dif</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="523"/>
+        <location filename="../../src/global.cpp" line="528"/>
         <source>Safety switch</source>
         <translation>Poistný ventil</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="524"/>
+        <location filename="../../src/global.cpp" line="529"/>
         <source>Remedies</source>
         <translation>Opatrenia</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="525"/>
+        <location filename="../../src/global.cpp" line="530"/>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="526"/>
+        <location filename="../../src/global.cpp" line="531"/>
         <source>Assembly record type</source>
         <translation>Typ montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="527"/>
+        <location filename="../../src/global.cpp" line="532"/>
         <source>Visual and aural check</source>
         <translation>Vizuálna a sluchová kontrola</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="528"/>
+        <location filename="../../src/global.cpp" line="533"/>
         <source>Corr/Def</source>
         <translation>Kor/Def</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="529"/>
+        <location filename="../../src/global.cpp" line="534"/>
         <source>Noise/Vibr</source>
         <translation>Hluk/Vibr</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="530"/>
+        <location filename="../../src/global.cpp" line="535"/>
         <source>Bubble/Level</source>
         <translation>Priezor</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="531"/>
+        <location filename="../../src/global.cpp" line="536"/>
         <source>Oil leak</source>
         <translation>Únik oleja</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="532"/>
+        <location filename="../../src/global.cpp" line="537"/>
         <source>Direct leak check (location)</source>
         <translation>Priama kontrola úniku (miesto)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="533"/>
+        <location filename="../../src/global.cpp" line="538"/>
         <source>Electronic detection</source>
         <translation>El. detekcia</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="534"/>
+        <location filename="../../src/global.cpp" line="539"/>
         <source>UV detection</source>
         <translation>UV detekcia</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="535"/>
+        <location filename="../../src/global.cpp" line="540"/>
         <source>Bubble detection</source>
         <translation>Penou</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="536"/>
+        <location filename="../../src/global.cpp" line="541"/>
         <source>Refrigerant addition</source>
         <translation>Doplnenie chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="537"/>
+        <location filename="../../src/global.cpp" line="542"/>
         <source>Annual leakage</source>
         <translation>Ročný únik</translation>
     </message>
@@ -5907,17 +6045,17 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Zhodnotené</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="538"/>
+        <location filename="../../src/global.cpp" line="543"/>
         <source>Refrigerant recovery</source>
         <translation>Zhodnotenie chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="539"/>
+        <location filename="../../src/global.cpp" line="544"/>
         <source>Inspector</source>
         <translation>Kontrolór</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="540"/>
+        <location filename="../../src/global.cpp" line="545"/>
         <source>Operator</source>
         <translation>Prevzal</translation>
     </message>
@@ -5932,12 +6070,12 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Nové</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="508"/>
+        <location filename="../../src/global.cpp" line="513"/>
         <source>%1T (evaporating)</source>
         <translation>%1T (výparník)</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="509"/>
+        <location filename="../../src/global.cpp" line="514"/>
         <source>%1T (condensing)</source>
         <translation>%1T (kondenzátor)</translation>
     </message>
@@ -5998,27 +6136,27 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>VariableTypes</name>
     <message>
-        <location filename="../../src/global.cpp" line="473"/>
+        <location filename="../../src/global.cpp" line="478"/>
         <source>Integer</source>
         <translation>Celé číslo</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="474"/>
+        <location filename="../../src/global.cpp" line="479"/>
         <source>Real number</source>
         <translation>Reálne číslo</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="475"/>
+        <location filename="../../src/global.cpp" line="480"/>
         <source>String</source>
         <translation>Reťazec</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="477"/>
+        <location filename="../../src/global.cpp" line="482"/>
         <source>Boolean</source>
         <translation>Áno/Nie</translation>
     </message>
     <message>
-        <location filename="../../src/global.cpp" line="476"/>
+        <location filename="../../src/global.cpp" line="481"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>

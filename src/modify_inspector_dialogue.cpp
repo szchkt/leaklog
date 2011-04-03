@@ -29,8 +29,8 @@ ModifyInspectorDialogue::ModifyInspectorDialogue(DBRecord * record, QWidget * pa
     main_tabw->setTabText(0, tr("Inspector"));
 
     QList<MDAbstractInputWidget *> tab_inputwidgets;
-    tab_inputwidgets << inputWidget("list_price");
     tab_inputwidgets << inputWidget("acquisition_price");
+    tab_inputwidgets << inputWidget("list_price");
 
     addTab(new ModifyInspectorDialogueTab(tab_inputwidgets, this));
 }

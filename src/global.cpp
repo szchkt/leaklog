@@ -837,7 +837,7 @@ MTDictionary Global::listDataTypes()
 
 MTDictionary Global::listStyles()
 {
-    MTDictionary styles(QObject::tr("No style"), "-1"); QSqlQuery query;
+    MTDictionary styles(QObject::tr("Default"), "-1"); QSqlQuery query;
     styles.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM styles"))) {
