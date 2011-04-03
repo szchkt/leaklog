@@ -48,6 +48,7 @@ public:
 
 private slots:
     void loadItemInputWidgets(bool = false);
+    void recordTypeChanged();
     void assemblyRecordNumberChanged();
 
 private:

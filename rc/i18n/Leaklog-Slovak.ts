@@ -97,27 +97,27 @@
 <context>
     <name>AssemblyRecordItem</name>
     <message>
-        <location filename="../../src/records.cpp" line="910"/>
+        <location filename="../../src/records.cpp" line="920"/>
         <source>Assembly record number</source>
         <translation>Číslo montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="911"/>
+        <location filename="../../src/records.cpp" line="921"/>
         <source>Record item type ID</source>
         <translation>IČ typu položky</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="912"/>
+        <location filename="../../src/records.cpp" line="922"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="913"/>
+        <location filename="../../src/records.cpp" line="923"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="914"/>
+        <location filename="../../src/records.cpp" line="924"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
@@ -125,73 +125,73 @@
 <context>
     <name>AssemblyRecordItemCategory</name>
     <message>
-        <location filename="../../src/records.cpp" line="846"/>
+        <location filename="../../src/records.cpp" line="856"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="847"/>
+        <location filename="../../src/records.cpp" line="857"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="861"/>
+        <location filename="../../src/records.cpp" line="871"/>
         <source>Assembly record item category</source>
         <translation>Kategória položiek montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="869"/>
-        <location filename="../../src/records.cpp" line="871"/>
+        <location filename="../../src/records.cpp" line="879"/>
+        <location filename="../../src/records.cpp" line="881"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="872"/>
+        <location filename="../../src/records.cpp" line="882"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="873"/>
+        <location filename="../../src/records.cpp" line="883"/>
         <source>Display Options:</source>
         <translation>Možnosti zobrazenia:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="874"/>
+        <location filename="../../src/records.cpp" line="884"/>
         <source>Show value</source>
         <translation>Zobraziť hodnotu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="875"/>
+        <location filename="../../src/records.cpp" line="885"/>
         <source>Show acquisition price</source>
         <translation>Zobraziť obstarávaciu cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="876"/>
+        <location filename="../../src/records.cpp" line="886"/>
         <source>Show list price</source>
         <translation>Zobraziť cenníkovú cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="877"/>
+        <location filename="../../src/records.cpp" line="887"/>
         <source>Show discount</source>
         <translation>Zobraziť zľavu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="878"/>
+        <location filename="../../src/records.cpp" line="888"/>
         <source>Calculate total</source>
         <translation>Vypočítať celkovú cenu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="880"/>
+        <location filename="../../src/records.cpp" line="890"/>
         <source>Display:</source>
         <translation>Zobraziť:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="881"/>
+        <location filename="../../src/records.cpp" line="891"/>
         <source>In table</source>
         <translation>V tabuľke</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="882"/>
+        <location filename="../../src/records.cpp" line="892"/>
         <source>Separately</source>
         <translation>Oddelene</translation>
     </message>
@@ -199,102 +199,102 @@
 <context>
     <name>AssemblyRecordItemType</name>
     <message>
-        <location filename="../../src/records.cpp" line="762"/>
+        <location filename="../../src/records.cpp" line="772"/>
         <source>Assembly record item type</source>
         <translation>Typ položky montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="769"/>
+        <location filename="../../src/records.cpp" line="779"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="770"/>
+        <location filename="../../src/records.cpp" line="780"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="771"/>
+        <location filename="../../src/records.cpp" line="781"/>
         <source>Unit:</source>
         <translation>Jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="772"/>
+        <location filename="../../src/records.cpp" line="782"/>
         <source>Acquisition price:</source>
         <translation>Obstarávacia cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="773"/>
+        <location filename="../../src/records.cpp" line="783"/>
         <source>List price:</source>
         <translation>Cenníková cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="774"/>
+        <location filename="../../src/records.cpp" line="784"/>
         <source>Discount:</source>
         <translation>Zľava:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="775"/>
+        <location filename="../../src/records.cpp" line="785"/>
         <source>EAN code:</source>
         <translation>EAN kód:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="776"/>
+        <location filename="../../src/records.cpp" line="786"/>
         <source>Automatically add to assembly record</source>
         <translation>Automaticky pridať do montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="777"/>
+        <location filename="../../src/records.cpp" line="787"/>
         <source>Category:</source>
         <translation>Kategória:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="778"/>
+        <location filename="../../src/records.cpp" line="788"/>
         <source>Get value from inspection:</source>
         <translation>Získať hodnotu z kontroly:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="779"/>
+        <location filename="../../src/records.cpp" line="789"/>
         <source>Data type:</source>
         <translation>Údajový typ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="797"/>
+        <location filename="../../src/records.cpp" line="807"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="798"/>
+        <location filename="../../src/records.cpp" line="808"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="799"/>
+        <location filename="../../src/records.cpp" line="809"/>
         <source>Unit</source>
         <translation>Jednotka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="800"/>
+        <location filename="../../src/records.cpp" line="810"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="801"/>
+        <location filename="../../src/records.cpp" line="811"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="802"/>
+        <location filename="../../src/records.cpp" line="812"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="803"/>
+        <location filename="../../src/records.cpp" line="813"/>
         <source>EAN code</source>
         <translation>EAN kód</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="804"/>
+        <location filename="../../src/records.cpp" line="814"/>
         <source>Category</source>
         <translation>Kategória</translation>
     </message>
@@ -307,67 +307,72 @@
         <translation>Typ montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="707"/>
+        <location filename="../../src/records.cpp" line="716"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="708"/>
+        <location filename="../../src/records.cpp" line="717"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="709"/>
+        <location filename="../../src/records.cpp" line="718"/>
         <source>Description:</source>
         <translation>Popis:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="710"/>
+        <location filename="../../src/records.cpp" line="719"/>
         <source>Display options:</source>
         <translation>Možnosti zobrazenia:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="711"/>
+        <location filename="../../src/records.cpp" line="720"/>
         <source>Show service company</source>
         <translation>Zobraziť servisnú organizáciu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="712"/>
+        <location filename="../../src/records.cpp" line="721"/>
         <source>Show customer</source>
         <translation>Zobraziť zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="713"/>
+        <location filename="../../src/records.cpp" line="722"/>
         <source>Show customer contact persons</source>
         <translation>Zobraziť kontaktné osoby zákazníka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="714"/>
+        <location filename="../../src/records.cpp" line="723"/>
         <source>Show circuit</source>
         <translation>Zobraziť okruh</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="715"/>
+        <location filename="../../src/records.cpp" line="724"/>
         <source>Show circuit units</source>
         <translation>Zobraziť jednotky okruhu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="717"/>
+        <location filename="../../src/records.cpp" line="726"/>
+        <source>Name format:</source>
+        <translation>Formát názvu:</translation>
+    </message>
+    <message>
+        <location filename="../../src/records.cpp" line="727"/>
         <source>Visual style:</source>
         <translation>Vzhľad:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="734"/>
+        <location filename="../../src/records.cpp" line="744"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="735"/>
+        <location filename="../../src/records.cpp" line="745"/>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="736"/>
+        <location filename="../../src/records.cpp" line="746"/>
         <source>Description</source>
         <translation>Popis</translation>
     </message>
@@ -375,12 +380,12 @@
 <context>
     <name>AssemblyRecordTypeCategory</name>
     <message>
-        <location filename="../../src/records.cpp" line="824"/>
+        <location filename="../../src/records.cpp" line="834"/>
         <source>Assembly record type ID</source>
         <translation>IČ typu montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="825"/>
+        <location filename="../../src/records.cpp" line="835"/>
         <source>Assembly record category type ID</source>
         <translation>IČ typu kategórie položiek montážneho listu</translation>
     </message>
@@ -656,186 +661,186 @@
 <context>
     <name>CircuitUnitType</name>
     <message>
-        <location filename="../../src/records.cpp" line="948"/>
+        <location filename="../../src/records.cpp" line="958"/>
         <source>Assembly record item type</source>
         <translation>Typ položky montážneho listu</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="951"/>
-        <location filename="../../src/records.cpp" line="1029"/>
+        <location filename="../../src/records.cpp" line="961"/>
+        <location filename="../../src/records.cpp" line="1039"/>
         <source>External</source>
         <translation>Externá</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="952"/>
-        <location filename="../../src/records.cpp" line="1031"/>
+        <location filename="../../src/records.cpp" line="962"/>
+        <location filename="../../src/records.cpp" line="1041"/>
         <source>Internal</source>
         <translation>Interná</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="962"/>
+        <location filename="../../src/records.cpp" line="972"/>
         <source>ID:</source>
         <translation>IČ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="963"/>
+        <location filename="../../src/records.cpp" line="973"/>
         <source>Manufacturer:</source>
         <translation>Výrobca:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="964"/>
+        <location filename="../../src/records.cpp" line="974"/>
         <source>Type:</source>
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="965"/>
+        <location filename="../../src/records.cpp" line="975"/>
         <source>Refrigerant:</source>
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="966"/>
+        <location filename="../../src/records.cpp" line="976"/>
         <source>Amount of refrigerant:</source>
         <translation>Množstvo chladiva:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="967"/>
+        <location filename="../../src/records.cpp" line="977"/>
         <source>Oil:</source>
         <translation>Olej:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="968"/>
+        <location filename="../../src/records.cpp" line="978"/>
         <source>Amount of oil:</source>
         <translation>Množstvo oleja:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="969"/>
+        <location filename="../../src/records.cpp" line="979"/>
         <source>Acquisition price:</source>
         <translation>Obstarávacia cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="970"/>
+        <location filename="../../src/records.cpp" line="980"/>
         <source>List price:</source>
         <translation>Cenníková cena:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="971"/>
+        <location filename="../../src/records.cpp" line="981"/>
         <source>Discount:</source>
         <translation>Zľava:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="972"/>
+        <location filename="../../src/records.cpp" line="982"/>
         <source>Location:</source>
         <translation>Poloha:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="973"/>
+        <location filename="../../src/records.cpp" line="983"/>
         <source>Unit of measure:</source>
         <translation>Merná jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="975"/>
+        <location filename="../../src/records.cpp" line="985"/>
         <source>Value:</source>
         <translation>Hodnota:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="976"/>
+        <location filename="../../src/records.cpp" line="986"/>
         <source>Unit:</source>
         <translation>Jednotka:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="977"/>
+        <location filename="../../src/records.cpp" line="987"/>
         <source>At t0/tc:</source>
         <translation>Pri t0/tk:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="978"/>
-        <location filename="../../src/records.cpp" line="1010"/>
+        <location filename="../../src/records.cpp" line="988"/>
+        <location filename="../../src/records.cpp" line="1020"/>
         <source>Output</source>
         <translation>Výkon</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="979"/>
+        <location filename="../../src/records.cpp" line="989"/>
         <source>Notes:</source>
         <translation>Poznámky:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="998"/>
-        <location filename="../../src/records.cpp" line="1077"/>
+        <location filename="../../src/records.cpp" line="1008"/>
+        <location filename="../../src/records.cpp" line="1087"/>
         <source>ID</source>
         <translation>IČ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="999"/>
+        <location filename="../../src/records.cpp" line="1009"/>
         <source>Manufacturer</source>
         <translation>Výrobca</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1000"/>
+        <location filename="../../src/records.cpp" line="1010"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1001"/>
+        <location filename="../../src/records.cpp" line="1011"/>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1002"/>
+        <location filename="../../src/records.cpp" line="1012"/>
         <source>Amount of refrigerant</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1003"/>
+        <location filename="../../src/records.cpp" line="1013"/>
         <source>Oil</source>
         <translation>Olej</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1004"/>
+        <location filename="../../src/records.cpp" line="1014"/>
         <source>Amount of oil</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1005"/>
+        <location filename="../../src/records.cpp" line="1015"/>
         <source>Acquisition price</source>
         <translation>Obstarávacia cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1006"/>
+        <location filename="../../src/records.cpp" line="1016"/>
         <source>List price</source>
         <translation>Cenníková cena</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1007"/>
+        <location filename="../../src/records.cpp" line="1017"/>
         <source>Discount</source>
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1008"/>
+        <location filename="../../src/records.cpp" line="1018"/>
         <source>Location</source>
         <translation>Poloha</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1009"/>
+        <location filename="../../src/records.cpp" line="1019"/>
         <source>Unit of measure</source>
         <translation>Merná jednotka</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1011"/>
+        <location filename="../../src/records.cpp" line="1021"/>
         <source>Output at t0/tc</source>
         <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1012"/>
+        <location filename="../../src/records.cpp" line="1022"/>
         <source>Category</source>
         <translation>Kategória</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1013"/>
+        <location filename="../../src/records.cpp" line="1023"/>
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1078"/>
+        <location filename="../../src/records.cpp" line="1088"/>
         <source>Content</source>
         <translation>Obsah</translation>
     </message>
@@ -4255,18 +4260,18 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectionDialogueImagesTab</name>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="341"/>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="357"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="368"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="384"/>
         <source>Images</source>
         <translation>Obrázky</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="351"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="378"/>
         <source>Description</source>
         <translation>Popis</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="354"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="381"/>
         <source>Image</source>
         <translation>Obrázok</translation>
     </message>
@@ -4274,7 +4279,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>ModifyInspectionDialogueTab</name>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="65"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="62"/>
         <source>Assembly record</source>
         <translation>Montážny list</translation>
     </message>
@@ -4304,12 +4309,12 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Zľava</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="332"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="359"/>
         <source>Conflict</source>
         <translation>Konflikt</translation>
     </message>
     <message>
-        <location filename="../../src/modify_inspection_dialogue.cpp" line="332"/>
+        <location filename="../../src/modify_inspection_dialogue.cpp" line="359"/>
         <source>Inspection with the same assembly record number already exists.</source>
         <translation>Kontrola s rovnakým číslom montážneho listu už existuje.</translation>
     </message>
@@ -5680,22 +5685,22 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
 <context>
     <name>Style</name>
     <message>
-        <location filename="../../src/records.cpp" line="1053"/>
+        <location filename="../../src/records.cpp" line="1063"/>
         <source>Style</source>
         <translation>Vzhľad</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1058"/>
+        <location filename="../../src/records.cpp" line="1068"/>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1059"/>
+        <location filename="../../src/records.cpp" line="1069"/>
         <source>Style:</source>
         <translation>Vzhľad:</translation>
     </message>
     <message>
-        <location filename="../../src/records.cpp" line="1060"/>
+        <location filename="../../src/records.cpp" line="1070"/>
         <source>Use div elements instead of tables</source>
         <translation>Použiť div elementy namiesto tabuliek</translation>
     </message>
@@ -5745,8 +5750,8 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <location filename="../../src/records.cpp" line="621"/>
         <location filename="../../src/records.cpp" line="622"/>
         <location filename="../../src/records.cpp" line="623"/>
-        <location filename="../../src/records.cpp" line="966"/>
-        <location filename="../../src/records.cpp" line="968"/>
+        <location filename="../../src/records.cpp" line="976"/>
+        <location filename="../../src/records.cpp" line="978"/>
         <location filename="../../src/variables.cpp" line="137"/>
         <location filename="../../src/variables.cpp" line="144"/>
         <location filename="../../src/variables.cpp" line="145"/>

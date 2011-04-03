@@ -450,7 +450,7 @@ public:
         dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
         dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
         dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, style INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, style INTEGER, name_format TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price NUMERIC, list_price NUMERIC, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, value_data_type INTEGER, discount NUMERIC, auto_show INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, position INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT, updated_by TEXT");

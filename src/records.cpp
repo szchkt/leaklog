@@ -699,6 +699,15 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
 {
     md->setWindowTitle(tr("Assembly record type"));
 
+    QStringList keywords;
+    keywords << "customer_id";
+    keywords << "customer_name";
+    keywords << "circuit_id";
+    keywords << "circuit_name";
+    keywords << "day";
+    keywords << "month";
+    keywords << "year";
+
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
@@ -714,6 +723,7 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
+    md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md, attributes.value("name_format").toString(), keywords));
     md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md, attributes.value("style").toString(), listStyles()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);

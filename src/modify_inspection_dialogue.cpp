@@ -59,12 +59,12 @@ ModifyInspectionDialogueTab::ModifyInspectionDialogueTab(int, MDLineEdit * arno_
     this->circuit_id = circuit_id;
     original_arno = arno_w->text();
 
-    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(loadItemInputWidgets()));
-    QObject::connect(arno_w, SIGNAL(editingFinished()), this, SLOT(assemblyRecordNumberChanged()));
-
     setName(tr("Assembly record"));
 
     init();
+
+    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(recordTypeChanged()));
+    QObject::connect(arno_w, SIGNAL(editingFinished()), this, SLOT(assemblyRecordNumberChanged()));
 }
 
 void ModifyInspectionDialogueTab::init()
@@ -106,6 +106,33 @@ const QVariant ModifyInspectionDialogueTab::assemblyRecordType()
 const QVariant ModifyInspectionDialogueTab::assemblyRecordId()
 {
     return arno_w->variantValue();
+}
+
+void ModifyInspectionDialogueTab::recordTypeChanged()
+{
+    AssemblyRecordType type_rec(assemblyRecordType().toString());
+    QVariantMap type = type_rec.list();
+    QString name_format = type.value("name_format").toString();
+
+    if (!name_format.isEmpty()) {
+        QDate current_date = QDate::currentDate();
+        name_format.replace("year", QString::number(current_date.year()));
+        name_format.replace("month", QString::number(current_date.month()));
+        name_format.replace("day", QString::number(current_date.day()));
+
+        name_format.replace("customer_id", customer_id);
+        name_format.replace("circuit_id", circuit_id);
+
+        if (name_format.contains("customer_name")) {
+            name_format.replace("customer_name", Customer(customer_id).list().value("company").toString());
+        }
+        if (name_format.contains("circuit_name")) {
+            name_format.replace("circuit_name", Circuit(customer_id, circuit_id).list().value("name").toString());
+        }
+        arno_w->setText(name_format);
+    }
+
+    loadItemInputWidgets();
 }
 
 void ModifyInspectionDialogueTab::loadItemInputWidgets(bool initial)
