@@ -385,6 +385,7 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
                 attribute = getCircuitRefrigerantAmount(customer_id, circuit_id, attribute);
             value.append(QString::number(attribute));
         } else if (expression.value(i) == "p_to_t") {
+            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
             MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
             QString refrigerant = circuit.stringValue("refrigerant");
             value.append(QString::number(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0 + 1.0)));
