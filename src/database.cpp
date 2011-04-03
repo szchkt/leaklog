@@ -2170,7 +2170,7 @@ void MainWindow::importCSV()
     tables.append(table);
 
     table = table->addChildTableTemplate(tr("Circuit units"), "circuit_units",
-        MTDictionary(QStringList() << "parent" << "id", QStringList() << "company_id" << "circuit_id"));
+        MTDictionary(QStringList() << "parent" << "id", QStringList() << "company_id" << "circuit_id"), true);
     table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_id", "id", "circuit_unit_types");
     table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
 

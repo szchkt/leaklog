@@ -299,7 +299,7 @@ class CircuitUnit : public MTRecord
     Q_OBJECT
 
 public:
-    CircuitUnit(const MTDictionary & = MTDictionary());
+    CircuitUnit(const QString & = QString(), const MTDictionary & = MTDictionary());
 };
 
 class InspectionImage : public MTRecord

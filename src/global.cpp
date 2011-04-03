@@ -456,7 +456,7 @@ public:
         dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, source INTEGER, name TEXT, category_id INTEGER, unit TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
         dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT, updated_by TEXT");
         dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("circuit_units", "company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("circuit_units", "id INTEGER PRIMARY KEY, company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
         dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, div_tables INTEGER, updated_by TEXT");
     }

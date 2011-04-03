@@ -123,13 +123,21 @@ void ModifyCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
     dict.insert("company_id", customer_id);
     dict.insert("circuit_id", circuit_id.toString());
 
-    CircuitUnit unit(dict);
+    CircuitUnit unit("", dict);
     unit.remove();
 
     QList<MTDictionary> values = table->allValues();
     QVariantMap map;
 
+    int id = 1;
+
+    QSqlQuery query("SELECT MAX(id) FROM circuit_units");
+    if (query.last()) {
+        id = query.value(0).toInt() + 1;
+    }
+
     for (int i = 0; i < values.count(); ++i) {
+        CircuitUnit unit(QString::number(id++), dict);
         map.insert("unit_type_id", values.at(i).value("unit_type_id"));
         map.insert("sn", values.at(i).value("sn"));
         unit.update(map);

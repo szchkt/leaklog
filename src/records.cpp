@@ -1033,8 +1033,8 @@ const QString CircuitUnitType::locationToString(int id)
     return QString();
 }
 
-CircuitUnit::CircuitUnit(const MTDictionary & dict)
-    : MTRecord("circuit_units", "", "", dict)
+CircuitUnit::CircuitUnit(const QString & id, const MTDictionary & dict)
+    : MTRecord("circuit_units", "id", id, dict)
 {
 }
 
