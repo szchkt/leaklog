@@ -185,6 +185,7 @@ QLayout * ModifyDialogueAdvancedTable::addRowControlsLayout()
     QHBoxLayout * layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     add_row_cb = new QComboBox(this);
+    add_row_cb->setMaximumWidth(500);
 
     layout->addWidget(add_row_cb);
 

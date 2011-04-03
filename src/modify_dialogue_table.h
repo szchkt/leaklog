@@ -267,12 +267,12 @@ public:
     void setVariantValue(const QVariant & val) { setChecked(val.toBool()); }
 };
 
-class MDTLabel : public QLabel, public MDTInputWidget
+class MDTLabel : public QLineEdit, public MDTInputWidget
 {
     Q_OBJECT
 
 public:
-    MDTLabel(const QString & text, QWidget * parent) : QLabel(text, parent), MDTInputWidget(this) {}
+    MDTLabel(const QString & text, QWidget * parent) : QLineEdit(text, parent), MDTInputWidget(this) { setReadOnly(true); }
 
     QVariant variantValue() { return text(); }
     void setVariantValue(const QVariant & val) { setText(val.toString()); }
