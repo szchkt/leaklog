@@ -46,6 +46,14 @@ QString Global::escapeString(QString s, bool escape_backslash, bool insert_lineb
     return s;
 }
 
+QString Global::elideRight(const QString & s, int n)
+{
+    QString result = s.trimmed();
+    if (result.length() > n)
+        result = result.left(n - 3).trimmed() + "...";
+    return result;
+}
+
 QString Global::upArrow() { return QString::fromUtf8("\342\206\221"); }
 
 QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }

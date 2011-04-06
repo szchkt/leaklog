@@ -535,7 +535,8 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
         out << "<td>" << MTVariant(inspections.at(i).value("operator")) << "</td>";
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
-            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true) << "')\" onmouseout=\"UnTip()\">...</td>";
+            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true);
+            out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("rmds").toString(), 50)) << "</td>";
         } else {
             out << "<td></td>";
         }
@@ -1073,7 +1074,7 @@ void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type,
     }
     out << ">";
     if (var_type == "text") {
-        if (!ins_value.isEmpty()) out << "...";
+        out << escapeString(elideRight(ins_value, 20));
     } else if (var_type == "string") {
         out << escapeString(ins_value);
     } else if (var_type == "bool") {
