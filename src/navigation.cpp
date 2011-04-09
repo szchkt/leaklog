@@ -237,24 +237,34 @@ void Navigation::updateView()
             spb_filter_since->setSpecialValueText(tr("Last"));
             break;
         case Navigation::ListOfAssemblyRecordTypes:
+            filter_since_visible = false;
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             group = 3;
-            filter_visible = false;
             break;
         case Navigation::ListOfAssemblyRecordItemTypes:
+            filter_since_visible = false;
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Category ID"), "category_id");
             group = 3;
-            filter_visible = false;
             break;
         case Navigation::ListOfAssemblyRecordItemCategories:
+            filter_since_visible = false;
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             group = 3;
-            filter_visible = false;
             break;
         case Navigation::AssemblyRecord:
             group = 2;
             filter_visible = false;
             break;
         case Navigation::ListOfCircuitUnitTypes:
+            filter_since_visible = false;
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Manufacturer"), "manufacturer");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Type"), "type");
             group = 3;
-            filter_visible = false;
             break;
         case Navigation::LeakagesByApplication:
         case Navigation::ListOfAssemblyRecords:
