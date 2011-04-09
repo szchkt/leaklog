@@ -240,6 +240,7 @@ void Navigation::updateView()
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Description"), "description");
             group = 3;
             break;
         case Navigation::ListOfAssemblyRecordItemTypes:
@@ -264,6 +265,9 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Manufacturer"), "manufacturer");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Type"), "type");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Refrigerant"), "refrigerant");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Oil"), "oil");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Notes"), "notes");
             group = 3;
             break;
         case Navigation::LeakagesByApplication:
