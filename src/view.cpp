@@ -31,6 +31,7 @@
 #include <QDate>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QFileInfo>
 
 using namespace Global;
 
@@ -156,6 +157,8 @@ QString MainWindow::currentView()
                    + " - " + QApplication::translate("Navigation", "List of inspections");
             break;
         case Navigation::AssemblyRecord:
+            view = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).stringValue("arno");
+            break;
         case Navigation::Inspection:
             view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
             view = Customer(selectedCustomer()).stringValue("company")
@@ -185,6 +188,14 @@ QString MainWindow::currentView()
         case Navigation::InspectionImages: view = QApplication::translate("Navigation", "Inspection images"); break;
     }
     return view;
+}
+
+QString MainWindow::fileNameForCurrentView()
+{
+    if (navigation->view() == Navigation::AssemblyRecord)
+        return currentView();
+
+    return QString("%1 - %2").arg(QFileInfo(db.databaseName()).baseName()).arg(currentView());
 }
 
 QString MainWindow::viewServiceCompany(int since)

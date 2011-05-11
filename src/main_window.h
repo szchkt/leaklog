@@ -196,6 +196,7 @@ private:
     inline QString selectedCircuitUnitType() { return QString::number(selected_circuit_unit_type); }
     // VIEW
     QString currentView();
+    QString fileNameForCurrentView();
     QString viewServiceCompany(int);
     QString viewRefrigerantManagement(int);
     QString viewAllCustomers();
