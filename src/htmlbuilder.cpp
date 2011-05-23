@@ -87,6 +87,14 @@ HTMLParagraph * HTMLParent::paragraph(const QString & args)
     return paragraph;
 }
 
+HTMLStyle * HTMLParent::addStyleElement(const QString & css)
+{
+    HTMLStyle * style = new HTMLStyle;
+    if (!css.isEmpty()) *style << css;
+    children.append(style);
+    return style;
+}
+
 HTMLParent & HTMLParent::operator<<(const QString & str)
 {
     children.append(new HTMLDataElement(str));
@@ -155,6 +163,26 @@ const QString HTMLParentElement::html()
     out << "</" << tagName() <<">";
 
     return str;
+}
+
+HTMLDocument::HTMLDocument(const QString & title_str):
+HTMLParentElement()
+{
+    tag_name = "html";
+
+    html_head = new HTMLCustomTaggedParentElement("head");
+    *html_head << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+
+    HTMLParentElement * title = new HTMLCustomTaggedParentElement("title");
+    *title << title_str;
+    *html_head << title;
+
+    *html_head << "<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />";
+    html_head->addStyleElement("<!-- body,td,th { font-family: %1; font-size: %2; } -->");
+    *this << html_head;
+
+    html_body = new HTMLCustomTaggedParentElement("body");
+    *this << html_body;
 }
 
 HTMLTable::HTMLTable(const QString & args, int cols_in_row):
@@ -341,4 +369,10 @@ HTMLParagraph::HTMLParagraph(const QString & args):
 HTMLParentElement(args)
 {
     tag_name = "p";
+}
+
+HTMLStyle::HTMLStyle():
+HTMLParentElement("type=\"text/css\"")
+{
+    tag_name = "style";
 }

@@ -33,6 +33,7 @@ class HTMLHeading;
 class HTMLSubHeading;
 class HTMLSubSubHeading;
 class HTMLParagraph;
+class HTMLStyle;
 class QTextStream;
 
 class HTMLElement
@@ -69,6 +70,7 @@ public:
     HTMLSubHeading * subHeading();
     HTMLSubSubHeading * subSubHeading();
     HTMLParagraph * paragraph(const QString & = QString());
+    HTMLStyle * addStyleElement(const QString & = QString());
 
     void newLine() { children.append(new HTMLDataElement("<br>")); }
 
@@ -98,6 +100,26 @@ protected:
     QString tag_id;
     QStringList tag_classes;
     QString tag_name;
+};
+
+class HTMLCustomTaggedParentElement : public HTMLParentElement
+{
+public:
+    HTMLCustomTaggedParentElement(const QString & tag_name, const QString & args = QString()) : HTMLParentElement(args)
+        { this->tag_name = tag_name; }
+};
+
+class HTMLDocument : public HTMLParentElement
+{
+public:
+    HTMLDocument(const QString &);
+
+    HTMLParentElement * body() { return html_body; }
+    HTMLParentElement * head() { return html_head; }
+
+private:
+    HTMLParentElement * html_body;
+    HTMLParentElement * html_head;
 };
 
 class HTMLMain : public HTMLParent
@@ -226,6 +248,12 @@ class HTMLParagraph : public HTMLParentElement
 {
 public:
     HTMLParagraph(const QString & = QString());
+};
+
+class HTMLStyle : public HTMLParentElement
+{
+public:
+    HTMLStyle();
 };
 
 #endif // HTMLBUILDER_H

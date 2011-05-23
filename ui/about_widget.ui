@@ -101,7 +101,13 @@
         <number>6</number>
        </property>
        <item row="0" column="0">
-        <widget class="QTextBrowser" name="txb_about"/>
+        <widget class="QWebView" name="webv_about">
+         <property name="url">
+          <url>
+           <string>about:blank</string>
+          </url>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -118,7 +124,13 @@
         <number>6</number>
        </property>
        <item row="0" column="0">
-        <widget class="QTextBrowser" name="txb_about_qt"/>
+        <widget class="QWebView" name="webv_about_qt">
+         <property name="url">
+          <url>
+           <string>about:blank</string>
+          </url>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -219,6 +231,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="6"/>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../rc/resources.qrc"/>
  </resources>

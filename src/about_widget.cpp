@@ -19,47 +19,61 @@
 
 #include "about_widget.h"
 #include "defs.h"
+#include "htmlbuilder.h"
 
 AboutWidget::AboutWidget()
 {
     setupUi(this);
     QObject::connect(btn_close, SIGNAL(clicked()), this, SLOT(close()));
-    QString about = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">Leaklog</span><br>";
-    about.append("<span style=\"font-size:8pt;\">");
-    about.append(tr("Version"));
-    about.append(QString(" %1%2</span></p><p></p>").arg(LEAKLOG_VERSION).arg(LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : ""));
-    about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about.append(tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage."));
-    about.append("</p><p></p>");
-    about.append("<p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about.append(tr("This program is distributed under the terms of the GPL v2."));
-    about.append("</p><p></p>");
-    about.append(QString("<p style=\"font-family: sans-serif; font-size:8pt;\">Copyright (C) 2008-2011 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span><br>%1</p>")
-                 .arg(tr("Slovak Association for Cooling and Air Conditioning Technology")));
-    about.append("<p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about.append(tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
-    about.append("</p>");
+
+    HTMLDocument html_doc("About Leaklog");
+
+    HTMLParentElement * style = html_doc.head()->addStyleElement();
 #ifdef Q_WS_MAC
-    about.remove("font-family: sans-serif;");
-    about.replace("font-size:12pt;", "font-size:16pt;");
-    about.replace("font-size:8pt;", "font-size:12pt;");
+    QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
+    QString font_size = "9pt";
+#else
+    QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
+    QString font_size = "small";
 #endif
-    txb_about->setHtml(about);
-    QString about_qt = "<p style=\"font-family: sans-serif; font-style:italic;\"><span style=\"font-size:12pt;\">";
-    about_qt.append(tr("About Qt"));
-    about_qt.append("</span></p><p></p><p style=\"font-family: sans-serif; font-size:8pt; font-style:italic;\">");
-    about_qt.append(tr("This program uses Qt Open Source Edition version %1.").arg(qVersion()));
-    about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about_qt.append(tr("Qt is a C++ toolkit for cross-platform application development."));
-    about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about_qt.append(tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux, and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE."));
-    about_qt.append("</p><p></p><p style=\"font-family: sans-serif; font-size:8pt;\">");
-    about_qt.append(tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">qt.nokia.com</span> for more information."));
-    about_qt.append("</p>");
-#ifdef Q_WS_MAC
-    about_qt.remove("font-family: sans-serif;");
-    about_qt.replace("font-size:12pt;", "font-size:16pt;");
-    about_qt.replace("font-size:8pt;", "font-size:12pt;");
-#endif
-    txb_about_qt->setHtml(about_qt);
+    *style << QString("body { font-family: %1; }").arg(font);
+    *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
+
+    HTMLParentElement * body = html_doc.body();
+
+    *(body->heading()) << "Leaklog";
+    *(body->subHeading()) << tr("Version")
+                             << QString(" %1").arg(LEAKLOG_VERSION)
+                             << (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "");
+
+    HTMLParagraph * p = body->paragraph();
+    *p << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
+
+    p = body->paragraph();
+    *p << tr("This program is distributed under the terms of the GPL v2.");
+
+    p = body->paragraph();
+    *p << "Copyright (C) 2008-2011 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span>";
+    p->newLine();
+    *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
+
+    p = body->paragraph();
+    *p << tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.");
+
+    webv_about->setHtml(html_doc.html());
+
+    // +++ ABOUT QT +++
+
+    HTMLDocument html_qt_doc("About Qt");
+    *(html_qt_doc.head()) << style;
+
+    body = html_qt_doc.body();
+    *(body->heading()) << tr("About Qt");
+
+    *(body->paragraph("style=\"font-style:italic;\"")) << tr("This program uses Qt Open Source Edition version %1.").arg(qVersion());
+    *(body->paragraph()) << tr("Qt is a C++ toolkit for cross-platform application development.");
+    *(body->paragraph()) << tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux, and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE.");
+    *(body->paragraph()) << tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">qt.nokia.com</span> for more information.");
+
+    webv_about_qt->setHtml(html_qt_doc.html());
 }
