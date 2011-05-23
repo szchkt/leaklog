@@ -21,6 +21,8 @@
 #include "defs.h"
 #include "htmlbuilder.h"
 
+#include <QBuffer>
+
 AboutWidget::AboutWidget()
 {
     setupUi(this);
@@ -36,7 +38,7 @@ AboutWidget::AboutWidget()
     QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
     QString font_size = "small";
 #endif
-    *style << QString("body { font-family: %1; }").arg(font);
+    *style << QString("body { font-family: %1; } img { margin-right: 10px; }").arg(font);
     *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
 
     HTMLParentElement * body = html_doc.body();
@@ -46,19 +48,32 @@ AboutWidget::AboutWidget()
                              << QString(" %1").arg(LEAKLOG_VERSION)
                              << (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "");
 
+    *(body->paragraph()) << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
+
+    *(body->paragraph()) << tr("This program is distributed under the terms of the GPL v2.");
+
     HTMLParagraph * p = body->paragraph();
-    *p << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
-
-    p = body->paragraph();
-    *p << tr("This program is distributed under the terms of the GPL v2.");
-
-    p = body->paragraph();
     *p << "Copyright (C) 2008-2011 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span>";
     p->newLine();
     *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
+    *(body->paragraph()) << tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.");
+
+    *(body->subHeading()) << tr("List of contributors:");
+
+    QPixmap frigo_logo(":/images/images/frigo_slovakia_logo.jpg");
+    QByteArray byte_array;
+    QBuffer buffer(&byte_array);
+    buffer.open(QIODevice::WriteOnly);
+    frigo_logo.save(&buffer, "JPG");
+
     p = body->paragraph();
-    *p << tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.");
+    *p << QString("<img style=\"float: left;\" src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+    HTMLDiv * div = new HTMLDiv("style=\"padding: 10px;\"");
+    *div << "Frigo Slovakia s.r.o., <i>http://www.frigo.sk/</i>";
+    *p << div;
+
+    *(body->paragraph()) << "Klimaservis Bratislava, s.r.o., <i>http://www.klimaservisba.sk/</i>";
 
     webv_about->setHtml(html_doc.html());
 
