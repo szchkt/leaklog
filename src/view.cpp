@@ -571,6 +571,10 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
+
+    HTMLTable * units_table = circuitUnitsTable(customer_id, circuit_id);
+    if (units_table) out << "<br>" << units_table->html();
+
     Inspection inspection_record(customer_id, circuit_id, "");
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
@@ -2169,17 +2173,6 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
 
 HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QString & circuit_id, HTMLTable * table)
 {
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-    table->addClass("circuit_units");
-    table->addClass("highlight");
-    HTMLTableRow * _tr;
-
-    _tr = table->addRow();
-    *(_tr->addHeaderCell()) << tr("Circuit units");
-    *(_tr->addHeaderCell()) << tr("Manufacturer");
-    *(_tr->addHeaderCell()) << tr("Type");
-    *(_tr->addHeaderCell()) << tr("Serial number");
-
     enum QUERY_RESULTS
     {
         SN = 0,
@@ -2193,15 +2186,29 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
                             " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
                             " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
                     .arg(customer_id.toInt()).arg(circuit_id.toInt()));
-    while (query.next()) {
-        _tr = table->addRow();
-        *(_tr->addCell()) << CircuitUnitType::locationToString(query.value(LOCATION).toInt());
-        *(_tr->addCell()) << query.value(MANUFACTURER).toString();
-        *(_tr->addCell()) << query.value(TYPE).toString();
-        *(_tr->addCell()) << query.value(SN).toString();
-    }
+    if (query.next()) {
+        if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+        table->addClass("circuit_units");
+        table->addClass("highlight");
+        HTMLTableRow * _tr;
 
-    return table;
+        _tr = table->addRow();
+        *(_tr->addHeaderCell()) << tr("Circuit units");
+        *(_tr->addHeaderCell()) << tr("Manufacturer");
+        *(_tr->addHeaderCell()) << tr("Type");
+        *(_tr->addHeaderCell()) << tr("Serial number");
+
+        do {
+            _tr = table->addRow();
+            *(_tr->addCell()) << CircuitUnitType::locationToString(query.value(LOCATION).toInt());
+            *(_tr->addCell()) << query.value(MANUFACTURER).toString();
+            *(_tr->addCell()) << query.value(TYPE).toString();
+            *(_tr->addCell()) << query.value(SN).toString();
+        } while (query.next());
+
+        return table;
+    }
+    return NULL;
 }
 
 HTMLTable * MainWindow::customerContactPersons(const QString & customer_id, HTMLTable * table)

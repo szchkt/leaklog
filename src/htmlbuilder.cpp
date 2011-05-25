@@ -103,7 +103,7 @@ HTMLParent & HTMLParent::operator<<(const QString & str)
 
 HTMLParent & HTMLParent::operator<<(HTMLElement * child)
 {
-    children.append(child);
+    if (child) children.append(child);
     return *this;
 }
 
