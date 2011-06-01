@@ -45,7 +45,8 @@ public:
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
-    QSqlQuery select(const QString & = "*", Qt::SortOrder = Qt::AscendingOrder);
+    QSqlQuery select(const QString & = "*", Qt::SortOrder order = Qt::AscendingOrder);
+    QSqlQuery select(const QString &, const QString & order_by);
     QVariantMap list(const QString & = "*", bool = false);
     void readValues();
     inline QVariantMap & values() { return r_values; }

@@ -69,6 +69,11 @@ bool MTRecord::exists()
 
 QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
 {
+    return select(fields, QString("%1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+}
+
+QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
+{
     bool has_id = !r_id.isEmpty();
     int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
@@ -86,7 +91,8 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(custom_where);
     }
-    if (!r_id_field.isEmpty()) select.append(QString(" ORDER BY %1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+    if (!r_id_field.isEmpty() && !order_by.isEmpty())
+        select.append(QString(" ORDER BY %1").arg(order_by));
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
