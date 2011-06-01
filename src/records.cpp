@@ -23,6 +23,7 @@
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
+#include "partner_widgets.h"
 
 #include <QSqlRecord>
 #include <QApplication>
@@ -608,10 +609,11 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
         date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
-    md->addInputWidget(new MDLineEdit("partner", tr("Business partner:"), md, attributes.value("partner").toString()));
-    MDLineEdit * partner_id = new MDLineEdit("partner_id", tr("Business partner (ID):"), md, attributes.value("partner_id").toString(), 99999999);
-    partner_id->setNullValue(QVariant(QVariant::Int));
-    md->addInputWidget(partner_id);
+
+    PartnerWidgets * partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md);
+    md->addInputWidget(partner_widgets->partnersWidget());
+    md->addInputWidget(partner_widgets->partnerNameWidget());
+    md->addInputWidget(partner_widgets->partnerIdWidget());
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));

@@ -47,7 +47,8 @@ HEADERS       += src/global.h \
                  src/modify_inspection_dialogue.h \
                  src/modify_assembly_record_dialogue.h \
                  src/modify_dialogue_table_groups.h \
-                 src/modify_inspector_dialogue.h
+                 src/modify_inspector_dialogue.h \
+                 src/partner_widgets.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -87,7 +88,8 @@ SOURCES       += src/global.cpp \
                  src/modify_inspection_dialogue.cpp \
                  src/modify_assembly_record_dialogue.cpp \
                  src/modify_dialogue_table_groups.cpp \
-                 src/modify_inspector_dialogue.cpp
+                 src/modify_inspector_dialogue.cpp \
+                 src/partner_widgets.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser
