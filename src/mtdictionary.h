@@ -66,23 +66,33 @@ public:
         if (contains(key)) { dict_values.replace(indexOfKey(key), value); }
         else { dict_keys << key; dict_values << value; }
     }
-    QString key(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i); else return QString(); }
-    QString firstKey(const QString & value) const {
+    inline QString key(int i) const {
+        if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i);
+        else return QString();
+    }
+    inline QString firstKey(const QString & value) const {
         return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));
     }
-    QStringList keys() const { return dict_keys; }
+    inline QStringList keys() const { return dict_keys; }
     inline int indexOfKey(const QString & key) const { return dict_keys.indexOf(key); }
     inline bool contains(const QString & key) const {
         return dict_keys.contains(key, Qt::CaseSensitive);
     }
-    QString value(int i) const { if (i >= 0 && i < dict_keys.count()) return dict_values.at(i); else return QString(); }
-    QString value(const QString & key) const {
+    inline const QString & value(int i, const QString & default_value = QString()) const {
+        if (i >= 0 && i < dict_keys.count()) return dict_values.at(i);
+        else return default_value;
+    }
+    inline const QString & value(const QString & key) const {
         return dict_keys.indexOf(key) < 0 ? key : dict_values.at(dict_keys.indexOf(key));
     }
-    QString value(const QString & key, const QString & default_value) const {
+    inline const QString & value(const QString & key, const QString & default_value) const {
         return dict_keys.indexOf(key) < 0 ? default_value : dict_values.at(dict_keys.indexOf(key));
     }
-    QStringList values() const { return dict_values; }
+    inline const QString & lastValue() const {
+        return dict_values.last();
+    }
+
+    inline QStringList values() const { return dict_values; }
     inline int indexOfValue(const QString & value, int from = 0) const { return dict_values.indexOf(value, from); }
     inline int lastIndexOfValue(const QString & value, int from = -1) const { return dict_values.lastIndexOf(value, from); }
     void removeAt(int i) { if (i >= 0 && i < count()) { dict_keys.removeAt(i); dict_values.removeAt(i); } }

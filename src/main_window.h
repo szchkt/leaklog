@@ -20,6 +20,7 @@
 #include "defs.h"
 #include "ui_main_window.h"
 #include "mtdictionary.h"
+#include "link_parser.h"
 
 #include <QSqlDatabase>
 
@@ -259,4 +260,5 @@ private:
     QMap<QString, QString> leaklog_i18n;
     bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;
+    LinkParser link_parser;
 };

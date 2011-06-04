@@ -362,103 +362,127 @@ void MainWindow::showIconsOnly(bool show)
 
 void MainWindow::executeLink(const QUrl & url)
 {
-    QStringList path = url.toString().split("/");
+    Link * link = link_parser.parse(url.toString());
     QString id;
-    if (path.count() > 0) {
-        if (path.at(0).startsWith("customer:")) {
-            id = path.at(0);
-            id.remove(0, QString("customer:").length());
-            if (id != selectedCustomer()) {
-                loadCustomer(id.toInt(), path.count() <= 1);
-            } else if (path.count() <= 1) {
+
+    switch (link->viewAt(0)) {
+    case LinkParser::Customer:
+        id = link->idValue("customer");
+        if (id != selectedCustomer()) {
+            loadCustomer(id.toInt(), link->countViews() <= 1 && link->action() == Link::View);
+        } else if (link->countViews() <= 1) {
+            if (link->action() == Link::View) {
                 if (actionBasic_logbook->isChecked())
                     navigation->setView(Navigation::ListOfRepairs);
                 else if (actionDetailed_logbook->isChecked())
                     navigation->setView(Navigation::ListOfCircuits);
-            }
-        } else if (path.at(0).startsWith("repair:")) {
-            id = path.at(0);
-            id.remove(0, QString("repair:").length());
-            loadRepair(id, path.count() <= 1);
-        } else if (path.at(0).startsWith("inspector:")) {
-            id = path.at(0);
-            id.remove(0, QString("inspector:").length());
-            loadInspector(id.toInt(), path.count() <= 1);
-        } else if (path.at(0).startsWith("inspectorreport")) {
-            id = path.at(0);
-            id.remove(0, QString("inspectorreport:").length());
-            loadInspectorReport(id.toInt(), path.count() <= 1);
-        } else if (path.at(0).startsWith("allcustomers:")) {
-            navigation->setView(Navigation::ListOfCustomers);
-        } else if (path.at(0).startsWith("toggledetailedview:")) {
-            id = path.at(0);
-            id.remove(0, QString("toggledetailedview:").length());
-            if (years_expanded_in_service_company_view.contains(id.toInt())) {
-                years_expanded_in_service_company_view.remove(id.toInt());
-            } else {
-                years_expanded_in_service_company_view << id.toInt();
-            }
-            refreshView();
-        } else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) {
-            id = path.at(0);
-            id.remove(0, QString("recordofrefrigerantmanagement:").length());
-        } else if (path.at(0).startsWith("assemblyrecordtype:")) {
-            id = path.at(0);
-            id.remove(0, QString("assemblyrecordtype:").length());
-            loadAssemblyRecordType(id.toInt(), path.count() <= 1);
-        } else if (path.at(0).startsWith("assemblyrecorditemtype:")) {
-            id = path.at(0);
-            id.remove(0, QString("assemblyrecorditemtype:").length());
-            loadAssemblyRecordItemType(id.toInt(), path.count() <= 1);
-        } else if (path.at(0).startsWith("assemblyrecorditemcategory:")) {
-            id = path.at(0);
-            id.remove(0, QString("assemblyrecorditemcategory:").length());
-            loadAssemblyRecordItemCategory(id.toInt(), path.count() <= 1);
-        } else if (path.at(0).startsWith("circuitunittype:")) {
-            id = path.at(0);
-            id.remove(0, QString("circuitunittype:").length());
-            loadCircuitUnitType(id.toInt(), path.count() <= 1);
+            } else if (link->action() == Link::Modify)
+                modifyCustomer();
+        }
+        break;
+
+    case LinkParser::Repair:
+        loadRepair(link->idValue("repair"), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyRepair();
+        break;
+
+    case LinkParser::ServiceCompany:
+        if (link->action() == Link::Modify)
+            modifyServiceCompany();
+        break;
+
+    case LinkParser::Inspector:
+        loadInspector(link->idValue("inspector").toInt(), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyInspector();
+        break;
+
+    case LinkParser::InspectorReport:
+        loadInspectorReport(link->idValue("inspectorreport").toInt(), link->action() == Link::View);
+        break;
+
+    case LinkParser::AllCustomers:
+        navigation->setView(Navigation::ListOfCustomers);
+        break;
+
+    case LinkParser::ToggleDetailedView:
+        id = link->idValue("toggledetailedview");
+        if (years_expanded_in_service_company_view.contains(id.toInt())) {
+            years_expanded_in_service_company_view.remove(id.toInt());
+        } else {
+            years_expanded_in_service_company_view << id.toInt();
+        }
+        refreshView();
+        break;
+
+    case LinkParser::RecordOfRefrigerantManagement:
+        if (link->action() == Link::Modify)
+            modifyRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
+        break;
+
+    case LinkParser::AssemblyRecordType:
+        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyAssemblyRecordType();
+        break;
+
+    case LinkParser::AssemblyRecordItemType:
+        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyAssemblyRecordItemType();
+        break;
+
+    case LinkParser::AssemblyRecordCategory:
+        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyAssemblyRecordItemCategory();
+        break;
+
+    case LinkParser::CircuitUnitType:
+        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), link->action() == Link::View);
+        if (link->action() == Link::Modify)
+            modifyCircuitUnitType();
+        break;
+    }
+
+    if (link->viewAt(1) == LinkParser::Circuit) {
+        if (link->idValue("circuit") != selectedCircuit())
+            loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
+        else if (link->countViews() <= 2) {
+            if (link->action() == Link::View)
+                navigation->setView(Navigation::ListOfInspections);
+            else if (link->action() == Link::Modify)
+                modifyCircuit();
         }
     }
-    if (path.count() > 1) {
-        if (path.at(1).startsWith("circuit:")) {
-            id = path.at(1);
-            id.remove(0, QString("circuit:").length());
-            if (id != selectedCircuit()) {
-                loadCircuit(id.toInt(), path.count() <= 2);
-            } else if (path.count() <= 2) { navigation->setView(Navigation::ListOfInspections); }
-        } else if (path.at(1).startsWith("modify")) {
-            if (path.at(0).startsWith("customer:")) { modifyCustomer(); }
-            else if (path.at(0).startsWith("repair:")) { modifyRepair(); }
-            else if (path.at(0).startsWith("inspector:")) { modifyInspector(); }
-            else if (path.at(0).startsWith("servicecompany:")) { modifyServiceCompany(); }
-            else if (path.at(0).startsWith("recordofrefrigerantmanagement:")) { modifyRecordOfRefrigerantManagement(id); }
-            else if (path.at(0).startsWith("assemblyrecordtype:")) { this->modifyAssemblyRecordType(); }
-            else if (path.at(0).startsWith("assemblyrecorditemtype:")) { this->modifyAssemblyRecordItemType(); }
-            else if (path.at(0).startsWith("assemblyrecorditemcategory:")) { this->modifyAssemblyRecordItemCategory(); }
-            else if (path.at(0).startsWith("circuitunittype:")) { this->modifyCircuitUnitType(); }
-        }
+
+    switch (link->viewAt(2)) {
+    case LinkParser::Inspection:
+        if (link->idValue("inspection") != selectedInspection())
+            loadInspection(link->idValue("inspection"), link->action() == Link::View);
+        else if (link->action() == Link::View)
+            navigation->setView(Navigation::Inspection);
+        if (link->action() == Link::Modify)
+            modifyInspection();
+        break;
+
+    case LinkParser::AssemblyRecord:
+        id = link->lastId();
+        id.remove(0, id.indexOf(":") + 1);
+        if (id != selectedInspection())
+            loadAssemblyRecord(id, link->action() == Link::View);
+        else if (link->action() == Link::View)
+            navigation->setView(Navigation::AssemblyRecord);
+        break;
+
+    case LinkParser::TableOfInspections:
+        navigation->setView(Navigation::TableOfInspections);
+        break;
     }
-    if (path.count() > 2) {
-        if (path.at(2).startsWith("inspection:") || path.at(2).startsWith("repair:")) {
-            id = path.at(2);
-            id.remove(0, id.indexOf(":") + 1);
-            if (id != selectedInspection()) {
-                loadInspection(id, path.count() <= 3);
-            } else if (path.count() <= 3) { navigation->setView(Navigation::Inspection); }
-        } else if (path.at(2).startsWith("assemblyrecord:")) {
-            id = path.at(2);
-            id.remove(0, id.indexOf(":") + 1);
-            if (id != selectedInspection()) {
-                loadAssemblyRecord(id, path.count() <= 3);
-            } else if (path.count() <= 3) { navigation->setView(Navigation::AssemblyRecord); }
-        } else if (path.at(2).startsWith("table")) {
-            navigation->setView(Navigation::TableOfInspections);
-        } else if (path.at(2).startsWith("modify")) { modifyCircuit(); }
-    }
-    if (path.count() > 3) {
-        if (path.at(3).startsWith("modify")) { modifyInspection(); }
-        else if (path.at(3).startsWith("assemblyrecord")) { navigation->setView(Navigation::AssemblyRecord); }
+
+    if (link->viewAt(3) == LinkParser::AssemblyRecord) {
+        navigation->setView(Navigation::AssemblyRecord);
     }
 }
 

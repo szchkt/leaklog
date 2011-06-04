@@ -45,7 +45,7 @@ PartnerWidgets::PartnerWidgets(const QString & partner_name_str, const QString &
     QObject::connect(partners_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(partnerChanged(int)));
 }
 
-void PartnerWidgets::partnerChanged(int index)
+void PartnerWidgets::partnerChanged(int)
 {
     partner_name_le->setText(partners_map.value(partners_cb->variantValue().toString()));
     partner_id_le->setText(partners_cb->variantValue().toString());
