@@ -67,6 +67,11 @@ bool MTRecord::exists()
 
 QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
 {
+    return select(fields, QString("%1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+}
+
+QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
+{
     bool has_id = !r_id.isEmpty();
     QString select = "SELECT " + fields + " FROM " + r_table;
     if (has_id || r_parents.count() || r_filter.count()) { select.append(" WHERE "); }
@@ -79,7 +84,8 @@ QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
     }
-    select.append(QString(" ORDER BY %1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+    if (!r_id_field.isEmpty() && !order_by.isEmpty())
+        select.append(QString(" ORDER BY %1").arg(order_by));
     QSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
@@ -112,10 +118,10 @@ void MTRecord::readValues()
     r_values = list("*", true);
 }
 
-ListOfVariantMaps MTRecord::listAll(const QString & fields)
+ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & order_by)
 {
     ListOfVariantMaps list;
-    QSqlQuery query = select(fields);
+    QSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {

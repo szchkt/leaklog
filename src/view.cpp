@@ -349,7 +349,7 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
     if (customer_id.isEmpty() && !navigation->isFilterEmpty()) {
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps list(all_customers.listAll());
+    ListOfVariantMaps list(all_customers.listAll("*", "company ASC"));
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < Customer::attributes().count(); ++n) {
