@@ -95,13 +95,23 @@ void LinkEntity::parse(QString url, Link * link)
 
         next->parse(url, link);
     } else {
-        if (route == "modify") link->setAction(Link::Modify);
-        else link->setAction(Link::View);
+        link->setAction(Link::View);
+        if (route == "modify") {
+            link->setAction(Link::Modify);
+        } else if (route == "order_by") {
+            QStringList split_entity = entity_str.split(":");
+            split_entity.takeFirst();
+            if (!split_entity.empty())
+                link->setOrderBy(split_entity.takeFirst());
+            if (!split_entity.empty())
+                link->setOrderDirection(split_entity.takeFirst() == "asc" ? Qt::AscendingOrder : Qt::DescendingOrder);
+        }
     }
 }
 
 Link::Link():
-    m_action(-1)
+    m_action(-1),
+    m_order_direction(-1)
 {}
 
 void Link::setId(const QString & key, const QString & value)

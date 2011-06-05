@@ -56,7 +56,8 @@
 
 using namespace Global;
 
-MainWindow::MainWindow()
+MainWindow::MainWindow():
+    last_link(NULL)
 {
     // Dictionaries
     dict_fieldtypes.insert("address", MTVariant::Address);
@@ -362,7 +363,7 @@ void MainWindow::showIconsOnly(bool show)
 
 void MainWindow::executeLink(const QUrl & url)
 {
-    Link * link = link_parser.parse(url.toString());
+    Link * link = last_link = link_parser.parse(url.toString());
     QString id;
 
     switch (link->viewAt(0)) {
@@ -484,6 +485,11 @@ void MainWindow::executeLink(const QUrl & url)
     if (link->viewAt(3) == LinkParser::AssemblyRecord) {
         navigation->setView(Navigation::AssemblyRecord);
     }
+
+    qApp->processEvents();
+    if (last_link)
+        delete last_link;
+    last_link = NULL;
 }
 
 void MainWindow::printPreview()

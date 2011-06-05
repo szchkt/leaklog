@@ -125,10 +125,10 @@ void MTRecord::readValues()
     r_values = list("*", true);
 }
 
-ListOfVariantMaps MTRecord::listAll(const QString & fields)
+ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & order_by)
 {
     ListOfVariantMaps list;
-    QSqlQuery query = select(fields);
+    QSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {

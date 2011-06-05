@@ -105,9 +105,17 @@ public:
     const QString & idValue(const QString &);
     const QString & lastId();
 
+    void setOrderBy(const QString & order_by) { m_order_by = order_by; }
+    const QString & orderBy() { return m_order_by; }
+
+    void setOrderDirection(int order) { m_order_direction = order; }
+    int orderDirection() { return m_order_direction; }
+
 private:
     int m_action;
+    int m_order_direction;
     QList<int> m_views;
+    QString m_order_by;
     MTDictionary m_ids;
 };
 

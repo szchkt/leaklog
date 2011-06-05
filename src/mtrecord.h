@@ -56,7 +56,7 @@ public:
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
         return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
     }
-    ListOfVariantMaps listAll(const QString & = "*");
+    ListOfVariantMaps listAll(const QString & = "*", const QString & order_by = QString());
     QVariantMap sumAll(const QString &);
     MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const QVariantMap &, bool = false);

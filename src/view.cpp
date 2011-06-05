@@ -32,6 +32,7 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QFileInfo>
+#include <QDebug>
 
 using namespace Global;
 
@@ -137,6 +138,7 @@ QString MainWindow::viewChanged(int view)
                 break;
         }
     } while (!ok);
+
     wv_main->setHtml(html, QUrl("qrc:/html/")); return html;
 }
 
@@ -406,7 +408,12 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     if (customer_id.isEmpty() && !navigation->isFilterEmpty()) {
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps list(all_customers.listAll());
+    ListOfVariantMaps list;
+    if (!customer_id.isEmpty() || !last_link || last_link->orderBy().isEmpty())
+        list = all_customers.listAll("*", "company ASC");
+    else {
+        list = all_customers.listAll("*", last_link->orderBy());
+    }
 
     if (!table)
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
@@ -416,7 +423,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     HTMLTableRow * row = new HTMLTableRow();
     int thead_colspan = 2;
     for (int n = 0; n < Customer::attributes().count(); ++n) {
-        *(row->addHeaderCell()) << Customer::attributes().value(n);
+        *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
         thead_colspan++;
     }
     *(row->addHeaderCell()) << tr("Number of circuits");
@@ -462,7 +469,12 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     if (circuit_id.isEmpty() && !navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps circuits(circuits_record.listAll());
+    ListOfVariantMaps circuits;
+    if (!circuit_id.isEmpty() || !last_link || last_link->orderBy().isEmpty())
+        circuits = circuits_record.listAll();
+    else {
+        circuits = circuits_record.listAll("*", last_link->orderBy());
+    }
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
@@ -470,7 +482,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     HTMLTableRow * thead = new HTMLTableRow();
     int thead_colspan = 2;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
-        *(thead->addHeaderCell()) << Circuit::attributes().value(n).split("||").first();
+        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:" << Circuit::attributes().key(n)<< "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
         thead_colspan++;
     }
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
@@ -579,7 +591,12 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps inspections(inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco"));
+    ListOfVariantMaps inspections;
+    if (!last_link || last_link->orderBy().isEmpty())
+        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco");
+    else {
+        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco", last_link->orderBy());
+    }
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -595,13 +612,13 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and repairs") << "</a></th></tr>";
-    out << "<tr><th>" << tr("Date") << "</th>";
-    out << "<th>" << variableNames().value("refr_add_am") << "</th>";
-    out << "<th>" << variableNames().value("refr_reco") << "</th>";
-    out << "<th>" << variableNames().value("inspector") << "</th>";
-    out << "<th>" << variableNames().value("operator") << "</th>";
-    out << "<th>" << variableNames().value("rmds") << "</th>";
-    out << "<th>" << variableNames().value("arno") << "</th></tr>";
+    out << "<tr><th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:date\">" << tr("Date") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:refr_add_am\">" << variableNames().value("refr_add_am") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:refr_reco\">" << variableNames().value("refr_reco") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:inspector\">" << variableNames().value("inspector") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:operator\">" << variableNames().value("operator") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:arno\">" << variableNames().value("arno") << "</a></th></tr>";
     bool is_nominal, is_repair, is_outside_interval;
     QString id; QString highlighted_id = selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {

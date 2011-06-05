@@ -261,4 +261,5 @@ private:
     bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;
     LinkParser link_parser;
+    Link * last_link;
 };
