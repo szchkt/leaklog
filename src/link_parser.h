@@ -46,7 +46,8 @@ public:
         Inspection,
         AssemblyRecord,
         ServiceCompany,
-        TableOfInspections
+        TableOfInspections,
+        AllAssemblyRecords
     };
 
     LinkParser();

@@ -445,6 +445,10 @@ void MainWindow::executeLink(const QUrl & url)
         if (link->action() == Link::Modify)
             modifyCircuitUnitType();
         break;
+
+    case LinkParser::AllAssemblyRecords:
+        navigation->setView(Navigation::ListOfAssemblyRecords);
+        break;
     }
 
     if (link->viewAt(1) == LinkParser::Circuit) {

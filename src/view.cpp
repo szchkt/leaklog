@@ -1747,11 +1747,15 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items(all_items.listAll());
+    ListOfVariantMaps items;
+    if (!last_link || last_link->orderBy().isEmpty())
+        items = all_items.listAll();
+    else
+        items = all_items.listAll("*", last_link->orderBy());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
-        thead.append("<th>" + AssemblyRecordType::attributes().value(n) + "</th>");
+        thead.append("<th><a href=\"assemblyrecordtype:/order_by:" + AssemblyRecordType::attributes().key(n) + "\">" + AssemblyRecordType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
@@ -1783,11 +1787,16 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items(all_items.listAll());
+    ListOfVariantMaps items;
+    if (!last_link || last_link->orderBy().isEmpty())
+        items = all_items.listAll();
+    else
+        items = all_items.listAll("*", last_link->orderBy());
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordItemType::attributes().count(); ++n) {
-        thead.append("<th>" + AssemblyRecordItemType::attributes().value(n) + "</th>");
+        thead.append("<th><a href=\"assemblyrecorditemtype:/order_by:" +  AssemblyRecordItemType::attributes().key(n) + "\">" + AssemblyRecordItemType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
@@ -1825,11 +1834,16 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items(all_items.listAll());
+    ListOfVariantMaps items;
+    if (!last_link || last_link->orderBy().isEmpty())
+        items = all_items.listAll();
+    else
+        items = all_items.listAll("*", last_link->orderBy());
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
-        thead.append("<th>" + AssemblyRecordItemCategory::attributes().value(n) + "</th>");
+        thead.append("<th><a href=\"assemblyrecorditemcategory:/order_by:" + AssemblyRecordItemCategory::attributes().key(n)
+                     + "\">" + AssemblyRecordItemCategory::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
@@ -2147,11 +2161,16 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items(all_items.listAll());
+    ListOfVariantMaps items;
+    if (!last_link || last_link->orderBy().isEmpty())
+        items = all_items.listAll();
+    else {
+        items = all_items.listAll("*", last_link->orderBy());
+    }
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
-        thead.append("<th>" + CircuitUnitType::attributes().value(n) + "</th>");
+        thead.append("<th><a href=\"circuitunittype:/order_by:" + CircuitUnitType::attributes().key(n) + "\">" + CircuitUnitType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
@@ -2280,13 +2299,13 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     _td = _tr->addHeaderCell("colspan=\"7\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << tr("Assembly records");
     _tr = table->addRow();
-    *(_tr->addHeaderCell()) << tr("Date");
-    *(_tr->addHeaderCell()) << tr("Assembly record number");
-    *(_tr->addHeaderCell()) << tr("Assembly record name");
-    if (!customer_given) *(_tr->addHeaderCell()) << tr("Customer");
-    if (!circuit_given) *(_tr->addHeaderCell()) << tr("Circuit");
-    *(_tr->addHeaderCell()) << tr("Inspector");
-    *(_tr->addHeaderCell()) << tr("Operator");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:date")) << tr("Date");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:arno")) << tr("Assembly record number");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:record_name")) << tr("Assembly record name");
+    if (!customer_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:customer")) << tr("Customer");
+    if (!circuit_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:circuit")) << tr("Circuit");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspector")) << tr("Inspector");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:operator")) << tr("Operator");
 
     MTDictionary parents;
     if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
@@ -2299,7 +2318,11 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator");
+    ListOfVariantMaps items;
+    if (!last_link || last_link->orderBy().isEmpty())
+        items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator");
+    else
+        items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator", last_link->orderBy());
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
