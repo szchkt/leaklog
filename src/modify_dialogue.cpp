@@ -110,6 +110,8 @@ void ModifyDialogue::save()
         }
         values.insert(id, value);
     }
+    if (!md_record->checkValues(values, this))
+        return;
     md_record->update(values, true);
     accept();
 }

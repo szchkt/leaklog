@@ -26,6 +26,7 @@
 
 #include <QSqlRecord>
 #include <QApplication>
+#include <QMessageBox>
 
 using namespace Global;
 
@@ -144,6 +145,26 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+bool Circuit::checkValues(const QVariantMap & values, QWidget * parent)
+{
+    if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant")) {
+        QMessageBox message(parent);
+        message.setWindowTitle(tr("Change refrigerant - Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("Changing the refrigerant will affect previous inspections of this circuit."));
+        message.setInformativeText(QApplication::translate("MainWindow", "Do you want to save your changes?"));
+        message.addButton(QApplication::translate("MainWindow", "&Save"), QMessageBox::AcceptRole);
+        message.addButton(QApplication::translate("MainWindow", "Cancel"), QMessageBox::RejectRole);
+        switch (message.exec()) {
+            case 1: // Cancel
+                return false;
+        }
+    }
+    return true;
 }
 
 class CircuitAttributes
