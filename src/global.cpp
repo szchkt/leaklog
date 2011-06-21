@@ -50,7 +50,14 @@ QString Global::upArrow() { return QString::fromUtf8("\342\206\221"); }
 
 QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 
-QString Global::rightTriangle() { return QString::fromUtf8("\342\226\270"); }
+QString Global::rightTriangle()
+{
+#ifdef Q_WS_WIN
+    if (QSysInfo::WindowsVersion < QSysInfo::WV_6_0)
+        return ">";
+#endif
+    return QString::fromUtf8("\342\226\270");
+}
 
 QString Global::degreeSign() { return QString::fromUtf8("\302\260"); }
 
