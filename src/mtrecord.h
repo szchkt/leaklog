@@ -44,7 +44,8 @@ public:
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
-    QSqlQuery select(const QString & = "*", Qt::SortOrder = Qt::AscendingOrder);
+    QSqlQuery select(const QString & = "*", Qt::SortOrder order = Qt::AscendingOrder);
+    QSqlQuery select(const QString &, const QString & order_by);
     QVariantMap list(const QString & = "*", bool = false);
     void readValues();
     inline QVariantMap & values() { return r_values; }
@@ -54,7 +55,7 @@ public:
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
         return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
     }
-    ListOfVariantMaps listAll(const QString & = "*");
+    ListOfVariantMaps listAll(const QString & = "*", const QString & order_by = QString());
     QVariantMap sumAll(const QString &);
     MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
     bool update(const QVariantMap &, bool = false);
