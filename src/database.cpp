@@ -1528,7 +1528,7 @@ void MainWindow::importData()
     shown_sections << 0 << 1 << 2;
     query.exec("SELECT circuits.*, customers.company FROM circuits LEFT JOIN customers ON circuits.parent = customers.id ORDER BY customers.company, circuits.id");
     while (query.next()) {
-        id_justified = QUERY("id").toString().rightJustified(4, '0');
+        id_justified = QUERY("id").toString().rightJustified(5, '0');
         Circuit circuit(QUERY("parent").toString(), QUERY("id").toString());
         if (circuit.exists()) {
             attributes = circuit.list();
@@ -1687,7 +1687,7 @@ void MainWindow::importData()
     shown_sections << 0 << 1 << 2;
     query.exec("SELECT inspections.*, customers.company FROM inspections LEFT JOIN customers ON inspections.customer = customers.id ORDER BY inspections.date");
     while (query.next()) {
-        id_justified = QUERY("circuit").toString().rightJustified(4, '0');
+        id_justified = QUERY("circuit").toString().rightJustified(5, '0');
         record_locked = Global::isRecordLocked(QUERY("date").toString());
         QTreeWidgetItem * item = NULL;
         Inspection inspection(QUERY("customer").toString(), QUERY("circuit").toString(), QUERY("date").toString());

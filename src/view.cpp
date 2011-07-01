@@ -414,7 +414,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
         if (id == highlighted_id) {
             out << " background-color: rgb(242, 248, 255);\">";
         } else { out << "\">"; }
-        out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
+        out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id) << "</td>";
         for (int n = 1; n < Circuit::numBasicAttributes(); ++n) {
             dict_value = Circuit::attributes().value(n).split("||");
             attr_value = circuits.at(i).value(Circuit::attributes().key(n)).toString();
@@ -452,7 +452,7 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
             if (id == highlighted_id) {
                 out << " background-color: rgb(242, 248, 255);\">";
             } else { out << "\">"; }
-            out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(4, '0'), customer_id, id) << "</td>";
+            out << "<td>" << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id) << "</td>";
             out << "<td>" << circuits.at(i).value("manufacturer").toString() << "</td>";
             out << "<td>" << circuits.at(i).value("type").toString() << "</td>";
             out << "<td>" << circuits.at(i).value("sn").toString() << "</td>";
@@ -766,7 +766,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "</th><th>" << QApplication::translate("Circuit", "Oil");
     out << "</th><th>" << QApplication::translate("Circuit", "Amount of oil");
     out << "</th></tr><tr>";
-    out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";
+    out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
     out << "<td>" << MTVariant(circuit_info.value("name")) << "</td>";
     out << "<td>" << MTVariant(circuit_info.value("manufacturer")) << "</td>";
     out << "<td>" << MTVariant(circuit_info.value("type")) << "</td>";
@@ -1337,7 +1337,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
             refrigerant_amount_end = 0.0;
 
         out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
-        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(4, '0'), customer_id, circuit_id) << "</td>";
+        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
         out << "<td>" << QUERY_VALUE(circuits, "refrigerant").toString() << "</td>";
         out << "<td>" << fieldsOfApplication().firstKey(QUERY_VALUE(circuits, "field").toString()) << "</td>";
         out << "<td>" << refrigerant_amount_begin << "</td>";
@@ -1512,7 +1512,7 @@ QString MainWindow::viewAgenda()
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
         out << customer.rightJustified(8, '0') << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
-        out << circuit.rightJustified(4, '0');
+        out << circuit.rightJustified(5, '0');
         if (!circuit_name.isEmpty()) { out << " (" << escapeString(circuit_name) << ")"; }
         out << "</a></td>";
         out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
