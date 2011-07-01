@@ -394,6 +394,11 @@ void MainWindow::openDatabase(QString path)
         db.transaction();
         initDatabase(&db, false);
     }
+    if (DBInfoValueForKey("min_leaklog_version", DBInfoValueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
+        QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
+        closeDatabase(false);
+        return;
+    }
     initTables(false);
     QSqlQuery query;
     Variables variables;
