@@ -98,6 +98,8 @@ bool ModifyDialogue::save(bool call_accept)
         }
         values.insert(id, value);
     }
+    if (!md_record->checkValues(values, this))
+        return;
     md_record->update(values, true);
 
     if (call_accept) accept();

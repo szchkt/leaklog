@@ -607,7 +607,7 @@ void MainWindow::printLabel(bool detailed)
     QString selected_inspector = selectedInspector();
     QVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(4, '0'));
+        attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(5, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
         attributes.unite(circuit.list("refrigerant, refrigerant_amount, hermetic, leak_detector, inspection_interval"));
         attributes["refrigerant_amount"] = getCircuitRefrigerantAmount(selectedCustomer(), selectedCircuit(), attributes.value("refrigerant_amount", 0.0).toDouble());
@@ -992,7 +992,7 @@ void MainWindow::enableTools()
             .arg(rightTriangle())
             .arg(Navigation::ListOfInspections)
             .arg(tr("<b>Circuit:</b> %1")
-                .arg(selectedCircuit().rightJustified(4, '0'))));
+                .arg(selectedCircuit().rightJustified(5, '0'))));
     if (inspection_selected) {
         current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
             .arg(rightTriangle())

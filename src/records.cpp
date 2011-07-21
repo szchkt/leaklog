@@ -27,6 +27,7 @@
 
 #include <QSqlRecord>
 #include <QApplication>
+#include <QMessageBox>
 
 using namespace Global;
 
@@ -104,7 +105,7 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 9999));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md, attributes.value("operation").toString()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md, attributes.value("building").toString()));
@@ -143,6 +144,26 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+bool Circuit::checkValues(const QVariantMap & values, QWidget * parent)
+{
+    if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant")) {
+        QMessageBox message(parent);
+        message.setWindowTitle(tr("Change refrigerant - Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("Changing the refrigerant will affect previous inspections of this circuit."));
+        message.setInformativeText(QApplication::translate("MainWindow", "Do you want to save your changes?"));
+        message.addButton(QApplication::translate("MainWindow", "&Save"), QMessageBox::AcceptRole);
+        message.addButton(QApplication::translate("MainWindow", "Cancel"), QMessageBox::RejectRole);
+        switch (message.exec()) {
+            case 1: // Cancel
+                return false;
+        }
+    }
+    return true;
 }
 
 class CircuitAttributes
@@ -204,7 +225,7 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         customer = parent("customer").rightJustified(8, '0');
     QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
     if (circuit.isEmpty())
-        circuit = parent("circuit").rightJustified(4, '0');
+        circuit = parent("circuit").rightJustified(5, '0');
     md->setWindowTitle(tr("Customer: %2 %1 Cooling circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {

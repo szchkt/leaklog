@@ -31,6 +31,7 @@ class QSqlError;
 
 namespace Global {
     QString escapeString(QString, bool = false, bool = false);
+    QString elideRight(const QString &, int);
     QString upArrow();
     QString downArrow();
     QString rightTriangle();

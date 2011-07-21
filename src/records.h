@@ -30,6 +30,7 @@ public:
     virtual ~Modifiable() {}
 
     virtual void initModifyDialogue(ModifyDialogue *) = 0;
+    virtual bool checkValues(const QVariantMap &, QWidget * = 0) { return true; }
 };
 
 class DBRecord : public MTRecord, public Modifiable
@@ -61,6 +62,7 @@ public:
     Circuit(const QString &, const QString &);
 
     void initModifyDialogue(ModifyDialogue *);
+    bool checkValues(const QVariantMap &, QWidget * = 0);
 
     static const MTDictionary & attributes();
     static int numBasicAttributes();
