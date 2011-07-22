@@ -1140,7 +1140,7 @@ QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_
         return escapeString(ins_value);
     } else if (var_type == "bool") {
         return (ins_value.toInt() ? tr("Yes") : tr("No"));
-    } else if (compare_nom && !nom_value.isEmpty()) {
+    } else if (compare_nom && actionCompare_values->isChecked() && !nom_value.isEmpty()) {
         return compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
     }
     return ins_value;

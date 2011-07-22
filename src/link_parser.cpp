@@ -80,10 +80,11 @@ void LinkEntity::setRoute(const QString & name, LinkEntity * entity)
 void LinkEntity::parse(QString url, Link * link)
 {
     QStringList split_url = url.split("/");
-    QString entity_str = split_url.takeFirst();
+    QStringList entity_list = split_url.takeFirst().split(":");
     url = split_url.join("/");
 
-    QString route = entity_str.split(":").first();
+    QString route = entity_list.takeFirst();
+    QString entity_id = entity_list.join(":");
 
     if (view() >= 0) link->setView(view());
 
@@ -91,7 +92,7 @@ void LinkEntity::parse(QString url, Link * link)
         LinkEntity * next = routes.value(route);
 
         if (next->hasId()) {
-            link->setId(next->name(), entity_str.split(":").last());
+            link->setId(next->name(), entity_id);
         }
 
         next->parse(url, link);
@@ -100,12 +101,10 @@ void LinkEntity::parse(QString url, Link * link)
         if (route == "modify") {
             link->setAction(Link::Modify);
         } else if (route == "order_by") {
-            QStringList split_entity = entity_str.split(":");
-            split_entity.takeFirst();
-            if (!split_entity.empty())
-                link->setOrderBy(split_entity.takeFirst());
-            if (!split_entity.empty())
-                link->setOrderDirection(split_entity.takeFirst() == "asc" ? Qt::AscendingOrder : Qt::DescendingOrder);
+            if (!entity_list.empty())
+                link->setOrderBy(entity_list.takeFirst());
+            if (!entity_list.empty())
+                link->setOrderDirection(entity_list.takeFirst() == "asc" ? Qt::AscendingOrder : Qt::DescendingOrder);
         }
     }
 }

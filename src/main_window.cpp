@@ -1199,6 +1199,7 @@ void MainWindow::loadSettings()
     actionShow_icons_only->setChecked(settings.value("toolbar_icons_only", false).toBool());
     showIconsOnly(actionShow_icons_only->isChecked());
     check_for_updates = settings.value("check_for_updates", true).toBool();
+    actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
     if (check_for_updates) checkForUpdates();
 }
 
@@ -1213,6 +1214,7 @@ void MainWindow::saveSettings()
     settings.setValue("size", this->size());
     settings.setValue("window_state", this->saveState(0));
     settings.setValue("toolbar_icons_only", actionShow_icons_only->isChecked());
+    settings.setValue("compare_values", actionCompare_values->isChecked());
 }
 
 void MainWindow::changeLanguage()

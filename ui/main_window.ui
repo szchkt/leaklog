@@ -342,6 +342,7 @@
     <addaction name="actionShow_styles"/>
     <addaction name="separator"/>
     <addaction name="actionPrinter_friendly_version"/>
+    <addaction name="actionCompare_values"/>
    </widget>
    <widget class="QMenu" name="menuInspector">
     <property name="title">
@@ -1931,6 +1932,17 @@
    </property>
    <property name="text">
     <string>Show styles</string>
+   </property>
+  </action>
+  <action name="actionCompare_values">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Compare values with the nominal inspection</string>
    </property>
   </action>
  </widget>
