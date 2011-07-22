@@ -1119,3 +1119,8 @@ const MTDictionary & Style::attributes()
     static StyleAttributes dict;
     return dict.dict;
 }
+
+Compressor::Compressor(const QString & id, const MTDictionary & dict)
+    : MTRecord("compressors", "id", id, dict)
+{
+}

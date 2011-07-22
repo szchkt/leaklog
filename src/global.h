@@ -38,6 +38,7 @@ namespace Global {
     QString degreeSign();
     QString delta();
     QColor textColourForBaseColour(const QColor &);
+    QString sqlStringForDatabaseType(QString, QSqlDatabase * = 0);
     QString variantTypeToSqlType(int);
     QString variableTypeToSqlType(const QString &);
     MTDictionary getTableFieldNames(const QString &, QSqlDatabase *);

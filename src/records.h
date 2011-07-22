@@ -324,4 +324,12 @@ public:
     static const MTDictionary & attributes();
 };
 
+class Compressor : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+};
+
 #endif // RECORDS_H

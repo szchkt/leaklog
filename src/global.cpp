@@ -81,6 +81,13 @@ QColor Global::textColourForBaseColour(const QColor & c)
     }
 }
 
+QString Global::sqlStringForDatabaseType(QString sql, QSqlDatabase * db)
+{
+    if (!isDatabaseRemote(db))
+        sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
+    return sql;
+}
+
 QString Global::variantTypeToSqlType(int type)
 {
     switch (type) {
@@ -475,6 +482,7 @@ public:
         dict.insert("circuit_units", "id INTEGER PRIMARY KEY, company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
         dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, div_tables INTEGER, updated_by TEXT");
+        dict.insert("compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
     }
 
     MTDictionary dict;

@@ -49,7 +49,9 @@ HEADERS       += src/global.h \
                  src/modify_dialogue_table_groups.h \
                  src/modify_inspector_dialogue.h \
                  src/partner_widgets.h \
-                 src/link_parser.h
+                 src/link_parser.h \
+    src/modify_circuit_dialogue_units_tab.h \
+    src/modify_circuit_dialogue_compressors_tab.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -91,7 +93,9 @@ SOURCES       += src/global.cpp \
                  src/modify_dialogue_table_groups.cpp \
                  src/modify_inspector_dialogue.cpp \
                  src/partner_widgets.cpp \
-                 src/link_parser.cpp
+                 src/link_parser.cpp \
+                 src/modify_circuit_dialogue_units_tab.cpp \
+                 src/modify_circuit_dialogue_compressors_tab.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

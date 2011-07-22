@@ -84,7 +84,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
     QStringList tables = database->tables();
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
-            query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + databaseTables().value(i) + ")");
+            query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + sqlStringForDatabaseType(databaseTables().value(i), database) + ")");
             if (databaseTables().key(i) == "inspections") {
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
