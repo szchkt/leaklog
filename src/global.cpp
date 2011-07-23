@@ -465,7 +465,7 @@ public:
         dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT, scope INTEGER DEFAULT 1 NOT NULL");
         dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, date_updated TEXT, updated_by TEXT");
         dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("warnings", "id INTEGER PRIMARY KEY, enabled INTEGER, name TEXT, description TEXT, delay INTEGER, date_updated TEXT, updated_by TEXT");

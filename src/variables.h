@@ -22,22 +22,30 @@
 
 #include "mtsqlqueryresult.h"
 
+#include <QDateTime>
+
+class ModifyDialogueWidgets;
+class MDCheckBox;
+
 class Variables : public MTSqlQueryResult
 {
     Q_OBJECT
 
 public:
-    Variables(QSqlDatabase = QSqlDatabase(), bool = true);
+    Variables(QSqlDatabase = QSqlDatabase(), bool = true, int = 0xFFFF);
+
+    void initModifyDialogueWidgets(ModifyDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDCheckBox * = NULL, MDCheckBox * = NULL);
 
 protected:
     virtual void saveResult();
 
     void initVariables(const QString & = QString());
-    void initVariable(const QString &, const QString &, const QString &, const QString &, bool, double, const QString &);
-    void initVariable(const QString &, const QString &, const QString &);
-    void initSubvariable(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, bool, double);
+    void initVariable(const QString &, const QString &, int, const QString &, const QString &, bool, double, const QString &);
+    void initVariable(const QString &, const QString &, int, const QString &);
+    void initSubvariable(const QString &, const QString &, int, const QString &, const QString &, const QString &, const QString &, bool, double);
 
     QMultiMap<QString, int> var_indices;
+    int m_scope;
 };
 
 class Variable : public Variables
@@ -45,6 +53,11 @@ class Variable : public Variables
     Q_OBJECT
 
 public:
+    enum Scope {
+        Inspection = 1,
+        Compressor = 2
+    };
+
     Variable(const QString & = QString(), QSqlDatabase = QSqlDatabase());
 
 protected:

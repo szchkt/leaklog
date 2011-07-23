@@ -24,6 +24,7 @@
 
 class ModifyDialogueBasicTable;
 class ModifyDialogueGroupsLayout;
+class ModifyInspectionDialogueCompressors;
 
 class ModifyInspectionDialogue : public TabbedModifyDialogue
 {
@@ -34,6 +35,7 @@ public:
 
 protected:
     const QVariant idFieldValue();
+    ModifyInspectionDialogueCompressors * compressors;
 };
 
 class ModifyInspectionDialogueTab : public ModifyDialogueTab

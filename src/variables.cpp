@@ -19,17 +19,21 @@
 
 #include "variables.h"
 #include "global.h"
+#include "modify_dialogue.h"
+#include "input_widgets.h"
 
 #include <QSet>
 #include <QApplication>
 
 using namespace Global;
 
-Variables::Variables(QSqlDatabase db, bool exec_query):
-MTSqlQueryResult(db)
+Variables::Variables(QSqlDatabase db, bool exec_query, int scope):
+    MTSqlQueryResult(db),
+    m_scope(scope)
 {
     if (exec_query)
-        exec("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent");
+        exec(QString("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance"
+             " FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent WHERE variables.scope & %1 > 0").arg(scope));
 }
 
 const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
@@ -88,69 +92,70 @@ void Variables::saveResult()
 
 void Variables::initVariables(const QString & filter)
 {
-    initVariable(filter, "t_sec", "mintcream");
-    initSubvariable(filter, "t_sec", "mintcream", "t_sec_evap_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
-    initSubvariable(filter, "t_sec", "mintcream", "t_sec_cond_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
+    initVariable(filter, "t_sec", Variable::Inspection, "mintcream");
+    initSubvariable(filter, "t_sec", Variable::Inspection, "mintcream", "t_sec_evap_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
+    initSubvariable(filter, "t_sec", Variable::Inspection, "mintcream", "t_sec_cond_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
 
-    initVariable(filter, "p_0", QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
-    initVariable(filter, "t_0", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
-    initVariable(filter, "delta_t_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
-    initVariable(filter, "t_evap_out", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
-    initVariable(filter, "t_comp_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable(filter, "p_0", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_0", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
+    initVariable(filter, "delta_t_evap", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
+    initVariable(filter, "t_evap_out", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable(filter, "t_comp_in", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
-    initVariable(filter, "t_sh", "aliceblue");
-    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
-    initSubvariable(filter, "t_sh", "aliceblue", "t_sh_comp", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
+    initVariable(filter, "t_sh", Variable::Inspection, "aliceblue");
+    initSubvariable(filter, "t_sh", Variable::Inspection, "aliceblue", "t_sh_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
+    initSubvariable(filter, "t_sh", Variable::Inspection, "aliceblue", "t_sh_comp", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
 
-    initVariable(filter, "p_c", QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
-    initVariable(filter, "t_c", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
-    initVariable(filter, "delta_t_c", QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
-    initVariable(filter, "t_ev", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
-    initVariable(filter, "t_sc", QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
-    initVariable(filter, "t_comp_out", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
-    initVariable(filter, "ep_comp", QApplication::translate("Units", "kW"), "", true, 0.0, "");
+    initVariable(filter, "p_c", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_c", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
+    initVariable(filter, "delta_t_c", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
+    initVariable(filter, "t_ev", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable(filter, "t_sc", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
+    initVariable(filter, "t_comp_out", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable(filter, "ep_comp", Variable::Compressor, QApplication::translate("Units", "kW"), "", true, 0.0, "");
 
-    initVariable(filter, "ec", "");
-    initSubvariable(filter, "ec", "", "ec_l1", QApplication::translate("Units", "A"), "", true, 0.0);
-    initSubvariable(filter, "ec", "", "ec_l2", QApplication::translate("Units", "A"), "", true, 0.0);
-    initSubvariable(filter, "ec", "", "ec_l3", QApplication::translate("Units", "A"), "", true, 0.0);
+    initVariable(filter, "ec", Variable::Compressor, "");
+    initSubvariable(filter, "ec", Variable::Compressor, "", "ec_l1", QApplication::translate("Units", "A"), "", true, 0.0);
+    initSubvariable(filter, "ec", Variable::Compressor, "", "ec_l2", QApplication::translate("Units", "A"), "", true, 0.0);
+    initSubvariable(filter, "ec", Variable::Compressor, "", "ec_l3", QApplication::translate("Units", "A"), "", true, 0.0);
 
-    initVariable(filter, "ev", "");
-    initSubvariable(filter, "ev", "", "ev_l1", QApplication::translate("Units", "V"), "", true, 0.0);
-    initSubvariable(filter, "ev", "", "ev_l2", QApplication::translate("Units", "V"), "", true, 0.0);
-    initSubvariable(filter, "ev", "", "ev_l3", QApplication::translate("Units", "V"), "", true, 0.0);
+    initVariable(filter, "ev", Variable::Compressor, "");
+    initSubvariable(filter, "ev", Variable::Compressor, "", "ev_l1", QApplication::translate("Units", "V"), "", true, 0.0);
+    initSubvariable(filter, "ev", Variable::Compressor, "", "ev_l2", QApplication::translate("Units", "V"), "", true, 0.0);
+    initSubvariable(filter, "ev", Variable::Compressor, "", "ev_l3", QApplication::translate("Units", "V"), "", true, 0.0);
 
-    initVariable(filter, "ppsw", "");
-    initSubvariable(filter, "ppsw", "", "ppsw_hip", QApplication::translate("Units", "Bar"), "", true, 0.0);
-    initSubvariable(filter, "ppsw", "", "ppsw_lop", QApplication::translate("Units", "Bar"), "", true, 0.0);
-    initSubvariable(filter, "ppsw", "", "ppsw_diff", QApplication::translate("Units", "Bar"), "", true, 0.0);
+    initVariable(filter, "ppsw", Variable::Inspection, "");
+    initSubvariable(filter, "ppsw", Variable::Inspection, "", "ppsw_hip", QApplication::translate("Units", "Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", Variable::Inspection, "", "ppsw_lop", QApplication::translate("Units", "Bar"), "", true, 0.0);
+    initSubvariable(filter, "ppsw", Variable::Inspection, "", "ppsw_diff", QApplication::translate("Units", "Bar"), "", true, 0.0);
 
-    initVariable(filter, "sftsw", QApplication::translate("Units", "Bar"), "", true, 0.0, "");
-    initVariable(filter, "rmds", "", "", false, 0.0, "");
-    initVariable(filter, "arno", "", "", false, 0.0, "");
-    initVariable(filter, "ar_type", "", "", false, 0.0, "");
+    initVariable(filter, "sftsw", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "");
+    initVariable(filter, "rmds", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable(filter, "arno", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable(filter, "ar_type", Variable::Inspection, "", "", false, 0.0, "");
 
-    initVariable(filter, "vis_aur_chk", "");
-    initSubvariable(filter, "vis_aur_chk", "", "corr_def", "", "", false, 0.0);
-    initSubvariable(filter, "vis_aur_chk", "", "noise_vibr", "", "", false, 0.0);
-    initSubvariable(filter, "vis_aur_chk", "", "bbl_lvl", "", "", false, 0.0);
-    initSubvariable(filter, "vis_aur_chk", "", "oil_leak_am", QApplication::translate("Units", "kg"), "", false, 0.0);
+    initVariable(filter, "vis_aur_chk", Variable::Inspection, "");
+    initSubvariable(filter, "vis_aur_chk", Variable::Inspection, "", "corr_def", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", Variable::Inspection, "", "noise_vibr", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", Variable::Inspection, "", "bbl_lvl", "", "", false, 0.0);
+    initSubvariable(filter, "vis_aur_chk", Variable::Inspection, "", "oil_leak_am", QApplication::translate("Units", "kg"), "", false, 0.0);
 
-    initVariable(filter, "dir_leak_chk", "green");
-    initSubvariable(filter, "dir_leak_chk", "green", "el_detect", "", "", false, 0.0);
-    initSubvariable(filter, "dir_leak_chk", "green", "uv_detect", "", "", false, 0.0);
-    initSubvariable(filter, "dir_leak_chk", "green", "bbl_detect", "", "", false, 0.0);
+    initVariable(filter, "dir_leak_chk", Variable::Inspection, "green");
+    initSubvariable(filter, "dir_leak_chk", Variable::Inspection, "green", "el_detect", "", "", false, 0.0);
+    initSubvariable(filter, "dir_leak_chk", Variable::Inspection, "green", "uv_detect", "", "", false, 0.0);
+    initSubvariable(filter, "dir_leak_chk", Variable::Inspection, "green", "bbl_detect", "", "", false, 0.0);
 
-    initVariable(filter, "refr_add_am", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_reco", QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_add_per", QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_am", Variable::Compressor, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_reco", Variable::Compressor, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_per", Variable::Compressor, QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
-    initVariable(filter, "inspector", "", "", false, 0.0, "");
-    initVariable(filter, "operator", "", "", false, 0.0, "");
+    initVariable(filter, "inspector", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable(filter, "operator", Variable::Inspection, "", "", false, 0.0, "");
 }
 
-void Variables::initVariable(const QString & filter, const QString & id, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
+void Variables::initVariable(const QString & filter, const QString & id, int scope, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
 {
+    if (scope > 0 && !(scope & m_scope)) { return; }
     if (!filter.isEmpty() && filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", id);
@@ -165,8 +170,9 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initVariable(const QString & filter, const QString & id, const QString & col_bg)
+void Variables::initVariable(const QString & filter, const QString & id, int scope, const QString & col_bg)
 {
+    if (scope > 0 && !(scope & m_scope)) { return; }
     if (filter.isEmpty() || filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", id);
@@ -176,8 +182,9 @@ void Variables::initVariable(const QString & filter, const QString & id, const Q
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initSubvariable(const QString & filter, const QString & parent, const QString & col_bg, const QString & id, const QString & unit, const QString & value, bool compare_nom, double tolerance)
+void Variables::initSubvariable(const QString & filter, const QString & parent, int scope, const QString & col_bg, const QString & id, const QString & unit, const QString & value, bool compare_nom, double tolerance)
 {
+    if (scope > 0 && !(scope & m_scope)) { return; }
     if (!filter.isEmpty() && filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", parent);
@@ -193,6 +200,105 @@ void Variables::initSubvariable(const QString & filter, const QString & parent, 
     *result() << row;
     var_indices.insert(parent, result()->count() - 1);
     var_indices.insert(id, result()->count() - 1);
+}
+
+void Variables::initModifyDialogueWidgets(ModifyDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record, const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
+{
+    QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
+    MDAbstractInputWidget * iw = NULL;
+    while (next()) {
+        var_id = value("VAR_ID").toString();
+        subvar_id = value("SUBVAR_ID").toString();
+        if (subvar_id.isEmpty()) {
+            if (!value("VAR_VALUE").toString().isEmpty()) { continue; }
+            var_name = tr("%1:").arg(value("VAR_NAME").toString());
+            var_type = value("VAR_TYPE").toString();
+            if (var_id == "inspector") {
+                iw = new MDComboBox(var_id, var_name, md->widget(),
+                                    attributes.value(var_id).toString(), listInspectors(), value("VAR_COL_BG").toString());
+                iw->label()->setAlternativeText(tr("Repairman:"));
+                if (chb_repair) {
+                    iw->label()->toggleAlternativeText(chb_repair->isChecked());
+                    iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+                }
+                md->addInputWidget(iw);
+            } else if (var_id == "rmds") {
+                iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
+                                         attributes.value(var_id).toString(), value("VAR_COL_BG").toString());
+                iw->setShowInForm(false);
+                md->addInputWidget(iw);
+            } else if (var_id == "operator") {
+                if (mt_record) {
+                    iw = new MDComboBox(var_id, var_name, md->widget(),
+                                        attributes.value(var_id).toString(), listOperators(mt_record->parent("customer")), value("VAR_COL_BG").toString());
+                    md->addInputWidget(iw);
+                }
+            } else if (var_id == "ar_type") {
+                iw = new MDComboBox(var_id, var_name, md->widget(),
+                                    attributes.value(var_id).toString(), listAssemblyRecordTypes(), value("VAR_COL_BG").toString());
+                iw->setShowInForm(false);
+                md->addInputWidget(iw);
+            } else if (var_type == "int") {
+                md->addInputWidget(new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
+                                                 attributes.value(var_id).toInt(), value("VAR_UNIT").toString(), value("VAR_COL_BG").toString()));
+            } else if (var_type == "float") {
+                iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
+                                                 attributes.value(var_id), value("VAR_UNIT").toString(), value("VAR_COL_BG").toString());
+                if (var_id == "refr_add_am") {
+                    iw->label()->setAlternativeText(tr("New charge:"));
+                    if (chb_nominal) {
+                        iw->label()->toggleAlternativeText(chb_nominal->isChecked());
+                        iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+                    }
+                }
+                md->addInputWidget(iw);
+            } else if (var_type == "string") {
+                iw = new MDLineEdit(var_id, var_name, md->widget(),
+                                    attributes.value(var_id).toString(), 0, value("VAR_COL_BG").toString());
+                if (var_id == "arno") {
+                    if (mt_record)
+                        if (mt_record->id().isEmpty()) iw->setVariantValue(QString("%1-%2-%3").arg(mt_record->parent("customer")).arg(mt_record->parent("circuit")).arg(date.toString("yyMMdd")));
+                    iw->setShowInForm(false);
+                }
+                md->addInputWidget(iw);
+            } else if (var_type == "text") {
+                md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md->widget(),
+                                                       attributes.value(var_id).toString(), value("VAR_COL_BG").toString()));
+            } else if (var_type == "bool") {
+                iw = new MDCheckBox(var_id, "", md->widget(), attributes.value(var_id).toInt());
+                iw->label()->setLabelText(var_name);
+                md->addInputWidget(iw);
+            } else {
+                md->addInputWidget(new MDLineEdit(var_id, var_name, md->widget(),
+                                                  attributes.value(var_id).toString(), 0, value("VAR_COL_BG").toString()));
+            }
+        } else {
+            if (!value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
+            subvar_name = tr("%1: %2:").arg(value("VAR_NAME").toString()).arg(value("SUBVAR_NAME").toString());
+            subvar_type = value("SUBVAR_TYPE").toString();
+            if (subvar_type == "int") {
+                md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md->widget(), -999999999, 999999999,
+                                                 attributes.value(subvar_id).toInt(), value("SUBVAR_UNIT").toString(), value("VAR_COL_BG").toString()));
+            } else if (subvar_type == "float") {
+                md->addInputWidget(new MDNullableDoubleSpinBox(subvar_id, subvar_name, md->widget(), -999999999.9, 999999999.9,
+                                                               attributes.value(subvar_id), value("SUBVAR_UNIT").toString(), value("VAR_COL_BG").toString()));
+            } else if (subvar_type == "string") {
+                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md->widget(),
+                                                  attributes.value(subvar_id).toString(), 0, value("VAR_COL_BG").toString()));
+            } else if (subvar_type == "text") {
+                md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md->widget(),
+                                                       attributes.value(subvar_id).toString(), value("VAR_COL_BG").toString()));
+            } else if (subvar_type == "bool") {
+                iw = new MDCheckBox(subvar_id, value("SUBVAR_NAME").toString(), md->widget(),
+                                    attributes.value(subvar_id).toInt());
+                iw->label()->setLabelText(tr("%1:").arg(value("VAR_NAME").toString()));
+                md->addInputWidget(iw);
+            } else {
+                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md->widget(),
+                                                  attributes.value(subvar_id).toString(), 0, value("VAR_COL_BG").toString()));
+            }
+        }
+    }
 }
 
 Variable::Variable(const QString & id, QSqlDatabase db):

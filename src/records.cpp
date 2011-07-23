@@ -43,18 +43,18 @@ Customer::Customer(const QString & id):
 DBRecord("customers", "id", id, MTDictionary())
 {}
 
-void Customer::initModifyDialogue(ModifyDialogue * md)
+void Customer::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Customer"));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999999));
-    md->addInputWidget(new MDLineEdit("company", tr("Company:"), md, attributes.value("company").toString()));
-    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999999));
+    md->addInputWidget(new MDLineEdit("company", tr("Company:"), md->widget(), attributes.value("company").toString()));
+    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM customers" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -91,7 +91,7 @@ Circuit::Circuit(const QString & parent, const QString & id):
 DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
 
-void Circuit::initModifyDialogue(ModifyDialogue * md)
+void Circuit::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -105,32 +105,32 @@ void Circuit::initModifyDialogue(ModifyDialogue * md)
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, id(), 99999));
-    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md, attributes.value("operation").toString()));
-    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md, attributes.value("building").toString()));
-    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
-    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md, attributes.value("hermetic").toInt()));
-    md->addInputWidget(new MDPlainTextEdit("manufacturer", tr("Manufacturer:"), md, attributes.value("manufacturer").toString()));
-    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md, attributes.value("type").toString()));
-    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md, attributes.value("sn").toString()));
-    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md, 1900, 2999, attributes.value("year").toInt()));
-    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md, attributes.value("commissioning").toString()));
-    MDCheckBox * disused = new MDCheckBox("disused", tr("Disused"), md, attributes.value("disused").toInt());
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999));
+    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), attributes.value("operation").toString()));
+    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), attributes.value("building").toString()));
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
+    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), attributes.value("hermetic").toInt()));
+    md->addInputWidget(new MDPlainTextEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
+    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), attributes.value("sn").toString()));
+    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, attributes.value("year").toInt()));
+    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), attributes.value("commissioning").toString()));
+    MDCheckBox * disused = new MDCheckBox("disused", tr("Disused"), md->widget(), attributes.value("disused").toInt());
     md->addInputWidget(disused);
-    MDDateEdit * decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md, attributes.value("decommissioning").toString());
+    MDDateEdit * decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), attributes.value("decommissioning").toString());
     decommissioning->setEnabled(disused->isChecked());
     QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md, attributes.value("oil").toString(), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md, attributes.value("leak_detector").toInt()));
-    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md, 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
-    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md, 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
-    MDSpinBox * inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md, 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), attributes.value("oil").toString(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), attributes.value("leak_detector").toInt()));
+    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
+    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
+    MDSpinBox * inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
     QStringList used_ids; QSqlQuery query_used_ids;
@@ -218,7 +218,7 @@ DBRecord(table, id_column, id, parents)
 {
 }
 
-void Inspection::initModifyDialogue(ModifyDialogue * md)
+void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString customer = Customer(parent("customer")).stringValue("company");
     if (customer.isEmpty())
@@ -245,107 +245,21 @@ void Inspection::initModifyDialogue(ModifyDialogue * md)
         }
     }
     md->setUsedIds(used_ids);
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
     if (isDatabaseLocked()) {
         date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
-    MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md);
-    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md, attributes.value("nominal").toInt() && nominal_allowed, nominal_allowed);
+    MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md->widget());
+    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt() && nominal_allowed, nominal_allowed);
     md->addInputWidget(chb_nominal);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
-    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md, attributes.value("repair").toInt(), true);
+    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md->widget(), attributes.value("repair").toInt(), true);
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
-    md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md, attributes.value("outside_interval").toInt()));
-    Variables query; QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
-    MDAbstractInputWidget * iw = NULL;
-    while (query.next()) {
-        var_id = query.value("VAR_ID").toString();
-        subvar_id = query.value("SUBVAR_ID").toString();
-        if (subvar_id.isEmpty()) {
-            if (!query.value("VAR_VALUE").toString().isEmpty()) { continue; }
-            var_name = tr("%1:").arg(query.value("VAR_NAME").toString());
-            var_type = query.value("VAR_TYPE").toString();
-            if (var_id == "inspector") {
-                iw = new MDComboBox(var_id, var_name, md,
-                    attributes.value(var_id).toString(), listInspectors(), query.value("VAR_COL_BG").toString());
-                iw->label()->setAlternativeText(tr("Repairman:"));
-                iw->label()->toggleAlternativeText(chb_repair->isChecked());
-                iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
-                md->addInputWidget(iw);
-            } else if (var_id == "rmds") {
-                iw = new MDPlainTextEdit(var_id, var_name, md,
-                                         attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString());
-                iw->setShowInForm(false);
-                md->addInputWidget(iw);
-            } else if (var_id == "operator") {
-                iw = new MDComboBox(var_id, var_name, md,
-                    attributes.value(var_id).toString(), listOperators(parent("customer")), query.value("VAR_COL_BG").toString());
-                md->addInputWidget(iw);
-            } else if (var_id == "ar_type") {
-                iw = new MDComboBox(var_id, var_name, md,
-                    attributes.value(var_id).toString(), listAssemblyRecordTypes(), query.value("VAR_COL_BG").toString());
-                iw->setShowInForm(false);
-                md->addInputWidget(iw);
-            } else if (var_type == "int") {
-                md->addInputWidget(new MDSpinBox(var_id, var_name, md, -999999999, 999999999,
-                    attributes.value(var_id).toInt(), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
-            } else if (var_type == "float") {
-                iw = new MDNullableDoubleSpinBox(var_id, var_name, md, -999999999.9, 999999999.9,
-                    attributes.value(var_id), query.value("VAR_UNIT").toString(), query.value("VAR_COL_BG").toString());
-                if (var_id == "refr_add_am") {
-                    iw->label()->setAlternativeText(tr("New charge:"));
-                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
-                    iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
-                }
-                md->addInputWidget(iw);
-            } else if (var_type == "string") {
-                iw = new MDLineEdit(var_id, var_name, md,
-                                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString());
-                if (var_id == "arno") {
-                    if (id().isEmpty()) iw->setVariantValue(QString("%1-%2-%3").arg(parent("customer")).arg(parent("circuit")).arg(date->variantValue().toDateTime().toString("yyMMdd")));
-                    iw->setShowInForm(false);
-                }
-                md->addInputWidget(iw);
-            } else if (var_type == "text") {
-                md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md,
-                    attributes.value(var_id).toString(), query.value("VAR_COL_BG").toString()));
-            } else if (var_type == "bool") {
-                iw = new MDCheckBox(var_id, "", md, attributes.value(var_id).toInt());
-                iw->label()->setLabelText(var_name);
-                md->addInputWidget(iw);
-            } else {
-                md->addInputWidget(new MDLineEdit(var_id, var_name, md,
-                    attributes.value(var_id).toString(), 0, query.value("VAR_COL_BG").toString()));
-            }
-        } else {
-            if (!query.value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
-            subvar_name = tr("%1: %2:").arg(query.value("VAR_NAME").toString()).arg(query.value("SUBVAR_NAME").toString());
-            subvar_type = query.value("SUBVAR_TYPE").toString();
-            if (subvar_type == "int") {
-                md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md, -999999999, 999999999,
-                    attributes.value(subvar_id).toInt(), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "float") {
-                md->addInputWidget(new MDNullableDoubleSpinBox(subvar_id, subvar_name, md, -999999999.9, 999999999.9,
-                    attributes.value(subvar_id), query.value("SUBVAR_UNIT").toString(), query.value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "string") {
-                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), 0, query.value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "text") {
-                md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), query.value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "bool") {
-                iw = new MDCheckBox(subvar_id, query.value("SUBVAR_NAME").toString(), md,
-                    attributes.value(subvar_id).toInt());
-                iw->label()->setLabelText(tr("%1:").arg(query.value("VAR_NAME").toString()));
-                md->addInputWidget(iw);
-            } else {
-                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md,
-                    attributes.value(subvar_id).toString(), 0, query.value("VAR_COL_BG").toString()));
-            }
-        }
-    }
+    md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
+    Variables query(QSqlDatabase(), true, Variable::Inspection);
+    query.initModifyDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 
 InspectionByInspector::InspectionByInspector(const QString & inspector_id):
@@ -358,7 +272,7 @@ Repair::Repair(const QString & date):
 DBRecord("repairs", "date", date, MTDictionary())
 {}
 
-void Repair::initModifyDialogue(ModifyDialogue * md)
+void Repair::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -371,24 +285,24 @@ void Repair::initModifyDialogue(ModifyDialogue * md)
             attributes.insert(parents().key(i), parents().value(i));
         }
     }
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, id());
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
     if (isDatabaseLocked())
         date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     md->addInputWidget(date);
-    MDLineEdit * customer = new MDLineEdit("customer", tr("Customer:"), md, attributes.value("customer").toString());
+    MDLineEdit * customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
     if (!attributes.value("parent").toString().isEmpty())
         customer->setEnabled(false);
     md->addInputWidget(customer);
-    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md, attributes.value("device").toString()));
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md, attributes.value("field").toString(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    MDComboBox * repairman = new MDComboBox("repairman", tr("Repairman:"), md, attributes.value("repairman").toString(), listInspectors());
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
+    MDComboBox * repairman = new MDComboBox("repairman", tr("Repairman:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
-    md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md, attributes.value("arno").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md, -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md, -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), attributes.value("arno").toString()));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM repairs" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
@@ -430,7 +344,7 @@ VariableRecord::VariableRecord(Type type, const QString & var_id, const QString 
 DBRecord(type ? "subvariables" : "variables", "id", type ? subvar_id : var_id, type ? MTDictionary("parent", var_id) : MTDictionary())
 { v_type = type; }
 
-void VariableRecord::initModifyDialogue(ModifyDialogue * md)
+void VariableRecord::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     switch (v_type) {
         case SUBVARIABLE: md->setWindowTitle(tr("Subvariable")); break;
@@ -470,15 +384,15 @@ void VariableRecord::initModifyDialogue(ModifyDialogue * md)
     used_ids << listVariableIds(true);
     if (!id().isEmpty()) { used_ids.removeAll(id()); }
     md->setUsedIds(used_ids);
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 0, "", enable_all));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), 0, "", enable_all));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString(), 0, "", enable_all));
-    md->addInputWidget(new MDComboBox("type", tr("Type:"), md, attributes.value("type").toString(), MTDictionary(variableTypes()).swapKeysAndValues(), "", enable_all));
-    md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md, attributes.value("value").toString(), used_ids, enable_all));
-    md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md, attributes.value("compare_nom").toInt()));
-    md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md, 0.0, 999999.9, attributes.value("tolerance").toDouble()));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), MTDictionary(variableTypes()).swapKeysAndValues(), "", enable_all));
+    md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
+    md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
+    md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md->widget(), 0.0, 999999.9, attributes.value("tolerance").toDouble()));
     if (v_type == VARIABLE) {
-        md->addInputWidget(new MDColourComboBox("col_bg", tr("Colour:"), md, attributes.value("col_bg").toString()));
+        md->addInputWidget(new MDColourComboBox("col_bg", tr("Colour:"), md->widget(), attributes.value("col_bg").toString()));
     }
 }
 
@@ -486,15 +400,15 @@ Table::Table(const QString & id, const QString & uid):
 DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, MTDictionary())
 {}
 
-void Table::initModifyDialogue(ModifyDialogue * md)
+void Table::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Table"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("Name:"), md, attributes.value("id").toString()));
-    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight the nominal inspection"), md, attributes.value("highlight_nominal").toInt()));
+    md->addInputWidget(new MDLineEdit("id", tr("Name:"), md->widget(), attributes.value("id").toString()));
+    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight the nominal inspection"), md->widget(), attributes.value("highlight_nominal").toInt()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -511,7 +425,7 @@ Inspector::Inspector(const QString & id):
 DBRecord("inspectors", "id", id, MTDictionary())
 {}
 
-void Inspector::initModifyDialogue(ModifyDialogue * md)
+void Inspector::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -520,14 +434,14 @@ void Inspector::initModifyDialogue(ModifyDialogue * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 9999));
-    md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md, attributes.value("person").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
-    MDInputWidget * iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 9999));
+    md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md->widget(), attributes.value("person").toString()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
+    MDInputWidget * iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
-    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
+    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
     QStringList used_ids; QSqlQuery query_used_ids;
@@ -565,20 +479,20 @@ ServiceCompany::ServiceCompany(const QString & id):
 DBRecord("service_companies", "id", id, MTDictionary())
 {}
 
-void ServiceCompany::initModifyDialogue(ModifyDialogue * md)
+void ServiceCompany::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Service company"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
-    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md, attributes.value("address").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md, attributes.value("phone").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md, attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("website", tr("Website:"), md, attributes.value("website").toString()));
-    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md, attributes.value("image").toInt()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
+    md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), attributes.value("website").toString()));
+    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), attributes.value("image").toInt()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM service_companies" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -616,7 +530,7 @@ RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & dat
 DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
 
-void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
+void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -625,25 +539,25 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogue * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md, attributes.value("date").toString());
+    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
     if (isDatabaseLocked()) {
         date->setMinimumDate(QDate::fromString(lockDate(), "yyyy.MM.dd"));
     }
     md->addInputWidget(date);
 
-    PartnerWidgets * partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md);
+    PartnerWidgets * partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md->widget());
     md->addInputWidget(partner_widgets->partnersWidget());
     md->addInputWidget(partner_widgets->partnerNameWidget());
     md->addInputWidget(partner_widgets->partnerIdWidget());
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md, 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md, 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md, 0.0, 999999999.9, attributes.value("sold").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md, 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md, 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md, 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md, 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md, 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, attributes.value("sold").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
@@ -687,7 +601,7 @@ WarningRecord::WarningRecord(const QString & id):
 DBRecord("warnings", "id", id, MTDictionary())
 {}
 
-void WarningRecord::initModifyDialogue(ModifyDialogue * md)
+void WarningRecord::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Warning"));
     QVariantMap attributes; bool enable_all = true;
@@ -703,10 +617,10 @@ void WarningRecord::initModifyDialogue(ModifyDialogue * md)
         }
         enable_all = id().toInt() < 1000;
     }
-    md->addInputWidget(new MDCheckBox("enabled", tr("Enabled"), md, attributes.value("enabled").toInt()));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString(), 0, "", enable_all));
-    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString(), 0, "", enable_all));
-    md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md, 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
+    md->addInputWidget(new MDCheckBox("enabled", tr("Enabled"), md->widget(), attributes.value("enabled").toInt()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md->widget(), 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     used_ids << listSupportedFunctions();
@@ -718,7 +632,7 @@ AssemblyRecordType::AssemblyRecordType(const QString & id):
 DBRecord("assembly_record_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
+void AssemblyRecordType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Assembly record type"));
 
@@ -736,18 +650,18 @@ void AssemblyRecordType::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md, attributes.value("description").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md, attributes.value("display_options").toInt());
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString()));
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
-    md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md, attributes.value("name_format").toString(), keywords));
-    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md, attributes.value("style").toString(), listStyles()));
+    md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), attributes.value("name_format").toString(), keywords));
+    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), attributes.value("style").toString(), listStyles()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -788,7 +702,7 @@ AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
 DBRecord("assembly_record_item_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
+void AssemblyRecordItemType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -799,17 +713,17 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md, attributes.value("unit").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
-    md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md, 0, 99999999, attributes.value("ean").toInt()));
-    md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md, attributes.value("auto_show").toBool()));
-    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md, attributes.value("category_id").toString(), listAssemblyRecordItemCategories(true)));
-    md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md, attributes.value("inspection_variable_id").toString(), listAllVariables()));
-    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md, attributes.value("value_data_type").toString(), listDataTypes()));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString()));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
+    md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md->widget(), 0, 99999999, attributes.value("ean").toInt()));
+    md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), attributes.value("auto_show").toBool()));
+    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md->widget(), attributes.value("category_id").toString(), listAssemblyRecordItemCategories(true)));
+    md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), attributes.value("inspection_variable_id").toString(), listAllVariables()));
+    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type").toString(), listDataTypes()));
 
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -889,7 +803,7 @@ const MTDictionary & AssemblyRecordItemCategory::attributes()
     return dict.dict;
 }
 
-void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
+void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Assembly record item category"));
 
@@ -899,18 +813,18 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogue * md)
     }
 
     if (attributes.value("id").toInt() >= 1000)
-        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999, QString(), false));
+        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999, QString(), false));
     else
-        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 999));
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md, attributes.value("display_options").toInt());
+        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 999));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowDiscount, tr("Show discount"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
-    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md, QString::number(attributes.value("display_position").toInt()));
+    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md->widget(), QString::number(attributes.value("display_position").toInt()));
     md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
     md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);
@@ -974,7 +888,7 @@ CircuitUnitType::CircuitUnitType(const QString & id):
 DBRecord("circuit_unit_types", "id", id, MTDictionary())
 {}
 
-void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
+void CircuitUnitType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -992,24 +906,24 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogue * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md, attributes.value("id").toString(), 99999999));
-    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md, attributes.value("manufacturer").toString()));
-    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md, attributes.value("type").toString()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md, attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md, 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md, attributes.value("oil").toString(), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md, 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md, 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md, 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md, 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
-    md->addInputWidget(new MDComboBox("location", tr("Location:"), md, attributes.value("location").toString(), locations));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md, attributes.value("unit").toString()));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), attributes.value("oil").toString(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
+    md->addInputWidget(new MDComboBox("location", tr("Location:"), md->widget(), attributes.value("location").toString(), locations));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md->widget(), attributes.value("unit").toString()));
     QList<MDAbstractInputWidget *> gw_list;
-    gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md, 0.0, 999999.9, attributes.value("output").toDouble()));
-    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md, attributes.value("output_unit").toString(), output_units));
-    gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md, 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
+    gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md->widget(), 0.0, 999999.9, attributes.value("output").toDouble()));
+    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), attributes.value("output_unit").toString(), output_units));
+    gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
     md->addGroupedInputWidgets(tr("Output"), gw_list);
-    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md, attributes.value("notes").toString()));
+    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
 
 
     QStringList used_ids; QSqlQuery query_used_ids;
@@ -1081,16 +995,16 @@ Style::Style(const QString & id)
 {
 }
 
-void Style::initModifyDialogue(ModifyDialogue * md)
+void Style::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Style"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md, attributes.value("name").toString()));
-    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md, attributes.value("content").toString()));
-    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md, attributes.value("div_tables").toBool()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
+    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), attributes.value("content").toString()));
+    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), attributes.value("div_tables").toBool()));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

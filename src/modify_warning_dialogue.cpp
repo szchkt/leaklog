@@ -22,6 +22,7 @@
 #include "records.h"
 #include "warnings.h"
 #include "highlighter.h"
+#include "modify_dialogue_layout.h"
 
 #include <QToolButton>
 #include <QMessageBox>

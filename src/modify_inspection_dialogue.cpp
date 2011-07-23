@@ -24,6 +24,8 @@
 #include "input_widgets.h"
 #include "modify_dialogue_table.h"
 #include "modify_dialogue_table_groups.h"
+#include "modify_inspection_dialogue_compressors.h"
+#include "modify_dialogue_layout.h"
 
 #include <QSqlQuery>
 #include <QMessageBox>
@@ -35,7 +37,10 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
 
     MDAbstractInputWidget * rmds = inputWidget("rmds");
     md_grid_main->addWidget(rmds->label()->widget(), md_grid_main->rowCount(), 0);
-    md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, -1, md_grid_main->columnCount() - 1);
+    md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, 1, md_grid_main->columnCount() - 1);
+
+    compressors = new ModifyInspectionDialogueCompressors(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString(), this);
+    md_grid_main->addWidget(compressors, md_grid_main->rowCount(), 0, 1, md_grid_main->columnCount());
 
     addTab(new ModifyInspectionDialogueTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
     addTab(new ModifyInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString()));

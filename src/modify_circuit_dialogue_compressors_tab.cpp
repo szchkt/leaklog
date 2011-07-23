@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QToolButton>
 
 ModifyCircuitDialogueCompressorsTab::ModifyCircuitDialogueCompressorsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : ModifyDialogueTab(parent),
@@ -145,13 +146,10 @@ CompressorsTableRow::CompressorsTableRow(QTreeWidget * tree, int id, QWidget * p
     sn_le = new QLineEdit(this);
     tree->setItemWidget(tree_item, 3, sn_le);
 
-    remove_btn = new QPushButton(tr("Remove"), this);
+    remove_btn = new QToolButton(this);
+    remove_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
     QObject::connect(remove_btn, SIGNAL(clicked()), this, SLOT(remove()));
     tree->setItemWidget(tree_item, 4, remove_btn);
-}
-
-CompressorsTableRow::~CompressorsTableRow()
-{
 }
 
 void CompressorsTableRow::remove()

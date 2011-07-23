@@ -20,6 +20,7 @@
 #include "modify_inspector_dialogue.h"
 
 #include "input_widgets.h"
+#include "modify_dialogue_layout.h"
 
 #include <QTabWidget>
 

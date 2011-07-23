@@ -24,6 +24,8 @@
 #include <QLineEdit>
 
 class QTreeWidgetItem;
+class QToolButton;
+
 class CompressorsTableRow;
 
 class ModifyCircuitDialogueCompressorsTab : public ModifyDialogueTab
@@ -55,7 +57,6 @@ class CompressorsTableRow : public QWidget
 
 public:
     CompressorsTableRow(QTreeWidget *, int = -1, QWidget * = NULL);
-    ~CompressorsTableRow();
 
     void setName(const QString & name) { name_le->setText(name); }
     QString name() { return name_le->text(); }
@@ -91,7 +92,7 @@ private:
     QLineEdit * manufacturer_le;
     QLineEdit * type_le;
     QLineEdit * sn_le;
-    QPushButton * remove_btn;
+    QToolButton * remove_btn;
     QTreeWidgetItem * tree_item;
 };
 

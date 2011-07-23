@@ -22,6 +22,7 @@
 #include "records.h"
 #include "input_widgets.h"
 #include "global.h"
+#include "modify_dialogue_layout.h"
 
 #include <QTabWidget>
 #include <QScrollArea>

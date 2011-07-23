@@ -23,11 +23,13 @@
 #include <QDialog>
 #include <QGridLayout>
 
+#include "modify_dialogue_widgets.h"
+
 class DBRecord;
 class MTRecord;
 class MDAbstractInputWidget;
 
-class ModifyDialogue : public QDialog
+class ModifyDialogue : public QDialog, public ModifyDialogueWidgets
 {
     Q_OBJECT
 
@@ -38,6 +40,8 @@ public:
 
     inline DBRecord * record() { return md_record; }
 
+    QWidget * widget() { return this; }
+
 protected slots:
     virtual void save();
     bool save(bool);
@@ -47,18 +51,12 @@ protected:
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
-    void addInputWidget(MDAbstractInputWidget * iw) { md_inputwidgets << iw; }
-    void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget*> &);
     int inputWidgetCount() { return md_inputwidgets.count(); }
     MDAbstractInputWidget * inputWidget(const QString);
 
     virtual const QVariant idFieldValue();
 
-    void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
-
-    QList<MDAbstractInputWidget *> md_inputwidgets;
     DBRecord * md_record;
-    QStringList md_used_ids;
     QGridLayout * md_grid_main;
 
     friend class Customer;
@@ -77,32 +75,6 @@ protected:
     friend class ModifyInspectionDialogueTab;
     friend class CircuitUnitType;
     friend class Style;
-};
-
-class ModifyDialogueLayout
-{
-public:
-    ModifyDialogueLayout(QList<MDAbstractInputWidget *> *, QGridLayout *);
-
-    virtual void layout();
-    void addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment = 0);
-    void addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
-
-protected:
-    QGridLayout * md_grid_main;
-    QList<MDAbstractInputWidget *> * md_inputwidgets;
-
-};
-
-class ModifyDialogueColumnLayout : public ModifyDialogueLayout
-{
-public:
-    ModifyDialogueColumnLayout(QList<MDAbstractInputWidget *> *, QGridLayout *, int = 20);
-
-    void layout();
-
-private:
-    int rows_in_column;
 };
 
 #endif // MODIFY_DIALOGUE_H
