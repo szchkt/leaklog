@@ -584,6 +584,9 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id);
 
+    HTMLTable * compressors_table = circuitCompressorsTable(customer_id, circuit_id);
+    if (compressors_table) out << "<br>" << circuitCompressorsTable(customer_id, circuit_id)->html();
+
     HTMLTable * units_table = circuitUnitsTable(customer_id, circuit_id);
     if (units_table) out << "<br>" << units_table->html();
 
@@ -2242,6 +2245,35 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
             *(_tr->addCell()) << query.value(TYPE).toString();
             *(_tr->addCell()) << query.value(SN).toString();
         } while (query.next());
+
+        return table;
+    }
+    return NULL;
+}
+
+HTMLTable * MainWindow::circuitCompressorsTable(const QString & customer_id, const QString & circuit_id, HTMLTable * table)
+{
+    Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
+                                                       QStringList() << customer_id << circuit_id));
+    ListOfVariantMaps compressors = compressors_rec.listAll();
+    if (compressors.count()) {
+        if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+        table->addClass("highlight");
+        HTMLTableRow * _tr;
+
+        _tr = table->addRow();
+        *(_tr->addHeaderCell()) << tr("Compressors");
+        *(_tr->addHeaderCell()) << tr("Manufacturer");
+        *(_tr->addHeaderCell()) << tr("Type");
+        *(_tr->addHeaderCell()) << tr("Serial number");
+
+        for (int i = 0; i < compressors.count(); ++i) {
+            _tr = table->addRow();
+            *(_tr->addCell()) << compressors.at(i).value("name").toString();
+            *(_tr->addCell()) << compressors.at(i).value("manufacturer").toString();
+            *(_tr->addCell()) << compressors.at(i).value("type").toString();
+            *(_tr->addCell()) << compressors.at(i).value("sn").toString();
+        }
 
         return table;
     }

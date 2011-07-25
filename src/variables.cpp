@@ -145,9 +145,9 @@ void Variables::initVariables(const QString & filter)
     initSubvariable(filter, "dir_leak_chk", Variable::Inspection, "green", "uv_detect", "", "", false, 0.0);
     initSubvariable(filter, "dir_leak_chk", Variable::Inspection, "green", "bbl_detect", "", "", false, 0.0);
 
-    initVariable(filter, "refr_add_am", Variable::Compressor, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_reco", Variable::Compressor, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable(filter, "refr_add_per", Variable::Compressor, QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_reco", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable(filter, "refr_add_per", Variable::Inspection, QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
     initVariable(filter, "inspector", Variable::Inspection, "", "", false, 0.0, "");
     initVariable(filter, "operator", Variable::Inspection, "", "", false, 0.0, "");

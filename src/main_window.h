@@ -228,6 +228,7 @@ private:
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);
     HTMLTable * writeServiceCompany(HTMLTable * = NULL);
     HTMLTable * circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
+    HTMLTable * circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
     HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
 
