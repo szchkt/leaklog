@@ -56,8 +56,8 @@ Link * LinkParser::parse(const QString & url)
 }
 
 LinkEntity::LinkEntity(bool has_id):
-    has_id(has_id),
-    m_view(-1)
+    m_view(-1),
+    has_id(has_id)
 {}
 
 LinkEntity * LinkEntity::addRoute(const QString & name, int view, bool has_id)

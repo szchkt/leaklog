@@ -425,7 +425,7 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
     return (double)(round(result * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP);
 }
 
-QString Global::compareValues(double value1, double value2, double tolerance, const QString & bg_class)
+QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
 {
     if (value1 < value2) {
         return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%1";
