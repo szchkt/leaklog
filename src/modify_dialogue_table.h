@@ -58,6 +58,8 @@ public:
     virtual void addRow(ModifyDialogueTableRow *);
     QList<MTDictionary> allValues();
 
+    int rowsCount() { return rows.count(); }
+
 public slots:
     void addNewRow();
 

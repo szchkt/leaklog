@@ -21,12 +21,8 @@
 #define MODIFY_CIRCUIT_DIALOGUE_COMPRESSORS_TAB_H
 
 #include "tabbed_modify_dialogue.h"
-#include <QLineEdit>
 
-class QTreeWidgetItem;
-class QToolButton;
-
-class CompressorsTableRow;
+class ModifyDialogueBasicTable;
 
 class ModifyCircuitDialogueCompressorsTab : public ModifyDialogueTab
 {
@@ -38,62 +34,12 @@ public:
     void save(const QVariant &);
     QWidget * widget() { return this; }
 
-private slots:
-    CompressorsTableRow * addRow(int = -1);
-    void rowWantsToBeRemoved(CompressorsTableRow *);
-
 private:
     void load(const QString &);
 
-    QTreeWidget * tree;
-    QList<CompressorsTableRow *> rows;
-    QList<int> deleted_ids;
+    ModifyDialogueBasicTable * compressors_table;
+    QList<int> former_ids;
     QString customer_id;
-};
-
-class CompressorsTableRow : public QWidget
-{
-    Q_OBJECT
-
-public:
-    CompressorsTableRow(QTreeWidget *, int = -1, QWidget * = NULL);
-
-    void setName(const QString & name) { name_le->setText(name); }
-    QString name() { return name_le->text(); }
-
-    void setManufacturer(const QString & manufacturer) { manufacturer_le->setText(manufacturer); }
-    QString manufacturer() { return manufacturer_le->text(); }
-
-    void setType(const QString & type) { type_le->setText(type); }
-    QString type() { return type_le->text(); }
-
-    void setSn(const QString & sn) { sn_le->setText(sn); }
-    QString sn() { return sn_le->text(); }
-
-    int id() { return m_id; }
-    bool hasId() { return m_id >= 0; }
-
-    bool isEmpty() { return name_le->text().isEmpty() &&
-                manufacturer_le->text().isEmpty() &&
-                type_le->text().isEmpty() &&
-                sn_le->text().isEmpty(); }
-
-    QTreeWidgetItem * treeItem() { return tree_item; }
-
-private slots:
-    void remove();
-
-signals:
-    void wantsToBeRemoved(CompressorsTableRow *);
-
-private:
-    int m_id;
-    QLineEdit * name_le;
-    QLineEdit * manufacturer_le;
-    QLineEdit * type_le;
-    QLineEdit * sn_le;
-    QToolButton * remove_btn;
-    QTreeWidgetItem * tree_item;
 };
 
 #endif // MODIFY_CIRCUIT_DIALOGUE_COMPRESSORS_TAB_H
