@@ -29,6 +29,7 @@ QWidget(parent)
 {
     layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(6);
     groups = new QMap<QString, ModifyDialogueAdvancedTable *>;
 }
 

@@ -33,6 +33,8 @@ ModifyCircuitDialogueCompressorsTab::ModifyCircuitDialogueCompressorsTab(const Q
     setName(tr("Compressors"));
 
     QVBoxLayout * layout = new QVBoxLayout(this);
+    layout->setContentsMargins(9, 9, 9, 9);
+    layout->setSpacing(9);
 
     tree = new QTreeWidget(this);
     tree->setColumnCount(5);
@@ -43,6 +45,7 @@ ModifyCircuitDialogueCompressorsTab::ModifyCircuitDialogueCompressorsTab(const Q
     header_labels << tr("Serial number");
     header_labels << tr("Remove");
     tree->setHeaderLabels(header_labels);
+    tree->setIndentation(0);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
     tree->header()->setResizeMode(0, QHeaderView::Stretch);
     tree->header()->setResizeMode(1, QHeaderView::Stretch);
@@ -56,6 +59,7 @@ ModifyCircuitDialogueCompressorsTab::ModifyCircuitDialogueCompressorsTab(const Q
     QHBoxLayout * buttons_layout = new QHBoxLayout(this);
     buttons_layout->addWidget(add_row_btn);
     buttons_layout->addStretch();
+    buttons_layout->setContentsMargins(0, 0, 0, 0);
     layout->addLayout(buttons_layout);
 
     load(circuit_id);

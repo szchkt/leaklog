@@ -32,6 +32,7 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & cus
     this->customer_id = customer_id;
 
     QGridLayout * grid = new QGridLayout(this);
+    grid->setContentsMargins(9, 9, 9, 9);
 
     tree = new QTreeWidget(this);
     tree->setColumnCount(3);
@@ -184,8 +185,6 @@ void ModifyCircuitDialogueUnitsTab::addToTable(ModifyCircuitDialogueTreeItem * i
 ModifyCircuitDialogueTable::ModifyCircuitDialogueTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent)
     : ModifyDialogueTable(name, header, parent)
 {
-    layout->addStretch();
-
     QPushButton * update_circuit_btn = new QPushButton(tr("Update circuit"), this);
     QObject::connect(update_circuit_btn, SIGNAL(clicked()), this, SLOT(updateCircuit()));
 

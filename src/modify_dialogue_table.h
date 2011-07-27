@@ -37,13 +37,16 @@ class QComboBox;
 class QLabel;
 class QToolButton;
 class QVBoxLayout;
+class QTreeWidget;
+class QTreeWidgetItem;
+class QHBoxLayout;
 
 class ModifyDialogueTableRow;
 class ModifyDialogueTableCell;
 class ModifyDialogueBasicTableRow;
 class MDTInputWidget;
 
-class ModifyDialogueTable : public QGroupBox
+class ModifyDialogueTable : public QWidget
 {
     Q_OBJECT
 
@@ -62,16 +65,15 @@ private slots:
     void rowRemoved(ModifyDialogueTableRow *);
 
 protected:
-    void createHeader();
     virtual void addHiddenRow(ModifyDialogueTableRow *) = 0;
     virtual QList<ModifyDialogueTableCell *> hiddenAttributes() = 0;
 
     QVBoxLayout * layout;
-    QGridLayout * grid;
+    QTreeWidget * tree;
+    QHBoxLayout * title_layout;
 
     QList<ModifyDialogueTableCell *> header;
     QList<ModifyDialogueTableRow *> rows;
-    int visible_rows;
 };
 
 class ModifyDialogueAdvancedTable : public ModifyDialogueTable
@@ -162,7 +164,7 @@ class ModifyDialogueTableRow : public QObject
     Q_OBJECT
 
 public:
-    ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> &, bool);
+    ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> &, bool, QTreeWidget *);
     ~ModifyDialogueTableRow();
 
     void addWidget(const QString &, MDTInputWidget *);
@@ -185,6 +187,9 @@ public:
     void setListPrice(double);
     QVariant widgetValue(const QString &);
 
+    QTreeWidgetItem * treeItem();
+    QTreeWidgetItem * takeTreeItem();
+
 private slots:
     void remove();
 
@@ -197,6 +202,8 @@ private:
     QString row_name;
     QMap<QString, MDTInputWidget *> widgets;
     QMap<QString, ModifyDialogueTableCell *> values;
+    QTreeWidget * m_tree;
+    QTreeWidgetItem * m_tree_item;
     bool in_table;
 };
 

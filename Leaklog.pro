@@ -53,8 +53,9 @@ HEADERS       += src/global.h \
                  src/modify_circuit_dialogue_units_tab.h \
                  src/modify_circuit_dialogue_compressors_tab.h \
                  src/modify_inspection_dialogue_compressors.h \
-    src/modify_dialogue_widgets.h \
-    src/modify_dialogue_layout.h
+                 src/modify_dialogue_widgets.h \
+                 src/modify_dialogue_layout.h \
+                 src/modify_inspection_dialogue_assembly_record_tab.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -100,8 +101,9 @@ SOURCES       += src/global.cpp \
                  src/modify_circuit_dialogue_units_tab.cpp \
                  src/modify_circuit_dialogue_compressors_tab.cpp \
                  src/modify_inspection_dialogue_compressors.cpp \
-    src/modify_dialogue_widgets.cpp \
-    src/modify_dialogue_layout.cpp
+                 src/modify_dialogue_widgets.cpp \
+                 src/modify_dialogue_layout.cpp \
+                 src/modify_inspection_dialogue_assembly_record_tab.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

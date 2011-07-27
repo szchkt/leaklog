@@ -38,35 +38,6 @@ protected:
     ModifyInspectionDialogueCompressors * compressors;
 };
 
-class ModifyInspectionDialogueTab : public ModifyDialogueTab
-{
-    Q_OBJECT
-
-public:
-    ModifyInspectionDialogueTab(int, MDLineEdit *, MDComboBox *, const QString &, const QString &, QWidget * = NULL);
-
-    void save(const QVariant &);
-    int saveNewItemType(const MTDictionary &);
-
-private slots:
-    void loadItemInputWidgets(bool = false);
-    void recordTypeChanged();
-    void assemblyRecordNumberChanged();
-
-private:
-    void init();
-    MTDictionary listAssemblyRecordItemTypes();
-    const QVariant assemblyRecordType();
-    const QVariant assemblyRecordId();
-
-    ModifyDialogueGroupsLayout * groups_layout;
-    MDComboBox * ar_type_w;
-    MDLineEdit * arno_w;
-    QString original_arno;
-    QString customer_id;
-    QString circuit_id;
-};
-
 class ModifyInspectionDialogueImagesTab : public ModifyDialogueTab
 {
     Q_OBJECT

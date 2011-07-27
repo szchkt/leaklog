@@ -29,21 +29,43 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QPushButton>
+#include <QTreeWidget>
+#include <QHeaderView>
+#include <QDebug>
 
 ModifyDialogueTable::ModifyDialogueTable(const QString & name, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
-        QGroupBox(name, parent)
+        QWidget(parent)
 {
     this->header = header;
-    visible_rows = 0;
 
     layout = new QVBoxLayout(this);
-    grid = new QGridLayout;
-    grid->setContentsMargins(0, 0, 0, 0);
-    layout->addLayout(grid);
-    layout->setContentsMargins(9, 9, 9, 9);
-    layout->setSpacing(6);
 
-    createHeader();
+    title_layout = new QHBoxLayout;
+    title_layout->addWidget(new QLabel(name, this));
+    title_layout->addStretch();
+    layout->addLayout(title_layout);
+
+    tree = new QTreeWidget(this);
+    tree->setColumnCount(header.count() + 1);
+    tree->setIndentation(0);
+    QStringList header_labels;
+    for (int i = 0; i < header.count(); ++i) {
+        header_labels << header.at(i)->value().toString();
+    }
+    header_labels << "";
+    tree->setHeaderLabels(header_labels);
+    tree->setSelectionMode(QAbstractItemView::NoSelection);
+    for (int i = 0; i < header.count(); ++i) {
+        tree->header()->setResizeMode(i, QHeaderView::Stretch);
+    }
+    tree->header()->setStretchLastSection(false);
+    tree->header()->setResizeMode(header.count(), QHeaderView::Custom);
+    tree->header()->resizeSection(header.count(), 24);
+    tree->setColumnWidth(header.count(), 24);
+
+    layout->addWidget(tree);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(2);
 }
 
 ModifyDialogueTable::~ModifyDialogueTable()
@@ -55,20 +77,12 @@ ModifyDialogueTable::~ModifyDialogueTable()
         delete header.takeAt(i);
     }
 
-    delete grid;
-}
-
-void ModifyDialogueTable::createHeader()
-{
-    for (int i = 0; i < header.count(); ++i) {
-        grid->addWidget(new QLabel(QString("<b>%1</b>").arg(header.at(i)->value().toString())), visible_rows, i);
-    }
-    visible_rows++;
+    delete tree;
 }
 
 void ModifyDialogueTable::addRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool display)
 {
-    ModifyDialogueTableRow * row = new ModifyDialogueTableRow(values, display);
+    ModifyDialogueTableRow * row = new ModifyDialogueTableRow(values, display, tree);
     QObject::connect(row, SIGNAL(removed(ModifyDialogueTableRow*)), this, SLOT(rowRemoved(ModifyDialogueTableRow*)));
     rows.append(row);
 
@@ -122,14 +136,17 @@ void ModifyDialogueTable::addRow(ModifyDialogueTableRow * row)
         }
 
         row->addWidget(header.at(i)->id(), iw);
-        grid->addWidget(iw->widget(), visible_rows, i);
+        tree->setItemWidget(row->treeItem(), i, iw->widget());
     }
-    grid->addWidget(row->removeButton(), visible_rows, header.count());
-    visible_rows++;
+    tree->setItemWidget(row->treeItem(), header.count(), row->removeButton());
 }
 
 void ModifyDialogueTable::rowRemoved(ModifyDialogueTableRow * row)
 {
+    int index = tree->indexOfTopLevelItem(row->takeTreeItem());
+    if (index >= 0) {
+        delete tree->takeTopLevelItem(index);
+    }
     if (row->toBeDeleted()) {
         for (int i = 0; i < rows.count(); ++i) {
             if (rows.at(i) == row) {
@@ -172,11 +189,6 @@ ModifyDialogueAdvancedTable::ModifyDialogueAdvancedTable(const QString &name, in
     this->category_id = category_id;
     smallest_index = -1;
 
-    QToolButton * add_new_btn = new QToolButton;
-    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
-    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    grid->addWidget(add_new_btn, 0, header.count());
-
     layout->addLayout(addRowControlsLayout());
 }
 
@@ -184,16 +196,24 @@ QLayout * ModifyDialogueAdvancedTable::addRowControlsLayout()
 {
     QHBoxLayout * layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(6);
     add_row_cb = new QComboBox(this);
     add_row_cb->setMaximumWidth(500);
 
     layout->addWidget(add_row_cb);
 
-    QPushButton * add_btn = new QPushButton(tr("Add"));
+    QPushButton * add_btn = new QPushButton(tr("Add"), this);
     QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(activateRow()));
     layout->addWidget(add_btn);
 
     layout->addStretch();
+
+    QToolButton * add_new_btn = new QToolButton(this);
+    add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
+    add_new_btn->setText(tr("Add custom item"));
+    add_new_btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QObject::connect(add_new_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
+    layout->addWidget(add_new_btn);
 
     return layout;
 }
@@ -242,12 +262,10 @@ ModifyDialogueBasicTable::ModifyDialogueBasicTable(const QString & name, const Q
 {
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
-    layout->addStretch();
-
     QToolButton * add_btn = new QToolButton;
     add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
-    grid->addWidget(add_btn, 0, header.count());
+    title_layout->addWidget(add_btn);
 }
 
 ModifyDialogueTableWithAdjustableTotal::ModifyDialogueTableWithAdjustableTotal(const QString & name, int category_id, const QList<ModifyDialogueTableCell *> & header, QWidget * parent):
@@ -256,11 +274,9 @@ ModifyDialogueTableWithAdjustableTotal::ModifyDialogueTableWithAdjustableTotal(c
     total_w = new QDoubleSpinBox(this);
     total_w->setMaximum(99999999.9);
 
-    QLayout * bottom_layout = layout->itemAt(layout->count() - 1)->layout();
-
-    QLabel * lbl = new QLabel(QString("<b>%1</b>").arg(tr("Total list price:")), this);
-    bottom_layout->addWidget(lbl);
-    bottom_layout->addWidget(total_w);
+    QLabel * lbl = new QLabel(tr("Total list price:"), this);
+    title_layout->addWidget(lbl);
+    title_layout->addWidget(total_w);
 
     QObject::connect(total_w, SIGNAL(editingFinished()), this, SLOT(calculatePricesFromTotal()));
 }
@@ -306,7 +322,9 @@ void ModifyDialogueTableWithAdjustableTotal::addRow(ModifyDialogueTableRow * row
     reloadTotal();
 }
 
-ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool in_table)
+ModifyDialogueTableRow::ModifyDialogueTableRow(const QMap<QString, ModifyDialogueTableCell *> & values, bool in_table, QTreeWidget * tree):
+    m_tree(tree),
+    m_tree_item(NULL)
 {
     this->values = values;
     this->in_table = in_table;
@@ -456,6 +474,7 @@ QToolButton * ModifyDialogueTableRow::removeButton()
     if (!remove_btn) {
         remove_btn = new QToolButton;
         remove_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
+        remove_btn->setMaximumWidth(24);
         QObject::connect(remove_btn, SIGNAL(clicked()), this, SLOT(remove()));
     }
     return remove_btn;
@@ -467,4 +486,20 @@ const QString ModifyDialogueTableRow::value(const QString &name)
         return values.value(name)->value().toString();
     else
         return QString();
+}
+
+QTreeWidgetItem * ModifyDialogueTableRow::treeItem()
+{
+    if (m_tree_item)
+        return  m_tree_item;
+
+    m_tree_item = new QTreeWidgetItem(m_tree);
+    return m_tree_item;
+}
+
+QTreeWidgetItem * ModifyDialogueTableRow::takeTreeItem()
+{
+    QTreeWidgetItem * item = m_tree_item;
+    m_tree_item = NULL;
+    return item;
 }
