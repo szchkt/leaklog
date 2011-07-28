@@ -461,7 +461,9 @@ public:
         dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("persons", "id INTEGER PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");
@@ -482,8 +484,6 @@ public:
         dict.insert("circuit_units", "id INTEGER PRIMARY KEY, company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("db_info", "id TEXT, value TEXT");
         dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, div_tables INTEGER, updated_by TEXT");
-        dict.insert("compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id INTEGER, date_updated TEXT, updated_by TEXT");
     }
 
     MTDictionary dict;

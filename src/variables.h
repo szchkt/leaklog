@@ -32,20 +32,27 @@ class Variables : public MTSqlQueryResult
     Q_OBJECT
 
 public:
-    Variables(QSqlDatabase = QSqlDatabase(), bool = true, int = 0xFFFF);
+    Variables(QSqlDatabase = QSqlDatabase(), int = 0xFFFF);
+    static Variables * defaultVariables(int = 0xFFFF);
+
+    QVariantMap variable(const QString &);
 
     void initModifyDialogueWidgets(ModifyDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDCheckBox * = NULL, MDCheckBox * = NULL);
 
 protected:
+    Variables(int);
+    Variables(QSqlDatabase, const QString &, int = 0xFFFF);
+
     virtual void saveResult();
 
-    void initVariables(const QString & = QString());
-    void initVariable(const QString &, const QString &, int, const QString &, const QString &, bool, double, const QString &);
-    void initVariable(const QString &, const QString &, int, const QString &);
-    void initSubvariable(const QString &, const QString &, int, const QString &, const QString &, const QString &, const QString &, bool, double);
+    void initVariables();
+    void initVariable(const QString &, int, const QString &, const QString &, bool, double, const QString &);
+    void initVariable(const QString &, int, const QString &);
+    void initSubvariable(const QString &, int, const QString &, const QString &, const QString &, const QString &, bool, double);
 
     QMultiMap<QString, int> var_indices;
     int m_scope;
+    QString m_filter;
 };
 
 class Variable : public Variables

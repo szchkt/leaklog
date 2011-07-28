@@ -258,7 +258,7 @@ void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
-    Variables query(QSqlDatabase(), true, Variable::Inspection);
+    Variables query(QSqlDatabase(), Variable::Inspection);
     query.initModifyDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 

@@ -45,7 +45,7 @@ InspectionCompressorTab::InspectionCompressorTab(int id, QWidget * parent)
     : QWidget(parent),
       m_id(id)
 {
-    Variables vars(QSqlDatabase(), true, Variable::Compressor);
+    Variables vars(QSqlDatabase(), Variable::Compressor);
     vars.initModifyDialogueWidgets(this, QVariantMap());
 
     QGridLayout * layout = new QGridLayout(this);

@@ -82,6 +82,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
 { // (SCOPE)
     QSqlQuery query(*database);
     QStringList tables = database->tables();
+    Variables * variables = Variables::defaultVariables();
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
             query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + sqlStringForDatabaseType(databaseTables().value(i), database) + ")");
@@ -91,6 +92,13 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
                     if (ok)
                         addColumn(variableNames().key(v) + " " + type, "inspections", database);
+                }
+            } else if (databaseTables().key(i) == "inspections_compressors") {
+                QString type; bool ok = true;
+                for (int v = 0; v < variableNames().count(); ++v) {
+                    type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (ok && (variables->variable(variableNames().key(v)).value("VAR_SCOPE").toInt() & Variable::Compressor))
+                        addColumn(variableNames().key(v) + " " + type, "inspections_compressors", database);
                 }
             }
         } else {
@@ -103,6 +111,13 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
                     if (ok)
                         all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
+            } else if (databaseTables().key(i) == "inspections_compressors") {
+                QString type; bool ok = true;
+                for (int v = 0; v < variableNames().count(); ++v) {
+                    type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (ok && (variables->variable(variableNames().key(v)).value("VAR_SCOPE").toInt() & Variable::Compressor))
+                        all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
+                }
             }
             for (int f = 0; f < all_field_names.count(); ++f) {
                 if (!field_names.contains(all_field_names.at(f).split(" ").first())) {
@@ -111,6 +126,8 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
             }
         }
     }
+    delete variables;
+
     double v = DBInfoValueForKey("db_version").toDouble();
     if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
