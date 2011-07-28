@@ -1034,7 +1034,12 @@ const MTDictionary & Style::attributes()
     return dict.dict;
 }
 
-Compressor::Compressor(const QString & id, const MTDictionary & dict)
-    : MTRecord("compressors", "id", id, dict)
+Compressor::Compressor(const QString & id, const MTDictionary & dict):
+    MTRecord("compressors", "id", id, dict)
+{
+}
+
+InspectionsCompressor::InspectionsCompressor(const QString & id, const MTDictionary & dict):
+    MTRecord("inspections_compressors", "id", id, dict)
 {
 }

@@ -34,6 +34,9 @@ public:
     ModifyInspectionDialogue(DBRecord *, QWidget * = NULL);
 
 protected:
+    bool saveOther();
+
+protected:
     const QVariant idFieldValue();
     ModifyInspectionDialogueCompressors * compressors;
 };

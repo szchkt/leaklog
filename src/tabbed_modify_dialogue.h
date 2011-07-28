@@ -30,6 +30,7 @@ class QGroupBox;
 class QScrollArea;
 
 class ModifyDialogueTab;
+class ModifyDialogueArea;
 class MDLineEdit;
 class MDComboBox;
 class MTDictionary;
@@ -43,7 +44,7 @@ public:
     ~TabbedModifyDialogue();
 
 protected slots:
-    void save();
+    virtual void save();
 
 protected:
     void addMainGridLayout(QVBoxLayout *);
@@ -51,10 +52,16 @@ protected:
     void addTab(ModifyDialogueTab *);
 
     QTabWidget * main_tabw;
-    QList<ModifyDialogueTab *> tabs;
+    QList<ModifyDialogueArea *> tabs;
 };
 
-class ModifyDialogueTab : public QWidget
+class ModifyDialogueArea
+{
+public:
+    virtual void save(const QVariant &) = 0;
+};
+
+class ModifyDialogueTab : public QWidget, public ModifyDialogueArea
 {
     Q_OBJECT
 

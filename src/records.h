@@ -333,4 +333,12 @@ public:
     Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
 };
 
+class InspectionsCompressor : public MTRecord
+{
+    Q_OBJECT
+
+public:
+    InspectionsCompressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+};
+
 #endif // RECORDS_H
