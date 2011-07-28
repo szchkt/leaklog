@@ -40,6 +40,7 @@ ModifyCustomerDialogue::ModifyCustomerDialogue(Customer * record, QWidget * pare
     cells.append(cell);
     persons_table = new ModifyDialogueBasicTable(tr("Contact persons"), cells, this);
     md_grid_main->addWidget(persons_table, 0, 2, md_grid_main->rowCount(), 1);
+    persons_table->setMinimumWidth(500);
 
     ListOfVariantMaps persons = persons_record.listAll();
     QMap<QString, ModifyDialogueTableCell *> person_data;

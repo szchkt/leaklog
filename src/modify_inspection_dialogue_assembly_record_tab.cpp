@@ -53,8 +53,6 @@ void ModifyInspectionDialogueAssemblyRecordTab::init()
         groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
     layout->addWidget(groups_layout);
 
-    layout->addStretch();
-
     loadItemInputWidgets(true);
 }
 

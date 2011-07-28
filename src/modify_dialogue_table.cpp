@@ -41,7 +41,7 @@ ModifyDialogueTable::ModifyDialogueTable(const QString & name, const QList<Modif
     layout = new QVBoxLayout(this);
 
     title_layout = new QHBoxLayout;
-    title_layout->addWidget(new QLabel(name, this));
+    title_layout->addWidget(new QLabel(QString("%1:").arg(name), this));
     title_layout->addStretch();
     layout->addLayout(title_layout);
 

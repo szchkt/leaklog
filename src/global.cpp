@@ -483,6 +483,7 @@ public:
         dict.insert("db_info", "id TEXT, value TEXT");
         dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, div_tables INTEGER, updated_by TEXT");
         dict.insert("compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id INTEGER, date_updated TEXT, updated_by TEXT");
     }
 
     MTDictionary dict;

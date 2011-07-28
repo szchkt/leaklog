@@ -22,8 +22,8 @@
 
 #include <QSqlQuery>
 #include <QPushButton>
+#include <QToolButton>
 #include <QHeaderView>
-#include <QScrollArea>
 
 ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : ModifyDialogueTab(parent)
@@ -39,16 +39,17 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & cus
     QStringList header_labels;
     header_labels << tr("Available unit types");
     header_labels << tr("Location");
-    header_labels << tr("Add");
+    header_labels << "";
     tree->setHeaderLabels(header_labels);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
     tree->header()->setStretchLastSection(false);
     tree->header()->setResizeMode(0, QHeaderView::Stretch);
     tree->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-    tree->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    tree->header()->setStretchLastSection(false);
+    tree->header()->setResizeMode(2, QHeaderView::Custom);
+    tree->header()->resizeSection(2, 24);
+    tree->setColumnWidth(2, 24);
     QObject::connect(tree, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(manufacturerItemExpanded(QTreeWidgetItem*)));
-    QObject::connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
-    QObject::connect(tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemClicked(QTreeWidgetItem*, int)));
     grid->addWidget(tree, 0, 0);
 
     QList<ModifyDialogueTableCell *> header;
@@ -60,9 +61,7 @@ ModifyCircuitDialogueUnitsTab::ModifyCircuitDialogueUnitsTab(const QString & cus
     table = new ModifyCircuitDialogueTable(tr("Used circuit units"), header, this);
     QObject::connect(table, SIGNAL(updateCircuit(MTDictionary)), this, SIGNAL(updateCircuit(MTDictionary)));
 
-    QScrollArea * scroll_area = createScrollArea();
-    scroll_area->setWidget(table);
-    grid->addWidget(scroll_area, 0, 1);
+    grid->addWidget(table, 0, 1);
 
     loadManufacturers();
     loadRows(customer_id, circuit_id);
@@ -147,28 +146,15 @@ void ModifyCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * q
         item = new ModifyCircuitDialogueTreeItem(parent_item);
         item->setText(0, query.value(1).toString());
         item->setText(1, CircuitUnitType::locationToString(query.value(2).toInt()));
-        item->setText(2, tr("Add"));
-        item->setIcon(2, QIcon(QString::fromUtf8(":/images/images/add16.png")));
+        QToolButton * add_btn = new QToolButton;
+        add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
+        QObject::connect(add_btn, SIGNAL(clicked()), item, SLOT(addClicked()));
+        tree->setItemWidget(item, 2, add_btn);
         item->setUnitType(query.value(0).toString());
         item->setManufacturer(parent_item->text(0));
         item->setLocation(query.value(2).toInt());
+        QObject::connect(item, SIGNAL(itemWantsToBeAdded(ModifyCircuitDialogueTreeItem*)), this, SLOT(addToTable(ModifyCircuitDialogueTreeItem*)));
     }
-}
-
-void ModifyCircuitDialogueUnitsTab::itemDoubleClicked(QTreeWidgetItem * qitem, int col)
-{
-    ModifyCircuitDialogueTreeItem * item = (ModifyCircuitDialogueTreeItem *) qitem;
-    if (!item->isType() || col == 2) return;
-
-    addToTable(item);
-}
-
-void ModifyCircuitDialogueUnitsTab::itemClicked(QTreeWidgetItem * qitem, int col)
-{
-    ModifyCircuitDialogueTreeItem * item = (ModifyCircuitDialogueTreeItem *) qitem;
-    if (!item->isType() || col != 2) return;
-
-    addToTable(item);
 }
 
 void ModifyCircuitDialogueUnitsTab::addToTable(ModifyCircuitDialogueTreeItem * item)
@@ -225,4 +211,9 @@ void ModifyCircuitDialogueTable::updateCircuit()
     circuit_vars.setValue("oil_amount", QString::number(oil_amount));
 
     updateCircuit(circuit_vars);
+}
+
+void ModifyCircuitDialogueTreeItem::addClicked()
+{
+    emit itemWantsToBeAdded(this);
 }

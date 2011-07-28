@@ -40,8 +40,7 @@ public:
 
 private slots:
     void manufacturerItemExpanded(QTreeWidgetItem *);
-    void itemDoubleClicked(QTreeWidgetItem *, int);
-    void itemClicked(QTreeWidgetItem*, int);
+    void addToTable(ModifyCircuitDialogueTreeItem *);
 
 signals:
     void updateCircuit(MTDictionary);
@@ -49,7 +48,6 @@ signals:
 private:
     void loadRows(const QString &, const QString &);
     void loadManufacturers();
-    void addToTable(ModifyCircuitDialogueTreeItem *);
 
     ModifyCircuitDialogueTable * table;
     QTreeWidget * tree;
@@ -75,11 +73,13 @@ private:
     QList<ModifyDialogueTableCell *> hiddenAttributes() { return QList<ModifyDialogueTableCell *>(); }
 };
 
-class ModifyCircuitDialogueTreeItem : public QTreeWidgetItem
+class ModifyCircuitDialogueTreeItem : public QObject, public QTreeWidgetItem
 {
+    Q_OBJECT
+
 public:
-    ModifyCircuitDialogueTreeItem(QTreeWidget * parent) : QTreeWidgetItem(parent) { is_type = true; }
-    ModifyCircuitDialogueTreeItem(QTreeWidgetItem * parent) : QTreeWidgetItem(parent) { is_type = true; }
+    ModifyCircuitDialogueTreeItem(QTreeWidget * parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
+    ModifyCircuitDialogueTreeItem(QTreeWidgetItem * parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
 
     void setManufacturer(const QString & manufacturer) { this->unit_manufacturer = manufacturer; }
     const QString & manufacturer() { return unit_manufacturer; }
@@ -89,6 +89,12 @@ public:
     bool isType() { return is_type; }
     void setLocation(int loc) { this->unit_location = loc; }
     int location() { return unit_location; }
+
+public slots:
+    void addClicked();
+
+signals:
+    void itemWantsToBeAdded(ModifyCircuitDialogueTreeItem *);
 
 private:
     QString unit_manufacturer;
