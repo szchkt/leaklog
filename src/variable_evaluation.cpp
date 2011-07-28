@@ -25,10 +25,11 @@
 
 using namespace Global;
 
-VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id)
+VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id, int vars_scope)
 {
     this->customer_id = customer_id;
     this->circuit_id = circuit_id;
+    this->vars_scope = vars_scope;
     init();
 }
 
@@ -43,7 +44,7 @@ VariableEvaluation::EvaluationContext::~EvaluationContext()
 
 void VariableEvaluation::EvaluationContext::init()
 {
-    Variables vars;
+    Variables vars(QSqlDatabase(), vars_scope);
     QString last_id;
     VariableEvaluation::Variable * parent_var = NULL, * var;
 
@@ -62,6 +63,7 @@ void VariableEvaluation::EvaluationContext::init()
 
             last_id = vars.value("VAR_ID").toString();
             vars_map.insert(var->id(), var);
+            vars_list.append(var);
         }
         if (!vars.value("SUBVAR_ID").toString().isEmpty()) {
             var = new VariableEvaluation::Variable;

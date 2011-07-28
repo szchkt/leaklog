@@ -34,11 +34,13 @@ void ModifyInspectionDialogueCompressors::loadTabs(const QString & inspection_da
             InspectionsCompressor inspection_compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                 QStringList() << customer_id << circuit_id << inspection_date << compressors.at(i).value("id").toString()));
             QVariantMap inspection_compressor = inspection_compressor_rec.list();
-            if (inspection_compressor.contains("id")) {
+            if (!inspection_compressor.isEmpty()) {
                 tab->setRecordId(inspection_compressor.value("id").toInt());
                 former_ids.append(inspection_compressor.value("id").toInt());
+                tab->init(inspection_compressor);
+            } else {
+                tab->init();
             }
-            tab->init(inspection_compressor);
         } else {
             tab->init();
         }

@@ -78,6 +78,11 @@ public:
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
 
     void initModifyDialogue(ModifyDialogueWidgets *);
+
+    int scope() { return m_scope; }
+
+private:
+    int m_scope;
 };
 
 class InspectionByInspector : public Inspection

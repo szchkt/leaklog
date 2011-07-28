@@ -30,7 +30,7 @@ namespace VariableEvaluation {
     class EvaluationContext
     {
     public:
-        EvaluationContext(const QString &, const QString &);
+        EvaluationContext(const QString &, const QString &, int = 0);
         ~EvaluationContext();
 
         void setNominalInspection(const QVariantMap & nominal_ins) { this->nominal_ins = nominal_ins; }
@@ -42,14 +42,18 @@ namespace VariableEvaluation {
 
         QStringList & usedIds() { return used_ids; }
 
+        const QList<Variable *> & listVariables() { return vars_list; }
+
     private:
         void init();
 
         QMap<QString, Variable *> vars_map;
+        QList<Variable *> vars_list;
         QStringList used_ids;
         QString customer_id;
         QString circuit_id;
         QVariantMap nominal_ins;
+        int vars_scope;
     };
 
     class Variable

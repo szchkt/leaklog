@@ -34,6 +34,10 @@ class QPainter;
 class QUrl;
 class QHttp;
 class QBuffer;
+namespace VariableEvaluation {
+    class Variable;
+    class EvaluationContext;
+}
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -231,6 +235,7 @@ private:
     HTMLTable * circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
     HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
+    void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
 
     int selected_customer;
     QString selected_customer_company;

@@ -184,7 +184,7 @@ void Variables::initVariables()
 
 void Variables::initVariable(const QString & id, int scope, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
 {
-    if (scope > 0 && !(scope & m_scope)) { return; }
+    if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", id);
@@ -202,7 +202,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & unit
 
 void Variables::initVariable(const QString & id, int scope, const QString & col_bg)
 {
-    if (scope > 0 && !(scope & m_scope)) { return; }
+    if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (m_filter.isEmpty() || m_filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", id);
@@ -215,7 +215,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & col_
 
 void Variables::initSubvariable(const QString & parent, int scope, const QString & col_bg, const QString & id, const QString & unit, const QString & value, bool compare_nom, double tolerance)
 {
-    if (scope > 0 && !(scope & m_scope)) { return; }
+    if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
     QVariantMap row;
     row.insert("VAR_ID", parent);

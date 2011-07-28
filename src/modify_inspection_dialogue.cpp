@@ -26,11 +26,13 @@
 #include "modify_inspection_dialogue_compressors.h"
 #include "modify_inspection_dialogue_assembly_record_tab.h"
 #include "modify_dialogue_layout.h"
+#include "variables.h"
 
 #include <QMessageBox>
 
 ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * parent)
-    : TabbedModifyDialogue(record, parent)
+    : TabbedModifyDialogue(record, parent),
+      compressors(NULL)
 {
     main_tabw->setTabText(0, tr("Inspection"));
 
@@ -38,12 +40,14 @@ ModifyInspectionDialogue::ModifyInspectionDialogue(DBRecord * record, QWidget * 
     md_grid_main->addWidget(rmds->label()->widget(), md_grid_main->rowCount(), 0);
     md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, 1, md_grid_main->columnCount() - 1);
 
-    compressors = new ModifyInspectionDialogueCompressors(md_record->parent("customer"),
-                                                          md_record->parent("circuit"),
-                                                          md_record->id(),
-                                                          this);
-    md_grid_main->addWidget(compressors, md_grid_main->rowCount(), 0, 1, md_grid_main->columnCount());
-    tabs.append(compressors);
+    if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
+        compressors = new ModifyInspectionDialogueCompressors(md_record->parent("customer"),
+                                                              md_record->parent("circuit"),
+                                                              md_record->id(),
+                                                              this);
+        md_grid_main->addWidget(compressors, md_grid_main->rowCount(), 0, 1, md_grid_main->columnCount());
+        tabs.append(compressors);
+    }
 
     addTab(new ModifyInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
     addTab(new ModifyInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString()));

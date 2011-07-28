@@ -210,11 +210,13 @@ int Circuit::numBasicAttributes()
 }
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
-DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit))
+DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
+m_scope(Variable::Inspection)
 {}
 
 Inspection::Inspection(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
-DBRecord(table, id_column, id, parents)
+DBRecord(table, id_column, id, parents),
+m_scope(Variable::Inspection)
 {
 }
 
@@ -258,7 +260,16 @@ void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
-    Variables query(QSqlDatabase(), Variable::Inspection);
+
+    if (!id().isEmpty()) {
+        MTDictionary parents("customer_id", parent("customer"));
+        parents.insert("circuit_id", parent("circuit"));
+        parents.insert("date", id());
+        if (!InspectionsCompressor(QString(), parents).exists())
+            m_scope |= Variable::Compressor;
+    }
+
+    Variables query(QSqlDatabase(), m_scope);
     query.initModifyDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 
