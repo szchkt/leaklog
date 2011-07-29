@@ -125,7 +125,7 @@ class Table : public DBRecord
     Q_OBJECT
 
 public:
-    Table(const QString &, const QString & = QString());
+    Table(const QString &, const QString & = QString(), const MTDictionary & = MTDictionary());
 
     void initModifyDialogue(ModifyDialogueWidgets *);
 };

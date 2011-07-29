@@ -26,6 +26,9 @@ class HTMLTable;
 class HTMLTableRow;
 class HTMLTableCell;
 class HTMLHeaderTableCell;
+class HTMLTableHead;
+class HTMLTableBody;
+class HTMLTableFoot;
 class HTMLBold;
 class HTMLItalics;
 class HTMLLink;
@@ -146,8 +149,30 @@ public:
     const QString html();
     const QString customHtml(int);
 
-private:
+    HTMLTableHead * thead(const QString & = QString());
+    HTMLTableBody * tbody(const QString & = QString());
+    HTMLTableFoot * tfoot(const QString & = QString());
+
+protected:
     int cols_in_row;
+};
+
+class HTMLTableHead : public HTMLTable
+{
+public:
+    HTMLTableHead(const QString & = QString(), int = 0);
+};
+
+class HTMLTableBody : public HTMLTable
+{
+public:
+    HTMLTableBody(const QString & = QString(), int = 0);
+};
+
+class HTMLTableFoot : public HTMLTable
+{
+public:
+    HTMLTableFoot(const QString & = QString(), int = 0);
 };
 
 class HTMLTableRow : public HTMLParentElement

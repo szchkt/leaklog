@@ -226,6 +226,45 @@ HTMLTableRow * HTMLTable::addRow(const QString & row_args)
     return row;
 }
 
+HTMLTableHead * HTMLTable::thead(const QString & args)
+{
+    HTMLTableHead * thead = new HTMLTableHead(args);
+    children.append(thead);
+    return thead;
+}
+
+HTMLTableBody * HTMLTable::tbody(const QString & args)
+{
+    HTMLTableBody * tbody = new HTMLTableBody(args);
+    children.append(tbody);
+    return tbody;
+}
+
+HTMLTableFoot * HTMLTable::tfoot(const QString & args)
+{
+    HTMLTableFoot * tfoot = new HTMLTableFoot(args);
+    children.append(tfoot);
+    return tfoot;
+}
+
+HTMLTableHead::HTMLTableHead(const QString & args, int cols_in_row):
+HTMLTable(args, cols_in_row)
+{
+    tag_name = "thead";
+}
+
+HTMLTableBody::HTMLTableBody(const QString & args, int cols_in_row):
+HTMLTable(args, cols_in_row)
+{
+    tag_name = "tbody";
+}
+
+HTMLTableFoot::HTMLTableFoot(const QString & args, int cols_in_row):
+HTMLTable(args, cols_in_row)
+{
+    tag_name = "tfoot";
+}
+
 HTMLTableRow::HTMLTableRow(const QString & args):
 HTMLParentElement(args)
 {

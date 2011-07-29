@@ -27,6 +27,7 @@
 class Warnings;
 class MTTextStream;
 class HTMLTable;
+class HTMLTableCell;
 class HTMLDiv;
 class QPushButton;
 class QCloseEvent;
@@ -185,6 +186,8 @@ private:
     inline QString selectedCustomer() { return QString::number(selected_customer); }
     inline bool isCircuitSelected() { return selected_circuit >= 0; }
     inline QString selectedCircuit() { return QString::number(selected_circuit); }
+    inline bool isCompressorSelected() { return selected_compressor >= 0; }
+    inline QString selectedCompressor() { return QString::number(selected_compressor); }
     inline bool isInspectionSelected() { return !selected_inspection.isEmpty(); }
     inline QString selectedInspection() { return selected_inspection; }
     inline bool isRepairSelected() { return !selected_repair.isEmpty(); }
@@ -208,7 +211,7 @@ private:
     QString viewCustomer(const QString &);
     QString viewCircuit(const QString &, const QString &, int);
     QString viewInspection(const QString &, const QString &, const QString &);
-    QString viewTable(const QString &, const QString &, const QString &, int);
+    QString viewTable(const QString &, const QString &, const QString &, int, const QString & = QString());
     QString viewRepairs(const QString &, int, const QString & = QString());
     QString viewAllInspectors(const QString &);
     QString viewInspector(const QString &);
@@ -225,6 +228,7 @@ private:
     QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
     QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
+    HTMLTableCell * writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     HTMLTable * writeCustomersTable(const QString &, HTMLTable * = NULL);
     HTMLDiv * writeCircuitsTable(const QString &, const QString &, int, HTMLTable * = NULL);
@@ -236,10 +240,12 @@ private:
     HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
     void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
+    HTMLTable * writeInspectionsTable(const QString &, const QString &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
 
     int selected_customer;
     QString selected_customer_company;
     int selected_circuit;
+    int selected_compressor;
     QString selected_inspection;
     bool selected_inspection_is_repair;
     QString selected_repair;

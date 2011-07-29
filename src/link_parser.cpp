@@ -44,6 +44,9 @@ LinkParser::LinkParser()
     circuit_entity->addRoute("assemblyrecord", AssemblyRecord);
     circuit_entity->addRoute("table", TableOfInspections, false);
 
+    LinkEntity * compressor_entity = circuit_entity->addRoute("compressor", Compressor);
+    compressor_entity->addRoute("table", TableOfInspections, false);
+
     inspection_entity->addRoute("assemblyrecord", AssemblyRecord, false);
 }
 

@@ -407,8 +407,8 @@ void VariableRecord::initModifyDialogue(ModifyDialogueWidgets * md)
     }
 }
 
-Table::Table(const QString & id, const QString & uid):
-DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, MTDictionary())
+Table::Table(const QString & id, const QString & uid, const MTDictionary & parents):
+DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
 {}
 
 void Table::initModifyDialogue(ModifyDialogueWidgets * md)
@@ -420,6 +420,9 @@ void Table::initModifyDialogue(ModifyDialogueWidgets * md)
     }
     md->addInputWidget(new MDLineEdit("id", tr("Name:"), md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight the nominal inspection"), md->widget(), attributes.value("highlight_nominal").toInt()));
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
+                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
+                                                   QStringList() << "1" << "2")));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

@@ -134,6 +134,7 @@ MainWindow::MainWindow():
     // ----
     selected_customer = -1;
     selected_circuit = -1;
+    selected_compressor = -1;
     selected_inspection_is_repair = false;
     selected_inspector = -1;
     selected_assembly_record_type = -1;
@@ -484,10 +485,22 @@ void MainWindow::executeLink(const QUrl & url)
     case LinkParser::TableOfInspections:
         navigation->setView(Navigation::TableOfInspections);
         break;
+
+    case LinkParser::Compressor:
+        bool ok = false;
+        selected_compressor = link->idValue("compressor").toInt(&ok);
+        if (!ok) selected_compressor = -1;
+        break;
     }
 
-    if (link->viewAt(3) == LinkParser::AssemblyRecord) {
+    switch (link->viewAt(3)) {
+    case LinkParser::AssemblyRecord:
         navigation->setView(Navigation::AssemblyRecord);
+        break;
+
+    case LinkParser::TableOfInspections:
+        navigation->setView(Navigation::TableOfInspections);
+        break;
     }
 
     qApp->processEvents();
@@ -823,6 +836,7 @@ void MainWindow::clearSelection(bool refresh)
     selected_customer = -1;
     selected_customer_company.clear();
     selected_circuit = -1;
+    selected_compressor = -1;
     selected_inspection.clear();
     selected_inspection_is_repair = false;
     selected_repair.clear();

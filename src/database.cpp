@@ -700,6 +700,7 @@ void MainWindow::removeCustomer()
     repairs.remove();
     selected_customer = -1;
     selected_circuit = -1;
+    selected_compressor = -1;
     selected_inspection.clear();
     selected_repair.clear();
     enableTools();
@@ -713,6 +714,7 @@ void MainWindow::loadCustomer(int customer, bool refresh)
     selected_customer = customer;
     selected_customer_company = Customer(QString::number(customer)).stringValue("company");
     selected_circuit = -1;
+    selected_compressor = -1;
     selected_inspection.clear();
     enableTools();
     if (refresh) {
@@ -796,6 +798,7 @@ void MainWindow::removeCircuit()
     Inspection inspections(selectedCustomer(), selectedCircuit(), "");
     inspections.remove();
     selected_circuit = -1;
+    selected_compressor = -1;
     selected_inspection.clear();
     enableTools();
     this->setWindowModified(true);
@@ -807,6 +810,7 @@ void MainWindow::loadCircuit(int circuit, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (circuit < 0) { return; }
     selected_circuit = circuit;
+    selected_compressor = -1;
     selected_inspection.clear();
     enableTools();
     if (refresh) {
