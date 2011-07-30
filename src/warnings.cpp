@@ -19,17 +19,22 @@
 
 #include "warnings.h"
 #include "global.h"
+#include "variables.h"
 
 #include <QSqlRecord>
 
 using namespace Global;
 
-Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_id, const QString & circuit_id):
-MTSqlQueryResult(db)
+Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_id, const QString & circuit_id, int scope):
+    MTSqlQueryResult(db),
+    enabled_only(enabled_only),
+    m_scope(scope)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
-    this->enabled_only = enabled_only;
-    if (exec("SELECT id, enabled, name, description, delay FROM warnings" + QString(enabled_only ? " WHERE enabled = 1" : ""))
+    QStringList query_where;
+    if (scope > 0) query_where << QString("scope = %1").arg(scope);
+    if (enabled_only) query_where << "enabled = 1";
+    if (exec(QString("SELECT id, enabled, name, description, delay FROM warnings%1").arg(query_where.count() ? (" WHERE " + query_where.join(" AND ")) : ""))
         && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
         MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
         QVariantMap circuit_attributes = circuit.list();
@@ -90,7 +95,7 @@ void Warnings::saveResult()
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    initWarnings(database, result(), 0, -1, enabled_only);
+    initWarnings(database, result(), 0, -1, enabled_only, m_scope);
     QVariantMap row;
     while (query()->next()) {
         if (query()->value(0).toInt() >= 1000) { continue; }
@@ -102,211 +107,213 @@ void Warnings::saveResult()
     }
 }
 
-void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int type, int id, bool enabled_only)
+void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int type, int id, bool enabled_only, int scope)
 {
     QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
-    w = "1000";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", "<", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "3");
-            initFilter(map, w, "refrigerant_amount", "<", "10");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+    if (scope == 0 || (scope & Variable::Inspection)) {
+        w = "1000";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", "<", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "3");
+                initFilter(map, w, "refrigerant_amount", "<", "10");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+            }
         }
-    }
-    w = "1001";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", ">=", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "3");
-            initFilter(map, w, "refrigerant_amount", "<", "10");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
+        w = "1001";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", ">=", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "3");
+                initFilter(map, w, "refrigerant_amount", "<", "10");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
+            }
         }
-    }
-    w = "1002";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", "<", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "10");
-            initFilter(map, w, "refrigerant_amount", "<", "100");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+        w = "1002";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", "<", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "10");
+                initFilter(map, w, "refrigerant_amount", "<", "100");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+            }
         }
-    }
-    w = "1003";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", ">=", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "10");
-            initFilter(map, w, "refrigerant_amount", "<", "100");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+        w = "1003";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", ">=", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "10");
+                initFilter(map, w, "refrigerant_amount", "<", "100");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+            }
         }
-    }
-    w = "1004";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", "<", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "100");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
+        w = "1004";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", "<", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "100");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
+            }
         }
-    }
-    w = "1005";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"), 0, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "commissioning", ">=", "2011.07.04");
-            initFilter(map, w, "refrigerant_amount", ">=", "100");
-        } else if (type == 2) {
-            initCondition(map, w, "nominal", "=", "0");
-            initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+        w = "1005";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"), 0, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "commissioning", ">=", "2011.07.04");
+                initFilter(map, w, "refrigerant_amount", ">=", "100");
+            } else if (type == 2) {
+                initCondition(map, w, "nominal", "=", "0");
+                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+            }
         }
-    }
-    w = "1100";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
-        } else if (type == 2) {
-            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-            initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
-            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
-            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
-            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+        w = "1100";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
+            } else if (type == 2) {
+                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+                initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
+                initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+                initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+            }
         }
-    }
-    w = "1101";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
-        } else if (type == 2) {
-            initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
-            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
-            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
-            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
-            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+        w = "1101";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
+            } else if (type == 2) {
+                initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+                initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
+                initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+                initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+            }
         }
-    }
-    w = "1102";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
-        } else if (type == 2) {
-            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-            initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
-            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
-            initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
-            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+        w = "1102";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
+            } else if (type == 2) {
+                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+                initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
+                initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+                initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+            }
         }
-    }
-    w = "1103";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Condenser fouling"), "", 0, enabled_only);
-        } else if (type == 2) {
-            initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
-            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
-            initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
-            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
-            initCondition(map, w, "t_comp_out", ">", "t_comp_out");
-            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", ">", "abs(t_sec_cond_in-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+        w = "1103";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Condenser fouling"), "", 0, enabled_only);
+            } else if (type == 2) {
+                initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
+                initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
+                initCondition(map, w, "t_comp_out", ">", "t_comp_out");
+                initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", ">", "abs(t_sec_cond_in-p_to_t(p_c))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+            }
         }
-    }
-    w = "1104";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Evaporator fouling"), "", 0, enabled_only);
-        } else if (type == 2) {
-            initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-            initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
-            initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
-            initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
-            initCondition(map, w, "t_comp_out", "<", "t_comp_out");
-            initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-            initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", ">", "abs(t_sec_evap_in-p_to_t(p_0))");
+        w = "1104";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Evaporator fouling"), "", 0, enabled_only);
+            } else if (type == 2) {
+                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
+                initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
+                initCondition(map, w, "t_comp_out", "<", "t_comp_out");
+                initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", ">", "abs(t_sec_evap_in-p_to_t(p_0))");
+            }
         }
-    }
-    w = "1200";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("3 - 30 kg"), 365, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "hermetic", "=", "0");
-            initFilter(map, w, "refrigerant_amount", ">=", "3");
-            initFilter(map, w, "refrigerant_amount", "<", "30");
+        w = "1200";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("3 - 30 kg"), 365, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "hermetic", "=", "0");
+                initFilter(map, w, "refrigerant_amount", ">=", "3");
+                initFilter(map, w, "refrigerant_amount", "<", "30");
+            }
         }
-    }
-    w = "1202";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("6 - 30 kg, hermetically sealed"), 365, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "hermetic", "=", "1");
-            initFilter(map, w, "refrigerant_amount", ">=", "6");
-            initFilter(map, w, "refrigerant_amount", "<", "30");
+        w = "1202";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("6 - 30 kg, hermetically sealed"), 365, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "hermetic", "=", "1");
+                initFilter(map, w, "refrigerant_amount", ">=", "6");
+                initFilter(map, w, "refrigerant_amount", "<", "30");
+            }
         }
-    }
-    w = "1204";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg"), 182, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "leak_detector", "=", "0");
-            initFilter(map, w, "refrigerant_amount", ">=", "30");
-            initFilter(map, w, "refrigerant_amount", "<", "300");
+        w = "1204";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg"), 182, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "leak_detector", "=", "0");
+                initFilter(map, w, "refrigerant_amount", ">=", "30");
+                initFilter(map, w, "refrigerant_amount", "<", "300");
+            }
         }
-    }
-    w = "1205";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg, leakage detector installed"), 365, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "leak_detector", "=", "1");
-            initFilter(map, w, "refrigerant_amount", ">=", "30");
-            initFilter(map, w, "refrigerant_amount", "<", "300");
+        w = "1205";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg, leakage detector installed"), 365, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "leak_detector", "=", "1");
+                initFilter(map, w, "refrigerant_amount", ">=", "30");
+                initFilter(map, w, "refrigerant_amount", "<", "300");
+            }
         }
-    }
-    w = "1206";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg"), 91, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "leak_detector", "=", "0");
-            initFilter(map, w, "refrigerant_amount", ">=", "300");
+        w = "1206";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg"), 91, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "leak_detector", "=", "0");
+                initFilter(map, w, "refrigerant_amount", ">=", "300");
+            }
         }
-    }
-    w = "1207";
-    if (id < 0 || id == w.toInt()) {
-        if (type == 0) {
-            initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg, leakage detector installed"), 182, enabled_only);
-        } else if (type == 1) {
-            initFilter(map, w, "leak_detector", "=", "1");
-            initFilter(map, w, "refrigerant_amount", ">=", "300");
+        w = "1207";
+        if (id < 0 || id == w.toInt()) {
+            if (type == 0) {
+                initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg, leakage detector installed"), 182, enabled_only);
+            } else if (type == 1) {
+                initFilter(map, w, "leak_detector", "=", "1");
+                initFilter(map, w, "refrigerant_amount", ">=", "300");
+            }
         }
     }
 }
@@ -375,7 +382,7 @@ MTSqlQueryResult(db)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
     this->id = id;
-    prepare("SELECT id, enabled, name, description, delay FROM warnings WHERE id = :id");
+    prepare("SELECT id, enabled, name, description, delay, scope FROM warnings WHERE id = :id");
     bindValue(":id", id);
     exec();
 }

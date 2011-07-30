@@ -27,7 +27,7 @@ class Warnings : public MTSqlQueryResult
     Q_OBJECT
 
 public:
-    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QString & = QString(), const QString & = QString());
+    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QString & = QString(), const QString & = QString(), int = 0);
 
     int warningConditionValueInsCount(int);
     MTDictionary warningConditionValueIns(int, int);
@@ -36,7 +36,7 @@ public:
     int warningConditionFunctionCount(int);
     QString warningConditionFunction(int, int);
 
-    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false);
+    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false, int = 0);
 
     static int circuitInspectionInterval(double, bool, bool, int = 0);
 
@@ -49,6 +49,7 @@ protected:
 
     QSqlDatabase database;
     bool enabled_only;
+    int m_scope;
     QMap<int, QList<MTDictionary> > conditions_value_ins;
     QMap<int, QList<MTDictionary> > conditions_value_nom;
     QMap<int, QList<QString> > conditions_functions;

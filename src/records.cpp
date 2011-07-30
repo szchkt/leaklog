@@ -28,6 +28,7 @@
 #include <QSqlRecord>
 #include <QApplication>
 #include <QMessageBox>
+#include <QDebug>
 
 using namespace Global;
 
@@ -635,11 +636,15 @@ void WarningRecord::initModifyDialogue(ModifyDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString(), 0, "", enable_all));
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md->widget(), 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
+                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
+                                                   QStringList() << "1" << "2")));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
+    qDebug() << attributes.value("scope").toString();
 }
 
 AssemblyRecordType::AssemblyRecordType(const QString & id):

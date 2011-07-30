@@ -977,7 +977,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 
 //*** Warnings ***
     if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
-        Warnings warnings(db, true, customer_id, circuit_id);
+        Warnings warnings(db, true, customer_id, circuit_id, table.value("scope").toInt());
         QString warnings_html, inspection_date;
         QStringList last_warnings_list, warnings_list, backup_warnings;
         for (int i = 0; i < inspections.count(); ++i) {
