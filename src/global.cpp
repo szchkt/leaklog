@@ -557,7 +557,11 @@ public:
         dict.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
         dict.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
         dict.insert("bbl_lvl", QApplication::translate("VariableNames", "Bubble/Level"));
-        dict.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil leak"));
+        dict.insert("oil_leak", QApplication::translate("VariableNames", "Oil leak"));
+        dict.insert("oil_leak_am", QApplication::translate("VariableNames", "Oil addition"));
+        dict.insert("oil_shortage", QApplication::translate("VariableNames", "Oil shortage"));
+        dict.insert("noise_vibr_comp", QApplication::translate("VariableNames", "Noise/Vibr"));
+        dict.insert("comp_runtime", QApplication::translate("VariableNames", "Compressor run-time"));
         dict.insert("dir_leak_chk", QApplication::translate("VariableNames", "Direct leak check (location)"));
         dict.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
         dict.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
@@ -614,7 +618,11 @@ public:
         dict.insert("corr_def", "bool");
         dict.insert("noise_vibr", "bool");
         dict.insert("bbl_lvl", "bool");
+        dict.insert("oil_leak", "bool");
         dict.insert("oil_leak_am", "float");
+        dict.insert("oil_shortage", "bool");
+        dict.insert("noise_vibr_comp", "bool");
+        dict.insert("comp_runtime", "float");
         dict.insert("el_detect", "bool");
         dict.insert("uv_detect", "bool");
         dict.insert("bbl_detect", "bool");

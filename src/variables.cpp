@@ -125,22 +125,22 @@ void Variables::initVariables()
     initSubvariable("t_sec", Variable::Inspection, "mintcream", "t_sec_evap_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
     initSubvariable("t_sec", Variable::Inspection, "mintcream", "t_sec_cond_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
 
-    initVariable("p_0", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
+    initVariable("p_0", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
     initVariable("t_0", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
     initVariable("delta_t_evap", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
     initVariable("t_evap_out", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
-    initVariable("t_comp_in", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
+    initVariable("t_comp_in", Variable::Compressor, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
     initVariable("t_sh", Variable::Inspection, "aliceblue");
     initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
     initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_comp", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
 
-    initVariable("p_c", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
+    initVariable("p_c", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
     initVariable("t_c", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");
     initVariable("delta_t_c", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_cond_in-p_to_t(p_c))", true, 0.0, "floralwhite");
     initVariable("t_ev", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
     initVariable("t_sc", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)-t_ev", true, 0.0, "floralwhite");
-    initVariable("t_comp_out", Variable::Inspection | Variable::Compressor, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
+    initVariable("t_comp_out", Variable::Compressor, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "floralwhite");
     initVariable("ep_comp", Variable::Compressor, QApplication::translate("Units", "kW"), "", true, 0.0, "");
 
     initVariable("ec", Variable::Compressor, "");
@@ -167,7 +167,11 @@ void Variables::initVariables()
     initSubvariable("vis_aur_chk", Variable::Inspection, "", "corr_def", "", "", false, 0.0);
     initSubvariable("vis_aur_chk", Variable::Inspection, "", "noise_vibr", "", "", false, 0.0);
     initSubvariable("vis_aur_chk", Variable::Inspection, "", "bbl_lvl", "", "", false, 0.0);
-    initSubvariable("vis_aur_chk", Variable::Inspection, "", "oil_leak_am", QApplication::translate("Units", "kg"), "", false, 0.0);
+    initSubvariable("vis_aur_chk", Variable::Inspection, "", "oil_leak", "", "", false, 0.0);
+
+    initVariable("oil_shortage", Variable::Compressor, "", "", false, 0.0, "");
+    initVariable("noise_vibr_comp", Variable::Compressor, "", "", false, 0.0, "");
+    initVariable("comp_runtime", Variable::Compressor, QApplication::translate("Units", "hours"), "", false, 0.0, "");
 
     initVariable("dir_leak_chk", Variable::Inspection, "green");
     initSubvariable("dir_leak_chk", Variable::Inspection, "green", "el_detect", "", "", false, 0.0);
@@ -177,6 +181,8 @@ void Variables::initVariables()
     initVariable("refr_add_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
     initVariable("refr_reco", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
     initVariable("refr_add_per", Variable::Inspection, QApplication::translate("Units", "%"), "(1-nominal)*100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+
+    initVariable("oil_leak_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "");
 
     initVariable("inspector", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("operator", Variable::Inspection, "", "", false, 0.0, "");
