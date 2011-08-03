@@ -908,7 +908,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         if (compressor_id.isEmpty())
             cell = compressors_table_row->addHeaderCell();
         else
-            cell = compressors_table_row->addCell();
+            cell = compressors_table_row->addCell("style=\"text-align: center;\"");
         *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id + "/compressor:-1/table"))
                 << tr("All compressors");
 
@@ -919,7 +919,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             if (compressor_id == compressors.at(i).value("id").toString())
                 cell = compressors_table_row->addHeaderCell();
             else
-                cell = compressors_table_row->addCell();
+                cell = compressors_table_row->addCell("style=\"text-align: center;\"");
             *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id  + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
                     << compressors.at(i).value("name").toString();
         }
