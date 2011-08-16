@@ -25,11 +25,11 @@
 
 using namespace Global;
 
-VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id, int vars_scope)
+VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id, int vars_scope):
+    customer_id(customer_id),
+    circuit_id(circuit_id),
+    vars_scope(vars_scope)
 {
-    this->customer_id = customer_id;
-    this->circuit_id = circuit_id;
-    this->vars_scope = vars_scope;
     init();
 }
 
@@ -38,46 +38,40 @@ VariableEvaluation::EvaluationContext::~EvaluationContext()
     QMapIterator<QString, VariableEvaluation::Variable *> i(vars_map);
     while (i.hasNext()) {
         i.next();
-        delete vars_map.take(i.key());
+        delete i.value();
     }
 }
 
 void VariableEvaluation::EvaluationContext::init()
 {
     Variables vars(QSqlDatabase(), vars_scope);
-    QString last_id;
-    VariableEvaluation::Variable * parent_var = NULL, * var;
+    VariableEvaluation::Variable * parent_var, * var;
 
     while (vars.next()) {
-        if (vars.value("VAR_ID").toString() != last_id) {
+        var = vars_map.value(vars.id(), NULL);
+        if (!var) {
             var = new VariableEvaluation::Variable;
-            parent_var = var;
-            var->setId(vars.value("VAR_ID").toString());
-            var->setName(vars.value("VAR_NAME").toString());
-            var->setType(vars.value("VAR_TYPE").toString());
-            var->setUnit(vars.value("VAR_UNIT").toString());
-            var->setValue(vars.value("VAR_VALUE").toString());
-            var->setCompareNom(vars.value("VAR_COMPARE_NOM").toInt());
-            var->setColBg(vars.value("VAR_COL_BG").toString());
-            var->setTolerance(vars.value("VAR_TOLERANCE").toDouble());
-
-            last_id = vars.value("VAR_ID").toString();
-            vars_map.insert(var->id(), var);
+            vars_map.insert(vars.id(), var);
             vars_list.append(var);
         }
-        if (!vars.value("SUBVAR_ID").toString().isEmpty()) {
-            var = new VariableEvaluation::Variable;
 
-            var->setId(vars.value("SUBVAR_ID").toString());
-            var->setName(vars.value("SUBVAR_NAME").toString());
-            var->setType(vars.value("SUBVAR_TYPE").toString());
-            var->setUnit(vars.value("SUBVAR_UNIT").toString());
-            var->setValue(vars.value("SUBVAR_VALUE").toString());
-            var->setCompareNom(vars.value("SUBVAR_COMPARE_NOM").toInt());
-            var->setTolerance(vars.value("SUBVAR_TOLERANCE").toDouble());
+        var->setId(vars.id());
+        var->setName(vars.name());
+        var->setType(vars.type());
+        var->setUnit(vars.unit());
+        var->setValue(vars.valueExpression());
+        var->setCompareNom(vars.compareNom());
+        var->setColBg(vars.colBg());
+        var->setTolerance(vars.tolerance());
+
+        if (!vars.parentID().isEmpty()) {
+            parent_var = vars_map.value(vars.parentID(), NULL);
+            if (!parent_var) {
+                parent_var = new VariableEvaluation::Variable;
+                vars_map.insert(vars.parentID(), parent_var);
+            }
 
             parent_var->addSubvariable(var);
-            vars_map.insert(var->id(), var);
         }
     }
 

@@ -97,7 +97,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).value("VAR_SCOPE").toInt() & Variable::Compressor))
+                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
                         addColumn(variableNames().key(v) + " " + type, "inspections_compressors", database);
                 }
             }
@@ -115,7 +115,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).value("VAR_SCOPE").toInt() & Variable::Compressor))
+                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
                         all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
             }
@@ -160,6 +160,29 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
     if (v < 0.908) {
+        QSqlQuery subvariables(*database);
+        subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
+        while (subvariables.next()) {
+            query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
+                          "VALUES (:parent_id, :id, :name, :type, :unit, :scope, :value, :compare_nom, :tolerance, :date_updated, :updated_by)");
+            query.bindValue(":parent_id", subvariables.value(0));
+            query.bindValue(":id", subvariables.value(1));
+            query.bindValue(":name", subvariables.value(2));
+            query.bindValue(":type", subvariables.value(3));
+            query.bindValue(":unit", subvariables.value(4));
+            query.bindValue(":scope", Variable::Inspection);
+            query.bindValue(":value", subvariables.value(5));
+            query.bindValue(":compare_nom", subvariables.value(6));
+            query.bindValue(":tolerance", subvariables.value(7));
+            query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+            query.bindValue(":updated_by", currentUser());
+            query.exec();
+            query.prepare("UPDATE variables SET type = 'group', date_updated = :date_updated, updated_by = :updated_by WHERE id = :id");
+            query.bindValue(":id", subvariables.value(0));
+            query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+            query.bindValue(":updated_by", currentUser());
+            query.exec();
+        }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
     }
@@ -186,7 +209,6 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("CREATE UNIQUE INDEX index_repairs_id ON repairs (date ASC)");
         query.exec("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_subvariables_id ON subvariables (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)");
         query.exec("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)");
         query.exec("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)");
@@ -427,31 +449,15 @@ void MainWindow::openDatabase(QString path)
         return;
     }
     initTables(false);
+    loadVariables(trw_variables);
+
     QSqlQuery query;
-    Variables variables;
-    QString last_id; QTreeWidgetItem * last_item = NULL;
-    while (variables.next()) {
-        if (variables.value("VAR_ID").toString() != last_id) {
-            last_item = new QTreeWidgetItem(trw_variables);
-            last_item->setText(0, variables.value("VAR_NAME").toString());
-            last_item->setText(1, variables.value("VAR_ID").toString());
-            last_item->setText(2, variables.value("VAR_UNIT").toString());
-            last_item->setText(3, variables.value("VAR_TOLERANCE").toString());
-            last_id = variables.value("VAR_ID").toString();
-        }
-        if (!variables.value("SUBVAR_ID").toString().isEmpty() && last_item) {
-            QTreeWidgetItem * subitem = new QTreeWidgetItem(last_item);
-            subitem->setText(0, variables.value("SUBVAR_NAME").toString());
-            subitem->setText(1, variables.value("SUBVAR_ID").toString());
-            subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, variables.value("SUBVAR_TOLERANCE").toString());
-        }
-    }
     query.exec("SELECT id FROM tables");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
         navigation->tableComboBox()->addItem(query.value(0).toString());
     }
+
     Warnings warnings;
     while (warnings.next()) {
         QListWidgetItem * item = new QListWidgetItem;
@@ -459,14 +465,15 @@ void MainWindow::openDatabase(QString path)
         item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
     }
-    Style styles_record;
-    ListOfVariantMaps styles = styles_record.listAll("id, name");
+
+    ListOfVariantMaps styles = Style().listAll("id, name");
     for (int i = 0; i < styles.count(); ++i) {
         QListWidgetItem * item = new QListWidgetItem;
         item->setText(styles.at(i).value("name").toString());
         item->setData(Qt::UserRole, styles.at(i).value("id"));
         lw_styles->addItem(item);
     }
+
     updateLockButton();
 #ifdef Q_WS_MAC
     this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
@@ -479,6 +486,7 @@ void MainWindow::openDatabase(QString path)
     enableTools();
     //loadTable(cb_table_edit->currentText());
     navigation->setView(Navigation::ServiceCompany);
+
     query.exec("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next())
         QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
@@ -499,6 +507,7 @@ void MainWindow::saveDatabase(bool compact)
     QStringList errors;
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
+    setDBInfoValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     db.commit();
     if (compact) {
         QSqlQuery query;
@@ -982,6 +991,36 @@ void MainWindow::loadRepair(const QString & date, bool refresh)
     }
 }
 
+void MainWindow::loadVariables(QTreeWidget * trw, QSqlDatabase database)
+{
+    Variables variables(database);
+    QMap<QString, QTreeWidgetItem *> variable_items;
+    while (variables.next()) {
+        QTreeWidgetItem * item = variable_items.value(variables.id(), NULL);
+        if (!item) {
+            if (variables.parentID().isEmpty())
+                item = new QTreeWidgetItem(trw);
+            else
+                item = new QTreeWidgetItem;
+            variable_items.insert(variables.id(), item);
+        }
+
+        if (!variables.parentID().isEmpty()) {
+            QTreeWidgetItem * parent_item = variable_items.value(variables.parentID(), NULL);
+            if (!parent_item) {
+                parent_item = new QTreeWidgetItem(trw);
+                variable_items.insert(variables.parentID(), parent_item);
+            }
+            parent_item->addChild(item);
+        }
+
+        item->setText(0, variables.name());
+        item->setText(1, variables.id());
+        item->setText(2, variables.unit());
+        item->setText(3, variables.value(Variable::Tolerance).toString());
+    }
+}
+
 void MainWindow::addVariable() { addVariable(false); }
 
 void MainWindow::addSubvariable() { addVariable(true); }
@@ -990,18 +1029,22 @@ void MainWindow::addVariable(bool subvar)
 {
     if (!db.isOpen()) { return; }
     if (!isOperationPermitted("add_variable")) { return; }
-    QString parent;
+    QString parent_id;
     if (subvar) {
-        if (trw_variables->currentItem()->parent() != NULL) { return; }
-        parent = trw_variables->currentItem()->text(1);
+        if (trw_variables->currentItem()->parent() != NULL)
+            return;
+        parent_id = trw_variables->currentItem()->text(1);
     }
-    VariableRecord record((VariableRecord::Type)subvar, parent);
+    VariableRecord record("", parent_id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, unit, tolerance");
+        QVariantMap attributes = record.list("name, unit, scope, tolerance");
         QTreeWidgetItem * item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
+            QVariantMap set;
+            set.insert("type", "group");
+            VariableRecord(parent_id).update(set);
         } else {
             item = new QTreeWidgetItem(trw_variables);
         }
@@ -1009,7 +1052,12 @@ void MainWindow::addVariable(bool subvar)
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, attributes.value("tolerance").toString());
-        addColumn(record.id(), "inspections", &db);
+
+        int scope = attributes.value("scope").toInt();
+        if (scope & Variable::Inspection)
+            addColumn(record.id(), "inspections", &db);
+        if (scope & Variable::Compressor)
+            addColumn(record.id(), "inspections_compressors", &db);
         parsed_expressions.clear();
         this->setWindowModified(true);
         refreshView();
@@ -1022,29 +1070,32 @@ void MainWindow::modifyVariable()
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_variable")) { return; }
+
     QTreeWidgetItem * item = trw_variables->currentItem();
-    bool subvar = item->parent() != NULL;
-    QString parent;
-    if (subvar) { parent = item->parent()->text(1); }
     QString id = item->text(1);
-    VariableRecord record((VariableRecord::Type)subvar, subvar ? parent : id, subvar ? id : "");
+    VariableRecord record(id);
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, unit, tolerance");
+        QVariantMap attributes = record.list("name, unit, scope, tolerance");
         item->setText(0, attributes.value("name").toString());
         item->setText(1, record.id());
         item->setText(2, attributes.value("unit").toString());
         item->setText(3, attributes.value("tolerance").toString());
+
         if (id != record.id()) {
-            renameColumn(id, record.id(), "inspections", &db);
+            int scope = attributes.value("scope").toInt();
+            if (scope & Variable::Inspection)
+                renameColumn(id, record.id(), "inspections", &db);
+            if (scope & Variable::Compressor)
+                renameColumn(id, record.id(), "inspections_compressors", &db);
+
             parsed_expressions.clear();
-            if (!subvar) {
-                QSqlQuery update_subvariables;
-                update_subvariables.prepare("UPDATE subvariables SET parent = :new_id WHERE parent = :old_id");
-                update_subvariables.bindValue(":old_id", id);
-                update_subvariables.bindValue(":new_id", record.id());
-                update_subvariables.exec();
-            }
+
+            QSqlQuery update_subvariables;
+            update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
+            update_subvariables.bindValue(":old_id", id);
+            update_subvariables.bindValue(":new_id", record.id());
+            update_subvariables.exec();
         }
         this->setWindowModified(true);
         refreshView();
@@ -1064,16 +1115,12 @@ void MainWindow::removeVariable()
     bool ok;
     QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(id), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
-    MTDictionary parents;
-    if (subvar) { parents.insert("parent", item->parent()->text(1)); }
-    else {
-        MTRecord subvars("subvariables", "id", "", MTDictionary("parent", id));
-        subvars.remove();
-    }
-    MTRecord record(subvar ? "subvariables" : "variables", "id", id, parents);
-    record.remove();
-    if (item != NULL) { delete item; }
+
+    MTRecord("variables", "id", "", MTDictionary("parent_id", id)).remove();
+    MTRecord("variables", "id", id, MTDictionary()).remove();
+    delete item;
     dropColumn(id, "inspections", &db);
+    dropColumn(id, "inspections_compressors", &db);
     parsed_expressions.clear();
     enableTools();
     this->setWindowModified(true);
@@ -1149,7 +1196,7 @@ void MainWindow::loadTable(const QString &)
     for (int i = 0; i < variables.count(); ++i) {
         Variable variable(variables.at(i));
         QTreeWidgetItem * item = new QTreeWidgetItem(trw_table_variables);
-        if (variable.next()) { item->setText(0, variable.value("VAR_NAME").toString()); }
+        if (variable.next()) { item->setText(0, variable.name()); }
         item->setText(1, variables.at(i));
         QComboBox * cb_foot = new QComboBox;
         cb_foot->addItem(tr("None"));
@@ -1216,13 +1263,13 @@ void MainWindow::addTableVariable()
             QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         vl->addWidget(bb);
-    Variable query;
+    Variable variable;
     QString id, name; QStringList ids;
-    while (query.next()) {
-        id = query.value("VAR_ID").toString();
+    while (variable.next()) {
+        id = variable.id();
         if (ids.contains(id)) { continue; }
         ids << id;
-        name = query.value("VAR_NAME").toString();
+        name = variable.name();
         if (!used_ids.contains(id)) {
             QListWidgetItem * item = new QListWidgetItem;
             item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
@@ -1492,7 +1539,6 @@ void MainWindow::exportData(const QString & type)
         initDatabase(&data);
         data.transaction();
         copyTable("variables", &db, &data);
-        copyTable("subvariables", &db, &data);
         copyTable("tables", &db, &data);
         copyTable("customers", &db, &data, QString("id = %1").arg(selectedCustomer()));
         if (type == "customer") {
@@ -1532,6 +1578,7 @@ void MainWindow::importData()
     QVariantMap attributes;
     QVariant attribute;
     bool modified, attribute_modified;
+
     // Customers
     query.exec("SELECT * FROM customers ORDER BY id");
     while (query.next()) {
@@ -1573,6 +1620,7 @@ void MainWindow::importData()
             item->setData(0, Qt::UserRole, QUERY("id"));
         }
     }
+
     // Circuits
     QSet<int> shown_sections;
     shown_sections << 0 << 1 << 2;
@@ -1625,107 +1673,115 @@ void MainWindow::importData()
         if (!shown_sections.contains(i))
             id->modifiedCircuits()->header()->hideSection(i);
     }
+
     // Variables
     MTDictionary variable_names;
     variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
     variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));
     Variables variables(data);
-    QString last_id; QTreeWidgetItem * last_item = NULL;
+    QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        if (variables.value("VAR_ID").toString() != last_id) {
-            if (variables.value("VAR_VALUE").toString().isEmpty())
-                variable_names.insert(variables.value("VAR_ID").toString(), variables.value("VAR_NAME").toString());
-            last_item = new QTreeWidgetItem(id->variables());
-            last_item->setText(0, variables.value("VAR_NAME").toString());
-            last_item->setText(1, variables.value("VAR_ID").toString());
-            last_item->setText(2, variables.value("VAR_UNIT").toString());
-            last_item->setText(3, variableTypes().value(variables.value("VAR_TYPE").toString()));
-            last_item->setText(4, variables.value("VAR_VALUE").toString());
-            last_item->setText(5, variables.value("VAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
-            last_item->setText(6, variables.value("VAR_TOLERANCE").toString());
-            last_item->setText(7, variables.value("VAR_COL_BG").toString());
-            Variable variable(variables.value("VAR_ID").toString());
-            bool found = false, overwrite = false;
-            if (variable.next()) {
-                found = true;
-                if (variable.value("VAR_NAME").toString() != variables.value("VAR_NAME").toString()) { overwrite = true; last_item->setBackground(0, QBrush(Qt::darkMagenta)); last_item->setForeground(0, QBrush(Qt::white)); }
-                if (variable.value("VAR_UNIT").toString() != variables.value("VAR_UNIT").toString()) { overwrite = true; last_item->setBackground(2, QBrush(Qt::darkMagenta)); last_item->setForeground(2, QBrush(Qt::white)); }
-                if (variable.value("VAR_TYPE").toString() != variables.value("VAR_TYPE").toString()) { overwrite = true; last_item->setBackground(3, QBrush(Qt::darkMagenta)); last_item->setForeground(3, QBrush(Qt::white)); }
-                if (variable.value("VAR_VALUE").toString() != variables.value("VAR_VALUE").toString()) { overwrite = true; last_item->setBackground(4, QBrush(Qt::darkMagenta)); last_item->setForeground(4, QBrush(Qt::white)); }
-                if ((variable.value("VAR_COMPARE_NOM").toInt() > 0) != (variables.value("VAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; last_item->setBackground(5, QBrush(Qt::darkMagenta)); last_item->setForeground(5, QBrush(Qt::white)); }
-                if (variable.value("VAR_TOLERANCE").toString() != variables.value("VAR_TOLERANCE").toString()) { overwrite = true; last_item->setBackground(6, QBrush(Qt::darkMagenta)); last_item->setForeground(6, QBrush(Qt::white)); }
-                if (variable.value("VAR_COL_BG").toString() != variables.value("VAR_COL_BG").toString()) { overwrite = true; last_item->setBackground(7, QBrush(Qt::darkMagenta)); last_item->setForeground(7, QBrush(Qt::white)); }
-            }
-            QComboBox * cb_action = new QComboBox;
-            if (!found) {
-                cb_action->addItem(tr("Import"));
-                last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
-            } else {
-                cb_action->addItem(tr("Use existing and import"));
-                if (overwrite) {
-                    cb_action->addItem(tr("Overwrite and import"));
-                    last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found_diff16.png")));
-                } else {
-                    last_item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
-                }
-            }
-            if (!variableNames().contains(variables.value("VAR_ID").toString())) {
-                cb_action->insertItem(0, tr("Do not import"));
-                cb_action->setCurrentIndex(1);
-            } else {
-                cb_action->setCurrentIndex(0);
-            }
-            id->variables()->setItemWidget(last_item, 8, cb_action);
-            last_id = variables.value("VAR_ID").toString();
+        QTreeWidgetItem * item = variable_items.value(variables.id(), NULL);
+        if (!item) {
+            if (variables.parentID().isEmpty())
+                item = new QTreeWidgetItem(id->variables());
+            else
+                item = new QTreeWidgetItem;
+            variable_items.insert(variables.id(), item);
         }
-        if (!variables.value("SUBVAR_ID").toString().isEmpty() && last_item) {
-            if (variables.value("SUBVAR_VALUE").toString().isEmpty()) {
-                variable_names.remove(variables.value("VAR_ID").toString());
-                variable_names.insert(variables.value("SUBVAR_ID").toString(), tr("%1: %2").arg(variables.value("VAR_NAME").toString()).arg(variables.value("SUBVAR_NAME").toString()));
+
+        if (!variables.parentID().isEmpty()) {
+            QTreeWidgetItem * parent_item = variable_items.value(variables.parentID(), NULL);
+            if (!parent_item) {
+                parent_item = new QTreeWidgetItem(id->variables());
+                variable_items.insert(variables.parentID(), parent_item);
             }
-            QTreeWidgetItem * subitem = new QTreeWidgetItem(last_item);
-            subitem->setText(0, variables.value("SUBVAR_NAME").toString());
-            subitem->setText(1, variables.value("SUBVAR_ID").toString());
-            subitem->setText(2, variables.value("SUBVAR_UNIT").toString());
-            subitem->setText(3, variableTypes().value(variables.value("SUBVAR_TYPE").toString()));
-            subitem->setText(4, variables.value("SUBVAR_VALUE").toString());
-            subitem->setText(5, variables.value("SUBVAR_COMPARE_NOM").toInt() ? tr("Yes") : tr("No"));
-            subitem->setText(6, variables.value("SUBVAR_TOLERANCE").toString());
-            Subvariable variable(variables.value("VAR_ID").toString(), variables.value("SUBVAR_ID").toString());
-            bool found = false, overwrite = false;
-            if (variable.next()) {
-                found = true;
-                if (variable.value("SUBVAR_NAME").toString() != variables.value("SUBVAR_NAME").toString()) { overwrite = true; subitem->setBackground(0, QBrush(Qt::darkMagenta)); subitem->setForeground(0, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_UNIT").toString() != variables.value("SUBVAR_UNIT").toString()) { overwrite = true; subitem->setBackground(2, QBrush(Qt::darkMagenta)); subitem->setForeground(2, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_TYPE").toString() != variables.value("SUBVAR_TYPE").toString()) { overwrite = true; subitem->setBackground(3, QBrush(Qt::darkMagenta)); subitem->setForeground(3, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_VALUE").toString() != variables.value("SUBVAR_VALUE").toString()) { overwrite = true; subitem->setBackground(4, QBrush(Qt::darkMagenta)); subitem->setForeground(4, QBrush(Qt::white)); }
-                if ((variable.value("SUBVAR_COMPARE_NOM").toInt() > 0) != (variables.value("SUBVAR_COMPARE_NOM").toInt() > 0)) { overwrite = true; subitem->setBackground(5, QBrush(Qt::darkMagenta)); subitem->setForeground(5, QBrush(Qt::white)); }
-                if (variable.value("SUBVAR_TOLERANCE").toString() != variables.value("SUBVAR_TOLERANCE").toString()) { overwrite = true; subitem->setBackground(6, QBrush(Qt::darkMagenta)); subitem->setForeground(6, QBrush(Qt::white)); }
-                if (variable.value("VAR_ID").toString() != variables.value("VAR_ID").toString()) { overwrite = true; last_item->setBackground(1, QBrush(Qt::darkMagenta)); subitem->setForeground(1, QBrush(Qt::white)); }
+            parent_item->addChild(item);
+            parent_item->setExpanded(true);
+
+            if (variables.valueExpression().isEmpty()) {
+                variable_names.remove(variables.parentID());
+                variable_names.insert(variables.id(),
+                                      tr("%1: %2")
+                                      .arg(variables.parentVariable().name())
+                                      .arg(variables.name()));
             }
-            QComboBox * cb_action = new QComboBox;
-            if (!found) {
-                cb_action->addItem(tr("Import"));
-                subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
-            } else {
-                cb_action->addItem(tr("Use existing and import"));
-                if (overwrite) {
-                    cb_action->addItem(tr("Overwrite and import"));
-                    subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found_diff16.png")));
-                } else {
-                    subitem->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
-                }
-            }
-            if (!variableNames().contains(variables.value("SUBVAR_ID").toString())) {
-                cb_action->insertItem(0, tr("Do not import"));
-                cb_action->setCurrentIndex(1);
-            } else {
-                cb_action->setCurrentIndex(0);
-            }
-            id->variables()->setItemWidget(subitem, 8, cb_action);
-            last_item->setExpanded(true);
         }
+
+        if (variables.valueExpression().isEmpty())
+            variable_names.insert(variables.id(), variables.name());
+
+        item->setText(0, variables.name());
+        item->setText(1, variables.id());
+        item->setText(2, variables.unit());
+        item->setText(3, variableTypes().value(variables.type()));
+        item->setText(4, variables.valueExpression());
+        item->setText(5, variables.compareNom() ? tr("Yes") : tr("No"));
+        item->setText(6, variables.value(Variable::Tolerance).toString());
+        item->setText(7, variables.colBg());
+
+        Variable variable(variables.id());
+        bool found = false, overwrite = false;
+        if (variable.next()) {
+            found = true;
+            if (variable.name() != variables.name()) {
+                overwrite = true;
+                item->setBackground(0, QBrush(Qt::darkMagenta));
+                item->setForeground(0, QBrush(Qt::white));
+            }
+            if (variable.unit() != variables.unit()) {
+                overwrite = true;
+                item->setBackground(2, QBrush(Qt::darkMagenta));
+                item->setForeground(2, QBrush(Qt::white));
+            }
+            if (variable.type() != variables.type()) {
+                overwrite = true;
+                item->setBackground(3, QBrush(Qt::darkMagenta));
+                item->setForeground(3, QBrush(Qt::white));
+            }
+            if (variable.valueExpression() != variables.valueExpression()) {
+                overwrite = true;
+                item->setBackground(4, QBrush(Qt::darkMagenta));
+                item->setForeground(4, QBrush(Qt::white));
+            }
+            if ((variable.compareNom() > 0) != (variables.compareNom() > 0)) {
+                overwrite = true;
+                item->setBackground(5, QBrush(Qt::darkMagenta));
+                item->setForeground(5, QBrush(Qt::white));
+            }
+            if (variable.tolerance() != variables.tolerance()) {
+                overwrite = true;
+                item->setBackground(6, QBrush(Qt::darkMagenta));
+                item->setForeground(6, QBrush(Qt::white));
+            }
+            if (variable.colBg() != variables.colBg()) {
+                overwrite = true;
+                item->setBackground(7, QBrush(Qt::darkMagenta));
+                item->setForeground(7, QBrush(Qt::white));
+            }
+        }
+        QComboBox * cb_action = new QComboBox;
+        if (!found) {
+            cb_action->addItem(tr("Import"));
+            item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
+        } else {
+            cb_action->addItem(tr("Use existing and import"));
+            if (overwrite) {
+                cb_action->addItem(tr("Overwrite and import"));
+                item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found_diff16.png")));
+            } else {
+                item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_found16.png")));
+            }
+        }
+        if (!variableNames().contains(variables.id())) {
+            cb_action->insertItem(0, tr("Do not import"));
+            cb_action->setCurrentIndex(1);
+        } else {
+            cb_action->setCurrentIndex(0);
+        }
+        id->variables()->setItemWidget(item, 8, cb_action);
     }
+
     // Inspections
     bool record_locked;
     QTreeWidget * trw[] = { id->newInspections(), id->modifiedInspections() };
@@ -1795,6 +1851,7 @@ void MainWindow::importData()
         if (!shown_sections.contains(i))
             id->modifiedInspections()->header()->hideSection(i);
     }
+
     // Repairs
     query.exec("SELECT * FROM repairs ORDER BY date");
     while (query.next()) {
@@ -1842,6 +1899,7 @@ void MainWindow::importData()
             }
         }
     }
+
     // Refrigerant management
     query.exec("SELECT * FROM refrigerant_management ORDER BY date");
     while (query.next()) {
@@ -1889,6 +1947,7 @@ void MainWindow::importData()
             }
         }
     }
+
     // Inspectors
     query.exec("SELECT * FROM inspectors ORDER BY person");
     while (query.next()) {
@@ -1930,6 +1989,7 @@ void MainWindow::importData()
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
         QVariantMap set;
         QSet<QString> fields;
+
         // Import customers
         trw[0] = id->newCustomers();
         trw[1] = id->modifiedCustomers();
@@ -1951,6 +2011,7 @@ void MainWindow::importData()
                 Customer(c_id).update(set);
             }
         }
+
         // Import circuits
         trw[0] = id->newCircuits();
         trw[1] = id->modifiedCircuits();
@@ -1975,6 +2036,7 @@ void MainWindow::importData()
                 Circuit(cc_parent, cc_id).update(set);
             }
         }
+
         // Import variables
         QStringList inspections_skip_columns; bool skip_parent = false;
         QString current_text; QTreeWidgetItem * item = NULL; QTreeWidgetItem * subitem = NULL;
@@ -1987,7 +2049,7 @@ void MainWindow::importData()
                 inspections_skip_columns << item->text(1);
                 skip_parent = true;
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                VariableRecord record(VariableRecord::VARIABLE, item->text(1));
+                VariableRecord record(item->text(1));
                 Variable variable(item->text(1));
                 if (!variable.next()) {
                     new_item = new QTreeWidgetItem(trw_variables);
@@ -2013,8 +2075,8 @@ void MainWindow::importData()
                 if (skip_parent || current_text == tr("Do not import")) {
                     inspections_skip_columns << subitem->text(1);
                 } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                    VariableRecord record(VariableRecord::SUBVARIABLE, item->text(1), subitem->text(1));
-                    Subvariable subvariable(item->text(1), subitem->text(1));
+                    VariableRecord record(subitem->text(1));
+                    Variable subvariable(subitem->text(1));
                     if (new_item != NULL && !subvariable.next()) {
                         QTreeWidgetItem * new_subitem = new QTreeWidgetItem(new_item);
                         new_subitem->setText(0, subitem->text(0));
@@ -2035,6 +2097,7 @@ void MainWindow::importData()
             }
         }
         inspections_skip_columns << "customer" << "circuit";
+
         // Import inspections
         trw[0] = id->newInspections();
         trw[1] = id->modifiedInspections();
@@ -2061,6 +2124,7 @@ void MainWindow::importData()
                 j++;
             }
         }
+
         // Import repairs
         trw[0] = id->newRepairs();
         trw[1] = id->modifiedRepairs();
@@ -2082,6 +2146,7 @@ void MainWindow::importData()
                 Repair(r_date).update(set);
             }
         }
+
         // Import refrigerant management
         trw[0] = id->newRefrigerantManagement();
         trw[1] = id->modifiedRefrigerantManagement();
@@ -2103,6 +2168,7 @@ void MainWindow::importData()
                 RecordOfRefrigerantManagement(r_date).update(set);
             }
         }
+
         // Import inspectors
         trw[0] = id->newInspectors();
         trw[1] = id->modifiedInspectors();

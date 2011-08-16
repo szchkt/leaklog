@@ -201,6 +201,7 @@ MainWindow::MainWindow():
     btn_clear_selection->setToolTip(tr("Clear current selection"));
     btn_clear_selection->setVisible(false);
     statusbar->addWidget(btn_clear_selection);
+    trw_variables->header()->setSortIndicator(0, Qt::AscendingOrder);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
@@ -645,7 +646,7 @@ void MainWindow::printLabel(bool detailed)
             selected_inspector = inspection.value("inspector").toString();
             Variable refr_add_per("refr_add_per");
             refr_add_per.next();
-            QString unparsed_expression = refr_add_per.value("VAR_VALUE").toString();
+            QString unparsed_expression = refr_add_per.valueExpression();
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
                 attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), selectedCustomer(), selectedCircuit()));

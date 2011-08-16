@@ -22,11 +22,12 @@
 #include "variables.h"
 
 #include <QSqlRecord>
+#include <QApplication>
 
 using namespace Global;
 
 Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_id, const QString & circuit_id, int scope):
-    MTSqlQueryResult(db),
+    MTSqlQueryResultBase<QString>(db),
     enabled_only(enabled_only),
     m_scope(scope)
 {
@@ -77,6 +78,8 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_
         }
     }
 }
+
+QString Warnings::tr(const char * s) { return QApplication::translate("Warnings", s); }
 
 int Warnings::warningConditionValueInsCount(int id) { return conditions_value_ins.value(id).count(); }
 
@@ -378,7 +381,7 @@ void Warnings::initCondition(ListOfVariantMaps * map, const QString & parent, co
 }
 
 Warning::Warning(int id, QSqlDatabase db):
-MTSqlQueryResult(db)
+    MTSqlQueryResultBase<QString>(db)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
     this->id = id;
@@ -405,7 +408,7 @@ void Warning::saveResult()
 }
 
 WarningFilters::WarningFilters(int id, QSqlDatabase db):
-MTSqlQueryResult(db)
+    MTSqlQueryResultBase<QString>(db)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
     this->id = id;
@@ -432,7 +435,7 @@ void WarningFilters::saveResult()
 }
 
 WarningConditions::WarningConditions(int id, QSqlDatabase db):
-MTSqlQueryResult(db)
+    MTSqlQueryResultBase<QString>(db)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
     this->id = id;

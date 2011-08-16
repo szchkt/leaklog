@@ -27,15 +27,89 @@
 class ModifyDialogueWidgets;
 class MDCheckBox;
 
-class Variables : public MTSqlQueryResult
+class VariableContractBase
 {
-    Q_OBJECT
+public:
+    enum Fields {
+        ParentID,
+        ID,
+        Name,
+        Type,
+        Unit,
+        ScopeValue,
+        Value,
+        CompareNom,
+        Tolerance,
+        ColBg,
+        FieldCount
+    };
 
+    QString parentID() const {
+        return variantValue(ParentID).toString();
+    }
+
+    QString id() const {
+        return variantValue(ID).toString();
+    }
+
+    QString name() const {
+        return variantValue(Name).toString();
+    }
+
+    QString type() const {
+        return variantValue(Type).toString();
+    }
+
+    QString unit() const {
+        return variantValue(Unit).toString();
+    }
+
+    int scope() const {
+        return variantValue(ScopeValue).toInt();
+    }
+
+    QString valueExpression() const {
+        return variantValue(Value).toString();
+    }
+
+    int compareNom() const {
+        return variantValue(CompareNom).toInt();
+    }
+
+    double tolerance() const {
+        return variantValue(Tolerance).toDouble();
+    }
+
+    QString colBg() const {
+        return variantValue(ColBg).toString();
+    }
+
+protected:
+    virtual QVariant variantValue(int) const = 0;
+};
+
+class VariableContract : public QMap<int, QVariant>, public VariableContractBase
+{
+public:
+    VariableContract(): QMap<int, QVariant>() {}
+    VariableContract(const QMap<int, QVariant> & other): QMap<int, QVariant>(other) {}
+
+protected:
+    QVariant variantValue(int i) const {
+        return QMap<int, QVariant>::value(i);
+    }
+};
+
+class Variables : public MTSqlQueryResultBase<int>, public VariableContractBase
+{
 public:
     Variables(QSqlDatabase = QSqlDatabase(), int = 0xFFFF);
     static Variables * defaultVariables(int = 0xFFFF);
 
-    QVariantMap variable(const QString &);
+    VariableContract variable(const QString &);
+    inline VariableContract parentVariable() {
+        return variable(parentID());
+    }
 
     void initModifyDialogueWidgets(ModifyDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDCheckBox * = NULL, MDCheckBox * = NULL);
 
@@ -43,22 +117,24 @@ protected:
     Variables(int);
     Variables(QSqlDatabase, const QString &, int = 0xFFFF);
 
-    virtual void saveResult();
+    void saveResult();
 
     void initVariables();
     void initVariable(const QString &, int, const QString &, const QString &, bool, double, const QString &);
     void initVariable(const QString &, int, const QString &);
     void initSubvariable(const QString &, int, const QString &, const QString &, const QString &, const QString &, bool, double);
 
-    QMultiMap<QString, int> var_indices;
+    QVariant variantValue(int i) const {
+        return MTSqlQueryResultBase<int>::value(i);
+    }
+
+    QMap<QString, int> var_indices;
     int m_scope;
     QString m_filter;
 };
 
 class Variable : public Variables
 {
-    Q_OBJECT
-
 public:
     enum Scope {
         Inspection = 1,
@@ -66,20 +142,6 @@ public:
     };
 
     Variable(const QString & = QString(), QSqlDatabase = QSqlDatabase());
-
-protected:
-    void saveResult();
-
-private:
-    QString var_id;
-};
-
-class Subvariable : public Variables
-{
-    Q_OBJECT
-
-public:
-    Subvariable(const QString &, const QString & = QString(), QSqlDatabase = QSqlDatabase());
 
 protected:
     void saveResult();

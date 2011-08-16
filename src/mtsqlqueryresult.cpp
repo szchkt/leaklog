@@ -19,109 +19,17 @@
 
 #include "mtsqlqueryresult.h"
 
-#include <QSqlRecord>
-
-MTSqlQueryResult::MTSqlQueryResult(const QString & q, QSqlDatabase db)
-{
-    _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
-    _query->exec(q);
-    _pos = -1;
-}
-
-MTSqlQueryResult::MTSqlQueryResult(QSqlDatabase db)
-{
-    _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
-    _pos = -1;
-}
-
-MTSqlQueryResult::~MTSqlQueryResult()
-{
-    if (_query) { delete _query; }
-}
-
-void MTSqlQueryResult::bindValue(const QString & placeholder, const QVariant & value, QSql::ParamType type)
-{
-    _query->bindValue(placeholder, value, type);
-}
-
-QVariant MTSqlQueryResult::boundValue(const QString & placeholder) const
-{
-    return _query->boundValue(placeholder);
-}
-
-bool MTSqlQueryResult::exec(const QString & q)
-{
-    bool ok = _query->exec(q);
-    if (ok) { saveResult(); }
-    return ok;
-}
-
-bool MTSqlQueryResult::exec()
-{
-    bool ok = _query->exec();
-    if (ok) { saveResult(); }
-    return ok;
-}
-
 void MTSqlQueryResult::saveResult()
 {
     int n = _query->record().count();
     _pos = -1;
     _result.clear();
-    QVariantMap row;
+    QMap<int, QVariant> row;
     while (_query->next()) {
         row.clear();
         for (int i = 0; i < n; ++i) {
-            row.insert(QString::number(i), _query->value(i));
+            row.insert(i, _query->value(i));
         }
         _result << row;
     }
-}
-
-bool MTSqlQueryResult::next()
-{
-    _pos++;
-    if (_pos >= _result.count()) { _pos = -1; return false; }
-    return true;
-}
-
-int * MTSqlQueryResult::pos()
-{
-    return &_pos;
-}
-
-bool MTSqlQueryResult::prepare(const QString & q)
-{
-    return _query->prepare(q);
-}
-
-QSqlQuery * MTSqlQueryResult::query()
-{
-    return _query;
-}
-
-QSqlRecord MTSqlQueryResult::record() const
-{
-    return _query->record();
-}
-
-ListOfVariantMaps * MTSqlQueryResult::result()
-{
-    return &_result;
-}
-
-QVariant MTSqlQueryResult::value(int i) const
-{
-    return value(QString::number(i));
-}
-
-QVariant MTSqlQueryResult::value(const QString & s) const
-{
-    if (_pos < 0) { return QVariant(); }
-    return _result.at(_pos).value(s);
-}
-
-int MTSqlQueryResult::count() const
-{
-    return _result.count();
 }

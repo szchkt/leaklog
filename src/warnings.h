@@ -22,10 +22,8 @@
 
 #include "mtsqlqueryresult.h"
 
-class Warnings : public MTSqlQueryResult
+class Warnings : public MTSqlQueryResultBase<QString>
 {
-    Q_OBJECT
-
 public:
     Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QString & = QString(), const QString & = QString(), int = 0);
 
@@ -47,6 +45,8 @@ protected:
     static void initFilter(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
     static void initCondition(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
 
+    static QString tr(const char *);
+
     QSqlDatabase database;
     bool enabled_only;
     int m_scope;
@@ -55,10 +55,8 @@ protected:
     QMap<int, QList<QString> > conditions_functions;
 };
 
-class Warning : public MTSqlQueryResult
+class Warning : public MTSqlQueryResultBase<QString>
 {
-    Q_OBJECT
-
 public:
     Warning(int, QSqlDatabase = QSqlDatabase());
 
@@ -69,10 +67,8 @@ protected:
     int id;
 };
 
-class WarningFilters : public MTSqlQueryResult
+class WarningFilters : public MTSqlQueryResultBase<QString>
 {
-    Q_OBJECT
-
 public:
     WarningFilters(int, QSqlDatabase = QSqlDatabase());
 
@@ -83,10 +79,8 @@ protected:
     int id;
 };
 
-class WarningConditions : public MTSqlQueryResult
+class WarningConditions : public MTSqlQueryResultBase<QString>
 {
-    Q_OBJECT
-
 public:
     WarningConditions(int, QSqlDatabase = QSqlDatabase());
 

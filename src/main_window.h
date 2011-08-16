@@ -172,6 +172,7 @@ private:
     void loadCircuit(int, bool);
     void loadInspection(const QString &, bool);
     void loadRepair(const QString &, bool);
+    void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase());
     void addVariable(bool);
     void moveTableVariable(bool);
     void loadInspector(int, bool);

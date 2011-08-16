@@ -28,12 +28,12 @@
 using namespace Global;
 
 Variables::Variables(QSqlDatabase db, int scope):
-    MTSqlQueryResult(db),
+    MTSqlQueryResultBase<int>(db),
     m_scope(scope)
 {
     initVariables();
-    exec(QString("SELECT variables.id, variables.name, variables.type, variables.unit, variables.value, variables.compare_nom, variables.tolerance, variables.col_bg, subvariables.id, subvariables.name, subvariables.type, subvariables.unit, subvariables.value, subvariables.compare_nom, subvariables.tolerance"
-         " FROM variables LEFT JOIN subvariables ON variables.id = subvariables.parent WHERE variables.scope & %1 > 0").arg(scope));
+    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg"
+         " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope));
 }
 
 Variables * Variables::defaultVariables(int scope)
@@ -42,79 +42,52 @@ Variables * Variables::defaultVariables(int scope)
 }
 
 Variables::Variables(int scope):
-    MTSqlQueryResult(QSqlDatabase()),
+    MTSqlQueryResultBase<int>(QSqlDatabase()),
     m_scope(scope)
 {
     initVariables();
 }
 
 Variables::Variables(QSqlDatabase db, const QString & filter, int scope):
-    MTSqlQueryResult(db),
+    MTSqlQueryResultBase<int>(db),
     m_scope(scope),
     m_filter(filter)
 {
     initVariables();
 }
 
-QVariantMap Variables::variable(const QString & id)
+VariableContract Variables::variable(const QString & id)
 {
-    QSet<int> indices = var_indices.values(id).toSet();
-    foreach (int index, indices) {
-        if (result()->at(index).value("SUBVAR_ID").toString().isEmpty() ||
-            result()->at(index).value("SUBVAR_ID").toString() == id)
-            return result()->at(index);
-    }
-    return QVariantMap();
+    int index = var_indices.value(id, -1);
+    if (index >= 0)
+        return VariableContract(result()->at(index));
+    return VariableContract();
 }
-
-const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3; const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
-const int SUBVAR_ID = 8; const int SUBVAR_NAME = 9; const int SUBVAR_TYPE = 10; const int SUBVAR_UNIT = 11; const int SUBVAR_VALUE = 12; const int SUBVAR_COMPARE_NOM = 13; const int SUBVAR_TOLERANCE = 14;
 
 void Variables::saveResult()
 {
-    bool insert = true;
     *pos() = -1;
-    QVariantMap row;
-    QSet<int> updated_indices;
     while (query()->next()) {
-        row.clear();
-        insert = true;
-        if (variableNames().contains(query()->value(VAR_ID).toString())) {
-            QSet<int> indices = var_indices.values(query()->value(VAR_ID).toString()).toSet();
-            indices.unite(var_indices.values(query()->value(SUBVAR_ID).toString()).toSet());
-            foreach (int index, indices) {
-                insert = false;
-                QVariantMap _row = result()->at(index);
-                if (!updated_indices.contains(index)) {
-                    updated_indices << index;
-                    if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
-                    if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
-                    if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
-                }
-                if (query()->value(SUBVAR_ID).toString() == _row.value("SUBVAR_ID").toString()) {
-                    if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
-                    if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
-                }
-                if (insert) { result()->replace(index, _row); insert = false; }
+        int index = var_indices.value(query()->value(Variable::ID).toString(), -1);
+        if (index >= 0) {
+            bool insert = false;
+            QMap<int, QVariant> row = result()->at(index);
+            if (!query()->value(Variable::CompareNom).toString().isEmpty()) {
+                insert = true; row.insert(Variable::CompareNom, query()->value(Variable::CompareNom));
             }
-        }
-        if (insert) {
-            row.insert("VAR_ID", query()->value(VAR_ID));
-            row.insert("VAR_NAME", query()->value(VAR_NAME));
-            row.insert("VAR_TYPE", query()->value(VAR_TYPE));
-            row.insert("VAR_UNIT", query()->value(VAR_UNIT));
-            row.insert("VAR_VALUE", query()->value(VAR_VALUE));
-            row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM));
-            row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE));
-            row.insert("VAR_COL_BG", query()->value(VAR_COL_BG));
-            row.insert("SUBVAR_ID", query()->value(SUBVAR_ID));
-            row.insert("SUBVAR_NAME", query()->value(SUBVAR_NAME));
-            row.insert("SUBVAR_TYPE", query()->value(SUBVAR_TYPE));
-            row.insert("SUBVAR_UNIT", query()->value(SUBVAR_UNIT));
-            row.insert("SUBVAR_VALUE", query()->value(SUBVAR_VALUE));
-            row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM));
-            row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE));
+            if (!query()->value(Variable::Tolerance).toString().isEmpty()) {
+                insert = true; row.insert(Variable::Tolerance, query()->value(Variable::Tolerance));
+            }
+            if (!query()->value(Variable::ColBg).toString().isEmpty()) {
+                insert = true; row.insert(Variable::ColBg, query()->value(Variable::ColBg));
+            }
+            if (insert) { result()->replace(index, row); }
+        } else {
+            QMap<int, QVariant> row;
+            for (int i = 0; i < Variable::FieldCount; ++i)
+                row.insert(i, query()->value(i));
             *result() << row;
+            var_indices.insert(query()->value(Variable::ID).toString(), result()->count() - 1);
         }
     }
 }
@@ -192,16 +165,16 @@ void Variables::initVariable(const QString & id, int scope, const QString & unit
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
-    QVariantMap row;
-    row.insert("VAR_ID", id);
-    row.insert("VAR_NAME", variableNames().value(id));
-    row.insert("VAR_TYPE", variableType(id));
-    row.insert("VAR_SCOPE", scope);
-    row.insert("VAR_UNIT", unit);
-    row.insert("VAR_VALUE", value);
-    row.insert("VAR_COMPARE_NOM", compare_nom ? 1 : 0);
-    row.insert("VAR_TOLERANCE", tolerance);
-    row.insert("VAR_COL_BG", col_bg);
+    QMap<int, QVariant> row;
+    row.insert(Variable::ID, id);
+    row.insert(Variable::Name, variableNames().value(id));
+    row.insert(Variable::Type, variableType(id));
+    row.insert(Variable::Unit, unit);
+    row.insert(Variable::ScopeValue, scope);
+    row.insert(Variable::Value, value);
+    row.insert(Variable::CompareNom, compare_nom ? 1 : 0);
+    row.insert(Variable::Tolerance, tolerance);
+    row.insert(Variable::ColBg, col_bg);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
 }
@@ -209,12 +182,13 @@ void Variables::initVariable(const QString & id, int scope, const QString & unit
 void Variables::initVariable(const QString & id, int scope, const QString & col_bg)
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
-    if (m_filter.isEmpty() || m_filter != id) { return; }
-    QVariantMap row;
-    row.insert("VAR_ID", id);
-    row.insert("VAR_NAME", variableNames().value(id));
-    row.insert("VAR_SCOPE", scope);
-    row.insert("VAR_COL_BG", col_bg);
+    if (!m_filter.isEmpty() && m_filter != id) { return; }
+    QMap<int, QVariant> row;
+    row.insert(Variable::ID, id);
+    row.insert(Variable::Name, variableNames().value(id));
+    row.insert(Variable::Type, "group");
+    row.insert(Variable::ScopeValue, scope);
+    row.insert(Variable::ColBg, col_bg);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
 }
@@ -223,118 +197,109 @@ void Variables::initSubvariable(const QString & parent, int scope, const QString
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
-    QVariantMap row;
-    row.insert("VAR_ID", parent);
-    row.insert("VAR_NAME", variableNames().value(parent));
-    row.insert("VAR_SCOPE", scope);
-    row.insert("VAR_COL_BG", col_bg);
-    row.insert("SUBVAR_ID", id);
-    row.insert("SUBVAR_NAME", variableNames().value(id));
-    row.insert("SUBVAR_TYPE", variableType(id));
-    row.insert("SUBVAR_UNIT", unit);
-    row.insert("SUBVAR_VALUE", value);
-    row.insert("SUBVAR_COMPARE_NOM", compare_nom ? 1 : 0);
-    row.insert("SUBVAR_TOLERANCE", tolerance);
+    QMap<int, QVariant> row;
+    row.insert(Variable::ParentID, parent);
+    row.insert(Variable::ID, id);
+    row.insert(Variable::Name, variableNames().value(id));
+    row.insert(Variable::Type, variableType(id));
+    row.insert(Variable::Unit, unit);
+    row.insert(Variable::ScopeValue, scope);
+    row.insert(Variable::Value, value);
+    row.insert(Variable::CompareNom, compare_nom ? 1 : 0);
+    row.insert(Variable::Tolerance, tolerance);
+    row.insert(Variable::ColBg, col_bg);
     *result() << row;
-    var_indices.insert(parent, result()->count() - 1);
     var_indices.insert(id, result()->count() - 1);
 }
 
 void Variables::initModifyDialogueWidgets(ModifyDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record, const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
 {
-    QString var_id, var_name, var_type, subvar_id, subvar_name, subvar_type;
     MDAbstractInputWidget * iw = NULL;
     while (next()) {
-        var_id = value("VAR_ID").toString();
-        subvar_id = value("SUBVAR_ID").toString();
-        if (subvar_id.isEmpty()) {
-            if (!value("VAR_VALUE").toString().isEmpty()) { continue; }
-            var_name = tr("%1:").arg(value("VAR_NAME").toString());
-            var_type = value("VAR_TYPE").toString();
-            if (var_id == "inspector") {
-                iw = new MDComboBox(var_id, var_name, md->widget(),
-                                    attributes.value(var_id).toString(), listInspectors(), value("VAR_COL_BG").toString());
-                iw->label()->setAlternativeText(tr("Repairman:"));
-                if (chb_repair) {
-                    iw->label()->toggleAlternativeText(chb_repair->isChecked());
-                    iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
-                }
-                md->addInputWidget(iw);
-            } else if (var_id == "rmds") {
-                iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
-                                         attributes.value(var_id).toString(), value("VAR_COL_BG").toString());
-                iw->setShowInForm(false);
-                md->addInputWidget(iw);
-            } else if (var_id == "operator") {
-                if (mt_record) {
-                    iw = new MDComboBox(var_id, var_name, md->widget(),
-                                        attributes.value(var_id).toString(), listOperators(mt_record->parent("customer")), value("VAR_COL_BG").toString());
-                    md->addInputWidget(iw);
-                }
-            } else if (var_id == "ar_type") {
-                iw = new MDComboBox(var_id, var_name, md->widget(),
-                                    attributes.value(var_id).toString(), listAssemblyRecordTypes(), value("VAR_COL_BG").toString());
-                iw->setShowInForm(false);
-                md->addInputWidget(iw);
-            } else if (var_type == "int") {
-                md->addInputWidget(new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
-                                                 attributes.value(var_id).toInt(), value("VAR_UNIT").toString(), value("VAR_COL_BG").toString()));
-            } else if (var_type == "float") {
-                iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
-                                                 attributes.value(var_id), value("VAR_UNIT").toString(), value("VAR_COL_BG").toString());
-                if (var_id == "refr_add_am") {
-                    iw->label()->setAlternativeText(tr("New charge:"));
-                    if (chb_nominal) {
-                        iw->label()->toggleAlternativeText(chb_nominal->isChecked());
-                        iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
-                    }
-                }
-                md->addInputWidget(iw);
-            } else if (var_type == "string") {
-                iw = new MDLineEdit(var_id, var_name, md->widget(),
-                                    attributes.value(var_id).toString(), 0, value("VAR_COL_BG").toString());
-                if (var_id == "arno") {
-                    if (mt_record)
-                        if (mt_record->id().isEmpty()) iw->setVariantValue(QString("%1-%2-%3").arg(mt_record->parent("customer")).arg(mt_record->parent("circuit")).arg(date.toString("yyMMdd")));
-                    iw->setShowInForm(false);
-                }
-                md->addInputWidget(iw);
-            } else if (var_type == "text") {
-                md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md->widget(),
-                                                       attributes.value(var_id).toString(), value("VAR_COL_BG").toString()));
-            } else if (var_type == "bool") {
-                iw = new MDCheckBox(var_id, "", md->widget(), attributes.value(var_id).toInt());
-                iw->label()->setLabelText(var_name);
-                md->addInputWidget(iw);
-            } else {
-                md->addInputWidget(new MDLineEdit(var_id, var_name, md->widget(),
-                                                  attributes.value(var_id).toString(), 0, value("VAR_COL_BG").toString()));
-            }
+        if (!valueExpression().isEmpty())
+            continue;
+
+        QString parent_id = parentID();
+        VariableContract parent;
+        QString var_id = id();
+        QString var_name;
+        QString var_type = type();
+        QString col_bg;
+        if (parent_id.isEmpty()) {
+            var_name = QApplication::translate("MainWindow", "%1:").arg(name());
+            col_bg = colBg();
         } else {
-            if (!value("SUBVAR_VALUE").toString().isEmpty()) { continue; }
-            subvar_name = tr("%1: %2:").arg(value("VAR_NAME").toString()).arg(value("SUBVAR_NAME").toString());
-            subvar_type = value("SUBVAR_TYPE").toString();
-            if (subvar_type == "int") {
-                md->addInputWidget(new MDSpinBox(subvar_id, subvar_name, md->widget(), -999999999, 999999999,
-                                                 attributes.value(subvar_id).toInt(), value("SUBVAR_UNIT").toString(), value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "float") {
-                md->addInputWidget(new MDNullableDoubleSpinBox(subvar_id, subvar_name, md->widget(), -999999999.9, 999999999.9,
-                                                               attributes.value(subvar_id), value("SUBVAR_UNIT").toString(), value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "string") {
-                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md->widget(),
-                                                  attributes.value(subvar_id).toString(), 0, value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "text") {
-                md->addInputWidget(new MDPlainTextEdit(subvar_id, subvar_name, md->widget(),
-                                                       attributes.value(subvar_id).toString(), value("VAR_COL_BG").toString()));
-            } else if (subvar_type == "bool") {
-                iw = new MDCheckBox(subvar_id, value("SUBVAR_NAME").toString(), md->widget(),
-                                    attributes.value(subvar_id).toInt());
-                iw->label()->setLabelText(tr("%1:").arg(value("VAR_NAME").toString()));
-                md->addInputWidget(iw);
-            } else {
-                md->addInputWidget(new MDLineEdit(subvar_id, subvar_name, md->widget(),
-                                                  attributes.value(subvar_id).toString(), 0, value("VAR_COL_BG").toString()));
+            parent = variable(parent_id);
+            var_name = QApplication::translate("MainWindow", "%1: %2:").arg(parent.name()).arg(name());
+            col_bg = parent.colBg();
+        }
+
+        if (var_id == "inspector") {
+            iw = new MDComboBox(var_id, var_name, md->widget(),
+                                attributes.value(var_id).toString(), listInspectors(), col_bg);
+            iw->label()->setAlternativeText(QApplication::translate("Variables", "Repairman:"));
+            if (chb_repair) {
+                iw->label()->toggleAlternativeText(chb_repair->isChecked());
+                iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
             }
+            md->addInputWidget(iw);
+        } else if (var_id == "rmds") {
+            iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
+                                     attributes.value(var_id).toString(), col_bg);
+            iw->setShowInForm(false);
+            md->addInputWidget(iw);
+        } else if (var_id == "operator") {
+            if (mt_record) {
+                iw = new MDComboBox(var_id, var_name, md->widget(),
+                                    attributes.value(var_id).toString(), listOperators(mt_record->parent("customer")), col_bg);
+                md->addInputWidget(iw);
+            }
+        } else if (var_id == "ar_type") {
+            iw = new MDComboBox(var_id, var_name, md->widget(),
+                                attributes.value(var_id).toString(), listAssemblyRecordTypes(), col_bg);
+            iw->setShowInForm(false);
+            md->addInputWidget(iw);
+        } else if (var_type == "int") {
+            md->addInputWidget(new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
+                                             attributes.value(var_id).toInt(), unit(), col_bg));
+        } else if (var_type == "float") {
+            iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
+                                             attributes.value(var_id), unit(), col_bg);
+            if (var_id == "refr_add_am") {
+                iw->label()->setAlternativeText(QApplication::translate("Variables", "New charge:"));
+                if (chb_nominal) {
+                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
+                    iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+                }
+            }
+            md->addInputWidget(iw);
+        } else if (var_type == "string") {
+            iw = new MDLineEdit(var_id, var_name, md->widget(),
+                                attributes.value(var_id).toString(), 0, col_bg);
+            if (var_id == "arno") {
+                if (mt_record && mt_record->id().isEmpty())
+                    iw->setVariantValue(QString("%1-%2-%3")
+                                        .arg(mt_record->parent("customer"))
+                                        .arg(mt_record->parent("circuit"))
+                                        .arg(date.toString("yyMMdd")));
+                iw->setShowInForm(false);
+            }
+            md->addInputWidget(iw);
+        } else if (var_type == "text") {
+            md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md->widget(),
+                                                   attributes.value(var_id).toString(), col_bg));
+        } else if (var_type == "bool") {
+            QString label = var_name;
+            if (parent_id.isEmpty())
+                var_name.clear();
+            else
+                label = QApplication::translate("MainWindow", "%1:").arg(parent.name());
+            iw = new MDCheckBox(var_id, var_name, md->widget(), attributes.value(var_id).toInt());
+            iw->label()->setLabelText(label);
+            md->addInputWidget(iw);
+        } else {
+            md->addInputWidget(new MDLineEdit(var_id, var_name, md->widget(),
+                                              attributes.value(var_id).toString(), 0, col_bg));
         }
     }
 }
@@ -343,95 +308,35 @@ Variable::Variable(const QString & id, QSqlDatabase db):
     Variables(db, id),
     var_id(id)
 {
-    prepare("SELECT id, name, type, unit, value, compare_nom, tolerance, col_bg FROM variables" + QString(id.isEmpty() ? "" : " WHERE id = :id"));
+    prepare("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg FROM variables" + QString(id.isEmpty() ? "" : " WHERE id = :id"));
     if (!id.isEmpty()) { bindValue(":id", var_id); }
     exec();
 }
 
 void Variable::saveResult()
 {
-    const int VAR_ID = 0; const int VAR_NAME = 1; const int VAR_TYPE = 2; const int VAR_UNIT = 3;
-    const int VAR_VALUE = 4; const int VAR_COMPARE_NOM = 5; const int VAR_TOLERANCE = 6; const int VAR_COL_BG = 7;
-    bool insert = true;
     *pos() = -1;
-    QVariantMap row;
     while (query()->next()) {
-        row.clear();
-        insert = true;
-        if (variableNames().contains(query()->value(VAR_ID).toString())) {
-            int index = var_indices.value(query()->value(VAR_ID).toString(), -1);
-            if (index < 0) { insert = true; }
-            else {
-                insert = false;
-                QVariantMap _row = result()->at(index);
-                if (!query()->value(VAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM)); }
-                if (!query()->value(VAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE)); }
-                if (!query()->value(VAR_COL_BG).toString().isEmpty()) { insert = true; _row.insert("VAR_COL_BG", query()->value(VAR_COL_BG)); }
-                if (insert) { result()->replace(index, _row); insert = false; }
+        int index = var_indices.value(query()->value(Variable::ID).toString(), -1);
+        if (index >= 0) {
+            bool insert = false;
+            QMap<int, QVariant> row = result()->at(index);
+            if (!query()->value(Variable::CompareNom).toString().isEmpty()) {
+                insert = true; row.insert(Variable::CompareNom, query()->value(Variable::CompareNom));
             }
-        }
-        if (insert) {
-            row.insert("VAR_ID", query()->value(VAR_ID));
-            row.insert("VAR_NAME", query()->value(VAR_NAME));
-            row.insert("VAR_TYPE", query()->value(VAR_TYPE));
-            row.insert("VAR_UNIT", query()->value(VAR_UNIT));
-            row.insert("VAR_VALUE", query()->value(VAR_VALUE));
-            row.insert("VAR_COMPARE_NOM", query()->value(VAR_COMPARE_NOM));
-            row.insert("VAR_TOLERANCE", query()->value(VAR_TOLERANCE));
-            row.insert("VAR_COL_BG", query()->value(VAR_COL_BG));
-            *result() << row;
-        }
-    }
-}
-
-Subvariable::Subvariable(const QString & parent, const QString & id, QSqlDatabase db):
-    Variables(db, id),
-    var_id(id)
-{
-    QString query = "SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables";
-    if (!parent.isEmpty() || !id.isEmpty()) { query.append(" WHERE "); }
-    if (!parent.isEmpty()) {
-        query.append("parent = :parent");
-        if (!id.isEmpty()) { query.append(" AND "); }
-    }
-    if (!id.isEmpty()) { query.append("id = :id"); }
-    prepare(query);
-    if (!parent.isEmpty()) { bindValue(":parent", parent); }
-    if (!id.isEmpty()) { bindValue(":id", var_id); }
-    exec();
-}
-
-void Subvariable::saveResult()
-{
-    const int VAR_ID = 0; const int SUBVAR_ID = 1; const int SUBVAR_NAME = 2; const int SUBVAR_TYPE = 3;
-    const int SUBVAR_UNIT = 4; const int SUBVAR_VALUE = 5; const int SUBVAR_COMPARE_NOM = 6; const int SUBVAR_TOLERANCE = 7;
-    bool insert = true;
-    *pos() = -1;
-    QVariantMap row;
-    while (query()->next()) {
-        row.clear();
-        insert = true;
-        if (variableNames().contains(query()->value(SUBVAR_ID).toString())) {
-            int index = var_indices.value(query()->value(SUBVAR_ID).toString(), -1);
-            if (index < 0) { insert = true; }
-            else {
-                insert = false;
-                QVariantMap _row = result()->at(index);
-                if (!query()->value(SUBVAR_COMPARE_NOM).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM)); }
-                if (!query()->value(SUBVAR_TOLERANCE).toString().isEmpty()) { insert = true; _row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE)); }
-                if (insert) { result()->replace(index, _row); insert = false; }
+            if (!query()->value(Variable::Tolerance).toString().isEmpty()) {
+                insert = true; row.insert(Variable::Tolerance, query()->value(Variable::Tolerance));
             }
-        }
-        if (insert) {
-            row.insert("VAR_ID", query()->value(VAR_ID));
-            row.insert("SUBVAR_ID", query()->value(SUBVAR_ID));
-            row.insert("SUBVAR_NAME", query()->value(SUBVAR_NAME));
-            row.insert("SUBVAR_TYPE", query()->value(SUBVAR_TYPE));
-            row.insert("SUBVAR_UNIT", query()->value(SUBVAR_UNIT));
-            row.insert("SUBVAR_VALUE", query()->value(SUBVAR_VALUE));
-            row.insert("SUBVAR_COMPARE_NOM", query()->value(SUBVAR_COMPARE_NOM));
-            row.insert("SUBVAR_TOLERANCE", query()->value(SUBVAR_TOLERANCE));
+            if (!query()->value(Variable::ColBg).toString().isEmpty()) {
+                insert = true; row.insert(Variable::ColBg, query()->value(Variable::ColBg));
+            }
+            if (insert) { result()->replace(index, row); insert = false; }
+        } else {
+            QMap<int, QVariant> row;
+            for (int i = 0; i < Variable::FieldCount; ++i)
+                row.insert(i, query()->value(i));
             *result() << row;
+            var_indices.insert(query()->value(Variable::ID).toString(), result()->count() - 1);
         }
     }
 }
