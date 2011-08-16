@@ -78,7 +78,11 @@ public:
     inline bool contains(const QString & key) const {
         return dict_keys.contains(key, Qt::CaseSensitive);
     }
-    inline const QString & value(int i, const QString & default_value = QString()) const {
+    inline QString value(int i) const {
+        if (i >= 0 && i < dict_keys.count()) return dict_values.at(i);
+        else return QString();
+    }
+    inline const QString & value(int i, const QString & default_value) const {
         if (i >= 0 && i < dict_keys.count()) return dict_values.at(i);
         else return default_value;
     }
