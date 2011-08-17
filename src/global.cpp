@@ -81,7 +81,7 @@ QColor Global::textColourForBaseColour(const QColor & c)
     }
 }
 
-QString Global::sqlStringForDatabaseType(QString sql, QSqlDatabase * db)
+QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase & db)
 {
     if (!isDatabaseRemote(db))
         sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
@@ -105,10 +105,10 @@ QString Global::variableTypeToSqlType(const QString & type)
     return "TEXT";
 }
 
-MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
+MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabase & database)
 {
     MTDictionary field_names;
-    QSqlQuery query(*database);
+    QSqlQuery query(database);
     query.exec("SELECT * FROM " + table);
     for (int i = 0; i < query.record().count(); ++i) {
         field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
@@ -116,9 +116,9 @@ MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * da
     return field_names;
 }
 
-void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
+void Global::copyTable(const QString & table, const QSqlDatabase & from, const QSqlDatabase & to, const QString & filter)
 {
-    QSqlQuery select(*from);
+    QSqlQuery select(from);
     select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
     if (select.next() && select.record().count()) {
         QString copy("INSERT INTO " + table + " (");
@@ -139,7 +139,7 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
         }
         copy.append(")");
         do {
-            QSqlQuery insert(*to);
+            QSqlQuery insert(to);
             insert.prepare(copy);
             for (int i = 0; i < select.record().count(); ++i) {
                 insert.bindValue(":" + select.record().fieldName(i), select.value(i));
@@ -149,21 +149,21 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
     }
 }
 
-void Global::addColumn(const QString & column, const QString & table, QSqlDatabase * database)
+void Global::addColumn(const QString & column, const QString & table, const QSqlDatabase & database)
 {
     if (getTableFieldNames(table, database).contains(column))
         return;
 
     QString col = column;
     if (column.split(" ").count() < 2) { col.append(" TEXT"); }
-    QSqlQuery add_column(*database);
+    QSqlQuery add_column(database);
     add_column.exec("ALTER TABLE " + table + " ADD COLUMN " + col);
 }
 
-void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
+void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, const QSqlDatabase & database)
 {
     if (isDatabaseRemote(database)) {
-        QSqlQuery rename_column(*database);
+        QSqlQuery rename_column(database);
         rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -177,7 +177,7 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(*database);
+        QSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol%2)").arg(fields).arg(column_type));
         query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -187,13 +187,13 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
     }
 }
 
-void Global::dropColumn(const QString & column, const QString & table, QSqlDatabase * database)
+void Global::dropColumn(const QString & column, const QString & table, const QSqlDatabase & database)
 {
     if (!getTableFieldNames(table, database).contains(column))
         return;
 
     if (isDatabaseRemote(database)) {
-        QSqlQuery drop_column(*database);
+        QSqlQuery drop_column(database);
         drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -203,7 +203,7 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(*database);
+        QSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(fields));
         query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -229,11 +229,9 @@ QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & valu
     return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
 }
 
-QString Global::currentUser(QSqlDatabase * database)
+QString Global::currentUser(const QSqlDatabase & database)
 {
-    return database ?
-            database->userName() :
-            QSqlDatabase::database().userName();
+    return database.userName();
 }
 
 bool Global::isCurrentUserAdmin()
@@ -242,11 +240,9 @@ bool Global::isCurrentUserAdmin()
     return DBInfoValueForKey("admin", current_user) == current_user;
 }
 
-bool Global::isDatabaseRemote(QSqlDatabase * database)
+bool Global::isDatabaseRemote(const QSqlDatabase & database)
 {
-    return database ?
-            !database->driverName().contains("SQLITE") :
-            !QSqlDatabase::database().driverName().contains("SQLITE");
+    return !database.driverName().contains("SQLITE");
 }
 
 int Global::isDatabaseLocked()

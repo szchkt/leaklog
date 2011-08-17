@@ -48,7 +48,8 @@ using namespace Global;
 
 bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
 {
-    if (db.isOpen() && this->isWindowModified()) {
+    bool db_open = QSqlDatabase::database().isOpen();
+    if (db_open && this->isWindowModified()) {
         QMessageBox message(this);
         message.setWindowTitle(title);
         message.setWindowModality(Qt::WindowModal);
@@ -70,18 +71,18 @@ bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
                 return true;
                 break;
         }
-    } else if (db.isOpen() && !this->isWindowModified()) {
+    } else if (db_open && !this->isWindowModified()) {
         if (close_) { closeDatabase(false); }; return false;
     }
     return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
+void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
 {
-    if (transaction) { database->transaction(); }
+    if (transaction) { database.transaction(); }
 { // (SCOPE)
-    QSqlQuery query(*database);
-    QStringList tables = database->tables();
+    QSqlQuery query(database);
+    QStringList tables = database.tables();
     Variables * variables = Variables::defaultVariables();
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
@@ -160,7 +161,7 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
     if (v < 0.908) {
-        QSqlQuery subvariables(*database);
+        QSqlQuery subvariables(database);
         subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
         while (subvariables.next()) {
             query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
@@ -216,11 +217,12 @@ void MainWindow::initDatabase(QSqlDatabase * database, bool transaction)
         query.exec("CREATE UNIQUE INDEX index_refrigerant_management_id ON refrigerant_management (date ASC)");
     }
 } // (SCOPE)
-    if (transaction) { database->commit(); }
+    if (transaction) { database.commit(); }
 }
 
 void MainWindow::initTables(bool transaction)
 {
+    QSqlDatabase db = QSqlDatabase::database();
     if (transaction) { db.transaction(); }
 { // (SCOPE)
     QVariantMap set;
@@ -304,7 +306,7 @@ void MainWindow::newDatabase()
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
-    db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
     if (!db.open()) {
         QMessageBox::critical(this, tr("New database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(db.lastError().text()));
@@ -312,7 +314,7 @@ void MainWindow::newDatabase()
         return;
     }
     addRecent(path);
-    initDatabase(&db);
+    initDatabase(db);
     initTables();
     db.transaction();
     setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
@@ -329,7 +331,7 @@ void MainWindow::openRecent(QListWidgetItem * item)
         bool ok;
         QString password = QInputDialog::getText(this, tr("Open remote database - Leaklog"), tr("Enter password for %1@%2:").arg(path.at(0).split(":").at(2)).arg(path.at(1)), QLineEdit::Password, "", &ok);
         if (!ok) { return; }
-        db = QSqlDatabase::addDatabase(path.at(0).split(":").at(1));
+        QSqlDatabase db = QSqlDatabase::addDatabase(path.at(0).split(":").at(1));
         db.setHostName(path.at(2).split(":").at(0));
         db.setPort(path.at(2).split(":").at(1).toInt());
         db.setDatabaseName(path.at(1));
@@ -337,7 +339,7 @@ void MainWindow::openRecent(QListWidgetItem * item)
         db.setPassword(password);
         if (db.open()) {
             db.transaction();
-            initDatabase(&db, false);
+            initDatabase(db, false);
         }
         openDatabase(QString());
     } else {
@@ -401,7 +403,7 @@ void MainWindow::openRemote()
         gl->addWidget(bb, 6, 0, 1, 2);
     if (d->exec() != QDialog::Accepted) { return; }
     int port = spb_port->value() == 0 ? 5432 : spb_port->value();
-    db = QSqlDatabase::addDatabase("QPSQL");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName(le_server->text());
     db.setPort(port);
     db.setDatabaseName(le_db_name->text());
@@ -410,7 +412,7 @@ void MainWindow::openRemote()
     if (db.open()) {
         addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(port));
         db.transaction();
-        initDatabase(&db, false);
+        initDatabase(db, false);
     }
     openDatabase(QString());
 }
@@ -420,6 +422,7 @@ void MainWindow::openDatabase(QString path)
     selected_repair.clear();
     clearAll();
     if (path.isEmpty()) {
+        QSqlDatabase db = QSqlDatabase::database();
         path = db.databaseName();
         if (!db.isOpen()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
@@ -433,7 +436,7 @@ void MainWindow::openDatabase(QString path)
             this->setWindowTitle(tr("Leaklog"));
             return;
         }
-        db = QSqlDatabase::addDatabase("QSQLITE");
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(path);
         if (!db.open()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
@@ -441,7 +444,7 @@ void MainWindow::openDatabase(QString path)
             return;
         }
         db.transaction();
-        initDatabase(&db, false);
+        initDatabase(db, false);
     }
     if (DBInfoValueForKey("min_leaklog_version", DBInfoValueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
@@ -504,15 +507,18 @@ void MainWindow::saveAndCompact()
 
 void MainWindow::saveDatabase(bool compact)
 {
-    QStringList errors;
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
     setDBInfoValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
+
+    QStringList errors;
+    QSqlDatabase db = QSqlDatabase::database();
     db.commit();
     if (compact) {
         QSqlQuery query;
         query.exec("VACUUM");
-        if (query.lastError().type() != QSqlError::NoError) { errors << query.lastError().text(); }
+        if (query.lastError().type() != QSqlError::NoError)
+            errors << query.lastError().text();
     }
     db.transaction();
     if (!errors.isEmpty()) {
@@ -530,10 +536,23 @@ void MainWindow::saveDatabase(bool compact)
 
 void MainWindow::closeDatabase(bool save)
 {
-    if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false)) { return; }
-    db.rollback(); db.close(); db = QSqlDatabase(); QSqlDatabase::removeDatabase(db.connectionName());
+    if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false))
+        return;
+
     parsed_expressions.clear();
-    clearAll(); enableTools(); setAllEnabled(false);
+    clearAll();
+    enableTools();
+    setAllEnabled(false);
+
+    QString connection_name;
+    {
+        QSqlDatabase db = QSqlDatabase::database();
+        connection_name = db.connectionName();
+        db.rollback();
+        db.close();
+    }
+    QSqlDatabase::removeDatabase(connection_name);
+
     stw_main->setCurrentIndex(0);
     this->setWindowTitle(tr("Leaklog"));
     this->setWindowModified(false);
@@ -579,7 +598,7 @@ bool MainWindow::isRecordLocked(const QString & date)
 
 void MainWindow::modifyServiceCompany()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
     ServiceCompany record(DBInfoValueForKey("default_service_company"));
     ModifyDialogue * md = new ModifyDialogue(&record, this);
@@ -592,14 +611,14 @@ void MainWindow::modifyServiceCompany()
 
 void MainWindow::addRecordOfRefrigerantManagement()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_refrigerant_management")) { return; }
     modifyRecordOfRefrigerantManagement("");
 }
 
 void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
     RecordOfRefrigerantManagement record(date);
     if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
@@ -620,7 +639,7 @@ void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
 
 void MainWindow::addCustomer()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record("");
     ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
@@ -633,7 +652,7 @@ void MainWindow::addCustomer()
 
 void MainWindow::modifyCustomer()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
     if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
@@ -677,7 +696,7 @@ void MainWindow::modifyCustomer()
 
 void MainWindow::duplicateCustomer()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record(selectedCustomer());
@@ -693,7 +712,7 @@ void MainWindow::duplicateCustomer()
 
 void MainWindow::removeCustomer()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
     if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
@@ -738,7 +757,7 @@ void MainWindow::loadCustomer(int customer, bool refresh)
 
 void MainWindow::addCircuit()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(selectedCustomer(), "");
@@ -752,7 +771,7 @@ void MainWindow::addCircuit()
 
 void MainWindow::modifyCircuit()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
@@ -778,7 +797,7 @@ void MainWindow::modifyCircuit()
 
 void MainWindow::duplicateCircuit()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
@@ -795,7 +814,7 @@ void MainWindow::duplicateCircuit()
 
 void MainWindow::removeCircuit()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
@@ -829,7 +848,7 @@ void MainWindow::loadCircuit(int circuit, bool refresh)
 
 void MainWindow::addInspection()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
@@ -844,7 +863,7 @@ void MainWindow::addInspection()
 
 void MainWindow::modifyInspection()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
@@ -861,7 +880,7 @@ void MainWindow::modifyInspection()
 
 void MainWindow::duplicateInspection()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
@@ -879,7 +898,7 @@ void MainWindow::duplicateInspection()
 
 void MainWindow::removeInspection()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (!isInspectionSelected()) { return; }
@@ -911,7 +930,7 @@ void MainWindow::loadInspection(const QString & inspection, bool refresh)
 
 void MainWindow::addRepair()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record("");
     if (isCustomerSelected()) {
@@ -928,7 +947,7 @@ void MainWindow::addRepair()
 
 void MainWindow::modifyRepair()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
     if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
@@ -943,7 +962,7 @@ void MainWindow::modifyRepair()
 
 void MainWindow::duplicateRepair()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record(selectedRepair());
@@ -962,7 +981,7 @@ void MainWindow::duplicateRepair()
 
 void MainWindow::removeRepair()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     QString repair = selectedRepair();
     Repair record(repair);
@@ -1027,6 +1046,7 @@ void MainWindow::addSubvariable() { addVariable(true); }
 
 void MainWindow::addVariable(bool subvar)
 {
+    QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!isOperationPermitted("add_variable")) { return; }
     QString parent_id;
@@ -1055,9 +1075,9 @@ void MainWindow::addVariable(bool subvar)
 
         int scope = attributes.value("scope").toInt();
         if (scope & Variable::Inspection)
-            addColumn(record.id(), "inspections", &db);
+            addColumn(record.id(), "inspections", db);
         if (scope & Variable::Compressor)
-            addColumn(record.id(), "inspections_compressors", &db);
+            addColumn(record.id(), "inspections_compressors", db);
         parsed_expressions.clear();
         this->setWindowModified(true);
         refreshView();
@@ -1067,6 +1087,7 @@ void MainWindow::addVariable(bool subvar)
 
 void MainWindow::modifyVariable()
 {
+    QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_variable")) { return; }
@@ -1085,9 +1106,9 @@ void MainWindow::modifyVariable()
         if (id != record.id()) {
             int scope = attributes.value("scope").toInt();
             if (scope & Variable::Inspection)
-                renameColumn(id, record.id(), "inspections", &db);
+                renameColumn(id, record.id(), "inspections", db);
             if (scope & Variable::Compressor)
-                renameColumn(id, record.id(), "inspections_compressors", &db);
+                renameColumn(id, record.id(), "inspections_compressors", db);
 
             parsed_expressions.clear();
 
@@ -1105,6 +1126,7 @@ void MainWindow::modifyVariable()
 
 void MainWindow::removeVariable()
 {
+    QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_variable")) { return; }
@@ -1119,8 +1141,8 @@ void MainWindow::removeVariable()
     MTRecord("variables", "id", "", MTDictionary("parent_id", id)).remove();
     MTRecord("variables", "id", id, MTDictionary()).remove();
     delete item;
-    dropColumn(id, "inspections", &db);
-    dropColumn(id, "inspections_compressors", &db);
+    dropColumn(id, "inspections", db);
+    dropColumn(id, "inspections_compressors", db);
     parsed_expressions.clear();
     enableTools();
     this->setWindowModified(true);
@@ -1129,7 +1151,7 @@ void MainWindow::removeVariable()
 
 void MainWindow::addTable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_table")) { return; }
     Table record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
@@ -1144,7 +1166,7 @@ void MainWindow::addTable()
 
 void MainWindow::modifyTable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
     Table record(cb_table_edit->currentText());
@@ -1166,7 +1188,7 @@ void MainWindow::modifyTable()
 
 void MainWindow::removeTable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("remove_table")) { return; }
     bool ok;
@@ -1184,7 +1206,7 @@ void MainWindow::removeTable()
 
 void MainWindow::loadTable(const QString &)
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     navigation->tableComboBox()->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
@@ -1213,7 +1235,7 @@ void MainWindow::loadTable(const QString &)
 
 void MainWindow::saveTable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { loadTable(cb_table_edit->currentText()); return; }
     Table record(cb_table_edit->currentText());
@@ -1235,7 +1257,7 @@ void MainWindow::saveTable()
 
 void MainWindow::addTableVariable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
     QStringList used_ids;
@@ -1293,7 +1315,7 @@ void MainWindow::addTableVariable()
 
 void MainWindow::removeTableVariable()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!trw_table_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
@@ -1333,7 +1355,7 @@ void MainWindow::moveTableVariableDown()
 
 void MainWindow::moveTableVariable(bool up)
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!trw_table_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
@@ -1359,7 +1381,7 @@ void MainWindow::moveTableVariable(bool up)
 
 void MainWindow::addWarning()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_warning")) { return; }
     WarningRecord record("");
     ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
@@ -1379,7 +1401,7 @@ void MainWindow::addWarning()
 
 void MainWindow::modifyWarning()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
@@ -1399,7 +1421,7 @@ void MainWindow::modifyWarning()
 
 void MainWindow::removeWarning()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
@@ -1420,7 +1442,7 @@ void MainWindow::removeWarning()
 
 void MainWindow::addInspector()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record("");
     ModifyDialogue * md = new ModifyInspectorDialogue(&record, this);
@@ -1433,7 +1455,7 @@ void MainWindow::addInspector()
 
 void MainWindow::modifyInspector()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isInspectorSelected()) { return; }
     if (!isOperationPermitted("edit_inspector")) { return; }
     QString old_id = selectedInspector();
@@ -1462,7 +1484,7 @@ void MainWindow::modifyInspector()
 
 void MainWindow::removeInspector()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isInspectorSelected()) { return; }
     if (!isOperationPermitted("remove_inspector")) { return; }
     bool ok;
@@ -1518,6 +1540,7 @@ void MainWindow::exportInspectionData()
 
 void MainWindow::exportData(const QString & type)
 {
+    QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     QString title;
@@ -1536,20 +1559,20 @@ void MainWindow::exportData(const QString & type)
             QMessageBox::critical(this, title, tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
             return;
         }
-        initDatabase(&data);
+        initDatabase(data);
         data.transaction();
-        copyTable("variables", &db, &data);
-        copyTable("tables", &db, &data);
-        copyTable("customers", &db, &data, QString("id = %1").arg(selectedCustomer()));
+        copyTable("variables", db, data);
+        copyTable("tables", db, data);
+        copyTable("customers", db, data, QString("id = %1").arg(selectedCustomer()));
         if (type == "customer") {
-            copyTable("circuits", &db, &data, QString("parent = %1").arg(selectedCustomer()));
-            copyTable("inspections", &db, &data, QString("customer = %1").arg(selectedCustomer()));
+            copyTable("circuits", db, data, QString("parent = %1").arg(selectedCustomer()));
+            copyTable("inspections", db, data, QString("customer = %1").arg(selectedCustomer()));
         } else if (type == "circuit") {
-            copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-            copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
         } else if (type == "inspection") {
-            copyTable("circuits", &db, &data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-            copyTable("inspections", &db, &data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
+            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'").arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
         }
         data.commit();
         data.close();
@@ -1559,7 +1582,7 @@ void MainWindow::exportData(const QString & type)
 
 void MainWindow::importData()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
@@ -1572,7 +1595,7 @@ void MainWindow::importData()
     }
     data.transaction();
     QSqlQuery query(data);
-    initDatabase(&data, false);
+    initDatabase(data, false);
     ImportDialogue * id = new ImportDialogue(this);
     QString id_justified;
     QVariantMap attributes;
@@ -2201,7 +2224,7 @@ void MainWindow::importData()
 
 void MainWindow::importCSV()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
     QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), "", tr("CSV files (*.csv);;All files (*.*)"));
     if (path.isEmpty()) { return; }
@@ -2326,7 +2349,7 @@ void MainWindow::importCSV()
 
 void MainWindow::addAssemblyRecordType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordType record("");
     ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -2348,7 +2371,7 @@ void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
 
 void MainWindow::modifyAssemblyRecordType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordTypeSelected()) { return; }
     AssemblyRecordType record(selectedAssemblyRecordType());
     ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
@@ -2361,7 +2384,7 @@ void MainWindow::modifyAssemblyRecordType()
 
 void MainWindow::removeAssemblyRecordType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordTypeSelected()) { return; }
     QString sel_record = selectedAssemblyRecordType();
     bool ok;
@@ -2377,7 +2400,7 @@ void MainWindow::removeAssemblyRecordType()
 
 void MainWindow::addAssemblyRecordItemType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemType record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -2399,7 +2422,7 @@ void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refre
 
 void MainWindow::modifyAssemblyRecordItemType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemTypeSelected()) { return; }
     AssemblyRecordItemType record(selectedAssemblyRecordItemType());
     ModifyDialogue * md = new ModifyDialogue(&record, this);
@@ -2412,7 +2435,7 @@ void MainWindow::modifyAssemblyRecordItemType()
 
 void MainWindow::removeAssemblyRecordItemType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemTypeSelected()) { return; }
     QString sel_record = selectedAssemblyRecordItemType();
     bool ok;
@@ -2428,7 +2451,7 @@ void MainWindow::removeAssemblyRecordItemType()
 
 void MainWindow::addAssemblyRecordItemCategory()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemCategory record("");
     ModifyDialogue * md = new ModifyDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
@@ -2450,7 +2473,7 @@ void MainWindow::loadAssemblyRecordItemCategory(int assembly_record_item_categor
 
 void MainWindow::modifyAssemblyRecordItemCategory()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemCategorySelected()) { return; }
     AssemblyRecordItemCategory category(selectedAssemblyRecordItemCategory());
     ModifyDialogue * md = new ModifyDialogue(&category, this);
@@ -2463,7 +2486,7 @@ void MainWindow::modifyAssemblyRecordItemCategory()
 
 void MainWindow::removeAssemblyRecordItemCategory()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemCategorySelected()) { return; }
     QString sel_category = selectedAssemblyRecordItemCategory();
     bool ok;
@@ -2492,7 +2515,7 @@ void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
 
 void MainWindow::addCircuitUnitType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     CircuitUnitType unit_type("");
     ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
     if (md->exec() == QDialog::Accepted) {
@@ -2514,7 +2537,7 @@ void MainWindow::loadCircuitUnitType(int circuit_unit_type, bool refresh)
 
 void MainWindow::modifyCircuitUnitType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCircuitUnitTypeSelected()) { return; }
     CircuitUnitType unit_type(selectedCircuitUnitType());
     ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
@@ -2527,7 +2550,7 @@ void MainWindow::modifyCircuitUnitType()
 
 void MainWindow::removeCircuitUnitType()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCircuitUnitTypeSelected()) { return; }
     QString sel_unit_type = selectedCircuitUnitType();
     bool ok;
@@ -2543,7 +2566,7 @@ void MainWindow::removeCircuitUnitType()
 
 void MainWindow::addStyle()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_style")) { return; }
 
     QSqlQuery query("SELECT MAX(id) FROM styles");
@@ -2567,7 +2590,7 @@ void MainWindow::addStyle()
 
 void MainWindow::modifyStyle()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();
@@ -2585,7 +2608,7 @@ void MainWindow::modifyStyle()
 
 void MainWindow::removeStyle()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();

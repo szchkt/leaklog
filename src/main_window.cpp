@@ -570,7 +570,7 @@ void MainWindow::printDetailedLabel()
 
 void MainWindow::printLabel(bool detailed)
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (detailed && !isCustomerSelected()) { return; }
     if (detailed && !isCircuitSelected()) { return; }
     if (!detailed && !isInspectorSelected()) { return; }
@@ -793,7 +793,7 @@ void MainWindow::reportDataFinished()
 
 void MainWindow::find()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     bool ok;
     QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
     if (ok && !keyword.isEmpty()) {
@@ -804,14 +804,14 @@ void MainWindow::find()
 
 void MainWindow::findNext()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
     wv_main->findText(last_search_keyword);
 }
 
 void MainWindow::findPrevious()
 {
-    if (!db.isOpen()) { return; }
+    if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
     wv_main->findText(last_search_keyword, QWebPage::FindBackward);
 }

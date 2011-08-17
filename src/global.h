@@ -22,12 +22,12 @@
 
 #include "defs.h"
 
+#include <QSqlDatabase>
+
 class MTDictionary;
 class QStringList;
 class QColor;
-class QSqlDatabase;
 class QTextStream;
-class QSqlError;
 
 namespace Global {
     QString escapeString(QString, bool = false, bool = false);
@@ -38,19 +38,19 @@ namespace Global {
     QString degreeSign();
     QString delta();
     QColor textColourForBaseColour(const QColor &);
-    QString sqlStringForDatabaseType(QString, QSqlDatabase * = 0);
+    QString sqlStringForDatabaseType(QString, const QSqlDatabase & = QSqlDatabase::database());
     QString variantTypeToSqlType(int);
     QString variableTypeToSqlType(const QString &);
-    MTDictionary getTableFieldNames(const QString &, QSqlDatabase *);
-    void copyTable(const QString &, QSqlDatabase *, QSqlDatabase *, const QString & = QString());
-    void addColumn(const QString &, const QString &, QSqlDatabase *);
-    void renameColumn(const QString &, const QString &, const QString &, QSqlDatabase *);
-    void dropColumn(const QString &, const QString &, QSqlDatabase *);
+    MTDictionary getTableFieldNames(const QString &, const QSqlDatabase &);
+    void copyTable(const QString &, const QSqlDatabase &, const QSqlDatabase &, const QString & = QString());
+    void addColumn(const QString &, const QString &, const QSqlDatabase &);
+    void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
+    void dropColumn(const QString &, const QString &, const QSqlDatabase &);
     QString DBInfoValueForKey(const QString &, const QString & = QString());
     QSqlError setDBInfoValueForKey(const QString &, const QString &);
-    QString currentUser(QSqlDatabase * = 0);
+    QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isCurrentUserAdmin();
-    bool isDatabaseRemote(QSqlDatabase * = 0);
+    bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());
     int isDatabaseLocked();
     QString lockDate();
     bool isRecordLocked(const QString &);

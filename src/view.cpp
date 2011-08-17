@@ -39,7 +39,10 @@ using namespace Global;
 QString MainWindow::viewChanged(int view)
 {
     QString html;
-    if (!db.isOpen()) { wv_main->setHtml(html); return html; }
+    if (!QSqlDatabase::database().isOpen()) {
+        wv_main->setHtml(html);
+        return html;
+    }
 
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
@@ -199,7 +202,7 @@ QString MainWindow::fileNameForCurrentView()
     if (navigation->view() == Navigation::AssemblyRecord)
         return currentView();
 
-    return QString("%1 - %2").arg(QFileInfo(db.databaseName()).baseName()).arg(currentView());
+    return QString("%1 - %2").arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName()).arg(currentView());
 }
 
 QString MainWindow::viewServiceCompany(int since)
@@ -763,7 +766,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     }
 
 //*** Warnings ***
-    Warnings warnings(db, true, customer_id, circuit_id);
+    Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id);
     QStringList warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspection);
     if (warnings_list.count()) {
         div.newLine();
@@ -975,7 +978,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 
 //*** Warnings ***
     if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
-        Warnings warnings(db, true, customer_id, circuit_id, table.value("scope").toInt());
+        Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id, table.value("scope").toInt());
         QString warnings_html, inspection_date;
         QStringList last_warnings_list, warnings_list, backup_warnings;
         for (int i = 0; i < inspections.count(); ++i) {
