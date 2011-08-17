@@ -965,10 +965,10 @@ void MainWindow::updateLockButton()
 {
     if (isDatabaseLocked()) {
         actionLock->setIcon(QIcon(":/images/images/locked.png"));
-        actionLock->setText(tr("Unlock"));
+        actionLock->setText(tr("Unlock..."));
     } else {
         actionLock->setIcon(QIcon(":/images/images/unlocked.png"));
-        actionLock->setText(tr("Lock"));
+        actionLock->setText(tr("Lock..."));
     }
 }
 

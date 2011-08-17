@@ -178,13 +178,13 @@ void ImportCsvDialogue::loadTableColumns(int index)
         }
     }
 
-    QMenu * menu = add_linked_table_btn->menu();
+    QMenu * menu = btn_add_linked_table->menu();
     if (menu) {
         menu->clear();
     } else {
-        menu = new QMenu(add_linked_table_btn);
-        add_linked_table_btn->setMenu(menu);
-        add_linked_table_btn->setPopupMode(QToolButton::InstantPopup);
+        menu = new QMenu(btn_add_linked_table);
+        btn_add_linked_table->setMenu(menu);
+        btn_add_linked_table->setPopupMode(QToolButton::InstantPopup);
         QObject::connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(addLinkedTable(QAction*)));
     }
 

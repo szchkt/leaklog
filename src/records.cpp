@@ -99,7 +99,7 @@ void Circuit::initModifyDialogue(ModifyDialogueWidgets * md)
     QString customer = Customer(parent("parent")).stringValue("company");
     if (customer.isEmpty())
         customer = parent("parent").rightJustified(8, '0');
-    md->setWindowTitle(tr("Customer: %2 %1 Cooling circuit").arg(rightTriangle()).arg(customer));
+    md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle()).arg(customer));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
@@ -229,7 +229,7 @@ void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
     QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(5, '0');
-    md->setWindowTitle(tr("Customer: %2 %1 Cooling circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
+    md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
@@ -492,7 +492,7 @@ DBRecord("service_companies", "id", id, MTDictionary())
 
 void ServiceCompany::initModifyDialogue(ModifyDialogueWidgets * md)
 {
-    md->setWindowTitle(tr("Service company"));
+    md->setWindowTitle(tr("Service Company"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
@@ -545,7 +545,7 @@ void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogueWidgets * m
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
-    md->setWindowTitle(tr("Record of refrigerant management"));
+    md->setWindowTitle(tr("Record of Refrigerant Management"));
     QVariantMap attributes;
     if (!id().isEmpty()) {
         attributes = list();
@@ -649,7 +649,7 @@ DBRecord("assembly_record_types", "id", id, MTDictionary())
 
 void AssemblyRecordType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
-    md->setWindowTitle(tr("Assembly record type"));
+    md->setWindowTitle(tr("Assembly Record Type"));
 
     QStringList keywords;
     keywords << "customer_id";
@@ -721,7 +721,7 @@ void AssemblyRecordItemType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
-    md->setWindowTitle(tr("Assembly record item type"));
+    md->setWindowTitle(tr("Assembly Record Item Type"));
 
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
@@ -820,7 +820,7 @@ const MTDictionary & AssemblyRecordItemCategory::attributes()
 
 void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogueWidgets * md)
 {
-    md->setWindowTitle(tr("Assembly record item category"));
+    md->setWindowTitle(tr("Assembly Record Item Category"));
 
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
@@ -832,7 +832,7 @@ void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogueWidgets * md)
     else
         md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 999));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display Options:"), md->widget(), attributes.value("display_options").toInt());
+    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
@@ -907,7 +907,7 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
-    md->setWindowTitle(tr("Assembly record item type"));
+    md->setWindowTitle(tr("Circuit Unit Type"));
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
     MTDictionary locations;
     locations.insert(tr("External"), QString::number(CircuitUnitType::External));
@@ -937,7 +937,7 @@ void CircuitUnitType::initModifyDialogue(ModifyDialogueWidgets * md)
     gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md->widget(), 0.0, 999999.9, attributes.value("output").toDouble()));
     gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), attributes.value("output_unit").toString(), output_units));
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
-    md->addGroupedInputWidgets(tr("Output"), gw_list);
+    md->addGroupedInputWidgets(tr("Output:"), gw_list);
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
 
 

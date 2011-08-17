@@ -151,9 +151,9 @@ QString MainWindow::currentView()
 {
     QString view = tr("Service company");
     switch (navigation->view()) {
-        case Navigation::ServiceCompany: view = QApplication::translate("Navigation", "Service company"); break;
-        case Navigation::RefrigerantManagement: view = QApplication::translate("Navigation", "Refrigerant management"); break;
-        case Navigation::ListOfCustomers: view = QApplication::translate("Navigation", "List of customers"); break;
+        case Navigation::ServiceCompany: view = QApplication::translate("Navigation", "Service Company"); break;
+        case Navigation::RefrigerantManagement: view = QApplication::translate("Navigation", "Refrigerant Management"); break;
+        case Navigation::ListOfCustomers: view = QApplication::translate("Navigation", "List of Customers"); break;
         case Navigation::ListOfCircuits:
             view = Customer(selectedCustomer()).stringValue("company");
             break;
@@ -161,7 +161,7 @@ QString MainWindow::currentView()
             view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
             view = Customer(selectedCustomer()).stringValue("company")
                    + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
-                   + " - " + QApplication::translate("Navigation", "List of inspections");
+                   + " - " + QApplication::translate("Navigation", "List of Inspections");
             break;
         case Navigation::AssemblyRecord:
             view = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).stringValue("arno");
@@ -176,23 +176,23 @@ QString MainWindow::currentView()
             view = Circuit(selectedCustomer(), selectedCircuit()).stringValue("name");
             view = Customer(selectedCustomer()).stringValue("company")
                    + " - " + QString(view.isEmpty() ? selectedCircuit() : view)
-                   + " - " + QApplication::translate("Navigation", "Table of inspections");
+                   + " - " + QApplication::translate("Navigation", "Table of Inspections");
             break;
-        case Navigation::ListOfRepairs: view = QApplication::translate("Navigation", "List of repairs"); break;
-        case Navigation::ListOfInspectors: view = QApplication::translate("Navigation", "List of inspectors"); break;
+        case Navigation::ListOfRepairs: view = QApplication::translate("Navigation", "List of Repairs"); break;
+        case Navigation::ListOfInspectors: view = QApplication::translate("Navigation", "List of Inspectors"); break;
         case Navigation::Inspector: view = QApplication::translate("Navigation", "Inspector"); break;
         case Navigation::OperatorReport:
-            view = QApplication::translate("Navigation", "Operator report")
+            view = QApplication::translate("Navigation", "Operator Report")
                    + " - " + Customer(selectedCustomer()).stringValue("company");
             break;
-        case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by application"); break;
+        case Navigation::LeakagesByApplication: view = QApplication::translate("Navigation", "Leakages by Application"); break;
         case Navigation::Agenda: view = QApplication::translate("Navigation", "Agenda"); break;
-        case Navigation::ListOfAssemblyRecordTypes: view = QApplication::translate("Navigation", "List of assembly record types"); break;
-        case Navigation::ListOfAssemblyRecordItemTypes: view = QApplication::translate("Navigation", "List of assembly record item types"); break;
-        case Navigation::ListOfAssemblyRecordItemCategories: view = QApplication::translate("Navigation", "List of assembly record item categories"); break;
-        case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of circuit unit types"); break;
+        case Navigation::ListOfAssemblyRecordTypes: view = QApplication::translate("Navigation", "List of Assembly Record Types"); break;
+        case Navigation::ListOfAssemblyRecordItemTypes: view = QApplication::translate("Navigation", "List of Assembly Record Item Types"); break;
+        case Navigation::ListOfAssemblyRecordItemCategories: view = QApplication::translate("Navigation", "List of Assembly Record Item Categories"); break;
+        case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of Circuit Unit Types"); break;
         case Navigation::ListOfAssemblyRecords: break;
-        case Navigation::InspectionImages: view = QApplication::translate("Navigation", "Inspection images"); break;
+        case Navigation::InspectionImages: view = QApplication::translate("Navigation", "Inspection Images"); break;
     }
     return view;
 }
@@ -213,7 +213,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
-    out << tr("Service company") << "</a></b></td></tr>";
+    out << tr("Service Company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int num_valid = 0; QString attr_value;
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
@@ -244,7 +244,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<store />";
     out << "</table></td></tr>";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
-    out << tr("Refrigerant management") << "</b></td></tr>";
+    out << tr("Refrigerant Management") << "</b></td></tr>";
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"centred_with_borders\">";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
@@ -359,7 +359,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
     QString html; MTTextStream out(&html);
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">";
-    out << tr("Refrigerant management") << "</th></tr>";
+    out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
@@ -436,7 +436,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
 
     HTMLTableCell * cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
-    if (customer_id.isEmpty()) { *cell << tr("List of customers"); }
+    if (customer_id.isEmpty()) { *cell << tr("List of Customers"); }
     else { *cell << "<a href=\"customer:" << customer_id << "/modify\">" << tr("Customer") << "</a>"; }
 
     *table << row;
@@ -494,7 +494,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     *(thead->addHeaderCell()) << Circuit::attributes().value("oil") ;
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
-    if (circuit_id.isEmpty()) { *_td << tr("List of circuits"); }
+    if (circuit_id.isEmpty()) { *_td << tr("List of Circuits"); }
     else { *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
     *table << thead;
     QString attr_value; QStringList dict_value; QString id;
@@ -537,7 +537,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
         _tr = table->addRow();
-        *(_tr->addHeaderCell("colspan=\"6\" style=\"font-size: medium;\"")) << tr("Disused circuits");
+        *(_tr->addHeaderCell("colspan=\"6\" style=\"font-size: medium;\"")) << tr("Disused Circuits");
         _tr = table->addRow();
         *(_tr->addHeaderCell()) << Circuit::attributes().value("id");
         *(_tr->addHeaderCell()) << Circuit::attributes().value("manufacturer");
@@ -619,7 +619,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
-    out << tr("Inspections and repairs") << "</a></th></tr>";
+    out << tr("Inspections and Repairs") << "</a></th></tr>";
     out << "<tr><th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:date\">" << tr("Date") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:refr_add_am\">" << variableNames().value("refr_add_am") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:refr_reco\">" << variableNames().value("refr_reco") << "</a></th>";
@@ -692,7 +692,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
 
     el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
             ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
-    if (nominal) *el << tr("Nominal inspection:");
+    if (nominal) *el << tr("Nominal Inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");
     *el << "&nbsp;" << inspection_date;
@@ -1366,7 +1366,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of repairs") << "</th></tr><tr>";
+    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of Repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
         out << "<th>" << Repair::attributes().value(n) << "</th>";
     }
@@ -1432,7 +1432,7 @@ QString MainWindow::viewInspector(const QString & inspector_id)
     ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer, inspections.circuit, inspections.date, assembly_record_items.*"));
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-    *(table->addRow()->addHeaderCell("colspan=\"10\" style=\"font-size: medium;\"")) << tr("Assembly records");
+    *(table->addRow()->addHeaderCell("colspan=\"10\" style=\"font-size: medium;\"")) << tr("Assembly Records");
     _tr = table->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Customer ID");
@@ -1500,7 +1500,7 @@ QString MainWindow::viewInspector(const QString & inspector_id)
     div.newLine();
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-    *(table->addRow()->addHeaderCell("colspan=\"5\" style=\"font-size: medium;\"")) << tr("Inspections and repairs");
+    *(table->addRow()->addHeaderCell("colspan=\"5\" style=\"font-size: medium;\"")) << tr("Inspections and Repairs");
     _tr = table->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Customer ID");
@@ -1564,7 +1564,7 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
     *(_tr->addHeaderCell()) << tr("Number of repairs");
 
     *(table->addRow()->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan)))
-            << (inspector_id.isEmpty() ? tr("List of inspectors") : tr("Inspector"));
+            << (inspector_id.isEmpty() ? tr("List of Inspectors") : tr("Inspector"));
     *table << _tr;
     QString id, tr_attr;
     for (int i = 0; i < inspectors.count(); ++i) {
@@ -1598,7 +1598,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     QVariantMap attributes = customer.list("company, address");
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
-    out << tr("Operator report: %1").arg(year) << "</th></tr></table><br>";
+    out << tr("Operator Report: %1").arg(year) << "</th></tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"3\">" << tr("Owner information") << "</th></tr><tr>";
     out << "<th>" << Customer::attributes().value("id") << "</th>";
@@ -1741,7 +1741,7 @@ QString MainWindow::viewLeakagesByApplication()
     }
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-    out << "<th style=\"font-size: medium;\">" << tr("Leakages by application") << "</th></tr></table><br>";
+    out << "<th style=\"font-size: medium;\">" << tr("Leakages by Application") << "</th></tr></table><br>";
     QStringList tables;
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
@@ -1885,7 +1885,7 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of assembly record types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Types") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < items.count(); ++i) {
@@ -1926,7 +1926,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of assembly record item types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Item Types") << "</th></tr>";
     out << thead;
     QString id;
     MTDictionary categories(listAssemblyRecordItemCategories());
@@ -1973,7 +1973,7 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of assembly record item categories") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Item Categories") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < items.count(); ++i) {
@@ -2300,7 +2300,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of circuit unit types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Circuit Unit Types") << "</th></tr>";
     out << thead;
     QString id;
     MTDictionary categories(listAssemblyRecordItemCategories());
@@ -2452,7 +2452,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     _tr = table->addRow();
     _td = _tr->addHeaderCell("colspan=\"7\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *_td << tr("Assembly records");
+    *_td << tr("Assembly Records");
     _tr = table->addRow();
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:date")) << tr("Date");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:arno")) << tr("Assembly record number");

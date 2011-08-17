@@ -62,14 +62,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_customers_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_customers_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -108,14 +108,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_customers_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_customers_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -161,14 +161,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_circuits_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_circuits_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -207,14 +207,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_circuits_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_circuits_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -260,14 +260,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_inspections_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_inspections_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -303,14 +303,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_inspections_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_inspections_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -353,14 +353,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_repairs_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_repairs_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -399,14 +399,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_repairs_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_repairs_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -437,7 +437,7 @@
      </widget>
      <widget class="QWidget" name="tab_refrigerant_management">
       <attribute name="title">
-       <string>Refrigerant management</string>
+       <string>Refrigerant Management</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
@@ -452,14 +452,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_refrigerant_management_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_refrigerant_management_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -498,14 +498,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_refrigerant_management_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_refrigerant_management_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -551,14 +551,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_inspectors_new_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_inspectors_new_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -597,14 +597,14 @@
          <item>
           <widget class="QToolButton" name="tbtn_inspectors_modified_selectall">
            <property name="text">
-            <string>Select all</string>
+            <string>Select All</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="tbtn_inspectors_modified_selectnone">
            <property name="text">
-            <string>Select none</string>
+            <string>Select None</string>
            </property>
           </widget>
          </item>
@@ -645,7 +645,7 @@
          </property>
          <column>
           <property name="text">
-           <string>Variable name</string>
+           <string>Variable Name</string>
           </property>
          </column>
          <column>
