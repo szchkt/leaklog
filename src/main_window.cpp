@@ -57,11 +57,21 @@
 using namespace Global;
 
 MainWindow::MainWindow():
+    selected_customer(-1),
+    selected_circuit(-1),
+    selected_compressor(-1),
+    selected_inspection_is_repair(false),
+    selected_inspector(-1),
+    selected_assembly_record_type(-1),
+    selected_assembly_record_item_type(-1),
+    selected_assembly_record_item_category(-1),
+    selected_circuit_unit_type(-1),
+    check_for_updates(true),
     last_link(NULL)
 {
     // Dictionaries
     dict_fieldtypes.insert("address", MTVariant::Address);
-    // ------------
+
     // HTML
 #ifdef Q_WS_MAC
     QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
@@ -71,86 +81,56 @@ MainWindow::MainWindow():
     QString font_size = "small";
 #endif
     QFile file; QTextStream in(&file); in.setCodec("UTF-8");
-    file.setFileName(":/html/service_company.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ServiceCompany, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/refrigerant_management.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::RefrigerantManagement, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/customers.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfCustomers, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/customer.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfCircuits, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/circuit.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfInspections, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/inspection.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::Inspection, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/table.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::TableOfInspections, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/repairs.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfRepairs, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/inspectors.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfInspectors, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/inspector.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::Inspector, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/operator_report.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::OperatorReport, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/leakages.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::LeakagesByApplication, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/agenda.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::Agenda, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/assembly_record_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfAssemblyRecordTypes, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/assembly_record_item_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfAssemblyRecordItemTypes, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/assembly_record_item_categories.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfAssemblyRecordItemCategories, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/assembly_record.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::AssemblyRecord, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/circuit_unit_types.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfCircuitUnitTypes, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/assembly_records.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::ListOfAssemblyRecords, in.readAll().arg(font).arg(font_size));
-    file.close();
-    file.setFileName(":/html/inspection_images.html"); file.open(QIODevice::ReadOnly | QIODevice::Text);
-    dict_html.insert(Navigation::InspectionImages, in.readAll().arg(font).arg(font_size));
-    file.close();
-    // ----
-    selected_customer = -1;
-    selected_circuit = -1;
-    selected_compressor = -1;
-    selected_inspection_is_repair = false;
-    selected_inspector = -1;
-    selected_assembly_record_type = -1;
-    selected_assembly_record_item_type = -1;
-    selected_assembly_record_item_category = -1;
-    selected_circuit_unit_type = -1;
-    check_for_updates = true;
+
+#define readFile(name, id) \
+    file.setFileName(":/html/" #name ".html"); \
+    file.open(QIODevice::ReadOnly | QIODevice::Text); \
+    dict_html.insert(id, in.readAll().arg(font).arg(font_size)); \
+    file.close()
+
+    readFile(service_company, Navigation::ServiceCompany);
+    readFile(refrigerant_management, Navigation::RefrigerantManagement);
+    readFile(customers, Navigation::ListOfCustomers);
+    readFile(customer, Navigation::ListOfCircuits);
+    readFile(circuit, Navigation::ListOfInspections);
+    readFile(inspection, Navigation::Inspection);
+    readFile(table, Navigation::TableOfInspections);
+    readFile(repairs, Navigation::ListOfRepairs);
+    readFile(inspectors, Navigation::ListOfInspectors);
+    readFile(inspector, Navigation::Inspector);
+    readFile(operator_report, Navigation::OperatorReport);
+    readFile(leakages, Navigation::LeakagesByApplication);
+    readFile(agenda, Navigation::Agenda);
+    readFile(assembly_record_types, Navigation::ListOfAssemblyRecordTypes);
+    readFile(assembly_record_item_types, Navigation::ListOfAssemblyRecordItemTypes);
+    readFile(assembly_record_item_categories, Navigation::ListOfAssemblyRecordItemCategories);
+    readFile(assembly_record, Navigation::AssemblyRecord);
+    readFile(circuit_unit_types, Navigation::ListOfCircuitUnitTypes);
+    readFile(assembly_records, Navigation::ListOfAssemblyRecords);
+    readFile(inspection_images, Navigation::InspectionImages);
+
+#undef readFile
+
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
-    // ----
-    if (tr("LTR") == "RTL") { qApp->setLayoutDirection(Qt::RightToLeft); }
+
+    // UI
+    if (tr("LTR") == "RTL")
+        qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
+
     http = new QHttp(this);
     http_buffer = new QBuffer(this);
+
+    // Dock widgets
+    dw_variables->setVisible(false);
+    dw_tables->setVisible(false);
+    dw_warnings->setVisible(false);
+    dw_styles->setVisible(false);
+
+    // Toolbar
     tbtn_open = new QToolButton(this);
     tbtn_open->setDefaultAction(actionOpen);
     tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -164,10 +144,6 @@ MainWindow::MainWindow():
     QWidget * spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
-    dw_variables->setVisible(false);
-    dw_tables->setVisible(false);
-    dw_warnings->setVisible(false);
-    dw_styles->setVisible(false);
     actionOpen->setMenu(menuOpen);
     actionExport->setMenu(menuExport);
     QMenu * menuAdd_variable = new QMenu(this);
@@ -181,6 +157,8 @@ MainWindow::MainWindow():
     actgrp_view->addAction(actionAssembly_records);
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
+
+    // Statusbar
     lbl_current_selection = new QLabel;
     lbl_current_selection->setVisible(false);
     statusbar->addWidget(lbl_current_selection);
@@ -193,24 +171,29 @@ MainWindow::MainWindow():
     btn_clear_selection = new QPushButton(this);
     btn_clear_selection->setFlat(true);
     btn_clear_selection->setMaximumSize(18, 18);
-    if (layoutDirection() == Qt::LeftToRight) {
-        btn_clear_selection->setIcon(QIcon(QString::fromUtf8(":/images/images/clear.png")));
-    } else {
-        btn_clear_selection->setIcon(QIcon(QString::fromUtf8(":/images/images/clear_rtl.png")));
-    }
+    btn_clear_selection->setIcon(QIcon(QString::fromUtf8(layoutDirection() == Qt::LeftToRight ?
+                                                             ":/images/images/clear.png" :
+                                                             ":/images/images/clear_rtl.png")));
     btn_clear_selection->setToolTip(tr("Clear current selection"));
     btn_clear_selection->setVisible(false);
     statusbar->addWidget(btn_clear_selection);
+
+    // Variables
     trw_variables->header()->setSortIndicator(0, Qt::AscendingOrder);
     trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
     trw_variables->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+
+    // Tables
     trw_table_variables->header()->setResizeMode(0, QHeaderView::Stretch);
     trw_table_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
     trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
+
     setAllEnabled(false);
+
     navigation->connectSlots(this);
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
@@ -297,6 +280,7 @@ MainWindow::MainWindow():
     QObject::connect(tbtn_add_style, SIGNAL(clicked()), this, SLOT(addStyle()));
     QObject::connect(tbtn_modify_style, SIGNAL(clicked()), this, SLOT(modifyStyle()));
     QObject::connect(tbtn_remove_style, SIGNAL(clicked()), this, SLOT(removeStyle()));
+
     setDefaultWebPage();
 #ifdef Q_WS_MAC
     show();
