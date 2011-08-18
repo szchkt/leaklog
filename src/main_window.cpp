@@ -217,6 +217,7 @@ MainWindow::MainWindow():
     QObject::connect(actionDetailed_logbook, SIGNAL(triggered()), navigation, SLOT(viewDetailedLogbook()));
     QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
