@@ -35,7 +35,7 @@
     <widget class="QSpinBox" name="spb_skip_lines"/>
    </item>
    <item row="1" column="10">
-    <spacer name="horizontalSpacer_2">
+    <spacer name="horizontal_spacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -91,9 +91,9 @@
     <widget class="QComboBox" name="cb_table"/>
    </item>
    <item row="3" column="1">
-    <widget class="QToolButton" name="add_linked_table_btn">
+    <widget class="QToolButton" name="btn_add_linked_table">
      <property name="text">
-      <string>Add linked table</string>
+      <string>Add Linked Table...</string>
      </property>
     </widget>
    </item>

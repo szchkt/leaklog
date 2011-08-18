@@ -161,7 +161,7 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(const QString &, bool);
-    void initDatabase(QSqlDatabase *, bool = true);
+    void initDatabase(QSqlDatabase &, bool = true);
     void initTables(bool = true);
     void openDatabase(QString);
     void saveDatabase(bool = false);
@@ -172,6 +172,7 @@ private:
     void loadCircuit(int, bool);
     void loadInspection(const QString &, bool);
     void loadRepair(const QString &, bool);
+    void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());
     void addVariable(bool);
     void moveTableVariable(bool);
     void loadInspector(int, bool);
@@ -267,7 +268,6 @@ private:
     QToolButton * tbtn_open;
     QToolButton * tbtn_export;
     QString last_search_keyword;
-    QSqlDatabase db;
     QComboBox * cb_lang;
     QMap<QString, QString> leaklog_i18n;
     bool check_for_updates;

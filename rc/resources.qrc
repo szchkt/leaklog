@@ -68,5 +68,7 @@
         <file>images/assembly_record.png</file>
         <file>images/assembly_records.png</file>
         <file>images/frigo_slovakia_logo.jpg</file>
+        <file>images/lklg.png</file>
+        <file>images/csv16.png</file>
     </qresource>
 </RCC>

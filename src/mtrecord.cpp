@@ -193,10 +193,10 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
         set.insert("updated_by", currentUser());
     QMapIterator<QString, QVariant> i(set);
     if (add_columns) {
-        MTDictionary field_names = getTableFieldNames(r_table, &db);
+        MTDictionary field_names = getTableFieldNames(r_table, db);
         while (i.hasNext()) { i.next();
             if (!field_names.contains(i.key())) {
-                addColumn(i.key(), r_table, &db);
+                addColumn(i.key(), r_table, db);
             }
         }
         i.toFront();

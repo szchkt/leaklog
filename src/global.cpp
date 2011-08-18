@@ -81,7 +81,7 @@ QColor Global::textColourForBaseColour(const QColor & c)
     }
 }
 
-QString Global::sqlStringForDatabaseType(QString sql, QSqlDatabase * db)
+QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase & db)
 {
     if (!isDatabaseRemote(db))
         sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
@@ -105,10 +105,10 @@ QString Global::variableTypeToSqlType(const QString & type)
     return "TEXT";
 }
 
-MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * database)
+MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabase & database)
 {
     MTDictionary field_names;
-    QSqlQuery query(*database);
+    QSqlQuery query(database);
     query.exec("SELECT * FROM " + table);
     for (int i = 0; i < query.record().count(); ++i) {
         field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
@@ -116,9 +116,9 @@ MTDictionary Global::getTableFieldNames(const QString & table, QSqlDatabase * da
     return field_names;
 }
 
-void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase * to, const QString & filter)
+void Global::copyTable(const QString & table, const QSqlDatabase & from, const QSqlDatabase & to, const QString & filter)
 {
-    QSqlQuery select(*from);
+    QSqlQuery select(from);
     select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
     if (select.next() && select.record().count()) {
         QString copy("INSERT INTO " + table + " (");
@@ -139,7 +139,7 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
         }
         copy.append(")");
         do {
-            QSqlQuery insert(*to);
+            QSqlQuery insert(to);
             insert.prepare(copy);
             for (int i = 0; i < select.record().count(); ++i) {
                 insert.bindValue(":" + select.record().fieldName(i), select.value(i));
@@ -149,18 +149,21 @@ void Global::copyTable(const QString & table, QSqlDatabase * from, QSqlDatabase 
     }
 }
 
-void Global::addColumn(const QString & column, const QString & table, QSqlDatabase * database)
+void Global::addColumn(const QString & column, const QString & table, const QSqlDatabase & database)
 {
+    if (getTableFieldNames(table, database).contains(column))
+        return;
+
     QString col = column;
     if (column.split(" ").count() < 2) { col.append(" TEXT"); }
-    QSqlQuery add_column(*database);
+    QSqlQuery add_column(database);
     add_column.exec("ALTER TABLE " + table + " ADD COLUMN " + col);
 }
 
-void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, QSqlDatabase * database)
+void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, const QSqlDatabase & database)
 {
     if (isDatabaseRemote(database)) {
-        QSqlQuery rename_column(*database);
+        QSqlQuery rename_column(database);
         rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -174,7 +177,7 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(*database);
+        QSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol%2)").arg(fields).arg(column_type));
         query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -184,10 +187,13 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
     }
 }
 
-void Global::dropColumn(const QString & column, const QString & table, QSqlDatabase * database)
+void Global::dropColumn(const QString & column, const QString & table, const QSqlDatabase & database)
 {
+    if (!getTableFieldNames(table, database).contains(column))
+        return;
+
     if (isDatabaseRemote(database)) {
-        QSqlQuery drop_column(*database);
+        QSqlQuery drop_column(database);
         drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -197,7 +203,7 @@ void Global::dropColumn(const QString & column, const QString & table, QSqlDatab
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(*database);
+        QSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(fields));
         query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -223,11 +229,9 @@ QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & valu
     return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
 }
 
-QString Global::currentUser(QSqlDatabase * database)
+QString Global::currentUser(const QSqlDatabase & database)
 {
-    return database ?
-            database->userName() :
-            QSqlDatabase::database().userName();
+    return database.userName();
 }
 
 bool Global::isCurrentUserAdmin()
@@ -236,11 +240,9 @@ bool Global::isCurrentUserAdmin()
     return DBInfoValueForKey("admin", current_user) == current_user;
 }
 
-bool Global::isDatabaseRemote(QSqlDatabase * database)
+bool Global::isDatabaseRemote(const QSqlDatabase & database)
 {
-    return database ?
-            !database->driverName().contains("SQLITE") :
-            !QSqlDatabase::database().driverName().contains("SQLITE");
+    return !database.driverName().contains("SQLITE");
 }
 
 int Global::isDatabaseLocked()
@@ -467,8 +469,7 @@ public:
         dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("variables", "id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT, scope INTEGER DEFAULT 1 NOT NULL");
-        dict.insert("subvariables", "parent TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, value TEXT, compare_nom INTEGER, tolerance NUMERIC, date_updated TEXT, updated_by TEXT");
+        dict.insert("variables", "parent_id TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, scope INTEGER DEFAULT 1 NOT NULL, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, scope INTEGER DEFAULT 1 NOT NULL, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("warnings", "id INTEGER PRIMARY KEY, scope INTEGER DEFAULT 1 NOT NULL, enabled INTEGER, name TEXT, description TEXT, delay INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
@@ -504,6 +505,7 @@ public:
         dict.insert("string", QApplication::translate("VariableTypes", "String"));
         dict.insert("text", QApplication::translate("VariableTypes", "Text"));
         dict.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
+        dict.insert("group", QApplication::translate("VariableTypes", "Group"));
     }
 
     MTDictionary dict;
@@ -842,16 +844,17 @@ MTDictionary Global::listAllVariables()
 {
     MTDictionary dict("", "");
     dict.allowDuplicateKeys();
-    Variables query;
-    bool is_subvar;
-    while (query.next()) {
-        is_subvar = !query.value("SUBVAR_ID").toString().isEmpty();
+    Variables variables;
+    QString name;
+    while (variables.next()) {
+        if (variables.parentID().isEmpty())
+            name = variables.name();
+        else
+            name = QString("%1: %2")
+                   .arg(variables.parentVariable().name())
+                   .arg(variables.name());
 
-        QString name = is_subvar ? QString("%1: %2").arg(query.value("VAR_NAME").toString()).arg(query.value("SUBVAR_NAME").toString())
-            : query.value("VAR_NAME").toString();
-        QString id = is_subvar ? query.value("SUBVAR_ID").toString() : query.value("VAR_ID").toString();
-
-        dict.insert(name, id);
+        dict.insert(name, variables.id());
     }
     return dict;
 }
@@ -882,14 +885,13 @@ MTDictionary Global::listStyles()
 
 QStringList Global::listVariableIds(bool all)
 {
-    QStringList ids; bool sub_empty = false;
+    QStringList ids;
     ids << "customer" << "circuit" << "nominal" << "repair";
     if (all) ids << "date";
-    Variables query;
-    while (query.next()) {
-        sub_empty = query.value("SUBVAR_ID").toString().isEmpty();
-        if (all || sub_empty) { ids << query.value("VAR_ID").toString(); }
-        if (!sub_empty) { ids << query.value("SUBVAR_ID").toString(); }
+    Variables variables;
+    while (variables.next()) {
+        if (all || variables.type() != "group")
+            ids << variables.id();
     }
     return ids;
 }

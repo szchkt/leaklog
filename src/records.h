@@ -110,14 +110,9 @@ class VariableRecord : public DBRecord
     Q_OBJECT
 
 public:
-    enum Type { VARIABLE = 0, SUBVARIABLE = 1 };
-
-    VariableRecord(Type, const QString &, const QString & = QString());
+    VariableRecord(const QString &, const QString & = QString());
 
     void initModifyDialogue(ModifyDialogueWidgets *);
-
-private:
-    Type v_type;
 };
 
 class Table : public DBRecord
@@ -187,7 +182,7 @@ public:
         ShowCustomerContactPersons = 4,
         ShowCircuit = 8,
         ShowCircuitUnits = 16
-            };
+    };
 
     AssemblyRecordType(const QString &);
 
@@ -230,7 +225,7 @@ public:
         ShowAcquisitionPrice = 4,
         ShowDiscount = 8,
         ShowTotal = 16
-            };
+    };
     enum DisplayPosition {
         DisplayAtTop = 0,
         DisplayAtBottom = 1
@@ -252,7 +247,7 @@ public:
         AssemblyRecordItemTypes = 0,
         CircuitUnitTypes = 1,
         Inspectors = 2
-            };
+    };
 
     AssemblyRecordItem(const QString &);
     AssemblyRecordItem(const QString &, const QString &, const QString &, const MTDictionary &);
@@ -292,7 +287,7 @@ public:
     enum Locations {
         External = 0,
         Internal = 1
-            };
+    };
 
     CircuitUnitType(const QString &);
 

@@ -21,6 +21,7 @@
 #define TABBED_MODIFY_DIALOGUE_H
 
 #include "modify_dialogue.h"
+#include "mtdictionary.h"
 
 class QTabWidget;
 class QTreeWidget;
@@ -33,7 +34,6 @@ class ModifyDialogueTab;
 class ModifyDialogueArea;
 class MDLineEdit;
 class MDComboBox;
-class MTDictionary;
 
 class TabbedModifyDialogue : public ModifyDialogue
 {

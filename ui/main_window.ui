@@ -159,7 +159,7 @@
            <item>
             <widget class="QLabel" name="lbl_recent_docs">
              <property name="text">
-              <string>Recent databases:</string>
+              <string>Recent Databases:</string>
              </property>
             </widget>
            </item>
@@ -238,16 +238,26 @@
      <addaction name="actionPDF_Landscape"/>
      <addaction name="actionHTML"/>
     </widget>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../rc/resources.qrc">
+       <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+     </property>
+     <addaction name="actionImport_data"/>
+     <addaction name="actionImport_CSV"/>
+    </widget>
     <addaction name="actionNew"/>
     <addaction name="menuOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_and_compact"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
-    <addaction name="actionImport_data"/>
-    <addaction name="actionImport_CSV"/>
-    <addaction name="separator"/>
+    <addaction name="menuImport"/>
     <addaction name="menuExport"/>
+    <addaction name="separator"/>
     <addaction name="actionPrint_preview"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
@@ -274,7 +284,7 @@
    </widget>
    <widget class="QMenu" name="menuCooling_circuit">
     <property name="title">
-     <string>Cooling circuit</string>
+     <string>Circuit</string>
     </property>
     <addaction name="actionAdd_circuit"/>
     <addaction name="actionModify_circuit"/>
@@ -411,9 +421,15 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTreeWidget" name="trw_variables">
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="expandsOnDoubleClick">
+        <bool>false</bool>
+       </property>
        <column>
         <property name="text">
-         <string>Variable name</string>
+         <string>Variable Name</string>
         </property>
        </column>
        <column>
@@ -441,7 +457,7 @@
           <string>Create a new variable</string>
          </property>
          <property name="text">
-          <string>Add variable</string>
+          <string>Add Variable</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -506,7 +522,7 @@
           <string>Remove the selected variable</string>
          </property>
          <property name="text">
-          <string>Remove variable</string>
+          <string>Remove Variable</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -630,7 +646,7 @@
        </property>
        <column>
         <property name="text">
-         <string>Variable name</string>
+         <string>Variable Name</string>
         </property>
        </column>
        <column>
@@ -803,7 +819,7 @@
           <string>Create a new warning</string>
          </property>
          <property name="text">
-          <string>Add warning</string>
+          <string>Add Warning</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -862,7 +878,7 @@
           <string>Remove the selected warning</string>
          </property>
          <property name="text">
-          <string>Remove warning</string>
+          <string>Remove Warning</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -901,7 +917,7 @@
        <item>
         <widget class="QToolButton" name="tbtn_add_style">
          <property name="text">
-          <string>Add style</string>
+          <string>Add Style</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -936,7 +952,7 @@
        <item>
         <widget class="QToolButton" name="tbtn_remove_style">
          <property name="text">
-          <string>Remove style</string>
+          <string>Remove Style</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -973,7 +989,7 @@
      <normaloff>:/images/images/filenew.png</normaloff>:/images/images/filenew.png</iconset>
    </property>
    <property name="text">
-    <string>New</string>
+    <string>New...</string>
    </property>
    <property name="statusTip">
     <string>Create a new database</string>
@@ -1051,7 +1067,7 @@
      <normaloff>:/images/images/customer_add.png</normaloff>:/images/images/customer_add.png</iconset>
    </property>
    <property name="text">
-    <string>Add customer</string>
+    <string>Add Customer...</string>
    </property>
    <property name="statusTip">
     <string>Add a new customer</string>
@@ -1069,7 +1085,7 @@
      <normaloff>:/images/images/customer_remove.png</normaloff>:/images/images/customer_remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove customer</string>
+    <string>Remove Customer...</string>
    </property>
    <property name="statusTip">
     <string>Remove the selected customer</string>
@@ -1087,7 +1103,7 @@
      <normaloff>:/images/images/add.png</normaloff>:/images/images/add.png</iconset>
    </property>
    <property name="text">
-    <string>Add circuit</string>
+    <string>Add Circuit...</string>
    </property>
    <property name="statusTip">
     <string>Add a new circuit to the selected customer</string>
@@ -1105,7 +1121,7 @@
      <normaloff>:/images/images/remove.png</normaloff>:/images/images/remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove circuit</string>
+    <string>Remove Circuit...</string>
    </property>
    <property name="statusTip">
     <string>Remove the selected circuit</string>
@@ -1123,7 +1139,7 @@
      <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
    </property>
    <property name="text">
-    <string>Add inspection</string>
+    <string>Add Inspection...</string>
    </property>
    <property name="statusTip">
     <string>Add a new inspection to the selected circuit</string>
@@ -1141,7 +1157,7 @@
      <normaloff>:/images/images/inspection_remove.png</normaloff>:/images/images/inspection_remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove inspection</string>
+    <string>Remove Inspection...</string>
    </property>
    <property name="statusTip">
     <string>Remove the selected inspection</string>
@@ -1166,7 +1182,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show variables</string>
+    <string>Show Variables</string>
    </property>
    <property name="statusTip">
     <string>Show variables</string>
@@ -1202,7 +1218,7 @@
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify circuit</string>
+    <string>Modify Circuit...</string>
    </property>
    <property name="statusTip">
     <string>Modify the selected circuit</string>
@@ -1220,7 +1236,7 @@
      <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
    </property>
    <property name="text">
-    <string>Modify customer</string>
+    <string>Modify Customer...</string>
    </property>
    <property name="statusTip">
     <string>Modify the selected customer</string>
@@ -1238,7 +1254,7 @@
      <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
    </property>
    <property name="text">
-    <string>Modify inspection</string>
+    <string>Modify Inspection...</string>
    </property>
    <property name="statusTip">
     <string>Modify the selected inspection</string>
@@ -1256,7 +1272,7 @@
      <normaloff>:/images/images/print.png</normaloff>:/images/images/print.png</iconset>
    </property>
    <property name="text">
-    <string>Print</string>
+    <string>Print...</string>
    </property>
    <property name="statusTip">
     <string>Print the current view</string>
@@ -1274,7 +1290,7 @@
      <normaloff>:/images/images/print_preview.png</normaloff>:/images/images/print_preview.png</iconset>
    </property>
    <property name="text">
-    <string>Print preview</string>
+    <string>Print Preview...</string>
    </property>
    <property name="statusTip">
     <string>Display a print preview of the current view</string>
@@ -1289,7 +1305,7 @@
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
-    <string>Export customer data</string>
+    <string>Export Customer Data...</string>
    </property>
    <property name="statusTip">
     <string>Export all data of the selected customer</string>
@@ -1307,7 +1323,7 @@
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
-    <string>Export circuit data</string>
+    <string>Export Circuit Data...</string>
    </property>
    <property name="statusTip">
     <string>Export all data of the selected circuit</string>
@@ -1325,7 +1341,7 @@
      <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
    </property>
    <property name="text">
-    <string>Export inspection data</string>
+    <string>Export Inspection Data...</string>
    </property>
    <property name="statusTip">
     <string>Export all data of the selected inspection</string>
@@ -1340,10 +1356,10 @@
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+     <normaloff>:/images/images/lklg.png</normaloff>:/images/images/lklg.png</iconset>
    </property>
    <property name="text">
-    <string>Import data</string>
+    <string>Another Database...</string>
    </property>
    <property name="statusTip">
     <string>Import data from another database file</string>
@@ -1358,7 +1374,7 @@
      <normaloff>:/images/images/software_update.png</normaloff>:/images/images/software_update.png</iconset>
    </property>
    <property name="text">
-    <string>Check for updates</string>
+    <string>Check for Updates</string>
    </property>
    <property name="statusTip">
     <string>Check for Leaklog updates on-line</string>
@@ -1391,7 +1407,7 @@
      <normaloff>:/images/images/edit_find.png</normaloff>:/images/images/edit_find.png</iconset>
    </property>
    <property name="text">
-    <string>Find</string>
+    <string>Find...</string>
    </property>
    <property name="statusTip">
     <string>Search for a word in the current view</string>
@@ -1406,7 +1422,7 @@
      <normaloff>:/images/images/edit_find_next.png</normaloff>:/images/images/edit_find_next.png</iconset>
    </property>
    <property name="text">
-    <string>Find next</string>
+    <string>Find Next</string>
    </property>
    <property name="statusTip">
     <string>Find the next occurrence of the searched word</string>
@@ -1421,7 +1437,7 @@
      <normaloff>:/images/images/edit_find_previous.png</normaloff>:/images/images/edit_find_previous.png</iconset>
    </property>
    <property name="text">
-    <string>Find previous</string>
+    <string>Find Previous</string>
    </property>
    <property name="statusTip">
     <string>Find the previous occurrence of the searched word</string>
@@ -1435,7 +1451,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show tables</string>
+    <string>Show Tables</string>
    </property>
    <property name="statusTip">
     <string>Show tables</string>
@@ -1449,7 +1465,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show warnings</string>
+    <string>Show Warnings</string>
    </property>
    <property name="statusTip">
     <string>Show warnings</string>
@@ -1464,7 +1480,7 @@
      <normaloff>:/images/images/language16.png</normaloff>:/images/images/language16.png</iconset>
    </property>
    <property name="text">
-    <string>Change language</string>
+    <string>Change Language...</string>
    </property>
    <property name="statusTip">
     <string>Change the interface language</string>
@@ -1487,7 +1503,7 @@
      <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
    </property>
    <property name="text">
-    <string>Add inspector</string>
+    <string>Add Inspector...</string>
    </property>
    <property name="statusTip">
     <string>Add a new inspector</string>
@@ -1502,7 +1518,7 @@
      <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
    </property>
    <property name="text">
-    <string>Modify inspector</string>
+    <string>Modify Inspector...</string>
    </property>
    <property name="statusTip">
     <string>Modify the selected inspector</string>
@@ -1517,7 +1533,7 @@
      <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove inspector</string>
+    <string>Remove Inspector...</string>
    </property>
    <property name="statusTip">
     <string>Remove the selected inspector</string>
@@ -1535,7 +1551,7 @@
      <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
    </property>
    <property name="text">
-    <string>Print detailed label</string>
+    <string>Print Detailed Label...</string>
    </property>
    <property name="statusTip">
     <string>Print a detailed label for the selected circuit</string>
@@ -1550,7 +1566,7 @@
      <normaloff>:/images/images/local_database.png</normaloff>:/images/images/local_database.png</iconset>
    </property>
    <property name="text">
-    <string>Local database</string>
+    <string>Local database...</string>
    </property>
    <property name="statusTip">
     <string>Open a database file</string>
@@ -1565,7 +1581,7 @@
      <normaloff>:/images/images/remote_database.png</normaloff>:/images/images/remote_database.png</iconset>
    </property>
    <property name="text">
-    <string>Remote database</string>
+    <string>Remote database...</string>
    </property>
    <property name="statusTip">
     <string>Connect to a remote database server</string>
@@ -1576,7 +1592,7 @@
   </action>
   <action name="actionModify_service_company_information">
    <property name="text">
-    <string>Modify service company information</string>
+    <string>Modify Service Company Information...</string>
    </property>
    <property name="statusTip">
     <string>Modify service company information</string>
@@ -1588,7 +1604,7 @@
      <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
    </property>
    <property name="text">
-    <string>Add repair</string>
+    <string>Add Repair...</string>
    </property>
    <property name="statusTip">
     <string>Add a new repair</string>
@@ -1606,7 +1622,7 @@
      <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
    </property>
    <property name="text">
-    <string>Modify repair</string>
+    <string>Modify Repair...</string>
    </property>
    <property name="statusTip">
     <string>Modify the selected repair</string>
@@ -1624,7 +1640,7 @@
      <normaloff>:/images/images/repair_remove.png</normaloff>:/images/images/repair_remove.png</iconset>
    </property>
    <property name="text">
-    <string>Remove repair</string>
+    <string>Remove Repair...</string>
    </property>
    <property name="statusTip">
     <string>Remove the selected repair</string>
@@ -1635,7 +1651,7 @@
   </action>
   <action name="actionAdd_record_of_refrigerant_management">
    <property name="text">
-    <string>Add record of refrigerant management</string>
+    <string>Add Record of Refrigerant Management...</string>
    </property>
    <property name="statusTip">
     <string>Add record of refrigerant management</string>
@@ -1674,7 +1690,7 @@
      <normaloff>:/images/images/pdf.png</normaloff>:/images/images/pdf.png</iconset>
    </property>
    <property name="text">
-    <string>PDF (Portrait)</string>
+    <string>PDF (Portrait)...</string>
    </property>
    <property name="statusTip">
     <string>Export the current view as a PDF document</string>
@@ -1686,7 +1702,7 @@
      <normaloff>:/images/images/html.png</normaloff>:/images/images/html.png</iconset>
    </property>
    <property name="text">
-    <string>HTML Webpage</string>
+    <string>HTML Webpage...</string>
    </property>
    <property name="statusTip">
     <string>Export the current view as an HTML document</string>
@@ -1706,7 +1722,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Printer-friendly version</string>
+    <string>Printer-Friendly Version</string>
    </property>
    <property name="statusTip">
     <string>Display a printer-friendly version of the current view</string>
@@ -1718,7 +1734,7 @@
      <normaloff>:/images/images/unlocked.png</normaloff>:/images/images/unlocked.png</iconset>
    </property>
    <property name="text">
-    <string>Lock</string>
+    <string>Lock...</string>
    </property>
    <property name="statusTip">
     <string>Lock the database</string>
@@ -1729,7 +1745,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Report data to the notified body</string>
+    <string>Report Data to the Notified Body...</string>
    </property>
    <property name="statusTip">
     <string>Report data to the notified body</string>
@@ -1744,7 +1760,7 @@
      <normaloff>:/images/images/print_label.png</normaloff>:/images/images/print_label.png</iconset>
    </property>
    <property name="text">
-    <string>Print label</string>
+    <string>Print Label...</string>
    </property>
    <property name="statusTip">
     <string>Print labels for the selected inspector</string>
@@ -1765,7 +1781,7 @@
      <normaloff>:/images/images/service_company.png</normaloff>:/images/images/service_company.png</iconset>
    </property>
    <property name="text">
-    <string>Service company</string>
+    <string>Service Company</string>
    </property>
    <property name="statusTip">
     <string>Switch view to service company</string>
@@ -1780,7 +1796,7 @@
      <normaloff>:/images/images/logbook_basic.png</normaloff>:/images/images/logbook_basic.png</iconset>
    </property>
    <property name="text">
-    <string>Basic logbook</string>
+    <string>Basic Logbook</string>
    </property>
    <property name="statusTip">
     <string>Switch view to basic logbook</string>
@@ -1795,7 +1811,7 @@
      <normaloff>:/images/images/logbook_detailed.png</normaloff>:/images/images/logbook_detailed.png</iconset>
    </property>
    <property name="text">
-    <string>Detailed logbook</string>
+    <string>Detailed Logbook</string>
    </property>
    <property name="statusTip">
     <string>Switch view to detailed logbook</string>
@@ -1807,10 +1823,10 @@
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/import.png</normaloff>:/images/images/import.png</iconset>
+     <normaloff>:/images/images/csv16.png</normaloff>:/images/images/csv16.png</iconset>
    </property>
    <property name="text">
-    <string>Import CSV</string>
+    <string>CSV File...</string>
    </property>
    <property name="statusTip">
     <string>Import a CSV (comma-separated values) file</string>
@@ -1822,7 +1838,7 @@
      <normaloff>:/images/images/pdf_landscape.png</normaloff>:/images/images/pdf_landscape.png</iconset>
    </property>
    <property name="text">
-    <string>PDF (Landscape)</string>
+    <string>PDF (Landscape)...</string>
    </property>
    <property name="statusTip">
     <string>Export the current view as a PDF document</string>
@@ -1837,7 +1853,7 @@
      <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
    </property>
    <property name="text">
-    <string>Duplicate circuit</string>
+    <string>Duplicate Circuit...</string>
    </property>
    <property name="statusTip">
     <string>Duplicate the selected circuit</string>
@@ -1855,7 +1871,7 @@
      <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
    </property>
    <property name="text">
-    <string>Duplicate customer</string>
+    <string>Duplicate Customer...</string>
    </property>
    <property name="statusTip">
     <string>Duplicate the selected customer</string>
@@ -1873,7 +1889,7 @@
      <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
    </property>
    <property name="text">
-    <string>Duplicate inspection</string>
+    <string>Duplicate Inspection...</string>
    </property>
    <property name="statusTip">
     <string>Duplicate the selected inspection</string>
@@ -1891,7 +1907,7 @@
      <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
    </property>
    <property name="text">
-    <string>Duplicate repair</string>
+    <string>Duplicate Repair...</string>
    </property>
    <property name="statusTip">
     <string>Duplicate the selected repair</string>
@@ -1909,7 +1925,7 @@
      <normaloff>:/images/images/assembly_records.png</normaloff>:/images/images/assembly_records.png</iconset>
    </property>
    <property name="text">
-    <string>Assembly records</string>
+    <string>Assembly Records</string>
    </property>
    <property name="statusTip">
     <string>Switch view to assembly records</string>
@@ -1917,7 +1933,7 @@
   </action>
   <action name="actionConfigure_permissions">
    <property name="text">
-    <string>Configure permissions</string>
+    <string>Configure Permissions...</string>
    </property>
    <property name="statusTip">
     <string>Configure database access and modification permissions</string>
@@ -1931,7 +1947,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show styles</string>
+    <string>Show Styles</string>
    </property>
   </action>
   <action name="actionCompare_values">
@@ -1942,7 +1958,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Compare values with the nominal inspection</string>
+    <string>Compare Values With the Nominal Inspection</string>
    </property>
   </action>
  </widget>

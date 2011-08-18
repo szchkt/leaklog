@@ -126,7 +126,7 @@ MOC_DIR        = build/win32
 RCC_DIR        = build/win32
 }
 macx {
-ICON           = rc/images/leaklog128.icns
+ICON           = rc/images/leaklog.icns
 CONFIG        += x86_64
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
 # QMAKE_MAC_SDK  = /Developer/SDKs/MacOSX10.5.sdk
