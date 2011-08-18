@@ -22,15 +22,15 @@
 
 #include "mtrecord.h"
 
-class ModifyDialogue;
-class ModifyDialogueWidgets;
+class EditDialogue;
+class EditDialogueWidgets;
 
 class Modifiable
 {
 public:
     virtual ~Modifiable() {}
 
-    virtual void initModifyDialogue(ModifyDialogueWidgets *) = 0;
+    virtual void initEditDialogue(EditDialogueWidgets *) = 0;
     virtual bool checkValues(const QVariantMap &, QWidget * = 0) { return true; }
 };
 
@@ -50,7 +50,7 @@ class Customer : public DBRecord
 public:
     Customer(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -62,7 +62,7 @@ class Circuit : public DBRecord
 public:
     Circuit(const QString &, const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
     bool checkValues(const QVariantMap &, QWidget * = 0);
 
     static const MTDictionary & attributes();
@@ -77,7 +77,7 @@ public:
     Inspection(const QString &, const QString &, const QString &);
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     int scope() { return m_scope; }
 
@@ -100,7 +100,7 @@ class Repair : public DBRecord
 public:
     Repair(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -112,7 +112,7 @@ class VariableRecord : public DBRecord
 public:
     VariableRecord(const QString &, const QString & = QString());
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 };
 
 class Table : public DBRecord
@@ -122,7 +122,7 @@ class Table : public DBRecord
 public:
     Table(const QString &, const QString & = QString(), const MTDictionary & = MTDictionary());
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 };
 
 class Inspector : public DBRecord
@@ -132,7 +132,7 @@ class Inspector : public DBRecord
 public:
     Inspector(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -144,7 +144,7 @@ class ServiceCompany : public DBRecord
 public:
     ServiceCompany(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -156,7 +156,7 @@ class RecordOfRefrigerantManagement : public DBRecord
 public:
     RecordOfRefrigerantManagement(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -168,7 +168,7 @@ class WarningRecord : public DBRecord
 public:
     WarningRecord(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 };
 
 class AssemblyRecordType : public DBRecord
@@ -186,7 +186,7 @@ public:
 
     AssemblyRecordType(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
     bool remove();
@@ -199,7 +199,7 @@ class AssemblyRecordItemType : public DBRecord
 public:
     AssemblyRecordItemType(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -233,7 +233,7 @@ public:
 
     AssemblyRecordItemCategory(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };
@@ -291,7 +291,7 @@ public:
 
     CircuitUnitType(const QString &);
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
     static const QString locationToString(int);
 
     static const MTDictionary & attributes();
@@ -320,7 +320,7 @@ class Style : public DBRecord
 public:
     Style(const QString & = QString());
 
-    void initModifyDialogue(ModifyDialogueWidgets *);
+    void initEditDialogue(EditDialogueWidgets *);
 
     static const MTDictionary & attributes();
 };

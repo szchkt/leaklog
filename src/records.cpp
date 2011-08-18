@@ -19,7 +19,7 @@
 
 #include "records.h"
 #include "input_widgets.h"
-#include "modify_dialogue.h"
+#include "edit_dialogue.h"
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
@@ -44,7 +44,7 @@ Customer::Customer(const QString & id):
 DBRecord("customers", "id", id, MTDictionary())
 {}
 
-void Customer::initModifyDialogue(ModifyDialogueWidgets * md)
+void Customer::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Customer"));
     QVariantMap attributes;
@@ -92,7 +92,7 @@ Circuit::Circuit(const QString & parent, const QString & id):
 DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
 
-void Circuit::initModifyDialogue(ModifyDialogueWidgets * md)
+void Circuit::initEditDialogue(EditDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -221,7 +221,7 @@ m_scope(Variable::Inspection)
 {
 }
 
-void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
+void Inspection::initEditDialogue(EditDialogueWidgets * md)
 {
     QString customer = Customer(parent("customer")).stringValue("company");
     if (customer.isEmpty())
@@ -271,7 +271,7 @@ void Inspection::initModifyDialogue(ModifyDialogueWidgets * md)
     }
 
     Variables query(QSqlDatabase(), m_scope);
-    query.initModifyDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
+    query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 
 InspectionByInspector::InspectionByInspector(const QString & inspector_id):
@@ -284,7 +284,7 @@ Repair::Repair(const QString & date):
 DBRecord("repairs", "date", date, MTDictionary())
 {}
 
-void Repair::initModifyDialogue(ModifyDialogueWidgets * md)
+void Repair::initEditDialogue(EditDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -356,7 +356,7 @@ VariableRecord::VariableRecord(const QString & var_id, const QString & parent_id
 DBRecord("variables", "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
 {}
 
-void VariableRecord::initModifyDialogue(ModifyDialogueWidgets * md)
+void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Variable"));
 
@@ -408,7 +408,7 @@ Table::Table(const QString & id, const QString & uid, const MTDictionary & paren
 DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
 {}
 
-void Table::initModifyDialogue(ModifyDialogueWidgets * md)
+void Table::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Table"));
     QVariantMap attributes;
@@ -436,7 +436,7 @@ Inspector::Inspector(const QString & id):
 DBRecord("inspectors", "id", id, MTDictionary())
 {}
 
-void Inspector::initModifyDialogue(ModifyDialogueWidgets * md)
+void Inspector::initEditDialogue(EditDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -490,7 +490,7 @@ ServiceCompany::ServiceCompany(const QString & id):
 DBRecord("service_companies", "id", id, MTDictionary())
 {}
 
-void ServiceCompany::initModifyDialogue(ModifyDialogueWidgets * md)
+void ServiceCompany::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Service Company"));
     QVariantMap attributes;
@@ -541,7 +541,7 @@ RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & dat
 DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
 
-void RecordOfRefrigerantManagement::initModifyDialogue(ModifyDialogueWidgets * md)
+void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets * md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -612,7 +612,7 @@ WarningRecord::WarningRecord(const QString & id):
 DBRecord("warnings", "id", id, MTDictionary())
 {}
 
-void WarningRecord::initModifyDialogue(ModifyDialogueWidgets * md)
+void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Warning"));
     QVariantMap attributes; bool enable_all = true;
@@ -647,7 +647,7 @@ AssemblyRecordType::AssemblyRecordType(const QString & id):
 DBRecord("assembly_record_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordType::initModifyDialogue(ModifyDialogueWidgets * md)
+void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Assembly Record Type"));
 
@@ -717,7 +717,7 @@ AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
 DBRecord("assembly_record_item_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordItemType::initModifyDialogue(ModifyDialogueWidgets * md)
+void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -818,7 +818,7 @@ const MTDictionary & AssemblyRecordItemCategory::attributes()
     return dict.dict;
 }
 
-void AssemblyRecordItemCategory::initModifyDialogue(ModifyDialogueWidgets * md)
+void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Assembly Record Item Category"));
 
@@ -903,7 +903,7 @@ CircuitUnitType::CircuitUnitType(const QString & id):
 DBRecord("circuit_unit_types", "id", id, MTDictionary())
 {}
 
-void CircuitUnitType::initModifyDialogue(ModifyDialogueWidgets * md)
+void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -1010,7 +1010,7 @@ Style::Style(const QString & id)
 {
 }
 
-void Style::initModifyDialogue(ModifyDialogueWidgets * md)
+void Style::initEditDialogue(EditDialogueWidgets * md)
 {
     md->setWindowTitle(tr("Style"));
     QVariantMap attributes;

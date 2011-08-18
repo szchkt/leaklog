@@ -21,13 +21,13 @@
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
-#include "modify_warning_dialogue.h"
-#include "tabbed_modify_dialogue.h"
-#include "modify_customer_dialogue.h"
-#include "modify_inspection_dialogue.h"
-#include "modify_assembly_record_dialogue.h"
-#include "modify_circuit_dialogue.h"
-#include "modify_inspector_dialogue.h"
+#include "edit_warning_dialogue.h"
+#include "tabbed_edit_dialogue.h"
+#include "edit_customer_dialogue.h"
+#include "edit_inspection_dialogue.h"
+#include "edit_assembly_record_dialogue.h"
+#include "edit_circuit_dialogue.h"
+#include "edit_inspector_dialogue.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -596,12 +596,12 @@ bool MainWindow::isRecordLocked(const QString & date)
     return false;
 }
 
-void MainWindow::modifyServiceCompany()
+void MainWindow::editServiceCompany()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
     ServiceCompany record(DBInfoValueForKey("default_service_company"));
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         setDBInfoValueForKey("default_service_company", record.id());
         this->setWindowModified(true);
@@ -613,16 +613,16 @@ void MainWindow::addRecordOfRefrigerantManagement()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_refrigerant_management")) { return; }
-    modifyRecordOfRefrigerantManagement("");
+    editRecordOfRefrigerantManagement("");
 }
 
-void MainWindow::modifyRecordOfRefrigerantManagement(const QString & date)
+void MainWindow::editRecordOfRefrigerantManagement(const QString & date)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
     RecordOfRefrigerantManagement record(date);
     if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list();
         if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("purchased_reco").toDouble() <= 0.0 &&
@@ -642,7 +642,7 @@ void MainWindow::addCustomer()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record("");
-    ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
+    EditDialogue * md = new EditCustomerDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCustomer(record.id().toInt(), true);
@@ -650,13 +650,13 @@ void MainWindow::addCustomer()
     delete md;
 }
 
-void MainWindow::modifyCustomer()
+void MainWindow::editCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
     if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
-    ModifyDialogue * md = new ModifyCustomerDialogue(&record, this);
+    EditDialogue * md = new EditCustomerDialogue(&record, this);
     QString old_id = selectedCustomer();
     QString old_company_name = record.stringValue("company");
     if (md->exec() == QDialog::Accepted) {
@@ -702,7 +702,7 @@ void MainWindow::duplicateCustomer()
     Customer record(selectedCustomer());
     record.readValues();
     record.id().clear();
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCustomer(record.id().toInt(), true);
@@ -761,7 +761,7 @@ void MainWindow::addCircuit()
     if (!isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(selectedCustomer(), "");
-    ModifyDialogue * md = new ModifyCircuitDialogue(&record, this);
+    EditDialogue * md = new EditCircuitDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
@@ -769,14 +769,14 @@ void MainWindow::addCircuit()
     delete md;
 }
 
-void MainWindow::modifyCircuit()
+void MainWindow::editCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
     if (!isOperationPermitted("edit_circuit", record.stringValue("updated_by"))) { return; }
-    ModifyDialogue * md = new ModifyCircuitDialogue(&record, this);
+    EditDialogue * md = new EditCircuitDialogue(&record, this);
     QString old_id = selectedCircuit();
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -804,7 +804,7 @@ void MainWindow::duplicateCircuit()
     Circuit record(selectedCustomer(), selectedCircuit());
     record.readValues();
     record.id().clear();
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
@@ -853,7 +853,7 @@ void MainWindow::addInspection()
     if (!isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), "");
-    ModifyDialogue * md = new ModifyInspectionDialogue(&record, this);
+    EditDialogue * md = new EditInspectionDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -861,7 +861,7 @@ void MainWindow::addInspection()
     delete md;
 }
 
-void MainWindow::modifyInspection()
+void MainWindow::editInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
@@ -870,7 +870,7 @@ void MainWindow::modifyInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     if (!isOperationPermitted("edit_inspection", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedInspection())) { return; }
-    ModifyDialogue * md = new ModifyInspectionDialogue(&record, this);
+    EditDialogue * md = new EditInspectionDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -888,7 +888,7 @@ void MainWindow::duplicateInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.readValues();
     record.id().clear();
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -937,7 +937,7 @@ void MainWindow::addRepair()
         record.parents().insert("parent", selectedCustomer());
         record.parents().insert("customer", Customer(selectedCustomer()).stringValue("company"));
     }
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -945,14 +945,14 @@ void MainWindow::addRepair()
     delete md;
 }
 
-void MainWindow::modifyRepair()
+void MainWindow::editRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
     if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedRepair())) { return; }
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -971,7 +971,7 @@ void MainWindow::duplicateRepair()
     if (!record.stringValue("parent").isEmpty()) {
         record.parents().insert("parent", record.stringValue("parent"));
     }
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -1056,7 +1056,7 @@ void MainWindow::addVariable(bool subvar)
         parent_id = trw_variables->currentItem()->text(1);
     }
     VariableRecord record("", parent_id);
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, unit, scope, tolerance");
         QTreeWidgetItem * item = NULL;
@@ -1085,7 +1085,7 @@ void MainWindow::addVariable(bool subvar)
     delete md;
 }
 
-void MainWindow::modifyVariable()
+void MainWindow::editVariable()
 {
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
@@ -1095,7 +1095,7 @@ void MainWindow::modifyVariable()
     QTreeWidgetItem * item = trw_variables->currentItem();
     QString id = item->text(1);
     VariableRecord record(id);
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, unit, scope, tolerance");
         item->setText(0, attributes.value("name").toString());
@@ -1154,7 +1154,7 @@ void MainWindow::addTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_table")) { return; }
     Table record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         navigation->tableComboBox()->addItem(record.id());
         cb_table_edit->addItem(record.id());
@@ -1164,13 +1164,13 @@ void MainWindow::addTable()
     delete md;
 }
 
-void MainWindow::modifyTable()
+void MainWindow::editTable()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
     Table record(cb_table_edit->currentText());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
         int j = navigation->tableComboBox()->currentIndex();
@@ -1384,7 +1384,7 @@ void MainWindow::addWarning()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_warning")) { return; }
     WarningRecord record("");
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
+    EditWarningDialogue * md = new EditWarningDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
@@ -1399,14 +1399,14 @@ void MainWindow::addWarning()
     delete md;
 }
 
-void MainWindow::modifyWarning()
+void MainWindow::editWarning()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
     WarningRecord record(item->data(Qt::UserRole).toString());
-    ModifyWarningDialogue * md = new ModifyWarningDialogue(&record, this);
+    EditWarningDialogue * md = new EditWarningDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
@@ -1445,7 +1445,7 @@ void MainWindow::addInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record("");
-    ModifyDialogue * md = new ModifyInspectorDialogue(&record, this);
+    EditDialogue * md = new EditInspectorDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspector(record.id().toInt(), true);
@@ -1453,14 +1453,14 @@ void MainWindow::addInspector()
     delete md;
 }
 
-void MainWindow::modifyInspector()
+void MainWindow::editInspector()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isInspectorSelected()) { return; }
     if (!isOperationPermitted("edit_inspector")) { return; }
     QString old_id = selectedInspector();
     Inspector record(old_id);
-    ModifyDialogue * md = new ModifyInspectorDialogue(&record, this);
+    EditDialogue * md = new EditInspectorDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -2351,7 +2351,7 @@ void MainWindow::addAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordType record("");
-    ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
+    EditDialogue * md = new EditAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);
@@ -2369,12 +2369,12 @@ void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
     }
 }
 
-void MainWindow::modifyAssemblyRecordType()
+void MainWindow::editAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordTypeSelected()) { return; }
     AssemblyRecordType record(selectedAssemblyRecordType());
-    ModifyDialogue * md = new ModifyAssemblyRecordDialogue(&record, this);
+    EditDialogue * md = new EditAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);
@@ -2402,7 +2402,7 @@ void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemType record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemType(record.id().toInt(), true);
@@ -2420,12 +2420,12 @@ void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refre
     }
 }
 
-void MainWindow::modifyAssemblyRecordItemType()
+void MainWindow::editAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemTypeSelected()) { return; }
     AssemblyRecordItemType record(selectedAssemblyRecordItemType());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemType(record.id().toInt(), true);
@@ -2453,7 +2453,7 @@ void MainWindow::addAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemCategory record("");
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemCategory(record.id().toInt(), true);
@@ -2471,12 +2471,12 @@ void MainWindow::loadAssemblyRecordItemCategory(int assembly_record_item_categor
     }
 }
 
-void MainWindow::modifyAssemblyRecordItemCategory()
+void MainWindow::editAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemCategorySelected()) { return; }
     AssemblyRecordItemCategory category(selectedAssemblyRecordItemCategory());
-    ModifyDialogue * md = new ModifyDialogue(&category, this);
+    EditDialogue * md = new EditDialogue(&category, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemCategory(category.id().toInt(), true);
@@ -2517,7 +2517,7 @@ void MainWindow::addCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     CircuitUnitType unit_type("");
-    ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
+    EditDialogue * md = new EditDialogue(&unit_type, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuitUnitType(unit_type.id().toInt(), true);
@@ -2535,12 +2535,12 @@ void MainWindow::loadCircuitUnitType(int circuit_unit_type, bool refresh)
     }
 }
 
-void MainWindow::modifyCircuitUnitType()
+void MainWindow::editCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCircuitUnitTypeSelected()) { return; }
     CircuitUnitType unit_type(selectedCircuitUnitType());
-    ModifyDialogue * md = new ModifyDialogue(&unit_type, this);
+    EditDialogue * md = new EditDialogue(&unit_type, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuitUnitType(unit_type.id().toInt(), true);
@@ -2575,7 +2575,7 @@ void MainWindow::addStyle()
     int id = query.value(0).toInt() + 1;
 
     Style record(QString::number(id));
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("id, name");
         QListWidgetItem * item = new QListWidgetItem;
@@ -2588,14 +2588,14 @@ void MainWindow::addStyle()
     delete md;
 }
 
-void MainWindow::modifyStyle()
+void MainWindow::editStyle()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();
     Style record(item->data(Qt::UserRole).toString());
-    ModifyDialogue * md = new ModifyDialogue(&record, this);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("id, name");
         item->setText(attributes.value("name").toString());

@@ -212,7 +212,7 @@ QString MainWindow::viewServiceCompany(int since)
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
-    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/modify\">";
+    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/edit\">";
     out << tr("Service Company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int num_valid = 0; QString attr_value;
@@ -389,7 +389,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
     while (query.next()) {
         date = QUERY("date").toString();
         if (since && date.left(4).toInt() < since) continue;
-        out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/modify'\" style=\"cursor: pointer;\">";
+        out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/edit'\" style=\"cursor: pointer;\">";
         out << "<td>" << date << "</td>";
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
             out << "<td>" << MTVariant(QUERY(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
@@ -437,7 +437,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     HTMLTableCell * cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
     if (customer_id.isEmpty()) { *cell << tr("List of Customers"); }
-    else { *cell << "<a href=\"customer:" << customer_id << "/modify\">" << tr("Customer") << "</a>"; }
+    else { *cell << "<a href=\"customer:" << customer_id << "/edit\">" << tr("Customer") << "</a>"; }
 
     *table << row;
     QString id; QString highlighted_id = selectedCustomer();
@@ -495,7 +495,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
     if (circuit_id.isEmpty()) { *_td << tr("List of Circuits"); }
-    else { *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/modify\">" << tr("Circuit") << "</a>"; }
+    else { *_td << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/edit\">" << tr("Circuit") << "</a>"; }
     *table << thead;
     QString attr_value; QStringList dict_value; QString id;
     QString highlighted_id = selectedCircuit();
@@ -691,7 +691,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     div.newLine();
 
     el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-            ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+            ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
     if (nominal) *el << tr("Nominal Inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");
@@ -1378,7 +1378,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         if (id.split(".").first().toInt() < year) continue;
         out << "<tr onclick=\"window.location = 'repair:" << id << "";
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }
@@ -1571,7 +1571,7 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
         id = inspectors.at(i).value("id").toString();
         tr_attr = QString("onclick=\"window.location = 'inspector:" + id + "");
         if (highlighted_id == id) {
-            tr_attr.append("/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;");
+            tr_attr.append("/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;");
         } else {
             tr_attr.append("'\" style=\"");
         }
@@ -1892,7 +1892,7 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'assemblyrecordtype:" << id << "";
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }
@@ -1934,7 +1934,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'assemblyrecorditemtype:" << id << "";
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }
@@ -1980,7 +1980,7 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'assemblyrecorditemcategory:" << id << "";
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }
@@ -2066,7 +2066,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
         elem = _td->link("customer:" + customer_id + "/circuit:" + circuit_id
-                         + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+                         + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
     } else elem = _td;
     if (nominal) *elem << tr("Nominal inspection:"); else if (repair) *elem << tr("Repair:"); else *elem << tr("Inspection:");
     *elem << "&nbsp;" << inspection_date;
@@ -2260,7 +2260,7 @@ HTMLTable * MainWindow::writeServiceCompany(HTMLTable * table)
         }
     }
     _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/modify")) << tr("Service company");
+    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/edit")) << tr("Service company");
     _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
@@ -2308,7 +2308,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         id = items.at(i).value("id").toString();
         out << "<tr onclick=\"window.location = 'circuitunittype:" << id << "";
         if (highlighted_id == id) {
-            out << "/modify'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
+            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
             out << "'\" style=\"";
         }
@@ -2518,7 +2518,7 @@ QString MainWindow::viewInspectionImages(const QString & customer_id, const QStr
 
     HTMLTable * table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-         ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/modify");
+         ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
     if (nominal) *el << tr("Nominal inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");

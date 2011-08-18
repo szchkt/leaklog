@@ -19,7 +19,7 @@
 
 #include "variables.h"
 #include "global.h"
-#include "modify_dialogue.h"
+#include "edit_dialogue.h"
 #include "input_widgets.h"
 
 #include <QSet>
@@ -212,7 +212,7 @@ void Variables::initSubvariable(const QString & parent, int scope, const QString
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initModifyDialogueWidgets(ModifyDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record, const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
+void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record, const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
 {
     MDAbstractInputWidget * iw = NULL;
     while (next()) {

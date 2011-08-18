@@ -492,7 +492,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_service_company">
+       <widget class="QToolButton" name="tbtn_edit_service_company">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -500,10 +500,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify service company information</string>
+         <string>Edit service company information</string>
         </property>
         <property name="text">
-         <string>Modify Service Company Information...</string>
+         <string>Edit Service Company Information...</string>
         </property>
        </widget>
       </item>
@@ -645,7 +645,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_customer">
+       <widget class="QToolButton" name="tbtn_edit_customer">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -656,14 +656,14 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected customer</string>
+         <string>Edit the selected customer</string>
         </property>
         <property name="text">
-         <string>Modify Customer...</string>
+         <string>Edit Customer...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+          <normaloff>:/images/images/customer_edit.png</normaloff>:/images/images/customer_edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -918,7 +918,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QToolButton" name="tbtn_modify_inspector">
+       <widget class="QToolButton" name="tbtn_edit_inspector">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -929,14 +929,14 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected inspector</string>
+         <string>Edit the selected inspector</string>
         </property>
         <property name="text">
-         <string>Modify Inspector...</string>
+         <string>Edit Inspector...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
+          <normaloff>:/images/images/inspector_edit22.png</normaloff>:/images/images/inspector_edit22.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1090,7 +1090,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_repair">
+       <widget class="QToolButton" name="tbtn_edit_repair">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1101,14 +1101,14 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected repair</string>
+         <string>Edit the selected repair</string>
         </property>
         <property name="text">
-         <string>Modify Repair...</string>
+         <string>Edit Repair...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
+          <normaloff>:/images/images/repair_edit.png</normaloff>:/images/images/repair_edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1233,7 +1233,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_circuit">
+       <widget class="QToolButton" name="tbtn_edit_circuit">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1244,10 +1244,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected circuit</string>
+         <string>Edit the selected circuit</string>
         </property>
         <property name="text">
-         <string>Modify Circuit...</string>
+         <string>Edit Circuit...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1379,7 +1379,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QToolButton" name="tbtn_modify_inspection">
+       <widget class="QToolButton" name="tbtn_edit_inspection">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1390,14 +1390,14 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected inspection</string>
+         <string>Edit the selected inspection</string>
         </property>
         <property name="text">
-         <string>Modify Inspection...</string>
+         <string>Edit Inspection...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
+          <normaloff>:/images/images/inspection_edit.png</normaloff>:/images/images/inspection_edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -1640,7 +1640,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_assembly_record_type">
+       <widget class="QToolButton" name="tbtn_edit_assembly_record_type">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1651,10 +1651,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected assembly record type</string>
+         <string>Edit the selected assembly record type</string>
         </property>
         <property name="text">
-         <string>Modify Record Type...</string>
+         <string>Edit Record Type...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1780,7 +1780,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_assembly_record_item_category">
+       <widget class="QToolButton" name="tbtn_edit_assembly_record_item_category">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1791,10 +1791,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected assembly record item category</string>
+         <string>Edit the selected assembly record item category</string>
         </property>
         <property name="text">
-         <string>Modify Item Category...</string>
+         <string>Edit Item Category...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -1920,7 +1920,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_assembly_record_item_type">
+       <widget class="QToolButton" name="tbtn_edit_assembly_record_item_type">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -1931,10 +1931,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected assembly record item type</string>
+         <string>Edit the selected assembly record item type</string>
         </property>
         <property name="text">
-         <string>Modify Item Type...</string>
+         <string>Edit Item Type...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">
@@ -2060,7 +2060,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_modify_circuit_unit_type">
+       <widget class="QToolButton" name="tbtn_edit_circuit_unit_type">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -2071,10 +2071,10 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>Modify the selected circuit unit type</string>
+         <string>Edit the selected circuit unit type</string>
         </property>
         <property name="text">
-         <string>Modify Unit Type...</string>
+         <string>Edit Unit Type...</string>
         </property>
         <property name="icon">
          <iconset resource="../rc/resources.qrc">

@@ -268,7 +268,7 @@
      <string>Customer</string>
     </property>
     <addaction name="actionAdd_customer"/>
-    <addaction name="actionModify_customer"/>
+    <addaction name="actionEdit_customer"/>
     <addaction name="actionDuplicate_customer"/>
     <addaction name="actionRemove_customer"/>
     <addaction name="separator"/>
@@ -287,7 +287,7 @@
      <string>Circuit</string>
     </property>
     <addaction name="actionAdd_circuit"/>
-    <addaction name="actionModify_circuit"/>
+    <addaction name="actionEdit_circuit"/>
     <addaction name="actionDuplicate_circuit"/>
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
@@ -300,7 +300,7 @@
      <string>Inspection</string>
     </property>
     <addaction name="actionAdd_inspection"/>
-    <addaction name="actionModify_inspection"/>
+    <addaction name="actionEdit_inspection"/>
     <addaction name="actionDuplicate_inspection"/>
     <addaction name="actionRemove_inspection"/>
     <addaction name="separator"/>
@@ -311,7 +311,7 @@
      <string>Repair</string>
     </property>
     <addaction name="actionAdd_repair"/>
-    <addaction name="actionModify_repair"/>
+    <addaction name="actionEdit_repair"/>
     <addaction name="actionDuplicate_repair"/>
     <addaction name="actionRemove_repair"/>
    </widget>
@@ -324,7 +324,7 @@
     <addaction name="separator"/>
     <addaction name="actionReport_data"/>
     <addaction name="separator"/>
-    <addaction name="actionModify_service_company_information"/>
+    <addaction name="actionEdit_service_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -359,7 +359,7 @@
      <string>Inspector</string>
     </property>
     <addaction name="actionAdd_inspector"/>
-    <addaction name="actionModify_inspector"/>
+    <addaction name="actionEdit_inspector"/>
     <addaction name="actionRemove_inspector"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_label"/>
@@ -475,18 +475,18 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="tbtn_modify_variable">
+        <widget class="QToolButton" name="tbtn_edit_variable">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="toolTip">
-          <string>Modify variable</string>
+          <string>Edit variable</string>
          </property>
          <property name="statusTip">
-          <string>Modify the selected variable</string>
+          <string>Edit the selected variable</string>
          </property>
          <property name="text">
-          <string>Modify variable</string>
+          <string>Edit variable</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -598,15 +598,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="tbtn_modify_table">
+        <widget class="QToolButton" name="tbtn_edit_table">
          <property name="toolTip">
-          <string>Modify table</string>
+          <string>Edit table</string>
          </property>
          <property name="statusTip">
-          <string>Modify the selected table</string>
+          <string>Edit the selected table</string>
          </property>
          <property name="text">
-          <string>Modify table</string>
+          <string>Edit table</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
@@ -837,19 +837,19 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="tbtn_modify_warning">
+        <widget class="QToolButton" name="tbtn_edit_warning">
          <property name="toolTip">
-          <string>Modify warning</string>
+          <string>Edit warning</string>
          </property>
          <property name="statusTip">
-          <string>Modify the selected warning</string>
+          <string>Edit the selected warning</string>
          </property>
          <property name="text">
-          <string>Modify warning</string>
+          <string>Edit warning</string>
          </property>
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
-           <normaloff>:/images/images/warning_modify.png</normaloff>:/images/images/warning_modify.png</iconset>
+           <normaloff>:/images/images/warning_edit.png</normaloff>:/images/images/warning_edit.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -929,7 +929,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="tbtn_modify_style">
+        <widget class="QToolButton" name="tbtn_edit_style">
          <property name="icon">
           <iconset resource="../rc/resources.qrc">
            <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
@@ -1209,7 +1209,7 @@
     <string>Ctrl+Shift+S</string>
    </property>
   </action>
-  <action name="actionModify_circuit">
+  <action name="actionEdit_circuit">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1218,46 +1218,46 @@
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify Circuit...</string>
+    <string>Edit Circuit...</string>
    </property>
    <property name="statusTip">
-    <string>Modify the selected circuit</string>
+    <string>Edit the selected circuit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+*</string>
    </property>
   </action>
-  <action name="actionModify_customer">
+  <action name="actionEdit_customer">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/customer_modify.png</normaloff>:/images/images/customer_modify.png</iconset>
+     <normaloff>:/images/images/customer_edit.png</normaloff>:/images/images/customer_edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify Customer...</string>
+    <string>Edit Customer...</string>
    </property>
    <property name="statusTip">
-    <string>Modify the selected customer</string>
+    <string>Edit the selected customer</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+*</string>
    </property>
   </action>
-  <action name="actionModify_inspection">
+  <action name="actionEdit_inspection">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/inspection_modify.png</normaloff>:/images/images/inspection_modify.png</iconset>
+     <normaloff>:/images/images/inspection_edit.png</normaloff>:/images/images/inspection_edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify Inspection...</string>
+    <string>Edit Inspection...</string>
    </property>
    <property name="statusTip">
-    <string>Modify the selected inspection</string>
+    <string>Edit the selected inspection</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+*</string>
@@ -1512,16 +1512,16 @@
     <string>Ctrl+Alt+Shift++</string>
    </property>
   </action>
-  <action name="actionModify_inspector">
+  <action name="actionEdit_inspector">
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/inspector_modify22.png</normaloff>:/images/images/inspector_modify22.png</iconset>
+     <normaloff>:/images/images/inspector_edit22.png</normaloff>:/images/images/inspector_edit22.png</iconset>
    </property>
    <property name="text">
-    <string>Modify Inspector...</string>
+    <string>Edit Inspector...</string>
    </property>
    <property name="statusTip">
-    <string>Modify the selected inspector</string>
+    <string>Edit the selected inspector</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+Shift+*</string>
@@ -1590,12 +1590,12 @@
     <string>Ctrl+Shift+O</string>
    </property>
   </action>
-  <action name="actionModify_service_company_information">
+  <action name="actionEdit_service_company_information">
    <property name="text">
-    <string>Modify Service Company Information...</string>
+    <string>Edit Service Company Information...</string>
    </property>
    <property name="statusTip">
-    <string>Modify service company information</string>
+    <string>Edit service company information</string>
    </property>
   </action>
   <action name="actionAdd_repair">
@@ -1613,19 +1613,19 @@
     <string>Meta++</string>
    </property>
   </action>
-  <action name="actionModify_repair">
+  <action name="actionEdit_repair">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/repair_modify.png</normaloff>:/images/images/repair_modify.png</iconset>
+     <normaloff>:/images/images/repair_edit.png</normaloff>:/images/images/repair_edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify Repair...</string>
+    <string>Edit Repair...</string>
    </property>
    <property name="statusTip">
-    <string>Modify the selected repair</string>
+    <string>Edit the selected repair</string>
    </property>
    <property name="shortcut">
     <string>Meta+*</string>
@@ -1675,13 +1675,13 @@
     <string>View</string>
    </property>
   </action>
-  <action name="actionModify">
+  <action name="actionEdit">
    <property name="icon">
     <iconset resource="../rc/resources.qrc">
      <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
    </property>
    <property name="text">
-    <string>Modify</string>
+    <string>Edit</string>
    </property>
   </action>
   <action name="actionPDF_Portrait">

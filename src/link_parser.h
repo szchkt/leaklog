@@ -90,7 +90,7 @@ class Link
 public:
     enum Action {
         View,
-        Modify
+        Edit
     };
 
     Link();

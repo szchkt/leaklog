@@ -14,8 +14,8 @@ HEADERS       += src/global.h \
                  src/extendedlineedit.h \
                  src/mtwidgetpalettes.h \
                  src/mtlistwidget.h \
-                 src/modify_dialogue.h \
-                 src/modify_warning_dialogue.h \
+                 src/edit_dialogue.h \
+                 src/edit_warning_dialogue.h \
                  src/mtdictionary.h \
                  src/mtcolourcombobox.h \
                  src/import_dialogue.h \
@@ -37,25 +37,25 @@ HEADERS       += src/global.h \
                  src/mttextstream.h \
                  src/import_csv_dialogue.h \
                  src/permissions_dialogue.h \
-                 src/tabbed_modify_dialogue.h \
+                 src/tabbed_edit_dialogue.h \
                  src/dbfile.h \
                  src/htmlbuilder.h \
-                 src/modify_dialogue_table.h \
-                 src/modify_customer_dialogue.h \
+                 src/edit_dialogue_table.h \
+                 src/edit_customer_dialogue.h \
                  src/variable_evaluation.h \
-                 src/modify_circuit_dialogue.h \
-                 src/modify_inspection_dialogue.h \
-                 src/modify_assembly_record_dialogue.h \
-                 src/modify_dialogue_table_groups.h \
-                 src/modify_inspector_dialogue.h \
+                 src/edit_circuit_dialogue.h \
+                 src/edit_inspection_dialogue.h \
+                 src/edit_assembly_record_dialogue.h \
+                 src/edit_dialogue_table_groups.h \
+                 src/edit_inspector_dialogue.h \
                  src/partner_widgets.h \
                  src/link_parser.h \
-                 src/modify_circuit_dialogue_units_tab.h \
-                 src/modify_circuit_dialogue_compressors_tab.h \
-                 src/modify_inspection_dialogue_compressors.h \
-                 src/modify_dialogue_widgets.h \
-                 src/modify_dialogue_layout.h \
-                 src/modify_inspection_dialogue_assembly_record_tab.h
+                 src/edit_circuit_dialogue_units_tab.h \
+                 src/edit_circuit_dialogue_compressors_tab.h \
+                 src/edit_inspection_dialogue_compressors.h \
+                 src/edit_dialogue_widgets.h \
+                 src/edit_dialogue_layout.h \
+                 src/edit_inspection_dialogue_assembly_record_tab.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -66,8 +66,8 @@ SOURCES       += src/global.cpp \
                  src/about_widget.cpp \
                  src/database.cpp \
                  src/view.cpp \
-                 src/modify_dialogue.cpp \
-                 src/modify_warning_dialogue.cpp \
+                 src/edit_dialogue.cpp \
+                 src/edit_warning_dialogue.cpp \
                  src/import_dialogue.cpp \
                  src/mtaddress.cpp \
                  src/mtrecord.cpp \
@@ -85,25 +85,25 @@ SOURCES       += src/global.cpp \
                  src/mtwebpage.cpp \
                  src/import_csv_dialogue.cpp \
                  src/permissions_dialogue.cpp \
-                 src/tabbed_modify_dialogue.cpp \
+                 src/tabbed_edit_dialogue.cpp \
                  src/dbfile.cpp \
                  src/htmlbuilder.cpp \
-                 src/modify_dialogue_table.cpp \
-                 src/modify_customer_dialogue.cpp \
+                 src/edit_dialogue_table.cpp \
+                 src/edit_customer_dialogue.cpp \
                  src/variable_evaluation.cpp \
-                 src/modify_circuit_dialogue.cpp \
-                 src/modify_inspection_dialogue.cpp \
-                 src/modify_assembly_record_dialogue.cpp \
-                 src/modify_dialogue_table_groups.cpp \
-                 src/modify_inspector_dialogue.cpp \
+                 src/edit_circuit_dialogue.cpp \
+                 src/edit_inspection_dialogue.cpp \
+                 src/edit_assembly_record_dialogue.cpp \
+                 src/edit_dialogue_table_groups.cpp \
+                 src/edit_inspector_dialogue.cpp \
                  src/partner_widgets.cpp \
                  src/link_parser.cpp \
-                 src/modify_circuit_dialogue_units_tab.cpp \
-                 src/modify_circuit_dialogue_compressors_tab.cpp \
-                 src/modify_inspection_dialogue_compressors.cpp \
-                 src/modify_dialogue_widgets.cpp \
-                 src/modify_dialogue_layout.cpp \
-                 src/modify_inspection_dialogue_assembly_record_tab.cpp
+                 src/edit_circuit_dialogue_units_tab.cpp \
+                 src/edit_circuit_dialogue_compressors_tab.cpp \
+                 src/edit_inspection_dialogue_compressors.cpp \
+                 src/edit_dialogue_widgets.cpp \
+                 src/edit_dialogue_layout.cpp \
+                 src/edit_inspection_dialogue_assembly_record_tab.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

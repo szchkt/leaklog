@@ -438,14 +438,14 @@ QString Global::compareValues(double value1, double value2, double tolerance, co
     }
 }
 
-QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3, bool modify_allowed)
+QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3, bool edit_allowed)
 {
     QString link = "<a ";
-    if (modify_allowed)
+    if (edit_allowed)
         link += "onmouseover=\"Tip('<a href=&quot;%1&quot;>"
             + QApplication::translate("MainWindow", "View")
-            + "</a> | <a href=&quot;%1/modify&quot;>"
-            + QApplication::translate("MainWindow", "Modify")
+            + "</a> | <a href=&quot;%1/edit&quot;>"
+            + QApplication::translate("MainWindow", "Edit")
             + "</a>', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\" ";
     link += "href=\"%1\">" + text + "</a>";
     QString href; QStringList typelist = type.split("/");
@@ -742,32 +742,32 @@ class Permissions
 {
 public:
     Permissions() {
-        dict.insert("edit_service_company", QApplication::translate("Permissions", "Modify service company information"));
+        dict.insert("edit_service_company", QApplication::translate("Permissions", "Edit service company information"));
         dict.insert("add_refrigerant_management", QApplication::translate("Permissions", "Add record of refrigerant management"));
-        dict.insert("edit_refrigerant_management", QApplication::translate("Permissions", "Modify record of refrigerant management"));
+        dict.insert("edit_refrigerant_management", QApplication::translate("Permissions", "Edit record of refrigerant management"));
         dict.insert("add_customer", QApplication::translate("Permissions", "Add customer"));
-        dict.insert("edit_customer", QApplication::translate("Permissions", "Modify customer"));
+        dict.insert("edit_customer", QApplication::translate("Permissions", "Edit customer"));
         dict.insert("remove_customer", QApplication::translate("Permissions", "Remove customer"));
         dict.insert("add_circuit", QApplication::translate("Permissions", "Add circuit"));
-        dict.insert("edit_circuit", QApplication::translate("Permissions", "Modify circuit"));
+        dict.insert("edit_circuit", QApplication::translate("Permissions", "Edit circuit"));
         dict.insert("remove_circuit", QApplication::translate("Permissions", "Remove circuit"));
         dict.insert("add_inspection", QApplication::translate("Permissions", "Add inspection"));
-        dict.insert("edit_inspection", QApplication::translate("Permissions", "Modify inspection"));
+        dict.insert("edit_inspection", QApplication::translate("Permissions", "Edit inspection"));
         dict.insert("remove_inspection", QApplication::translate("Permissions", "Remove inspection"));
         dict.insert("add_repair", QApplication::translate("Permissions", "Add repair"));
-        dict.insert("edit_repair", QApplication::translate("Permissions", "Modify repair"));
+        dict.insert("edit_repair", QApplication::translate("Permissions", "Edit repair"));
         dict.insert("remove_repair", QApplication::translate("Permissions", "Remove repair"));
         dict.insert("add_inspector", QApplication::translate("Permissions", "Add inspector"));
-        dict.insert("edit_inspector", QApplication::translate("Permissions", "Modify inspector"));
+        dict.insert("edit_inspector", QApplication::translate("Permissions", "Edit inspector"));
         dict.insert("remove_inspector", QApplication::translate("Permissions", "Remove inspector"));
         dict.insert("add_table", QApplication::translate("Permissions", "Add table"));
-        dict.insert("edit_table", QApplication::translate("Permissions", "Modify table"));
+        dict.insert("edit_table", QApplication::translate("Permissions", "Edit table"));
         dict.insert("remove_table", QApplication::translate("Permissions", "Remove table"));
         dict.insert("add_variable", QApplication::translate("Permissions", "Add variable"));
-        dict.insert("edit_variable", QApplication::translate("Permissions", "Modify variable"));
+        dict.insert("edit_variable", QApplication::translate("Permissions", "Edit variable"));
         dict.insert("remove_variable", QApplication::translate("Permissions", "Remove variable"));
         dict.insert("add_warning", QApplication::translate("Permissions", "Add warning"));
-        dict.insert("edit_warning", QApplication::translate("Permissions", "Modify warning"));
+        dict.insert("edit_warning", QApplication::translate("Permissions", "Edit warning"));
         dict.insert("remove_warning", QApplication::translate("Permissions", "Remove warning"));
         dict.insert("import_data", QApplication::translate("Permissions", "Import data"));
         dict.insert("access_assembly_record_acquisition_price", QApplication::translate("Permissions", "Access assembly record acquisition prices"));

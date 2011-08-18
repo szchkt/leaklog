@@ -101,8 +101,8 @@ void LinkEntity::parse(QString url, Link * link)
         next->parse(url, link);
     } else {
         link->setAction(Link::View);
-        if (route == "modify") {
-            link->setAction(Link::Modify);
+        if (route == "edit") {
+            link->setAction(Link::Edit);
         } else if (route == "order_by") {
             if (!entity_list.empty())
                 link->setOrderBy(entity_list.takeFirst());

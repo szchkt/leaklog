@@ -220,42 +220,42 @@ MainWindow::MainWindow():
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
-    QObject::connect(actionModify_service_company_information, SIGNAL(triggered()), this, SLOT(modifyServiceCompany()));
+    QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
-    QObject::connect(actionModify_customer, SIGNAL(triggered()), this, SLOT(modifyCustomer()));
+    QObject::connect(actionEdit_customer, SIGNAL(triggered()), this, SLOT(editCustomer()));
     QObject::connect(actionDuplicate_customer, SIGNAL(triggered()), this, SLOT(duplicateCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
     QObject::connect(actionAdd_circuit, SIGNAL(triggered()), this, SLOT(addCircuit()));
-    QObject::connect(actionModify_circuit, SIGNAL(triggered()), this, SLOT(modifyCircuit()));
+    QObject::connect(actionEdit_circuit, SIGNAL(triggered()), this, SLOT(editCircuit()));
     QObject::connect(actionDuplicate_circuit, SIGNAL(triggered()), this, SLOT(duplicateCircuit()));
     QObject::connect(actionRemove_circuit, SIGNAL(triggered()), this, SLOT(removeCircuit()));
     QObject::connect(actionAdd_inspection, SIGNAL(triggered()), this, SLOT(addInspection()));
-    QObject::connect(actionModify_inspection, SIGNAL(triggered()), this, SLOT(modifyInspection()));
+    QObject::connect(actionEdit_inspection, SIGNAL(triggered()), this, SLOT(editInspection()));
     QObject::connect(actionDuplicate_inspection, SIGNAL(triggered()), this, SLOT(duplicateInspection()));
     QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
     QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
-    QObject::connect(actionModify_repair, SIGNAL(triggered()), this, SLOT(modifyRepair()));
+    QObject::connect(actionEdit_repair, SIGNAL(triggered()), this, SLOT(editRepair()));
     QObject::connect(actionDuplicate_repair, SIGNAL(triggered()), this, SLOT(duplicateRepair()));
     QObject::connect(actionRemove_repair, SIGNAL(triggered()), this, SLOT(removeRepair()));
     QObject::connect(actionPrint_detailed_label, SIGNAL(triggered()), this, SLOT(printDetailedLabel()));
     QObject::connect(actionPrint_label, SIGNAL(triggered()), this, SLOT(printLabel()));
     QObject::connect(actionNew_variable, SIGNAL(triggered()), this, SLOT(addVariable()));
     QObject::connect(actionNew_subvariable, SIGNAL(triggered()), this, SLOT(addSubvariable()));
-    QObject::connect(tbtn_modify_variable, SIGNAL(clicked()), this, SLOT(modifyVariable()));
+    QObject::connect(tbtn_edit_variable, SIGNAL(clicked()), this, SLOT(editVariable()));
     QObject::connect(tbtn_remove_variable, SIGNAL(clicked()), this, SLOT(removeVariable()));
     QObject::connect(tbtn_add_table, SIGNAL(clicked()), this, SLOT(addTable()));
-    QObject::connect(tbtn_modify_table, SIGNAL(clicked()), this, SLOT(modifyTable()));
+    QObject::connect(tbtn_edit_table, SIGNAL(clicked()), this, SLOT(editTable()));
     QObject::connect(tbtn_remove_table, SIGNAL(clicked()), this, SLOT(removeTable()));
     QObject::connect(tbtn_table_add_variable, SIGNAL(clicked()), this, SLOT(addTableVariable()));
     QObject::connect(tbtn_table_remove_variable, SIGNAL(clicked()), this, SLOT(removeTableVariable()));
     QObject::connect(tbtn_table_move_up, SIGNAL(clicked()), this, SLOT(moveTableVariableUp()));
     QObject::connect(tbtn_table_move_down, SIGNAL(clicked()), this, SLOT(moveTableVariableDown()));
     QObject::connect(tbtn_add_warning, SIGNAL(clicked()), this, SLOT(addWarning()));
-    QObject::connect(tbtn_modify_warning, SIGNAL(clicked()), this, SLOT(modifyWarning()));
+    QObject::connect(tbtn_edit_warning, SIGNAL(clicked()), this, SLOT(editWarning()));
     QObject::connect(tbtn_remove_warning, SIGNAL(clicked()), this, SLOT(removeWarning()));
     QObject::connect(actionAdd_inspector, SIGNAL(triggered()), this, SLOT(addInspector()));
-    QObject::connect(actionModify_inspector, SIGNAL(triggered()), this, SLOT(modifyInspector()));
+    QObject::connect(actionEdit_inspector, SIGNAL(triggered()), this, SLOT(editInspector()));
     QObject::connect(actionRemove_inspector, SIGNAL(triggered()), this, SLOT(removeInspector()));
     QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
     QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
@@ -265,7 +265,7 @@ MainWindow::MainWindow():
     QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
     QObject::connect(lw_recent_docs, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(openRecent(QListWidgetItem *)));
     QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
-    QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(modifyVariable()));
+    QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
     QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
@@ -273,12 +273,12 @@ MainWindow::MainWindow():
     QObject::connect(btn_clear_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(modifyWarning()));
+    QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
     QObject::connect(tbtn_add_style, SIGNAL(clicked()), this, SLOT(addStyle()));
-    QObject::connect(tbtn_modify_style, SIGNAL(clicked()), this, SLOT(modifyStyle()));
+    QObject::connect(tbtn_edit_style, SIGNAL(clicked()), this, SLOT(editStyle()));
     QObject::connect(tbtn_remove_style, SIGNAL(clicked()), this, SLOT(removeStyle()));
 
     setDefaultWebPage();
@@ -363,26 +363,26 @@ void MainWindow::executeLink(const QUrl & url)
                     navigation->setView(Navigation::ListOfRepairs);
                 else if (actionDetailed_logbook->isChecked())
                     navigation->setView(Navigation::ListOfCircuits);
-            } else if (link->action() == Link::Modify)
-                modifyCustomer();
+            } else if (link->action() == Link::Edit)
+                editCustomer();
         }
         break;
 
     case LinkParser::Repair:
         loadRepair(link->idValue("repair"), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyRepair();
+        if (link->action() == Link::Edit)
+            editRepair();
         break;
 
     case LinkParser::ServiceCompany:
-        if (link->action() == Link::Modify)
-            modifyServiceCompany();
+        if (link->action() == Link::Edit)
+            editServiceCompany();
         break;
 
     case LinkParser::Inspector:
         loadInspector(link->idValue("inspector").toInt(), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyInspector();
+        if (link->action() == Link::Edit)
+            editInspector();
         break;
 
     case LinkParser::InspectorReport:
@@ -404,32 +404,32 @@ void MainWindow::executeLink(const QUrl & url)
         break;
 
     case LinkParser::RecordOfRefrigerantManagement:
-        if (link->action() == Link::Modify)
-            modifyRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
+        if (link->action() == Link::Edit)
+            editRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
         break;
 
     case LinkParser::AssemblyRecordType:
         loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyAssemblyRecordType();
+        if (link->action() == Link::Edit)
+            editAssemblyRecordType();
         break;
 
     case LinkParser::AssemblyRecordItemType:
         loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyAssemblyRecordItemType();
+        if (link->action() == Link::Edit)
+            editAssemblyRecordItemType();
         break;
 
     case LinkParser::AssemblyRecordCategory:
         loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyAssemblyRecordItemCategory();
+        if (link->action() == Link::Edit)
+            editAssemblyRecordItemCategory();
         break;
 
     case LinkParser::CircuitUnitType:
         loadCircuitUnitType(link->idValue("circuitunittype").toInt(), link->action() == Link::View);
-        if (link->action() == Link::Modify)
-            modifyCircuitUnitType();
+        if (link->action() == Link::Edit)
+            editCircuitUnitType();
         break;
 
     case LinkParser::AllAssemblyRecords:
@@ -443,8 +443,8 @@ void MainWindow::executeLink(const QUrl & url)
         else if (link->countViews() <= 2) {
             if (link->action() == Link::View)
                 navigation->setView(Navigation::ListOfInspections);
-            else if (link->action() == Link::Modify)
-                modifyCircuit();
+            else if (link->action() == Link::Edit)
+                editCircuit();
         }
     }
 
@@ -454,8 +454,8 @@ void MainWindow::executeLink(const QUrl & url)
             loadInspection(link->idValue("inspection"), link->action() == Link::View);
         else if (link->action() == Link::View)
             navigation->setView(Navigation::Inspection);
-        if (link->action() == Link::Modify)
-            modifyInspection();
+        if (link->action() == Link::Edit)
+            editInspection();
         break;
 
     case LinkParser::AssemblyRecord:
@@ -925,7 +925,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionConfigure_permissions->setEnabled(enable);
 
     actionReport_data->setEnabled(enable);
-    actionModify_service_company_information->setEnabled(enable);
+    actionEdit_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
 
     actionAdd_customer->setEnabled(enable);
@@ -933,26 +933,26 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionAdd_inspector->setEnabled(enable);
     if (!enable) {
     // menuCustomer
-        actionModify_customer->setEnabled(enable);
+        actionEdit_customer->setEnabled(enable);
         actionDuplicate_customer->setEnabled(enable);
         actionRemove_customer->setEnabled(enable);
     // menuCooling_circuit
         actionAdd_circuit->setEnabled(enable);
-        actionModify_circuit->setEnabled(enable);
+        actionEdit_circuit->setEnabled(enable);
         actionDuplicate_circuit->setEnabled(enable);
         actionRemove_circuit->setEnabled(enable);
     // menuInspection
         actionAdd_inspection->setEnabled(enable);
-        actionModify_inspection->setEnabled(enable);
+        actionEdit_inspection->setEnabled(enable);
         actionDuplicate_inspection->setEnabled(enable);
         actionRemove_inspection->setEnabled(enable);
         actionPrint_label->setEnabled(enable);
     // menuRepair
-        actionModify_repair->setEnabled(enable);
+        actionEdit_repair->setEnabled(enable);
         actionDuplicate_repair->setEnabled(enable);
         actionRemove_repair->setEnabled(enable);
     // menuInspector
-        actionModify_inspector->setEnabled(enable);
+        actionEdit_inspector->setEnabled(enable);
         actionRemove_inspector->setEnabled(enable);
     }
     dw_variables->setEnabled(enable);
@@ -1017,37 +1017,37 @@ void MainWindow::enableTools()
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     navigation->enableTools(customer_selected, circuit_selected, inspection_selected, repair_selected, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected(), isCircuitUnitTypeSelected());
-    actionModify_customer->setEnabled(customer_selected);
+    actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
-    actionModify_circuit->setEnabled(circuit_selected);
+    actionEdit_circuit->setEnabled(circuit_selected);
     actionDuplicate_circuit->setEnabled(circuit_selected);
     actionRemove_circuit->setEnabled(circuit_selected);
     actionExport_circuit_data->setEnabled(circuit_selected);
     actionAdd_inspection->setEnabled(circuit_selected);
-    actionModify_inspection->setEnabled(inspection_selected);
+    actionEdit_inspection->setEnabled(inspection_selected);
     actionDuplicate_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
-    actionModify_repair->setEnabled(repair_selected);
+    actionEdit_repair->setEnabled(repair_selected);
     actionDuplicate_repair->setEnabled(repair_selected);
     actionRemove_repair->setEnabled(repair_selected);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !variableNames().contains(trw_variables->currentItem()->text(1)));
-    tbtn_modify_variable->setEnabled(trw_variables->currentIndex().isValid());
+    tbtn_edit_variable->setEnabled(trw_variables->currentIndex().isValid());
     tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !variableNames().contains(trw_variables->currentItem()->text(1)));
-    tbtn_modify_table->setEnabled(cb_table_edit->currentIndex() >= 0);
+    tbtn_edit_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_remove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_remove_variable->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
-    tbtn_modify_warning->setEnabled(lw_warnings->currentIndex().isValid());
+    tbtn_edit_warning->setEnabled(lw_warnings->currentIndex().isValid());
     tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
-    actionModify_inspector->setEnabled(inspector_selected);
+    actionEdit_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
 }
 

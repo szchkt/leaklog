@@ -66,7 +66,7 @@ ReportData::ReportData(int since)
         if (year < since) { continue; }
 
         QVector<QString> entries_list(ENTRIES::COUNT);
-        entries_list[ENTRIES::LINK] = QString("recordofrefrigerantmanagement:%1/modify").arg(date);
+        entries_list[ENTRIES::LINK] = QString("recordofrefrigerantmanagement:%1/edit").arg(date);
         entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_list[ENTRIES::PURCHASED] = purchased.toString();
         entries_list[ENTRIES::PURCHASED_RECO] = purchased_reco.toString();
