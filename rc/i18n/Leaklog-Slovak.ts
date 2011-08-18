@@ -2739,7 +2739,7 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <source>Database name:</source>
-        <translation>Meno databázy:</translation>
+        <translation>Názov databázy:</translation>
     </message>
     <message>
         <source>User name:</source>
@@ -4414,7 +4414,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <name>ServiceCompany</name>
     <message>
         <source>Name:</source>
-        <translation>Meno:</translation>
+        <translation>Názov:</translation>
     </message>
     <message>
         <source>ID:</source>
@@ -4479,7 +4479,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <source>Name:</source>
-        <translation>Meno:</translation>
+        <translation>Názov:</translation>
     </message>
     <message>
         <source>Highlight the nominal inspection</source>
@@ -4741,7 +4741,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <source>Compressor run-time</source>
-        <translation>Pracovná doba kompresora</translation>
+        <translation>Beh kompresora</translation>
     </message>
 </context>
 <context>
@@ -4756,7 +4756,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <source>Name:</source>
-        <translation>Meno:</translation>
+        <translation>Názov:</translation>
     </message>
     <message>
         <source>Unit:</source>
@@ -4837,7 +4837,7 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     </message>
     <message>
         <source>Name:</source>
-        <translation>Meno:</translation>
+        <translation>Názov:</translation>
     </message>
     <message>
         <source>Description:</source>
