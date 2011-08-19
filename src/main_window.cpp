@@ -57,15 +57,6 @@
 using namespace Global;
 
 MainWindow::MainWindow():
-    selected_customer(-1),
-    selected_circuit(-1),
-    selected_compressor(-1),
-    selected_inspection_is_repair(false),
-    selected_inspector(-1),
-    selected_assembly_record_type(-1),
-    selected_assembly_record_item_type(-1),
-    selected_assembly_record_item_category(-1),
-    selected_circuit_unit_type(-1),
     check_for_updates(true),
     last_link(NULL)
 {
@@ -474,8 +465,8 @@ void MainWindow::executeLink(const QUrl & url)
 
     case LinkParser::Compressor:
         bool ok = false;
-        selected_compressor = link->idValue("compressor").toInt(&ok);
-        if (!ok) selected_compressor = -1;
+        m_settings.setSelectedCompressor(link->idValue("compressor").toInt(&ok));
+        if (!ok) m_settings.setSelectedCompressor(-1);
         break;
     }
 
@@ -612,8 +603,8 @@ void MainWindow::printLabel(bool detailed)
         attributes["refrigerant_amount"] = getCircuitRefrigerantAmount(selectedCustomer(), selectedCircuit(), attributes.value("refrigerant_amount", 0.0).toDouble());
         QSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
-        query.bindValue(":customer_id", selected_customer);
-        query.bindValue(":circuit_id", selected_circuit);
+        query.bindValue(":customer_id", m_settings.selectedCustomer());
+        query.bindValue(":circuit_id", m_settings.selectedCircuit());
         query.exec();
         if (query.next()) {
             QVariantMap inspection;
@@ -819,15 +810,13 @@ void MainWindow::findPrevious()
 
 void MainWindow::clearSelection(bool refresh)
 {
-    selected_customer = -1;
-    selected_customer_company.clear();
-    selected_circuit = -1;
-    selected_compressor = -1;
-    selected_inspection.clear();
-    selected_inspection_is_repair = false;
-    selected_repair.clear();
-    selected_inspector = -1;
-    selected_inspector_name.clear();
+    m_settings.setSelectedCustomer(-1);
+    m_settings.setSelectedCircuit(-1);
+    m_settings.setSelectedCompressor(-1);
+    m_settings.clearSelectedInspection();
+    m_settings.setSelectedInspectionIsRepair(false);
+    m_settings.clearSelectedRepair();
+    m_settings.setSelectedInspector(-1);
     if (refresh) {
         enableTools();
         refreshView();
@@ -975,18 +964,18 @@ void MainWindow::updateLockButton()
 
 void MainWindow::enableTools()
 {
-    bool customer_selected = selected_customer >= 0;
-    bool circuit_selected = selected_circuit >= 0;
-    bool inspection_selected = !selected_inspection.isEmpty();
-    bool repair_selected = !selected_repair.isEmpty();
-    bool inspector_selected = selected_inspector >= 0;
+    bool customer_selected = m_settings.isCustomerSelected();
+    bool circuit_selected = m_settings.isCircuitSelected();
+    bool inspection_selected = m_settings.isInspectionSelected();
+    bool repair_selected = m_settings.isRepairSelected();
+    bool inspector_selected = m_settings.isInspectorSelected();
     QString current_selection;
     if (customer_selected)
         current_selection.append(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
             .arg(Navigation::ListOfCircuits)
             .arg(tr("<b>Customer:</b> %1%2")
                 .arg(selectedCustomer().rightJustified(8, '0'))
-                .arg(selected_customer_company.isEmpty() ? "" : QString(" (%1)").arg(selected_customer_company))));
+                .arg(m_settings.selectedCustomerCompany().isEmpty() ? "" : QString(" (%1)").arg(m_settings.selectedCustomerCompany()))));
     if (circuit_selected)
         current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
             .arg(rightTriangle())
@@ -997,8 +986,8 @@ void MainWindow::enableTools()
         current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
             .arg(rightTriangle())
             .arg(Navigation::Inspection)
-            .arg((selected_inspection_is_repair ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
-                .arg(selected_inspection)));
+            .arg((m_settings.selectedInspectionIsRepair() ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
+                .arg(m_settings.selectedInspection())));
     }
     lbl_current_selection->setText(current_selection + "&nbsp;&nbsp;");
     lbl_current_selection->setVisible(!current_selection.isEmpty());
@@ -1013,11 +1002,11 @@ void MainWindow::enableTools()
         lbl_selected_inspector->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
             .arg(Navigation::ListOfInspectors)
             .arg(tr("<b>Inspector:</b> %1")
-                .arg(selected_inspector_name)));
+                .arg(m_settings.selectedInspectorName())));
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(customer_selected, circuit_selected, inspection_selected, repair_selected, inspector_selected, isAssemblyRecordTypeSelected(), isAssemblyRecordItemTypeSelected(), isAssemblyRecordItemCategorySelected(), isCircuitUnitTypeSelected());
+    navigation->enableTools(m_settings);
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

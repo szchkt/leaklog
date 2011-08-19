@@ -21,6 +21,7 @@
 #include "ui_main_window.h"
 #include "mtdictionary.h"
 #include "link_parser.h"
+#include "main_window_settings.h"
 
 #include <QSqlDatabase>
 
@@ -183,26 +184,26 @@ private:
     void loadAssemblyRecordItemCategory(int, bool);
     void loadAssemblyRecord(const QString &, bool);
     void loadCircuitUnitType(int, bool);
-    inline bool isCustomerSelected() { return selected_customer >= 0; }
-    inline QString selectedCustomer() { return QString::number(selected_customer); }
-    inline bool isCircuitSelected() { return selected_circuit >= 0; }
-    inline QString selectedCircuit() { return QString::number(selected_circuit); }
-    inline bool isCompressorSelected() { return selected_compressor >= 0; }
-    inline QString selectedCompressor() { return QString::number(selected_compressor); }
-    inline bool isInspectionSelected() { return !selected_inspection.isEmpty(); }
-    inline QString selectedInspection() { return selected_inspection; }
-    inline bool isRepairSelected() { return !selected_repair.isEmpty(); }
-    inline QString selectedRepair() { return selected_repair; }
-    inline bool isInspectorSelected() { return selected_inspector >= 0; }
-    inline QString selectedInspector() { return QString::number(selected_inspector); }
-    inline QString selectedAssemblyRecordType() { return QString::number(selected_assembly_record_type); }
-    inline bool isAssemblyRecordTypeSelected() { return selected_assembly_record_type >= 0; }
-    inline bool isAssemblyRecordItemTypeSelected() { return selected_assembly_record_item_type >= 0; }
-    inline bool isAssemblyRecordItemCategorySelected() { return selected_assembly_record_item_category >= 0; }
-    inline QString selectedAssemblyRecordItemType() { return QString::number(selected_assembly_record_item_type); }
-    inline QString selectedAssemblyRecordItemCategory() { return QString::number(selected_assembly_record_item_category); }
-    inline bool isCircuitUnitTypeSelected() { return selected_circuit_unit_type >= 0; }
-    inline QString selectedCircuitUnitType() { return QString::number(selected_circuit_unit_type); }
+    inline bool isCustomerSelected() { return m_settings.isCustomerSelected(); }
+    inline QString selectedCustomer() { return m_settings.selectedCustomer(); }
+    inline bool isCircuitSelected() { return m_settings.isCircuitSelected(); }
+    inline QString selectedCircuit() { return m_settings.selectedCircuit(); }
+    inline bool isCompressorSelected() { return m_settings.isCompressorSelected(); }
+    inline QString selectedCompressor() { return m_settings.selectedCompressor(); }
+    inline bool isInspectionSelected() { return m_settings.isInspectionSelected(); }
+    inline QString selectedInspection() { return m_settings.selectedInspection(); }
+    inline bool isRepairSelected() { return m_settings.isRepairSelected(); }
+    inline QString selectedRepair() { return m_settings.selectedRepair(); }
+    inline bool isInspectorSelected() { return m_settings.isInspectorSelected(); }
+    inline QString selectedInspector() { return m_settings.selectedInspector(); }
+    inline QString selectedAssemblyRecordType() { return m_settings.selectedAssemblyRecordType(); }
+    inline bool isAssemblyRecordTypeSelected() { return m_settings.isAssemblyRecordTypeSelected(); }
+    inline bool isAssemblyRecordItemTypeSelected() { return m_settings.isAssemblyRecordItemTypeSelected(); }
+    inline bool isAssemblyRecordItemCategorySelected() { return m_settings.isAssemblyRecordItemCategorySelected(); }
+    inline QString selectedAssemblyRecordItemType() { return m_settings.selectedAssemblyRecordItemType(); }
+    inline QString selectedAssemblyRecordItemCategory() { return m_settings.selectedAssemblyRecordItemCategory(); }
+    inline bool isCircuitUnitTypeSelected() { return m_settings.isCircuitUnitTypeSelected(); }
+    inline QString selectedCircuitUnitType() { return m_settings.selectedCircuitUnitType(); }
     // VIEW
     QString currentView();
     QString fileNameForCurrentView();
@@ -243,19 +244,6 @@ private:
     void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
     HTMLTable * writeInspectionsTable(const QString &, const QString &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
 
-    int selected_customer;
-    QString selected_customer_company;
-    int selected_circuit;
-    int selected_compressor;
-    QString selected_inspection;
-    bool selected_inspection_is_repair;
-    QString selected_repair;
-    int selected_inspector;
-    QString selected_inspector_name;
-    int selected_assembly_record_type;
-    int selected_assembly_record_item_type;
-    int selected_assembly_record_item_category;
-    int selected_circuit_unit_type;
     QSet<int> years_expanded_in_service_company_view;
     QMap<Navigation::View, QString> dict_html;
     QMap<QString, int> dict_fieldtypes;
@@ -274,4 +262,5 @@ private:
     QHttp * http; QBuffer * http_buffer;
     LinkParser link_parser;
     Link * last_link;
+    MainWindowSettings m_settings;
 };

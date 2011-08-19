@@ -20,6 +20,7 @@
 #include "navigation.h"
 
 #include "global.h"
+#include "main_window_settings.h"
 
 Navigation::Navigation(QWidget * parent):
 QWidget(parent)
@@ -270,7 +271,6 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Notes"), "notes");
             group = 3;
             break;
-        case Navigation::LeakagesByApplication:
         case Navigation::ListOfAssemblyRecords:
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector ID"), "inspector");
@@ -282,6 +282,7 @@ void Navigation::updateView()
             group = 2;
             filter_visible = false;
             break;
+        case Navigation::LeakagesByApplication:
         default:
             group = 0;
             filter_visible = false;
@@ -384,36 +385,36 @@ void Navigation::emitFilterChanged()
     if (!isFilterEmpty()) emit filterChanged();
 }
 
-void Navigation::enableTools(bool customer_selected, bool circuit_selected, bool inspection_selected, bool repair_selected, bool inspector_selected, bool assembly_record_type_selected, bool assembly_record_item_type_selected, bool assembly_record_item_category_selected, bool circuit_unit_type_selected)
+void Navigation::enableTools(const MainWindowSettings & settings)
 {
-    tbtn_edit_inspector->setEnabled(inspector_selected);
-    tbtn_remove_inspector->setEnabled(inspector_selected);
-    tbtn_view_inspector->setEnabled(inspector_selected);
-    tbtn_edit_customer->setEnabled(customer_selected);
-    tbtn_remove_customer->setEnabled(customer_selected);
-    tbtn_edit_repair->setEnabled(repair_selected);
-    tbtn_remove_repair->setEnabled(repair_selected);
-    tbtn_view_operator_report->setEnabled(customer_selected);
-    tbtn_view_circuits->setEnabled(customer_selected);
-    gb_circuits->setEnabled(customer_selected);
-    tbtn_edit_circuit->setEnabled(circuit_selected);
-    tbtn_remove_circuit->setEnabled(circuit_selected);
-    gb_inspections->setEnabled(circuit_selected);
-    tbtn_edit_inspection->setEnabled(inspection_selected);
-    tbtn_remove_inspection->setEnabled(inspection_selected);
-    tbtn_view_inspection->setEnabled(inspection_selected);
-    tbtn_view_assembly_record->setEnabled(inspection_selected);
-    tbtn_edit_assembly_record_type->setEnabled(assembly_record_type_selected);
-    tbtn_remove_assembly_record_type->setEnabled(assembly_record_type_selected);
-    tbtn_edit_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
-    tbtn_remove_assembly_record_item_type->setEnabled(assembly_record_item_type_selected);
-    tbtn_edit_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
-    tbtn_remove_assembly_record_item_category->setEnabled(assembly_record_item_category_selected);
-    tbtn_edit_circuit_unit_type->setEnabled(circuit_unit_type_selected);
-    tbtn_remove_circuit_unit_type->setEnabled(circuit_unit_type_selected);
-    tbtn_view_inspection_images->setEnabled(inspection_selected);
-    gb_tables->setEnabled(circuit_selected);
-    ar_show_options_widget->setVisible(inspection_selected);
+    tbtn_edit_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_remove_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_view_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_edit_customer->setEnabled(settings.isCustomerSelected());
+    tbtn_remove_customer->setEnabled(settings.isCustomerSelected());
+    tbtn_edit_repair->setEnabled(settings.isRepairSelected());
+    tbtn_remove_repair->setEnabled(settings.isRepairSelected());
+    tbtn_view_operator_report->setEnabled(settings.isCustomerSelected());
+    tbtn_view_circuits->setEnabled(settings.isCustomerSelected());
+    gb_circuits->setEnabled(settings.isCustomerSelected());
+    tbtn_edit_circuit->setEnabled(settings.isCircuitSelected());
+    tbtn_remove_circuit->setEnabled(settings.isCircuitSelected());
+    gb_inspections->setEnabled(settings.isCircuitSelected());
+    tbtn_edit_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_remove_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_view_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_view_assembly_record->setEnabled(settings.isInspectionSelected());
+    tbtn_edit_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
+    tbtn_remove_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
+    tbtn_edit_assembly_record_item_type->setEnabled(settings.isAssemblyRecordItemTypeSelected());
+    tbtn_remove_assembly_record_item_type->setEnabled(settings.isAssemblyRecordItemTypeSelected());
+    tbtn_edit_assembly_record_item_category->setEnabled(settings.isAssemblyRecordItemCategorySelected());
+    tbtn_remove_assembly_record_item_category->setEnabled(settings.isAssemblyRecordItemCategorySelected());
+    tbtn_edit_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
+    tbtn_remove_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
+    tbtn_view_inspection_images->setEnabled(settings.isInspectionSelected());
+    gb_tables->setEnabled(settings.isCircuitSelected());
+    ar_show_options_widget->setVisible(settings.isInspectionSelected());
 
     bool enabled = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     assembly_record_acquisition_price_chb->setEnabled(enabled);

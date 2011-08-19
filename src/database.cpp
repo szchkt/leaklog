@@ -419,7 +419,7 @@ void MainWindow::openRemote()
 
 void MainWindow::openDatabase(QString path)
 {
-    selected_repair.clear();
+    m_settings.clearSelectedRepair();
     clearAll();
     if (path.isEmpty()) {
         QSqlDatabase db = QSqlDatabase::database();
@@ -726,11 +726,11 @@ void MainWindow::removeCustomer()
     inspections.remove();
     MTRecord repairs("repairs", "date", "", MTDictionary("parent", selectedCustomer()));
     repairs.remove();
-    selected_customer = -1;
-    selected_circuit = -1;
-    selected_compressor = -1;
-    selected_inspection.clear();
-    selected_repair.clear();
+    m_settings.setSelectedCustomer(-1);
+    m_settings.setSelectedCircuit(-1);
+    m_settings.setSelectedCompressor(-1);
+    m_settings.clearSelectedInspection();
+    m_settings.clearSelectedRepair();
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfCustomers);
@@ -739,11 +739,10 @@ void MainWindow::removeCustomer()
 void MainWindow::loadCustomer(int customer, bool refresh)
 {
     if (customer < 0) { return; }
-    selected_customer = customer;
-    selected_customer_company = Customer(QString::number(customer)).stringValue("company");
-    selected_circuit = -1;
-    selected_compressor = -1;
-    selected_inspection.clear();
+    m_settings.setSelectedCustomer(customer, Customer(QString::number(customer)).stringValue("company"));
+    m_settings.setSelectedCircuit(-1);
+    m_settings.setSelectedCompressor(-1);
+    m_settings.clearSelectedInspection();
     enableTools();
     if (refresh) {
         if (actionService_company->isChecked())
@@ -783,7 +782,7 @@ void MainWindow::editCircuit()
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-            update_inspections.bindValue(":customer_id", selected_customer);
+            update_inspections.bindValue(":customer_id", m_settings.selectedCustomer());
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
@@ -825,9 +824,7 @@ void MainWindow::removeCircuit()
     record.remove();
     Inspection inspections(selectedCustomer(), selectedCircuit(), "");
     inspections.remove();
-    selected_circuit = -1;
-    selected_compressor = -1;
-    selected_inspection.clear();
+    m_settings.clearSelectedCircuit();
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfCircuits);
@@ -837,9 +834,7 @@ void MainWindow::loadCircuit(int circuit, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
     if (circuit < 0) { return; }
-    selected_circuit = circuit;
-    selected_compressor = -1;
-    selected_inspection.clear();
+    m_settings.setSelectedCircuit(circuit);
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfInspections);
@@ -909,7 +904,7 @@ void MainWindow::removeInspection()
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     record.remove();
-    selected_inspection.clear();
+    m_settings.clearSelectedInspection();
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfInspections);
@@ -920,8 +915,8 @@ void MainWindow::loadInspection(const QString & inspection, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    selected_inspection = inspection;
-    selected_inspection_is_repair = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool();
+    m_settings.setSelectedInspection(inspection);
+    m_settings.setSelectedInspectionIsRepair(Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool());
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::Inspection);
@@ -991,7 +986,7 @@ void MainWindow::removeRepair()
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     record.remove();
-    selected_repair.clear();
+    m_settings.clearSelectedRepair();
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfRepairs);
@@ -1000,7 +995,7 @@ void MainWindow::removeRepair()
 void MainWindow::loadRepair(const QString & date, bool refresh)
 {
     if (date.isEmpty()) { return; }
-    selected_repair = date;
+    m_settings.setSelectedRepair(date);
     enableTools();
     if (refresh) {
         if (actionBasic_logbook->isChecked() && navigation->view() == Navigation::ListOfCircuits)
@@ -1492,7 +1487,7 @@ void MainWindow::removeInspector()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     Inspector record(selectedInspector());
     record.remove();
-    selected_inspector = -1;
+    m_settings.setSelectedInspector(-1);
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfInspectors);
@@ -1501,8 +1496,7 @@ void MainWindow::removeInspector()
 void MainWindow::loadInspector(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
-    selected_inspector = inspector;
-    selected_inspector_name = Inspector(selectedInspector()).stringValue("person");
+    m_settings.setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfInspectors);
@@ -1512,8 +1506,7 @@ void MainWindow::loadInspector(int inspector, bool refresh)
 void MainWindow::loadInspectorReport(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
-    selected_inspector = inspector;
-    selected_inspector_name = Inspector(selectedInspector()).stringValue("person");
+    m_settings.setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::Inspector);
@@ -2362,7 +2355,7 @@ void MainWindow::addAssemblyRecordType()
 void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
 {
     if (assembly_record < 0) { return; }
-    selected_assembly_record_type = assembly_record;
+    m_settings.setSelectedAssemblyRecordType(assembly_record);
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordTypes);
@@ -2392,7 +2385,7 @@ void MainWindow::removeAssemblyRecordType()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     AssemblyRecordType record(sel_record);
     record.remove();
-    selected_assembly_record_type = -1;
+    m_settings.setSelectedAssemblyRecordType(-1);
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfAssemblyRecordTypes);
@@ -2413,7 +2406,7 @@ void MainWindow::addAssemblyRecordItemType()
 void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refresh)
 {
     if (assembly_record_item < 0) { return; }
-    selected_assembly_record_item_type = assembly_record_item;
+    m_settings.setSelectedAssemblyRecordItemType(assembly_record_item);
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
@@ -2443,7 +2436,7 @@ void MainWindow::removeAssemblyRecordItemType()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     AssemblyRecordItemType record(sel_record);
     record.remove();
-    selected_assembly_record_item_type = -1;
+    m_settings.setSelectedAssemblyRecordItemType(-1);
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
@@ -2464,7 +2457,7 @@ void MainWindow::addAssemblyRecordItemCategory()
 void MainWindow::loadAssemblyRecordItemCategory(int assembly_record_item_category, bool refresh)
 {
     if (assembly_record_item_category < 0) { return; }
-    selected_assembly_record_item_category = assembly_record_item_category;
+    m_settings.setSelectedAssemblyRecordItemCategory(assembly_record_item_category);
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
@@ -2494,7 +2487,7 @@ void MainWindow::removeAssemblyRecordItemCategory()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     AssemblyRecordItemCategory category(sel_category);
     category.remove();
-    selected_assembly_record_item_category = -1;
+    m_settings.setSelectedAssemblyRecordItemCategory(-1);
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
@@ -2505,8 +2498,8 @@ void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    selected_inspection = inspection;
-    selected_inspection_is_repair = Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool();
+    m_settings.setSelectedInspection(inspection);
+    m_settings.setSelectedInspectionIsRepair(Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool());
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::AssemblyRecord);
@@ -2528,7 +2521,7 @@ void MainWindow::addCircuitUnitType()
 void MainWindow::loadCircuitUnitType(int circuit_unit_type, bool refresh)
 {
     if (circuit_unit_type < 0) { return; }
-    selected_circuit_unit_type = circuit_unit_type;
+    m_settings.setSelectedCircuitUnitType(circuit_unit_type);
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::ListOfCircuitUnitTypes);
@@ -2558,7 +2551,7 @@ void MainWindow::removeCircuitUnitType()
     if (!ok || confirmation != tr("REMOVE")) { return; }
     CircuitUnitType unit_type(sel_unit_type);
     unit_type.remove();
-    selected_circuit_unit_type = -1;
+    m_settings.setSelectedCircuitUnitType(-1);
     enableTools();
     this->setWindowModified(true);
     navigation->setView(Navigation::ListOfCircuitUnitTypes);

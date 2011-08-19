@@ -55,7 +55,8 @@ HEADERS       += src/global.h \
                  src/edit_inspection_dialogue_compressors.h \
                  src/edit_dialogue_widgets.h \
                  src/edit_dialogue_layout.h \
-                 src/edit_inspection_dialogue_assembly_record_tab.h
+                 src/edit_inspection_dialogue_assembly_record_tab.h \
+                 src/main_window_settings.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -103,7 +104,8 @@ SOURCES       += src/global.cpp \
                  src/edit_inspection_dialogue_compressors.cpp \
                  src/edit_dialogue_widgets.cpp \
                  src/edit_dialogue_layout.cpp \
-                 src/edit_inspection_dialogue_assembly_record_tab.cpp
+                 src/edit_inspection_dialogue_assembly_record_tab.cpp \
+                 src/main_window_settings.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser
