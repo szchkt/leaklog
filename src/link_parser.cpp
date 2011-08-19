@@ -52,6 +52,9 @@ LinkParser::LinkParser()
 
 Link * LinkParser::parse(const QString & url)
 {
+    if (url == "qrc:/html/")
+        return NULL;
+
     Link * link = new Link;
     root_entity->parse(url, link);
 

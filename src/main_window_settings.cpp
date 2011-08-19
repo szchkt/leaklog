@@ -19,8 +19,12 @@
 
 #include "main_window_settings.h"
 #include "records.h"
+#include "link_parser.h"
+
+#define MAX_LINKS 10
 
 MainWindowSettings::MainWindowSettings():
+    QObject(),
     m_customer(-1),
     m_circuit(-1),
     m_compressor(-1),
@@ -29,7 +33,8 @@ MainWindowSettings::MainWindowSettings():
     m_assembly_record_type(-1),
     m_assembly_record_item_type(-1),
     m_assembly_record_item_category(-1),
-    m_circuit_unit_type(-1)
+    m_circuit_unit_type(-1),
+    m_last_link(NULL)
 {
 }
 
@@ -49,4 +54,52 @@ void MainWindowSettings::setSelectedInspector(int inspector, const QString & ins
         m_inspector_name = Inspector(QString::number(inspector)).stringValue("person");
     else
         m_inspector_name = inspector_name;
+}
+
+void MainWindowSettings::setLastLink(Link * link)
+{
+    if (m_last_link) {
+        m_previous_links.append(m_last_link);
+        if (m_previous_links.count() > MAX_LINKS)
+            delete m_previous_links.takeFirst();
+    }
+
+    m_last_link = link;
+
+    while (m_next_links.count())
+        delete m_next_links.takeLast();
+
+    enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::loadPreviousLink()
+{
+    if (m_previous_links.count()) {
+        if (m_last_link) {
+            m_next_links.append(m_last_link);
+            if (m_next_links.count() > MAX_LINKS)
+                delete m_next_links.takeFirst();
+        }
+        m_last_link = m_previous_links.takeLast();
+    }
+    enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::loadNextLink()
+{
+    if (m_next_links.count()) {
+        if (m_last_link) {
+            m_previous_links.append(m_last_link);
+            if (m_previous_links.count() > MAX_LINKS)
+                delete m_previous_links.takeFirst();
+        }
+        m_last_link = m_next_links.takeLast();
+    }
+    enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::enableBackAndForwardButtons()
+{
+    emit enableBackButton(m_previous_links.count() > 0);
+    emit enableForwardButton(m_next_links.count() > 0);
 }

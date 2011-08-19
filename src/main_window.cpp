@@ -53,12 +53,12 @@
 #include <QDate>
 #include <QDateEdit>
 #include <QDesktopServices>
+#include <QDebug>
 
 using namespace Global;
 
 MainWindow::MainWindow():
-    check_for_updates(true),
-    last_link(NULL)
+    check_for_updates(true)
 {
     // Dictionaries
     dict_fieldtypes.insert("address", MTVariant::Address);
@@ -203,6 +203,10 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
+    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(loadPreviousLink()));
+    QObject::connect(&m_settings, SIGNAL(enableBackButton(bool)), actionBack, SLOT(setEnabled(bool)));
+    QObject::connect(actionForward, SIGNAL(triggered()), this, SLOT(loadNextLink()));
+    QObject::connect(&m_settings, SIGNAL(enableForwardButton(bool)), actionForward, SLOT(setEnabled(bool)));
     QObject::connect(actionService_company, SIGNAL(triggered()), navigation, SLOT(viewServiceCompany()));
     QObject::connect(actionBasic_logbook, SIGNAL(triggered()), navigation, SLOT(viewBasicLogbook()));
     QObject::connect(actionDetailed_logbook, SIGNAL(triggered()), navigation, SLOT(viewDetailedLogbook()));
@@ -339,9 +343,29 @@ void MainWindow::showIconsOnly(bool show)
     toolBar->setToolButtonStyle(tbtn_style);
 }
 
+void MainWindow::loadPreviousLink()
+{
+    m_settings.loadPreviousLink();
+    executeLink(m_settings.lastLink());
+}
+
+void MainWindow::loadNextLink()
+{
+    m_settings.loadNextLink();
+    executeLink(m_settings.lastLink());
+}
+
 void MainWindow::executeLink(const QUrl & url)
 {
-    Link * link = last_link = link_parser.parse(url.toString());
+    Link * link = link_parser.parse(url.toString());
+    if (link) {
+        m_settings.setLastLink(link);
+        executeLink(link);
+    }
+}
+
+void MainWindow::executeLink(Link * link)
+{
     QString id;
 
     switch (link->viewAt(0)) {
@@ -479,11 +503,6 @@ void MainWindow::executeLink(const QUrl & url)
         navigation->setView(Navigation::TableOfInspections);
         break;
     }
-
-    qApp->processEvents();
-    if (last_link)
-        delete last_link;
-    last_link = NULL;
 }
 
 void MainWindow::printPreview()

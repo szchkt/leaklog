@@ -56,6 +56,7 @@ private slots:
     void showIconsOnly(bool);
     void about();
     void executeLink(const QUrl &);
+    void executeLink(Link *);
     void printPreview();
     void print();
     void exportPDFPortrait();
@@ -144,6 +145,8 @@ private slots:
     void addStyle();
     void editStyle();
     void removeStyle();
+    void loadPreviousLink();
+    void loadNextLink();
     // VIEW
     QString viewChanged(int);
 
@@ -261,6 +264,5 @@ private:
     bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;
     LinkParser link_parser;
-    Link * last_link;
     MainWindowSettings m_settings;
 };

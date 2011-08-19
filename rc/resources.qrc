@@ -70,5 +70,7 @@
         <file>images/frigo_slovakia_logo.jpg</file>
         <file>images/lklg.png</file>
         <file>images/csv16.png</file>
+        <file>images/back.png</file>
+        <file>images/forward.png</file>
     </qresource>
 </RCC>

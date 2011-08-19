@@ -341,6 +341,9 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionBack"/>
+    <addaction name="actionForward"/>
+    <addaction name="separator"/>
     <addaction name="actionService_company"/>
     <addaction name="actionBasic_logbook"/>
     <addaction name="actionDetailed_logbook"/>
@@ -400,6 +403,9 @@
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionBack"/>
+   <addaction name="actionForward"/>
    <addaction name="separator"/>
    <addaction name="actionService_company"/>
    <addaction name="actionBasic_logbook"/>
@@ -1959,6 +1965,36 @@
    </property>
    <property name="text">
     <string>Compare Values With the Nominal Inspection</string>
+   </property>
+  </action>
+  <action name="actionBack">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/back.png</normaloff>:/images/images/back.png</iconset>
+   </property>
+   <property name="text">
+    <string>Back</string>
+   </property>
+   <property name="statusTip">
+    <string>View the last page</string>
+   </property>
+  </action>
+  <action name="actionForward">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/forward.png</normaloff>:/images/images/forward.png</iconset>
+   </property>
+   <property name="text">
+    <string>Forward</string>
+   </property>
+   <property name="statusTip">
+    <string>View the next page</string>
    </property>
   </action>
  </widget>
