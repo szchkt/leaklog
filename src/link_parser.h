@@ -26,34 +26,47 @@
 
 class LinkEntity;
 class Link;
+class UrlEntity;
 
 class LinkParser
 {
 public:
     enum View {
-        Customer,
-        Repair,
+        ServiceCompany,
+        RefrigerantManagement,
+        RecordOfRefrigerantManagement,
+        LeakagesByApplication,
+        Agenda,
+        AllInspectors,
         Inspector,
         InspectorReport,
         AllCustomers,
-        ToggleDetailedView,
-        RecordOfRefrigerantManagement,
-        AssemblyRecordType,
-        AssemblyRecordItemType,
-        AssemblyRecordCategory,
-        CircuitUnitType,
+        Customer,
+        OperatorReport,
+        AllRepairs,
+        Repair,
         Circuit,
+        Compressor,
         Inspection,
-        AssemblyRecord,
-        ServiceCompany,
+        InspectionImages,
         TableOfInspections,
         AllAssemblyRecords,
-        Compressor
+        AssemblyRecord,
+        AllAssemblyRecordTypes,
+        AssemblyRecordType,
+        AllAssemblyRecordItemTypes,
+        AssemblyRecordItemType,
+        AllAssemblyRecordItemCategories,
+        AssemblyRecordCategory,
+        AllCircuitUnitTypes,
+        CircuitUnitType,
+        ToggleDetailedView
     };
 
     LinkParser();
 
     Link * parse(const QString &);
+    Link * parse(UrlEntity *);
 
 private:
     LinkEntity * root_entity;
@@ -76,7 +89,7 @@ public:
     void setHasId(bool has_id) { this->has_id = has_id; }
     bool hasId() { return has_id; }
 
-    void parse(QString, Link *);
+    void parse(UrlEntity *, Link *);
 
 private:
     int m_view;
@@ -119,6 +132,32 @@ private:
     QList<int> m_views;
     QString m_order_by;
     MTDictionary m_ids;
+};
+
+class UrlEntity
+{
+public:
+    UrlEntity() : m_next(NULL) {}
+    UrlEntity(const QStringList & attributes) : m_next(NULL)
+        { m_attributes << attributes; }
+    UrlEntity(const QString & attr1, const QString & attr2 = QString()) : m_next(NULL)
+        { m_attributes.append(attr1); if (!attr2.isNull()) m_attributes.append(attr2); }
+
+    ~UrlEntity() { if (m_next) delete m_next; }
+
+    void addAttribute(const QString & attr) { m_attributes.append(attr); }
+
+    UrlEntity * addNext(const QStringList & attributes);
+    UrlEntity * addNext(const QString & attr1, const QString & attr2 = QString());
+    UrlEntity * next() { return m_next; }
+
+    int countAttributes() { return m_attributes.count(); }
+    const QString & name() { return m_attributes.first(); }
+    const QString & attributeAt(int i) { return m_attributes.at(i); }
+
+private:
+    QStringList m_attributes;
+    UrlEntity * m_next;
 };
 
 #endif // LINK_PARSER_H

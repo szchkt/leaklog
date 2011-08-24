@@ -183,6 +183,8 @@ MainWindow::MainWindow():
 
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    navigation->setSettings(&m_settings);
+
     setAllEnabled(false);
 
     navigation->connectSlots(this);
@@ -357,7 +359,7 @@ void MainWindow::loadNextLink()
 
 void MainWindow::executeLink(const QUrl & url)
 {
-    Link * link = link_parser.parse(url.toString());
+    Link * link = m_settings.linkParser().parse(url.toString());
     if (link) {
         m_settings.setLastLink(link);
         executeLink(link);
@@ -367,6 +369,7 @@ void MainWindow::executeLink(const QUrl & url)
 void MainWindow::executeLink(Link * link)
 {
     QString id;
+    bool ok = false;
 
     switch (link->viewAt(0)) {
     case LinkParser::Customer:
@@ -393,6 +396,8 @@ void MainWindow::executeLink(Link * link)
     case LinkParser::ServiceCompany:
         if (link->action() == Link::Edit)
             editServiceCompany();
+        else
+            navigation->setView(Navigation::ServiceCompany);
         break;
 
     case LinkParser::Inspector:
@@ -419,9 +424,21 @@ void MainWindow::executeLink(Link * link)
         refreshView();
         break;
 
+    case LinkParser::RefrigerantManagement:
+        navigation->setView(Navigation::RefrigerantManagement);
+        break;
+
     case LinkParser::RecordOfRefrigerantManagement:
         if (link->action() == Link::Edit)
             editRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
+        break;
+
+    case LinkParser::LeakagesByApplication:
+        navigation->setView(Navigation::LeakagesByApplication);
+        break;
+
+    case LinkParser::Agenda:
+        navigation->setView(Navigation::Agenda);
         break;
 
     case LinkParser::AssemblyRecordType:
@@ -451,9 +468,34 @@ void MainWindow::executeLink(Link * link)
     case LinkParser::AllAssemblyRecords:
         navigation->setView(Navigation::ListOfAssemblyRecords);
         break;
+
+    case LinkParser::AllInspectors:
+        navigation->setView(Navigation::ListOfInspectors);
+        break;
+
+    case LinkParser::AllAssemblyRecordTypes:
+        navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+        break;
+
+    case LinkParser::AllAssemblyRecordItemTypes:
+        navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
+        break;
+
+    case LinkParser::AllAssemblyRecordItemCategories:
+        navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
+        break;
+
+    case LinkParser::AllCircuitUnitTypes:
+        navigation->setView(Navigation::ListOfCircuitUnitTypes);
+        break;
+
+    case LinkParser::AllRepairs:
+        navigation->setView(Navigation::ListOfRepairs);
+        break;
     }
 
-    if (link->viewAt(1) == LinkParser::Circuit) {
+    switch (link->viewAt(1)) {
+    case LinkParser::Circuit:
         if (link->idValue("circuit") != selectedCircuit())
             loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
         else if (link->countViews() <= 2) {
@@ -462,14 +504,28 @@ void MainWindow::executeLink(Link * link)
             else if (link->action() == Link::Edit)
                 editCircuit();
         }
+        break;
+
+    case LinkParser::AllAssemblyRecords:
+        navigation->setView(Navigation::ListOfAssemblyRecords);
+        break;
+
+    case LinkParser::OperatorReport:
+        navigation->setView(Navigation::OperatorReport);
+        break;
+
+    case LinkParser::AllRepairs:
+        navigation->setView(Navigation::ListOfRepairs);
+        break;
     }
 
     switch (link->viewAt(2)) {
     case LinkParser::Inspection:
         if (link->idValue("inspection") != selectedInspection())
-            loadInspection(link->idValue("inspection"), link->action() == Link::View);
-        else if (link->action() == Link::View)
+            loadInspection(link->idValue("inspection"), link->countViews() <= 3 && link->action() == Link::View);
+        else if (link->countViews() <= 3 && link->action() == Link::View)
             navigation->setView(Navigation::Inspection);
+
         if (link->action() == Link::Edit)
             editInspection();
         break;
@@ -488,9 +544,13 @@ void MainWindow::executeLink(Link * link)
         break;
 
     case LinkParser::Compressor:
-        bool ok = false;
+        ok = false;
         m_settings.setSelectedCompressor(link->idValue("compressor").toInt(&ok));
         if (!ok) m_settings.setSelectedCompressor(-1);
+        break;
+
+    case LinkParser::AllAssemblyRecords:
+        navigation->setView(Navigation::ListOfAssemblyRecords);
         break;
     }
 
@@ -501,6 +561,10 @@ void MainWindow::executeLink(Link * link)
 
     case LinkParser::TableOfInspections:
         navigation->setView(Navigation::TableOfInspections);
+        break;
+
+    case LinkParser::InspectionImages:
+        navigation->setView(Navigation::InspectionImages);
         break;
     }
 }
@@ -1025,7 +1089,7 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(m_settings);
+    navigation->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

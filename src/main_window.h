@@ -263,6 +263,5 @@ private:
     QMap<QString, QString> leaklog_i18n;
     bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;
-    LinkParser link_parser;
     MainWindowSettings m_settings;
 };

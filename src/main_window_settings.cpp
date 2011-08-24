@@ -19,7 +19,6 @@
 
 #include "main_window_settings.h"
 #include "records.h"
-#include "link_parser.h"
 
 #define MAX_LINKS 10
 

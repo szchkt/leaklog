@@ -56,12 +56,14 @@ public:
     void restoreDefaults(bool = true);
     void connectSlots(QObject *);
 
+    void setSettings(MainWindowSettings * settings) { m_settings = settings; }
+
     // View
     View view();
     void setView(int, bool);
 
     // Widgets
-    void enableTools(const MainWindowSettings &);
+    void enableTools();
     inline QComboBox * tableComboBox() const { return cb_view_table; }
     inline int filterSinceValue() const { return spb_filter_since->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
@@ -87,6 +89,7 @@ public slots:
     void viewAssemblyRecords();
     void setView(int);
     void setView(const QString &);
+    void saveLink(int);
 
 private slots:
     void tableChanged(int);
@@ -111,6 +114,7 @@ private:
     int current_group;
     View current_view;
     QVector<View> default_view_for_group;
+    MainWindowSettings * m_settings;
 };
 
 #endif // NAVIGATION_H

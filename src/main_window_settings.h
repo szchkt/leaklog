@@ -20,11 +20,11 @@
 #ifndef MAIN_WINDOW_SETTINGS_H
 #define MAIN_WINDOW_SETTINGS_H
 
-class Link;
-
 #include <QString>
 #include <QList>
 #include <QObject>
+
+#include "link_parser.h"
 
 class MainWindowSettings : public QObject
 {
@@ -91,6 +91,8 @@ public:
     bool hasPreviousLinks() { return m_previous_links.count() > 0; }
     bool hasNextLinks() { return m_next_links.count() > 0; }
 
+    LinkParser & linkParser() { return link_parser; }
+
 signals:
     void enableBackButton(bool);
     void enableForwardButton(bool);
@@ -113,6 +115,7 @@ private:
     int m_circuit_unit_type;
 
     Link * m_last_link;
+    LinkParser link_parser;
     QList<Link *> m_previous_links;
     QList<Link *> m_next_links;
 };
