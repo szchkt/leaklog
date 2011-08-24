@@ -26,8 +26,7 @@
 #include <QDebug>
 
 Navigation::Navigation(QWidget * parent):
-QWidget(parent),
-m_settings(NULL)
+QWidget(parent)
 {
     default_view_for_group.resize(4);
     restoreDefaults(false);
@@ -75,7 +74,6 @@ m_settings(NULL)
     btngrp_view->addButton(tbtn_view_inspection_images);
     btngrp_view->setId(tbtn_view_inspection_images, Navigation::InspectionImages);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
-    QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(saveLink(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
@@ -390,36 +388,36 @@ void Navigation::emitFilterChanged()
     if (!isFilterEmpty()) emit filterChanged();
 }
 
-void Navigation::enableTools()
+void Navigation::enableTools(const MainWindowSettings & settings)
 {
-    tbtn_edit_inspector->setEnabled(m_settings->isInspectorSelected());
-    tbtn_remove_inspector->setEnabled(m_settings->isInspectorSelected());
-    tbtn_view_inspector->setEnabled(m_settings->isInspectorSelected());
-    tbtn_edit_customer->setEnabled(m_settings->isCustomerSelected());
-    tbtn_remove_customer->setEnabled(m_settings->isCustomerSelected());
-    tbtn_edit_repair->setEnabled(m_settings->isRepairSelected());
-    tbtn_remove_repair->setEnabled(m_settings->isRepairSelected());
-    tbtn_view_operator_report->setEnabled(m_settings->isCustomerSelected());
-    tbtn_view_circuits->setEnabled(m_settings->isCustomerSelected());
-    gb_circuits->setEnabled(m_settings->isCustomerSelected());
-    tbtn_edit_circuit->setEnabled(m_settings->isCircuitSelected());
-    tbtn_remove_circuit->setEnabled(m_settings->isCircuitSelected());
-    gb_inspections->setEnabled(m_settings->isCircuitSelected());
-    tbtn_edit_inspection->setEnabled(m_settings->isInspectionSelected());
-    tbtn_remove_inspection->setEnabled(m_settings->isInspectionSelected());
-    tbtn_view_inspection->setEnabled(m_settings->isInspectionSelected());
-    tbtn_view_assembly_record->setEnabled(m_settings->isInspectionSelected());
-    tbtn_edit_assembly_record_type->setEnabled(m_settings->isAssemblyRecordTypeSelected());
-    tbtn_remove_assembly_record_type->setEnabled(m_settings->isAssemblyRecordTypeSelected());
-    tbtn_edit_assembly_record_item_type->setEnabled(m_settings->isAssemblyRecordItemTypeSelected());
-    tbtn_remove_assembly_record_item_type->setEnabled(m_settings->isAssemblyRecordItemTypeSelected());
-    tbtn_edit_assembly_record_item_category->setEnabled(m_settings->isAssemblyRecordItemCategorySelected());
-    tbtn_remove_assembly_record_item_category->setEnabled(m_settings->isAssemblyRecordItemCategorySelected());
-    tbtn_edit_circuit_unit_type->setEnabled(m_settings->isCircuitUnitTypeSelected());
-    tbtn_remove_circuit_unit_type->setEnabled(m_settings->isCircuitUnitTypeSelected());
-    tbtn_view_inspection_images->setEnabled(m_settings->isInspectionSelected());
-    gb_tables->setEnabled(m_settings->isCircuitSelected());
-    ar_show_options_widget->setVisible(m_settings->isInspectionSelected());
+    tbtn_edit_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_remove_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_view_inspector->setEnabled(settings.isInspectorSelected());
+    tbtn_edit_customer->setEnabled(settings.isCustomerSelected());
+    tbtn_remove_customer->setEnabled(settings.isCustomerSelected());
+    tbtn_edit_repair->setEnabled(settings.isRepairSelected());
+    tbtn_remove_repair->setEnabled(settings.isRepairSelected());
+    tbtn_view_operator_report->setEnabled(settings.isCustomerSelected());
+    tbtn_view_circuits->setEnabled(settings.isCustomerSelected());
+    gb_circuits->setEnabled(settings.isCustomerSelected());
+    tbtn_edit_circuit->setEnabled(settings.isCircuitSelected());
+    tbtn_remove_circuit->setEnabled(settings.isCircuitSelected());
+    gb_inspections->setEnabled(settings.isCircuitSelected());
+    tbtn_edit_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_remove_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_view_inspection->setEnabled(settings.isInspectionSelected());
+    tbtn_view_assembly_record->setEnabled(settings.isInspectionSelected());
+    tbtn_edit_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
+    tbtn_remove_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
+    tbtn_edit_assembly_record_item_type->setEnabled(settings.isAssemblyRecordItemTypeSelected());
+    tbtn_remove_assembly_record_item_type->setEnabled(settings.isAssemblyRecordItemTypeSelected());
+    tbtn_edit_assembly_record_item_category->setEnabled(settings.isAssemblyRecordItemCategorySelected());
+    tbtn_remove_assembly_record_item_category->setEnabled(settings.isAssemblyRecordItemCategorySelected());
+    tbtn_edit_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
+    tbtn_remove_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
+    tbtn_view_inspection_images->setEnabled(settings.isInspectionSelected());
+    gb_tables->setEnabled(settings.isCircuitSelected());
+    ar_show_options_widget->setVisible(settings.isInspectionSelected());
 
     bool enabled = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     assembly_record_acquisition_price_chb->setEnabled(enabled);
@@ -457,117 +455,4 @@ QString Navigation::filterKeyword() const
         case 3: return "%" + le_filter->text(); break;
     }
     return le_filter->text();
-}
-
-void Navigation::saveLink(int view)
-{
-    UrlEntity * url_entity = NULL, * e = NULL;
-
-    switch (view) {
-    case Navigation::ServiceCompany:
-        url_entity = new UrlEntity("servicecompany");
-        break;
-
-    case Navigation::RefrigerantManagement:
-        url_entity = new UrlEntity("refrigerantmanagement");
-        break;
-
-    case Navigation::ListOfCustomers:
-        url_entity = new UrlEntity("allcustomers");
-        break;
-
-    case Navigation::ListOfCircuits:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        break;
-
-    case Navigation::ListOfInspections:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        url_entity->addNext("circuit", m_settings->selectedCircuit());
-        break;
-
-    case Navigation::ListOfRepairs:
-        url_entity = new UrlEntity;
-        if (m_settings->isCustomerSelected())
-            url_entity->addNext("customer", m_settings->selectedCustomer());
-        url_entity->addNext("allrepairs");
-        break;
-
-    case Navigation::ListOfInspectors:
-        url_entity = new UrlEntity("allinspectors");
-        break;
-
-    case Navigation::Inspector:
-        url_entity = new UrlEntity("inspector", m_settings->selectedInspector());
-        break;
-
-    case Navigation::TableOfInspections:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        e = url_entity->addNext("circuit", m_settings->selectedCircuit());
-        if (m_settings->isCompressorSelected())
-            e = e->addNext("compressor", m_settings->selectedCompressor());
-        e->addNext("table");
-        break;
-
-    case Navigation::Inspection:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        url_entity->addNext("circuit", m_settings->selectedCircuit())
-                ->addNext("inspection", m_settings->selectedInspection());
-        break;
-
-    case Navigation::Agenda:
-        url_entity = new UrlEntity("agenda");
-        break;
-
-    case Navigation::OperatorReport:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        url_entity->addNext("operatorreport");
-        break;
-
-    case Navigation::ListOfAssemblyRecordTypes:
-        url_entity = new UrlEntity("allassemblyrecordtypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecordItemTypes:
-        url_entity = new UrlEntity("allassemblyrecorditemtypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecordItemCategories:
-        url_entity = new UrlEntity("allassemblyrecorditemcategories");
-        break;
-
-    case Navigation::AssemblyRecord:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        url_entity->addNext("circuit", m_settings->selectedCircuit())
-                ->addNext("assemblyrecord", m_settings->selectedInspection());
-        break;
-
-    case Navigation::ListOfCircuitUnitTypes:
-        url_entity = new UrlEntity("allcircuitunittypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecords:
-        e = url_entity = new UrlEntity;
-        if (m_settings->isCustomerSelected())
-            e = e->addNext("customer", m_settings->selectedCustomer());
-        if (m_settings->isCircuitSelected())
-            e = e->addNext("circuit", m_settings->selectedCircuit());
-        e->addNext("allassemblyrecords");
-        break;
-
-    case Navigation::InspectionImages:
-        url_entity = new UrlEntity("customer", m_settings->selectedCustomer());
-        url_entity->addNext("circuit", m_settings->selectedCircuit())
-                ->addNext("inspection", m_settings->selectedInspection())
-                ->addNext("images");
-        break;
-
-    case Navigation::LeakagesByApplication:
-        url_entity = new UrlEntity("leakagesbyapplication");
-        break;
-
-    default:
-        break;
-    }
-    if (url_entity)
-        m_settings->setLastLink(m_settings->linkParser().parse(url_entity));
 }

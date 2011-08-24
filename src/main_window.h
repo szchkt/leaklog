@@ -57,6 +57,7 @@ private slots:
     void about();
     void executeLink(const QUrl &);
     void executeLink(Link *);
+    void saveLink(int);
     void printPreview();
     void print();
     void exportPDFPortrait();

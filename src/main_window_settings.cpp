@@ -20,6 +20,8 @@
 #include "main_window_settings.h"
 #include "records.h"
 
+#include <QDebug>
+
 #define MAX_LINKS 10
 
 MainWindowSettings::MainWindowSettings():
@@ -33,7 +35,8 @@ MainWindowSettings::MainWindowSettings():
     m_assembly_record_item_type(-1),
     m_assembly_record_item_category(-1),
     m_circuit_unit_type(-1),
-    m_last_link(NULL)
+    m_last_link(NULL),
+    m_received_link(NULL)
 {
 }
 
@@ -57,13 +60,10 @@ void MainWindowSettings::setSelectedInspector(int inspector, const QString & ins
 
 void MainWindowSettings::setLastLink(Link * link)
 {
-    if (m_last_link) {
-        m_previous_links.append(m_last_link);
-        if (m_previous_links.count() > MAX_LINKS)
-            delete m_previous_links.takeFirst();
-    }
+    saveToPreviousLinks();
 
     m_last_link = link;
+    m_received_link = NULL;
 
     while (m_next_links.count())
         delete m_next_links.takeLast();
@@ -71,34 +71,70 @@ void MainWindowSettings::setLastLink(Link * link)
     enableBackAndForwardButtons();
 }
 
+void MainWindowSettings::loadReceivedLink()
+{
+    updateLastLink();
+    enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::updateLastLink()
+{
+    if (m_received_link) {
+        saveToPreviousLinks();
+
+        m_last_link = m_received_link;
+        m_received_link = NULL;
+    }
+}
+
 void MainWindowSettings::loadPreviousLink()
 {
+    updateLastLink();
     if (m_previous_links.count()) {
-        if (m_last_link) {
-            m_next_links.append(m_last_link);
-            if (m_next_links.count() > MAX_LINKS)
-                delete m_next_links.takeFirst();
-        }
-        m_last_link = m_previous_links.takeLast();
+        saveToNextLinks();
+        setReceivedLink(m_previous_links.takeLast());
     }
     enableBackAndForwardButtons();
 }
 
+void MainWindowSettings::saveToNextLinks()
+{
+    if (m_last_link) {
+        m_next_links.append(m_last_link);
+        if (m_next_links.count() > MAX_LINKS)
+            delete m_next_links.takeFirst();
+    }
+    m_last_link = NULL;
+}
+
 void MainWindowSettings::loadNextLink()
 {
+    updateLastLink();
     if (m_next_links.count()) {
-        if (m_last_link) {
-            m_previous_links.append(m_last_link);
-            if (m_previous_links.count() > MAX_LINKS)
-                delete m_previous_links.takeFirst();
-        }
-        m_last_link = m_next_links.takeLast();
+        saveToPreviousLinks();
+        setReceivedLink(m_next_links.takeLast());
     }
     enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::saveToPreviousLinks()
+{
+    if (m_last_link) {
+        m_previous_links.append(m_last_link);
+        if (m_previous_links.count() > MAX_LINKS)
+            delete m_previous_links.takeFirst();
+    }
+    m_last_link = NULL;
 }
 
 void MainWindowSettings::enableBackAndForwardButtons()
 {
     emit enableBackButton(m_previous_links.count() > 0);
     emit enableForwardButton(m_next_links.count() > 0);
+}
+
+Link * MainWindowSettings::lastLink()
+{
+    updateLastLink();
+    return m_last_link;
 }

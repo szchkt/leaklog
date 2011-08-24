@@ -183,8 +183,6 @@ MainWindow::MainWindow():
 
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    navigation->setSettings(&m_settings);
-
     setAllEnabled(false);
 
     navigation->connectSlots(this);
@@ -348,20 +346,20 @@ void MainWindow::showIconsOnly(bool show)
 void MainWindow::loadPreviousLink()
 {
     m_settings.loadPreviousLink();
-    executeLink(m_settings.lastLink());
+    executeLink(m_settings.receivedLink());
 }
 
 void MainWindow::loadNextLink()
 {
     m_settings.loadNextLink();
-    executeLink(m_settings.lastLink());
+    executeLink(m_settings.receivedLink());
 }
 
 void MainWindow::executeLink(const QUrl & url)
 {
     Link * link = m_settings.linkParser().parse(url.toString());
     if (link) {
-        m_settings.setLastLink(link);
+        m_settings.setReceivedLink(link);
         executeLink(link);
     }
 }
@@ -376,15 +374,15 @@ void MainWindow::executeLink(Link * link)
         id = link->idValue("customer");
         if (id != selectedCustomer()) {
             loadCustomer(id.toInt(), link->countViews() <= 1 && link->action() == Link::View);
-        } else if (link->countViews() <= 1) {
-            if (link->action() == Link::View) {
-                if (actionBasic_logbook->isChecked())
-                    navigation->setView(Navigation::ListOfRepairs);
-                else if (actionDetailed_logbook->isChecked())
-                    navigation->setView(Navigation::ListOfCircuits);
-            } else if (link->action() == Link::Edit)
-                editCustomer();
+        } else if (link->countViews() <= 1 && link->action() == Link::View) {
+            if (actionBasic_logbook->isChecked())
+                navigation->setView(Navigation::ListOfRepairs);
+            else if (actionDetailed_logbook->isChecked())
+                navigation->setView(Navigation::ListOfCircuits);
         }
+
+        if (link->countViews() <= 1 && link->action() == Link::Edit)
+            editCustomer();
         break;
 
     case LinkParser::Repair:
@@ -498,12 +496,11 @@ void MainWindow::executeLink(Link * link)
     case LinkParser::Circuit:
         if (link->idValue("circuit") != selectedCircuit())
             loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
-        else if (link->countViews() <= 2) {
-            if (link->action() == Link::View)
-                navigation->setView(Navigation::ListOfInspections);
-            else if (link->action() == Link::Edit)
-                editCircuit();
-        }
+        else if (link->countViews() <= 2 && link->action() == Link::View)
+            navigation->setView(Navigation::ListOfInspections);
+
+        if (link->countViews() <= 2 && link->action() == Link::Edit)
+            editCircuit();
         break;
 
     case LinkParser::AllAssemblyRecords:
@@ -567,6 +564,119 @@ void MainWindow::executeLink(Link * link)
         navigation->setView(Navigation::InspectionImages);
         break;
     }
+}
+
+void MainWindow::saveLink(int view)
+{
+    UrlEntity * url_entity = NULL, * e = NULL;
+
+    switch (view) {
+    case Navigation::ServiceCompany:
+        url_entity = new UrlEntity("servicecompany");
+        break;
+
+    case Navigation::RefrigerantManagement:
+        url_entity = new UrlEntity("refrigerantmanagement");
+        break;
+
+    case Navigation::ListOfCustomers:
+        url_entity = new UrlEntity("allcustomers");
+        break;
+
+    case Navigation::ListOfCircuits:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        break;
+
+    case Navigation::ListOfInspections:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        url_entity->addNext("circuit", m_settings.selectedCircuit());
+        break;
+
+    case Navigation::ListOfRepairs:
+        url_entity = new UrlEntity;
+        if (m_settings.isCustomerSelected())
+            url_entity->addNext("customer", m_settings.selectedCustomer());
+        url_entity->addNext("allrepairs");
+        break;
+
+    case Navigation::ListOfInspectors:
+        url_entity = new UrlEntity("allinspectors");
+        break;
+
+    case Navigation::Inspector:
+        url_entity = new UrlEntity("inspector", m_settings.selectedInspector());
+        break;
+
+    case Navigation::TableOfInspections:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        e = url_entity->addNext("circuit", m_settings.selectedCircuit());
+        if (m_settings.isCompressorSelected())
+            e = e->addNext("compressor", m_settings.selectedCompressor());
+        e->addNext("table");
+        break;
+
+    case Navigation::Inspection:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        url_entity->addNext("circuit", m_settings.selectedCircuit())
+                ->addNext("inspection", m_settings.selectedInspection());
+        break;
+
+    case Navigation::Agenda:
+        url_entity = new UrlEntity("agenda");
+        break;
+
+    case Navigation::OperatorReport:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        url_entity->addNext("operatorreport");
+        break;
+
+    case Navigation::ListOfAssemblyRecordTypes:
+        url_entity = new UrlEntity("allassemblyrecordtypes");
+        break;
+
+    case Navigation::ListOfAssemblyRecordItemTypes:
+        url_entity = new UrlEntity("allassemblyrecorditemtypes");
+        break;
+
+    case Navigation::ListOfAssemblyRecordItemCategories:
+        url_entity = new UrlEntity("allassemblyrecorditemcategories");
+        break;
+
+    case Navigation::AssemblyRecord:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        url_entity->addNext("circuit", m_settings.selectedCircuit())
+                ->addNext("assemblyrecord", m_settings.selectedInspection());
+        break;
+
+    case Navigation::ListOfCircuitUnitTypes:
+        url_entity = new UrlEntity("allcircuitunittypes");
+        break;
+
+    case Navigation::ListOfAssemblyRecords:
+        e = url_entity = new UrlEntity;
+        if (m_settings.isCustomerSelected())
+            e = e->addNext("customer", m_settings.selectedCustomer());
+        if (m_settings.isCircuitSelected())
+            e = e->addNext("circuit", m_settings.selectedCircuit());
+        e->addNext("allassemblyrecords");
+        break;
+
+    case Navigation::InspectionImages:
+        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
+        url_entity->addNext("circuit", m_settings.selectedCircuit())
+                ->addNext("inspection", m_settings.selectedInspection())
+                ->addNext("images");
+        break;
+
+    case Navigation::LeakagesByApplication:
+        url_entity = new UrlEntity("leakagesbyapplication");
+        break;
+
+    default:
+        break;
+    }
+    if (url_entity)
+        m_settings.setLastLink(m_settings.linkParser().parse(url_entity));
 }
 
 void MainWindow::printPreview()
@@ -926,6 +1036,10 @@ void MainWindow::groupChanged(int g)
             if (!actionDetailed_logbook->isChecked())
                 actionDetailed_logbook->setChecked(true);
             break;
+        case 3:
+            if (!actionAssembly_records->isChecked())
+                actionAssembly_records->setChecked(true);
+            break;
     }
 }
 
@@ -1089,7 +1203,7 @@ void MainWindow::enableTools()
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools();
+    navigation->enableTools(m_settings);
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

@@ -46,6 +46,13 @@ QString MainWindow::viewChanged(int view)
 
     wv_main->setHtml(tr("Loading..."));
     qApp->processEvents();
+
+    if (m_settings.receivedLink()) {
+        m_settings.loadReceivedLink();
+    } else {
+        saveLink(view);
+    }
+
     bool ok = true;
     do {
         navigation->setView(view, false);

@@ -84,10 +84,16 @@ public:
     inline QString selectedCircuitUnitType() const { return QString::number(m_circuit_unit_type); }
     void setSelectedCircuitUnitType(int circuit_unit_type) { m_circuit_unit_type = circuit_unit_type; }
 
-    Link * lastLink() { return m_last_link; }
+    Link * lastLink();
     void setLastLink(Link *);
+
+    Link * receivedLink() { return m_received_link; }
+    void setReceivedLink(Link * link) { m_received_link = link; }
+    void loadReceivedLink();
+
     void loadPreviousLink();
     void loadNextLink();
+
     bool hasPreviousLinks() { return m_previous_links.count() > 0; }
     bool hasNextLinks() { return m_next_links.count() > 0; }
 
@@ -99,6 +105,11 @@ signals:
 
 private:
     void enableBackAndForwardButtons();
+
+    inline void updateLastLink();
+
+    inline void saveToPreviousLinks();
+    inline void saveToNextLinks();
 
     int m_customer;
     QString m_customer_company;
@@ -115,6 +126,7 @@ private:
     int m_circuit_unit_type;
 
     Link * m_last_link;
+    Link * m_received_link;
     LinkParser link_parser;
     QList<Link *> m_previous_links;
     QList<Link *> m_next_links;

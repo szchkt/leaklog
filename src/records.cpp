@@ -640,7 +640,6 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
     used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
-    qDebug() << attributes.value("scope").toString();
 }
 
 AssemblyRecordType::AssemblyRecordType(const QString & id):
