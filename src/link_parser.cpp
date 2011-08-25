@@ -19,8 +19,6 @@
 
 #include "link_parser.h"
 
-#include <QDebug>
-
 LinkParser::LinkParser()
 {
     root_entity = new LinkEntity(false);

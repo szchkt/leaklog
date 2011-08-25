@@ -34,13 +34,15 @@ public:
     virtual bool checkValues(const QVariantMap &, QWidget * = 0) { return true; }
 };
 
-class DBRecord : public MTRecord, public Modifiable
+class DBRecord : public QObject, public MTRecord, public Modifiable
 {
     Q_OBJECT
 
 public:
     DBRecord();
     DBRecord(const QString &, const QString &, const QString &, const MTDictionary &);
+
+    QString parent(const QString & field) const { return MTRecord::parent(field); }
 };
 
 class Customer : public DBRecord
@@ -206,8 +208,6 @@ public:
 
 class AssemblyRecordTypeCategory : public MTRecord
 {
-    Q_OBJECT
-
 public:
     AssemblyRecordTypeCategory(const QString &);
 
@@ -240,8 +240,6 @@ public:
 
 class AssemblyRecordItem : public MTRecord
 {
-    Q_OBJECT
-
 public:
     enum Source {
         AssemblyRecordItemTypes = 0,
@@ -257,24 +255,18 @@ public:
 
 class AssemblyRecordItemByInspector : public AssemblyRecordItem
 {
-    Q_OBJECT
-
 public:
     AssemblyRecordItemByInspector(const QString &);
 };
 
 class File : public MTRecord
 {
-    Q_OBJECT
-
 public:
     File(const QString &);
 };
 
 class Person : public MTRecord
 {
-    Q_OBJECT
-
 public:
     Person(const QString & = QString(), const QString & = QString());
 };
@@ -299,16 +291,12 @@ public:
 
 class CircuitUnit : public MTRecord
 {
-    Q_OBJECT
-
 public:
     CircuitUnit(const QString & = QString(), const MTDictionary & = MTDictionary());
 };
 
 class InspectionImage : public MTRecord
 {
-    Q_OBJECT
-
 public:
     InspectionImage(const QString &, const QString &, const QString &);
 };
@@ -327,16 +315,12 @@ public:
 
 class Compressor : public MTRecord
 {
-    Q_OBJECT
-
 public:
     Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
 };
 
 class InspectionsCompressor : public MTRecord
 {
-    Q_OBJECT
-
 public:
     InspectionsCompressor(const QString & = QString(), const MTDictionary & = MTDictionary());
 };

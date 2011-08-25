@@ -27,27 +27,25 @@
 
 class QSqlQuery;
 
-class MTRecord : public QObject
+class MTRecord
 {
-    Q_OBJECT
-
 public:
-    MTRecord(): QObject() {}
-    MTRecord(const QString &, const QString &, const QString &, const MTDictionary &);
-    MTRecord(const MTRecord &);
-    MTRecord & operator=(const MTRecord &);
-    void addFilter(const QString &, const QString &);
+    MTRecord() {}
+    MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents);
+    MTRecord(const MTRecord & other);
+    MTRecord & operator=(const MTRecord & other);
+    void addFilter(const QString & column, const QString & filter);
     inline QString table() const { return r_table; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline QString & id() { return r_id; }
-    void setId(const QString &);
+    void setId(const QString & id) { r_id = id; }
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
-    QSqlQuery select(const QString & = "*", Qt::SortOrder order = Qt::AscendingOrder);
-    QSqlQuery select(const QString &, const QString & order_by);
-    QVariantMap list(const QString & = "*", bool = false);
+    QSqlQuery select(const QString & fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
+    QSqlQuery select(const QString & fields, const QString & order_by);
+    QVariantMap list(const QString & fields = "*", bool refresh = false);
     void readValues();
     inline QVariantMap & values() { return r_values; }
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
@@ -56,19 +54,19 @@ public:
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
         return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
     }
-    ListOfVariantMaps listAll(const QString & = "*", const QString & order_by = QString());
-    QVariantMap sumAll(const QString &);
-    MultiMapOfVariantMaps mapAll(const QString &, const QString & = "*");
-    bool update(const QVariantMap &, bool = false);
+    ListOfVariantMaps listAll(const QString & fields = "*", const QString & order_by = QString());
+    QVariantMap sumAll(const QString & fields);
+    MultiMapOfVariantMaps mapAll(const QString & map_to, const QString & fields = "*");
+    bool update(const QVariantMap & values, bool add_columns = false);
     virtual bool remove();
-    void setCustomWhere(const QString & where) { this->custom_where = where; }
+    void setCustomWhere(const QString & where) { r_custom_where = where; }
 
 private:
     QString r_table;
     QString r_id_field;
     QString r_id;
-    QString custom_where;
     MTDictionary r_parents;
+    QString r_custom_where;
     MTDictionary r_filter;
     QVariantMap r_values;
 };

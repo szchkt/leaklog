@@ -53,7 +53,6 @@
 #include <QDate>
 #include <QDateEdit>
 #include <QDesktopServices>
-#include <QDebug>
 
 using namespace Global;
 

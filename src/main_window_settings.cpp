@@ -20,8 +20,6 @@
 #include "main_window_settings.h"
 #include "records.h"
 
-#include <QDebug>
-
 #define MAX_LINKS 10
 
 MainWindowSettings::MainWindowSettings():

@@ -31,7 +31,6 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QHeaderView>
-#include <QDebug>
 
 EditDialogueTable::EditDialogueTable(const QString & name, const QList<EditDialogueTableCell *> & header, QWidget * parent):
         QWidget(parent)

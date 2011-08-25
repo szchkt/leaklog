@@ -32,7 +32,6 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QFileInfo>
-#include <QDebug>
 
 using namespace Global;
 

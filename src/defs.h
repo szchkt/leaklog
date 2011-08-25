@@ -50,4 +50,10 @@ typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
 #define QUERY(field) query.value(query.record().indexOf(field))
 #define QUERY_VALUE(query, field) query.value(query.record().indexOf(field))
 
+#include <QtGlobal>
+
+#ifdef QT_DEBUG
+#include <QDebug>
+#endif
+
 #endif // DEFS_H

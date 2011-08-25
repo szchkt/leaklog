@@ -24,21 +24,23 @@
 #include <QSqlRecord>
 #include <QDateTime>
 #include <QSqlError>
-#include <QDebug>
 
 using namespace Global;
 
 MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
-QObject(), r_table(table), r_id_field(id_field), r_id(id), r_parents(parents)
+    r_table(table),
+    r_id_field(id_field),
+    r_id(id),
+    r_parents(parents)
 {}
 
-MTRecord::MTRecord(const MTRecord & other):
-QObject()
+MTRecord::MTRecord(const MTRecord & other)
 {
     r_table = other.r_table;
     r_id_field = other.r_id_field;
     r_id = other.r_id;
     r_parents = other.r_parents;
+    r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
     r_values = other.r_values;
 }
@@ -49,6 +51,7 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     r_id_field = other.r_id_field;
     r_id = other.r_id;
     r_parents = other.r_parents;
+    r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
     r_values = other.r_values;
     return *this;
@@ -77,7 +80,7 @@ QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
     bool has_id = !r_id.isEmpty();
     int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
-    if (has_id || r_parents.count() || r_filter.count() || !custom_where.isEmpty()) { select.append(" WHERE "); }
+    if (has_id || r_parents.count() || r_filter.count() || !r_custom_where.isEmpty()) { select.append(" WHERE "); }
     if (has_id) { select.append(r_id_field + " = :_id"); }
     for (i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { select.append(" AND "); }
@@ -87,9 +90,9 @@ QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
     }
-    if (!custom_where.isEmpty()) {
+    if (!r_custom_where.isEmpty()) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
-        select.append(custom_where);
+        select.append(r_custom_where);
     }
     if (!r_id_field.isEmpty() && !order_by.isEmpty())
         select.append(QString(" ORDER BY %1").arg(order_by));
@@ -290,9 +293,4 @@ bool MTRecord::remove()
     bool result = query.exec();
     if (result) { r_id.clear(); }
     return result;
-}
-
-void MTRecord::setId(const QString & r_id)
-{
-    this->r_id = r_id;
 }

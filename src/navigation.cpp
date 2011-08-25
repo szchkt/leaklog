@@ -23,8 +23,6 @@
 #include "main_window_settings.h"
 #include "link_parser.h"
 
-#include <QDebug>
-
 Navigation::Navigation(QWidget * parent):
 QWidget(parent)
 {

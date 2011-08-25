@@ -28,20 +28,21 @@
 #include <QSqlRecord>
 #include <QApplication>
 #include <QMessageBox>
-#include <QDebug>
 
 using namespace Global;
 
 DBRecord::DBRecord():
-MTRecord()
+    QObject(),
+    MTRecord()
 {}
 
 DBRecord::DBRecord(const QString & type, const QString & id_field, const QString & id, const MTDictionary & parents):
-MTRecord(type, id_field, id, parents)
+    QObject(),
+    MTRecord(type, id_field, id, parents)
 {}
 
 Customer::Customer(const QString & id):
-DBRecord("customers", "id", id, MTDictionary())
+    DBRecord("customers", "id", id, MTDictionary())
 {}
 
 void Customer::initEditDialogue(EditDialogueWidgets * md)
@@ -89,7 +90,7 @@ const MTDictionary & Customer::attributes()
 }
 
 Circuit::Circuit(const QString & parent, const QString & id):
-DBRecord("circuits", "id", id, MTDictionary("parent", parent))
+    DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets * md)
@@ -211,15 +212,14 @@ int Circuit::numBasicAttributes()
 }
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
-DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
-m_scope(Variable::Inspection)
+    DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
+    m_scope(Variable::Inspection)
 {}
 
 Inspection::Inspection(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
-DBRecord(table, id_column, id, parents),
-m_scope(Variable::Inspection)
-{
-}
+    DBRecord(table, id_column, id, parents),
+    m_scope(Variable::Inspection)
+{}
 
 void Inspection::initEditDialogue(EditDialogueWidgets * md)
 {
@@ -275,13 +275,12 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
 }
 
 InspectionByInspector::InspectionByInspector(const QString & inspector_id):
-Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
+    Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
            " LEFT JOIN circuits ON inspections.circuit = circuits.id AND circuits.parent = inspections.customer", "date", "", MTDictionary("inspector", inspector_id))
-{
-}
+{}
 
 Repair::Repair(const QString & date):
-DBRecord("repairs", "date", date, MTDictionary())
+    DBRecord("repairs", "date", date, MTDictionary())
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets * md)
@@ -353,7 +352,7 @@ const MTDictionary & Repair::attributes()
 }
 
 VariableRecord::VariableRecord(const QString & var_id, const QString & parent_id):
-DBRecord("variables", "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
+    DBRecord("variables", "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
 {}
 
 void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
@@ -405,7 +404,7 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
 }
 
 Table::Table(const QString & id, const QString & uid, const MTDictionary & parents):
-DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
+    DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
 {}
 
 void Table::initEditDialogue(EditDialogueWidgets * md)
@@ -433,7 +432,7 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
 }
 
 Inspector::Inspector(const QString & id):
-DBRecord("inspectors", "id", id, MTDictionary())
+    DBRecord("inspectors", "id", id, MTDictionary())
 {}
 
 void Inspector::initEditDialogue(EditDialogueWidgets * md)
@@ -487,7 +486,7 @@ const MTDictionary & Inspector::attributes()
 }
 
 ServiceCompany::ServiceCompany(const QString & id):
-DBRecord("service_companies", "id", id, MTDictionary())
+    DBRecord("service_companies", "id", id, MTDictionary())
 {}
 
 void ServiceCompany::initEditDialogue(EditDialogueWidgets * md)
@@ -538,7 +537,7 @@ const MTDictionary & ServiceCompany::attributes()
 }
 
 RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & date):
-DBRecord("refrigerant_management", "date", date, MTDictionary())
+    DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
 
 void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets * md)
@@ -609,7 +608,7 @@ const MTDictionary & RecordOfRefrigerantManagement::attributes()
 }
 
 WarningRecord::WarningRecord(const QString & id):
-DBRecord("warnings", "id", id, MTDictionary())
+    DBRecord("warnings", "id", id, MTDictionary())
 {}
 
 void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
@@ -643,7 +642,7 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
 }
 
 AssemblyRecordType::AssemblyRecordType(const QString & id):
-DBRecord("assembly_record_types", "id", id, MTDictionary())
+    DBRecord("assembly_record_types", "id", id, MTDictionary())
 {}
 
 void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
@@ -713,7 +712,7 @@ bool AssemblyRecordType::remove()
 }
 
 AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
-DBRecord("assembly_record_item_types", "id", id, MTDictionary())
+    DBRecord("assembly_record_item_types", "id", id, MTDictionary())
 {}
 
 void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets * md)
@@ -775,7 +774,7 @@ const MTDictionary & AssemblyRecordItemType::attributes()
 }
 
 AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString & record_type_id):
-MTRecord("assembly_record_type_categories", "", "", MTDictionary("record_type_id", record_type_id))
+    MTRecord("assembly_record_type_categories", "", "", MTDictionary("record_type_id", record_type_id))
 {}
 
 class AssemblyRecordTypeCategoryAttributes
@@ -795,8 +794,8 @@ const MTDictionary & AssemblyRecordTypeCategory::attributes()
     return dict.dict;
 }
 
-AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString & id)
-    : DBRecord("assembly_record_item_categories", "id", id, MTDictionary())
+AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString & id):
+    DBRecord("assembly_record_item_categories", "id", id, MTDictionary())
 {
 }
 
@@ -854,15 +853,13 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
     md->setUsedIds(used_ids);
 }
 
-AssemblyRecordItem::AssemblyRecordItem(const QString & record_id)
-    : MTRecord("assembly_record_items", "", "", MTDictionary("arno", record_id))
-{
-}
+AssemblyRecordItem::AssemblyRecordItem(const QString & record_id):
+    MTRecord("assembly_record_items", "", "", MTDictionary("arno", record_id))
+{}
 
-AssemblyRecordItem::AssemblyRecordItem(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents)
-    : MTRecord(table, id_column, id, parents)
-{
-}
+AssemblyRecordItem::AssemblyRecordItem(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
+    MTRecord(table, id_column, id, parents)
+{}
 
 class AssemblyRecordItemAttributes
 {
@@ -884,22 +881,21 @@ const MTDictionary & AssemblyRecordItem::attributes()
     return dict.dict;
 }
 
-AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString & inspector_id)
-    : AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno", "", "",
-               MTDictionary(QStringList() << "item_type_id" << "source", QStringList() << inspector_id << QString::number(AssemblyRecordItem::Inspectors)))
-{
-}
+AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString & inspector_id):
+    AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno", "", "",
+        MTDictionary(QStringList() << "item_type_id" << "source", QStringList() << inspector_id << QString::number(AssemblyRecordItem::Inspectors)))
+{}
 
 File::File(const QString & file_id):
-MTRecord("files", "id", file_id, MTDictionary())
+    MTRecord("files", "id", file_id, MTDictionary())
 {}
 
 Person::Person(const QString & person_id, const QString & customer_id):
-MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
+    MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
 {}
 
 CircuitUnitType::CircuitUnitType(const QString & id):
-DBRecord("circuit_unit_types", "id", id, MTDictionary())
+    DBRecord("circuit_unit_types", "id", id, MTDictionary())
 {}
 
 void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
@@ -994,20 +990,17 @@ const QString CircuitUnitType::locationToString(int id)
     return QString();
 }
 
-CircuitUnit::CircuitUnit(const QString & id, const MTDictionary & dict)
-    : MTRecord("circuit_units", "id", id, dict)
-{
-}
+CircuitUnit::CircuitUnit(const QString & id, const MTDictionary & dict):
+    MTRecord("circuit_units", "id", id, dict)
+{}
 
-InspectionImage::InspectionImage(const QString & customer_id, const QString & circuit_id, const QString & inspection_id)
-    : MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit" << "date", QStringList() << customer_id << circuit_id << inspection_id))
-{
-}
+InspectionImage::InspectionImage(const QString & customer_id, const QString & circuit_id, const QString & inspection_id):
+    MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit" << "date", QStringList() << customer_id << circuit_id << inspection_id))
+{}
 
-Style::Style(const QString & id)
-    : DBRecord("styles", "id", id, MTDictionary())
-{
-}
+Style::Style(const QString & id):
+    DBRecord("styles", "id", id, MTDictionary())
+{}
 
 void Style::initEditDialogue(EditDialogueWidgets * md)
 {
@@ -1050,10 +1043,8 @@ const MTDictionary & Style::attributes()
 
 Compressor::Compressor(const QString & id, const MTDictionary & dict):
     MTRecord("compressors", "id", id, dict)
-{
-}
+{}
 
 InspectionsCompressor::InspectionsCompressor(const QString & id, const MTDictionary & dict):
     MTRecord("inspections_compressors", "id", id, dict)
-{
-}
+{}
