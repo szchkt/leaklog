@@ -176,14 +176,14 @@ public:
         dict.insert("operation", QApplication::translate("Circuit", "Place of operation"));
         dict.insert("building", QApplication::translate("Circuit", "Building"));
         dict.insert("device", QApplication::translate("Circuit", "Device"));
-        dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
         dict.insert("manufacturer", QApplication::translate("Circuit", "Manufacturer"));
         dict.insert("type", QApplication::translate("Circuit", "Type"));
         dict.insert("sn", QApplication::translate("Circuit", "Serial number"));
         dict.insert("year", QApplication::translate("Circuit", "Year of purchase"));
         dict.insert("commissioning", QApplication::translate("Circuit", "Date of commissioning"));
         dict.insert("field", QApplication::translate("Circuit", "Field of application"));
-        // numBasicAttributes: 12
+        // numBasicAttributes: 11
+        dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
         dict.insert("disused", QApplication::translate("Circuit", "Disused"));
         dict.insert("decommissioning", QApplication::translate("Circuit", "Date of decommissioning"));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
@@ -207,7 +207,7 @@ const MTDictionary & Circuit::attributes()
 
 int Circuit::numBasicAttributes()
 {
-    return 12;
+    return 11;
 }
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):

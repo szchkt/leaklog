@@ -482,23 +482,25 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps circuits;
+    QString circuits_query_select = "circuits.*, (SELECT date FROM inspections WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id ORDER BY date DESC LIMIT 1) AS last_inspection";
     if (!circuit_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        circuits = circuits_record.listAll();
+        circuits = circuits_record.listAll(circuits_query_select);
     else {
-        circuits = circuits_record.listAll("*", m_settings.lastLink()->orderBy());
+        circuits = circuits_record.listAll(circuits_query_select, m_settings.lastLink()->orderBy());
     }
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
     table->addClass("highlight");
     HTMLTableRow * thead = new HTMLTableRow();
-    int thead_colspan = 2;
+    int thead_colspan = 3;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
         *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:" << Circuit::attributes().key(n)<< "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
         thead_colspan++;
     }
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
     *(thead->addHeaderCell()) << Circuit::attributes().value("oil") ;
+    *(thead->addHeaderCell()) << tr("Last inspection");
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
     if (circuit_id.isEmpty()) { *_td << tr("List of Circuits"); }
@@ -537,6 +539,11 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         _td = _tr->addCell();
         *_td << circuits.at(i).value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
         *_td << " " << circuits.at(i).value("oil").toString().toUpper();
+        *(_tr->addCell()->link(QString("customer:%1/circuit:%2/inspection:%3")
+                               .arg(customer_id)
+                               .arg(id)
+                               .arg(circuits.at(i).value("last_inspection").toString())))
+                << circuits.at(i).value("last_inspection").toString().split('-').first();
     }
     if (cols_in_row < 0) *div << table;
     else *div << table->customHtml(cols_in_row);
