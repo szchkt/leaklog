@@ -1981,6 +1981,9 @@
    <property name="statusTip">
     <string>View the last page</string>
    </property>
+   <property name="shortcut">
+    <string>Backspace</string>
+   </property>
   </action>
   <action name="actionForward">
    <property name="enabled">
@@ -1995,6 +1998,9 @@
    </property>
    <property name="statusTip">
     <string>View the next page</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Backspace</string>
    </property>
   </action>
  </widget>
