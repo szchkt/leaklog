@@ -32,7 +32,7 @@ Variables::Variables(QSqlDatabase db, int scope):
     m_scope(scope)
 {
     initVariables();
-    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg"
+    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg, (SELECT COUNT(v.id) FROM variables AS v WHERE variables.id = v.parent_id) AS count_children"
          " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope));
 }
 
@@ -175,6 +175,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & unit
     row.insert(Variable::CompareNom, compare_nom ? 1 : 0);
     row.insert(Variable::Tolerance, tolerance);
     row.insert(Variable::ColBg, col_bg);
+    row.insert(Variable::CountChildren, 0);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
 }
@@ -189,6 +190,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & col_
     row.insert(Variable::Type, "group");
     row.insert(Variable::ScopeValue, scope);
     row.insert(Variable::ColBg, col_bg);
+    row.insert(Variable::CountChildren, 0);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
 }
@@ -210,13 +212,16 @@ void Variables::initSubvariable(const QString & parent, int scope, const QString
     row.insert(Variable::ColBg, col_bg);
     *result() << row;
     var_indices.insert(id, result()->count() - 1);
+
+    QMap<int, QVariant> * parent_row = &(*result())[var_indices.value(parent, -1)];
+    parent_row->insert(Variable::CountChildren, parent_row->value(Variable::CountChildren).toInt() + 1);
 }
 
 void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record, const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
 {
     MDAbstractInputWidget * iw = NULL;
     while (next()) {
-        if (!valueExpression().isEmpty())
+        if (!valueExpression().isEmpty() || countChildren() > 0)
             continue;
 
         QString parent_id = parentID();
