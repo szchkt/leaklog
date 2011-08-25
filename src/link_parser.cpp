@@ -75,7 +75,9 @@ Link * LinkParser::parse(const QString & url)
     UrlEntity * url_entity = new UrlEntity;
     UrlEntity * entity = url_entity;
     for (int i = 0; i < split_url.count(); ++i) {
-        entity = entity->addNext(split_url.at(i).split(":"));
+        QStringList args = split_url.at(i).split(":");
+        QString name = args.takeFirst();
+        entity = entity->addNext(name, args.join(":"));
     }
 
     return parse(url_entity);
@@ -136,11 +138,11 @@ void LinkEntity::parse(UrlEntity * url, Link * link)
         link->setAction(Link::View);
         if (url->name() == "edit") {
             link->setAction(Link::Edit);
-        } else if (url->name() == "order_by") {
-            if (url->countAttributes() > 1)
-                link->setOrderBy(url->attributeAt(1));
-            if (url->countAttributes() > 2)
-                link->setOrderDirection(url->attributeAt(2) == "asc" ? Qt::AscendingOrder : Qt::DescendingOrder);
+        } else if (url->name() == "order_by" && url->countAttributes() > 1) {
+            QStringList subargs = url->attributeAt(1).split(":");
+            link->setOrderBy(subargs.takeFirst());
+            if (subargs.count())
+                link->setOrderDirection(subargs.first() == "asc" ? Qt::AscendingOrder : Qt::DescendingOrder);
         }
     }
 }

@@ -718,8 +718,9 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     QSet<QString> all_variables;
 
     Variables vars;
-    while (vars.next())
+    while (vars.next()) {
         all_variables << vars.id();
+    }
 
     while (tables.next() || all_variables.count()) {
         QStringList table_vars;
