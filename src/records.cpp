@@ -671,6 +671,7 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuit, tr("Show circuit"));
+    md_display_options->addCheckBox(AssemblyRecordType::ShowCompressors, tr("Show compressors"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
     md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), attributes.value("name_format").toString(), keywords));

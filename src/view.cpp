@@ -2053,12 +2053,13 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     *(table->addRow()->addCell()->paragraph()) << ar_type.value("description").toString();
     main->newLine();
 
-    QString html; MTTextStream out(&html);
+    QString html;
 
     if (type_display_options & AssemblyRecordType::ShowCustomer) {
         writeCustomersTable(customer_id, main->table());
         main->newLine();
     }
+
     if (type_display_options & AssemblyRecordType::ShowCustomerContactPersons) {
         customerContactPersons(customer_id, main->table());
         main->newLine();
@@ -2069,6 +2070,12 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         main->newLine();
     }
     *main << html;
+
+    if (type_display_options & AssemblyRecordType::ShowCompressors) {
+        circuitCompressorsTable(customer_id, circuit_id, main->table());
+        main->newLine();
+    }
+
     if (type_display_options & AssemblyRecordType::ShowCircuitUnits) {
         circuitUnitsTable(customer_id, circuit_id, main->table());
         main->newLine();

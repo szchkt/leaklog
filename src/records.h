@@ -183,7 +183,8 @@ public:
         ShowCustomer = 2,
         ShowCustomerContactPersons = 4,
         ShowCircuit = 8,
-        ShowCircuitUnits = 16
+        ShowCompressors = 16,
+        ShowCircuitUnits = 32
     };
 
     AssemblyRecordType(const QString &);
