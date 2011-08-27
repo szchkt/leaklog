@@ -2241,43 +2241,50 @@ void MainWindow::importCSV()
     table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
-    table = new ImportDialogueTable(tr("Circuits"), "circuits");
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
-    table->addForeignKeyColumn(tr("Customer ID"), "parent", "id", "customers");
-    table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Device"), "device", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
-    table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
-    table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
-    table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
-    table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
-    ImportDialogueTableColumn * col = table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    ImportDialogueTable * circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
+    circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
+    circuits_table->addForeignKeyColumn(tr("Customer ID"), "parent", "id", "customers");
+    circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Device"), "device", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
+    circuits_table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
+    circuits_table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
+    circuits_table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
+    circuits_table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
+    ImportDialogueTableColumn * col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
         col->addSelectValue(attributeValues().value(n).toLower(), string_value);
     }
-    col = table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
+    col = circuits_table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
         col->addSelectValue(attributeValues().value(n).toLower(), string_value);
     }
-    col = table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
+    col = circuits_table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
     foreach (string_value, refrigerants)
         col->addSelectValue(string_value.toLower(), string_value);
-    tables.append(table);
+    tables.append(circuits_table);
 
-    table = table->addChildTableTemplate(tr("Circuit units"), "circuit_units",
+    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors",
+        MTDictionary(QStringList() << "parent" << "id", QStringList() << "customer_id" << "circuit_id"), true);
+    table->addColumn(tr("Compressor name"), "name", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
+
+    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units",
         MTDictionary(QStringList() << "parent" << "id", QStringList() << "company_id" << "circuit_id"), true);
     table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_id", "id", "circuit_unit_types");
     table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
