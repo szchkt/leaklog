@@ -1475,16 +1475,20 @@ void MainWindow::httpRequestFinished(bool error)
     if (in.readLine() != "[Leaklog.current-version.float]") { return httpRequestFinished(true); }
     double f_current_ver = in.readLine().toDouble();
     if (in.readLine() != "[Leaklog.download-url.src]") { return httpRequestFinished(true); }
-    QString src_url = in.readLine();
+#if !defined Q_WS_MAC && !defined Q_WS_WIN
+    QString url = in.readLine();
+#else
+    in.readLine();
+#endif
     if (in.readLine() != "[Leaklog.download-url.macx]") { return httpRequestFinished(true); }
 #ifdef Q_WS_MAC
-    QString macx_url = in.readLine();
+    QString url = in.readLine();
 #else
     in.readLine();
 #endif
     if (in.readLine() != "[Leaklog.download-url.win32]") { return httpRequestFinished(true); }
 #ifdef Q_WS_WIN
-    QString win32_url = in.readLine();
+    QString url = in.readLine();
 #else
     in.readLine();
 #endif
@@ -1493,21 +1497,36 @@ void MainWindow::httpRequestFinished(bool error)
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
     if ((f_current_ver <= F_LEAKLOG_VERSION && !LEAKLOG_PREVIEW_VERSION) ||
         (f_current_ver < F_LEAKLOG_VERSION && LEAKLOG_PREVIEW_VERSION)) {
-        if (!check_for_updates)
-            QMessageBox::information(this, tr("Leaklog"), tr("You are running the latest version of Leaklog."));
+        if (!check_for_updates) {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Information);
+            message.setText(tr("You are running the latest version of Leaklog."));
+            message.exec();
+        }
     } else {
-        QString info; QTextStream out(&info);
-        out << "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; }</style></head><body><p>" << endl;
-        out << "<b>" << tr("Leaklog %1 is available now.").arg(current_ver) << "</b><br><br>" << endl;
-        out << release_notes << endl << "<br><br>" << endl;
-#ifdef Q_WS_MAC
-        out << "<a href=\"" << macx_url << "\">" << tr("Download Leaklog %1 for Mac OS X").arg(current_ver) << "</a><br>" << endl;
-#elif defined Q_WS_WIN
-        out << "<a href=\"" << win32_url << "\">" << tr("Download Leaklog %1 for Windows").arg(current_ver) << "</a><br>" << endl;
-#endif
-        out << "<a href=\"" << src_url << "\">" << tr("Download source code") << "</a>" << endl;
-        out << "</p></body></html>";
-        QMessageBox::information(this, tr("Leaklog"), info);
+        QMessageBox message(this);
+        message.setWindowTitle(tr("Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("Leaklog %1 is available now.").arg(current_ver));
+        message.setInformativeText(QString("<html><head>"
+                                           "<meta name=\"qrichtext\" content=\"1\" />"
+                                           "<style type=\"text/css\">p, li { white-space: pre-wrap; }</style>"
+                                           "</head><body><p>%1</p></body></html>")
+                                   .arg(release_notes));
+        message.addButton(tr("&Download Update"), QMessageBox::AcceptRole);
+        message.addButton(tr("Remind Me &Later"), QMessageBox::RejectRole);
+        switch (message.exec()) {
+            case QMessageBox::AcceptRole: // Download
+                QDesktopServices::openUrl(url);
+                break;
+            case QMessageBox::RejectRole: // Later
+                break;
+        }
     }
     check_for_updates = false;
 }
