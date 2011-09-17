@@ -346,6 +346,10 @@
         <source>Assembly Record Type</source>
         <translation>Typ montážneho listu</translation>
     </message>
+    <message>
+        <source>Show compressors</source>
+        <translation>Zobraziť kompresory</translation>
+    </message>
 </context>
 <context>
     <name>AssemblyRecordTypeCategory</name>
@@ -2454,18 +2458,6 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>Leaklog %1 je teraz dostupný.</translation>
     </message>
     <message>
-        <source>Download Leaklog %1 for Mac OS X</source>
-        <translation>Stiahnuť Leaklog %1 pre Mac OS X</translation>
-    </message>
-    <message>
-        <source>Download Leaklog %1 for Windows</source>
-        <translation>Stiahnuť Leaklog %1 pre Windows</translation>
-    </message>
-    <message>
-        <source>Download source code</source>
-        <translation>Stiahnuť zdrojový kód</translation>
-    </message>
-    <message>
         <source>Yes</source>
         <translation>Áno</translation>
     </message>
@@ -3392,6 +3384,42 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>List of Circuit Unit Types</source>
         <translation>Zoznam typov jednotiek okruhu</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Naspäť</translation>
+    </message>
+    <message>
+        <source>View the last page</source>
+        <translation>Zobraziť poslednú stránku</translation>
+    </message>
+    <message>
+        <source>Backspace</source>
+        <translation>Backspace</translation>
+    </message>
+    <message>
+        <source>Forward</source>
+        <translation>Dopredu</translation>
+    </message>
+    <message>
+        <source>View the next page</source>
+        <translation>Zobraziť nasledujúcu stránku</translation>
+    </message>
+    <message>
+        <source>Shift+Backspace</source>
+        <translation>Shift+Backspace</translation>
+    </message>
+    <message>
+        <source>Compressor name</source>
+        <translation>Názov kompresora</translation>
+    </message>
+    <message>
+        <source>&amp;Download Update</source>
+        <translation>&amp;Stiahnuť aktualizáciu</translation>
+    </message>
+    <message>
+        <source>Remind Me &amp;Later</source>
+        <translation>Pripomenúť &amp;neskôr</translation>
     </message>
 </context>
 <context>
