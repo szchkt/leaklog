@@ -294,12 +294,10 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
             md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md->widget(),
                                                    attributes.value(var_id).toString(), col_bg));
         } else if (var_type == "bool") {
-            QString label = var_name;
-            if (parent_id.isEmpty())
-                var_name.clear();
-            else
+            QString label;
+            if (!parent_id.isEmpty())
                 label = QApplication::translate("MainWindow", "%1:").arg(parent.name());
-            iw = new MDCheckBox(var_id, var_name, md->widget(), attributes.value(var_id).toInt());
+            iw = new MDCheckBox(var_id, name(), md->widget(), attributes.value(var_id).toInt());
             iw->label()->setLabelText(label);
             md->addInputWidget(iw);
         } else {
