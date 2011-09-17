@@ -395,6 +395,10 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
     if (attributes.value("type").toString() == "group")
         cb_type->setEnabled(false);
     md->addInputWidget(cb_type);
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
+                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
+                                                   QStringList() << "1" << "2"),
+                                      "", id().isEmpty()));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md->widget(), 0.0, 999999.9, attributes.value("tolerance").toDouble()));
@@ -935,7 +939,6 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
     md->addGroupedInputWidgets(tr("Output:"), gw_list);
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
-
 
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
