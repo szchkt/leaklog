@@ -4810,6 +4810,18 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>Compare value with the nominal inspection</source>
         <translation>Porovnať hodnotu s nominálnou</translation>
     </message>
+    <message>
+        <source>Scope:</source>
+        <translation>Rámec:</translation>
+    </message>
+    <message>
+        <source>Inspection</source>
+        <translation>Kontrola</translation>
+    </message>
+    <message>
+        <source>Compressor</source>
+        <translation>Kompresor</translation>
+    </message>
 </context>
 <context>
     <name>VariableTypes</name>
