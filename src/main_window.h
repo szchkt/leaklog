@@ -237,7 +237,7 @@ private:
     HTMLTableCell * writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
     HTMLTable * writeCustomersTable(const QString &, HTMLTable * = NULL);
-    HTMLDiv * writeCircuitsTable(const QString &, const QString &, int, HTMLTable * = NULL);
+    HTMLDiv * writeCircuitsTable(const QString &, const QString & = QString(), int = -1, HTMLTable * = NULL);
     void writeCircuitsTable(MTTextStream &, const QString &, const QString & = QString(), int = -1);
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);
     HTMLTable * writeServiceCompany(HTMLTable * = NULL);

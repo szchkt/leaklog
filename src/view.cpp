@@ -588,11 +588,13 @@ QString MainWindow::viewAllCustomers()
 
 QString MainWindow::viewCustomer(const QString & customer_id)
 {
-    QString html; MTTextStream out(&html);
-    writeCustomersTable(out, customer_id);
-    out << "<br>";
-    writeCircuitsTable(out, customer_id);
-    return dict_html.value(Navigation::ListOfCircuits).arg(html);
+    HTMLMain main;
+    main << writeCustomersTable(customer_id);
+    main.newLine();
+    main << customerContactPersons(customer_id);
+    main.newLine();
+    main << writeCircuitsTable(customer_id);
+    return dict_html.value(Navigation::ListOfCircuits).arg(main.html());
 }
 
 QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id, int year)
