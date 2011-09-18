@@ -186,6 +186,24 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
+
+        // Contact persons separated from customers table
+        Customer customers_rec("");
+        ListOfVariantMaps customers = customers_rec.listAll();
+
+        Person person;
+        int next_id = person.list("MAX(id) AS max").value("max").toInt();
+        QVariantMap person_values;
+        for (int i = 0; i < customers.count(); ++i) {
+            if (customers.at(i).value("contact_person").isNull())
+                continue;
+
+            person_values.insert("company_id", customers.at(i).value("id"));
+            person_values.insert("name", customers.at(i).value("contact_person"));
+            person.setId(QString::number(++next_id));
+            person.update(person_values);
+        }
+
     }
     if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_db_info_id");
