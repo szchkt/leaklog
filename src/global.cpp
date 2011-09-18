@@ -616,7 +616,7 @@ public:
         dict.insert("sftsw", "float");
         dict.insert("rmds", "text");
         dict.insert("arno", "string");
-        dict.insert("ar_type", "integer");
+        dict.insert("ar_type", "int");
         dict.insert("corr_def", "bool");
         dict.insert("noise_vibr", "bool");
         dict.insert("bbl_lvl", "bool");
