@@ -33,6 +33,7 @@ MainWindowSettings::MainWindowSettings():
     m_assembly_record_item_type(-1),
     m_assembly_record_item_category(-1),
     m_circuit_unit_type(-1),
+    m_has_assembly_record(false),
     m_last_link(NULL),
     m_received_link(NULL)
 {

@@ -915,8 +915,9 @@ void MainWindow::loadInspection(const QString & inspection, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    m_settings.setSelectedInspection(inspection);
-    m_settings.setSelectedInspectionIsRepair(Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool());
+    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
+    m_settings.setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
+    m_settings.setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::Inspection);
@@ -2505,8 +2506,9 @@ void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    m_settings.setSelectedInspection(inspection);
-    m_settings.setSelectedInspectionIsRepair(Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).value("repair").toBool());
+    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
+    m_settings.setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
+    m_settings.setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
     enableTools();
     if (refresh) {
         navigation->setView(Navigation::AssemblyRecord);

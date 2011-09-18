@@ -51,8 +51,9 @@ public:
 
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
-    void setSelectedInspection(const QString & inspection) { m_inspection = inspection; }
-    inline void clearSelectedInspection() { m_inspection.clear(); }
+    void setSelectedInspection(const QString & inspection, bool has_ar = false) { m_inspection = inspection; m_has_assembly_record = has_ar; }
+    inline void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; }
+    inline bool hasAssemblyRecord() const { return m_has_assembly_record; }
 
     bool selectedInspectionIsRepair() { return m_inspection_is_repair; }
     void setSelectedInspectionIsRepair(bool inspection_is_repair) { m_inspection_is_repair = inspection_is_repair; }
@@ -124,6 +125,7 @@ private:
     int m_assembly_record_item_type;
     int m_assembly_record_item_category;
     int m_circuit_unit_type;
+    bool m_has_assembly_record;
 
     Link * m_last_link;
     Link * m_received_link;

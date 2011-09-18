@@ -404,7 +404,7 @@ void Navigation::enableTools(const MainWindowSettings & settings)
     tbtn_edit_inspection->setEnabled(settings.isInspectionSelected());
     tbtn_remove_inspection->setEnabled(settings.isInspectionSelected());
     tbtn_view_inspection->setEnabled(settings.isInspectionSelected());
-    tbtn_view_assembly_record->setEnabled(settings.isInspectionSelected());
+    tbtn_view_assembly_record->setEnabled(settings.isInspectionSelected() && settings.hasAssemblyRecord());
     tbtn_edit_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
     tbtn_remove_assembly_record_type->setEnabled(settings.isAssemblyRecordTypeSelected());
     tbtn_edit_assembly_record_item_type->setEnabled(settings.isAssemblyRecordItemTypeSelected());
