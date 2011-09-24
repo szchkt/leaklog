@@ -75,7 +75,8 @@ QString MainWindow::viewChanged(int view)
                 break;
             case Navigation::ListOfInspections:
                 if (isCustomerSelected() && isCircuitSelected()) {
-                    html = viewCircuit(selectedCustomer(), selectedCircuit(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                    html = viewCircuit(selectedCustomer(), selectedCircuit(),
+                                       navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 } else {
                     view = Navigation::ListOfCircuits; ok = false;
                 }
@@ -98,7 +99,9 @@ QString MainWindow::viewChanged(int view)
                 }
                 break;
             case Navigation::ListOfRepairs:
-                html = viewRepairs(selectedRepair(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(), isCustomerSelected() ? selectedCustomer() : "");
+                html = viewRepairs(selectedRepair(),
+                                   navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(),
+                                   isCustomerSelected() ? selectedCustomer() : "");
                 break;
             case Navigation::ListOfInspectors:
                 html = viewAllInspectors(selectedInspector());
@@ -108,7 +111,8 @@ QString MainWindow::viewChanged(int view)
                 break;
             case Navigation::OperatorReport:
                 if (isCustomerSelected()) {
-                    html = viewOperatorReport(selectedCustomer(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                    html = viewOperatorReport(selectedCustomer(),
+                                              navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 } else {
                     view = Navigation::ListOfCustomers; ok = false;
                 }
@@ -139,7 +143,8 @@ QString MainWindow::viewChanged(int view)
                 html = viewAllCircuitUnitTypes(selectedCircuitUnitType());
                 break;
             case Navigation::ListOfAssemblyRecords:
-                html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit(), navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                html = viewAllAssemblyRecords(selectedCustomer(), selectedCircuit(),
+                                              navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
                 break;
             case Navigation::InspectionImages:
                 html = viewInspectionImages(selectedCustomer(), selectedCircuit(), selectedInspection());
@@ -231,7 +236,8 @@ QString MainWindow::viewServiceCompany(int since)
         num_valid++;
     }
     if (num_valid != 0) {
-        html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)), "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
+        html.replace(QString("<num_attr>%1</num_attr>").arg(int(num_valid / 2 + num_valid % 2)),
+                     "</table></td><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">");
     }
     for (int k = 0; k < num_valid; ++k) {
         html.remove(QString("<num_attr>%1</num_attr>").arg(k));
@@ -481,7 +487,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps circuits;
-    QString circuits_query_select = "circuits.*, (SELECT date FROM inspections WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id ORDER BY date DESC LIMIT 1) AS last_inspection";
+    QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
+            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
+            " ORDER BY date DESC LIMIT 1) AS last_inspection";
     if (!circuit_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
         circuits = circuits_record.listAll(circuits_query_select);
     else {
@@ -494,7 +502,8 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     HTMLTableRow * thead = new HTMLTableRow();
     int thead_colspan = 3;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
-        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:" << Circuit::attributes().key(n)<< "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
+        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:"
+                                  << Circuit::attributes().key(n)<< "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
         thead_colspan++;
     }
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
@@ -533,7 +542,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
             if (dict_value.count() > 1) { *_td << "&nbsp;" << dict_value.last(); }
         }
         _td = _tr->addCell();
-        *_td << QString::number(getCircuitRefrigerantAmount(customer_id, id, circuits.at(i).value("refrigerant_amount").toDouble())) << "&nbsp;" << QApplication::translate("Units", "kg");
+        *_td << QString::number(getCircuitRefrigerantAmount(customer_id, id,
+                                                            circuits.at(i).value("refrigerant_amount").toDouble()))
+             << "&nbsp;" << QApplication::translate("Units", "kg");
         *_td << " " << circuits.at(i).value("refrigerant").toString();
         _td = _tr->addCell();
         *_td << circuits.at(i).value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
@@ -618,7 +629,8 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
         inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco");
     else {
-        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco", m_settings.lastLink()->orderBy());
+        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco",
+                                                m_settings.lastLink()->orderBy());
     }
     if (year) {
         for (int i = 0; i < inspections.count();) {
@@ -664,8 +676,10 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
-        out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString()).value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
-        out << "<td>" << escapeString(operators.value(inspections.at(i).value("operator").toString()).value("name", inspections.at(i).value("operator")).toString()) << "</td>";
+        out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector").toString())
+                                      .value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
+        out << "<td>" << escapeString(operators.value(inspections.at(i).value("operator").toString())
+                                      .value("name", inspections.at(i).value("operator")).toString()) << "</td>";
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
             out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true);
             out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("rmds").toString(), 50)) << "</td>";
@@ -705,7 +719,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     div << html;
     div.newLine();
 
-    el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
+    el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")
+            ->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
             ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
     if (nominal) *el << tr("Nominal Inspection:");
     else if (repair) *el << tr("Repair:");
@@ -793,7 +808,9 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     return dict_html.value(Navigation::Inspection).arg(div.html());
 }
 
-void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * variable, VariableEvaluation::EvaluationContext & var_evaluation, QVariantMap & inspection, HTMLTable * _table)
+void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * variable,
+                                               VariableEvaluation::EvaluationContext & var_evaluation,
+                                               QVariantMap & inspection, HTMLTable * _table)
 {
     bool compare_nom = false; QString ins_value; QString nom_value;
     VariableEvaluation::Variable * subvariable = NULL;
@@ -813,7 +830,8 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
 
         compare_nom = !nom_value.isEmpty();
 
-        subvar_values.insert(subvariable->name(), tableVarValue(subvariable->type(), ins_value, nom_value, variable->colBg(), compare_nom, subvariable->tolerance(), true)
+        subvar_values.insert(subvariable->name(), tableVarValue(subvariable->type(), ins_value, nom_value,
+                                                                variable->colBg(), compare_nom, subvariable->tolerance(), true)
                                              + "&nbsp;" + subvariable->unit());
     }
 
@@ -834,7 +852,8 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
     }
 }
 
-QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id, int year, const QString & compressor_id)
+QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id,
+                              int year, const QString & compressor_id)
 {
     QString html; MTTextStream out(&html);
 
@@ -845,7 +864,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     QStringList table_vars = table.value("variables").toString().split(";", QString::SkipEmptyParts);
 
     Inspection inspection_record(customer_id, circuit_id, "");
-    ListOfVariantMaps inspections(inspection_record.listAll());
+    ListOfVariantMaps inspections(inspection_record.listAll("*", "nominal DESC, date ASC"));
     QString last_inspection_date, last_entry_date, date;
     for (int i = 0; i < inspections.count(); ++i) {
         date = inspections.at(i).value("date").toString();
@@ -866,7 +885,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     Customer customer(customer_id);
     QVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
     Circuit circuit(customer_id, circuit_id);
-    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, refrigerant_amount, oil, oil_amount, runtime, utilisation");
+    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant,"
+                                            " refrigerant_amount, oil, oil_amount, runtime, utilisation");
     out << "<table><tr><th>" << QApplication::translate("Customer", "ID");
     out << "</th><th>" << QApplication::translate("Customer", "Company");
     out << "</th><th>" << QApplication::translate("Customer", "Contact person");
@@ -899,7 +919,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "<td>" << circuit_info.value("year").toString() << "</td>";
     out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
     out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
-    out << "<td>" << getCircuitRefrigerantAmount(customer_id, circuit_id, circuit_info.value("refrigerant_amount").toDouble()) << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+    out << "<td>" << getCircuitRefrigerantAmount(customer_id, circuit_id, circuit_info.value("refrigerant_amount").toDouble())
+        << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
     out << "<td>";
     if (attributeValues().contains("oil::" + circuit_info.value("oil").toString())) {
         out << attributeValues().value("oil::" + circuit_info.value("oil").toString());
@@ -937,7 +958,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                 cell = compressors_table_row->addHeaderCell();
             else
                 cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-            *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id  + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
+            *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id
+                         + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
                     << compressors.at(i).value("name").toString();
         }
         out << "<br>" << compressors_table->html();
@@ -956,15 +978,11 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         for (int i = 0; i < compressor_ids.count(); ++i) {
             InspectionsCompressor inspections_compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "compressor_id",
                                                                                       QStringList() << customer_id << circuit_id << compressor_ids.at(i)));
-            ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll();
+            ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("*", "nominal DESC, date ASC");
             for (int l = 0; l < inspections_compressors.count(); ++l) {
-                bool nominal = false;
-                if (nominal_inspection_index >= 0) {
-                    if (inspections.at(nominal_inspection_index).value("date").toString()
-                            == inspections_compressors.at(l).value("date").toString()) {
-                        nominal = true;
-                    }
-                }
+                bool nominal = nominal_inspection_index >= 0 &&
+                        inspections.at(nominal_inspection_index).value("date").toString()
+                        == inspections_compressors.at(l).value("date").toString();
                 if ((!table.value("highlight_nominal").toInt() || !nominal)
                     && inspections_compressors.at(l).value("date").toString().split(".").first().toInt() < year) {
                     inspections_compressors.removeAt(l);
@@ -977,7 +995,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
             if (compressor_ids.count() > 1) {
                 for (int n = 0; n < compressors.count(); ++n) {
                     if (compressor_ids.at(i) == compressors.at(n).value("id").toString()) {
-                        out << "<h4><a href=\"customer:" << customer_id << "/circuit:" << circuit_id  << "/compressor:" << compressors.at(i).value("id").toString() << "/table\">"
+                        out << "<h4><a href=\"customer:" << customer_id << "/circuit:" << circuit_id
+                            << "/compressor:" << compressors.at(i).value("id").toString() << "/table\">"
                             << compressors.at(n).value("name").toString() << "</a></h4>";
                         break;
                     }
@@ -1020,7 +1039,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
                 last_warnings_list.clear();
             last_warnings_list << backup_warnings;
         }
-        QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(), last_entry_date, last_inspection_date);
+        QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(),
+                                                           last_entry_date, last_inspection_date);
         if (delayed_warnings.count()) {
             warnings_html.append("<tr><td colspan=\"2\"><b>");
             warnings_html.append(delayed_warnings.join(", "));
@@ -1037,7 +1057,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     return dict_html.value(Navigation::TableOfInspections).arg(colours).arg(html);
 }
 
-HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const QString & circuit_id, const QVariantMap & table_map, ListOfVariantMaps & inspections, VariableEvaluation::EvaluationContext & var_evaluation)
+HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const QString & circuit_id, const QVariantMap & table_map,
+                                              ListOfVariantMaps & inspections, VariableEvaluation::EvaluationContext & var_evaluation)
 {
     QStringList table_vars = table_map.value("variables").toString().split(";", QString::SkipEmptyParts);
     VariableEvaluation::Variable * variable = NULL, * subvariable = NULL;
@@ -1118,7 +1139,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
         el = cell = row->addCell();
         if (is_nominal) { el = cell->bold(); }
         else if (is_repair) { el = cell->italics(); }
-        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", inspection_date, customer_id, circuit_id, inspection_date);
+        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
+                           inspection_date, customer_id, circuit_id, inspection_date);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {
@@ -1132,43 +1154,47 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
                     compare_nom = subvariable->compareNom() > 0;
                     if (subvariable->value().contains("sum")) {
                         QString i_year = inspection_date.split(".").first();
-                        if (is_nominal) rowspan = 1;
-                        else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
-                        else {
+                        if (is_nominal) {
+                            rowspan = 1;
+                        } else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() &&
+                                 inspections.at(i-1).value("date").toString().split(".").first() == i_year) {
+                            continue;
+                        } else {
                             int in = i;
                             for (; in < inspections.count(); ++in) {
-                                if (inspections.at(in).value("nominal").toInt()) in--;
-                                if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
+                                if (inspections.at(in).value("date").toString().split(".").first() != i_year)
                                     break;
-                                }
                             }
                             rowspan = in - i;
                         }
                     } else rowspan = 1;
                     ins_value = var_evaluation.evaluate(subvariable, inspections[i], nom_value);
                     compare_nom = !nom_value.isEmpty();
-                    *row << writeTableVarCell(subvariable->type(), ins_value, nom_value, variable->colBg(), compare_nom, rowspan, subvariable->tolerance());
+                    *row << writeTableVarCell(subvariable->type(), ins_value, nom_value, variable->colBg(),
+                                              compare_nom, rowspan, subvariable->tolerance());
                 }
             } else {
                 compare_nom = variable->compareNom() > 0;
                 if (variable->value().contains("sum")) {
                     QString i_year = inspection_date.split(".").first();
-                    if (is_nominal) rowspan = 1;
-                    else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() && inspections.at(i-1).value("date").toString().split(".").first() == i_year) continue;
-                    else {
+                    if (is_nominal) {
+                        rowspan = 1;
+                    } else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() &&
+                               inspections.at(i-1).value("date").toString().split(".").first() == i_year) {
+                        continue;
+                    } else {
                         int in = i;
                         for (; in < inspections.count(); ++in) {
-                            if (inspections.at(in).value("nominal").toInt()) in--;
-                            if (inspections.at(in).value("date").toString().split(".").first() != i_year) {
+                            if (inspections.at(in).value("date").toString().split(".").first() != i_year)
                                 break;
-                            }
                         }
                         rowspan = in - i;
                     }
                 } else rowspan = 1;
                 ins_value = var_evaluation.evaluate(variable, inspections[i], nom_value);
                 compare_nom = !nom_value.isEmpty();
-                *row << writeTableVarCell(variable->type(), ins_value, nom_value, variable->colBg(), compare_nom, rowspan, variable->tolerance());
+                *row << writeTableVarCell(variable->type(), ins_value, nom_value, variable->colBg(),
+                                          compare_nom, rowspan, variable->tolerance());
             }
         }
     }
@@ -1209,7 +1235,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
                                 MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIds());
                                 for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
                                     if (value_contains_sum && ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
-                                        inspections.at(ins - 1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
+                                        inspections.at(ins - 1).value("date").toString().split(".").first()
+                                            == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
                                     num_ins++;
                                     value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
@@ -1238,7 +1265,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
                             MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIds());
                             for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
                                 if (value_contains_sum && ins > 0 && !inspections.at(ins - 1).value("nominal").toInt() &&
-                                    inspections.at(ins - 1).value("date").toString().split(".").first() == inspections.at(ins).value("date").toString().split(".").first())
+                                    inspections.at(ins - 1).value("date").toString().split(".").first()
+                                        == inspections.at(ins).value("date").toString().split(".").first())
                                     continue;
                                 num_ins++;
                                 value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
@@ -1255,12 +1283,14 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
     return table;
 }
 
-void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
+void MainWindow::writeTableVarCell(MTTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value,
+                                   const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
 {
     out << writeTableVarCell(var_type, ins_value, nom_value, bg_class, compare_nom, rowspan, tolerance)->html();
 }
 
-HTMLTableCell * MainWindow::writeTableVarCell(const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
+HTMLTableCell * MainWindow::writeTableVarCell(const QString & var_type, const QString & ins_value, const QString & nom_value,
+                                              const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
 {
     QString args = QString("class=\"%1\" rowspan=\"%2\"").arg(bg_class).arg(rowspan);
     if (var_type == "text" && !ins_value.isEmpty()) {
@@ -1272,7 +1302,8 @@ HTMLTableCell * MainWindow::writeTableVarCell(const QString & var_type, const QS
     return cell;
 }
 
-QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_value, const QString & nom_value, const QString & bg_class, bool compare_nom, double tolerance, bool expand_text)
+QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_value, const QString & nom_value,
+                                  const QString & bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
         if (expand_text) return escapeString(ins_value);
@@ -1305,7 +1336,8 @@ QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_
             else { show_warning = false; break; }\
         }
 
-QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, QVariantMap & nominal_ins, QVariantMap & inspection)
+QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id,
+                                     QVariantMap & nominal_ins, QVariantMap & inspection)
 {
     QStringList warnings_list;
     Circuit circuit(customer_id, circuit_id);
@@ -1324,7 +1356,9 @@ QStringList MainWindow::listWarnings(Warnings & warnings, const QString & custom
     return warnings_list;
 }
 
-QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id, QVariantMap & nominal_ins, const QString & last_entry_date, const QString & last_inspection_date, int * delay_out)
+QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id,
+                                            QVariantMap & nominal_ins, const QString & last_entry_date,
+                                            const QString & last_inspection_date, int * delay_out)
 {
     QStringList warnings_list;
     Circuit circuit(customer_id, circuit_id);
@@ -1686,7 +1720,8 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
         if (decommissioning_year == year)
             refrigerant_amount_end = 0.0;
 
-        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
+        out << "<tr onclick=\"window.location = 'customer:" << customer_id
+            << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
         out << "<td>" << QUERY_VALUE(circuits, "refrigerant").toString() << "</td>";
         out << "<td>" << fieldsOfApplication().firstKey(QUERY_VALUE(circuits, "field").toString()) << "</td>";
@@ -1716,7 +1751,10 @@ QString MainWindow::viewLeakagesByApplication()
     QStringList keys;
     const int VECTOR_SIZE = 3;
     map["All::All"].resize(VECTOR_SIZE);
-    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id AND inspections.customer = circuits.parent WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
+    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am"
+                          " FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id"
+                          " AND inspections.customer = circuits.parent"
+                          " WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
     while (inspections.next()) {
         keys.clear();
         keys << inspections.value(0).toString() + "::" + attributeValues().value(attributeValues().indexOfKey("field::" + inspections.value(1).toString()));
@@ -1897,11 +1935,14 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
-        thead.append("<th><a href=\"assemblyrecordtype:/order_by:" + AssemblyRecordType::attributes().key(n) + "\">" + AssemblyRecordType::attributes().value(n) + "</a></th>");
+        thead.append("<th><a href=\"assemblyrecordtype:/order_by:"
+                     + AssemblyRecordType::attributes().key(n) + "\">"
+                     + AssemblyRecordType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
+        << tr("List of Assembly Record Types") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < items.count(); ++i) {
@@ -1938,11 +1979,14 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordItemType::attributes().count(); ++n) {
-        thead.append("<th><a href=\"assemblyrecorditemtype:/order_by:" +  AssemblyRecordItemType::attributes().key(n) + "\">" + AssemblyRecordItemType::attributes().value(n) + "</a></th>");
+        thead.append("<th><a href=\"assemblyrecorditemtype:/order_by:"
+                     + AssemblyRecordItemType::attributes().key(n) + "\">"
+                     + AssemblyRecordItemType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Item Types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
+        << tr("List of Assembly Record Item Types") << "</th></tr>";
     out << thead;
     QString id;
     MTDictionary categories(listAssemblyRecordItemCategories());
@@ -1984,12 +2028,14 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
-        thead.append("<th><a href=\"assemblyrecorditemcategory:/order_by:" + AssemblyRecordItemCategory::attributes().key(n)
-                     + "\">" + AssemblyRecordItemCategory::attributes().value(n) + "</a></th>");
+        thead.append("<th><a href=\"assemblyrecorditemcategory:/order_by:"
+                     + AssemblyRecordItemCategory::attributes().key(n) + "\">"
+                     + AssemblyRecordItemCategory::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Assembly Record Item Categories") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
+        << tr("List of Assembly Record Item Categories") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < items.count(); ++i) {
@@ -2111,15 +2157,24 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         ITEM_TYPE_ID = 12
                };
 
-    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name, assembly_record_item_categories.id, assembly_record_item_categories.name,"
-                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price, assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type, assembly_record_item_categories.display_position,"
+    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name,"
+                                       " assembly_record_item_categories.id, assembly_record_item_categories.name,"
+                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price,"
+                                       " assembly_record_items.acquisition_price, assembly_record_items.unit,"
+                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type,"
+                                       " assembly_record_item_categories.display_position,"
                                        " assembly_record_items.discount, assembly_record_item_types.id"
                                        " FROM assembly_record_items"
-                                       " LEFT JOIN assembly_record_item_types ON assembly_record_items.item_type_id = assembly_record_item_types.id AND assembly_record_items.source = %1"
-                                       " LEFT JOIN assembly_record_item_categories ON assembly_record_items.category_id = assembly_record_item_categories.id"
-                                       " LEFT JOIN assembly_record_type_categories ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id AND assembly_record_type_categories.record_type_id = %3"
-                                       " WHERE arno = '%2' ORDER BY assembly_record_type_categories.position, assembly_record_item_types.category_id, assembly_record_item_types.name")
+                                       " LEFT JOIN assembly_record_item_types"
+                                       " ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                                       " AND assembly_record_items.source = %1"
+                                       " LEFT JOIN assembly_record_item_categories"
+                                       " ON assembly_record_items.category_id = assembly_record_item_categories.id"
+                                       " LEFT JOIN assembly_record_type_categories"
+                                       " ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id"
+                                       " AND assembly_record_type_categories.record_type_id = %3"
+                                       " WHERE arno = '%2' ORDER BY assembly_record_type_categories.position,"
+                                       " assembly_record_item_types.category_id, assembly_record_item_types.name")
                                .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
                                .arg(inspection.value("arno").toString())
                                .arg(inspection.value("ar_type").toInt()));
@@ -2239,7 +2294,8 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
     if (show_total) {
         table = top_table;
         _tr = table->addRow();
-        _td = _tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price)) + " rowspan=\"2\"");
+        _td = _tr->addHeaderCell(QString(colspan.arg(num_columns - 4 + !show_acquisition_price + 2 * !show_list_price))
+                                 + " rowspan=\"2\"");
         _td->setId("total_label");
         *_td << tr("Total");
         if (show_acquisition_price) {
@@ -2319,7 +2375,9 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
-        thead.append("<th><a href=\"circuitunittype:/order_by:" + CircuitUnitType::attributes().key(n) + "\">" + CircuitUnitType::attributes().value(n) + "</a></th>");
+        thead.append("<th><a href=\"circuitunittype:/order_by:"
+                     + CircuitUnitType::attributes().key(n) + "\">"
+                     + CircuitUnitType::attributes().value(n) + "</a></th>");
         thead_colspan++;
     }
     thead.append("</tr>");
@@ -2366,7 +2424,8 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
         LOCATION = 3,
         UNIT_TYPE_ID = 4
     };
-    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
+                            " circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
                             " FROM circuit_units"
                             " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
                             " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
@@ -2498,9 +2557,17 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     }
     ListOfVariantMaps items;
     if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator");
+        items = record.listAll("inspections.customer, inspections.circuit,"
+                               " inspections.date, inspections.arno,"
+                               " assembly_record_types.name AS record_name,"
+                               " inspections.inspector, customers.company,"
+                               " persons.name AS operator");
     else
-        items = record.listAll("inspections.customer, inspections.circuit, inspections.date, inspections.arno, assembly_record_types.name AS record_name, inspections.inspector, customers.company, persons.name AS operator", m_settings.lastLink()->orderBy());
+        items = record.listAll("inspections.customer, inspections.circuit,"
+                               " inspections.date, inspections.arno,"
+                               " assembly_record_types.name AS record_name,"
+                               " inspections.inspector, customers.company,"
+                               " persons.name AS operator", m_settings.lastLink()->orderBy());
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
