@@ -24,10 +24,9 @@
 #include "global.h"
 
 EditCustomerDialogue::EditCustomerDialogue(Customer * record, QWidget * parent):
-        EditDialogue(record, parent)
+    EditDialogue(record, parent),
+    original_customer_id(idFieldValue().toString())
 {
-    Person persons_record("", idFieldValue().toString());
-
     QList<EditDialogueTableCell *> cells;
     EditDialogueTableCell * cell = new EditDialogueTableCell(tr("Name"), Global::String);
     cell->setId("name");
@@ -42,10 +41,12 @@ EditCustomerDialogue::EditCustomerDialogue(Customer * record, QWidget * parent):
     md_grid_main->addWidget(persons_table, 0, 2, md_grid_main->rowCount(), 1);
     persons_table->setMinimumWidth(500);
 
-    ListOfVariantMaps persons = persons_record.listAll();
+    ListOfVariantMaps persons = Person("", original_customer_id).listAll();
     QMap<QString, EditDialogueTableCell *> person_data;
 
     for (int i = 0; i < persons.count(); ++i) {
+        former_ids.append(persons.at(i).value("id").toInt());
+
         cell = new EditDialogueTableCell(persons.at(i).value("name"), Global::String);
         cell->setId("name");
         person_data.insert("name", cell);
@@ -55,6 +56,7 @@ EditCustomerDialogue::EditCustomerDialogue(Customer * record, QWidget * parent):
         cell = new EditDialogueTableCell(persons.at(i).value("phone"), Global::String);
         cell->setId("phone");
         person_data.insert("phone", cell);
+        person_data.insert("id", new EditDialogueTableCell(persons.at(i).value("id"), "id"));
         persons_table->addRow(person_data);
     }
 
@@ -65,28 +67,35 @@ void EditCustomerDialogue::save()
 {
     if (!EditDialogue::save(false)) return;
 
-    Person persons_record("", idFieldValue().toString());
-    persons_record.remove();
-
-    Person person;
-    int next_id = person.list("MAX(id) AS max").value("max").toInt() + 1;
+    int next_id = 0;
+    for (int i = 0; i < former_ids.count(); ++i)
+        next_id = former_ids.at(i) > next_id ? former_ids.at(i) : next_id;
+    next_id++;
 
     QList<MTDictionary> all_values = persons_table->allValues();
-    QVariantMap person_values;
-    person_values.insert("company_id", idFieldValue());
 
+    Person person;
     for (int i = 0; i < all_values.count(); ++i) {
         if (all_values.at(i).value("name").isEmpty()) continue;
+        QVariantMap map;
 
-        person_values.insert("name", all_values.at(i).value("name"));
-        person_values.insert("mail", all_values.at(i).value("mail"));
-        person_values.insert("phone", all_values.at(i).value("phone"));
+        if (all_values.at(i).contains("id")) {
+            person = Person(all_values.at(i).value("id"));
+            if (former_ids.contains(all_values.at(i).value("id").toInt()))
+                former_ids.removeAll(all_values.at(i).value("id").toInt());
+        } else {
+            person = Person();
+            map.insert("id", QString::number(next_id++));
+        }
 
-        person.setId(QString::number(next_id));
-        person.update(person_values);
-
-        next_id++;
+        map.insert("company_id", idFieldValue());
+        map.insert("name", all_values.at(i).value("name"));
+        map.insert("mail", all_values.at(i).value("mail"));
+        map.insert("phone", all_values.at(i).value("phone"));
+        person.update(map);
     }
+    for (int i = 0; i < former_ids.count(); ++i)
+        Person(QString::number(former_ids.at(i))).remove();
 
     accept();
 }

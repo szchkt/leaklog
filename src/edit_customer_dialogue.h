@@ -37,6 +37,9 @@ protected slots:
 
 private:
     EditDialogueBasicTable * persons_table;
+
+    QString original_customer_id;
+    QList<int> former_ids;
 };
 
 #endif // EDIT_CUSTOMER_DIALOGUE_H

@@ -46,6 +46,7 @@ private:
 
     QString customer_id;
     QString circuit_id;
+    QString original_inspection_date;
     QTabWidget * tab_w;
     QList<InspectionCompressorTab *> tabs;
     QList<int> former_ids;
@@ -60,7 +61,7 @@ public:
     void init(const QVariantMap & = QVariantMap());
 
     void setWindowTitle(const QString &) {}
-    bool save(const QString &, const QString &, const QString &);
+    bool save(const QString &, const QString &, const QString &, const QString &);
 
     QWidget * widget() { return this; }
 

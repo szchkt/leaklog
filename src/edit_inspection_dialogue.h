@@ -56,6 +56,7 @@ private:
 
     QString customer_id;
     QString circuit_id;
+    QString original_inspection_id;
 
     EditDialogueBasicTable * table;
 };

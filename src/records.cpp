@@ -779,7 +779,7 @@ const MTDictionary & AssemblyRecordItemType::attributes()
 }
 
 AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString & record_type_id):
-    MTRecord("assembly_record_type_categories", "", "", MTDictionary("record_type_id", record_type_id))
+    MTRecord("assembly_record_type_categories", "", "", record_type_id.isEmpty() ? MTDictionary() : MTDictionary("record_type_id", record_type_id))
 {}
 
 class AssemblyRecordTypeCategoryAttributes
@@ -893,6 +893,10 @@ AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString & ins
 
 File::File(const QString & file_id):
     MTRecord("files", "id", file_id, MTDictionary())
+{}
+
+Person::Person(const QString & person_id):
+    MTRecord("persons", "id", person_id, MTDictionary())
 {}
 
 Person::Person(const QString & person_id, const QString & customer_id):

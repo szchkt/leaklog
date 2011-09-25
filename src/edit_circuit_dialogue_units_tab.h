@@ -52,6 +52,7 @@ private:
     EditCircuitDialogueTable * table;
     QTreeWidget * tree;
     QString customer_id;
+    QList<int> former_ids;
 };
 
 class EditCircuitDialogueTable : public EditDialogueTable

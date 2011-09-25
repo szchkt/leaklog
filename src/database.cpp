@@ -686,11 +686,31 @@ void MainWindow::editCustomer()
             update_circuits.bindValue(":old_id", old_id);
             update_circuits.bindValue(":new_id", record.id());
             update_circuits.exec();
+            QSqlQuery update_compressors;
+            update_compressors.prepare("UPDATE compressors SET customer_id = :new_id WHERE customer_id = :old_id");
+            update_compressors.bindValue(":old_id", old_id);
+            update_compressors.bindValue(":new_id", record.id());
+            update_compressors.exec();
+            QSqlQuery update_circuit_units;
+            update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_id WHERE company_id = :old_id");
+            update_circuit_units.bindValue(":old_id", old_id);
+            update_circuit_units.bindValue(":new_id", record.id());
+            update_circuit_units.exec();
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET customer = :new_id WHERE customer = :old_id");
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            QSqlQuery update_inspections_compressors;
+            update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_id WHERE customer_id = :old_id");
+            update_inspections_compressors.bindValue(":old_id", old_id);
+            update_inspections_compressors.bindValue(":new_id", record.id());
+            update_inspections_compressors.exec();
+            QSqlQuery update_inspection_images;
+            update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_id WHERE customer = :old_id");
+            update_inspection_images.bindValue(":old_id", old_id);
+            update_inspection_images.bindValue(":new_id", record.id());
+            update_inspection_images.exec();
             QSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET parent = :new_id, customer = :customer WHERE parent = :old_id");
             update_repairs.bindValue(":old_id", old_id);
@@ -800,10 +820,22 @@ void MainWindow::editCircuit()
         if (old_id != record.id()) {
             QSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-            update_inspections.bindValue(":customer_id", m_settings.selectedCustomer());
+            update_inspections.bindValue(":customer_id", selectedCustomer());
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
+            QSqlQuery update_inspections_compressors;
+            update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+            update_inspections_compressors.bindValue(":customer_id", selectedCustomer());
+            update_inspections_compressors.bindValue(":old_id", old_id);
+            update_inspections_compressors.bindValue(":new_id", record.id());
+            update_inspections_compressors.exec();
+            QSqlQuery update_inspection_images;
+            update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+            update_inspection_images.bindValue(":customer_id", selectedCustomer());
+            update_inspection_images.bindValue(":old_id", old_id);
+            update_inspection_images.bindValue(":new_id", record.id());
+            update_inspection_images.exec();
             loadCircuit(record.id().toInt(), true);
         } else {
             refreshView();
@@ -840,8 +872,14 @@ void MainWindow::removeCircuit()
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     record.remove();
-    Inspection inspections(selectedCustomer(), selectedCircuit(), "");
-    inspections.remove();
+    MTDictionary parents(QStringList() << "customer_id" << "circuit_id",
+                         QStringList() << selectedCustomer() << selectedCircuit());
+    Compressor("", parents).remove();
+    CircuitUnit("", parents).remove();
+    Inspection(selectedCustomer(), selectedCircuit(), "").remove();
+    InspectionsCompressor("", parents).remove();
+    MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit",
+                                                       QStringList() << selectedCustomer() << selectedCircuit())).remove();
     m_settings.clearSelectedCircuit();
     enableTools();
     this->setWindowModified(true);
@@ -922,6 +960,10 @@ void MainWindow::removeInspection()
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
     record.remove();
+    MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date",
+                         QStringList() << selectedCustomer() << selectedCircuit() << selectedInspection());
+    InspectionsCompressor("", parents).remove();
+    InspectionImage(selectedCustomer(), selectedCircuit(), selectedInspection()).remove();
     m_settings.clearSelectedInspection();
     enableTools();
     this->setWindowModified(true);
@@ -1488,6 +1530,12 @@ void MainWindow::editInspector()
             update_repairs.bindValue(":old_id", old_id);
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.exec();
+            QSqlQuery update_assembly_record_items;
+            update_assembly_record_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
+                                                 .arg(AssemblyRecordItem::Inspectors));
+            update_assembly_record_items.bindValue(":old_id", old_id);
+            update_assembly_record_items.bindValue(":new_id", record.id());
+            update_assembly_record_items.exec();
             loadInspector(record.id().toInt(), true);
         } else {
             refreshView();
@@ -2392,10 +2440,18 @@ void MainWindow::editAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordTypeSelected()) { return; }
-    AssemblyRecordType record(selectedAssemblyRecordType());
+    QString old_id = selectedAssemblyRecordType();
+    AssemblyRecordType record(old_id);
     EditDialogue * md = new EditAssemblyRecordDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
+        if (old_id != record.id()) {
+            QSqlQuery update_ar_type;
+            update_ar_type.prepare("UPDATE inspections SET ar_type = :new_id WHERE ar_type = :old_id");
+            update_ar_type.bindValue(":old_id", old_id);
+            update_ar_type.bindValue(":new_id", record.id());
+            update_ar_type.exec();
+        }
         loadAssemblyRecordType(record.id().toInt(), true);
     }
     delete md;
@@ -2443,10 +2499,19 @@ void MainWindow::editAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemTypeSelected()) { return; }
-    AssemblyRecordItemType record(selectedAssemblyRecordItemType());
+    QString old_id = selectedAssemblyRecordItemType();
+    AssemblyRecordItemType record(old_id);
     EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
+        if (old_id != record.id()) {
+            QSqlQuery update_ar_items;
+            update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
+                                    .arg(AssemblyRecordItem::AssemblyRecordItemTypes));
+            update_ar_items.bindValue(":old_id", old_id);
+            update_ar_items.bindValue(":new_id", record.id());
+            update_ar_items.exec();
+        }
         loadAssemblyRecordItemType(record.id().toInt(), true);
     }
     delete md;
@@ -2494,11 +2559,29 @@ void MainWindow::editAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isAssemblyRecordItemCategorySelected()) { return; }
-    AssemblyRecordItemCategory category(selectedAssemblyRecordItemCategory());
-    EditDialogue * md = new EditDialogue(&category, this);
+    QString old_id = selectedAssemblyRecordItemCategory();
+    AssemblyRecordItemCategory record(old_id);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadAssemblyRecordItemCategory(category.id().toInt(), true);
+        if (old_id != record.id()) {
+            QSqlQuery update_ar_item_types;
+            update_ar_item_types.prepare("UPDATE assembly_record_item_types SET category_id = :new_id WHERE category_id = :old_id");
+            update_ar_item_types.bindValue(":old_id", old_id);
+            update_ar_item_types.bindValue(":new_id", record.id());
+            update_ar_item_types.exec();
+            QSqlQuery update_ar_type_categories;
+            update_ar_type_categories.prepare("UPDATE assembly_record_type_categories SET record_category_id = :new_id WHERE record_category_id = :old_id");
+            update_ar_type_categories.bindValue(":old_id", old_id);
+            update_ar_type_categories.bindValue(":new_id", record.id());
+            update_ar_type_categories.exec();
+            QSqlQuery update_ar_items;
+            update_ar_items.prepare("UPDATE assembly_record_items SET category_id = :new_id WHERE category_id = :old_id");
+            update_ar_items.bindValue(":old_id", old_id);
+            update_ar_items.bindValue(":new_id", record.id());
+            update_ar_items.exec();
+        }
+        loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
     delete md;
 }
@@ -2559,11 +2642,25 @@ void MainWindow::editCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCircuitUnitTypeSelected()) { return; }
-    CircuitUnitType unit_type(selectedCircuitUnitType());
-    EditDialogue * md = new EditDialogue(&unit_type, this);
+    QString old_id = selectedCircuitUnitType();
+    CircuitUnitType record(old_id);
+    EditDialogue * md = new EditDialogue(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadCircuitUnitType(unit_type.id().toInt(), true);
+        if (old_id != record.id()) {
+            QSqlQuery update_circuit_units;
+            update_circuit_units.prepare("UPDATE circuit_units SET unit_type_id = :new_id WHERE unit_type_id = :old_id");
+            update_circuit_units.bindValue(":old_id", old_id);
+            update_circuit_units.bindValue(":new_id", record.id());
+            update_circuit_units.exec();
+            QSqlQuery update_ar_items;
+            update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
+                                    .arg(AssemblyRecordItem::CircuitUnitTypes));
+            update_ar_items.bindValue(":old_id", old_id);
+            update_ar_items.bindValue(":new_id", record.id());
+            update_ar_items.exec();
+        }
+        loadCircuitUnitType(record.id().toInt(), true);
     }
     delete md;
 }

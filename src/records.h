@@ -210,7 +210,7 @@ public:
 class AssemblyRecordTypeCategory : public MTRecord
 {
 public:
-    AssemblyRecordTypeCategory(const QString &);
+    AssemblyRecordTypeCategory(const QString & = QString());
 
     static const MTDictionary & attributes();
 };
@@ -269,7 +269,8 @@ public:
 class Person : public MTRecord
 {
 public:
-    Person(const QString & = QString(), const QString & = QString());
+    Person(const QString & = QString());
+    Person(const QString &, const QString &);
 };
 
 class CircuitUnitType : public DBRecord

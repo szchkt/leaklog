@@ -31,7 +31,8 @@
 EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString & customer_id, const QString & circuit_id, const QString & inspection_date, QWidget * parent)
     : QWidget(parent),
       customer_id(customer_id),
-      circuit_id(circuit_id)
+      circuit_id(circuit_id),
+      original_inspection_date(inspection_date)
 {
     QVBoxLayout * layout = new QVBoxLayout(this);
     tab_w = new QTabWidget(this);
@@ -78,17 +79,13 @@ InspectionCompressorTab * EditInspectionDialogueCompressors::addTab(int tab_id, 
 
 void EditInspectionDialogueCompressors::save(const QVariant & inspection_date)
 {
-    bool success = false;
     for (int i = 0; i < tabs.count(); ++i) {
-        success = tabs.at(i)->save(customer_id, circuit_id, inspection_date.toString()) && success;
+        tabs.at(i)->save(customer_id, circuit_id, original_inspection_date, inspection_date.toString());
         if (tabs.at(i)->recordId() >= 0)
             former_ids.removeAll(tabs.at(i)->recordId());
     }
-    for (int i = 0; i < former_ids.count(); ++i) {
-        InspectionsCompressor record(QString::number(former_ids.at(i)));
-        record.remove();
-    }
-    //return success;
+    for (int i = 0; i < former_ids.count(); ++i)
+        InspectionsCompressor(QString::number(former_ids.at(i))).remove();
 }
 
 InspectionCompressorTab::InspectionCompressorTab(int id, QWidget * parent)
@@ -108,19 +105,22 @@ void InspectionCompressorTab::init(const QVariantMap & var_values)
     EditDialogueColumnLayout(&md_inputwidgets, layout, 5).layout();
 }
 
-bool InspectionCompressorTab::save(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)
+bool InspectionCompressorTab::save(const QString & customer_id, const QString & circuit_id,
+                                   const QString & original_inspection_date, const QString & inspection_date)
 {
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                         QStringList() << customer_id << circuit_id << inspection_date << QString::number(m_id));
-    InspectionsCompressor record;
-    if (m_record_id >= 0)
-        record = InspectionsCompressor(QString::number(m_record_id), parents);
-    else
-        record = InspectionsCompressor(QString(), parents);
+                         QStringList() << customer_id << circuit_id << original_inspection_date << QString::number(m_id));
+    InspectionsCompressor record(m_record_id >= 0 ?
+                                     QString::number(m_record_id)
+                                   : QString(),
+                                 parents);
 
     QVariantMap values;
+    if (inspection_date != original_inspection_date)
+        values.insert("date", inspection_date);
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
-        if ((*i)->skipSave()) continue;
+        if ((*i)->skipSave())
+            continue;
         values.insert((*i)->id(), (*i)->variantValue());
     }
     return record.update(values, true);

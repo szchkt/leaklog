@@ -26,17 +26,17 @@
 #include <QHeaderView>
 #include <QSpinBox>
 
-EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, QWidget * parent)
-    : TabbedEditDialogue(record, parent)
+EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, QWidget * parent):
+    TabbedEditDialogue(record, parent)
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
     addTab(new EditAssemblyRecordDialogueTab(idFieldValue().toInt()));
 }
 
-EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget * parent)
-    : EditDialogueTab(parent)
+EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget * parent):
+    EditDialogueTab(parent),
+    record_id(record_id)
 {
-    this->record_id = record_id;
     setName(tr("Item categories"));
 
     init();
@@ -44,10 +44,9 @@ EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWid
 
 void EditAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
 {
-    this->record_id = record_id_variant.toInt();
+    AssemblyRecordTypeCategory(QString("%1").arg(record_id)).remove();
 
-    AssemblyRecordTypeCategory used_categories(QString("%1").arg(record_id));
-    used_categories.remove();
+    record_id = record_id_variant.toInt();
 
     QVariantMap map;
     map.insert("record_type_id", record_id);
@@ -59,7 +58,7 @@ void EditAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
         if (item->checkState(0) == Qt::Checked) {
             map.insert("record_category_id", item->data(0, Qt::UserRole).toInt());
             map.insert("position", ((QSpinBox *) tree->itemWidget(item, 1))->value());
-            used_categories.update(map);
+            AssemblyRecordTypeCategory().update(map);
         }
     }
 }
@@ -83,7 +82,8 @@ void EditAssemblyRecordDialogueTab::init()
                     " AND assembly_record_type_categories.record_type_id = %1").arg(record_id),
                     "", "", MTDictionary());
 
-    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_type_categories.record_type_id, assembly_record_type_categories.position"));
+    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.id,"
+                                                    " assembly_record_type_categories.record_type_id, assembly_record_type_categories.position"));
 
     QTreeWidgetItem * item;
     for (int i = 0; i < all_categories.count(); ++i) {

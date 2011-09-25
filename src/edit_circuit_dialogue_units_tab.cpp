@@ -77,48 +77,59 @@ void EditCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QS
         MANUFACTURER = 1,
         TYPE = 2,
         LOCATION = 3,
-        UNIT_TYPE_ID = 4
+        UNIT_TYPE_ID = 4,
+        UNIT_ID = 5
     };
-    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
+                            " circuit_unit_types.location, circuit_unit_types.id, circuit_units.id AS unit_id"
                             " FROM circuit_units"
                             " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
                             " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
                     .arg(customer_id.toInt()).arg(circuit_id.toInt()));
     while (query.next()) {
+        former_ids.append(query.value(UNIT_ID).toInt());
         cells.insert("manufacturer", new EditDialogueTableCell(query.value(MANUFACTURER), "manufacturer"));
         cells.insert("type", new EditDialogueTableCell(query.value(TYPE), "type"));
         cells.insert("unit_type_id", new EditDialogueTableCell(query.value(UNIT_TYPE_ID), "unit_type_id"));
         cells.insert("location", new EditDialogueTableCell(CircuitUnitType::locationToString(query.value(LOCATION).toInt()), "location"));
         cells.insert("sn", new EditDialogueTableCell(query.value(SN), "sn", Global::String));
+        cells.insert("id", new EditDialogueTableCell(query.value(UNIT_ID), "id"));
         table->addRow(cells);
     }
 }
 
 void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
 {
-    MTDictionary dict;
-    dict.insert("company_id", customer_id);
-    dict.insert("circuit_id", circuit_id.toString());
-
-    CircuitUnit unit("", dict);
-    unit.remove();
-
-    QList<MTDictionary> values = table->allValues();
-    QVariantMap map;
+    QList<MTDictionary> all_values = table->allValues();
 
     int id = 1;
-
     QSqlQuery query("SELECT MAX(id) FROM circuit_units");
     if (query.last()) {
         id = query.value(0).toInt() + 1;
     }
 
-    for (int i = 0; i < values.count(); ++i) {
-        CircuitUnit unit(QString::number(id++), dict);
-        map.insert("unit_type_id", values.at(i).value("unit_type_id"));
-        map.insert("sn", values.at(i).value("sn"));
+    CircuitUnit unit;
+    for (int i = 0; i < all_values.count(); ++i) {
+        QVariantMap map;
+
+        if (all_values.at(i).contains("id")) {
+            unit = CircuitUnit(all_values.at(i).value("id"));
+            if (former_ids.contains(all_values.at(i).value("id").toInt()))
+                former_ids.removeAll(all_values.at(i).value("id").toInt());
+        } else {
+            unit = CircuitUnit();
+            map.insert("id", QString::number(id++));
+        }
+
+        map.insert("company_id", customer_id);
+        map.insert("circuit_id", circuit_id);
+        map.insert("unit_type_id", all_values.at(i).value("unit_type_id"));
+        map.insert("sn", all_values.at(i).value("sn"));
         unit.update(map);
     }
+
+    for (int i = 0; i < former_ids.count(); ++i)
+        CircuitUnit(QString::number(former_ids.at(i))).remove();
 }
 
 void EditCircuitDialogueUnitsTab::loadManufacturers()

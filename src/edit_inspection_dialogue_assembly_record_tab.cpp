@@ -139,7 +139,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             ITEM_DISCOUNT = 15,
             DISCOUNT = 16,
             AUTO_SHOW = 17
-                    };
+        };
         QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
@@ -191,14 +191,14 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             ITEM_DISCOUNT = 14,
             DISCOUNT = 15,
             UNIT_ID = 16
-                    };
+        };
         QSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit,"
                                       " assembly_record_items.discount, circuit_unit_types.discount, circuit_units.id"
                                       " FROM circuit_units"
                                       " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_units.id"
+                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
                                       " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
                                       " LEFT JOIN assembly_record_item_categories ON %5 = assembly_record_item_categories.id"
                                       " WHERE circuit_units.company_id = %3 AND circuit_units.circuit_id = %4 AND %5 IN"
@@ -215,7 +215,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
                                : units_query.value(ITEM_NAME).toString();
             cells_map.insert("name", new EditDialogueTableCell(name, "name"));
             cells_map.insert("value", new EditDialogueTableCell(units_query.value(VALUE).toInt() ? units_query.value(VALUE) : 1, "value", Global::Integer));
-            cells_map.insert("item_type_id", new EditDialogueTableCell(units_query.value(UNIT_ID), "item_type_id"));
+            cells_map.insert("item_type_id", new EditDialogueTableCell(units_query.value(TYPE_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new EditDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
             cells_map.insert("list_price", new EditDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(LIST_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));
             cells_map.insert("discount", new EditDialogueTableCell(units_query.value(ITEM_DISCOUNT).isNull() ? units_query.value(DISCOUNT) : units_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
@@ -282,13 +282,14 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
 
 void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
 {
+    if (!original_arno.isEmpty())
+        AssemblyRecordItem(original_arno).remove();
+
     QString arno = assemblyRecordId().toString();
     if (arno.isEmpty())
         return;
 
-    AssemblyRecordItem record_item(arno);
-    record_item.remove();
-
+    AssemblyRecordItem record_item("");
     QVariantMap map;
     map.insert("arno", arno);
 

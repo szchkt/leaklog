@@ -28,7 +28,6 @@ class EditAssemblyRecordDialogue : public TabbedEditDialogue
 
 public:
     EditAssemblyRecordDialogue(DBRecord *, QWidget * = NULL);
-
 };
 
 class EditAssemblyRecordDialogueTab : public EditDialogueTab

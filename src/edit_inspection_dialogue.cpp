@@ -74,6 +74,8 @@ EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &
 
 void EditInspectionDialogueImagesTab::init(const QString & inspection_id)
 {
+    original_inspection_id = inspection_id;
+
     QVBoxLayout * layout = new QVBoxLayout(this);
 
     QList<EditDialogueTableCell *> cells;
@@ -117,7 +119,7 @@ void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
     QList<MTDictionary> dicts = table->allValues();
     QList<int> undeleted_files;
 
-    InspectionImage images_record(customer_id, circuit_id, inspection_id.toString());
+    InspectionImage images_record(customer_id, circuit_id, original_inspection_id);
 
     ListOfVariantMaps images = images_record.listAll("file_id");
 
@@ -129,9 +131,12 @@ void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
 
     images_record.remove();
 
+    images_record = InspectionImage(customer_id, circuit_id, inspection_id.toString());
+
     for (int i = 0; i < dicts.count(); ++i) {
         int file_id = dicts.at(i).value("file_id").toInt();
-        if (file_id <= 0) continue;
+        if (file_id <= 0)
+            continue;
         undeleted_files.removeAll(file_id);
 
         map.insert("description", dicts.at(i).value("description"));
@@ -139,8 +144,6 @@ void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
         images_record.update(map);
     }
 
-    for (int i = 0; i < undeleted_files.count(); ++i) {
-        DBFile file(undeleted_files.at(i));
-        file.remove();
-    }
+    for (int i = 0; i < undeleted_files.count(); ++i)
+        DBFile(undeleted_files.at(i)).remove();
 }
