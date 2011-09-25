@@ -42,7 +42,7 @@ LinkParser::LinkParser()
     root_entity->addRoute("allassemblyrecorditemcategories", AllAssemblyRecordItemCategories, false);
     root_entity->addRoute("assemblyrecorditemcategory", AssemblyRecordCategory);
     root_entity->addRoute("allcircuitunittypes", AllCircuitUnitTypes, false);
-    root_entity->addRoute("circuitunittype", CircuitUnitType, false);
+    root_entity->addRoute("circuitunittype", CircuitUnitType);
     root_entity->addRoute("servicecompany", ServiceCompany, false);
     root_entity->addRoute("allassemblyrecords", AllAssemblyRecords, false);
 

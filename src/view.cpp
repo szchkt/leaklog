@@ -1947,7 +1947,7 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     QString id;
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'assemblyrecordtype:" << id << "";
+        out << "<tr onclick=\"window.location = 'assemblyrecordtype:" << id;
         if (highlighted_id == id) {
             out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
         } else {
@@ -2393,7 +2393,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
         } else {
             out << "'\" style=\"";
         }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        out << " cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
             if (CircuitUnitType::attributes().key(n) == "location")
