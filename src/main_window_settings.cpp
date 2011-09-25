@@ -137,3 +137,23 @@ Link * MainWindowSettings::lastLink()
     updateLastLink();
     return m_last_link;
 }
+
+void MainWindowSettings::clear()
+{
+    clearSelectedCustomer();
+    setSelectedInspector(-1);
+    setSelectedAssemblyRecordType(-1);
+    setSelectedAssemblyRecordItemType(-1);
+    setSelectedAssemblyRecordItemCategory(-1);
+    setSelectedCircuitUnitType(-1);
+
+    if (m_last_link) delete m_last_link;
+    if (m_received_link) delete m_received_link;
+    m_last_link = NULL; m_received_link = NULL;
+
+    for (int i = m_previous_links.count() - 1; i >= 0; --i)
+        delete m_previous_links.takeAt(i);
+
+    for (int i = m_next_links.count() - 1; i >= 0; --i)
+        delete m_next_links.takeAt(i);
+}

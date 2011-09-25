@@ -1002,13 +1002,7 @@ void MainWindow::findPrevious()
 
 void MainWindow::clearSelection(bool refresh)
 {
-    m_settings.setSelectedCustomer(-1);
-    m_settings.setSelectedCircuit(-1);
-    m_settings.setSelectedCompressor(-1);
-    m_settings.clearSelectedInspection();
-    m_settings.setSelectedInspectionIsRepair(false);
-    m_settings.clearSelectedRepair();
-    m_settings.setSelectedInspector(-1);
+    m_settings.clear();
     if (refresh) {
         enableTools();
         refreshView();

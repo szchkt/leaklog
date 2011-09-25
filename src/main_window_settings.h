@@ -52,7 +52,7 @@ public:
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
     void setSelectedInspection(const QString & inspection, bool has_ar = false) { m_inspection = inspection; m_has_assembly_record = has_ar; }
-    inline void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; }
+    inline void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; m_inspection_is_repair = false; }
     inline bool hasAssemblyRecord() const { return m_has_assembly_record; }
 
     bool selectedInspectionIsRepair() { return m_inspection_is_repair; }
@@ -99,6 +99,8 @@ public:
     bool hasNextLinks() { return m_next_links.count() > 0; }
 
     LinkParser & linkParser() { return link_parser; }
+
+    void clear();
 
 signals:
     void enableBackButton(bool);
