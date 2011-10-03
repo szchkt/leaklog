@@ -142,7 +142,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         query.exec("UPDATE inspections SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
         query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
     }
-    if (v < 0.9061) {
+    if (v > 0 && v < 0.9061) {
         Customer customers("");
         MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
         QVariantMap set;
@@ -157,53 +157,54 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
     }
-    if (v < 0.907) {
+    if (v > 0 && v < 0.907) {
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
     if (v < 0.908) {
-        QSqlQuery subvariables(database);
-        subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
-        while (subvariables.next()) {
-            query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
-                          "VALUES (:parent_id, :id, :name, :type, :unit, :scope, :value, :compare_nom, :tolerance, :date_updated, :updated_by)");
-            query.bindValue(":parent_id", subvariables.value(0));
-            query.bindValue(":id", subvariables.value(1));
-            query.bindValue(":name", subvariables.value(2));
-            query.bindValue(":type", subvariables.value(3));
-            query.bindValue(":unit", subvariables.value(4));
-            query.bindValue(":scope", Variable::Inspection);
-            query.bindValue(":value", subvariables.value(5));
-            query.bindValue(":compare_nom", subvariables.value(6));
-            query.bindValue(":tolerance", subvariables.value(7));
-            query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
-            query.bindValue(":updated_by", currentUser());
-            query.exec();
-            query.prepare("UPDATE variables SET type = 'group', date_updated = :date_updated, updated_by = :updated_by WHERE id = :id");
-            query.bindValue(":id", subvariables.value(0));
-            query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
-            query.bindValue(":updated_by", currentUser());
-            query.exec();
+        if (v > 0) {
+            QSqlQuery subvariables(database);
+            subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
+            while (subvariables.next()) {
+                query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
+                              "VALUES (:parent_id, :id, :name, :type, :unit, :scope, :value, :compare_nom, :tolerance, :date_updated, :updated_by)");
+                query.bindValue(":parent_id", subvariables.value(0));
+                query.bindValue(":id", subvariables.value(1));
+                query.bindValue(":name", subvariables.value(2));
+                query.bindValue(":type", subvariables.value(3));
+                query.bindValue(":unit", subvariables.value(4));
+                query.bindValue(":scope", Variable::Inspection);
+                query.bindValue(":value", subvariables.value(5));
+                query.bindValue(":compare_nom", subvariables.value(6));
+                query.bindValue(":tolerance", subvariables.value(7));
+                query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+                query.bindValue(":updated_by", currentUser());
+                query.exec();
+                query.prepare("UPDATE variables SET type = 'group', date_updated = :date_updated, updated_by = :updated_by WHERE id = :id");
+                query.bindValue(":id", subvariables.value(0));
+                query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+                query.bindValue(":updated_by", currentUser());
+                query.exec();
+            }
+
+            // Contact persons separated from customers table
+            Customer customers_rec("");
+            ListOfVariantMaps customers = customers_rec.listAll();
+
+            Person person;
+            int next_id = person.list("MAX(id) AS max").value("max").toInt();
+            QVariantMap person_values;
+            for (int i = 0; i < customers.count(); ++i) {
+                if (customers.at(i).value("contact_person").isNull())
+                    continue;
+
+                person_values.insert("company_id", customers.at(i).value("id"));
+                person_values.insert("name", customers.at(i).value("contact_person"));
+                person.setId(QString::number(++next_id));
+                person.update(person_values);
+            }
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
-
-        // Contact persons separated from customers table
-        Customer customers_rec("");
-        ListOfVariantMaps customers = customers_rec.listAll();
-
-        Person person;
-        int next_id = person.list("MAX(id) AS max").value("max").toInt();
-        QVariantMap person_values;
-        for (int i = 0; i < customers.count(); ++i) {
-            if (customers.at(i).value("contact_person").isNull())
-                continue;
-
-            person_values.insert("company_id", customers.at(i).value("id"));
-            person_values.insert("name", customers.at(i).value("contact_person"));
-            person.setId(QString::number(++next_id));
-            person.update(person_values);
-        }
-
     }
     if (v < F_DB_VERSION) {
         query.exec("DROP INDEX IF EXISTS index_db_info_id");
