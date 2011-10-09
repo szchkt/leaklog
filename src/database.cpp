@@ -20,6 +20,7 @@
 #include "main_window.h"
 #include "global.h"
 #include "variables.h"
+#include "variable_evaluation.h"
 #include "warnings.h"
 #include "edit_warning_dialogue.h"
 #include "tabbed_edit_dialogue.h"
@@ -201,6 +202,46 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
                 person_values.insert("name", customers.at(i).value("contact_person"));
                 person.setId(QString::number(++next_id));
                 person.update(person_values);
+            }
+
+            // Create a compressor for each circuit
+            ListOfVariantMaps circuits = Circuit().listAll();
+            QVariantMap map;
+            for (int i = 0; i < circuits.count(); ++i) {
+                map.insert("customer_id", circuits.at(i).value("parent"));
+                map.insert("circuit_id", circuits.at(i).value("id"));
+                map.insert("name", tr("Compressor"));
+                map.insert("manufacturer", QString());
+                map.insert("type", QString());
+                map.insert("sn", QString());
+                Compressor().update(map);
+            }
+
+            // Copy values of compressor variables from inspections table to inspections_compressors
+            ListOfVariantMaps inspections = Inspection().listAll("*, (SELECT MIN(id) FROM compressors WHERE customer_id = inspections.customer AND circuit_id = inspections.circuit) AS compressor_id");
+
+            VariableEvaluation::EvaluationContext variable_evaluation("", "", Variable::Compressor);
+            QList<VariableEvaluation::Variable *> vars_list = variable_evaluation.listVariables();
+
+            for (int i = 0; i < inspections.count(); ++i) {
+                if (inspections.at(i).value("compressor_id").isNull())
+                    continue;
+
+                QVariantMap values;
+                values.insert("customer_id", inspections.at(i).value("customer").toString());
+                values.insert("circuit_id", inspections.at(i).value("circuit").toString());
+                values.insert("date", inspections.at(i).value("date").toString());
+                values.insert("compressor_id", inspections.at(i).value("compressor_id").toString());
+
+                for (int n = 0; n < vars_list.count(); ++n) {
+                    if (vars_list.at(n)->countSubvariables())
+                        continue;
+
+                    if (inspections.at(i).contains(vars_list.at(n)->id()) && !inspections.at(i).value(vars_list.at(n)->id()).isNull())
+                        values.insert(vars_list.at(n)->id(), inspections.at(i).value(vars_list.at(n)->id()).toString());
+                }
+
+                InspectionsCompressor().update(values, true);
             }
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));

@@ -62,6 +62,7 @@ class Circuit : public DBRecord
     Q_OBJECT
 
 public:
+    Circuit();
     Circuit(const QString &, const QString &);
 
     void initEditDialogue(EditDialogueWidgets *);
@@ -76,6 +77,7 @@ class Inspection : public DBRecord
     Q_OBJECT
 
 public:
+    Inspection();
     Inspection(const QString &, const QString &, const QString &);
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
 

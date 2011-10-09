@@ -89,6 +89,10 @@ const MTDictionary & Customer::attributes()
     return dict.dict;
 }
 
+Circuit::Circuit():
+    DBRecord("circuits", "id", "", MTDictionary())
+{}
+
 Circuit::Circuit(const QString & parent, const QString & id):
     DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
@@ -210,6 +214,11 @@ int Circuit::numBasicAttributes()
 {
     return 11;
 }
+
+Inspection::Inspection():
+    DBRecord("inspections", "date", "", MTDictionary()),
+    m_scope(Variable::Inspection)
+{}
 
 Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
     DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
