@@ -427,7 +427,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     }
     ListOfVariantMaps list;
     if (!customer_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        list = all_customers.listAll("*", "company ASC");
+        list = all_customers.listAll("*", "company ASC, id ASC");
     else {
         list = all_customers.listAll("*", m_settings.lastLink()->orderBy());
     }
