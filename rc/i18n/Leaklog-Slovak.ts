@@ -3421,6 +3421,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>Remind Me &amp;Later</source>
         <translation>Pripomenúť &amp;neskôr</translation>
     </message>
+    <message>
+        <source>Compressor</source>
+        <translation>Kompresor</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>
