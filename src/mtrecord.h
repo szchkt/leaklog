@@ -36,6 +36,7 @@ public:
     MTRecord & operator=(const MTRecord & other);
     void addFilter(const QString & column, const QString & filter);
     inline QString table() const { return r_table; }
+    void setTable(const QString & table) { r_table = table; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline QString & id() { return r_id; }
