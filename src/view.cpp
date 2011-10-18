@@ -861,7 +861,6 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 
     Table table_record(table_id);
     QVariantMap table = table_record.list();
-    QStringList table_vars = table.value("variables").toString().split(";", QString::SkipEmptyParts);
 
     Inspection inspection_record(customer_id, circuit_id, "");
     ListOfVariantMaps inspections(inspection_record.listAll("*", "nominal DESC, date ASC"));
@@ -978,19 +977,21 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
         for (int i = 0; i < compressor_ids.count(); ++i) {
             InspectionsCompressor inspections_compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "compressor_id",
                                                                                       QStringList() << customer_id << circuit_id << compressor_ids.at(i)));
-            ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("*", "nominal DESC, date ASC");
-            for (int l = 0; l < inspections_compressors.count(); ++l) {
-                bool nominal = nominal_inspection_index >= 0 &&
-                        inspections.at(nominal_inspection_index).value("date").toString()
-                        == inspections_compressors.at(l).value("date").toString();
-                if ((!table.value("highlight_nominal").toInt() || !nominal)
-                    && inspections_compressors.at(l).value("date").toString().split(".").first().toInt() < year) {
-                    inspections_compressors.removeAt(l);
-                    l--;
-                } else if (nominal) {
-                    inspections_compressors[l].insert("nominal", 1);
-                    var_evaluation.setNominalInspection(inspections_compressors.at(l));
-                }
+            inspections_compressors_rec.setTable("inspections_compressors JOIN inspections"
+                                                 " ON inspections.customer = inspections_compressors.customer_id"
+                                                 " AND inspections.circuit = inspections_compressors.circuit_id"
+                                                 " AND inspections.date = inspections_compressors.date");
+            if (table.value("highlight_nominal").toInt())
+                inspections_compressors_rec.setCustomWhere("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
+            else
+                inspections_compressors_rec.setCustomWhere("inspections_compressors.date > '" + QString::number(year) + "'");
+
+            ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "nominal DESC, date ASC");
+
+            if (inspections_compressors.count()
+                    && table.value("highlight_nominal").toInt()
+                    && inspections_compressors.first().value("nominal").toInt()) {
+                var_evaluation.setNominalInspection(inspections_compressors.first());
             }
             if (compressor_ids.count() > 1) {
                 for (int n = 0; n < compressors.count(); ++n) {
