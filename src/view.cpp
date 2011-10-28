@@ -816,6 +816,7 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
     VariableEvaluation::Variable * subvariable = NULL;
     QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
     if (!subvariables.count()) subvariables.append(variable);
+    bool nominal = inspection.value("nominal").toInt();
 
     MTDictionary subvar_values;
 
@@ -830,7 +831,8 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
 
         compare_nom = !nom_value.isEmpty();
 
-        subvar_values.insert(subvariable->name(), tableVarValue(subvariable->type(), ins_value, nom_value,
+        subvar_values.insert(var_evaluation.variableName(subvariable, nominal),
+                             tableVarValue(subvariable->type(), ins_value, nom_value,
                                                                 variable->colBg(), compare_nom, subvariable->tolerance(), true)
                                              + "&nbsp;" + subvariable->unit());
     }
@@ -840,12 +842,12 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
     HTMLTableRow * _tr = _table->addRow();
     *(_tr->addCell(QString("rowspan=\"%1\" colspan=\"%2\"")
                    .arg(subvar_values.count())
-                   .arg(subvariables.count() == 1 ? 2 : 1))) << variable->name();
+                   .arg(subvariables.count() == 1 ? 2 : 1))) << var_evaluation.variableName(variable, nominal);
 
     for (int i = 0; i < subvar_values.count(); ++i) {
         if (!_tr) _tr = _table->addRow();
 
-        if (subvar_values.key(i) != variable->name()) *(_tr->addCell()) << subvar_values.key(i);
+        if (subvar_values.key(i) != var_evaluation.variableName(variable, nominal)) *(_tr->addCell()) << subvar_values.key(i);
         *(_tr->addCell()) << subvar_values.value(i);
 
         _tr = NULL;

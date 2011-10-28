@@ -78,6 +78,14 @@ void VariableEvaluation::EvaluationContext::init()
     used_ids = listVariableIds();
 }
 
+QString VariableEvaluation::EvaluationContext::variableName(Variable * var, bool is_nominal)
+{
+    if (is_nominal && var->id() == "refr_add_am")
+        return QObject::tr("New charge");
+
+    return var->name();
+}
+
 QString VariableEvaluation::EvaluationContext::evaluate(const QString & var_name, QVariantMap & inspection, QString & nom_value)
 {
     VariableEvaluation::Variable * var = vars_map.value(var_name);

@@ -44,6 +44,8 @@ namespace VariableEvaluation {
 
         const QList<Variable *> & listVariables() { return vars_list; }
 
+        QString variableName(Variable *, bool = false);
+
     private:
         void init();
 
