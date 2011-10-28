@@ -31,7 +31,9 @@ MTRecord::MTRecord(const QString & table, const QString & id_field, const QStrin
     r_table(table),
     r_id_field(id_field),
     r_id(id),
-    r_parents(parents)
+    r_parents(parents),
+    r_order(true),
+    r_serial_id(false)
 {}
 
 MTRecord::MTRecord(const MTRecord & other)
@@ -43,6 +45,8 @@ MTRecord::MTRecord(const MTRecord & other)
     r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
     r_values = other.r_values;
+    r_order = other.r_order;
+    r_serial_id = other.r_serial_id;
 }
 
 MTRecord & MTRecord::operator=(const MTRecord & other)
@@ -54,6 +58,8 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
     r_values = other.r_values;
+    r_order = other.r_order;
+    r_serial_id = other.r_serial_id;
     return *this;
 }
 
@@ -94,7 +100,7 @@ QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
         select.append(r_custom_where);
     }
-    if (!r_id_field.isEmpty() && !order_by.isEmpty())
+    if (!r_id_field.isEmpty() && !order_by.isEmpty() && r_order)
         select.append(QString(" ORDER BY %1").arg(order_by));
     QSqlQuery query;
     query.prepare(select);
@@ -229,7 +235,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
             update.append(r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field) && !r_id_field.isEmpty()) {
+        if (!set.contains(r_id_field) && !r_id_field.isEmpty() && !r_serial_id) {
             if (append_comma) { update.append(", "); }
             update.append(r_id_field);
         }
@@ -247,7 +253,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
             update.append(":_" + r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field) && !r_id_field.isEmpty()) {
+        if (!set.contains(r_id_field) && !r_id_field.isEmpty() && !r_serial_id) {
             if (append_comma) { update.append(", "); }
             update.append(":_id");
         }
@@ -255,7 +261,8 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
     }
     QSqlQuery query;
     query.prepare(update);
-    if ((has_id || !set.contains(r_id_field)) && !r_id_field.isEmpty()) { query.bindValue(":_id", r_id); }
+    if ((has_id || !set.contains(r_id_field)) && !r_id_field.isEmpty() && !r_serial_id)
+        query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
         if (!has_id && set.contains(r_parents.key(p))) continue;
         query.bindValue(":_" + r_parents.key(p), r_parents.value(p));

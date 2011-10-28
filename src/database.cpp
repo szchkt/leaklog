@@ -192,7 +192,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
             ListOfVariantMaps customers = customers_rec.listAll();
 
             Person person;
-            int next_id = person.list("MAX(id) AS max").value("max").toInt();
+            int next_id = person.max("id");
             QVariantMap person_values;
             for (int i = 0; i < customers.count(); ++i) {
                 if (customers.at(i).value("contact_person").isNull())

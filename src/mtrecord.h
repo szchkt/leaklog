@@ -37,6 +37,8 @@ public:
     void addFilter(const QString & column, const QString & filter);
     inline QString table() const { return r_table; }
     void setTable(const QString & table) { r_table = table; }
+    void setUnordered(bool unordered) { r_order = !unordered; }
+    void setSerialId(bool serial_id) { r_serial_id = serial_id; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline QString & id() { return r_id; }
@@ -61,6 +63,10 @@ public:
     bool update(const QVariantMap & values, bool add_columns = false);
     virtual bool remove();
     void setCustomWhere(const QString & where) { r_custom_where = where; }
+    int max(const QString & attr) {
+        setUnordered(true);
+        return list(QString("MAX(%1) AS max").arg(attr)).value("max").toInt();
+    }
 
 private:
     QString r_table;
@@ -70,6 +76,8 @@ private:
     QString r_custom_where;
     MTDictionary r_filter;
     QVariantMap r_values;
+    bool r_order;
+    bool r_serial_id;
 };
 
 #endif // MTRECORD_H

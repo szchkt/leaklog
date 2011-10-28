@@ -1060,8 +1060,12 @@ const MTDictionary & Style::attributes()
 
 Compressor::Compressor(const QString & id, const MTDictionary & dict):
     MTRecord("compressors", "id", id, dict)
-{}
+{
+    setSerialId(true);
+}
 
 InspectionsCompressor::InspectionsCompressor(const QString & id, const MTDictionary & dict):
     MTRecord("inspections_compressors", "id", id, dict)
-{}
+{
+    setSerialId(true);
+}

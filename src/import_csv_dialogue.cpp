@@ -434,7 +434,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     if (generate_id) {
         MTRecord record(id(), "id", "", MTDictionary());
 
-        int next_id = record.list("MAX(id) AS max").value("max").toInt() + 1;
+        int next_id = record.max("id") + 1;
         set.insert("id", QString::number(next_id));
         id_column = "id";
     }
