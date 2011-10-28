@@ -82,12 +82,12 @@ void EditCircuitDialogueCompressorsTab::save(const QVariant & circuit_id)
 
 void EditCircuitDialogueCompressorsTab::load(const QString & circuit_id)
 {
+    EditDialogueTableCell * cell;
+    QMap<QString, EditDialogueTableCell *> compressors_data;
     if (!circuit_id.isEmpty()) {
         Compressor compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
                                                                        QStringList() << customer_id << circuit_id));
 
-        EditDialogueTableCell * cell;
-        QMap<QString, EditDialogueTableCell *> compressors_data;
         ListOfVariantMaps compressors = compressor_rec.listAll();
         for (int i = 0; i < compressors.count(); ++i) {
             former_ids.append(compressors.at(i).value("id").toInt());
@@ -108,7 +108,15 @@ void EditCircuitDialogueCompressorsTab::load(const QString & circuit_id)
             compressors_data.insert("id", cell);
             compressors_table->addRow(compressors_data);
         }
+    } else if (!compressors_table->rowsCount()) {
+        cell = new EditDialogueTableCell(tr("Compressor 1"), "name", Global::String);
+        compressors_data.insert("name", cell);
+        cell = new EditDialogueTableCell("", "manufacturer", Global::String);
+        compressors_data.insert("manufacturer", cell);
+        cell = new EditDialogueTableCell("", "type", Global::String);
+        compressors_data.insert("type", cell);
+        cell = new EditDialogueTableCell("", "sn", Global::String);
+        compressors_data.insert("sn", cell);
+        compressors_table->addRow(compressors_data);
     }
-
-    if (!compressors_table->rowsCount()) compressors_table->addNewRow();
 }
