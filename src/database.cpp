@@ -286,7 +286,7 @@ void MainWindow::initTables(bool transaction)
     if (transaction) { db.transaction(); }
 { // (SCOPE)
     double v = DBInfoValueForKey("db_version").toDouble();
-    if (v > 0 && v < 0.908) {
+    if (v > 0 && v < 0.9081) {
         Table("", "Leakages").remove();
         Table("", "Pressures and temperatures").remove();
         Table("", "Electrical parameters").remove();
