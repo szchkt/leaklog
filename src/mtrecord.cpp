@@ -261,7 +261,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
     }
     QSqlQuery query;
     query.prepare(update);
-    if ((has_id || !set.contains(r_id_field)) && !r_id_field.isEmpty() && !r_serial_id)
+    if ((has_id || (!set.contains(r_id_field) && !r_serial_id)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
         if (!has_id && set.contains(r_parents.key(p))) continue;
