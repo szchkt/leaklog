@@ -285,13 +285,20 @@ void MainWindow::initTables(bool transaction)
     QSqlDatabase db = QSqlDatabase::database();
     if (transaction) { db.transaction(); }
 { // (SCOPE)
+    double v = DBInfoValueForKey("db_version").toDouble();
+    if (v > 0 && v < 0.908) {
+        Table("", "Leakages").remove();
+        Table("", "Pressures and temperatures").remove();
+        Table("", "Electrical parameters").remove();
+    }
     QVariantMap set;
     Table leakages("", "Leakages");
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;inspector;operator;rmds;arno;ar_type");
-        set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector;operator;rmds;arno");
+        set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am");
+        set.insert("scope", QString::number(Variable::Inspection));
         leakages.update(set);
         set.clear();
     }
@@ -299,61 +306,21 @@ void MainWindow::initTables(bool transaction)
     if (!pressures_and_temperatures.exists()) {
         set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
-        set.insert("variables", "t_sec;p_0;t_0;delta_t_evap;t_evap_out;t_comp_in;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;t_comp_out");
+        set.insert("variables", "t_sec;p_0;t_0;delta_t_evap;t_evap_out;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;sftsw");
         set.insert("sum", "");
+        set.insert("scope", QString::number(Variable::Inspection));
         pressures_and_temperatures.update(set);
         set.clear();
     }
-    Table electrical_parameters("", "Electrical parameters");
-    if (!electrical_parameters.exists()) {
-        set.insert("id", tr("Electrical parameters"));
+    Table compressors("", "Compressors");
+    if (!compressors.exists()) {
+        set.insert("id", tr("Compressors"));
         set.insert("highlight_nominal", 1);
-        set.insert("variables", "ep_comp;ec;ev;ppsw;sftsw");
+        set.insert("variables", "t_comp_in;t_comp_out;ep_comp;ec;ev;oil_shortage;noise_vibr_comp;comp_runtime");
         set.insert("sum", "");
-        electrical_parameters.update(set);
+        set.insert("scope", QString::number(Variable::Compressor));
+        compressors.update(set);
         //set.clear();
-    }
-    double v = DBInfoValueForKey("db_version").toDouble();
-    if (v < 0.903) {
-        Table table_of_leakages(tr("Table of leakages"));
-        table_of_leakages.remove();
-        Table table_of_parameters(tr("Table of parameters"));
-        table_of_parameters.remove();
-    } else if (v < 0.906) {
-        set.clear();
-        QStringList variables = pressures_and_temperatures.stringValue("variables").split(";", QString::SkipEmptyParts);
-        if (variables.contains("t")) {
-            variables.replace(variables.indexOf("t"), "t_sec");
-            set.insert("variables", variables.join(";"));
-        } else if (!variables.contains("t_sec")) {
-            variables.prepend("t_sec");
-            set.insert("variables", variables.join(";"));
-        }
-        if (!set.isEmpty())
-            pressures_and_temperatures.update(set);
-
-        set.clear();
-        QVariantMap table_attributes = leakages.list("variables, sum");
-        variables = table_attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
-        QStringList sum = table_attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
-        if (variables.contains("refr_add")) {
-            variables.replace(variables.indexOf("refr_add"), "refr_add_am;refr_add_per");
-            set.insert("variables", variables.join(";"));
-        }
-        if (sum.contains("refr_add")) {
-            sum.replace(sum.indexOf("refr_add"), "refr_add_am;refr_add_per");
-            set.insert("sum", sum.join(";"));
-        }
-        if (variables.contains("refr_recovery")) {
-            variables.replace(variables.indexOf("refr_recovery"), "refr_reco");
-            set.insert("variables", variables.join(";"));
-        }
-        if (sum.contains("refr_recovery")) {
-            sum.replace(sum.indexOf("refr_recovery"), "refr_reco");
-            set.insert("sum", sum.join(";"));
-        }
-        if (!set.isEmpty())
-            leakages.update(set);
     }
 } // (SCOPE)
     if (transaction) { db.commit(); }

@@ -406,7 +406,9 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(cb_type);
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
                                       MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList() << "1" << "2"),
+                                                   QStringList()
+                                                   << QString::number(Variable::Inspection)
+                                                   << QString::number(Variable::Compressor)),
                                       "", id().isEmpty()));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
@@ -431,7 +433,9 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight the nominal inspection"), md->widget(), attributes.value("highlight_nominal").toInt()));
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
                                       MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList() << "1" << "2")));
+                                                   QStringList()
+                                                   << QString::number(Variable::Inspection)
+                                                   << QString::number(Variable::Compressor))));
     QStringList used_ids; QSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -646,7 +650,9 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md->widget(), 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
                                       MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList() << "1" << "2")));
+                                                   QStringList()
+                                                   << QString::number(Variable::Inspection)
+                                                   << QString::number(Variable::Compressor))));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     used_ids << listSupportedFunctions();
