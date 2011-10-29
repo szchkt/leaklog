@@ -156,4 +156,6 @@ void MainWindowSettings::clear()
 
     for (int i = m_next_links.count() - 1; i >= 0; --i)
         delete m_next_links.takeAt(i);
+
+    enableBackAndForwardButtons();
 }

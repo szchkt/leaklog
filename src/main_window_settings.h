@@ -101,18 +101,17 @@ public:
     LinkParser & linkParser() { return link_parser; }
 
     void clear();
+    void enableBackAndForwardButtons();
 
 signals:
     void enableBackButton(bool);
     void enableForwardButton(bool);
 
 private:
-    void enableBackAndForwardButtons();
+    void updateLastLink();
 
-    inline void updateLastLink();
-
-    inline void saveToPreviousLinks();
-    inline void saveToNextLinks();
+    void saveToPreviousLinks();
+    void saveToNextLinks();
 
     int m_customer;
     QString m_customer_company;

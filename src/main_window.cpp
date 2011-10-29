@@ -1068,6 +1068,13 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionOpen->setEnabled(enable);
         actionLocal_database->setEnabled(enable);
         actionRemote_database->setEnabled(enable);
+
+        if (enable) {
+            m_settings.enableBackAndForwardButtons();
+        } else {
+            actionBack->setEnabled(false);
+            actionForward->setEnabled(false);
+        }
     }
 
     actionSave->setEnabled(enable);
