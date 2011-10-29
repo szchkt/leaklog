@@ -56,7 +56,7 @@ namespace Global {
     bool isRecordLocked(const QString &);
     bool isOwnerPermissionApplicable(const QString &);
     int isOperationPermitted(const QString &, const QString & = QString());
-    double getCircuitRefrigerantAmount(const QString &, const QString &, double);
+    QString circuitRefrigerantAmountQuery(const QString & return_as = "refrigerant_amount");
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
     double evaluateExpression(QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);

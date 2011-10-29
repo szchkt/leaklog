@@ -295,12 +295,11 @@ int Global::isOperationPermitted(const QString & operation, const QString & reco
     return -1;
 }
 
-double Global::getCircuitRefrigerantAmount(const QString & customer_id, const QString & circuit_id, double refrigerant_amount)
+QString Global::circuitRefrigerantAmountQuery(const QString & return_as)
 {
-    MTDictionary parents("customer", customer_id);
-    parents.insert("circuit", circuit_id);
-    parents.insert("nominal", "1");
-    return refrigerant_amount + MTRecord("inspections", "date", "", parents).value("refr_add_am", 0.0).toDouble();
+    return "(COALESCE(circuits.refrigerant_amount, 0)"
+            " + COALESCE((SELECT SUM(refr_add_am) FROM inspections"
+            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id AND inspections.nominal = 1), 0)) AS " + return_as;
 }
 
 QMap<QString, MTDictionary> Global::parsed_expressions;
@@ -380,7 +379,7 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
     FunctionParser fparser;
     const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
     MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-    QVariantMap circuit_attributes = circuit.list();
+    QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
@@ -404,10 +403,7 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
             }
             value.append(QString::number(v));
         } else if (expression.value(i) == "circuit_attribute") {
-            double attribute = circuit_attributes.value(expression.key(i)).toDouble();
-            if (expression.key(i) == "refrigerant_amount" && !inspection.value("nominal").toInt())
-                attribute = getCircuitRefrigerantAmount(customer_id, circuit_id, attribute);
-            value.append(QString::number(attribute));
+            value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
             if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
             MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));

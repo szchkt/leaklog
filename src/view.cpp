@@ -425,12 +425,15 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     if (customer_id.isEmpty() && !navigation->isFilterEmpty()) {
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps list;
+    QString order_by;
     if (!customer_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        list = all_customers.listAll("*", "company ASC, id ASC");
-    else {
-        list = all_customers.listAll("*", m_settings.lastLink()->orderBy());
-    }
+        order_by = "company ASC, id ASC";
+    else
+        order_by = m_settings.lastLink()->orderBy();
+    ListOfVariantMaps list = all_customers.listAll("*,"
+                                                   " (SELECT COUNT(id) FROM circuits WHERE parent = customers.id) AS circuits_count,"
+                                                   " (SELECT COUNT(date) FROM inspections WHERE customer = customers.id) AS inspections_count",
+                                                   order_by);
 
     if (!table)
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
@@ -463,12 +466,11 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         }
         row = table->addRow(row_attrs);
         *(row->addCell()) << toolTipLink("customer", id.rightJustified(8, '0'), id);
-        for (int n = 1; n < Customer::attributes().count(); ++n) {
+        for (int n = 1; n < Customer::attributes().count(); ++n)
             *(row->addCell()) << MTVariant(list.at(i).value(Customer::attributes().key(n)),
                                        (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(n))).toString();
-        }
-        *(row->addCell()) << QString::number(Circuit(id, "").listAll("id").count());
-        *(row->addCell()) << QString::number(MTRecord("inspections", "date", "", MTDictionary("customer", id)).listAll("date").count());
+        *(row->addCell()) << list.at(i).value("circuits_count").toString();
+        *(row->addCell()) << list.at(i).value("inspections_count").toString();
     }
     return table;
 }
@@ -489,12 +491,11 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     ListOfVariantMaps circuits;
     QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
             " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
-            " ORDER BY date DESC LIMIT 1) AS last_inspection";
+            " ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
     if (!circuit_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
         circuits = circuits_record.listAll(circuits_query_select);
-    else {
+    else
         circuits = circuits_record.listAll(circuits_query_select, m_settings.lastLink()->orderBy());
-    }
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
@@ -542,8 +543,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
             if (dict_value.count() > 1) { *_td << "&nbsp;" << dict_value.last(); }
         }
         _td = _tr->addCell();
-        *_td << QString::number(getCircuitRefrigerantAmount(customer_id, id,
-                                                            circuits.at(i).value("refrigerant_amount").toDouble()))
+        *_td << circuits.at(i).value("refrigerant_amount").toString()
              << "&nbsp;" << QApplication::translate("Units", "kg");
         *_td << " " << circuits.at(i).value("refrigerant").toString();
         _td = _tr->addCell();
@@ -886,8 +886,9 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     Customer customer(customer_id);
     QVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
     Circuit circuit(customer_id, circuit_id);
-    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant,"
-                                            " refrigerant_amount, oil, oil_amount, runtime, utilisation");
+    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, "
+                                            + circuitRefrigerantAmountQuery()
+                                            + ", oil, oil_amount, runtime, utilisation");
     out << "<table><tr><th>" << QApplication::translate("Customer", "ID");
     out << "</th><th>" << QApplication::translate("Customer", "Company");
     out << "</th><th>" << QApplication::translate("Customer", "Contact person");
@@ -920,14 +921,15 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "<td>" << circuit_info.value("year").toString() << "</td>";
     out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
     out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
-    out << "<td>" << getCircuitRefrigerantAmount(customer_id, circuit_id, circuit_info.value("refrigerant_amount").toDouble())
+    out << "<td>" << circuit_info.value("refrigerant_amount").toString()
         << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
     out << "<td>";
     if (attributeValues().contains("oil::" + circuit_info.value("oil").toString())) {
         out << attributeValues().value("oil::" + circuit_info.value("oil").toString());
     }
     out << "</td>";
-    out << "<td>" << circuit_info.value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+    out << "<td>" << circuit_info.value("oil_amount").toString()
+        << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
     out << "</td></tr></table>";
 
 // *** Table ***
@@ -1602,7 +1604,9 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
     if (!navigation->isFilterEmpty()) {
         inspectors_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps inspectors(inspectors_record.listAll());
+    ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
+                                                           " (SELECT COUNT(date) FROM inspections WHERE inspector = inspectors.id) AS inspections_count,"
+                                                           " (SELECT COUNT(date) FROM repairs WHERE repairman = inspectors.id) AS repairs_count"));
 
     HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     HTMLTableRow * _tr;
@@ -1635,8 +1639,8 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
             *(_tr->addCell()) << escapeString(inspectors.at(i).value(Inspector::attributes().key(n)).toString());
         }
-        *(_tr->addCell()) << QString::number(MTRecord("inspections", "date", "", MTDictionary("inspector", id)).listAll("date").count());
-        *(_tr->addCell()) << QString::number(MTRecord("repairs", "date", "", MTDictionary("repairman", id)).listAll("date").count());
+        *(_tr->addCell()) << inspectors.at(i).value("inspections_count").toString();
+        *(_tr->addCell()) << inspectors.at(i).value("repairs_count").toString();
     }
 
     return table;
@@ -1769,10 +1773,10 @@ QString MainWindow::viewLeakagesByApplication()
         }
         map["All::All"][0] += inspections.value(2).toDouble() + inspections.value(3).toDouble();
     }
-    QSqlQuery circuits("SELECT parent, id, refrigerant, field, refrigerant_amount FROM circuits");
+    QSqlQuery circuits("SELECT parent, id, refrigerant, field, " + circuitRefrigerantAmountQuery() + " FROM circuits");
     double refrigerant_amount;
     while (circuits.next()) {
-        refrigerant_amount = getCircuitRefrigerantAmount(circuits.value(0).toString(), circuits.value(1).toString(), circuits.value(4).toDouble());
+        refrigerant_amount = circuits.value(4).toDouble();
         keys.clear();
         keys << circuits.value(2).toString() + "::" + attributeValues().value(attributeValues().indexOfKey("field::" + circuits.value(3).toString()));
         keys << circuits.value(2).toString() + "::All";
