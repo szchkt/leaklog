@@ -1837,7 +1837,7 @@ QString MainWindow::viewAgenda()
     QString html; MTTextStream out(&html);
 
     QMultiMap<QString, QStringList> next_inspections_map;
-    QString last_inspection_date, circuit, customer;
+    QString last_inspection_date;
     int inspection_interval;
 
     MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
@@ -1846,7 +1846,12 @@ QString MainWindow::viewAgenda()
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QSqlQuery circuits = circuits_record.select("parent, id, name, operation, commissioning, refrigerant_amount, hermetic, leak_detector, inspection_interval");
+    QSqlQuery circuits = circuits_record.select("parent, id, name, operation, "
+                                                + circuitRefrigerantAmountQuery()
+                                                + ", hermetic, leak_detector, inspection_interval,"
+                                                " COALESCE((SELECT date FROM inspections"
+                                                " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
+                                                " AND outside_interval = 0 ORDER BY date DESC LIMIT 1), commissioning) AS last_inspection");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -1855,24 +1860,14 @@ QString MainWindow::viewAgenda()
                                                                   QUERY_VALUE(circuits, "leak_detector").toInt(),
                                                                   QUERY_VALUE(circuits, "inspection_interval").toInt());
         if (inspection_interval) {
-            customer = QUERY_VALUE(circuits, "parent").toString();
-            circuit = QUERY_VALUE(circuits, "id").toString();
-            last_inspection_date.clear();
-            MTDictionary inspections_parents("customer", customer);
-            inspections_parents.insert("circuit", circuit);
-            inspections_parents.insert("outside_interval", "0");
-            QSqlQuery inspections = MTRecord("inspections", "date", "", inspections_parents).select("date", Qt::DescendingOrder);
-            inspections.setForwardOnly(true);
-            if (inspections.exec() && inspections.next()) {
-                last_inspection_date = inspections.value(0).toString();
-            }
-            if (last_inspection_date.isEmpty()) {
-                last_inspection_date = QUERY_VALUE(circuits, "commissioning").toString();
-                if (last_inspection_date.isEmpty()) continue;
-            }
+            last_inspection_date = QUERY_VALUE(circuits, "last_inspection").toString();
+            if (last_inspection_date.isEmpty())
+                continue;
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
                                             .addDays(inspection_interval).toString("yyyy.MM.dd"),
-                                        QStringList() << customer << circuit
+                                        QStringList()
+                                            << QUERY_VALUE(circuits, "parent").toString()
+                                            << QUERY_VALUE(circuits, "id").toString()
                                             << QUERY_VALUE(circuits, "name").toString()
                                             << QUERY_VALUE(circuits, "operation").toString()
                                             << last_inspection_date);
@@ -1885,7 +1880,7 @@ QString MainWindow::viewAgenda()
     out << "<th>" << tr("Circuit") << "</th><th>" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "<th>" << tr("Last inspection") << "</th></tr>";
 
-    QString next_inspection, colour, circuit_name, operation;
+    QString next_inspection, colour, customer, circuit, circuit_name, operation;
     QMapIterator<QString, QStringList> i(next_inspections_map);
     while (i.hasNext()) { i.next();
         customer = i.value().value(0);
