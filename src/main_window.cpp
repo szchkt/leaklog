@@ -1451,7 +1451,10 @@ void MainWindow::checkForUpdates()
 {
     delete http_buffer; http_buffer = new QBuffer(this);
     http->setHost("leaklog.sourceforge.net");
-    http->get(tr("/current-version-en"), http_buffer);
+    http->get(QString("/current-version.php?v=%1&preview=%2&lang=%3")
+              .arg(F_LEAKLOG_VERSION)
+              .arg(LEAKLOG_PREVIEW_VERSION)
+              .arg(tr("en_GB")), http_buffer);
 }
 
 void MainWindow::httpRequestFinished(bool error)
