@@ -166,7 +166,6 @@ void Navigation::updateView()
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Customer", "Company"), "company");
-            cb_filter_column->addItem(QApplication::translate("Customer", "Contact person"), "contact_person");
             cb_filter_column->addItem(QApplication::translate("Customer", "Address"), "address");
             cb_filter_column->addItem(QApplication::translate("Customer", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");

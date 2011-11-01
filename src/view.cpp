@@ -884,7 +884,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
 
 //*** Top tables ***
     Customer customer(customer_id);
-    QVariantMap customer_info = customer.list("company, contact_person, address, mail, phone");
+    QVariantMap customer_info = customer.list("company, address, mail, phone");
     Circuit circuit(customer_id, circuit_id);
     QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, "
                                             + circuitRefrigerantAmountQuery()
@@ -898,7 +898,6 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & circu
     out << "</th></tr><tr>";
     out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
     out << "<td>" << MTVariant(customer_info.value("company")) << "</td>";
-    out << "<td>" << MTVariant(customer_info.value("contact_person")) << "</td>";
     out << "<td>" << MTAddress(customer_info.value("address").toString()).toHtml() << "</td>";
     out << "<td>" << MTVariant(customer_info.value("mail")) << "</td>";
     out << "<td>" << MTVariant(customer_info.value("phone")) << "</td>";
