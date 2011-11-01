@@ -1385,7 +1385,9 @@ void MainWindow::loadSettings()
     showIconsOnly(actionShow_icons_only->isChecked());
     check_for_updates = settings.value("check_for_updates", true).toBool();
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
+#ifndef QT_DEBUG
     if (check_for_updates) checkForUpdates();
+#endif
 }
 
 void MainWindow::saveSettings()
@@ -1451,10 +1453,18 @@ void MainWindow::checkForUpdates()
 {
     delete http_buffer; http_buffer = new QBuffer(this);
     http->setHost("leaklog.sourceforge.net");
-    http->get(QString("/current-version.php?v=%1&preview=%2&lang=%3")
+    http->get(QString("/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
-              .arg(tr("en_GB")), http_buffer);
+              .arg(tr("en_GB"))
+#ifdef Q_WS_WIN
+              .arg('W').arg(QSysInfo::WindowsVersion),
+#elif defined Q_WS_MAC
+              .arg('M').arg(QSysInfo::MacintoshVersion),
+#else
+              .arg('O').arg(-1),
+#endif
+              http_buffer);
 }
 
 void MainWindow::httpRequestFinished(bool error)
