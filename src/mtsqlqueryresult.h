@@ -21,8 +21,8 @@
 #define MTSQLQUERYRESULT_H
 
 #include "mtrecord.h"
+#include "mtsqlquery.h"
 
-#include <QSqlQuery>
 #include <QSqlRecord>
 
 class MTSqlQueryResult;
@@ -32,13 +32,13 @@ class MTSqlQueryResultBase
 {
 public:
     MTSqlQueryResultBase(const QString & q, QSqlDatabase db = QSqlDatabase()) {
-        _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
+        _query = new MTSqlQuery(db.isValid() ? db : QSqlDatabase::database());
         _query->exec(q);
         _pos = -1;
     }
 
     MTSqlQueryResultBase(QSqlDatabase db = QSqlDatabase()) {
-        _query = new QSqlQuery(db.isValid() ? db : QSqlDatabase::database());
+        _query = new MTSqlQuery(db.isValid() ? db : QSqlDatabase::database());
         _pos = -1;
     }
 
@@ -76,7 +76,7 @@ public:
         return _query->prepare(q);
     }
 
-    QSqlQuery * query() {
+    MTSqlQuery * query() {
         return _query;
     }
 
@@ -106,7 +106,7 @@ protected:
     virtual void saveResult() = 0;
 
 private:
-    QSqlQuery * _query;
+    MTSqlQuery * _query;
     QList<QMap<Key, QVariant> > _result;
     int _pos;
 

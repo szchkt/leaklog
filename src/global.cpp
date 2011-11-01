@@ -108,7 +108,7 @@ QString Global::variableTypeToSqlType(const QString & type)
 MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabase & database)
 {
     MTDictionary field_names;
-    QSqlQuery query(database);
+    MTSqlQuery query(database);
     query.exec("SELECT * FROM " + table);
     for (int i = 0; i < query.record().count(); ++i) {
         field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
@@ -118,7 +118,7 @@ MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabas
 
 void Global::copyTable(const QString & table, const QSqlDatabase & from, const QSqlDatabase & to, const QString & filter)
 {
-    QSqlQuery select(from);
+    MTSqlQuery select(from);
     select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
     if (select.next() && select.record().count()) {
         QString copy("INSERT INTO " + table + " (");
@@ -139,7 +139,7 @@ void Global::copyTable(const QString & table, const QSqlDatabase & from, const Q
         }
         copy.append(")");
         do {
-            QSqlQuery insert(to);
+            MTSqlQuery insert(to);
             insert.prepare(copy);
             for (int i = 0; i < select.record().count(); ++i) {
                 insert.bindValue(":" + select.record().fieldName(i), select.value(i));
@@ -156,14 +156,14 @@ void Global::addColumn(const QString & column, const QString & table, const QSql
 
     QString col = column;
     if (column.split(" ").count() < 2) { col.append(" TEXT"); }
-    QSqlQuery add_column(database);
+    MTSqlQuery add_column(database);
     add_column.exec("ALTER TABLE " + table + " ADD COLUMN " + col);
 }
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, const QSqlDatabase & database)
 {
     if (isDatabaseRemote(database)) {
-        QSqlQuery rename_column(database);
+        MTSqlQuery rename_column(database);
         rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -177,7 +177,7 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(database);
+        MTSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol%2)").arg(fields).arg(column_type));
         query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -193,7 +193,7 @@ void Global::dropColumn(const QString & column, const QString & table, const QSq
         return;
 
     if (isDatabaseRemote(database)) {
-        QSqlQuery drop_column(database);
+        MTSqlQuery drop_column(database);
         drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
@@ -203,7 +203,7 @@ void Global::dropColumn(const QString & column, const QString & table, const QSq
             if (i) { fields.append(", "); }
             fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
         }
-        QSqlQuery query(database);
+        MTSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(fields));
         query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
         query.exec(QString("DROP TABLE %1").arg(table));
@@ -215,7 +215,7 @@ void Global::dropColumn(const QString & column, const QString & table, const QSq
 
 QString Global::DBInfoValueForKey(const QString & key, const QString & default_value)
 {
-    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
     if (!query.next())
         return default_value;
     return query.value(0).toString();
@@ -223,10 +223,10 @@ QString Global::DBInfoValueForKey(const QString & key, const QString & default_v
 
 QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value)
 {
-    QSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
     if (query.next())
-        return QSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key)).lastError();
-    return QSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
+        return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key)).lastError();
+    return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
 }
 
 QString Global::currentUser(const QSqlDatabase & database)
@@ -391,7 +391,7 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
                 if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
                 v += inspection.value(expression.key(i)).toDouble();
             } else {
-                QSqlQuery sum_ins;
+                MTSqlQuery sum_ins;
                 sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
                 sum_ins.bindValue(":customer_id", customer_id);
                 sum_ins.bindValue(":circuit_id", circuit_id);
@@ -786,7 +786,7 @@ QString Global::listRefrigerantsToString()
 
 MTDictionary Global::listInspectors()
 {
-    MTDictionary inspectors(true); QSqlQuery query;
+    MTDictionary inspectors(true); MTSqlQuery query;
     query.setForwardOnly(true);
     if (query.exec("SELECT id, person FROM inspectors")) {
         while (query.next()) {
@@ -798,7 +798,7 @@ MTDictionary Global::listInspectors()
 
 MTDictionary Global::listOperators(const QString & customer)
 {
-    MTDictionary operators(true); QSqlQuery query;
+    MTDictionary operators(true); MTSqlQuery query;
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1").arg(customer))) {
         while (query.next()) {
@@ -810,7 +810,7 @@ MTDictionary Global::listOperators(const QString & customer)
 
 MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 {
-    MTDictionary categories(QObject::tr("No category"), "-1"); QSqlQuery query;
+    MTDictionary categories(QObject::tr("No category"), "-1"); MTSqlQuery query;
     categories.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM assembly_record_item_categories%1")
@@ -824,7 +824,7 @@ MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 
 MTDictionary Global::listAssemblyRecordTypes()
 {
-    MTDictionary dict(QObject::tr("No type"), "-1"); QSqlQuery query;
+    MTDictionary dict(QObject::tr("No type"), "-1"); MTSqlQuery query;
     dict.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec("SELECT id, name FROM assembly_record_types")) {
@@ -868,7 +868,7 @@ MTDictionary Global::listDataTypes()
 
 MTDictionary Global::listStyles()
 {
-    MTDictionary styles(QObject::tr("Default"), "-1"); QSqlQuery query;
+    MTDictionary styles(QObject::tr("Default"), "-1"); MTSqlQuery query;
     styles.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM styles"))) {

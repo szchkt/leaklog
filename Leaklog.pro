@@ -56,7 +56,8 @@ HEADERS       += src/global.h \
                  src/edit_dialogue_widgets.h \
                  src/edit_dialogue_layout.h \
                  src/edit_inspection_dialogue_assembly_record_tab.h \
-                 src/main_window_settings.h
+                 src/main_window_settings.h \
+                 src/mtsqlquery.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc

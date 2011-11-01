@@ -20,7 +20,6 @@
 #include "mtrecord.h"
 #include "global.h"
 
-#include <QSqlQuery>
 #include <QSqlRecord>
 #include <QDateTime>
 #include <QSqlError>
@@ -71,17 +70,17 @@ void MTRecord::addFilter(const QString & column, const QString & filter)
 bool MTRecord::exists()
 {
     if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
-    QSqlQuery find_record = select(r_id_field);
+    MTSqlQuery find_record = select(r_id_field);
     find_record.exec();
     return find_record.next();
 }
 
-QSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
+MTSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
 {
     return select(fields, QString("%1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
 }
 
-QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
+MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
 {
     bool has_id = !r_id.isEmpty();
     int i;
@@ -102,7 +101,7 @@ QSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
     }
     if (!r_id_field.isEmpty() && !order_by.isEmpty() && r_order)
         select.append(QString(" ORDER BY %1").arg(order_by));
-    QSqlQuery query;
+    MTSqlQuery query;
     query.prepare(select);
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
@@ -119,7 +118,7 @@ QVariantMap MTRecord::list(const QString & fields, bool refresh)
     if (!refresh && !r_values.isEmpty())
         return r_values;
     QVariantMap list;
-    QSqlQuery query = select(fields);
+    MTSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
     if (!query.next()) { return list; }
@@ -137,7 +136,7 @@ void MTRecord::readValues()
 ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & order_by)
 {
     ListOfVariantMaps list;
-    QSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
+    MTSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
@@ -154,7 +153,7 @@ ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & orde
 QVariantMap MTRecord::sumAll(const QString & fields)
 {
     QVariantMap list;
-    QSqlQuery query = select(fields);
+    MTSqlQuery query = select(fields);
     query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
@@ -169,7 +168,7 @@ MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & f
 {
     MultiMapOfVariantMaps map;
     QStringList list_map_to = map_to.split("::");
-    QSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
+    MTSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
     query.setForwardOnly(true);
     query.exec();
     QList<int> indices;
@@ -259,7 +258,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
         }
         update.append(")");
     }
-    QSqlQuery query;
+    MTSqlQuery query;
     query.prepare(update);
     if ((has_id || (!set.contains(r_id_field) && !r_serial_id)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
@@ -291,7 +290,7 @@ bool MTRecord::remove()
         if (has_id || i) { remove.append(" AND "); }
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
-    QSqlQuery query;
+    MTSqlQuery query;
     query.prepare(remove);
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {

@@ -792,7 +792,7 @@ void MainWindow::printLabel(bool detailed)
         attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(5, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
         attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery() + ", hermetic, leak_detector, inspection_interval"));
-        QSqlQuery query;
+        MTSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
         query.bindValue(":customer_id", m_settings.selectedCustomer());
         query.bindValue(":circuit_id", m_settings.selectedCircuit());

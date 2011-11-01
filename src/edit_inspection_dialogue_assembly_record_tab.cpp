@@ -24,8 +24,8 @@
 #include "input_widgets.h"
 #include "edit_dialogue_layout.h"
 #include "global.h"
+#include "mtsqlquery.h"
 
-#include <QSqlQuery>
 #include <QMessageBox>
 
 EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, const QString & customer_id, const QString & circuit_id, QWidget * parent)
@@ -140,7 +140,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             DISCOUNT = 16,
             AUTO_SHOW = 17
         };
-        QSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
+        MTSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
                                       " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit,"
@@ -192,7 +192,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             DISCOUNT = 15,
             UNIT_ID = 16
         };
-        QSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
+        MTSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit,"
                                       " assembly_record_items.discount, circuit_unit_types.discount, circuit_units.id"
@@ -246,7 +246,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             ITEM_UNIT = 11,
             ITEM_DISCOUNT = 12
         };
-        QSqlQuery inspectors_query(QString("SELECT inspectors.id, inspectors.person, inspectors.acquisition_price, inspectors.list_price,"
+        MTSqlQuery inspectors_query(QString("SELECT inspectors.id, inspectors.person, inspectors.acquisition_price, inspectors.list_price,"
                                       " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
                                       " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit,"
                                       " assembly_record_items.discount"
@@ -313,7 +313,7 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
 int EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary & dict)
 {
     int id = -1;
-    QSqlQuery query("SELECT MAX(id) FROM assembly_record_item_types");
+    MTSqlQuery query("SELECT MAX(id) FROM assembly_record_item_types");
     if (query.last()) {
         id = query.value(0).toInt() + 1;
 
@@ -332,7 +332,7 @@ void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()
 {
     if (original_arno == arno_w->text()) return;
 
-    QSqlQuery query(QString("SELECT date FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
+    MTSqlQuery query(QString("SELECT date FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
     if (query.next()) {
         QMessageBox::warning(this, tr("Conflict"), tr("Inspection with the same assembly record number already exists."));
     }

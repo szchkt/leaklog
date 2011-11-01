@@ -251,18 +251,18 @@ void EditWarningDialogue::save()
     QVariantMap values;
     if (!md_record->id().isEmpty()) {
         values.insert("id", md_record->id().toInt());
-        QSqlQuery delete_filters;
+        MTSqlQuery delete_filters;
         delete_filters.prepare("DELETE FROM warnings_filters WHERE parent = :parent");
         delete_filters.bindValue(":parent", md_record->id());
         delete_filters.exec();
-        QSqlQuery delete_conditions;
+        MTSqlQuery delete_conditions;
         delete_conditions.prepare("DELETE FROM warnings_conditions WHERE parent = :parent");
         delete_conditions.bindValue(":parent", md_record->id());
         delete_conditions.exec();
     } else {
         QList<int> ids;
         for (int i = 0; i < 1000; ++i) { ids << i; }
-        QSqlQuery query("SELECT id FROM warnings");
+        MTSqlQuery query("SELECT id FROM warnings");
         while (query.next()) { ids.removeAll(query.value(0).toInt()); }
         if (!ids.count()) {
             QMessageBox::critical(this, tr("Save changes"), tr("You cannot create more than 1000 warnings."));
@@ -276,7 +276,7 @@ void EditWarningDialogue::save()
     md_record->update(values);
     if (md_record->id().toInt() < 1000) {
         for (int i = 0; i < md_filters->count(); ++i) {
-            QSqlQuery insert_filter;
+            MTSqlQuery insert_filter;
             insert_filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");
             insert_filter.bindValue(":parent", md_record->id());
             insert_filter.bindValue(":circuit_attribute", md_filters->attribute(i));
@@ -285,7 +285,7 @@ void EditWarningDialogue::save()
             insert_filter.exec();
         }
         for (int i = 0; i < md_conditions->count(); ++i) {
-            QSqlQuery insert_condition;
+            MTSqlQuery insert_condition;
             insert_condition.prepare("INSERT INTO warnings_conditions (parent, value_ins, function, value_nom) VALUES (:parent, :value_ins, :function, :value_nom)");
             insert_condition.bindValue(":parent", md_record->id());
             insert_condition.bindValue(":value_ins", md_conditions->expressionIns(i));

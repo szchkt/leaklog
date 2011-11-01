@@ -82,7 +82,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
 {
     if (transaction) { database.transaction(); }
 { // (SCOPE)
-    QSqlQuery query(database);
+    MTSqlQuery query(database);
     QStringList tables = database.tables();
     Variables * variables = Variables::defaultVariables();
     for (int i = 0; i < databaseTables().count(); ++i) {
@@ -147,7 +147,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         Customer customers("");
         MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
         QVariantMap set;
-        QSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
+        MTSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
         while (repairs.next()) {
             if (customer_ids.contains(repairs.value(1).toString())) {
                 Repair repair(repairs.value(0).toString());
@@ -163,7 +163,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
     }
     if (v < 0.908) {
         if (v > 0) {
-            QSqlQuery subvariables(database);
+            MTSqlQuery subvariables(database);
             subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
             while (subvariables.next()) {
                 query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
@@ -481,7 +481,7 @@ void MainWindow::openDatabase(QString path)
     initTables(false);
     loadVariables(trw_variables);
 
-    QSqlQuery query;
+    MTSqlQuery query;
     query.exec("SELECT id FROM tables");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
@@ -542,7 +542,7 @@ void MainWindow::saveDatabase(bool compact)
     QSqlDatabase db = QSqlDatabase::database();
     db.commit();
     if (compact) {
-        QSqlQuery query;
+        MTSqlQuery query;
         query.exec("VACUUM");
         if (query.lastError().type() != QSqlError::NoError)
             errors << query.lastError().text();
@@ -690,37 +690,37 @@ void MainWindow::editCustomer()
         this->setWindowModified(true);
         QString company_name = record.stringValue("company");
         if (old_id != record.id()) {
-            QSqlQuery update_circuits;
+            MTSqlQuery update_circuits;
             update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
             update_circuits.bindValue(":old_id", old_id);
             update_circuits.bindValue(":new_id", record.id());
             update_circuits.exec();
-            QSqlQuery update_compressors;
+            MTSqlQuery update_compressors;
             update_compressors.prepare("UPDATE compressors SET customer_id = :new_id WHERE customer_id = :old_id");
             update_compressors.bindValue(":old_id", old_id);
             update_compressors.bindValue(":new_id", record.id());
             update_compressors.exec();
-            QSqlQuery update_circuit_units;
+            MTSqlQuery update_circuit_units;
             update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_id WHERE company_id = :old_id");
             update_circuit_units.bindValue(":old_id", old_id);
             update_circuit_units.bindValue(":new_id", record.id());
             update_circuit_units.exec();
-            QSqlQuery update_inspections;
+            MTSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET customer = :new_id WHERE customer = :old_id");
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
-            QSqlQuery update_inspections_compressors;
+            MTSqlQuery update_inspections_compressors;
             update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_id WHERE customer_id = :old_id");
             update_inspections_compressors.bindValue(":old_id", old_id);
             update_inspections_compressors.bindValue(":new_id", record.id());
             update_inspections_compressors.exec();
-            QSqlQuery update_inspection_images;
+            MTSqlQuery update_inspection_images;
             update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_id WHERE customer = :old_id");
             update_inspection_images.bindValue(":old_id", old_id);
             update_inspection_images.bindValue(":new_id", record.id());
             update_inspection_images.exec();
-            QSqlQuery update_repairs;
+            MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET parent = :new_id, customer = :customer WHERE parent = :old_id");
             update_repairs.bindValue(":old_id", old_id);
             update_repairs.bindValue(":new_id", record.id());
@@ -728,7 +728,7 @@ void MainWindow::editCustomer()
             update_repairs.exec();
             loadCustomer(record.id().toInt(), true);
         } else if (old_company_name != company_name) {
-            QSqlQuery update_repairs;
+            MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
             update_repairs.bindValue(":id", record.id());
             update_repairs.bindValue(":customer", company_name);
@@ -827,19 +827,19 @@ void MainWindow::editCircuit()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_inspections;
+            MTSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
             update_inspections.bindValue(":customer_id", selectedCustomer());
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
-            QSqlQuery update_inspections_compressors;
+            MTSqlQuery update_inspections_compressors;
             update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
             update_inspections_compressors.bindValue(":customer_id", selectedCustomer());
             update_inspections_compressors.bindValue(":old_id", old_id);
             update_inspections_compressors.bindValue(":new_id", record.id());
             update_inspections_compressors.exec();
-            QSqlQuery update_inspection_images;
+            MTSqlQuery update_inspection_images;
             update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
             update_inspection_images.bindValue(":customer_id", selectedCustomer());
             update_inspection_images.bindValue(":old_id", old_id);
@@ -1177,7 +1177,7 @@ void MainWindow::editVariable()
 
             parsed_expressions.clear();
 
-            QSqlQuery update_subvariables;
+            MTSqlQuery update_subvariables;
             update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
             update_subvariables.bindValue(":old_id", id);
             update_subvariables.bindValue(":new_id", record.id());
@@ -1529,17 +1529,17 @@ void MainWindow::editInspector()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_inspections;
+            MTSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
             update_inspections.bindValue(":old_id", old_id);
             update_inspections.bindValue(":new_id", record.id());
             update_inspections.exec();
-            QSqlQuery update_repairs;
+            MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET repairman = :new_id WHERE repairman = :old_id");
             update_repairs.bindValue(":old_id", old_id);
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.exec();
-            QSqlQuery update_assembly_record_items;
+            MTSqlQuery update_assembly_record_items;
             update_assembly_record_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
                                                  .arg(AssemblyRecordItem::Inspectors));
             update_assembly_record_items.bindValue(":old_id", old_id);
@@ -1663,7 +1663,7 @@ void MainWindow::importData()
         return;
     }
     data.transaction();
-    QSqlQuery query(data);
+    MTSqlQuery query(data);
     initDatabase(data, false);
     ImportDialogue * id = new ImportDialogue(this);
     QString id_justified;
@@ -2455,7 +2455,7 @@ void MainWindow::editAssemblyRecordType()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_ar_type;
+            MTSqlQuery update_ar_type;
             update_ar_type.prepare("UPDATE inspections SET ar_type = :new_id WHERE ar_type = :old_id");
             update_ar_type.bindValue(":old_id", old_id);
             update_ar_type.bindValue(":new_id", record.id());
@@ -2514,7 +2514,7 @@ void MainWindow::editAssemblyRecordItemType()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_ar_items;
+            MTSqlQuery update_ar_items;
             update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
                                     .arg(AssemblyRecordItem::AssemblyRecordItemTypes));
             update_ar_items.bindValue(":old_id", old_id);
@@ -2574,17 +2574,17 @@ void MainWindow::editAssemblyRecordItemCategory()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_ar_item_types;
+            MTSqlQuery update_ar_item_types;
             update_ar_item_types.prepare("UPDATE assembly_record_item_types SET category_id = :new_id WHERE category_id = :old_id");
             update_ar_item_types.bindValue(":old_id", old_id);
             update_ar_item_types.bindValue(":new_id", record.id());
             update_ar_item_types.exec();
-            QSqlQuery update_ar_type_categories;
+            MTSqlQuery update_ar_type_categories;
             update_ar_type_categories.prepare("UPDATE assembly_record_type_categories SET record_category_id = :new_id WHERE record_category_id = :old_id");
             update_ar_type_categories.bindValue(":old_id", old_id);
             update_ar_type_categories.bindValue(":new_id", record.id());
             update_ar_type_categories.exec();
-            QSqlQuery update_ar_items;
+            MTSqlQuery update_ar_items;
             update_ar_items.prepare("UPDATE assembly_record_items SET category_id = :new_id WHERE category_id = :old_id");
             update_ar_items.bindValue(":old_id", old_id);
             update_ar_items.bindValue(":new_id", record.id());
@@ -2657,12 +2657,12 @@ void MainWindow::editCircuitUnitType()
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            QSqlQuery update_circuit_units;
+            MTSqlQuery update_circuit_units;
             update_circuit_units.prepare("UPDATE circuit_units SET unit_type_id = :new_id WHERE unit_type_id = :old_id");
             update_circuit_units.bindValue(":old_id", old_id);
             update_circuit_units.bindValue(":new_id", record.id());
             update_circuit_units.exec();
-            QSqlQuery update_ar_items;
+            MTSqlQuery update_ar_items;
             update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
                                     .arg(AssemblyRecordItem::CircuitUnitTypes));
             update_ar_items.bindValue(":old_id", old_id);
@@ -2695,7 +2695,7 @@ void MainWindow::addStyle()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_style")) { return; }
 
-    QSqlQuery query("SELECT MAX(id) FROM styles");
+    MTSqlQuery query("SELECT MAX(id) FROM styles");
     if (!query.last()) return;
 
     int id = query.value(0).toInt() + 1;

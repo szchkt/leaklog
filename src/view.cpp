@@ -394,7 +394,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
     if (!navigation->isFilterEmpty()) {
         records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QSqlQuery query = records.select("*", Qt::DescendingOrder);
+    MTSqlQuery query = records.select("*", Qt::DescendingOrder);
     query.setForwardOnly(true);
     query.exec();
     QString date;
@@ -734,7 +734,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     var_evaluation.setNominalInspection(nominal_ins);
 
     Table tables_record("", QString(), MTDictionary("scope", "1"));
-    QSqlQuery tables = tables_record.select("id, variables", Qt::DescendingOrder);
+    MTSqlQuery tables = tables_record.select("id, variables", Qt::DescendingOrder);
     tables.setForwardOnly(true);
     tables.exec();
 
@@ -1417,7 +1417,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     if (!navigation->isFilterEmpty()) {
         repairs_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QSqlQuery repairs = repairs_record.select();
+    MTSqlQuery repairs = repairs_record.select();
     repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
@@ -1693,7 +1693,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     int nominal_inspection_year, commissioning_year, decommissioning_year;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
-    QSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
+    MTSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -1758,7 +1758,7 @@ QString MainWindow::viewLeakagesByApplication()
     QStringList keys;
     const int VECTOR_SIZE = 3;
     map["All::All"].resize(VECTOR_SIZE);
-    QSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am"
+    MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am"
                           " FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id"
                           " AND inspections.customer = circuits.parent"
                           " WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
@@ -1773,7 +1773,7 @@ QString MainWindow::viewLeakagesByApplication()
         }
         map["All::All"][0] += inspections.value(2).toDouble() + inspections.value(3).toDouble();
     }
-    QSqlQuery circuits("SELECT parent, id, refrigerant, field, " + circuitRefrigerantAmountQuery() + " FROM circuits");
+    MTSqlQuery circuits("SELECT parent, id, refrigerant, field, " + circuitRefrigerantAmountQuery() + " FROM circuits");
     double refrigerant_amount;
     while (circuits.next()) {
         refrigerant_amount = circuits.value(4).toDouble();
@@ -1846,7 +1846,7 @@ QString MainWindow::viewAgenda()
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QSqlQuery circuits = circuits_record.select("parent, id, name, operation, "
+    MTSqlQuery circuits = circuits_record.select("parent, id, name, operation, "
                                                 + circuitRefrigerantAmountQuery()
                                                 + ", hermetic, leak_detector, inspection_interval,"
                                                 " COALESCE((SELECT date FROM inspections"
@@ -2159,7 +2159,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         ITEM_TYPE_ID = 12
                };
 
-    QSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name,"
+    MTSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name,"
                                        " assembly_record_item_categories.id, assembly_record_item_categories.name,"
                                        " assembly_record_item_categories.display_options, assembly_record_items.list_price,"
                                        " assembly_record_items.acquisition_price, assembly_record_items.unit,"
@@ -2426,7 +2426,7 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
         LOCATION = 3,
         UNIT_TYPE_ID = 4
     };
-    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
+    MTSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
                             " circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
                             " FROM circuit_units"
                             " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"

@@ -19,8 +19,8 @@
 
 #include "edit_circuit_dialogue_units_tab.h"
 #include "global.h"
+#include "mtsqlquery.h"
 
-#include <QSqlQuery>
 #include <QPushButton>
 #include <QToolButton>
 #include <QHeaderView>
@@ -80,7 +80,7 @@ void EditCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QS
         UNIT_TYPE_ID = 4,
         UNIT_ID = 5
     };
-    QSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
+    MTSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
                             " circuit_unit_types.location, circuit_unit_types.id, circuit_units.id AS unit_id"
                             " FROM circuit_units"
                             " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
@@ -103,7 +103,7 @@ void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
     QList<MTDictionary> all_values = table->allValues();
 
     int id = 1;
-    QSqlQuery query("SELECT MAX(id) FROM circuit_units");
+    MTSqlQuery query("SELECT MAX(id) FROM circuit_units");
     if (query.last()) {
         id = query.value(0).toInt() + 1;
     }
@@ -135,7 +135,7 @@ void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
 void EditCircuitDialogueUnitsTab::loadManufacturers()
 {
     EditCircuitDialogueTreeItem * item;
-    QSqlQuery query("SELECT DISTINCT manufacturer FROM circuit_unit_types ORDER BY manufacturer");
+    MTSqlQuery query("SELECT DISTINCT manufacturer FROM circuit_unit_types ORDER BY manufacturer");
     while (query.next()) {
         item = new EditCircuitDialogueTreeItem(tree);
         item->setText(0, query.value(0).toString());
@@ -150,7 +150,7 @@ void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * qit
     EditCircuitDialogueTreeItem * item = NULL;
     if (parent_item->isType() || parent_item->childCount()) return;
 
-    QSqlQuery query(QString("SELECT id, type, location FROM circuit_unit_types WHERE manufacturer = '%1' ORDER BY type")
+    MTSqlQuery query(QString("SELECT id, type, location FROM circuit_unit_types WHERE manufacturer = '%1' ORDER BY type")
                     .arg(parent_item->text(0)));
 
     while (query.next()) {

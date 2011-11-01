@@ -1,0 +1,70 @@
+/*******************************************************************
+ This file is part of Leaklog
+ Copyright (C) 2008-2011 Matus & Michal Tomlein
+
+ Leaklog is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public Licence
+ as published by the Free Software Foundation; either version 2
+ of the Licence, or (at your option) any later version.
+
+ Leaklog is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public Licence for more details.
+
+ You should have received a copy of the GNU General Public Licence
+ along with Leaklog; if not, write to the Free Software Foundation,
+ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+********************************************************************/
+
+#ifndef MTSQLQUERY_H
+#define MTSQLQUERY_H
+
+#include <QSqlQuery>
+
+#ifdef QT_DEBUG
+
+#include <QSqlError>
+#include <QDebug>
+
+class MTSqlQuery : public QSqlQuery
+{
+public:
+    MTSqlQuery(QSqlResult * result): QSqlQuery(result) {}
+    MTSqlQuery(const QString & query = QString(), QSqlDatabase db = QSqlDatabase()):
+        QSqlQuery(query, db) {
+        if (!query.isEmpty())
+            printLastError();
+    }
+    MTSqlQuery(QSqlDatabase db): QSqlQuery(db) {}
+    MTSqlQuery(const QSqlQuery & other): QSqlQuery(other) {}
+
+    bool exec(const QString & query) {
+        bool result = QSqlQuery::exec(query);
+        printLastError();
+        return result;
+    }
+
+    bool exec() {
+        bool result = QSqlQuery::exec();
+        printLastError();
+        return result;
+    }
+
+protected:
+    void printLastError() {
+        QSqlError error = lastError();
+        if (error.type() != QSqlError::NoError) {
+            qDebug() << lastQuery();
+            qDebug() << error.text();
+        }
+    }
+};
+
+#else
+
+#define MTSqlQuery QSqlQuery
+
+#endif // QT_DEBUG
+
+#endif // MTSQLQUERY_H

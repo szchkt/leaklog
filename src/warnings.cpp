@@ -342,7 +342,7 @@ int Warnings::circuitInspectionInterval(double refrigerant_amount, bool hermetic
 
 void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
 {
-    QSqlQuery query(database);
+    MTSqlQuery query(database);
     query.prepare("SELECT enabled FROM warnings WHERE id = :id");
     query.bindValue(":id", id);
     query.exec();

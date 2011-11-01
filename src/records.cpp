@@ -57,7 +57,7 @@ void Customer::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM customers" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -139,7 +139,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets * md)
     MDSpinBox * inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
     query_used_ids.bindValue(":parent", parent("parent"));
@@ -244,7 +244,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
     bool nominal_allowed = true;
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE customer = :customer AND circuit = :circuit" + QString(id().isEmpty() ? "" : " AND date <> :date"));
     query_used_ids.bindValue(":customer", parent("customer"));
@@ -323,7 +323,7 @@ void Repair::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM repairs" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
@@ -436,7 +436,7 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
                                                    QStringList()
                                                    << QString::number(Variable::Inspection)
                                                    << QString::number(Variable::Compressor))));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -471,7 +471,7 @@ void Inspector::initEditDialogue(EditDialogueWidgets * md)
     iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM inspectors" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -520,7 +520,7 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), attributes.value("website").toString()));
     md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), attributes.value("image").toInt()));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM service_companies" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -585,7 +585,7 @@ void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
@@ -695,7 +695,7 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(md_display_options);
     md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), attributes.value("name_format").toString(), keywords));
     md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), attributes.value("style").toString(), listStyles()));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -758,7 +758,7 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), attributes.value("inspection_variable_id").toString(), listAllVariables()));
     md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type").toString(), listDataTypes()));
 
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -861,7 +861,7 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
     md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
     md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM assembly_record_item_categories" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -959,7 +959,7 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
     md->addGroupedInputWidgets(tr("Output:"), gw_list);
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
 
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM circuit_unit_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
@@ -1035,7 +1035,7 @@ void Style::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), attributes.value("content").toString()));
     md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), attributes.value("div_tables").toBool()));
-    QStringList used_ids; QSqlQuery query_used_ids;
+    QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }

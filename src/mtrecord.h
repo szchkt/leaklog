@@ -22,10 +22,9 @@
 
 #include "defs.h"
 #include "mtdictionary.h"
+#include "mtsqlquery.h"
 
 #include <QVariant>
-
-class QSqlQuery;
 
 class MTRecord
 {
@@ -46,8 +45,8 @@ public:
     inline MTDictionary & parents() { return r_parents; }
     inline QString parent(const QString & field) const { return r_parents.value(field); }
     bool exists();
-    QSqlQuery select(const QString & fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
-    QSqlQuery select(const QString & fields, const QString & order_by);
+    MTSqlQuery select(const QString & fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
+    MTSqlQuery select(const QString & fields, const QString & order_by);
     QVariantMap list(const QString & fields = "*", bool refresh = false);
     void readValues();
     inline QVariantMap & values() { return r_values; }

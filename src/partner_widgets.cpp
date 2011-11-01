@@ -18,12 +18,11 @@
 ********************************************************************/
 
 #include "partner_widgets.h"
-
 #include "input_widgets.h"
+#include "mtsqlquery.h"
 
 #include <QString>
 #include <QLineEdit>
-#include <QSqlQuery>
 
 PartnerWidgets::PartnerWidgets(const QString & partner_name_str, const QString & partner_id_str, QWidget * md)
 {
@@ -33,7 +32,7 @@ PartnerWidgets::PartnerWidgets(const QString & partner_name_str, const QString &
 
     MTDictionary partners_dict("", "");
 
-    QSqlQuery query("SELECT partner, partner_id FROM refrigerant_management WHERE partner IS NOT NULL GROUP BY partner, partner_id");
+    MTSqlQuery query("SELECT partner, partner_id FROM refrigerant_management WHERE partner IS NOT NULL GROUP BY partner, partner_id");
     while (query.next()) {
         partners_map.insert(query.value(1).toString(), query.value(0).toString());
         partners_dict.insert(QString("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()), query.value(1).toString());
