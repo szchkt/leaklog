@@ -825,6 +825,10 @@
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
     </message>
+    <message>
+        <source>Compressor 1</source>
+        <translation>Kompresor 1</translation>
+    </message>
 </context>
 <context>
     <name>EditCircuitDialogueTable</name>
@@ -2414,14 +2418,6 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <translation>LTR</translation>
     </message>
     <message>
-        <source>Table of leakages</source>
-        <translation>Tabuľka únikov</translation>
-    </message>
-    <message>
-        <source>Table of parameters</source>
-        <translation>Tabuľka parametrov</translation>
-    </message>
-    <message>
         <source>Change language</source>
         <translation>Zmeniť jazyk</translation>
     </message>
@@ -2652,10 +2648,6 @@ Nariadenia (ES) č. 842/2006 a zákona
     <message>
         <source>Administrator:</source>
         <translation>Administrátor:</translation>
-    </message>
-    <message>
-        <source>/current-version-en</source>
-        <translation>/current-version</translation>
     </message>
     <message>
         <source>Certified company</source>
@@ -2988,10 +2980,6 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Pressures and temperatures</source>
         <translation>Tlaky a teploty</translation>
-    </message>
-    <message>
-        <source>Electrical parameters</source>
-        <translation>Elektrické parametre</translation>
     </message>
     <message>
         <source>Amount of refrigerant in circuits</source>
@@ -3424,6 +3412,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Compressor</source>
         <translation>Kompresor</translation>
+    </message>
+    <message>
+        <source>en_GB</source>
+        <translation>sk_SK</translation>
     </message>
 </context>
 <context>
@@ -4242,6 +4234,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Partners:</source>
         <translation>Partneri:</translation>
+    </message>
+    <message>
+        <source>New charge</source>
+        <translation>Nová náplň</translation>
     </message>
 </context>
 <context>
