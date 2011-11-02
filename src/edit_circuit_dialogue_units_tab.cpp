@@ -102,11 +102,7 @@ void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
 {
     QList<MTDictionary> all_values = table->allValues();
 
-    int id = 1;
-    MTSqlQuery query("SELECT MAX(id) FROM circuit_units");
-    if (query.last()) {
-        id = query.value(0).toInt() + 1;
-    }
+    int next_id = -1;
 
     CircuitUnit unit;
     for (int i = 0; i < all_values.count(); ++i) {
@@ -117,8 +113,11 @@ void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
             if (former_ids.contains(all_values.at(i).value("id").toInt()))
                 former_ids.removeAll(all_values.at(i).value("id").toInt());
         } else {
+            if (next_id < 0)
+                next_id = CircuitUnit().max("id");
+
             unit = CircuitUnit();
-            map.insert("id", QString::number(id++));
+            map.insert("id", QString::number(++next_id));
         }
 
         map.insert("company_id", customer_id);
