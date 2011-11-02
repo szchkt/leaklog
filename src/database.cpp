@@ -187,6 +187,8 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
                 query.exec();
             }
 
+            query.exec("DROP TABLE subvariables");
+
             // Contact persons separated from customers table
             Customer customers_rec("");
             ListOfVariantMaps customers = customers_rec.listAll();
@@ -248,33 +250,28 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
     }
     if (v < F_DB_VERSION) {
-        query.exec("DROP INDEX IF EXISTS index_db_info_id");
-        query.exec("DROP INDEX IF EXISTS index_service_companies_id");
-        query.exec("DROP INDEX IF EXISTS index_customers_id");
-        query.exec("DROP INDEX IF EXISTS index_circuits_id");
-        query.exec("DROP INDEX IF EXISTS index_inspections_id");
-        query.exec("DROP INDEX IF EXISTS index_repairs_id");
-        query.exec("DROP INDEX IF EXISTS index_inspectors_id");
-        query.exec("DROP INDEX IF EXISTS index_variables_id");
-        query.exec("DROP INDEX IF EXISTS index_subvariables_id");
-        query.exec("DROP INDEX IF EXISTS index_tables_id");
-        query.exec("DROP INDEX IF EXISTS index_warnings_id");
-        query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
-        query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
-        query.exec("DROP INDEX IF EXISTS index_refrigerant_management_id");
-        query.exec("CREATE UNIQUE INDEX index_db_info_id ON db_info (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_service_companies_id ON service_companies (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_customers_id ON customers (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_circuits_id ON circuits (parent ASC, id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)");
-        query.exec("CREATE UNIQUE INDEX index_repairs_id ON repairs (date ASC)");
-        query.exec("CREATE UNIQUE INDEX index_inspectors_id ON inspectors (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_variables_id ON variables (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_tables_id ON tables (id ASC)");
-        query.exec("CREATE UNIQUE INDEX index_warnings_id ON warnings (id ASC)");
-        query.exec("CREATE INDEX index_warnings_filters_parent ON warnings_filters (parent ASC)");
-        query.exec("CREATE INDEX index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
-        query.exec("CREATE UNIQUE INDEX index_refrigerant_management_id ON refrigerant_management (date ASC)");
+        bool remote = isDatabaseRemote(database);
+        QString unique_index = remote ? "CREATE UNIQUE INDEX " : "CREATE UNIQUE INDEX IF NOT EXISTS ";
+        QString index = remote ? "CREATE INDEX " : "CREATE INDEX IF NOT EXISTS ";
+        if (!remote || v == 0) {
+            query.exec(unique_index + "index_db_info_id ON db_info (id ASC)");
+            query.exec(unique_index + "index_circuits_id ON circuits (parent ASC, id ASC)");
+            query.exec(unique_index + "index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)");
+            query.exec(unique_index + "index_repairs_id ON repairs (date ASC)");
+            query.exec(unique_index + "index_variables_id ON variables (id ASC)");
+            query.exec(unique_index + "index_tables_id ON tables (id ASC)");
+            query.exec(index + "index_warnings_filters_parent ON warnings_filters (parent ASC)");
+            query.exec(index + "index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
+            query.exec(unique_index + "index_refrigerant_management_id ON refrigerant_management (date ASC)");
+        }
+        if (!remote || v < 0.9082) {
+            query.exec(unique_index + "index_compressors_id ON compressors (customer_id ASC, circuit_id ASC, id ASC)");
+            query.exec(unique_index + "index_inspections_compressors_id ON inspections_compressors (customer_id ASC, circuit_id ASC, date ASC, id ASC)");
+            query.exec(index + "index_inspection_images_parent ON inspection_images (customer ASC, circuit ASC, date ASC)");
+            query.exec(index + "index_assembly_record_items_parent ON assembly_record_items (arno ASC)");
+            query.exec(unique_index + "index_circuit_units_id ON circuit_units (company_id ASC, circuit_id ASC, id ASC)");
+            query.exec(unique_index + "index_styles_id ON styles (id ASC)");
+        }
     }
 } // (SCOPE)
     if (transaction) { database.commit(); }
