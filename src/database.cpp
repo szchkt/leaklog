@@ -283,13 +283,14 @@ void MainWindow::initTables(bool transaction)
     if (transaction) { db.transaction(); }
 { // (SCOPE)
     double v = DBInfoValueForKey("db_version").toDouble();
-    if (v > 0 && v < 0.9081) {
+    if (v > 0 && v < 0.9082) {
         Table("", "Leakages").remove();
         Table("", "Pressures and temperatures").remove();
         Table("", "Electrical parameters").remove();
+        Table("", "Compressors").remove();
     }
     QVariantMap set;
-    Table leakages("", "Leakages");
+    Table leakages("", "90");
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
@@ -299,7 +300,7 @@ void MainWindow::initTables(bool transaction)
         leakages.update(set);
         set.clear();
     }
-    Table pressures_and_temperatures("", "Pressures and temperatures");
+    Table pressures_and_temperatures("", "70");
     if (!pressures_and_temperatures.exists()) {
         set.insert("id", tr("Pressures and temperatures"));
         set.insert("highlight_nominal", 1);
@@ -309,7 +310,7 @@ void MainWindow::initTables(bool transaction)
         pressures_and_temperatures.update(set);
         set.clear();
     }
-    Table compressors("", "Compressors");
+    Table compressors("", "40");
     if (!compressors.exists()) {
         set.insert("id", tr("Compressors"));
         set.insert("highlight_nominal", 1);
@@ -479,7 +480,7 @@ void MainWindow::openDatabase(QString path)
     loadVariables(trw_variables);
 
     MTSqlQuery query;
-    query.exec("SELECT id FROM tables");
+    query.exec("SELECT id FROM tables ORDER BY uid DESC, id ASC");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
         navigation->tableComboBox()->addItem(query.value(0).toString());
