@@ -88,9 +88,7 @@ bool DBFile::saveData(const QString & file_name)
 int DBFile::save()
 {
     if (file_id <= 0) {
-        File max_file("");
-        QVariantMap max_id_map = max_file.list("MAX(id) AS max");
-        file_id = max_id_map.value("max").toInt() + 1;
+        file_id = File("").max("id") + 1;
         File::setId(QString::number(file_id));
     }
 
