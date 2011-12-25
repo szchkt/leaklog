@@ -73,6 +73,9 @@ public:
     inline QString firstKey(const QString & value) const {
         return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));
     }
+    inline const QString & lastKey() const {
+        return dict_keys.last();
+    }
     inline QStringList keys() const { return dict_keys; }
     inline int indexOfKey(const QString & key) const { return dict_keys.indexOf(key); }
     inline bool contains(const QString & key) const {
