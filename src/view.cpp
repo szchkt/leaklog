@@ -444,7 +444,10 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     HTMLTableRow * row = new HTMLTableRow();
     int thead_colspan = 2;
     for (int n = 0; n < Customer::attributes().count(); ++n) {
-        *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
+        if (customer_id.isEmpty())
+            *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
+        else
+            *(row->addHeaderCell()) << Customer::attributes().value(n);
         thead_colspan++;
     }
     *(row->addHeaderCell()) << tr("Number of circuits");
@@ -505,8 +508,11 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     HTMLTableRow * thead = new HTMLTableRow();
     int thead_colspan = 3;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
-        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:"
-                                  << Circuit::attributes().key(n)<< "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
+        if (circuit_id.isEmpty())
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:"
+                                      << Circuit::attributes().key(n) << "\">" << Circuit::attributes().value(n).split("||").first() << "</a>";
+        else
+            *(thead->addHeaderCell()) << Circuit::attributes().value(n).split("||").first();
         thead_colspan++;
     }
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
