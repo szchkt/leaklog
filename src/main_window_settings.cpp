@@ -132,12 +132,6 @@ void MainWindowSettings::enableBackAndForwardButtons()
     emit enableForwardButton(m_next_links.count() > 0);
 }
 
-Link * MainWindowSettings::lastLink()
-{
-    updateLastLink();
-    return m_last_link;
-}
-
 void MainWindowSettings::clear()
 {
     clearSelectedCustomer();

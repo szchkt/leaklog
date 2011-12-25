@@ -53,6 +53,7 @@
 #include <QDate>
 #include <QDateEdit>
 #include <QDesktopServices>
+#include <QWebFrame>
 
 using namespace Global;
 
@@ -368,11 +369,19 @@ void MainWindow::executeLink(Link * link)
     QString id;
     bool ok = false;
 
+    bool select_with_javascript = false;
+    bool view_changed = true;
+    Link * last_link = m_settings.lastLink();
+    if (last_link != NULL && link->compareViews(*last_link) < Link::MinViewDifference)
+        view_changed = false;
+
     switch (link->viewAt(0)) {
     case LinkParser::Customer:
+        view_changed = !actionService_company->isChecked();
+        select_with_javascript = !view_changed;
         id = link->idValue("customer");
         if (id != selectedCustomer()) {
-            loadCustomer(id.toInt(), link->countViews() <= 1 && link->action() == Link::View);
+            loadCustomer(id.toInt(), view_changed && link->countViews() <= 1 && link->action() == Link::View);
         } else if (link->countViews() <= 1 && link->action() == Link::View) {
             if (actionBasic_logbook->isChecked())
                 navigation->setView(Navigation::ListOfRepairs);
@@ -385,7 +394,8 @@ void MainWindow::executeLink(Link * link)
         break;
 
     case LinkParser::Repair:
-        loadRepair(link->idValue("repair"), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadRepair(link->idValue("repair"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editRepair();
         break;
@@ -398,7 +408,8 @@ void MainWindow::executeLink(Link * link)
         break;
 
     case LinkParser::Inspector:
-        loadInspector(link->idValue("inspector").toInt(), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadInspector(link->idValue("inspector").toInt(), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editInspector();
         break;
@@ -439,25 +450,29 @@ void MainWindow::executeLink(Link * link)
         break;
 
     case LinkParser::AssemblyRecordType:
-        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editAssemblyRecordType();
         break;
 
     case LinkParser::AssemblyRecordItemType:
-        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editAssemblyRecordItemType();
         break;
 
     case LinkParser::AssemblyRecordCategory:
-        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editAssemblyRecordItemCategory();
         break;
 
     case LinkParser::CircuitUnitType:
-        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), link->action() == Link::View);
+        select_with_javascript = !view_changed;
+        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             editCircuitUnitType();
         break;
@@ -527,7 +542,7 @@ void MainWindow::executeLink(Link * link)
         break;
 
     case LinkParser::AssemblyRecord:
-        id = link->lastId();
+        id = link->lastIdValue();
         id.remove(0, id.indexOf(":") + 1);
         if (id != selectedInspection())
             loadAssemblyRecord(id, link->action() == Link::View);
@@ -562,6 +577,11 @@ void MainWindow::executeLink(Link * link)
     case LinkParser::InspectionImages:
         navigation->setView(Navigation::InspectionImages);
         break;
+    }
+
+    if (select_with_javascript) {
+        m_settings.loadReceivedLink();
+        wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
     }
 }
 
@@ -740,6 +760,13 @@ void MainWindow::exportHTML()
         QTextStream in(&colours_css); in.setCodec("UTF-8");
         html.replace("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
         colours_css.close();
+    }
+    if (html.contains("<script type=\"text/javascript\" src=\"application.js\"></script>")) {
+        QFile application_js(":/html/application.js");
+        application_js.open(QIODevice::ReadOnly | QIODevice::Text);
+        QTextStream in(&application_js); in.setCodec("UTF-8");
+        html.replace("<script type=\"text/javascript\" src=\"application.js\"></script>", QString("<script type=\"text/javascript\">\n<!--\n%1\n-->\n</script>").arg(in.readAll()));
+        application_js.close();
     }
     QTextStream out(&file);
     out.setCodec("UTF-8");

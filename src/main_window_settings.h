@@ -55,7 +55,7 @@ public:
     inline void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; m_inspection_is_repair = false; }
     inline bool hasAssemblyRecord() const { return m_has_assembly_record; }
 
-    bool selectedInspectionIsRepair() { return m_inspection_is_repair; }
+    bool selectedInspectionIsRepair() const { return m_inspection_is_repair; }
     void setSelectedInspectionIsRepair(bool inspection_is_repair) { m_inspection_is_repair = inspection_is_repair; }
 
     inline bool isRepairSelected() const { return !m_repair.isEmpty(); }
@@ -85,18 +85,18 @@ public:
     inline QString selectedCircuitUnitType() const { return QString::number(m_circuit_unit_type); }
     void setSelectedCircuitUnitType(int circuit_unit_type) { m_circuit_unit_type = circuit_unit_type; }
 
-    Link * lastLink();
+    Link * lastLink() const { return m_last_link; }
     void setLastLink(Link *);
 
-    Link * receivedLink() { return m_received_link; }
+    Link * receivedLink() const { return m_received_link; }
     void setReceivedLink(Link * link) { m_received_link = link; }
     void loadReceivedLink();
 
     void loadPreviousLink();
     void loadNextLink();
 
-    bool hasPreviousLinks() { return m_previous_links.count() > 0; }
-    bool hasNextLinks() { return m_next_links.count() > 0; }
+    bool hasPreviousLinks() const { return m_previous_links.count() > 0; }
+    bool hasNextLinks() const { return m_next_links.count() > 0; }
 
     LinkParser & linkParser() { return link_parser; }
 

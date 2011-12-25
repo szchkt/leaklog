@@ -438,7 +438,8 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     if (!table)
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("customers");
-    table->addClass("highlight");
+    if (customer_id.isEmpty())
+        table->addClass("highlight");
 
     HTMLTableRow * row = new HTMLTableRow();
     int thead_colspan = 2;
@@ -458,11 +459,11 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     QString id; QString highlighted_id = selectedCustomer();
     for (int i = 0; i < list.count(); ++i) {
         id = list.at(i).value("id").toString();
-        QString row_attrs = "onclick=\"window.location = 'customer:" + id + "'\" style=\"cursor: pointer;";
-        if (id == highlighted_id) {
-            row_attrs.append(" background-color: rgb(242, 248, 255);\"");
-        } else {
-            row_attrs.append("\"");
+        QString row_attrs;
+        if (customer_id.isEmpty()) {
+            row_attrs = QString("id=\"%1\" onclick=\"window.location = '%1'\" style=\"cursor: pointer;\"").arg("customer:" + id);
+            if (id == highlighted_id)
+                row_attrs.append(" class=\"selected\"");
         }
         row = table->addRow(row_attrs);
         *(row->addCell()) << toolTipLink("customer", id.rightJustified(8, '0'), id);
@@ -499,7 +500,8 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
-    table->addClass("highlight");
+    if (circuit_id.isEmpty())
+        table->addClass("highlight");
     HTMLTableRow * thead = new HTMLTableRow();
     int thead_colspan = 3;
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
@@ -521,11 +523,12 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     for (int i = 0; i < circuits.count(); ++i) {
         if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt()) { show_disused = true; continue; }
         id = circuits.at(i).value("id").toString();
-        QString tr_attr = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + id + "'\" style=\"cursor: pointer;";
-        if (id == highlighted_id) {
-            tr_attr.append(" background-color: rgb(242, 248, 255);");
+        QString tr_attr;
+        if (circuit_id.isEmpty()) {
+            tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_id).arg("circuit:" + id);
+            if (id == highlighted_id)
+                tr_attr.append(" class=\"selected\"");
         }
-        tr_attr.append("\"");
         _tr = table->addRow(tr_attr);
         *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id);
         for (int n = 1; n < Circuit::numBasicAttributes(); ++n) {
@@ -572,11 +575,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         for (int i = 0; i < circuits.count(); ++i) {
             if (!circuits.at(i).value("disused").toInt()) continue;
             id = circuits.at(i).value("id").toString();
-            QString tr_attr = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + id + "'\" style=\"cursor: pointer;";
-            if (id == highlighted_id) {
-                tr_attr.append(" background-color: rgb(242, 248, 255);");
-            }
-            tr_attr.append("\"");
+            QString tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_id).arg("circuit:" + id);
+            if (id == highlighted_id)
+                tr_attr.append(" class=\"selected\"");
             _tr = table->addRow(tr_attr);
             *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id);
             *(_tr->addCell()) << circuits.at(i).value("manufacturer").toString();
@@ -661,12 +662,11 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         is_nominal = inspections.at(i).value("nominal").toInt();
         is_repair = inspections.at(i).value("repair").toInt();
         is_outside_interval = inspections.at(i).value("outside_interval").toInt();
-        out << "<tr onclick=\"window.location = 'customer:" << customer_id << "/circuit:" << circuit_id;
-        out << (is_repair ? "/repair:" : "/inspection:") << id << "'\" style=\"cursor: pointer;";
-        if (id == highlighted_id) {
-            out << " background-color: rgb(242, 248, 255);\">";
-        } else { out << "\">"; }
-        out << "<td>";
+        out << QString("<tr id=\"%3\" onclick=\"window.location = 'customer:%1/circuit:%2/%3'\" style=\"cursor: pointer;\"")
+               .arg(customer_id).arg(circuit_id).arg((is_repair ? "repair:" : "inspection:") + id);
+        if (id == highlighted_id)
+            out << " class=\"selected\"";
+        out << "><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
         out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
@@ -1430,13 +1430,10 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     while (repairs.next()) {
         id = QUERY_VALUE(repairs, "date").toString();
         if (id.split(".").first().toInt() < year) continue;
-        out << "<tr onclick=\"window.location = 'repair:" << id << "";
-        if (highlighted_id == id) {
-            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-        } else {
-            out << "'\" style=\"";
-        }
-        out << " cursor: pointer;\"><td>" << id << "</td>";
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
+        if (highlighted_id == id)
+            out << " class=\"selected\"";
+        out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
             attr_value = QUERY_VALUE(repairs, Repair::attributes().key(n)).toString();
             out << "<td>";
@@ -1607,7 +1604,9 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
                                                            " (SELECT COUNT(date) FROM inspections WHERE inspector = inspectors.id) AS inspections_count,"
                                                            " (SELECT COUNT(date) FROM repairs WHERE repairman = inspectors.id) AS repairs_count"));
 
-    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    if (inspector_id.isEmpty())
+        table->addClass("highlight");
     HTMLTableRow * _tr;
 
     _tr = new HTMLTableRow;
@@ -1622,16 +1621,15 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
     *(table->addRow()->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan)))
             << (inspector_id.isEmpty() ? tr("List of Inspectors") : tr("Inspector"));
     *table << _tr;
-    QString id, tr_attr;
     for (int i = 0; i < inspectors.count(); ++i) {
-        id = inspectors.at(i).value("id").toString();
-        tr_attr = QString("onclick=\"window.location = 'inspector:" + id + "");
-        if (highlighted_id == id) {
-            tr_attr.append("/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;");
-        } else {
-            tr_attr.append("'\" style=\"");
+        QString id = inspectors.at(i).value("id").toString();
+        QString tr_attr;
+        if (inspector_id.isEmpty()) {
+            tr_attr = QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("inspector:" + id);
+            if (highlighted_id == id)
+                tr_attr.append(" class=\"selected\"");
+            tr_attr.append(" style=\"cursor: pointer;\"");
         }
-        tr_attr.append(" cursor: pointer;\"");
         _tr = table->addRow(tr_attr);
         *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector activity") + "')\" onmouseout=\"UnTip()\"")
                 ->link("inspectorreport:" + id)) << id.rightJustified(4, '0');
@@ -1948,13 +1946,11 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     QString id;
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'assemblyrecordtype:" << id;
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecordtype:" + id);
         if (highlighted_id == id) {
-            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-        } else {
-            out << "'\" style=\"";
+            out << " class=\"selected\"";
         }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        out << " style=\"cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < AssemblyRecordType::attributes().count(); ++n) {
             out << "<td>" << escapeString(items.at(i).value(AssemblyRecordType::attributes().key(n)).toString()) << "</td>";
         }
@@ -1993,13 +1989,10 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     MTDictionary categories(listAssemblyRecordItemCategories());
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'assemblyrecorditemtype:" << id << "";
-        if (highlighted_id == id) {
-            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-        } else {
-            out << "'\" style=\"";
-        }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecorditemtype:" + id);
+        if (highlighted_id == id)
+            out << " class=\"selected\"";
+        out << " style=\"cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < AssemblyRecordItemType::attributes().count(); ++n) {
             out << "<td>";
             if (AssemblyRecordItemType::attributes().key(n) == "category_id")
@@ -2041,13 +2034,10 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     QString id;
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'assemblyrecorditemcategory:" << id << "";
-        if (highlighted_id == id) {
-            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-        } else {
-            out << "'\" style=\"";
-        }
-        out << " cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecorditemcategory:" + id);
+        if (highlighted_id == id)
+            out << " class=\"selected\"";
+        out << " style=\"cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
         for (int n = 1; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
             out << "<td>" << escapeString(items.at(i).value(AssemblyRecordItemCategory::attributes().key(n)).toString()) << "</td>";
         }
@@ -2388,13 +2378,10 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     MTDictionary categories(listAssemblyRecordItemCategories());
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << "<tr onclick=\"window.location = 'circuitunittype:" << id << "";
-        if (highlighted_id == id) {
-            out << "/edit'\" style=\"background-color: rgb(242, 248, 255); font-weight: bold;";
-        } else {
-            out << "'\" style=\"";
-        }
-        out << " cursor: pointer;\"><td>" << id << "</td>";
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("circuitunittype:" + id);
+        if (highlighted_id == id)
+            out << " class=\"selected\"";
+        out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
             if (CircuitUnitType::attributes().key(n) == "location")
@@ -2434,7 +2421,6 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
     if (query.next()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         table->addClass("circuit_units");
-        table->addClass("highlight");
         HTMLTableRow * _tr;
 
         _tr = table->addRow();
@@ -2463,7 +2449,6 @@ HTMLTable * MainWindow::circuitCompressorsTable(const QString & customer_id, con
     ListOfVariantMaps compressors = compressors_rec.listAll();
     if (compressors.count()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-        table->addClass("highlight");
         HTMLTableRow * _tr;
 
         _tr = table->addRow();
@@ -2489,7 +2474,6 @@ HTMLTable * MainWindow::customerContactPersons(const QString & customer_id, HTML
 {
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("contact_persons");
-    table->addClass("highlight");
     HTMLTableRow * _tr;
 
     _tr = table->addRow();

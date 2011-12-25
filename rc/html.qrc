@@ -23,5 +23,6 @@
         <file>html/assembly_records.html</file>
         <file>html/inspector.html</file>
         <file>html/inspection_images.html</file>
+        <file>html/application.js</file>
     </qresource>
 </RCC>

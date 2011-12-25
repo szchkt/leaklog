@@ -155,12 +155,26 @@ void Link::setId(const QString & key, const QString & value)
     m_ids.setValue(key, value);
 }
 
+int Link::compareViews(const Link & other) const
+{
+    int result = 0;
+    int count = qMax(m_views.count(), other.m_views.count());
+    for (int i = 0; i < count; ++i)
+        result += abs(m_views.value(i, 0) - other.m_views.value(i, 0));
+    return result;
+}
+
 const QString & Link::idValue(const QString & key)
 {
     return m_ids.value(key);
 }
 
-const QString & Link::lastId()
+const QString & Link::lastIdKey()
+{
+    return m_ids.lastKey();
+}
+
+const QString & Link::lastIdValue()
 {
     return m_ids.lastValue();
 }

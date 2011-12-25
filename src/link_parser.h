@@ -32,35 +32,35 @@ class LinkParser
 {
 public:
     enum View {
-        ServiceCompany,
-        RefrigerantManagement,
-        RecordOfRefrigerantManagement,
-        LeakagesByApplication,
-        Agenda,
-        AllInspectors,
-        Inspector,
-        InspectorReport,
-        AllCustomers,
-        Customer,
-        OperatorReport,
-        AllRepairs,
-        Repair,
-        Circuit,
-        Compressor,
-        Inspection,
-        InspectionImages,
-        TableOfInspections,
-        AllAssemblyRecords,
-        AssemblyRecord,
-        AllAssemblyRecordTypes,
-        AssemblyRecordType,
-        AllAssemblyRecordItemTypes,
-        AssemblyRecordItemType,
-        AllAssemblyRecordItemCategories,
-        AssemblyRecordCategory,
-        AllCircuitUnitTypes,
-        CircuitUnitType,
-        ToggleDetailedView
+        ServiceCompany = 100,
+        ToggleDetailedView = 101,
+        RefrigerantManagement = 200,
+        RecordOfRefrigerantManagement = 201,
+        LeakagesByApplication = 300,
+        Agenda = 400,
+        AllInspectors = 500,
+        Inspector = 501,
+        InspectorReport = 600,
+        AllCustomers = 700,
+        Customer = 800,
+        AllRepairs = 801,
+        Repair = 802,
+        OperatorReport = 900,
+        Circuit = 1000,
+        Compressor = 1001,
+        Inspection = 1100,
+        InspectionImages = 1200,
+        TableOfInspections = 1300,
+        AllAssemblyRecords = 1400,
+        AssemblyRecord = 1401,
+        AllAssemblyRecordTypes = 1500,
+        AssemblyRecordType = 1501,
+        AllAssemblyRecordItemTypes = 1600,
+        AssemblyRecordItemType = 1601,
+        AllAssemblyRecordItemCategories = 1700,
+        AssemblyRecordCategory = 1701,
+        AllCircuitUnitTypes = 1800,
+        CircuitUnitType = 1801
     };
 
     LinkParser();
@@ -101,6 +101,10 @@ private:
 class Link
 {
 public:
+    enum {
+        MinViewDifference = 50
+    };
+
     enum Action {
         View,
         Edit
@@ -110,6 +114,7 @@ public:
 
     void setId(const QString &, const QString &);
 
+    int compareViews(const Link & other) const;
     int viewAt(int i) { return m_views.count() > i ? m_views.at(i) : -1; }
     void setView(int view) { m_views << view; }
     int countViews() { return m_views.count(); }
@@ -118,7 +123,8 @@ public:
     void setAction(int action) { m_action = action; }
 
     const QString & idValue(const QString &);
-    const QString & lastId();
+    const QString & lastIdKey();
+    const QString & lastIdValue();
 
     void setOrderBy(const QString & order_by) { m_order_by = order_by; }
     const QString & orderBy() { return m_order_by; }
