@@ -27,7 +27,7 @@ HTMLParent::HTMLParent()
 HTMLParent::~HTMLParent()
 {
     for (int i = children.count() - 1; i >= 0; --i) {
-        delete children.takeAt(i);
+        delete children.at(i);
     }
 }
 
