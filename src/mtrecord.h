@@ -32,6 +32,7 @@ public:
     MTRecord() {}
     MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents);
     MTRecord(const MTRecord & other);
+    virtual ~MTRecord() {}
     MTRecord & operator=(const MTRecord & other);
     void addFilter(const QString & column, const QString & filter);
     inline QString table() const { return r_table; }

@@ -42,6 +42,8 @@ class QTextStream;
 class HTMLElement
 {
 public:
+    virtual ~HTMLElement() {}
+
     virtual const QString html() = 0;
 };
 
@@ -60,7 +62,7 @@ class HTMLParent : public HTMLElement
 {
 public:
     HTMLParent();
-    ~HTMLParent();
+    virtual ~HTMLParent();
 
     virtual void html(QTextStream &);
     virtual const QString html();

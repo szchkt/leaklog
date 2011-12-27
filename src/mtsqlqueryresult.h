@@ -42,7 +42,7 @@ public:
         _pos = -1;
     }
 
-    ~MTSqlQueryResultBase() {
+    virtual ~MTSqlQueryResultBase() {
         if (_query) { delete _query; }
     }
 
