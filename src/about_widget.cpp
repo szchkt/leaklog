@@ -62,13 +62,13 @@ AboutWidget::AboutWidget()
     *(body->subHeading()) << tr("List of contributors:");
 
     QPixmap frigo_logo(":/images/images/frigo_slovakia_logo.jpg");
-    QByteArray byte_array;
-    QBuffer buffer(&byte_array);
+    QBuffer buffer;
     buffer.open(QIODevice::WriteOnly);
-    frigo_logo.save(&buffer, "JPG");
+    frigo_logo.save(&buffer, "JPG", 100);
+    buffer.close();
 
     p = body->paragraph();
-    *p << QString("<img style=\"float: left;\" src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+    *p << "<img style=\"float: left;\" src=\"data:image/jpeg;base64," << buffer.data().toBase64() << "\">";
     HTMLDiv * div = new HTMLDiv("style=\"padding: 10px;\"");
     *div << "Frigo Slovakia s.r.o., <i>http://www.frigo.sk/</i>";
     *p << div;
