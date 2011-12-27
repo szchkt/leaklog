@@ -2329,10 +2329,10 @@ HTMLTable * MainWindow::writeServiceCompany(HTMLTable * table)
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td;
     if (serv_company.value("image").toInt()) {
-        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data();
+        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).dataToBase64();
         if (!byte_array.isNull()) {
             _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
-            *_td << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+            *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
         }
     }
     _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
@@ -2609,9 +2609,9 @@ QString MainWindow::viewInspectionImages(const QString & customer_id, const QStr
     ListOfVariantMaps images = images_record.listAll();
 
     for (int i = 0; i < images.count(); ++i) {
-        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).data();
+        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).dataToBase64();
         if (!byte_array.isNull()) {
-            *(table->addRow()->addCell()) << QString("<img src=\"data:image/png;base64," + byte_array.toBase64() + "\">");
+            *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
         }
         *(table->addRow()->addCell()) << images.at(i).value("description").toString();
     }

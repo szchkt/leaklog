@@ -18,6 +18,8 @@
 ********************************************************************/
 
 #include "dbfile.h"
+#include "global.h"
+
 #include <QBuffer>
 #include <QFile>
 #include <QDataStream>
@@ -35,6 +37,14 @@ File(QString::number(file_id))
     this->file_id = file_id;
 }
 
+void DBFile::setData(const QByteArray & file_data)
+{
+    if (Global::isDatabaseRemote())
+        this->file_data = file_data.toBase64();
+    else
+        this->file_data = file_data;
+}
+
 void DBFile::setFileName(const QString & file_name)
 {
     this->file_name = file_name;
@@ -45,7 +55,7 @@ void DBFile::setFileName(const QString & file_name)
     if (!file.open(QIODevice::ReadOnly))
         return;
 
-    file_data = file.readAll();
+    setData(file.readAll());
 }
 
 void DBFile::setPixmap(const QString & file_name)
@@ -63,25 +73,25 @@ void DBFile::setPixmap(const QString & file_name)
 
 void DBFile::setPixmap(QPixmap & pixmap)
 {
-    QByteArray bytes;
-    QBuffer buffer(&bytes);
+    QBuffer buffer;
     buffer.open(QIODevice::WriteOnly);
     if (pixmap.height() > IMAGE_MAX_SIZE || pixmap.width() > IMAGE_MAX_SIZE)
         pixmap = pixmap.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    pixmap.save(&buffer, "PNG");
-    file_data = buffer.data();
+    pixmap.save(&buffer, "JPG", JPEG_QUALITY);
+    buffer.close();
+    setData(buffer.data());
 }
 
 bool DBFile::saveData(const QString & file_name)
 {
-    if (file_data.isEmpty()){
+    QByteArray data = this->data();
+    if (data.isEmpty())
         return false;
-    }
 
     QFile file(file_name);
     file.open(QIODevice::WriteOnly);
     QDataStream stream(&file);
-    stream.writeRawData(file_data.constData(), file_data.size());
+    stream.writeRawData(data.constData(), data.size());
     return true;
 }
 
@@ -101,12 +111,30 @@ int DBFile::save()
     return file_id;
 }
 
-const QByteArray & DBFile::data()
+QByteArray DBFile::data()
 {
-    if (!file_data.isNull() || file_id < 0) return file_data;
+    if (!file_data.isNull() || file_id < 0)
+        return Global::isDatabaseRemote() ? QByteArray::fromBase64(file_data) : file_data;
 
-    file_data = list().value("data").toByteArray();
-    return file_data;
+    if (Global::isDatabaseRemote())
+        file_data = QByteArray::fromHex(list("data").value("data").toByteArray());
+    else
+        return file_data = list("data").value("data").toByteArray();
+
+    return QByteArray::fromBase64(file_data);
+}
+
+QByteArray DBFile::dataToBase64()
+{
+    if (!file_data.isNull() || file_id < 0)
+        return Global::isDatabaseRemote() ? file_data : file_data.toBase64();
+
+    if (Global::isDatabaseRemote())
+        return file_data = QByteArray::fromHex(list("data").value("data").toByteArray());
+    else
+        file_data = list("data").value("data").toByteArray();
+
+    return file_data.toBase64();
 }
 
 DBFileChooser::DBFileChooser(QWidget * parent, int file_id):

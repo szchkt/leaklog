@@ -32,10 +32,11 @@ class DBFile : public File
 public:
     DBFile(int = -1);
 
-    const QByteArray & data();
+    QByteArray data();
+    QByteArray dataToBase64();
     bool saveData(const QString &);
 
-    void setData(const QByteArray & file_data) { this->file_data = file_data;}
+    void setData(const QByteArray & file_data);
     void setFileName(const QString &);
     void setPixmap(const QString &);
     void setPixmap(QPixmap &);

@@ -36,6 +36,7 @@
 #include "mtaddress.h"
 #include "mtvariant.h"
 
+#include <QBuffer>
 #include <QMessageBox>
 #include <QFile>
 #include <QFileDialog>
@@ -248,6 +249,34 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
+    }
+    if (v < 0.9083) {
+        MTSqlQuery files(database);
+        files.exec("SELECT id, data FROM files");
+        while (files.next()) {
+            QByteArray png;
+            if (isDatabaseRemote())
+                png = QByteArray::fromBase64(QByteArray::fromHex(files.value(1).toByteArray()));
+            else
+                png = files.value(1).toByteArray();
+
+            QImage image = QImage::fromData(png, "PNG");
+            QBuffer buffer;
+            buffer.open(QIODevice::WriteOnly);
+            image.save(&buffer, "JPG", JPEG_QUALITY);
+            buffer.close();
+
+            QByteArray jpg;
+            if (isDatabaseRemote())
+                jpg = buffer.data().toBase64();
+            else
+                jpg = buffer.data();
+
+            query.prepare("UPDATE files SET data = :data WHERE id = :id");
+            query.bindValue(":id", files.value(0));
+            query.bindValue(":data", jpg);
+            query.exec();
+        }
     }
     if (v < F_DB_VERSION) {
         bool remote = isDatabaseRemote(database);
