@@ -80,7 +80,9 @@ AboutWidget::AboutWidget()
     // +++ ABOUT QT +++
 
     HTMLDocument html_qt_doc("About Qt");
-    *(html_qt_doc.head()) << style;
+    style = html_qt_doc.head()->addStyleElement();
+    *style << QString("body { font-family: %1; } img { margin-right: 10px; }").arg(font);
+    *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
 
     body = html_qt_doc.body();
     *(body->heading()) << tr("About Qt");
