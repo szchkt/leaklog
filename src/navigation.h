@@ -63,6 +63,7 @@ public:
     // Widgets
     void enableTools(const MainWindowSettings &);
     inline QComboBox * tableComboBox() const { return cb_view_table; }
+    inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
     inline int filterSinceValue() const { return spb_filter_since->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
     inline bool isFilterEmpty() const { return le_filter->text().isEmpty(); }
@@ -75,9 +76,9 @@ public:
     inline QLabel * reportYearLabel() const { return lbl_report_year; }
     inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
 
-    bool isAssemblyRecordListPriceChecked() { return assembly_record_list_price_chb->isChecked(); }
-    bool isAssemblyRecordAcquisitionPriceChecked() { return assembly_record_acquisition_price_chb->isChecked(); }
-    bool isAssemblyRecordTotalChecked() { return assembly_record_total_chb->isChecked(); }
+    bool isAssemblyRecordListPriceChecked() { return chb_assembly_record_list_price->isChecked(); }
+    bool isAssemblyRecordAcquisitionPriceChecked() { return chb_assembly_record_acquisition_price->isChecked(); }
+    bool isAssemblyRecordTotalChecked() { return chb_assembly_record_total->isChecked(); }
 
 public slots:
     // View
@@ -90,6 +91,7 @@ public slots:
 
 private slots:
     void tableChanged(int);
+    void toggleTableForAllCircuits();
     void emitFilterChanged();
 
 signals:

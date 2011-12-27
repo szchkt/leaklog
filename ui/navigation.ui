@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2894</width>
+    <width>3159</width>
     <height>169</height>
    </rect>
   </property>
@@ -1442,6 +1442,64 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QToolButton" name="tbtn_view_inspection">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>View inspection details</string>
+        </property>
+        <property name="text">
+         <string>Inspection Details</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QToolButton" name="tbtn_view_inspection_images">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>View inspection images</string>
+        </property>
+        <property name="text">
+         <string>Inspection Images</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -1455,7 +1513,7 @@
      </property>
      <layout class="QVBoxLayout" name="gl_tables">
       <property name="spacing">
-       <number>3</number>
+       <number>5</number>
       </property>
       <property name="margin">
        <number>6</number>
@@ -1506,62 +1564,30 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_view_inspection">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View inspection details</string>
-        </property>
-        <property name="text">
-         <string>Inspection Details</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
+       <widget class="QCheckBox" name="chb_table_all_circuits">
+        <property name="minimumSize">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>0</width>
+          <height>26</height>
          </size>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        <property name="text">
+         <string>All Circuits</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_view_inspection_images">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <property name="statusTip">
-         <string>View inspection images</string>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>0</height>
+         </size>
         </property>
-        <property name="text">
-         <string>Inspection Images</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -2228,14 +2254,14 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="lbl_assembly_records_show">
            <property name="text">
             <string>Show:</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QCheckBox" name="assembly_record_list_price_chb">
+          <widget class="QCheckBox" name="chb_assembly_record_list_price">
            <property name="statusTip">
             <string>Show list price on assembly record</string>
            </property>
@@ -2248,7 +2274,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QCheckBox" name="assembly_record_total_chb">
+          <widget class="QCheckBox" name="chb_assembly_record_total">
            <property name="statusTip">
             <string>Show total on assembly record</string>
            </property>
@@ -2261,7 +2287,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QCheckBox" name="assembly_record_acquisition_price_chb">
+          <widget class="QCheckBox" name="chb_assembly_record_acquisition_price">
            <property name="statusTip">
             <string>Show acquisition price on assembly record</string>
            </property>

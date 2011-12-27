@@ -73,6 +73,7 @@ QWidget(parent)
     btngrp_view->setId(tbtn_view_inspection_images, Navigation::InspectionImages);
     QObject::connect(btngrp_view, SIGNAL(buttonClicked(int)), this, SLOT(setView(int)));
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
+    QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
     QObject::connect(cb_filter_column, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
@@ -380,6 +381,12 @@ void Navigation::tableChanged(int)
     }
 }
 
+void Navigation::toggleTableForAllCircuits()
+{
+    if (current_view == Navigation::TableOfInspections)
+        emit viewChanged(current_view);
+}
+
 void Navigation::emitFilterChanged()
 {
     if (!isFilterEmpty()) emit filterChanged();
@@ -413,19 +420,21 @@ void Navigation::enableTools(const MainWindowSettings & settings)
     tbtn_edit_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
     tbtn_remove_circuit_unit_type->setEnabled(settings.isCircuitUnitTypeSelected());
     tbtn_view_inspection_images->setEnabled(settings.isInspectionSelected());
-    gb_tables->setEnabled(settings.isCircuitSelected());
+    gb_tables->setEnabled(settings.isCustomerSelected());
+    chb_table_all_circuits->setEnabled(settings.isCircuitSelected());
+    chb_table_all_circuits->setChecked(!settings.isCircuitSelected());
     ar_show_options_widget->setVisible(settings.isInspectionSelected());
 
     bool enabled = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
-    assembly_record_acquisition_price_chb->setEnabled(enabled);
-    assembly_record_acquisition_price_chb->setChecked(enabled);
+    chb_assembly_record_acquisition_price->setEnabled(enabled);
+    chb_assembly_record_acquisition_price->setChecked(enabled);
 
     enabled = Global::isOperationPermitted("access_assembly_record_list_price") > 0;
-    assembly_record_list_price_chb->setEnabled(enabled);
-    assembly_record_list_price_chb->setChecked(enabled);
+    chb_assembly_record_list_price->setEnabled(enabled);
+    chb_assembly_record_list_price->setChecked(enabled);
 
-    assembly_record_total_chb->setEnabled(enabled);
-    assembly_record_total_chb->setChecked(enabled);
+    chb_assembly_record_total->setEnabled(enabled);
+    chb_assembly_record_total->setChecked(enabled);
 }
 
 void Navigation::setReportDataGroupBoxVisible(bool visible)

@@ -22,6 +22,9 @@ td {
 	tr.selected {
 		background-color: rgb(180, 215, 255);
 	}
+	.print_only {
+		display: none;
+	}
 }
 th {
 	background-color: #F3F3F3;

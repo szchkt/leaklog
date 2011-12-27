@@ -90,12 +90,14 @@ QString MainWindow::viewChanged(int view)
                 break;
             case Navigation::TableOfInspections:
                 cb_table_edit->setCurrentIndex(navigation->tableComboBox()->currentIndex());
-                if (isCustomerSelected() && isCircuitSelected() && navigation->tableComboBox()->currentIndex() >= 0) {
-                    html = viewTable(selectedCustomer(), selectedCircuit(), navigation->tableComboBox()->currentText(),
+                if (isCustomerSelected() && navigation->tableComboBox()->currentIndex() >= 0) {
+                    html = viewTable(selectedCustomer(),
+                                     navigation->isTableForAllCircuitsChecked() ? QString() : selectedCircuit(),
+                                     navigation->tableComboBox()->currentText(),
                                      navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(),
                                      isCompressorSelected() ? selectedCompressor() : QString());
                 } else {
-                    view = Navigation::ListOfCircuits; ok = false;
+                    view = Navigation::ListOfCustomers; ok = false;
                 }
                 break;
             case Navigation::ListOfRepairs:
@@ -860,209 +862,216 @@ void MainWindow::showVariableInInspectionTable(VariableEvaluation::Variable * va
     }
 }
 
-QString MainWindow::viewTable(const QString & customer_id, const QString & circuit_id, const QString & table_id,
+QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id, const QString & table_id,
                               int year, const QString & compressor_id)
 {
     QString html; MTTextStream out(&html);
 
-    VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    QVariantMap customer = Customer(customer_id).list("company, address, mail, phone");
 
-    Table table_record(table_id);
-    QVariantMap table = table_record.list();
+    ListOfVariantMaps circuits = Circuit(customer_id, cc_id).listAll("id, name, manufacturer, type, sn, year, commissioning, field, refrigerant, "
+                                                                     + circuitRefrigerantAmountQuery()
+                                                                     + ", oil, oil_amount, runtime, utilisation");
+    int c = 0;
+    foreach (const QVariantMap & circuit, circuits) {
+        c++;
+        QString circuit_id = circuit.value("id").toString();
 
-    Inspection inspection_record(customer_id, circuit_id, "");
-    ListOfVariantMaps inspections(inspection_record.listAll("*", "nominal DESC, date ASC"));
-    QString last_inspection_date, last_entry_date, date;
-    for (int i = 0; i < inspections.count(); ++i) {
-        date = inspections.at(i).value("date").toString();
-        if (date > last_entry_date) {
-            last_entry_date = date;
-            if (!inspections.at(i).value("repair").toInt()) {
-                last_inspection_date = date;
+        VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+
+        Table table_record(table_id);
+        QVariantMap table = table_record.list();
+
+        Inspection inspection_record(customer_id, circuit_id, "");
+        ListOfVariantMaps inspections(inspection_record.listAll("*", "nominal DESC, date ASC"));
+        QString last_inspection_date, last_entry_date, date;
+        for (int i = 0; i < inspections.count(); ++i) {
+            date = inspections.at(i).value("date").toString();
+            if (date > last_entry_date) {
+                last_entry_date = date;
+                if (!inspections.at(i).value("repair").toInt()) {
+                    last_inspection_date = date;
+                }
+            }
+            if ((!table.value("highlight_nominal").toInt() || !inspections.at(i).value("nominal").toInt())
+                && date.split(".").first().toInt() < year) {
+                inspections.removeAt(i);
+                i--;
             }
         }
-        if ((!table.value("highlight_nominal").toInt() || !inspections.at(i).value("nominal").toInt())
-            && date.split(".").first().toInt() < year) {
-            inspections.removeAt(i);
-            i--;
+
+        out << QString("<div%1><table>").arg(c > 1 ? " class=\"print_only\"" : "");
+        out << "<tr><th>" << QApplication::translate("Customer", "ID");
+        out << "</th><th>" << QApplication::translate("Customer", "Company");
+        out << "</th><th>" << QApplication::translate("Customer", "Address");
+        out << "</th><th>" << QApplication::translate("Customer", "E-mail");
+        out << "</th><th>" << QApplication::translate("Customer", "Phone");
+        out << "</th></tr><tr>";
+        out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
+        out << "<td>" << MTVariant(customer.value("company")) << "</td>";
+        out << "<td>" << MTAddress(customer.value("address").toString()).toHtml() << "</td>";
+        out << "<td>" << MTVariant(customer.value("mail")) << "</td>";
+        out << "<td>" << MTVariant(customer.value("phone")) << "</td>";
+        out << "</tr></table><br /></div>";
+        out << "<table><tr><th>" << QApplication::translate("Circuit", "ID");
+        out << "</th><th>" << QApplication::translate("Circuit", "Name");
+        out << "</th><th>" << QApplication::translate("Circuit", "Manufacturer");
+        out << "</th><th>" << QApplication::translate("Circuit", "Type");
+        out << "</th><th>" << QApplication::translate("Circuit", "Year of purchase");
+        out << "</th><th>" << QApplication::translate("Circuit", "Date of commissioning");
+        out << "</th><th>" << QApplication::translate("Circuit", "Refrigerant");
+        out << "</th><th>" << QApplication::translate("Circuit", "Amount of refrigerant");
+        out << "</th><th>" << QApplication::translate("Circuit", "Oil");
+        out << "</th><th>" << QApplication::translate("Circuit", "Amount of oil");
+        out << "</th></tr><tr>";
+        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
+        out << "<td>" << MTVariant(circuit.value("name")) << "</td>";
+        out << "<td>" << MTVariant(circuit.value("manufacturer")) << "</td>";
+        out << "<td>" << MTVariant(circuit.value("type")) << "</td>";
+        out << "<td>" << circuit.value("year").toString() << "</td>";
+        out << "<td>" << circuit.value("commissioning").toString() << "</td>";
+        out << "<td>" << circuit.value("refrigerant").toString() << "</td>";
+        out << "<td>" << circuit.value("refrigerant_amount").toString()
+            << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+        out << "<td>";
+        if (attributeValues().contains("oil::" + circuit.value("oil").toString())) {
+            out << attributeValues().value("oil::" + circuit.value("oil").toString());
         }
-    }
+        out << "</td>";
+        out << "<td>" << circuit.value("oil_amount").toString()
+            << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+        out << "</td></tr></table>";
 
-//*** Top tables ***
-    Customer customer(customer_id);
-    QVariantMap customer_info = customer.list("company, address, mail, phone");
-    Circuit circuit(customer_id, circuit_id);
-    QVariantMap circuit_info = circuit.list("name, manufacturer, type, sn, year, commissioning, field, refrigerant, "
-                                            + circuitRefrigerantAmountQuery()
-                                            + ", oil, oil_amount, runtime, utilisation");
-    out << "<table><tr><th>" << QApplication::translate("Customer", "ID");
-    out << "</th><th>" << QApplication::translate("Customer", "Company");
-    out << "</th><th>" << QApplication::translate("Customer", "Contact person");
-    out << "</th><th>" << QApplication::translate("Customer", "Address");
-    out << "</th><th>" << QApplication::translate("Customer", "E-mail");
-    out << "</th><th>" << QApplication::translate("Customer", "Phone");
-    out << "</th></tr><tr>";
-    out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
-    out << "<td>" << MTVariant(customer_info.value("company")) << "</td>";
-    out << "<td>" << MTAddress(customer_info.value("address").toString()).toHtml() << "</td>";
-    out << "<td>" << MTVariant(customer_info.value("mail")) << "</td>";
-    out << "<td>" << MTVariant(customer_info.value("phone")) << "</td>";
-    out << "</tr></table><br />";
-    out << "<table><tr><th>" << QApplication::translate("Circuit", "ID");
-    out << "</th><th>" << QApplication::translate("Circuit", "Name");
-    out << "</th><th>" << QApplication::translate("Circuit", "Manufacturer");
-    out << "</th><th>" << QApplication::translate("Circuit", "Type");
-    out << "</th><th>" << QApplication::translate("Circuit", "Year of purchase");
-    out << "</th><th>" << QApplication::translate("Circuit", "Date of commissioning");
-    out << "</th><th>" << QApplication::translate("Circuit", "Refrigerant");
-    out << "</th><th>" << QApplication::translate("Circuit", "Amount of refrigerant");
-    out << "</th><th>" << QApplication::translate("Circuit", "Oil");
-    out << "</th><th>" << QApplication::translate("Circuit", "Amount of oil");
-    out << "</th></tr><tr>";
-    out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
-    out << "<td>" << MTVariant(circuit_info.value("name")) << "</td>";
-    out << "<td>" << MTVariant(circuit_info.value("manufacturer")) << "</td>";
-    out << "<td>" << MTVariant(circuit_info.value("type")) << "</td>";
-    out << "<td>" << circuit_info.value("year").toString() << "</td>";
-    out << "<td>" << circuit_info.value("commissioning").toString() << "</td>";
-    out << "<td>" << circuit_info.value("refrigerant").toString() << "</td>";
-    out << "<td>" << circuit_info.value("refrigerant_amount").toString()
-        << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
-    out << "<td>";
-    if (attributeValues().contains("oil::" + circuit_info.value("oil").toString())) {
-        out << attributeValues().value("oil::" + circuit_info.value("oil").toString());
-    }
-    out << "</td>";
-    out << "<td>" << circuit_info.value("oil_amount").toString()
-        << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
-    out << "</td></tr></table>";
-
-// *** Table ***
-    int nominal_inspection_index = -1;
-    for (int i = 0; i < inspections.count(); ++i) {
-        if (inspections.at(i).value("nominal").toInt()) {
-            nominal_inspection_index = i;
-            //var_evaluation.setNominalInspection(inspections[i]);
-            break;
+        // *** Table ***
+        int nominal_inspection_index = -1;
+        for (int i = 0; i < inspections.count(); ++i) {
+            if (inspections.at(i).value("nominal").toInt()) {
+                nominal_inspection_index = i;
+                //var_evaluation.setNominalInspection(inspections[i]);
+                break;
+            }
         }
-    }
-    if (table.value("scope").toInt() & Variable::Compressor) {
-        HTMLTable * compressors_table = new HTMLTable();
-        HTMLTableRow * compressors_table_row = compressors_table->addRow();
+        if (table.value("scope").toInt() & Variable::Compressor) {
+            HTMLTable * compressors_table = new HTMLTable();
+            HTMLTableRow * compressors_table_row = compressors_table->addRow();
 
-        HTMLTableCell * cell;
-        if (compressor_id.isEmpty())
-            cell = compressors_table_row->addHeaderCell();
-        else
-            cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-        *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id + "/compressor:-1/table"))
-                << tr("All compressors");
-
-        Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                   QStringList() << customer_id << circuit_id));
-        ListOfVariantMaps compressors = compressors_rec.listAll();
-        for (int i = 0; i < compressors.count(); ++i) {
-            if (compressor_id == compressors.at(i).value("id").toString())
+            HTMLTableCell * cell;
+            if (compressor_id.isEmpty())
                 cell = compressors_table_row->addHeaderCell();
             else
                 cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-            *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id
-                         + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
-                    << compressors.at(i).value("name").toString();
-        }
-        out << "<br>" << compressors_table->html();
+            *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id + "/compressor:-1/table"))
+                    << tr("All compressors");
 
-        QStringList compressor_ids;
-        if (compressor_id.isEmpty()) {
             Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
                                        QStringList() << customer_id << circuit_id));
             ListOfVariantMaps compressors = compressors_rec.listAll();
             for (int i = 0; i < compressors.count(); ++i) {
-                compressor_ids.append(compressors.at(i).value("id").toString());
+                if (compressor_id == compressors.at(i).value("id").toString())
+                    cell = compressors_table_row->addHeaderCell();
+                else
+                    cell = compressors_table_row->addCell("style=\"text-align: center;\"");
+                *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id
+                             + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
+                        << compressors.at(i).value("name").toString();
+            }
+            out << "<br>" << compressors_table->html();
+
+            QStringList compressor_ids;
+            if (compressor_id.isEmpty()) {
+                Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
+                                           QStringList() << customer_id << circuit_id));
+                ListOfVariantMaps compressors = compressors_rec.listAll();
+                for (int i = 0; i < compressors.count(); ++i) {
+                    compressor_ids.append(compressors.at(i).value("id").toString());
+                }
+            } else {
+                compressor_ids.append(compressor_id);
+            }
+            for (int i = 0; i < compressor_ids.count(); ++i) {
+                InspectionsCompressor inspections_compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "compressor_id",
+                                                                                          QStringList() << customer_id << circuit_id << compressor_ids.at(i)));
+                inspections_compressors_rec.setTable("inspections_compressors JOIN inspections"
+                                                     " ON inspections.customer = inspections_compressors.customer_id"
+                                                     " AND inspections.circuit = inspections_compressors.circuit_id"
+                                                     " AND inspections.date = inspections_compressors.date");
+                if (table.value("highlight_nominal").toInt())
+                    inspections_compressors_rec.setCustomWhere("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
+                else
+                    inspections_compressors_rec.setCustomWhere("inspections_compressors.date > '" + QString::number(year) + "'");
+
+                ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "nominal DESC, date ASC");
+
+                if (inspections_compressors.count()
+                        && table.value("highlight_nominal").toInt()
+                        && inspections_compressors.first().value("nominal").toInt()) {
+                    var_evaluation.setNominalInspection(inspections_compressors.first());
+                }
+                if (compressor_ids.count() > 1) {
+                    for (int n = 0; n < compressors.count(); ++n) {
+                        if (compressor_ids.at(i) == compressors.at(n).value("id").toString()) {
+                            out << "<h4><a href=\"customer:" << customer_id << "/circuit:" << circuit_id
+                                << "/compressor:" << compressors.at(i).value("id").toString() << "/table\">"
+                                << compressors.at(n).value("name").toString() << "</a></h4>";
+                            break;
+                        }
+                    }
+                } else
+                    out << "<br>";
+                out << writeInspectionsTable(customer_id, circuit_id, table, inspections_compressors, var_evaluation)->html();
             }
         } else {
-            compressor_ids.append(compressor_id);
+            if (nominal_inspection_index >= 0)
+                var_evaluation.setNominalInspection(inspections[nominal_inspection_index]);
+            out << "<br>" << writeInspectionsTable(customer_id, circuit_id, table, inspections, var_evaluation)->html();
         }
-        for (int i = 0; i < compressor_ids.count(); ++i) {
-            InspectionsCompressor inspections_compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "compressor_id",
-                                                                                      QStringList() << customer_id << circuit_id << compressor_ids.at(i)));
-            inspections_compressors_rec.setTable("inspections_compressors JOIN inspections"
-                                                 " ON inspections.customer = inspections_compressors.customer_id"
-                                                 " AND inspections.circuit = inspections_compressors.circuit_id"
-                                                 " AND inspections.date = inspections_compressors.date");
-            if (table.value("highlight_nominal").toInt())
-                inspections_compressors_rec.setCustomWhere("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
-            else
-                inspections_compressors_rec.setCustomWhere("inspections_compressors.date > '" + QString::number(year) + "'");
 
-            ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "nominal DESC, date ASC");
-
-            if (inspections_compressors.count()
-                    && table.value("highlight_nominal").toInt()
-                    && inspections_compressors.first().value("nominal").toInt()) {
-                var_evaluation.setNominalInspection(inspections_compressors.first());
-            }
-            if (compressor_ids.count() > 1) {
-                for (int n = 0; n < compressors.count(); ++n) {
-                    if (compressor_ids.at(i) == compressors.at(n).value("id").toString()) {
-                        out << "<h4><a href=\"customer:" << customer_id << "/circuit:" << circuit_id
-                            << "/compressor:" << compressors.at(i).value("id").toString() << "/table\">"
-                            << compressors.at(n).value("name").toString() << "</a></h4>";
-                        break;
+        //*** Warnings ***
+        if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
+            Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id, table.value("scope").toInt());
+            QString warnings_html, inspection_date;
+            QStringList last_warnings_list, warnings_list, backup_warnings;
+            for (int i = 0; i < inspections.count(); ++i) {
+                inspection_date = inspections.at(i).value("date").toString();
+                warnings_list = listWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(), inspections[i]);
+                backup_warnings = warnings_list;
+                for (int n = 0; n < warnings_list.count(); ++n) {
+                    if (last_warnings_list.contains(warnings_list.at(n))) {
+                        warnings_list[n].prepend("<span style=\"color: red;\"><b>");
+                        warnings_list[n].append("</b></span>");
                     }
                 }
-            } else
-                out << "<br>";
-            out << writeInspectionsTable(customer_id, circuit_id, table, inspections_compressors, var_evaluation)->html();
+                if (warnings_list.count()) {
+                    warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
+                    warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
+                    warnings_html.append(inspection_date + "\">");
+                    warnings_html.append(inspection_date + "</a>");
+                    warnings_html.append("</td><td>");
+                    warnings_html.append(warnings_list.join(", "));
+                    warnings_html.append("</td></tr>");
+                }
+                if (!inspections.at(i).value("outside_interval").toInt())
+                    last_warnings_list.clear();
+                last_warnings_list << backup_warnings;
+            }
+            QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(),
+                                                               last_entry_date, last_inspection_date);
+            if (delayed_warnings.count()) {
+                warnings_html.append("<tr><td colspan=\"2\"><b>");
+                warnings_html.append(delayed_warnings.join(", "));
+                warnings_html.append("</b></td></tr>");
+            }
+            if (!warnings_html.isEmpty()) {
+                out << "<br /><table>";
+                out << "<tr><th width=\"20%\">" << tr("Date") << "</th><th>" << tr("Warnings") << "</th></tr>";
+                out << warnings_html;
+                out << "</table>";
+            }
         }
-    } else {
-        if (nominal_inspection_index >= 0)
-            var_evaluation.setNominalInspection(inspections[nominal_inspection_index]);
-        out << "<br>" << writeInspectionsTable(customer_id, circuit_id, table, inspections, var_evaluation)->html();
+        if (c < circuits.count())
+            out << "<div style=\"page-break-after: always;\"><br /></div>";
     }
 
-//*** Warnings ***
-    if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
-        Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id, table.value("scope").toInt());
-        QString warnings_html, inspection_date;
-        QStringList last_warnings_list, warnings_list, backup_warnings;
-        for (int i = 0; i < inspections.count(); ++i) {
-            inspection_date = inspections.at(i).value("date").toString();
-            warnings_list = listWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(), inspections[i]);
-            backup_warnings = warnings_list;
-            for (int n = 0; n < warnings_list.count(); ++n) {
-                if (last_warnings_list.contains(warnings_list.at(n))) {
-                    warnings_list[n].prepend("<span style=\"color: red;\"><b>");
-                    warnings_list[n].append("</b></span>");
-                }
-            }
-            if (warnings_list.count()) {
-                warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
-                warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
-                warnings_html.append(inspection_date + "\">");
-                warnings_html.append(inspection_date + "</a>");
-                warnings_html.append("</td><td>");
-                warnings_html.append(warnings_list.join(", "));
-                warnings_html.append("</td></tr>");
-            }
-            if (!inspections.at(i).value("outside_interval").toInt())
-                last_warnings_list.clear();
-            last_warnings_list << backup_warnings;
-        }
-        QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(),
-                                                           last_entry_date, last_inspection_date);
-        if (delayed_warnings.count()) {
-            warnings_html.append("<tr><td colspan=\"2\"><b>");
-            warnings_html.append(delayed_warnings.join(", "));
-            warnings_html.append("</b></td></tr>");
-        }
-        if (!warnings_html.isEmpty()) {
-            out << "<br /><table>";
-            out << "<tr><th width=\"20%\">" << tr("Date") << "</th><th>" << tr("Warnings") << "</th></tr>";
-            out << warnings_html;
-            out << "</table>";
-        }
-    }
     QString colours = !actionPrinter_friendly_version->isChecked() ? "<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />" : "";
     return dict_html.value(Navigation::TableOfInspections).arg(colours).arg(html);
 }
