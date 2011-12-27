@@ -27,7 +27,7 @@
 #include <QFileDialog>
 #include <QLabel>
 
-#define IMAGE_MAX_SIZE 640
+#define IMAGE_MAX_SIZE 800
 
 DBFile::DBFile(int file_id):
 File(QString::number(file_id))
