@@ -44,6 +44,10 @@ VariableEvaluation::EvaluationContext::~EvaluationContext()
 
 void VariableEvaluation::EvaluationContext::init()
 {
+    circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
+    persons = Person("", customer_id).mapAll("id", "name");
+    inspectors = Inspector("").mapAll("id", "person");
+
     Variables vars(QSqlDatabase(), vars_scope);
     VariableEvaluation::Variable * parent_var, * var;
 
@@ -90,41 +94,38 @@ QString VariableEvaluation::EvaluationContext::evaluate(const QString & var_name
 {
     VariableEvaluation::Variable * var = vars_map.value(var_name);
     if (!var) return QString();
-    return var->evaluate(customer_id, circuit_id, inspection, used_ids, nominal_ins, nom_value);
+    return var->evaluate(*this, inspection, nom_value);
 }
 
 QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable * var, QVariantMap & inspection, QString & nom_value)
 {
-    return var->evaluate(customer_id, circuit_id, inspection, used_ids, nominal_ins, nom_value);
+    return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::Variable::evaluate(const QString & customer_id, const QString & circuit_id, QVariantMap & inspection, QStringList & used_ids, QVariantMap & nominal_ins, QString & nom_value)
+QString VariableEvaluation::Variable::evaluate(EvaluationContext & context, QVariantMap & inspection, QString & nom_value)
 {
     QString ins_value = inspection.value(id()).toString();
 
     if (value().isEmpty()) {
-        if (!ins_value.isEmpty()) {
-            if (id() == "inspector") {
-                Inspector inspector(ins_value);
-                ins_value = inspector.stringValue("person", ins_value);
-            } else if (id() == "operator") {
-                if (ins_value.toInt())
-                    ins_value = Person(ins_value, customer_id).stringValue("name", ins_value);
-            }
+        if (!ins_value.isEmpty() && ins_value.toInt()) {
+            if (id() == "inspector")
+                ins_value = context.inspectors.value(ins_value).value("person", ins_value).toString();
+            else if (id() == "operator")
+                ins_value = context.persons.value(ins_value).value("name", ins_value).toString();
         }
 
         if (compareNom()) {
-            nom_value = nominal_ins.value(id()).toString();
+            nom_value = context.nominal_ins.value(id()).toString();
         }
     } else {
-        MTDictionary expression = parseExpression(value(), used_ids);
+        MTDictionary expression = parseExpression(value(), context.used_ids);
         bool ok_eval, is_null;
-        ins_value = QString::number(evaluateExpression(inspection, expression, customer_id, circuit_id, &ok_eval, &is_null));
+        ins_value = QString::number(evaluateExpression(inspection, expression, context.circuit, &ok_eval, &is_null));
         if (!ok_eval || is_null) ins_value.clear();
 
-        if (nominal_ins.isEmpty()) nom_value.clear();
+        if (context.nominal_ins.isEmpty()) nom_value.clear();
         else if (compareNom()) {
-            nom_value = QString::number(evaluateExpression(nominal_ins, expression, customer_id, circuit_id, &ok_eval));
+            nom_value = QString::number(evaluateExpression(context.nominal_ins, expression, context.circuit, &ok_eval));
             if (!ok_eval) nom_value.clear();
         }
     }

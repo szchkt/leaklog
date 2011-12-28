@@ -231,8 +231,8 @@ private:
     QString viewAllCircuitUnitTypes(const QString & = QString());
     QString viewAllAssemblyRecords(const QString &, const QString &, int);
     QString viewInspectionImages(const QString &, const QString &, const QString &);
-    QStringList listWarnings(Warnings &, const QString &, const QString &, QVariantMap &, QVariantMap &);
-    QStringList listDelayedWarnings(Warnings &, const QString &, const QString &, QVariantMap &, const QString &, const QString &, int * = NULL);
+    QStringList listWarnings(Warnings &, const QVariantMap &, QVariantMap &, QVariantMap &);
+    QStringList listDelayedWarnings(Warnings &, const QVariantMap &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     HTMLTableCell * writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
     void writeCustomersTable(MTTextStream &, const QString & = QString());
@@ -246,7 +246,7 @@ private:
     HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
     void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
-    HTMLTable * writeInspectionsTable(const QString &, const QString &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
+    HTMLTable * writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
 
     QSet<int> years_expanded_in_service_company_view;
     QMap<Navigation::View, QString> dict_html;

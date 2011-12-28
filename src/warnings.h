@@ -25,7 +25,7 @@
 class Warnings : public MTSqlQueryResultBase<QString>
 {
 public:
-    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QString & = QString(), const QString & = QString(), int = 0);
+    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QVariantMap & = QVariantMap(), int = 0);
 
     int warningConditionValueInsCount(int);
     MTDictionary warningConditionValueIns(int, int);

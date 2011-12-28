@@ -26,7 +26,7 @@
 
 using namespace Global;
 
-Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_id, const QString & circuit_id, int scope):
+Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap & circuit_attributes, int scope):
     MTSqlQueryResultBase<QString>(db),
     enabled_only(enabled_only),
     m_scope(scope)
@@ -36,9 +36,7 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QString & customer_
     if (scope > 0) query_where << QString("scope = %1").arg(scope);
     if (enabled_only) query_where << "enabled = 1";
     if (exec(QString("SELECT id, enabled, name, description, delay FROM warnings%1").arg(query_where.count() ? (" WHERE " + query_where.join(" AND ")) : ""))
-        && !customer_id.isEmpty() && !circuit_id.isEmpty()) {
-        MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-        QVariantMap circuit_attributes = circuit.list();
+        && !circuit_attributes.isEmpty()) {
         QString circuit_attribute, function, value;
         bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
         bool skip = false; int id; QStringList used_ids = listVariableIds();

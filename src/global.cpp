@@ -374,12 +374,17 @@ Refrigerants refrigerants;
 
 double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok, bool * null_var)
 {
+    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
+    QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
+    return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
+}
+
+double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QVariantMap & circuit_attributes, bool * ok, bool * null_var)
+{
+    static const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
     if (null_var) *null_var = false;
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
-    const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
-    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-    QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     QString value;
     for (int i = 0; i < expression.count(); ++i) {
         if (expression.value(i) == "id") {
@@ -393,8 +398,8 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
             } else {
                 MTSqlQuery sum_ins;
                 sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
-                sum_ins.bindValue(":customer_id", customer_id);
-                sum_ins.bindValue(":circuit_id", circuit_id);
+                sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
+                sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
                 if (sum_ins.exec()) {
                     while (sum_ins.next()) {
                         v += sum_ins.value(0).toDouble();
@@ -406,9 +411,8 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
             value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
             if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-            QString refrigerant = circuit.stringValue("refrigerant");
-            value.append(QString::number(refrigerants.pressureToTemperature(refrigerant, round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0 + 1.0)));
+            value.append(QString::number(refrigerants.pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
+                                                                            round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0 + 1.0)));
         } else {
             value.append(expression.key(i));
         }

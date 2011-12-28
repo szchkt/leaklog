@@ -32,8 +32,9 @@ Variables::Variables(QSqlDatabase db, int scope):
     m_scope(scope)
 {
     initVariables();
-    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg, (SELECT COUNT(v.id) FROM variables AS v WHERE variables.id = v.parent_id) AS count_children"
-         " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope));
+    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg,"
+                 " (SELECT COUNT(v.id) FROM variables AS v WHERE variables.id = v.parent_id) AS count_children"
+                 " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope > 0 ? scope : 0xFFFF));
 }
 
 Variables * Variables::defaultVariables(int scope)

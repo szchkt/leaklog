@@ -20,6 +20,8 @@
 #ifndef VARIABLE_PARSER_H
 #define VARIABLE_PARSER_H
 
+#include "defs.h"
+
 #include <QVariantMap>
 #include <QStringList>
 
@@ -54,8 +56,13 @@ namespace VariableEvaluation {
         QStringList used_ids;
         QString customer_id;
         QString circuit_id;
+        QVariantMap circuit;
         QVariantMap nominal_ins;
         int vars_scope;
+        MultiMapOfVariantMaps persons;
+        MultiMapOfVariantMaps inspectors;
+
+        friend class Variable;
     };
 
     class Variable
@@ -83,7 +90,7 @@ namespace VariableEvaluation {
         const QList<Variable *> & subvariables() { return subvars; }
         int countSubvariables() { return subvars.count(); }
 
-        QString evaluate(const QString &, const QString &, QVariantMap &, QStringList &, QVariantMap &, QString &);
+        QString evaluate(EvaluationContext &, QVariantMap &, QString &);
 
     private:
         QString _name;

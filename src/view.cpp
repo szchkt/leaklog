@@ -708,6 +708,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id, 7);
 
+    QVariantMap circuit = Circuit(customer_id, circuit_id).list("*, " + circuitRefrigerantAmountQuery());
+
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
@@ -805,8 +807,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     }
 
 //*** Warnings ***
-    Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id);
-    QStringList warnings_list = listWarnings(warnings, customer_id, circuit_id, nominal_ins, inspection);
+    Warnings warnings(QSqlDatabase::database(), true, circuit);
+    QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection);
     if (warnings_list.count()) {
         div.newLine();
         _table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
@@ -869,9 +871,10 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
 
     QVariantMap customer = Customer(customer_id).list("company, address, mail, phone");
 
-    ListOfVariantMaps circuits = Circuit(customer_id, cc_id).listAll("id, name, manufacturer, type, sn, year, commissioning, field, refrigerant, "
-                                                                     + circuitRefrigerantAmountQuery()
-                                                                     + ", oil, oil_amount, runtime, utilisation");
+    ListOfVariantMaps circuits = Circuit(customer_id, cc_id).listAll("*, " + circuitRefrigerantAmountQuery());
+
+    QVariantMap table = Table(table_id).list();
+
     int c = 0;
     foreach (const QVariantMap & circuit, circuits) {
         c++;
@@ -879,11 +882,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
 
         VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
 
-        Table table_record(table_id);
-        QVariantMap table = table_record.list();
-
-        Inspection inspection_record(customer_id, circuit_id, "");
-        ListOfVariantMaps inspections(inspection_record.listAll("*", "nominal DESC, date ASC"));
+        ListOfVariantMaps inspections(Inspection(customer_id, circuit_id, "").listAll("*", "nominal DESC, date ASC"));
         QString last_inspection_date, last_entry_date, date;
         for (int i = 0; i < inspections.count(); ++i) {
             date = inspections.at(i).value("date").toString();
@@ -1018,22 +1017,22 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
                     }
                 } else
                     out << "<br>";
-                out << writeInspectionsTable(customer_id, circuit_id, table, inspections_compressors, var_evaluation)->html();
+                out << writeInspectionsTable(circuit, table, inspections_compressors, var_evaluation)->html();
             }
         } else {
             if (nominal_inspection_index >= 0)
                 var_evaluation.setNominalInspection(inspections[nominal_inspection_index]);
-            out << "<br>" << writeInspectionsTable(customer_id, circuit_id, table, inspections, var_evaluation)->html();
+            out << "<br>" << writeInspectionsTable(circuit, table, inspections, var_evaluation)->html();
         }
 
         //*** Warnings ***
         if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
-            Warnings warnings(QSqlDatabase::database(), true, customer_id, circuit_id, table.value("scope").toInt());
+            Warnings warnings(QSqlDatabase::database(), true, circuit, table.value("scope").toInt());
             QString warnings_html, inspection_date;
             QStringList last_warnings_list, warnings_list, backup_warnings;
             for (int i = 0; i < inspections.count(); ++i) {
                 inspection_date = inspections.at(i).value("date").toString();
-                warnings_list = listWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(), inspections[i]);
+                warnings_list = listWarnings(warnings, circuit, var_evaluation.nominalInspection(), inspections[i]);
                 backup_warnings = warnings_list;
                 for (int n = 0; n < warnings_list.count(); ++n) {
                     if (last_warnings_list.contains(warnings_list.at(n))) {
@@ -1054,7 +1053,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
                     last_warnings_list.clear();
                 last_warnings_list << backup_warnings;
             }
-            QStringList delayed_warnings = listDelayedWarnings(warnings, customer_id, circuit_id, var_evaluation.nominalInspection(),
+            QStringList delayed_warnings = listDelayedWarnings(warnings, circuit, var_evaluation.nominalInspection(),
                                                                last_entry_date, last_inspection_date);
             if (delayed_warnings.count()) {
                 warnings_html.append("<tr><td colspan=\"2\"><b>");
@@ -1076,7 +1075,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
     return dict_html.value(Navigation::TableOfInspections).arg(colours).arg(html);
 }
 
-HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const QString & circuit_id, const QVariantMap & table_map,
+HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const QVariantMap & table_map,
                                               ListOfVariantMaps & inspections, VariableEvaluation::EvaluationContext & var_evaluation)
 {
     QStringList table_vars = table_map.value("variables").toString().split(";", QString::SkipEmptyParts);
@@ -1159,7 +1158,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
         if (is_nominal) { el = cell->bold(); }
         else if (is_repair) { el = cell->italics(); }
         *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
-                           inspection_date, customer_id, circuit_id, inspection_date);
+                           inspection_date, circuit.value("parent").toString(), circuit.value("id").toString(), inspection_date);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {
@@ -1258,7 +1257,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
                                             == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
                                     num_ins++;
-                                    value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
+                                    value += evaluateExpression(inspections[ins], expression, circuit);
                                 }
                             }
                             if (num_ins && (foot_functions.key(f) == "avg" || subvariable->unit() == "%"))
@@ -1288,7 +1287,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QString & customer_id, const
                                         == inspections.at(ins).value("date").toString().split(".").first())
                                     continue;
                                 num_ins++;
-                                value += evaluateExpression(inspections[ins], expression, customer_id, circuit_id);
+                                value += evaluateExpression(inspections[ins], expression, circuit);
                             }
                         }
                         if (num_ins && (foot_functions.key(f) == "avg" || variable->unit() == "%"))
@@ -1341,9 +1340,9 @@ QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_
         num_conditions = warnings.warningConditionFunctionCount(id);\
         for (int i = 0; i < num_conditions; ++i) {\
             ok = true;\
-            ins_value = evaluateExpression(inspection, warnings.warningConditionValueIns(id, i), customer_id, circuit_id, &ok);\
+            ins_value = evaluateExpression(inspection, warnings.warningConditionValueIns(id, i), circuit_attributes, &ok);\
             if (!ok) { show_warning = false; break; }\
-            nom_value = evaluateExpression(nominal_ins, warnings.warningConditionValueNom(id, i), customer_id, circuit_id, &ok);\
+            nom_value = evaluateExpression(nominal_ins, warnings.warningConditionValueNom(id, i), circuit_attributes, &ok);\
             if (!ok) { show_warning = false; break; }\
             function = warnings.warningConditionFunction(id, i);\
             if (function == "=" && ins_value == nom_value) {}\
@@ -1355,12 +1354,10 @@ QString MainWindow::tableVarValue(const QString & var_type, const QString & ins_
             else { show_warning = false; break; }\
         }
 
-QStringList MainWindow::listWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id,
+QStringList MainWindow::listWarnings(Warnings & warnings, const QVariantMap & circuit_attributes,
                                      QVariantMap & nominal_ins, QVariantMap & inspection)
 {
     QStringList warnings_list;
-    Circuit circuit(customer_id, circuit_id);
-    QVariantMap circuit_attributes = circuit.list();
     bool show_warning, ok; QString function;
     int id, num_conditions; double ins_value, nom_value;
     while (warnings.next()) {
@@ -1375,21 +1372,19 @@ QStringList MainWindow::listWarnings(Warnings & warnings, const QString & custom
     return warnings_list;
 }
 
-QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QString & customer_id, const QString & circuit_id,
+QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QVariantMap & circuit_attributes,
                                             QVariantMap & nominal_ins, const QString & last_entry_date,
                                             const QString & last_inspection_date, int * delay_out)
 {
+    QString customer_id = circuit_attributes.value("parent").toString();
+    QString circuit_id = circuit_attributes.value("id").toString();
     QStringList warnings_list;
-    Circuit circuit(customer_id, circuit_id);
-    QVariantMap circuit_attributes = circuit.list();
-    Inspection last_entry_record(customer_id, circuit_id, last_entry_date);
-    QVariantMap last_entry = last_entry_record.list();
+    QVariantMap last_entry = Inspection(customer_id, circuit_id, last_entry_date).list();
     QVariantMap last_inspection;
     if (last_inspection_date == last_entry_date) {
         last_inspection = last_entry;
     } else {
-        Inspection last_inspection_record(customer_id, circuit_id, last_inspection_date);
-        last_inspection = last_inspection_record.list();
+        last_inspection = Inspection(customer_id, circuit_id, last_inspection_date).list();
     }
     QVariantMap * entry;
     bool show_warning, ok; QString function;
