@@ -24,6 +24,7 @@
 #include "variables.h"
 #include "warnings.h"
 #include "partner_widgets.h"
+#include "edit_customer_dialogue.h"
 
 #include <QSqlRecord>
 #include <QApplication>
@@ -57,6 +58,7 @@ void Customer::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
+    (new OperatorInputWidget(attributes, md->widget()))->addToEditDialogue(*md);
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM customers" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -67,6 +69,29 @@ void Customer::initEditDialogue(EditDialogueWidgets * md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+void Customer::readOperatorValues()
+{
+    readValues();
+    switch (value("operator_id").toInt()) {
+    case -1: {
+            QVariantMap service_company = ServiceCompany(DBInfoValueForKey("default_service_company")).list();
+            values().insert("operator_id", service_company.value("id"));
+            values().insert("operator_company", service_company.value("name"));
+            values().insert("operator_address", service_company.value("address"));
+            values().insert("operator_mail", service_company.value("mail"));
+            values().insert("operator_phone", service_company.value("phone"));
+        }
+        break;
+    case 0:
+        values().insert("operator_id", value("id"));
+        values().insert("operator_company", value("company"));
+        values().insert("operator_address", value("address"));
+        values().insert("operator_mail", value("mail"));
+        values().insert("operator_phone", value("phone"));
+        break;
+    }
 }
 
 class CustomerAttributes

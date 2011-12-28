@@ -170,7 +170,7 @@ void EditDialogueTable::addNewRow()
     addRow(cells_map, true);
 }
 
-QList<MTDictionary> EditDialogueTable::allValues()
+QList<MTDictionary> EditDialogueTable::allValues() const
 {
     QList<MTDictionary> values;
 
@@ -341,7 +341,7 @@ EditDialogueTableRow::~EditDialogueTableRow()
     }
 }
 
-double EditDialogueTableRow::total()
+double EditDialogueTableRow::total() const
 {
     if (!isInTable() || !widgets.contains("value"))
         return 0.0;
@@ -357,7 +357,7 @@ void EditDialogueTableRow::setListPrice(double lp)
     widgets.value("list_price")->setVariantValue(lp);
 }
 
-double EditDialogueTableRow::listPrice()
+double EditDialogueTableRow::listPrice() const
 {
     double lp = 0.0;
     if (!widgets.contains("list_price")) return lp;
@@ -369,7 +369,7 @@ double EditDialogueTableRow::listPrice()
     return lp;
 }
 
-double EditDialogueTableRow::acquisitionOrListPrice()
+double EditDialogueTableRow::acquisitionOrListPrice() const
 {
     if (widgets.contains("acquisition_price"))
         return widgets.value("acquisition_price")->variantValue().toDouble();
@@ -379,7 +379,7 @@ double EditDialogueTableRow::acquisitionOrListPrice()
         return 0.0;
 }
 
-QVariant EditDialogueTableRow::widgetValue(const QString & col_id)
+QVariant EditDialogueTableRow::widgetValue(const QString & col_id) const
 {
     if (widgets.contains(col_id))
         return widgets.value(col_id)->variantValue();
@@ -401,7 +401,7 @@ void EditDialogueTableRow::addWidget(const QString & name, MDTInputWidget * le)
     widgets.insert(name, le);
 }
 
-const MTDictionary EditDialogueTableRow::dictValues()
+const MTDictionary EditDialogueTableRow::dictValues() const
 {
     MTDictionary dict;
     QMapIterator<QString, EditDialogueTableCell *> i(values);
@@ -416,7 +416,7 @@ const MTDictionary EditDialogueTableRow::dictValues()
     return dict;
 }
 
-const QString EditDialogueTableRow::itemTypeId()
+const QString EditDialogueTableRow::itemTypeId() const
 {
     return values.value("item_type_id")->value().toString();
 }
@@ -479,7 +479,7 @@ QToolButton * EditDialogueTableRow::removeButton()
     return remove_btn;
 }
 
-const QString EditDialogueTableRow::value(const QString &name)
+const QString EditDialogueTableRow::value(const QString &name) const
 {
     if (values.contains(name))
         return values.value(name)->value().toString();

@@ -111,7 +111,7 @@ MDInputWidget(id, labeltext, parent, this)
     setText(value);
 }
 
-QVariant MDLineEdit::variantValue()
+QVariant MDLineEdit::variantValue() const
 {
     return text().isEmpty() ? nullvalue : text();
 }
@@ -134,7 +134,7 @@ MDInputWidget(id, "", parent, this)
     setChecked(checked);
 }
 
-QVariant MDCheckBox::variantValue()
+QVariant MDCheckBox::variantValue() const
 {
     return isChecked() ? 1 : 0;
 }
@@ -162,7 +162,7 @@ MDInputWidget(id, labeltext, parent, this)
     if (!suffix.isEmpty()) { setSuffix(QString(" %1").arg(suffix)); }
 }
 
-QVariant MDSpinBox::variantValue()
+QVariant MDSpinBox::variantValue() const
 {
     return value();
 }
@@ -190,7 +190,7 @@ MDInputWidget(id, labeltext, parent, this)
     if (!suffix.isEmpty()) { setSuffix(QString(" %1").arg(suffix)); }
 }
 
-QVariant MDDoubleSpinBox::variantValue()
+QVariant MDDoubleSpinBox::variantValue() const
 {
     return value();
 }
@@ -224,7 +224,7 @@ MDNullableInputWidget(id, labeltext, parent, this)
     QObject::connect((MTButtonLabel *)label(), SIGNAL(clicked()), this, SLOT(labelClicked()));
 }
 
-QVariant MDNullableDoubleSpinBox::variantValue()
+QVariant MDNullableDoubleSpinBox::variantValue() const
 {
     return label()->wasChanged() ? value() : QVariant();
 }
@@ -270,7 +270,7 @@ MDInputWidget(id, labeltext, parent, this)
     setCurrentIndex(n);
 }
 
-QVariant MDComboBox::variantValue()
+QVariant MDComboBox::variantValue() const
 {
     QString value = cb_items.value(currentText());
     return value.isEmpty() ? nullvalue : value;
@@ -300,7 +300,7 @@ MDInputWidget(id, labeltext, parent, this)
     }
 }
 
-QVariant MDColourComboBox::variantValue()
+QVariant MDColourComboBox::variantValue() const
 {
     return currentText();
 }
@@ -313,7 +313,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
 }
 
-QVariant MDDateTimeEdit::variantValue()
+QVariant MDDateTimeEdit::variantValue() const
 {
     return dateTime().toString("yyyy.MM.dd-hh:mm");
 }
@@ -341,7 +341,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
 }
 
-QVariant MDDateEdit::variantValue()
+QVariant MDDateEdit::variantValue() const
 {
     return date().toString("yyyy.MM.dd");
 }
@@ -359,7 +359,7 @@ MDInputWidget(id, labeltext, parent, this)
     setAddress(MTAddress(value));
 }
 
-QVariant MDAddressEdit::variantValue()
+QVariant MDAddressEdit::variantValue() const
 {
     return address().toString();
 }
@@ -379,7 +379,7 @@ MDInputWidget(id, labeltext, parent, this)
     new Highlighter(ids, document());
 }
 
-QVariant MDHighlightedPlainTextEdit::variantValue()
+QVariant MDHighlightedPlainTextEdit::variantValue() const
 {
     return toPlainText();
 }
@@ -399,7 +399,7 @@ MDInputWidget(id, labeltext, parent, this)
     setPlainText(value);
 }
 
-QVariant MDPlainTextEdit::variantValue()
+QVariant MDPlainTextEdit::variantValue() const
 {
     return toPlainText();
 }
@@ -433,7 +433,7 @@ void MDGroupedCheckBoxes::addCheckBox(int chb_id, const QString & chb_name)
     layout()->addWidget(chb);
 }
 
-QVariant MDGroupedCheckBoxes::variantValue()
+QVariant MDGroupedCheckBoxes::variantValue() const
 {
     int value = 0;
 
@@ -452,7 +452,7 @@ MDInputWidget(id, labeltext, parent, this)
 {
 }
 
-QVariant MDFileChooser::variantValue()
+QVariant MDFileChooser::variantValue() const
 {
     return DBFileChooser::variantValue();
 }
@@ -490,7 +490,7 @@ void MDRadioButtonGroup::addRadioButton(const QString & name, const QString & va
     this->layout()->addWidget(radio);
 }
 
-QVariant MDRadioButtonGroup::variantValue()
+QVariant MDRadioButtonGroup::variantValue() const
 {
     QMapIterator<QRadioButton *, QString> i(radiobuttons);
     while (i.hasNext()) { i.next();

@@ -56,9 +56,9 @@ public:
 
     void addRow(const QMap<QString, EditDialogueTableCell *> &, bool = true);
     virtual void addRow(EditDialogueTableRow *);
-    QList<MTDictionary> allValues();
+    QList<MTDictionary> allValues() const;
 
-    int rowsCount() { return rows.count(); }
+    int rowsCount() const { return rows.count(); }
 
 public slots:
     void addNewRow();
@@ -148,11 +148,11 @@ public:
     }
 
     void setId(const QString & id) { this->_id = id; }
-    const QString & id() { return _id; }
+    const QString & id() const { return _id; }
 
-    const QVariant & value() { return _value; }
-    int dataType() { return _data_type; }
-    const QString & unit() { return _unit; }
+    const QVariant & value() const { return _value; }
+    int dataType() const { return _data_type; }
+    const QString & unit() const { return _unit; }
 
 private:
     QString _id;
@@ -170,24 +170,24 @@ public:
     ~EditDialogueTableRow();
 
     void addWidget(const QString &, MDTInputWidget *);
-    const MTDictionary dictValues();
-    bool isInTable() { return in_table; }
+    const MTDictionary dictValues() const;
+    bool isInTable() const { return in_table; }
     void setInTable(bool in_table) { this->in_table = in_table; }
 
-    const QString itemTypeId();
-    const QString value(const QString & name);
-    const QMap<QString, EditDialogueTableCell *> & valuesMap() { return values; }
+    const QString itemTypeId() const;
+    const QString value(const QString & name) const;
+    const QMap<QString, EditDialogueTableCell *> & valuesMap() const { return values; }
 
     QToolButton * removeButton();
-    const QString & name() { return row_name; }
+    const QString & name() const { return row_name; }
 
-    bool toBeDeleted() { return value("item_type_id").toInt() < 0; }
+    bool toBeDeleted() const { return value("item_type_id").toInt() < 0; }
 
-    double total();
-    double listPrice();
-    double acquisitionOrListPrice();
+    double total() const;
+    double listPrice() const;
+    double acquisitionOrListPrice() const;
     void setListPrice(double);
-    QVariant widgetValue(const QString &);
+    QVariant widgetValue(const QString &) const;
 
     QTreeWidgetItem * treeItem();
     QTreeWidgetItem * takeTreeItem();
@@ -214,9 +214,9 @@ class MDTInputWidget
 public:
     MDTInputWidget(QWidget * w) { this->w = w; }
 
-    virtual QVariant variantValue() = 0;
+    virtual QVariant variantValue() const = 0;
     virtual void setVariantValue(const QVariant &) = 0;
-    QWidget * widget() { return w; }
+    QWidget * widget() const { return w; }
 
 private:
     QWidget * w;
@@ -227,7 +227,7 @@ class MDTLineEdit : public QLineEdit, public MDTInputWidget
 public:
     MDTLineEdit(const QString & text, QWidget * parent) : QLineEdit(text, parent), MDTInputWidget(this) {}
 
-    QVariant variantValue() { return text(); }
+    QVariant variantValue() const { return text(); }
     void setVariantValue(const QVariant & val) { setText(val.toString()); }
 };
 
@@ -236,7 +236,7 @@ class MDTSpinBox : public QSpinBox, public MDTInputWidget
 public:
     MDTSpinBox(QWidget * parent) : QSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999); }
 
-    QVariant variantValue() { return value(); }
+    QVariant variantValue() const { return value(); }
     void setVariantValue(const QVariant & val) { setValue(val.toInt()); }
 };
 
@@ -247,7 +247,7 @@ class MDTDoubleSpinBox : public QDoubleSpinBox, public MDTInputWidget
 public:
     MDTDoubleSpinBox(QWidget * parent) : QDoubleSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999.0); }
 
-    QVariant variantValue() { return value(); }
+    QVariant variantValue() const { return value(); }
     void setVariantValue(const QVariant & val) { setValue(val.toDouble()); }
 
 public slots:
@@ -261,7 +261,7 @@ class MDTPlainTextEdit : public QPlainTextEdit, public MDTInputWidget
 public:
     MDTPlainTextEdit(const QString & text, QWidget * parent) : QPlainTextEdit(text, parent), MDTInputWidget(this) {}
 
-    QVariant variantValue() { return toPlainText(); }
+    QVariant variantValue() const { return toPlainText(); }
     void setVariantValue(const QVariant & val) { setPlainText(val.toString()); }
 };
 
@@ -272,7 +272,7 @@ class MDTCheckBox : public QCheckBox, public MDTInputWidget
 public:
     MDTCheckBox(bool checked, QWidget * parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
 
-    QVariant variantValue() { return isChecked() ? 1 : 0; }
+    QVariant variantValue() const { return isChecked() ? 1 : 0; }
     void setVariantValue(const QVariant & val) { setChecked(val.toBool()); }
 };
 
@@ -283,7 +283,7 @@ class MDTLabel : public QLineEdit, public MDTInputWidget
 public:
     MDTLabel(const QString & text, QWidget * parent) : QLineEdit(text, parent), MDTInputWidget(this) { setReadOnly(true); }
 
-    QVariant variantValue() { return text(); }
+    QVariant variantValue() const { return text(); }
     void setVariantValue(const QVariant & val) { setText(val.toString()); }
 };
 
@@ -294,7 +294,7 @@ class MDTFileChooser : public DBFileChooser, public MDTInputWidget
 public:
     MDTFileChooser(int value, QWidget * parent) : DBFileChooser(parent, value), MDTInputWidget(this) {}
 
-    QVariant variantValue() { return DBFileChooser::variantValue(); }
+    QVariant variantValue() const { return DBFileChooser::variantValue(); }
     void setVariantValue(const QVariant &) {}
 };
 

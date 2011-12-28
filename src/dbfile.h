@@ -56,7 +56,7 @@ class DBFileChooser : public QWidget
 public:
     DBFileChooser(QWidget *, int);
 
-    virtual QVariant variantValue();
+    virtual QVariant variantValue() const;
 
 private slots:
     void browse();

@@ -128,9 +128,9 @@ QVariantMap MTRecord::list(const QString & fields, bool refresh)
     return list;
 }
 
-void MTRecord::readValues()
+void MTRecord::readValues(const QString & fields)
 {
-    r_values = list("*", true);
+    r_values = list(fields, true);
 }
 
 ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & order_by)

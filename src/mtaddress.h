@@ -70,7 +70,7 @@ public:
     QFrame(parent, f) { init(); setAddress(address); }
 
     void setAddress(const MTAddress & address);
-    MTAddress address();
+    MTAddress address() const;
 
     static QString addressStringFormat(MTAddress::AddressFormat);
 

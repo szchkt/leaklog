@@ -96,7 +96,7 @@ void MTAddressEdit::setAddress(const MTAddress & address)
     ae_postal_code->setText(address.postalCode());
 }
 
-MTAddress MTAddressEdit::address()
+MTAddress MTAddressEdit::address() const
 {
     MTAddress address;
     address.setStreet(ae_street->text());

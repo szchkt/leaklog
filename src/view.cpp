@@ -1659,7 +1659,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
         year = QDate::currentDate().year() - 1;
     QString html; MTTextStream out(&html);
     Customer customer(customer_id);
-    QVariantMap attributes = customer.list("company, address");
+    customer.readOperatorValues();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
     out << tr("Operator Report: %1").arg(year) << "</th></tr></table><br>";
@@ -1670,13 +1670,17 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
     out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
-    out << "<td>" << MTVariant(attributes.value("company")) << "</td>";
-    out << "<td>" << MTVariant(attributes.value("address"), MTVariant::Address) << "</td>";
+    out << "<td>" << MTVariant(customer.value("company")) << "</td>";
+    out << "<td>" << MTVariant(customer.value("address"), MTVariant::Address) << "</td>";
     out << "</tr><tr><th colspan=\"3\">" << tr("Operator information") << "</th></tr><tr>";
     out << "<th>" << Customer::attributes().value("id") << "</th>";
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
-    out << "</tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><br>";
+    out << "</tr><tr>";
+    out << "<td>" << customer.stringValue("operator_id").rightJustified(8, '0') << "</td>";
+    out << "<td>" << MTVariant(customer.value("operator_company")) << "</td>";
+    out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
+    out << "</tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"8\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
@@ -1748,11 +1752,11 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     }
     out << "</table>";
     if (isInspectorSelected()) {
-        attributes = Inspector(selectedInspector()).list("person, mail, phone");
+        QVariantMap inspector = Inspector(selectedInspector()).list("person, mail, phone");
         out << "<br><table><tr><td>";
-        out << tr("Person responsible:", "Operator report") << " " << MTVariant(attributes.value("person"));
-        out << "<br>" << tr("Phone:") << " " << MTVariant(attributes.value("phone"));
-        out << "<br>" << tr("E-mail:") << " " << MTVariant(attributes.value("mail"));
+        out << tr("Person responsible:", "Operator report") << " " << MTVariant(inspector.value("person"));
+        out << "<br>" << tr("Phone:") << " " << MTVariant(inspector.value("phone"));
+        out << "<br>" << tr("E-mail:") << " " << MTVariant(inspector.value("mail"));
         out << "</td></tr></table>";
     }
     return dict_html.value(Navigation::OperatorReport).arg(html);

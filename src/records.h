@@ -53,6 +53,7 @@ public:
     Customer(const QString &);
 
     void initEditDialogue(EditDialogueWidgets *);
+    void readOperatorValues();
 
     static const MTDictionary & attributes();
 };

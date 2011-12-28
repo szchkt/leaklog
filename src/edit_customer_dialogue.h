@@ -20,10 +20,33 @@
 #ifndef EDIT_CUSTOMER_DIALOGUE_H
 #define EDIT_CUSTOMER_DIALOGUE_H
 
+#include "input_widgets.h"
 #include "edit_dialogue.h"
 
 class Customer;
 class EditDialogueBasicTable;
+class QButtonGroup;
+
+class OperatorInputWidget : public MDGroupedInputWidgets
+{
+    Q_OBJECT
+
+public:
+    OperatorInputWidget(const QVariantMap &, QWidget *);
+
+    QVariant variantValue() const;
+    void setVariantValue(const QVariant &);
+
+    void addToEditDialogue(EditDialogueWidgets &);
+
+private slots:
+    void operatorChoiceChanged(int);
+
+private:
+    QButtonGroup * operator_choice;
+    MDAbstractInputWidget * operator_id;
+    QList<MDAbstractInputWidget *> input_widgets;
+};
 
 class EditCustomerDialogue : public EditDialogue
 {

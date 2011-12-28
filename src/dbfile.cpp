@@ -167,7 +167,7 @@ void DBFileChooser::browse()
     }
 }
 
-QVariant DBFileChooser::variantValue()
+QVariant DBFileChooser::variantValue() const
 {
     if (changed)
         return db_file->save();

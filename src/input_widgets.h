@@ -53,14 +53,16 @@ public:
     MTLabeledWidget(const QString &, QWidget *);
 
     void setAlternativeText(const QString & alt) { altlabeltext = alt; }
-    QWidget * widget() { return w; }
+    QWidget * widget() const { return w; }
 
     virtual void setLabelText(const QString &) = 0;
 
-    bool wasChanged() { return changed; }
+    bool wasChanged() const { return changed; }
     void toggleChanged() { changed = !changed; }
 
     void toggleAlternativeText(bool);
+
+    void setVisible(bool visible) { w->setVisible(visible); }
 
 protected:
     QString labeltext;
@@ -104,18 +106,24 @@ public:
     MDAbstractInputWidget(const QString &, QWidget *);
     virtual ~MDAbstractInputWidget() {}
 
-    virtual QVariant variantValue() = 0;
+    virtual QVariant variantValue() const = 0;
     virtual void setVariantValue(const QVariant &) = 0;
 
-    inline QString id() { return iw_id; }
-    inline MTLabeledWidget * label() { return iw_label; }
-    inline QWidget * widget() { return iw_widget; }
+    inline QString id() const { return iw_id; }
+    inline void setId(const QString & id) { iw_id = id; }
+    inline MTLabeledWidget * label() const { return iw_label; }
+    inline QWidget * widget() const { return iw_widget; }
 
-    bool showInForm() { return show; }
+    bool showInForm() const { return show; }
     void setShowInForm(bool show) { this->show = show; }
 
-    bool skipSave() { return skip_save; }
+    bool skipSave() const { return skip_save; }
     void setSkipSave(bool skip) { skip_save = skip; }
+
+    void setVisible(bool visible) {
+        iw_label->setVisible(visible);
+        iw_widget->setVisible(visible);
+    }
 
 protected:
     static QPalette paletteForColour(const QString &);
@@ -151,7 +159,7 @@ class MDLineEdit : public QLineEdit, public MDInputWidget
 public:
     MDLineEdit(const QString &, const QString &, QWidget *, const QString &, int = 0, const QString & = QString(), bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 
     void setNullValue(const QVariant &);
@@ -167,7 +175,7 @@ class MDCheckBox : public MTCheckBox, public MDInputWidget
 public:
     MDCheckBox(const QString &, const QString &, QWidget *, bool, bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -178,7 +186,7 @@ class MDSpinBox : public QSpinBox, public MDInputWidget
 public:
     MDSpinBox(const QString &, const QString &, QWidget *, int, int, int, const QString & = QString(), const QString & = QString(), bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -189,7 +197,7 @@ class MDDoubleSpinBox : public QDoubleSpinBox, public MDInputWidget
 public:
     MDDoubleSpinBox(const QString &, const QString &, QWidget *, double, double, double, const QString & = QString(), const QString & = QString());
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 
 public slots:
@@ -203,7 +211,7 @@ class MDNullableDoubleSpinBox : public QDoubleSpinBox, public MDNullableInputWid
 public:
     MDNullableDoubleSpinBox(const QString &, const QString &, QWidget *, double, double, const QVariant &, const QString & = QString(), const QString & = QString());
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 
 public slots:
@@ -220,7 +228,7 @@ class MDComboBox : public QComboBox, public MDInputWidget
 public:
     MDComboBox(const QString &, const QString &, QWidget *, const QString &, const MTDictionary &, const QString & = QString(), bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 
     void setNullValue(const QVariant &);
@@ -237,7 +245,7 @@ class MDColourComboBox : public MTColourComboBox, public MDInputWidget
 public:
     MDColourComboBox(const QString &, const QString &, QWidget *, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -248,7 +256,7 @@ class MDDateTimeEdit : public QDateTimeEdit, public MDInputWidget
 public:
     MDDateTimeEdit(const QString &, const QString &, QWidget *, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -259,7 +267,7 @@ class MDDateEdit : public QDateEdit, public MDInputWidget
 public:
     MDDateEdit(const QString &, const QString &, QWidget *, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -270,7 +278,7 @@ class MDAddressEdit : public MTAddressEdit, public MDInputWidget
 public:
     MDAddressEdit(const QString &, const QString &, QWidget *, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -281,7 +289,7 @@ class MDHighlightedPlainTextEdit : public QPlainTextEdit, public MDInputWidget
 public:
     MDHighlightedPlainTextEdit(const QString &, const QString &, QWidget *, const QString &, const QStringList &, bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -292,7 +300,7 @@ class MDPlainTextEdit : public QPlainTextEdit, public MDInputWidget
 public:
     MDPlainTextEdit(const QString &, const QString &, QWidget *, const QString &, const QString & = QString(), bool = true);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &);
 };
 
@@ -306,7 +314,7 @@ public:
 
     void addCheckBox(int, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &) {}
 
 private:
@@ -321,7 +329,7 @@ class MDFileChooser : public DBFileChooser, public MDInputWidget
 public:
     MDFileChooser(const QString &, const QString &, QWidget *, int);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &) {}
 };
 
@@ -334,10 +342,10 @@ public:
 
     void addWidget(MDAbstractInputWidget *);
 
-    QVariant variantValue() { return QVariant(); }
+    QVariant variantValue() const { return QVariant(); }
     void setVariantValue(const QVariant &) {}
 
-private:
+protected:
     QGridLayout * grid;
 };
 
@@ -349,7 +357,7 @@ public:
 
     void addRadioButton(const QString &, const QString &);
 
-    QVariant variantValue();
+    QVariant variantValue() const;
     void setVariantValue(const QVariant &) {}
 
 private:
