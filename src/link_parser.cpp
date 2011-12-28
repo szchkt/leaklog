@@ -19,6 +19,8 @@
 
 #include "link_parser.h"
 
+#include <cstdlib>
+
 LinkParser::LinkParser()
 {
     root_entity = new LinkEntity(false);
