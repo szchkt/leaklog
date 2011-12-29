@@ -289,7 +289,6 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
     if (arno.isEmpty())
         return;
 
-    AssemblyRecordItem record_item("");
     QVariantMap map;
     map.insert("arno", arno);
 
@@ -306,7 +305,7 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
         map.insert("category_id", record_dicts.at(i).value("category_id"));
         map.insert("unit", record_dicts.at(i).value("unit"));
         map.insert("discount", record_dicts.at(i).value("discount"));
-        record_item.update(map);
+        AssemblyRecordItem("").update(map);
     }
 }
 

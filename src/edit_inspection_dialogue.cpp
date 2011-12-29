@@ -114,8 +114,6 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString & inspe
 
 void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
 {
-    QVariantMap map;
-
     QList<MTDictionary> dicts = table->allValues();
     QList<int> undeleted_files;
 
@@ -131,8 +129,7 @@ void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
 
     images_record.remove();
 
-    images_record = InspectionImage(customer_id, circuit_id, inspection_id.toString());
-
+    QVariantMap map;
     for (int i = 0; i < dicts.count(); ++i) {
         int file_id = dicts.at(i).value("file_id").toInt();
         if (file_id <= 0)
@@ -141,7 +138,7 @@ void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
 
         map.insert("description", dicts.at(i).value("description"));
         map.insert("file_id", file_id);
-        images_record.update(map);
+        InspectionImage(customer_id, circuit_id, inspection_id.toString()).update(map);
     }
 
     for (int i = 0; i < undeleted_files.count(); ++i)
