@@ -41,7 +41,6 @@ public:
         CompareNom,
         Tolerance,
         ColBg,
-        CountChildren,
         FieldCount
     };
 
@@ -83,10 +82,6 @@ public:
 
     QString colBg() const {
         return variantValue(ColBg).toString();
-    }
-
-    int countChildren() const {
-        return variantValue(CountChildren).toInt();
     }
 
 protected:
