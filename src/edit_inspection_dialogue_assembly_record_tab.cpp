@@ -29,19 +29,21 @@
 #include <QMessageBox>
 
 EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, const QString & customer_id, const QString & circuit_id, QWidget * parent)
-    : EditDialogueTab(parent)
+    : EditDialogueTab(parent),
+      arno_being_changed(false)
 {
     this->ar_type_w = ar_type_w;
     this->arno_w = arno_w;
     this->customer_id = customer_id;
     this->circuit_id = circuit_id;
     original_arno = arno_w->text();
+    current_arno = original_arno;
 
     setName(tr("Assembly record"));
 
     init();
 
-    QObject::connect(ar_type_w, SIGNAL(currentIndexChanged(int)), this, SLOT(recordTypeChanged()));
+    QObject::connect(ar_type_w, SIGNAL(activated(int)), this, SLOT(recordTypeChanged()));
     QObject::connect(arno_w, SIGNAL(editingFinished()), this, SLOT(assemblyRecordNumberChanged()));
 }
 
@@ -289,6 +291,14 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
     if (arno.isEmpty())
         return;
 
+    if (arno != original_arno)
+        AssemblyRecordItem(arno).remove();
+
+    MTSqlQuery query(QString("UPDATE inspections SET ar_type = %2 WHERE arno = '%1'")
+                     .arg(arno)
+                     .arg(ar_type_w->variantValue().toString()));
+    query.exec();
+
     QVariantMap map;
     map.insert("arno", arno);
 
@@ -329,10 +339,35 @@ int EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary 
 
 void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()
 {
-    if (original_arno == arno_w->text()) return;
+    if (arno_being_changed)
+        return;
+    arno_being_changed = true;
 
-    MTSqlQuery query(QString("SELECT date FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
+    if (current_arno == arno_w->text()) return;
+
+    MTSqlQuery query(QString("SELECT date, ar_type FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
     if (query.next()) {
-        QMessageBox::warning(this, tr("Conflict"), tr("Inspection with the same assembly record number already exists."));
+        QMessageBox message(this);
+        message.setWindowTitle(tr("Assembly record number already in use"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("An inspection with the same assembly record number already exists."));
+        message.setInformativeText(tr("Use anyway?"));
+        message.addButton(tr("&Use"), QMessageBox::AcceptRole);
+        message.addButton(tr("Cancel"), QMessageBox::RejectRole);
+
+        switch (message.exec()) {
+            case 0: // Use
+                current_arno = arno_w->text();
+                ar_type_w->setVariantValue(query.value(1).toInt());
+                loadItemInputWidgets();
+                break;
+            case 1: // Cancel
+                arno_w->setText(current_arno);
+                break;
+        }
     }
+
+    arno_being_changed = false;
 }

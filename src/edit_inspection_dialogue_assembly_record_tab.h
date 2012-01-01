@@ -49,8 +49,10 @@ private:
     MDComboBox * ar_type_w;
     MDLineEdit * arno_w;
     QString original_arno;
+    QString current_arno;
     QString customer_id;
     QString circuit_id;
+    bool arno_being_changed;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_ASSEMBLY_RECORD_H

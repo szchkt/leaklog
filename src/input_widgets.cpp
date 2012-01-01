@@ -279,7 +279,7 @@ QVariant MDComboBox::variantValue() const
 void MDComboBox::setVariantValue(const QVariant & value)
 {
     for (int i = 0; i < count(); ++i) {
-        if (itemText(i) == value.toString()) {
+        if (itemText(i) == value.toString() || cb_items.value(i) == value.toString()) {
             setCurrentIndex(i);
             break;
         }
