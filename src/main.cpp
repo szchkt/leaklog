@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2011 Matus & Michal Tomlein
+ Copyright (C) 2008-2012 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
