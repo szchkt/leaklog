@@ -96,11 +96,7 @@ QList<MTDictionary> EditDialogueGroupsLayout::allValues()
 
 void EditDialogueGroupsLayout::clear()
 {
-    QMapIterator<QString, EditDialogueAdvancedTable *> i(*groups);
-    while (i.hasNext()) {
-        i.next();
-        delete groups->take(i.key());
-    }
+    groups->clear();
 }
 
 EditDialogueGroupHeaderItem::EditDialogueGroupHeaderItem(int id, const QString & name, const QString & full_name, int data_type)

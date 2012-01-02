@@ -27,6 +27,7 @@
 #include "mtsqlquery.h"
 
 #include <QMessageBox>
+#include <QApplication>
 
 EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : EditDialogueTab(parent),
@@ -363,11 +364,12 @@ void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()
                 ar_type_w->setVariantValue(query.value(1).toInt());
                 loadItemInputWidgets();
                 break;
-            case 1: // Cancel
+            default: // Cancel
                 arno_w->setText(current_arno);
                 break;
         }
     }
 
     arno_being_changed = false;
+    QApplication::processEvents();
 }
