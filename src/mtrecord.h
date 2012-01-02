@@ -63,9 +63,9 @@ public:
     bool update(const QVariantMap & values, bool add_columns = false, bool force_update = false);
     virtual bool remove();
     void setCustomWhere(const QString & where) { r_custom_where = where; }
-    int max(const QString & attr) {
+    qlonglong max(const QString & attr) {
         setUnordered(true);
-        return list(QString("MAX(%1) AS max").arg(attr)).value("max").toInt();
+        return list(QString("MAX(%1) AS max").arg(attr)).value("max").toLongLong();
     }
 
 private:
