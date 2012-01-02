@@ -705,6 +705,29 @@
     </message>
 </context>
 <context>
+    <name>Compressor</name>
+    <message>
+        <source>ID</source>
+        <translation>IČ</translation>
+    </message>
+    <message>
+        <source>Compressor name</source>
+        <translation>Názov kompresora</translation>
+    </message>
+    <message>
+        <source>Manufacturer</source>
+        <translation>Výrobca</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <source>Serial number</source>
+        <translation>Sériové číslo</translation>
+    </message>
+</context>
+<context>
     <name>Customer</name>
     <message>
         <source>ID</source>
@@ -739,10 +762,6 @@
         <translation>Firma</translation>
     </message>
     <message>
-        <source>Contact person</source>
-        <translation>Kontaktná osoba</translation>
-    </message>
-    <message>
         <source>Address</source>
         <translation>Adresa</translation>
     </message>
@@ -753,6 +772,38 @@
     <message>
         <source>Phone</source>
         <translation>Telefón</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Servisná organizácia</translation>
+    </message>
+    <message>
+        <source>Operator:</source>
+        <translation>Prevádzkovateľ:</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation>Iný</translation>
+    </message>
+    <message>
+        <source>Operator ID</source>
+        <translation>IČO prevádzkovateľa</translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation>Prevádzkovateľ</translation>
+    </message>
+    <message>
+        <source>Operator address</source>
+        <translation>Adresa prevádzkovateľa</translation>
+    </message>
+    <message>
+        <source>Operator e-mail</source>
+        <translation>E-mail prevádzkovateľa</translation>
+    </message>
+    <message>
+        <source>Operator phone</source>
+        <translation>Telefón prevádzkovateľa</translation>
     </message>
 </context>
 <context>
@@ -970,12 +1021,24 @@
         <translation>Zľava</translation>
     </message>
     <message>
-        <source>Conflict</source>
-        <translation>Konflikt</translation>
+        <source>Assembly record number already in use</source>
+        <translation>Číslo montážneho listu sa už používa</translation>
     </message>
     <message>
-        <source>Inspection with the same assembly record number already exists.</source>
-        <translation>Kontrola s rovnakým číslom montážneho listu už existuje.</translation>
+        <source>An inspection with the same assembly record number already exists.</source>
+        <translation>Kontrola so zadaným číslom montážneho listu už existuje.</translation>
+    </message>
+    <message>
+        <source>Use anyway?</source>
+        <translation>Použiť toto číslo aj napriek tomu?</translation>
+    </message>
+    <message>
+        <source>&amp;Use</source>
+        <translation>&amp;Použiť</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Zrušiť</translation>
     </message>
 </context>
 <context>
@@ -1241,10 +1304,6 @@
         <translation>Tolerancia</translation>
     </message>
     <message>
-        <source>Customer</source>
-        <translation>Zákazník</translation>
-    </message>
-    <message>
         <source>Select All</source>
         <translation>Vybrať všetko</translation>
     </message>
@@ -1259,6 +1318,18 @@
     <message>
         <source>Variable Name</source>
         <translation>Názov premennej</translation>
+    </message>
+    <message>
+        <source>Contact Persons</source>
+        <translation>Kontaktné osoby</translation>
+    </message>
+    <message>
+        <source>New contact persons:</source>
+        <translation>Nové kontaktné osoby:</translation>
+    </message>
+    <message>
+        <source>Modified contact persons:</source>
+        <translation>Upravené kontaktné osoby:</translation>
     </message>
 </context>
 <context>
@@ -2807,11 +2878,6 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Na konci roka</translation>
     </message>
     <message>
-        <source>Person responsible:</source>
-        <comment>Operator report</comment>
-        <translation>Vybavuje:</translation>
-    </message>
-    <message>
         <source>Phone:</source>
         <translation>Telefón:</translation>
     </message>
@@ -3417,6 +3483,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>en_GB</source>
         <translation>sk_SK</translation>
     </message>
+    <message>
+        <source>Compiled by:</source>
+        <translation>Spracoval:</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>
@@ -3992,6 +4062,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>List of Circuit Unit Types</source>
         <translation>Zoznam typov jednotiek okruhu</translation>
     </message>
+    <message>
+        <source>All Circuits</source>
+        <translation>Všetky okruhy</translation>
+    </message>
 </context>
 <context>
     <name>Oils</name>
@@ -4191,6 +4265,29 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
+    </message>
+</context>
+<context>
+    <name>Person</name>
+    <message>
+        <source>ID</source>
+        <translation>IČ</translation>
+    </message>
+    <message>
+        <source>Company ID</source>
+        <translation>IČO firmy</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Meno</translation>
+    </message>
+    <message>
+        <source>E-mail</source>
+        <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation>Telefón</translation>
     </message>
 </context>
 <context>
