@@ -43,6 +43,8 @@ QString MTAddress::toString() const
 
 QString MTAddress::toPlainText(MTAddress::AddressFormat format) const
 {
+    if (a_street.isEmpty() && a_city.isEmpty() && a_postal_code.isEmpty())
+        return QString();
     return MTAddressEdit::addressStringFormat(format).arg(a_street).arg(a_city).arg(a_postal_code);
 }
 
