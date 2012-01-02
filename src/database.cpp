@@ -317,6 +317,9 @@ void MainWindow::initTables(bool transaction)
         Table("", "Pressures and temperatures").remove();
         Table("", "Electrical parameters").remove();
         Table("", "Compressors").remove();
+        Table(tr("Leakages")).remove();
+        Table(tr("Pressures and temperatures")).remove();
+        Table(tr("Compressors")).remove();
     }
     QVariantMap set;
     Table leakages("", "90");
