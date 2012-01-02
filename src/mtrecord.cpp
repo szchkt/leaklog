@@ -189,7 +189,7 @@ MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & f
     return map;
 }
 
-bool MTRecord::update(const QVariantMap & values, bool add_columns)
+bool MTRecord::update(const QVariantMap & values, bool add_columns, bool force_update)
 {
     bool has_id = !r_id.isEmpty();
     QString update;
@@ -210,15 +210,19 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
         i.toFront();
     }
     if (has_id && !exists()) { has_id = false; }
-    if (has_id) {
+    if (has_id || force_update) {
         update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) update.append(", ");
         }
-        update.append(" WHERE " + r_id_field + " = :_id");
+        if (has_id)
+            update.append(" WHERE " + r_id_field + " = :_id");
+        else if (r_parents.count())
+            update.append(" WHERE ");
         for (int p = 0; p < r_parents.count(); ++p) {
-            update.append(" AND " + r_parents.key(p) + " = :_" + r_parents.key(p));
+            if (has_id || p) { update.append(" AND "); }
+            update.append(r_parents.key(p) + " = :_" + r_parents.key(p));
         }
     } else {
         bool append_comma = false;
@@ -260,7 +264,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns)
     }
     MTSqlQuery query;
     query.prepare(update);
-    if ((has_id || (!set.contains(r_id_field) && !r_serial_id)) && !r_id_field.isEmpty())
+    if ((has_id || (!set.contains(r_id_field) && !r_serial_id && !force_update)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
         if (!has_id && set.contains(r_parents.key(p))) continue;

@@ -60,7 +60,7 @@ public:
     ListOfVariantMaps listAll(const QString & fields = "*", const QString & order_by = QString());
     QVariantMap sumAll(const QString & fields);
     MultiMapOfVariantMaps mapAll(const QString & map_to, const QString & fields = "*");
-    bool update(const QVariantMap & values, bool add_columns = false);
+    bool update(const QVariantMap & values, bool add_columns = false, bool force_update = false);
     virtual bool remove();
     void setCustomWhere(const QString & where) { r_custom_where = where; }
     int max(const QString & attr) {
