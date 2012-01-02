@@ -1754,7 +1754,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     if (isInspectorSelected()) {
         QVariantMap inspector = Inspector(selectedInspector()).list("person, mail, phone");
         out << "<br><table><tr><td>";
-        out << tr("Person responsible:", "Operator report") << " " << MTVariant(inspector.value("person"));
+        out << tr("Compiled by:") << " " << MTVariant(inspector.value("person"));
         out << "<br>" << tr("Phone:") << " " << MTVariant(inspector.value("phone"));
         out << "<br>" << tr("E-mail:") << " " << MTVariant(inspector.value("mail"));
         out << "</td></tr></table>";
