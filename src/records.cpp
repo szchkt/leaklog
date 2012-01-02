@@ -103,6 +103,12 @@ public:
         dict.insert("address", QApplication::translate("Customer", "Address"));
         dict.insert("mail", QApplication::translate("Customer", "E-mail"));
         dict.insert("phone", QApplication::translate("Customer", "Phone"));
+        // numBasicAttributes: 5
+        dict.insert("operator_id", QApplication::translate("Customer", "Operator ID"));
+        dict.insert("operator_company", QApplication::translate("Customer", "Operator"));
+        dict.insert("operator_address", QApplication::translate("Customer", "Operator address"));
+        dict.insert("operator_mail", QApplication::translate("Customer", "Operator e-mail"));
+        dict.insert("operator_phone", QApplication::translate("Customer", "Operator phone"));
     }
 
     MTDictionary dict;
@@ -112,6 +118,11 @@ const MTDictionary & Customer::attributes()
 {
     static CustomerAttributes dict;
     return dict.dict;
+}
+
+int Customer::numBasicAttributes()
+{
+    return 5;
 }
 
 Circuit::Circuit():
@@ -943,6 +954,26 @@ Person::Person(const QString & person_id, const QString & customer_id):
     MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
 {}
 
+class PersonAttributes
+{
+public:
+    PersonAttributes() {
+        dict.insert("id", QApplication::translate("Person", "ID"));
+        dict.insert("company_id", QApplication::translate("Person", "Company ID"));
+        dict.insert("name", QApplication::translate("Person", "Name"));
+        dict.insert("mail", QApplication::translate("Person", "E-mail"));
+        dict.insert("phone", QApplication::translate("Person", "Phone"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Person::attributes()
+{
+    static PersonAttributes dict;
+    return dict.dict;
+}
+
 CircuitUnitType::CircuitUnitType(const QString & id):
     DBRecord("circuit_unit_types", "id", id, MTDictionary())
 {}
@@ -1093,6 +1124,26 @@ Compressor::Compressor(const QString & id, const MTDictionary & dict):
     MTRecord("compressors", "id", id, dict)
 {
     setSerialId(true);
+}
+
+class CompressorAttributes
+{
+public:
+    CompressorAttributes() {
+        dict.insert("id", QApplication::translate("Compressor", "ID"));
+        dict.insert("name", QApplication::translate("Compressor", "Compressor name"));
+        dict.insert("manufacturer", QApplication::translate("Compressor", "Manufacturer"));
+        dict.insert("type", QApplication::translate("Compressor", "Type"));
+        dict.insert("sn", QApplication::translate("Compressor", "Serial number"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary & Compressor::attributes()
+{
+    static CompressorAttributes dict;
+    return dict.dict;
 }
 
 InspectionsCompressor::InspectionsCompressor(const QString & id, const MTDictionary & dict):

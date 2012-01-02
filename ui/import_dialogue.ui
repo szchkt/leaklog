@@ -144,6 +144,105 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_persons">
+      <attribute name="title">
+       <string>Contact Persons</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_31">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <item>
+          <widget class="QLabel" name="lbl_persons_new">
+           <property name="text">
+            <string>New contact persons:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_persons_new_selectall">
+           <property name="text">
+            <string>Select All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_persons_new_selectnone">
+           <property name="text">
+            <string>Select None</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="trw_persons_new">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="indentation">
+          <number>0</number>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QLabel" name="lbl_persons_modified">
+           <property name="text">
+            <string>Modified contact persons:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_persons_modified_selectall">
+           <property name="text">
+            <string>Select All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_persons_modified_selectnone">
+           <property name="text">
+            <string>Select None</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTreeWidget" name="trw_persons_modified">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="indentation">
+          <number>0</number>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_circuits">
       <attribute name="title">
        <string>Circuits</string>
@@ -181,9 +280,6 @@
          </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
-         </property>
-         <property name="indentation">
-          <number>0</number>
          </property>
          <property name="uniformRowHeights">
           <bool>true</bool>
@@ -227,9 +323,6 @@
          </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
-         </property>
-         <property name="indentation">
-          <number>0</number>
          </property>
          <property name="uniformRowHeights">
           <bool>true</bool>
@@ -281,9 +374,6 @@
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
-         <property name="indentation">
-          <number>0</number>
-         </property>
          <column>
           <property name="text">
            <string notr="true">1</string>
@@ -323,9 +413,6 @@
          </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
-         </property>
-         <property name="indentation">
-          <number>0</number>
          </property>
          <column>
           <property name="text">

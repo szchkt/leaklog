@@ -22,6 +22,8 @@
 #include "records.h"
 #include "global.h"
 
+#include <QDateTime>
+
 EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : EditDialogueTab(parent),
       customer_id(customer_id)
@@ -53,31 +55,38 @@ EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QStri
 
 void EditCircuitDialogueCompressorsTab::save(const QVariant & circuit_id)
 {
+    qint64 next_id = -1;
+
     QList<MTDictionary> all_values = compressors_table->allValues();
 
+    Compressor compressor;
     for (int i = 0; i < all_values.count(); ++i) {
-        Compressor compressor_rec;
+        QVariantMap map;
+
         if (all_values.at(i).contains("id")) {
-            compressor_rec = Compressor(all_values.at(i).value("id"));
+            compressor = Compressor(all_values.at(i).value("id"));
             if (former_ids.contains(all_values.at(i).value("id").toInt()))
                 former_ids.removeAll(all_values.at(i).value("id").toInt());
         } else {
-            compressor_rec = Compressor(QString());
+            if (next_id < 0)
+                next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+            else
+                next_id++;
+
+            compressor = Compressor();
+            map.insert("id", QString::number(next_id));
         }
 
-        QVariantMap map;
         map.insert("customer_id", customer_id);
         map.insert("circuit_id", circuit_id);
         map.insert("name", all_values.at(i).value("name"));
         map.insert("manufacturer", all_values.at(i).value("manufacturer"));
         map.insert("type", all_values.at(i).value("type"));
         map.insert("sn", all_values.at(i).value("sn"));
-        compressor_rec.update(map);
+        compressor.update(map);
     }
-    for (int i = 0; i < former_ids.count(); ++i) {
-        Compressor compressor_rec(QString::number(former_ids.at(i)));
-        compressor_rec.remove();
-    }
+    for (int i = 0; i < former_ids.count(); ++i)
+        Compressor(QString::number(former_ids.at(i))).remove();
 }
 
 void EditCircuitDialogueCompressorsTab::load(const QString & circuit_id)

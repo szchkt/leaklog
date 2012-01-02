@@ -83,8 +83,10 @@ QColor Global::textColourForBaseColour(const QColor & c)
 
 QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase & db)
 {
-    if (!isDatabaseRemote(db))
+    if (!isDatabaseRemote(db)) {
         sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
+        sql.replace("BIGINT", "INTEGER");
+    }
     return sql;
 }
 
@@ -461,11 +463,11 @@ public:
     DatabaseTables() {
         dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, operator_id TEXT, operator_company TEXT, operator_address TEXT, operator_mail TEXT, operator_phone TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("persons", "id INTEGER PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("persons", "id BIGINT PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("compressors", "id BIGINT NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id BIGINT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");

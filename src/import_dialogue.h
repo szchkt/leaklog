@@ -30,6 +30,8 @@ public:
     ImportDialogue(QWidget * parent = NULL);
     inline QTreeWidget * newCustomers() { return trw_customers_new; }
     inline QTreeWidget * modifiedCustomers() { return trw_customers_modified; }
+    inline QTreeWidget * newPersons() { return trw_persons_new; }
+    inline QTreeWidget * modifiedPersons() { return trw_persons_modified; }
     inline QTreeWidget * newCircuits() { return trw_circuits_new; }
     inline QTreeWidget * modifiedCircuits() { return trw_circuits_modified; }
     inline QTreeWidget * newInspections() { return trw_inspections_new; }
@@ -47,6 +49,10 @@ private slots:
     void deselectAllNewCustomers() { setCheckState(trw_customers_new, Qt::Unchecked); }
     void selectAllModifiedCustomers() { setCheckState(trw_customers_modified, Qt::Checked); }
     void deselectAllModifiedCustomers() { setCheckState(trw_customers_modified, Qt::Unchecked); }
+    void selectAllNewPersons() { setCheckState(trw_persons_new, Qt::Checked); }
+    void deselectAllNewPersons() { setCheckState(trw_persons_new, Qt::Unchecked); }
+    void selectAllModifiedPersons() { setCheckState(trw_persons_modified, Qt::Checked); }
+    void deselectAllModifiedPersons() { setCheckState(trw_persons_modified, Qt::Unchecked); }
     void selectAllNewCircuits() { setCheckState(trw_circuits_new, Qt::Checked); }
     void deselectAllNewCircuits() { setCheckState(trw_circuits_new, Qt::Unchecked); }
     void selectAllModifiedCircuits() { setCheckState(trw_circuits_modified, Qt::Checked); }

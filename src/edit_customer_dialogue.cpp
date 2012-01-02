@@ -159,7 +159,7 @@ void EditCustomerDialogue::save()
 {
     if (!EditDialogue::save(false)) return;
 
-    int next_id = -1;
+    qint64 next_id = -1;
 
     QList<MTDictionary> all_values = persons_table->allValues();
 
@@ -174,10 +174,12 @@ void EditCustomerDialogue::save()
                 former_ids.removeAll(all_values.at(i).value("id").toInt());
         } else {
             if (next_id < 0)
-                next_id = Person().max("id");
+                next_id = qMax(Person().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+            else
+                next_id++;
 
             person = Person();
-            map.insert("id", QString::number(++next_id));
+            map.insert("id", QString::number(next_id));
         }
 
         map.insert("company_id", idFieldValue());

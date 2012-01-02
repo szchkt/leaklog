@@ -31,11 +31,24 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     trw_customers_modified->setColumnCount(Customer::attributes().count());
     trw_customers_modified->setHeaderItem(new QTreeWidgetItem(Customer::attributes().values()));
     trw_customers_modified->header()->setResizeMode(QHeaderView::ResizeToContents);
+    QStringList persons_header_items = Person::attributes().values();
+    persons_header_items.removeFirst();
+    persons_header_items.replace(0, QApplication::translate("Customer", "Customer"));
+    trw_persons_new->setColumnCount(Person::attributes().count());
+    trw_persons_new->setHeaderItem(new QTreeWidgetItem(persons_header_items));
+    trw_persons_new->header()->setResizeMode(QHeaderView::ResizeToContents);
+    trw_persons_modified->setColumnCount(Person::attributes().count());
+    trw_persons_modified->setHeaderItem(new QTreeWidgetItem(persons_header_items));
+    trw_persons_modified->header()->setResizeMode(QHeaderView::ResizeToContents);
     trw_circuits_new->setColumnCount(Circuit::attributes().count() + 1);
-    trw_circuits_new->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Customer") << Circuit::attributes().values()));
+    trw_circuits_new->setHeaderItem(new QTreeWidgetItem(QStringList()
+                                                        << QApplication::translate("Customer", "Customer")
+                                                        << Circuit::attributes().values()));
     trw_circuits_new->header()->setResizeMode(QHeaderView::ResizeToContents);
     trw_circuits_modified->setColumnCount(Circuit::attributes().count() + 1);
-    trw_circuits_modified->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Customer") << Circuit::attributes().values()));
+    trw_circuits_modified->setHeaderItem(new QTreeWidgetItem(QStringList()
+                                                             << QApplication::translate("Customer", "Customer")
+                                                             << Circuit::attributes().values()));
     trw_circuits_modified->header()->setResizeMode(QHeaderView::ResizeToContents);
     trw_inspections_new->header()->setResizeMode(QHeaderView::ResizeToContents);
     trw_inspections_modified->header()->setResizeMode(QHeaderView::ResizeToContents);
@@ -70,6 +83,10 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     QObject::connect(tbtn_customers_new_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllNewCustomers()));
     QObject::connect(tbtn_customers_modified_selectall, SIGNAL(clicked()), this, SLOT(selectAllModifiedCustomers()));
     QObject::connect(tbtn_customers_modified_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllModifiedCustomers()));
+    QObject::connect(tbtn_persons_new_selectall, SIGNAL(clicked()), this, SLOT(selectAllNewPersons()));
+    QObject::connect(tbtn_persons_new_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllNewPersons()));
+    QObject::connect(tbtn_persons_modified_selectall, SIGNAL(clicked()), this, SLOT(selectAllModifiedPersons()));
+    QObject::connect(tbtn_persons_modified_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllModifiedPersons()));
     QObject::connect(tbtn_circuits_new_selectall, SIGNAL(clicked()), this, SLOT(selectAllNewCircuits()));
     QObject::connect(tbtn_circuits_new_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllNewCircuits()));
     QObject::connect(tbtn_circuits_modified_selectall, SIGNAL(clicked()), this, SLOT(selectAllModifiedCircuits()));
@@ -97,18 +114,18 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
 }
 
 void ImportDialogue::setCheckState(QTreeWidget * trw, Qt::CheckState state) {
-    qApp->setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     for (int i = 0; i < trw->topLevelItemCount(); ++i) {
         if (!trw->topLevelItem(i)->isDisabled())
             trw->topLevelItem(i)->setCheckState(0, state);
     }
-    qApp->restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 }
 
 void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
 {
     if (column) return;
-    qApp->setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     int id = item->data(0, Qt::UserRole).toInt();
     Qt::CheckState checked = item->checkState(0);
     bool modified = item->treeWidget() == trw_customers_modified;
@@ -138,13 +155,13 @@ void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
             }
         }
     }
-    qApp->restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 }
 
 void ImportDialogue::circuitChanged(QTreeWidgetItem * item, int column)
 {
     if (column) return;
-    qApp->setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     int customer_id = item->data(0, Qt::UserRole).toInt();
     int id = item->data(1, Qt::UserRole).toInt();
     Qt::CheckState checked = item->checkState(0);
@@ -163,5 +180,5 @@ void ImportDialogue::circuitChanged(QTreeWidgetItem * item, int column)
             }
         }
     }
-    qApp->restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 }

@@ -62,6 +62,7 @@ MainWindow::MainWindow():
 {
     // Dictionaries
     dict_fieldtypes.insert("address", MTVariant::Address);
+    dict_fieldtypes.insert("operator_address", MTVariant::Address);
 
     // HTML
 #ifdef Q_WS_MAC

@@ -445,7 +445,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
 
     HTMLTableRow * row = new HTMLTableRow();
     int thead_colspan = 2;
-    for (int n = 0; n < Customer::attributes().count(); ++n) {
+    for (int n = 0; n < Customer::numBasicAttributes(); ++n) {
         if (customer_id.isEmpty())
             *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
         else
@@ -472,7 +472,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         }
         row = table->addRow(row_attrs);
         *(row->addCell()) << toolTipLink("customer", id.rightJustified(8, '0'), id);
-        for (int n = 1; n < Customer::attributes().count(); ++n)
+        for (int n = 1; n < Customer::numBasicAttributes(); ++n)
             *(row->addCell()) << MTVariant(list.at(i).value(Customer::attributes().key(n)),
                                        (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(n))).toString();
         *(row->addCell()) << list.at(i).value("circuits_count").toString();

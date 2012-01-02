@@ -56,6 +56,7 @@ public:
     void readOperatorValues();
 
     static const MTDictionary & attributes();
+    static int numBasicAttributes();
 };
 
 class Circuit : public DBRecord
@@ -274,6 +275,8 @@ class Person : public MTRecord
 public:
     Person(const QString & = QString());
     Person(const QString &, const QString &);
+
+    static const MTDictionary & attributes();
 };
 
 class CircuitUnitType : public DBRecord
@@ -322,6 +325,8 @@ class Compressor : public MTRecord
 {
 public:
     Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+
+    static const MTDictionary & attributes();
 };
 
 class InspectionsCompressor : public MTRecord
