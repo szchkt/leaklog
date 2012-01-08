@@ -80,12 +80,16 @@ void EditCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QS
         UNIT_TYPE_ID = 4,
         UNIT_ID = 5
     };
-    MTSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
-                            " circuit_unit_types.location, circuit_unit_types.id, circuit_units.id AS unit_id"
-                            " FROM circuit_units"
-                            " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                            " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
-                    .arg(customer_id.toInt()).arg(circuit_id.toInt()));
+    MTSqlQuery query;
+    query.prepare("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
+                  " circuit_unit_types.location, circuit_unit_types.id, circuit_units.id AS unit_id"
+                  " FROM circuit_units"
+                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                  " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id");
+    query.bindValue(":customer_id", customer_id.toInt());
+    query.bindValue(":circuit_id", circuit_id.toInt());
+    query.exec();
+
     while (query.next()) {
         former_ids.append(query.value(UNIT_ID).toInt());
         cells.insert("manufacturer", new EditDialogueTableCell(query.value(MANUFACTURER), "manufacturer"));
@@ -149,8 +153,10 @@ void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * qit
     EditCircuitDialogueTreeItem * item = NULL;
     if (parent_item->isType() || parent_item->childCount()) return;
 
-    MTSqlQuery query(QString("SELECT id, type, location FROM circuit_unit_types WHERE manufacturer = '%1' ORDER BY type")
-                    .arg(parent_item->text(0)));
+    MTSqlQuery query;
+    query.prepare("SELECT id, type, location FROM circuit_unit_types WHERE manufacturer = :manufacturer ORDER BY type");
+    query.bindValue(":manufacturer", parent_item->text(0));
+    query.exec();
 
     while (query.next()) {
         item = new EditCircuitDialogueTreeItem(parent_item);

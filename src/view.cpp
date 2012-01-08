@@ -2162,27 +2162,30 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         ITEM_TYPE_ID = 12
                };
 
-    MTSqlQuery categories_query(QString("SELECT assembly_record_items.value, assembly_record_items.name,"
-                                       " assembly_record_item_categories.id, assembly_record_item_categories.name,"
-                                       " assembly_record_item_categories.display_options, assembly_record_items.list_price,"
-                                       " assembly_record_items.acquisition_price, assembly_record_items.unit,"
-                                       " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type,"
-                                       " assembly_record_item_categories.display_position,"
-                                       " assembly_record_items.discount, assembly_record_item_types.id"
-                                       " FROM assembly_record_items"
-                                       " LEFT JOIN assembly_record_item_types"
-                                       " ON assembly_record_items.item_type_id = assembly_record_item_types.id"
-                                       " AND assembly_record_items.source = %1"
-                                       " LEFT JOIN assembly_record_item_categories"
-                                       " ON assembly_record_items.category_id = assembly_record_item_categories.id"
-                                       " LEFT JOIN assembly_record_type_categories"
-                                       " ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id"
-                                       " AND assembly_record_type_categories.record_type_id = %3"
-                                       " WHERE arno = '%2' ORDER BY assembly_record_type_categories.position,"
-                                       " assembly_record_item_types.category_id, assembly_record_item_types.name")
-                               .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
-                               .arg(inspection.value("arno").toString())
-                               .arg(inspection.value("ar_type").toInt()));
+    MTSqlQuery categories_query;
+    categories_query.prepare("SELECT assembly_record_items.value, assembly_record_items.name,"
+                             " assembly_record_item_categories.id, assembly_record_item_categories.name,"
+                             " assembly_record_item_categories.display_options, assembly_record_items.list_price,"
+                             " assembly_record_items.acquisition_price, assembly_record_items.unit,"
+                             " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type,"
+                             " assembly_record_item_categories.display_position,"
+                             " assembly_record_items.discount, assembly_record_item_types.id"
+                             " FROM assembly_record_items"
+                             " LEFT JOIN assembly_record_item_types"
+                             " ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                             " AND assembly_record_items.source = :source"
+                             " LEFT JOIN assembly_record_item_categories"
+                             " ON assembly_record_items.category_id = assembly_record_item_categories.id"
+                             " LEFT JOIN assembly_record_type_categories"
+                             " ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id"
+                             " AND assembly_record_type_categories.record_type_id = :ar_type"
+                             " WHERE arno = :arno ORDER BY assembly_record_type_categories.position,"
+                             " assembly_record_item_types.category_id, assembly_record_item_types.name");
+    categories_query.bindValue(":source", AssemblyRecordItem::AssemblyRecordItemTypes);
+    categories_query.bindValue(":arno", inspection.value("arno").toString());
+    categories_query.bindValue(":ar_type", inspection.value("ar_type").toInt());
+    categories_query.exec();
+
     int last_category = -1;
     int num_columns = 6, i, n;
     int colspans[num_columns];
@@ -2426,12 +2429,16 @@ HTMLTable * MainWindow::circuitUnitsTable(const QString & customer_id, const QSt
         LOCATION = 3,
         UNIT_TYPE_ID = 4
     };
-    MTSqlQuery query(QString("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
-                            " circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
-                            " FROM circuit_units"
-                            " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                            " WHERE circuit_units.company_id = %1 AND circuit_units.circuit_id = %2")
-                    .arg(customer_id.toInt()).arg(circuit_id.toInt()));
+    MTSqlQuery query;
+    query.prepare("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
+                  " circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+                  " FROM circuit_units"
+                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                  " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id");
+    query.bindValue(":customer_id", customer_id.toInt());
+    query.bindValue(":circuit_id", circuit_id.toInt());
+    query.exec();
+
     if (query.next()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         table->addClass("circuit_units");
@@ -2548,7 +2555,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (circuit_id.toInt() >= 0) parents.insert("circuit", circuit_id);
     MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
                     " LEFT JOIN customers ON customers.id = inspections.customer"
-                    " LEFT JOIN persons ON inspections.operator = persons.id",
+                    " LEFT JOIN persons ON inspections.operator = CAST(persons.id AS text)",
                     "inspections.date", "", parents);
     record.setCustomWhere("arno <> ''");
     if (!navigation->isFilterEmpty()) {
