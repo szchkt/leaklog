@@ -58,26 +58,26 @@ void DBFile::setFileName(const QString & file_name)
     setData(file.readAll());
 }
 
-void DBFile::setPixmap(const QString & file_name)
+void DBFile::setImage(const QString & file_name)
 {
     this->file_name = file_name;
     if (file_name.isEmpty())
         return;
 
-    QPixmap pixmap(file_name);
-    if (pixmap.isNull())
+    QImage image(file_name);
+    if (image.isNull())
         return;
 
-    setPixmap(pixmap);
+    setImage(image);
 }
 
-void DBFile::setPixmap(QPixmap & pixmap)
+void DBFile::setImage(QImage & image)
 {
     QBuffer buffer;
     buffer.open(QIODevice::WriteOnly);
-    if (pixmap.height() > IMAGE_MAX_SIZE || pixmap.width() > IMAGE_MAX_SIZE)
-        pixmap = pixmap.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    pixmap.save(&buffer, "JPG", JPEG_QUALITY);
+    if (image.height() > IMAGE_MAX_SIZE || image.width() > IMAGE_MAX_SIZE)
+        image = image.scaled(QSize(IMAGE_MAX_SIZE, IMAGE_MAX_SIZE), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    image.save(&buffer, "JPG", JPEG_QUALITY);
     buffer.close();
     setData(buffer.data());
 }
@@ -162,7 +162,7 @@ void DBFileChooser::browse()
                                                      "Images (*.png *.jpg)");
     if (!file_name.isNull()) {
         name_lbl->setText(QFileInfo(file_name).fileName());
-        db_file->setPixmap(file_name);
+        db_file->setImage(file_name);
         changed = true;
     }
 }
