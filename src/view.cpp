@@ -1611,8 +1611,8 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
         inspectors_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
-                                                           " (SELECT COUNT(date) FROM inspections WHERE inspector = inspectors.id) AS inspections_count,"
-                                                           " (SELECT COUNT(date) FROM repairs WHERE repairman = inspectors.id) AS repairs_count"));
+       " (SELECT COUNT(date) FROM inspections WHERE inspector = CAST(inspectors.id AS text)) AS inspections_count,"
+       " (SELECT COUNT(date) FROM repairs WHERE repairman = CAST(inspectors.id AS text)) AS repairs_count"));
 
     HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     if (inspector_id.isEmpty())

@@ -143,20 +143,23 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             DISCOUNT = 16,
             AUTO_SHOW = 17
         };
-        MTSqlQuery items_query(QString("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
-                                      " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
-                                      " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit,"
-                                      " assembly_record_items.discount, assembly_record_item_types.discount, assembly_record_item_types.auto_show"
-                                      " FROM assembly_record_item_types"
-                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
-                                      " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
-                                      " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
-                                      " WHERE assembly_record_item_types.category_id IN"
-                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %3)")
-                              .arg(assemblyRecordId().toString())
-                              .arg(AssemblyRecordItem::AssemblyRecordItemTypes)
-                              .arg(assemblyRecordType().toString()));
+        MTSqlQuery items_query;
+        items_query.prepare("SELECT assembly_record_item_types.id, assembly_record_item_types.name, assembly_record_item_types.acquisition_price, assembly_record_item_types.list_price,"
+                            " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                            " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_item_types.inspection_variable_id,"
+                            " assembly_record_item_types.value_data_type, assembly_record_items.name, assembly_record_items.unit, assembly_record_item_types.unit,"
+                            " assembly_record_items.discount, assembly_record_item_types.discount, assembly_record_item_types.auto_show"
+                            " FROM assembly_record_item_types"
+                            " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                            " AND assembly_record_items.arno = :arno AND assembly_record_items.source = :source"
+                            " LEFT JOIN assembly_record_item_categories ON assembly_record_item_types.category_id = assembly_record_item_categories.id"
+                            " WHERE assembly_record_item_types.category_id IN"
+                            " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = :ar_type)");
+        items_query.bindValue(":arno", assemblyRecordId().toString());
+        items_query.bindValue(":source", AssemblyRecordItem::AssemblyRecordItemTypes);
+        items_query.bindValue(":ar_type", assemblyRecordType().toInt());
+        items_query.exec();
+
         while (items_query.next()) {
             cells_map.insert("name", new EditDialogueTableCell(items_query.value(ITEM_NAME).isNull() ? items_query.value(NAME) : items_query.value(ITEM_NAME), "name"));
             cells_map.insert("value", new EditDialogueTableCell(items_query.value(VALUE), "value", items_query.value(INSPECTION_VAR).toString().isEmpty() ? items_query.value(VALUE_DATA_TYPE).toInt() : -1));
@@ -195,23 +198,26 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             DISCOUNT = 15,
             UNIT_ID = 16
         };
-        MTSqlQuery units_query(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
-                                      " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit,"
-                                      " assembly_record_items.discount, circuit_unit_types.discount, circuit_units.id"
-                                      " FROM circuit_units"
-                                      " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
-                                      " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
-                                      " LEFT JOIN assembly_record_item_categories ON %5 = assembly_record_item_categories.id"
-                                      " WHERE circuit_units.company_id = %3 AND circuit_units.circuit_id = %4 AND %5 IN"
-                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %6)")
-                              .arg(assemblyRecordId().toString())
-                              .arg(AssemblyRecordItem::CircuitUnitTypes)
-                              .arg(customer_id)
-                              .arg(circuit_id)
-                              .arg(CIRCUIT_UNITS_CATEGORY_ID)
-                              .arg(assemblyRecordType().toString()));
+        MTSqlQuery units_query;
+        units_query.prepare(QString("SELECT circuit_unit_types.id, circuit_unit_types.manufacturer, circuit_unit_types.type, circuit_unit_types.acquisition_price, circuit_unit_types.list_price,"
+                                    " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                                    " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit, circuit_unit_types.unit,"
+                                    " assembly_record_items.discount, circuit_unit_types.discount, circuit_units.id"
+                                    " FROM circuit_units"
+                                    " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
+                                    " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
+                                    " AND assembly_record_items.arno = :arno AND assembly_record_items.source = :source"
+                                    " LEFT JOIN assembly_record_item_categories ON %1 = assembly_record_item_categories.id"
+                                    " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id AND %1 IN"
+                                    " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = :ar_type)")
+                                    .arg(CIRCUIT_UNITS_CATEGORY_ID));
+        units_query.bindValue(":arno", assemblyRecordId().toString());
+        units_query.bindValue(":source", AssemblyRecordItem::CircuitUnitTypes);
+        units_query.bindValue(":customer_id", customer_id);
+        units_query.bindValue(":circuit_id", circuit_id);
+        units_query.bindValue(":ar_type", assemblyRecordType().toInt());
+        units_query.exec();
+
         while (units_query.next()) {
             QString name = units_query.value(ITEM_NAME).isNull() ?
                            QString("%1 - %2").arg(units_query.value(MANUFACTURER).toString()).arg(units_query.value(TYPE).toString())
@@ -249,20 +255,23 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
             ITEM_UNIT = 11,
             ITEM_DISCOUNT = 12
         };
-        MTSqlQuery inspectors_query(QString("SELECT inspectors.id, inspectors.person, inspectors.acquisition_price, inspectors.list_price,"
-                                      " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
-                                      " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit,"
-                                      " assembly_record_items.discount"
-                                      " FROM inspectors"
-                                      " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = inspectors.id"
-                                      " AND assembly_record_items.arno = '%1' AND assembly_record_items.source = %2"
-                                      " LEFT JOIN assembly_record_item_categories ON %3 = assembly_record_item_categories.id"
-                                      " WHERE %3 IN"
-                                      " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = %4)")
-                              .arg(assemblyRecordId().toString())
-                              .arg(AssemblyRecordItem::Inspectors)
-                              .arg(INSPECTORS_CATEGORY_ID)
-                              .arg(assemblyRecordType().toString()));
+        MTSqlQuery inspectors_query;
+        inspectors_query.prepare(QString("SELECT inspectors.id, inspectors.person, inspectors.acquisition_price, inspectors.list_price,"
+                                         " assembly_record_items.value, assembly_record_item_categories.name, assembly_record_item_categories.id, assembly_record_item_categories.display_options,"
+                                         " assembly_record_items.acquisition_price, assembly_record_items.list_price, assembly_record_items.name, assembly_record_items.unit,"
+                                         " assembly_record_items.discount"
+                                         " FROM inspectors"
+                                         " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = inspectors.id"
+                                         " AND assembly_record_items.arno = :arno AND assembly_record_items.source = :source"
+                                         " LEFT JOIN assembly_record_item_categories ON %1 = assembly_record_item_categories.id"
+                                         " WHERE %1 IN"
+                                         " (SELECT DISTINCT record_category_id FROM assembly_record_type_categories WHERE record_type_id = :record_type_id)")
+                                         .arg(INSPECTORS_CATEGORY_ID));
+        inspectors_query.bindValue(":arno", assemblyRecordId().toString());
+        inspectors_query.bindValue(":source", AssemblyRecordItem::Inspectors);
+        inspectors_query.bindValue(":record_type_id", assemblyRecordType().toInt());
+        inspectors_query.exec();
+
         while (inspectors_query.next()) {
             QString name = inspectors_query.value(ITEM_NAME).isNull() ? inspectors_query.value(NAME).toString() : inspectors_query.value(ITEM_NAME).toString();
             cells_map.insert("name", new EditDialogueTableCell(name, "name"));
@@ -295,9 +304,10 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
     if (arno != original_arno)
         AssemblyRecordItem(arno).remove();
 
-    MTSqlQuery query(QString("UPDATE inspections SET ar_type = %2 WHERE arno = '%1'")
-                     .arg(arno)
-                     .arg(ar_type_w->variantValue().toString()));
+    MTSqlQuery query;
+    query.prepare("UPDATE inspections SET ar_type = :ar_type WHERE arno = :arno");
+    query.bindValue(":ar_type", ar_type_w->variantValue().toInt());
+    query.bindValue(":arno", arno);
     query.exec();
 
     QVariantMap map;
@@ -346,7 +356,9 @@ void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()
 
     if (current_arno == arno_w->text()) return;
 
-    MTSqlQuery query(QString("SELECT date, ar_type FROM inspections WHERE arno = '%1'").arg(arno_w->text()));
+    MTSqlQuery query;
+    query.prepare("SELECT date, ar_type FROM inspections WHERE arno = :arno");
+    query.bindValue(":arno", arno_w->text());
     if (query.next()) {
         QMessageBox message(this);
         message.setWindowTitle(tr("Assembly record number already in use"));
