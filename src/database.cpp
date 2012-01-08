@@ -255,7 +255,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         files.exec("SELECT id, data FROM files");
         while (files.next()) {
             QByteArray png;
-            if (isDatabaseRemote())
+            if (isDatabaseRemote(database))
                 png = QByteArray::fromBase64(QByteArray::fromHex(files.value(1).toByteArray()));
             else
                 png = files.value(1).toByteArray();
@@ -267,7 +267,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
             buffer.close();
 
             QByteArray jpg;
-            if (isDatabaseRemote())
+            if (isDatabaseRemote(database))
                 jpg = buffer.data().toBase64();
             else
                 jpg = buffer.data();
@@ -279,7 +279,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
         }
     }
     if (v > 0 && v < 0.9084) {
-        if (isDatabaseRemote()) {
+        if (isDatabaseRemote(database)) {
             query.exec("ALTER TABLE persons ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE compressors ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE inspections_compressors ALTER COLUMN compressor_id TYPE BIGINT");
