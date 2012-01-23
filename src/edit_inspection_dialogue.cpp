@@ -26,6 +26,7 @@
 #include "edit_inspection_dialogue_compressors.h"
 #include "edit_inspection_dialogue_assembly_record_tab.h"
 #include "edit_dialogue_layout.h"
+#include "edit_inspection_dialogue_access.h"
 #include "variables.h"
 
 #include <QMessageBox>
@@ -49,7 +50,11 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * pare
         tabs.append(compressors);
     }
 
-    addTab(new EditInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *) inputWidget("arno"), (MDComboBox *) inputWidget("ar_type"), md_record->parent("customer"), md_record->parent("circuit")));
+    addTab(new EditInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *) inputWidget("arno"),
+                                                       (MDComboBox *) inputWidget("ar_type"),
+                                                       new EditInspectionDialogueAccess(this),
+                                                       md_record->parent("customer"),
+                                                       md_record->parent("circuit")));
     addTab(new EditInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString()));
 }
 

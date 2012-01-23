@@ -75,6 +75,7 @@ protected:
     friend class EditInspectionDialogueTab;
     friend class CircuitUnitType;
     friend class Style;
+    friend class EditInspectionDialogueAccess;
 };
 
 #endif // EDIT_DIALOGUE_H

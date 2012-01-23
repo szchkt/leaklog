@@ -23,13 +23,14 @@
 #include "tabbed_edit_dialogue.h"
 
 class EditDialogueGroupsLayout;
+class EditInspectionDialogueAccess;
 
 class EditInspectionDialogueAssemblyRecordTab : public EditDialogueTab
 {
     Q_OBJECT
 
 public:
-    EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *, MDComboBox *, const QString &, const QString &, QWidget * = NULL);
+    EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *, MDComboBox *, EditInspectionDialogueAccess *, const QString &, const QString &, QWidget * = NULL);
 
     void save(const QVariant &);
     int saveNewItemType(const MTDictionary &);
@@ -53,6 +54,7 @@ private:
     QString customer_id;
     QString circuit_id;
     bool arno_being_changed;
+    EditInspectionDialogueAccess * inspection_dialogue_access;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_ASSEMBLY_RECORD_H

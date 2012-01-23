@@ -25,13 +25,15 @@
 #include "edit_dialogue_layout.h"
 #include "global.h"
 #include "mtsqlquery.h"
+#include "edit_inspection_dialogue_access.h"
 
 #include <QMessageBox>
 #include <QApplication>
 
-EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, const QString & customer_id, const QString & circuit_id, QWidget * parent)
+EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, EditInspectionDialogueAccess * inspection_dialogue_access, const QString & customer_id, const QString & circuit_id, QWidget * parent)
     : EditDialogueTab(parent),
-      arno_being_changed(false)
+      arno_being_changed(false),
+      inspection_dialogue_access(inspection_dialogue_access)
 {
     this->ar_type_w = ar_type_w;
     this->arno_w = arno_w;
@@ -95,10 +97,10 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
     QString name_format = type.value("name_format").toString();
 
     if (!name_format.isEmpty()) {
-        QDate current_date = QDate::currentDate();
-        name_format.replace("year", QString::number(current_date.year()));
-        name_format.replace("month", QString::number(current_date.month()));
-        name_format.replace("day", QString::number(current_date.day()));
+        QDate current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), "yyyy.MM.dd-hh:mm").date();
+        name_format.replace("year", QString("%1").arg(current_date.year(), 4, 10, QChar('0')));
+        name_format.replace("month", QString("%1").arg(current_date.month(), 2, 10, QChar('0')));
+        name_format.replace("day", QString("%1").arg(current_date.day(), 2, 10, QChar('0')));
 
         name_format.replace("customer_id", customer_id);
         name_format.replace("circuit_id", circuit_id);
