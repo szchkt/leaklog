@@ -365,4 +365,16 @@ private:
     QString selected;
 };
 
+class MDHiddenIdField : public MDInputWidget
+{
+public:
+    MDHiddenIdField(const QString &, QWidget *, const QVariant &);
+
+    QVariant variantValue() const;
+    void setVariantValue(const QVariant &);
+
+private:
+    QVariant value;
+};
+
 #endif // INPUT_WIDGETS_H

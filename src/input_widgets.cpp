@@ -499,3 +499,21 @@ QVariant MDRadioButtonGroup::variantValue() const
     }
     return QVariant();
 }
+
+MDHiddenIdField::MDHiddenIdField(const QString & id, QWidget * parent, const QVariant & value):
+MDInputWidget(id, "", parent, NULL)
+{
+    setShowInForm(false);
+    iw_label->setVisible(false);
+    setVariantValue(value);
+}
+
+QVariant MDHiddenIdField::variantValue() const
+{
+    return value;
+}
+
+void MDHiddenIdField::setVariantValue(const QVariant & value)
+{
+    this->value = value;
+}

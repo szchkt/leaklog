@@ -28,6 +28,9 @@ class EditAssemblyRecordDialogue : public TabbedEditDialogue
 
 public:
     EditAssemblyRecordDialogue(DBRecord *, QWidget * = NULL);
+
+protected slots:
+    virtual void save();
 };
 
 class EditAssemblyRecordDialogueTab : public EditDialogueTab

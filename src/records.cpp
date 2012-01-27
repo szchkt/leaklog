@@ -718,7 +718,7 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id")));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString()));
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
@@ -782,7 +782,7 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id")));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString()));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
@@ -881,10 +881,7 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
 
-    if (attributes.value("id").toInt() >= 1000)
-        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999, QString(), false));
-    else
-        md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 999));
+    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
@@ -996,7 +993,7 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));

@@ -20,6 +20,7 @@
 #include "edit_assembly_record_dialogue.h"
 
 #include "records.h"
+#include "input_widgets.h"
 
 #include <QTreeWidgetItem>
 #include <QLabel>
@@ -31,6 +32,16 @@ EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, QWidge
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
     addTab(new EditAssemblyRecordDialogueTab(idFieldValue().toInt()));
+}
+
+void EditAssemblyRecordDialogue::save()
+{
+    MDAbstractInputWidget * id_iw = inputWidget("id");
+    QString id = id_iw->variantValue().toString();
+    if (id.isEmpty()) {
+        id_iw->setVariantValue(AssemblyRecordType("").max("id") + (qint64)1);
+    }
+    TabbedEditDialogue::save();
 }
 
 EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget * parent):

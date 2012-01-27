@@ -29,6 +29,7 @@
 #include "edit_assembly_record_dialogue.h"
 #include "edit_circuit_dialogue.h"
 #include "edit_inspector_dialogue.h"
+#include "edit_dialogue_with_auto_id.h"
 #include "import_dialogue.h"
 #include "import_csv_dialogue.h"
 #include "records.h"
@@ -2812,7 +2813,7 @@ void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemType record("");
-    EditDialogue * md = new EditDialogue(&record, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemType(record.id().toInt(), true);
@@ -2836,7 +2837,7 @@ void MainWindow::editAssemblyRecordItemType()
     if (!isAssemblyRecordItemTypeSelected()) { return; }
     QString old_id = selectedAssemblyRecordItemType();
     AssemblyRecordItemType record(old_id);
-    EditDialogue * md = new EditDialogue(&record, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -2872,7 +2873,7 @@ void MainWindow::addAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemCategory record("");
-    EditDialogue * md = new EditDialogue(&record, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&record, this, 1000);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemCategory(record.id().toInt(), true);
@@ -2896,7 +2897,7 @@ void MainWindow::editAssemblyRecordItemCategory()
     if (!isAssemblyRecordItemCategorySelected()) { return; }
     QString old_id = selectedAssemblyRecordItemCategory();
     AssemblyRecordItemCategory record(old_id);
-    EditDialogue * md = new EditDialogue(&record, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&record, this, 1000);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -2955,7 +2956,7 @@ void MainWindow::addCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     CircuitUnitType unit_type("");
-    EditDialogue * md = new EditDialogue(&unit_type, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&unit_type, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuitUnitType(unit_type.id().toInt(), true);
@@ -2979,7 +2980,7 @@ void MainWindow::editCircuitUnitType()
     if (!isCircuitUnitTypeSelected()) { return; }
     QString old_id = selectedCircuitUnitType();
     CircuitUnitType record(old_id);
-    EditDialogue * md = new EditDialogue(&record, this);
+    EditDialogue * md = new EditDialogueWithAutoId(&record, this);
     if (md->exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
