@@ -122,7 +122,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", "<", "10");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "6");
             }
         }
         w = "1001";
@@ -135,7 +135,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", "<", "10");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "8");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "8");
             }
         }
         w = "1002";
@@ -148,7 +148,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", "<", "100");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "4");
             }
         }
         w = "1003";
@@ -161,7 +161,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", "<", "100");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "6");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "6");
             }
         }
         w = "1004";
@@ -173,7 +173,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", ">=", "100");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "2");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "2");
             }
         }
         w = "1005";
@@ -185,7 +185,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int
                 initFilter(map, w, "refrigerant_amount", ">=", "100");
             } else if (type == 2) {
                 initCondition(map, w, "nominal", "=", "0");
-                initCondition(map, w, "100*refr_add_am/refrigerant_amount", ">", "4");
+                initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "4");
             }
         }
         w = "1100";
