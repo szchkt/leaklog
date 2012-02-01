@@ -50,17 +50,19 @@ void EditDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
 }
 
 EditDialogue::EditDialogue(QWidget * parent):
-QDialog(parent)
+    QDialog(parent),
+    EditDialogueWidgets()
 {}
 
 EditDialogue::EditDialogue(DBRecord * record, QWidget * parent):
-QDialog(parent)
+    QDialog(parent),
+    EditDialogueWidgets()
 {
     init(record);
 
     md_record->initEditDialogue(this);
 
-    EditDialogueColumnLayout(&md_inputwidgets, md_grid_main).layout();
+    EditDialogueColumnLayout(&md_inputwidgets, md_grid_main, md_rows_in_column).layout();
 }
 
 void EditDialogue::setWindowTitle(const QString & title)

@@ -36,7 +36,7 @@ TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, QWidget * parent)
 
     md_record->initEditDialogue(this);
 
-    EditDialogueColumnLayout(&md_inputwidgets, md_grid_main).layout();
+    EditDialogueColumnLayout(&md_inputwidgets, md_grid_main, md_rows_in_column).layout();
 }
 
 TabbedEditDialogue::~TabbedEditDialogue()

@@ -90,6 +90,7 @@ void EditInspectionDialogueCompressors::save(const QVariant & inspection_date)
 
 InspectionCompressorTab::InspectionCompressorTab(int id, QWidget * parent)
     : QWidget(parent),
+      EditDialogueWidgets(),
       m_id(id),
       m_record_id(-1)
 {

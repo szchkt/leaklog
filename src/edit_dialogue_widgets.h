@@ -27,6 +27,8 @@ class MDAbstractInputWidget;
 class EditDialogueWidgets
 {
 public:
+    EditDialogueWidgets(): md_rows_in_column(12) {}
+
     void addInputWidget(MDAbstractInputWidget * iw) { md_inputwidgets << iw; }
     void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget *> &);
 
@@ -36,9 +38,12 @@ public:
 
     virtual QWidget * widget() = 0;
 
+    void setMaximumRowCount(int rows_in_column) { md_rows_in_column = rows_in_column; }
+
 protected:
     QStringList md_used_ids;
     QList<MDAbstractInputWidget *> md_inputwidgets;
+    int md_rows_in_column;
 };
 
 #endif // EDIT_DIALOGUE_WIDGETS_H

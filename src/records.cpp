@@ -275,6 +275,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(5, '0');
     md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
+    md->setMaximumRowCount(10);
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
