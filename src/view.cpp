@@ -1715,10 +1715,14 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
     out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "</tr><tr>";
-    out << "<th>" << tr("At the beginning of this year") << "</th>";
+    out << "<th>" << ((month_from > 1 || month_until < 12) ?
+                          tr("At the beginning of the period") :
+                          tr("At the beginning of the year")) << "</th>";
     out << "<th>" << tr("Added") << "</th>";
     out << "<th>" << tr("Recovered") << "</th>";
-    out << "<th>" << tr("At the end of this year") << "</th>";
+    out << "<th>" << ((month_from > 1 || month_until < 12) ?
+                          tr("At the end of the period") :
+                          tr("At the end of the year")) << "</th>";
     out << "</tr>";
 
     MTRecord inspections("inspections", "date", "", MTDictionary("customer", customer_id));

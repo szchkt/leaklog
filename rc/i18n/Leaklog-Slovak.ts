@@ -2909,14 +2909,6 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Údaje o prevádzkovateľovi</translation>
     </message>
     <message>
-        <source>At the beginning of this year</source>
-        <translation>Na začiatku roka</translation>
-    </message>
-    <message>
-        <source>At the end of this year</source>
-        <translation>Na konci roka</translation>
-    </message>
-    <message>
         <source>Phone:</source>
         <translation>Telefón:</translation>
     </message>
@@ -3547,6 +3539,22 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Show</source>
         <translation>Zobraziť</translation>
+    </message>
+    <message>
+        <source>At the beginning of the period</source>
+        <translation>Na začiatku obdobia</translation>
+    </message>
+    <message>
+        <source>At the beginning of the year</source>
+        <translation>Na začiatku roka</translation>
+    </message>
+    <message>
+        <source>At the end of the period</source>
+        <translation>Na konci obdobia</translation>
+    </message>
+    <message>
+        <source>At the end of the year</source>
+        <translation>Na konci roka</translation>
     </message>
 </context>
 <context>
