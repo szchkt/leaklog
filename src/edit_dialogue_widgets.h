@@ -27,7 +27,7 @@ class MDAbstractInputWidget;
 class EditDialogueWidgets
 {
 public:
-    EditDialogueWidgets(): md_rows_in_column(12) {}
+    EditDialogueWidgets(): md_rows_in_column(14) {}
 
     void addInputWidget(MDAbstractInputWidget * iw) { md_inputwidgets << iw; }
     void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget *> &);
