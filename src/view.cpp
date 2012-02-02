@@ -2063,7 +2063,6 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
 
 QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highlighted_id)
 {
-    QString html; MTTextStream out(&html);
     AssemblyRecordItemCategory all_items("");
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
@@ -2073,32 +2072,51 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
         items = all_items.listAll();
     else
         items = all_items.listAll("*", m_settings.lastLink()->orderBy());
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    QString thead = "<tr>"; int thead_colspan = 2;
+
+    HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    int thead_colspan = 5;
+    HTMLTableRow * row = new HTMLTableRow();
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
-        thead.append("<th><a href=\"assemblyrecorditemcategory:/order_by:"
-                     + AssemblyRecordItemCategory::attributes().key(n) + "\">"
-                     + AssemblyRecordItemCategory::attributes().value(n) + "</a></th>");
+        *(row->addHeaderCell("rowspan=\"2\"")->link("assemblyrecorditemcategory:/order_by:"
+                                  + AssemblyRecordItemCategory::attributes().key(n)))
+                << AssemblyRecordItemCategory::attributes().value(n);
         thead_colspan++;
     }
-    thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
-        << tr("List of Assembly Record Item Categories") << "</th></tr>";
-    out << thead;
+    *(row->addHeaderCell("colspan=\"5\"")) << tr("Show");
+    *(table.addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
+        << tr("List of Assembly Record Item Categories");
+    table << row;
+    row = table.addRow();
+    *(row->addHeaderCell()) << tr("Value");
+    *(row->addHeaderCell()) << tr("Acquisition price");
+    *(row->addHeaderCell()) << tr("List price");
+    *(row->addHeaderCell()) << tr("Discount");
+    *(row->addHeaderCell()) << tr("Total");
+
     QString id;
     for (int i = 0; i < items.count(); ++i) {
         id = items.at(i).value("id").toString();
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecorditemcategory:" + id);
-        if (highlighted_id == id)
-            out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
+        row = table.addRow(QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"%2 style=\"cursor: pointer;\"")
+                           .arg("assemblyrecorditemcategory:" + id)
+                           .arg(highlighted_id == id ? " class=\"selected\"" : ""));
+        *(row->addCell()->link(""))
+                << id;
         for (int n = 1; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
-            out << "<td>" << escapeString(items.at(i).value(AssemblyRecordItemCategory::attributes().key(n)).toString()) << "</td>";
+            *(row->addCell())
+                    << escapeString(items.at(i).value(AssemblyRecordItemCategory::attributes().key(n)).toString());
         }
-        out << "</tr>";
+        addDisplayOptionsCellToCategoriesTable(row, items.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowValue);
+        addDisplayOptionsCellToCategoriesTable(row, items.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowAcquisitionPrice);
+        addDisplayOptionsCellToCategoriesTable(row, items.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowListPrice);
+        addDisplayOptionsCellToCategoriesTable(row, items.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowDiscount);
+        addDisplayOptionsCellToCategoriesTable(row, items.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowTotal);
     }
-    out << "</table>";
-    return dict_html.value(Navigation::ListOfAssemblyRecordItemCategories).arg(html);
+    return dict_html.value(Navigation::ListOfAssemblyRecordItemCategories).arg(table.html());
+}
+
+void MainWindow::addDisplayOptionsCellToCategoriesTable(HTMLTableRow * row, int display_options, int value)
+{
+    *(row->addCell()) << (display_options & value ? tr("Yes") : tr("No"));
 }
 
 QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QString & circuit_id, const QString & inspection_date)

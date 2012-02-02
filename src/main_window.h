@@ -29,6 +29,7 @@ class Warnings;
 class MTTextStream;
 class HTMLTable;
 class HTMLTableCell;
+class HTMLTableRow;
 class HTMLDiv;
 class QPushButton;
 class QCloseEvent;
@@ -247,6 +248,8 @@ private:
     HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
     void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
     HTMLTable * writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
+
+    void addDisplayOptionsCellToCategoriesTable(HTMLTableRow *, int, int);
 
     QSet<int> years_expanded_in_service_company_view;
     QMap<Navigation::View, QString> dict_html;

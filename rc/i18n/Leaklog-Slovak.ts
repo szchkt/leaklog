@@ -3544,6 +3544,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>Date:</source>
         <translation>Dátum:</translation>
     </message>
+    <message>
+        <source>Show</source>
+        <translation>Zobraziť</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>
