@@ -899,6 +899,18 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
             }
         }
 
+        QString title = circuit.value("name").toString();
+        if (title.simplified().isEmpty())
+            title = circuit.value("device").toString();
+        if (title.simplified().isEmpty())
+            title = QString("%1 %2").arg(circuit.value("manufacturer").toString()).arg(circuit.value("type").toString());
+        if (title.simplified().isEmpty())
+            title = tr("Table of Inspections", "View Title");
+        else
+            title = tr("Table of Inspections: %1", "View Title").arg(title);
+        out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><th style=\"font-size: medium;\">";
+        out << escapeString(title) << "</th></tr></table><br>";
+
         out << QString("<div%1><table>").arg(c > 1 ? " class=\"print_only\"" : "");
         out << "<tr><th>" << QApplication::translate("Customer", "ID");
         out << "</th><th>" << QApplication::translate("Customer", "Company");
@@ -914,31 +926,29 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
         out << "</tr></table><br /></div>";
         out << "<table><tr><th>" << QApplication::translate("Circuit", "ID");
         out << "</th><th>" << QApplication::translate("Circuit", "Name");
+        out << "</th><th>" << QApplication::translate("Circuit", "Device");
         out << "</th><th>" << QApplication::translate("Circuit", "Manufacturer");
         out << "</th><th>" << QApplication::translate("Circuit", "Type");
         out << "</th><th>" << QApplication::translate("Circuit", "Year of purchase");
-        out << "</th><th>" << QApplication::translate("Circuit", "Date of commissioning");
+        out << "</th><th>" << QApplication::translate("Circuit", "Commissioned on");
         out << "</th><th>" << QApplication::translate("Circuit", "Refrigerant");
-        out << "</th><th>" << QApplication::translate("Circuit", "Amount of refrigerant");
         out << "</th><th>" << QApplication::translate("Circuit", "Oil");
-        out << "</th><th>" << QApplication::translate("Circuit", "Amount of oil");
         out << "</th></tr><tr>";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
         out << "<td>" << MTVariant(circuit.value("name")) << "</td>";
+        out << "<td>" << MTVariant(circuit.value("device")) << "</td>";
         out << "<td>" << MTVariant(circuit.value("manufacturer")) << "</td>";
         out << "<td>" << MTVariant(circuit.value("type")) << "</td>";
         out << "<td>" << circuit.value("year").toString() << "</td>";
         out << "<td>" << circuit.value("commissioning").toString() << "</td>";
-        out << "<td>" << circuit.value("refrigerant").toString() << "</td>";
         out << "<td>" << circuit.value("refrigerant_amount").toString()
-            << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
-        out << "<td>";
+            << "&nbsp;" << QApplication::translate("Units", "kg") << " "
+            << circuit.value("refrigerant").toString() << "</td>";
+        out << "<td>" << circuit.value("oil_amount").toString()
+            << "&nbsp;" << QApplication::translate("Units", "kg") << " ";
         if (attributeValues().contains("oil::" + circuit.value("oil").toString())) {
             out << attributeValues().value("oil::" + circuit.value("oil").toString());
         }
-        out << "</td>";
-        out << "<td>" << circuit.value("oil_amount").toString()
-            << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "</td></tr></table>";
 
         // *** Table ***

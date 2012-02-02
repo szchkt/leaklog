@@ -153,10 +153,6 @@
         <translation>Názov</translation>
     </message>
     <message>
-        <source>ID:</source>
-        <translation>IČ:</translation>
-    </message>
-    <message>
         <source>Name:</source>
         <translation>Názov:</translation>
     </message>
@@ -203,10 +199,6 @@
 </context>
 <context>
     <name>AssemblyRecordItemType</name>
-    <message>
-        <source>ID:</source>
-        <translation>IČ:</translation>
-    </message>
     <message>
         <source>Name:</source>
         <translation>Názov:</translation>
@@ -286,10 +278,6 @@
 </context>
 <context>
     <name>AssemblyRecordType</name>
-    <message>
-        <source>ID:</source>
-        <translation>IČ:</translation>
-    </message>
     <message>
         <source>Name:</source>
         <translation>Názov:</translation>
@@ -552,6 +540,10 @@
         <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
         <translation>Zmena chladiva ovplyvní predchádzajúce kontroly tohto okruhu.</translation>
     </message>
+    <message>
+        <source>Commissioned on</source>
+        <translation>Uvedenie do prevádzky</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -562,10 +554,6 @@
     <message>
         <source>Internal</source>
         <translation>Interná</translation>
-    </message>
-    <message>
-        <source>ID:</source>
-        <translation>IČ:</translation>
     </message>
     <message>
         <source>Manufacturer:</source>
@@ -3486,6 +3474,16 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Compiled by:</source>
         <translation>Spracoval:</translation>
+    </message>
+    <message>
+        <source>Table of Inspections</source>
+        <comment>View Title</comment>
+        <translation>Tabuľka kontrol</translation>
+    </message>
+    <message>
+        <source>Table of Inspections: %1</source>
+        <comment>View Title</comment>
+        <translation>Tabuľka kontrol: %1</translation>
     </message>
 </context>
 <context>
