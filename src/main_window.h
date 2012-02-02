@@ -221,7 +221,7 @@ private:
     QString viewRepairs(const QString &, int, const QString & = QString());
     QString viewAllInspectors(const QString &);
     QString viewInspector(const QString &);
-    QString viewOperatorReport(const QString &, int);
+    QString viewOperatorReport(const QString &, int, int, int);
     QString viewLeakagesByApplication();
     QString viewAgenda();
     QString viewAllAssemblyRecordTypes(const QString & = QString());

@@ -55,6 +55,8 @@ QWidget(parent)
     QObject::connect(cb_view_table, SIGNAL(currentIndexChanged(int)), this, SLOT(tableChanged(int)));
     QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
+    QObject::connect(spb_filter_month_from, SIGNAL(valueChanged(int)), this, SLOT(monthFromChanged(int)));
+    QObject::connect(spb_filter_month_until, SIGNAL(valueChanged(int)), this, SLOT(monthUntilChanged(int)));
     QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
     QObject::connect(cb_filter_column, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
@@ -129,6 +131,7 @@ void Navigation::updateView()
     le_filter->clear();
     bool filter_keyword_visible = true;
     bool filter_since_visible = true;
+    bool filter_month_visible = false;
     bool filter_visible = true;
     int group = -1;
     switch (btngrp_view->checkedId()) {
@@ -215,6 +218,7 @@ void Navigation::updateView()
         case Navigation::OperatorReport:
             group = 0;
             filter_keyword_visible = false;
+            filter_month_visible = true;
             lbl_filter_since->setText(tr("Year:"));
             spb_filter_since->setSpecialValueText(tr("Last"));
             break;
@@ -276,6 +280,10 @@ void Navigation::updateView()
     le_filter->setVisible(filter_keyword_visible);
     lbl_filter_since->setVisible(filter_since_visible);
     spb_filter_since->setVisible(filter_since_visible);
+    lbl_filter_month->setVisible(filter_month_visible);
+    spb_filter_month_from->setVisible(filter_month_visible);
+    lbl_filter_month_dash->setVisible(filter_month_visible);
+    spb_filter_month_until->setVisible(filter_month_visible);
     gb_filter->setVisible(filter_visible);
 }
 
@@ -370,6 +378,20 @@ void Navigation::toggleTableForAllCircuits()
 void Navigation::emitFilterChanged()
 {
     if (!isFilterEmpty()) emit filterChanged();
+}
+
+void Navigation::monthFromChanged(int value)
+{
+    if (spb_filter_month_until->value() < value)
+        spb_filter_month_until->setValue(value);
+    emit filterChanged();
+}
+
+void Navigation::monthUntilChanged(int value)
+{
+    if (spb_filter_month_from->value() > value)
+        spb_filter_month_from->setValue(value);
+    emit filterChanged();
 }
 
 void Navigation::enableTools(const MainWindowSettings & settings)

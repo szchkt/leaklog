@@ -65,6 +65,8 @@ public:
     inline QComboBox * tableComboBox() const { return cb_view_table; }
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
     inline int filterSinceValue() const { return spb_filter_since->value(); }
+    inline int filterMonthFromValue() const { return spb_filter_month_from->value(); }
+    inline int filterMonthUntilValue() const { return spb_filter_month_until->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
     inline bool isFilterEmpty() const { return le_filter->text().isEmpty(); }
     QString filterKeyword() const;
@@ -93,6 +95,8 @@ private slots:
     void tableChanged(int);
     void toggleTableForAllCircuits();
     void emitFilterChanged();
+    void monthFromChanged(int);
+    void monthUntilChanged(int);
 
 signals:
     // Groups

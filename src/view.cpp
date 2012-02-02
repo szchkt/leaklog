@@ -114,7 +114,9 @@ QString MainWindow::viewChanged(int view)
             case Navigation::OperatorReport:
                 if (isCustomerSelected()) {
                     html = viewOperatorReport(selectedCustomer(),
-                                              navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue());
+                                              navigation->filterSinceValue() == 1999 ? 0 : navigation->filterSinceValue(),
+                                              navigation->filterMonthFromValue(),
+                                              navigation->filterMonthUntilValue());
                 } else {
                     view = Navigation::ListOfCustomers; ok = false;
                 }
@@ -1663,16 +1665,29 @@ HTMLTable * MainWindow::writeInspectorsTable(const QString & highlighted_id, con
     return table;
 }
 
-QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
+QString MainWindow::viewOperatorReport(const QString & customer_id, int year, int month_from, int month_until)
 {
     if (year == 0)
         year = QDate::currentDate().year() - 1;
+    QString date_from = QString("%1.%2").arg(year).arg(month_from, 2, 10, QChar('0'));
+    QString date_until = QString("%1.%2").arg(year).arg(month_until + 1, 2, 10, QChar('0'));
+
+    QString interval_string = QString::number(year);
+    if (month_from > 1 || month_until < 12) {
+        if (month_from == month_until)
+            interval_string.prepend(QString("%1 ").arg(longMonthName(month_from)));
+        else
+            interval_string.prepend(QString::fromUtf8("%1 \342\200\223 %2 ")
+                                    .arg(longMonthName(month_from))
+                                    .arg(longMonthName(month_until)));
+    }
+
     QString html; MTTextStream out(&html);
     Customer customer(customer_id);
     customer.readOperatorValues();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
-    out << tr("Operator Report: %1").arg(year) << "</th></tr></table><br>";
+    out << tr("Operator Report: %1").arg(interval_string) << "</th></tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th colspan=\"3\">" << tr("Owner information") << "</th></tr><tr>";
     out << "<th>" << Customer::attributes().value("id") << "</th>";
@@ -1705,13 +1720,21 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
     out << "<th>" << tr("Recovered") << "</th>";
     out << "<th>" << tr("At the end of this year") << "</th>";
     out << "</tr>";
+
     MTRecord inspections("inspections", "date", "", MTDictionary("customer", customer_id));
     inspections.parents().insert("nominal", "0");
-    inspections.addFilter("date", QString("%1%").arg(year));
+    if (month_from > 1)
+        inspections.addFilter("date >= ?", date_from);
+    if (month_until < 12)
+        inspections.addFilter("date < ?", date_until);
+    if (month_from <= 1 || month_until >= 12)
+        inspections.addFilter("date", QString("%1%").arg(year));
+
     MTDictionary nominal_inpection_parents("customer", customer_id);
     nominal_inpection_parents.insert("nominal", "1");
+
     QVariantMap sums; QVariantMap nominal_inspection;
-    int nominal_inspection_year, commissioning_year, decommissioning_year;
+    QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
     MTSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
@@ -1723,29 +1746,29 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
         inspections.parents().insert("circuit", circuit_id);
         sums = inspections.sumAll("refr_add_am, refr_reco");
 
-        commissioning_year = QUERY_VALUE(circuits, "commissioning").toString().left(4).toInt();
-        if (commissioning_year > year)
+        commissioning_date = QUERY_VALUE(circuits, "commissioning").toString().left(7);
+        if (commissioning_date >= date_until)
             continue;
-        decommissioning_year = QUERY_VALUE(circuits, "decommissioning").toString().left(4).toInt();
+        decommissioning_date = QUERY_VALUE(circuits, "decommissioning").toString().left(7);
         if (QUERY_VALUE(circuits, "disused").toInt() == 0)
-            decommissioning_year = 9999;
-        else if (decommissioning_year == 0)
-            decommissioning_year = QDate::currentDate().year();
-        if (decommissioning_year < year)
+            decommissioning_date = "9999";
+        else if (decommissioning_date.isEmpty())
+            decommissioning_date = QString::number(QDate::currentDate().year());
+        if (decommissioning_date < date_from)
             continue;
         refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
         nominal_inpection_parents.insert("circuit", circuit_id);
         nominal_inspection = MTRecord("inspections", "date", "", nominal_inpection_parents).list("date, refr_add_am");
-        nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();
+        nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
         refrigerant_amount_begin = 0.0;
         refrigerant_amount_end = refrigerant_amount;
-        if (commissioning_year < year)
+        if (commissioning_date < date_from)
             refrigerant_amount_begin += refrigerant_amount;
-        if (nominal_inspection_year < year)
+        if (nominal_inspection_date < date_from)
             refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble();
-        if (nominal_inspection_year <= year)
+        if (nominal_inspection_date < date_until)
             refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble();
-        if (decommissioning_year == year)
+        if (decommissioning_date >= date_from && decommissioning_date < date_until)
             refrigerant_amount_end = 0.0;
 
         out << "<tr onclick=\"window.location = 'customer:" << customer_id

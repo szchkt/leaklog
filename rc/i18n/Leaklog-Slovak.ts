@@ -810,6 +810,57 @@
     </message>
 </context>
 <context>
+    <name>DateTime</name>
+    <message>
+        <source>January</source>
+        <translation>január</translation>
+    </message>
+    <message>
+        <source>February</source>
+        <translation>február</translation>
+    </message>
+    <message>
+        <source>March</source>
+        <translation>marec</translation>
+    </message>
+    <message>
+        <source>April</source>
+        <translation>apríl</translation>
+    </message>
+    <message>
+        <source>May</source>
+        <translation>máj</translation>
+    </message>
+    <message>
+        <source>June</source>
+        <translation>jún</translation>
+    </message>
+    <message>
+        <source>July</source>
+        <translation>júl</translation>
+    </message>
+    <message>
+        <source>August</source>
+        <translation>august</translation>
+    </message>
+    <message>
+        <source>September</source>
+        <translation>september</translation>
+    </message>
+    <message>
+        <source>October</source>
+        <translation>október</translation>
+    </message>
+    <message>
+        <source>November</source>
+        <translation>november</translation>
+    </message>
+    <message>
+        <source>December</source>
+        <translation>december</translation>
+    </message>
+</context>
+<context>
     <name>EditAssemblyRecordDialogue</name>
     <message>
         <source>Assembly record type</source>
@@ -4071,6 +4122,14 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>All Circuits</source>
         <translation>Všetky okruhy</translation>
+    </message>
+    <message>
+        <source>Month:</source>
+        <translation>Mesiac:</translation>
+    </message>
+    <message utf8="true">
+        <source>—</source>
+        <translation>—</translation>
     </message>
 </context>
 <context>

@@ -37,6 +37,7 @@ namespace Global {
     QString rightTriangle();
     QString degreeSign();
     QString delta();
+    QString longMonthName(int);
     QColor textColourForBaseColour(const QColor &);
     QString sqlStringForDatabaseType(QString, const QSqlDatabase & = QSqlDatabase::database());
     QString variantTypeToSqlType(int);

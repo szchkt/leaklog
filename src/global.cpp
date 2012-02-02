@@ -71,6 +71,25 @@ QString Global::degreeSign() { return QString::fromUtf8("\302\260"); }
 
 QString Global::delta() { return QString::fromUtf8("\316\224"); }
 
+QString Global::longMonthName(int month)
+{
+    switch (month) {
+        case 1: return QApplication::translate("DateTime", "January"); break;
+        case 2: return QApplication::translate("DateTime", "February"); break;
+        case 3: return QApplication::translate("DateTime", "March"); break;
+        case 4: return QApplication::translate("DateTime", "April"); break;
+        case 5: return QApplication::translate("DateTime", "May"); break;
+        case 6: return QApplication::translate("DateTime", "June"); break;
+        case 7: return QApplication::translate("DateTime", "July"); break;
+        case 8: return QApplication::translate("DateTime", "August"); break;
+        case 9: return QApplication::translate("DateTime", "September"); break;
+        case 10: return QApplication::translate("DateTime", "October"); break;
+        case 11: return QApplication::translate("DateTime", "November"); break;
+        case 12: return QApplication::translate("DateTime", "December"); break;
+    }
+    return QString();
+}
+
 QColor Global::textColourForBaseColour(const QColor & c)
 {
     if ((((c.red() * 299.0) + (c.green() * 587.0) + (c.blue() * 114.0)) / 1000.0) > 125.0 &&
