@@ -93,7 +93,10 @@ MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
     }
     for (i = 0; i < r_filter.count(); ++i) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
-        select.append(r_filter.key(i) + " LIKE :" + r_filter.key(i));
+        if (r_filter.key(i).contains('?'))
+            select.append(r_filter.key(i).replace('?', QString(":_filter%1").arg(i)));
+        else
+            select.append(QString("%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
     }
     if (!r_custom_where.isEmpty()) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
@@ -108,7 +111,7 @@ MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
     }
     for (int i = 0; i < r_filter.count(); ++i) {
-        query.bindValue(":" + r_filter.key(i), r_filter.value(i));
+        query.bindValue(QString(":_filter%1").arg(i), r_filter.value(i));
     }
     return query;
 }
