@@ -3485,6 +3485,14 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <comment>View Title</comment>
         <translation>Tabuľka kontrol: %1</translation>
     </message>
+    <message>
+        <source>Place:</source>
+        <translation>Miesto:</translation>
+    </message>
+    <message>
+        <source>Date:</source>
+        <translation>Dátum:</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>

@@ -1760,15 +1760,22 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year)
         out << "<td>" << MTVariant(QUERY_VALUE(circuits, "operation")) << "</td>";
         out << "</tr>";
     }
-    out << "</table>";
-    if (isInspectorSelected()) {
-        QVariantMap inspector = Inspector(selectedInspector()).list("person, mail, phone");
-        out << "<br><table><tr><td>";
-        out << tr("Compiled by:") << " " << MTVariant(inspector.value("person"));
-        out << "<br>" << tr("Phone:") << " " << MTVariant(inspector.value("phone"));
-        out << "<br>" << tr("E-mail:") << " " << MTVariant(inspector.value("mail"));
-        out << "</td></tr></table>";
-    }
+    out << "</table><br>";
+
+    QVariantMap inspector;
+    if (isInspectorSelected())
+        inspector = Inspector(selectedInspector()).list("person, mail, phone");
+
+    HTMLTable compiled_by;
+    HTMLTableRow * row = compiled_by.addRow();
+    *(row->addCell()) << tr("Compiled by:") << " " << inspector.value("person").toString();
+    *(row->addCell()) << tr("Phone:") << " " << inspector.value("phone").toString();
+    *(row->addCell()) << tr("E-mail:") << " " << inspector.value("mail").toString();
+    row = compiled_by.addRow();
+    *(row->addCell("colspan=\"2\"")) << tr("Place:");
+    *(row->addCell()) << tr("Date:");
+    out << compiled_by.html();
+
     return dict_html.value(Navigation::OperatorReport).arg(html);
 }
 
