@@ -207,7 +207,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
                                     " assembly_record_items.discount, circuit_unit_types.discount, circuit_units.id"
                                     " FROM circuit_units"
                                     " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                                    " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_unit_types.id"
+                                    " LEFT JOIN assembly_record_items ON assembly_record_items.item_type_id = circuit_units.id"
                                     " AND assembly_record_items.arno = :arno AND assembly_record_items.source = :source"
                                     " LEFT JOIN assembly_record_item_categories ON %1 = assembly_record_item_categories.id"
                                     " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id AND %1 IN"
@@ -226,7 +226,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
                                : units_query.value(ITEM_NAME).toString();
             cells_map.insert("name", new EditDialogueTableCell(name, "name"));
             cells_map.insert("value", new EditDialogueTableCell(units_query.value(VALUE).toInt() ? units_query.value(VALUE) : 1, "value", Global::Integer));
-            cells_map.insert("item_type_id", new EditDialogueTableCell(units_query.value(TYPE_ID), "item_type_id"));
+            cells_map.insert("item_type_id", new EditDialogueTableCell(units_query.value(UNIT_ID), "item_type_id"));
             cells_map.insert("acquisition_price", new EditDialogueTableCell(units_query.value(ITEM_ACQUISITION_PRICE).isNull() ? units_query.value(ACQUISITION_PRICE) : units_query.value(ITEM_ACQUISITION_PRICE), "acquisition_price", Global::Numeric, currency));
             cells_map.insert("list_price", new EditDialogueTableCell(units_query.value(ITEM_LIST_PRICE).isNull() ? units_query.value(LIST_PRICE) : units_query.value(ITEM_LIST_PRICE), "list_price", Global::Numeric, currency));
             cells_map.insert("discount", new EditDialogueTableCell(units_query.value(ITEM_DISCOUNT).isNull() ? units_query.value(DISCOUNT) : units_query.value(ITEM_DISCOUNT), "discount", Global::Numeric, "%"));
