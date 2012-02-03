@@ -312,8 +312,10 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
         MTDictionary parents("customer_id", parent("customer"));
         parents.insert("circuit_id", parent("circuit"));
         parents.insert("date", id());
-        if (!InspectionsCompressor(QString(), parents).exists())
+        if (!InspectionsCompressor(QString(), parents).exists()) {
             m_scope |= Variable::Compressor;
+            md->setMaximumRowCount(14);
+        }
     }
 
     Variables query(QSqlDatabase(), m_scope);
