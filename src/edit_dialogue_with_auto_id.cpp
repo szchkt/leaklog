@@ -14,7 +14,7 @@ void EditDialogueWithAutoId::save()
             rec.setCustomWhere(QString("id < %1").arg(m_max_id));
 
         qlonglong next_id = rec.max("id") + (qint64)1;
-        if (next_id > m_max_id)
+        if (m_max_id > 0 && next_id > m_max_id)
             return;
 
         id_iw->setVariantValue(next_id);
