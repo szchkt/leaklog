@@ -321,7 +321,8 @@ QString MainWindow::viewServiceCompany(int since)
         if (year < last_year) { last_year = 0; }
         if (!last_year) {
             last_year = year;
-            out << "<tr><th rowspan=\"<rowspan />\"><a href=\"toggledetailedview:" << year << "\">" << year << "</a></th>";
+            out << "<tr><th rowspan=\"<rowspan />\"><a name=\"" << year << "\" id=\"" << year
+                << "\" href=\"toggledetailedview:" << year << "\">" << year << "</a></th>";
             int row_count = 0;
             sums_iterator = data.sums_map.constFind(QString::number(year));
             if (++sums_iterator != data.sums_map.constEnd()) {

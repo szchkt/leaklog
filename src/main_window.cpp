@@ -431,6 +431,7 @@ void MainWindow::executeLink(Link * link)
             years_expanded_in_service_company_view << id.toInt();
         }
         refreshView();
+        wv_main->page()->mainFrame()->evaluateJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
         break;
 
     case LinkParser::RefrigerantManagement:
