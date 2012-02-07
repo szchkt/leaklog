@@ -74,7 +74,7 @@ void ReportDataController::enableAutofill()
 void ReportDataController::autofill()
 {
     emit processing(true);
-    qApp->processEvents();
+    QApplication::processEvents();
 
     int year = currentReportYear();
 

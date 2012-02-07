@@ -44,7 +44,7 @@ QString MainWindow::viewChanged(int view)
     }
 
     wv_main->setHtml(tr("Loading..."));
-    qApp->processEvents();
+    QApplication::processEvents();
 
     if (m_settings.receivedLink()) {
         m_settings.loadReceivedLink();

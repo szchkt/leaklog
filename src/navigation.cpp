@@ -310,25 +310,21 @@ void Navigation::setView(int v, bool emit_signal)
 void Navigation::viewServiceCompany()
 {
     toggleVisibleGroup(0);
-    updateView();
 }
 
 void Navigation::viewBasicLogbook()
 {
     toggleVisibleGroup(1);
-    updateView();
 }
 
 void Navigation::viewDetailedLogbook()
 {
     toggleVisibleGroup(2);
-    updateView();
 }
 
 void Navigation::viewAssemblyRecords()
 {
     toggleVisibleGroup(3);
-    updateView();
 }
 
 void Navigation::toggleVisibleGroup(int g, bool emit_signal)
@@ -355,18 +351,22 @@ void Navigation::toggleVisibleGroup(int g, bool emit_signal)
     gb_filter->setVisible(g < 4);
     gb_report_data->setVisible(g == 4);
     gb_circuit_unit_types->setVisible(g == 3);
-    if (emit_signal && g < 4 && current_view != default_view_for_group[current_group]) {
-        current_view = default_view_for_group[current_group];
-        if (btngrp_view->button(current_view)) btngrp_view->button(current_view)->setChecked(true);
-        emit viewChanged(current_view);
+    if (g < 4) {
+        if (emit_signal && current_view != default_view_for_group[current_group]) {
+            current_view = default_view_for_group[current_group];
+            if (btngrp_view->button(current_view)) btngrp_view->button(current_view)->setChecked(true);
+            updateView();
+            emit viewChanged(current_view);
+        } else {
+            updateView();
+        }
     }
 }
 
 void Navigation::tableChanged(int)
 {
-    if (tbtn_view_table->isChecked()) {
+    if (tbtn_view_table->isChecked())
         emit viewChanged(Navigation::TableOfInspections);
-    }
 }
 
 void Navigation::toggleTableForAllCircuits()
@@ -377,7 +377,8 @@ void Navigation::toggleTableForAllCircuits()
 
 void Navigation::emitFilterChanged()
 {
-    if (!isFilterEmpty()) emit filterChanged();
+    if (!isFilterEmpty() && cb_filter_column->count())
+        emit filterChanged();
 }
 
 void Navigation::monthFromChanged(int value)
