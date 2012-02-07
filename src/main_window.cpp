@@ -581,6 +581,8 @@ void MainWindow::executeLink(Link * link)
         break;
     }
 
+    if (!link->countIds())
+        select_with_javascript = false;
     if (select_with_javascript) {
         m_settings.loadReceivedLink();
         wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));

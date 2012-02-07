@@ -163,6 +163,8 @@ int Link::compareViews(const Link & other) const
     int count = qMax(m_views.count(), other.m_views.count());
     for (int i = 0; i < count; ++i)
         result += abs(m_views.value(i, 0) - other.m_views.value(i, 0));
+    if (orderBy() != other.orderBy())
+        result += Link::MinViewDifference;
     return result;
 }
 
@@ -179,6 +181,15 @@ const QString & Link::lastIdKey()
 const QString & Link::lastIdValue()
 {
     return m_ids.lastValue();
+}
+
+const QString Link::suffixParameters()
+{
+    QString ret;
+    if (!m_order_by.isEmpty())
+        ret = "/order_by:" + m_order_by;
+
+    return ret;
 }
 
 UrlEntity * UrlEntity::addNext(const QStringList & attributes)

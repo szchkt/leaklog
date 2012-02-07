@@ -125,9 +125,12 @@ public:
     const QString & idValue(const QString &);
     const QString & lastIdKey();
     const QString & lastIdValue();
+    int countIds() { return m_ids.count(); }
+
+    const QString suffixParameters();
 
     void setOrderBy(const QString & order_by) { m_order_by = order_by; }
-    const QString & orderBy() { return m_order_by; }
+    const QString & orderBy() const { return m_order_by; }
 
     void setOrderDirection(int order) { m_order_direction = order; }
     int orderDirection() { return m_order_direction; }
