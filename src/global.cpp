@@ -319,8 +319,8 @@ int Global::isOperationPermitted(const QString & operation, const QString & reco
 QString Global::circuitRefrigerantAmountQuery(const QString & return_as)
 {
     return "(COALESCE(circuits.refrigerant_amount, 0)"
-            " + COALESCE((SELECT SUM(refr_add_am) FROM inspections"
-            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id AND inspections.nominal = 1), 0)) AS " + return_as;
+            " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
+            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id AND inspections.nominal = 1)) AS " + return_as;
 }
 
 QMap<QString, MTDictionary> Global::parsed_expressions;
