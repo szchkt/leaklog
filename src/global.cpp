@@ -907,7 +907,7 @@ MTDictionary Global::listStyles()
 QStringList Global::listVariableIds(bool all)
 {
     QStringList ids;
-    ids << "customer" << "circuit" << "nominal" << "repair";
+    ids << "customer" << "circuit" << "nominal" << "repair" << "outside_interval";
     if (all) ids << "date";
     Variables variables;
     while (variables.next()) {
