@@ -922,7 +922,8 @@ void MainWindow::removeCircuit()
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id",
                          QStringList() << selectedCustomer() << selectedCircuit());
     Compressor("", parents).remove();
-    CircuitUnit("", parents).remove();
+    CircuitUnit("", MTDictionary(QStringList() << "company_id" << "circuit_id",
+                                 QStringList() << selectedCustomer() << selectedCircuit())).remove();
     Inspection(selectedCustomer(), selectedCircuit(), "").remove();
     InspectionsCompressor("", parents).remove();
     MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit",
