@@ -822,40 +822,50 @@ void MainWindow::printLabel(bool detailed)
     if (detailed) {
         attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(5, '0'));
         Circuit circuit(selectedCustomer(), selectedCircuit());
-        attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery() + ", hermetic, leak_detector, inspection_interval"));
+        attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery()
+                                      + ", hermetic, leak_detector, inspection_interval"));
+
         MTSqlQuery query;
-        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL) AND (repair <> 1 OR repair IS NULL) ORDER BY date DESC");
+        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id"
+                      " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
         query.bindValue(":customer_id", m_settings.selectedCustomer());
         query.bindValue(":circuit_id", m_settings.selectedCircuit());
         query.exec();
         if (query.next()) {
             QVariantMap inspection;
-            for (int i = 0; i < query.record().count(); ++i) {
+            for (int i = 0; i < query.record().count(); ++i)
                 inspection.insert(query.record().fieldName(i), query.value(i));
-            }
+
             attributes.insert("date", inspection.value("date").toString());
-            int delay = Warnings::circuitInspectionInterval(attributes.value("refrigerant_amount").toDouble(),
-                                                            attributes.value("hermetic").toInt(),
-                                                            attributes.value("leak_detector").toInt(),
-                                                            attributes.value("inspection_interval").toInt());
-            if (delay) {
-                attributes.insert("next_inspection", QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd").addDays(delay).toString("yyyy.MM.dd"));
-            }
+
+            int inspection_interval = Warnings::circuitInspectionInterval(attributes.value("refrigerant_amount").toDouble(),
+                                                                          attributes.value("hermetic").toInt(),
+                                                                          attributes.value("leak_detector").toInt(),
+                                                                          attributes.value("inspection_interval").toInt());
+            if (inspection_interval)
+                attributes.insert("next_inspection",
+                                  QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd")
+                                  .addDays(inspection_interval).toString("yyyy.MM.dd"));
+
             selected_inspector = inspection.value("inspector").toString();
+
             Variable refr_add_per("refr_add_per");
             refr_add_per.next();
             QString unparsed_expression = refr_add_per.valueExpression();
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
-                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids), selectedCustomer(), selectedCircuit()));
+                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids),
+                                                                     selectedCustomer(), selectedCircuit()));
             }
         }
     }
+
     Inspector inspector(selected_inspector);
     if (inspector.exists()) {
         attributes.insert("inspector", selected_inspector.rightJustified(4, '0'));
         attributes.unite(inspector.list("person"));
     }
+
     QString default_service_company = DBInfoValueForKey("default_service_company");
     ServiceCompany service_company(default_service_company);
     if (service_company.exists()) {
