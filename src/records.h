@@ -24,6 +24,7 @@
 
 class EditDialogue;
 class EditDialogueWidgets;
+class MTCheckBox;
 
 class Modifiable
 {
@@ -86,6 +87,9 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
 
     int scope() { return m_scope; }
+
+public slots:
+    void showSecondNominalInspectionWarning(MTCheckBox *, bool);
 
 private:
     int m_scope;

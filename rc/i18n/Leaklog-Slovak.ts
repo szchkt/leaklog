@@ -1417,6 +1417,26 @@
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
         <translation>Zákazník: %2 %1 Okruh: %3 %1 Kontrola</translation>
     </message>
+    <message>
+        <source>Nominal inspection already exists - Leaklog</source>
+        <translation>Nominálna kontrola už existuje - Leaklog</translation>
+    </message>
+    <message>
+        <source>This circuit already has a nominal inspection.</source>
+        <translation>Tento okruh už má nominálnu kontrolu.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to add another?</source>
+        <translation>Naozaj chcete pridať ďalšiu?</translation>
+    </message>
+    <message>
+        <source>&amp;Add Another Nominal Inspection</source>
+        <translation>&amp;Pridať ďalšiu nominálnu kontrolu</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Zrušiť</translation>
+    </message>
 </context>
 <context>
     <name>Inspector</name>
@@ -4684,10 +4704,6 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Názov:</translation>
     </message>
     <message>
-        <source>Highlight the nominal inspection</source>
-        <translation>Vyznačiť nominálnu kontrolu</translation>
-    </message>
-    <message>
         <source>Scope:</source>
         <translation>Rámec:</translation>
     </message>
@@ -4698,6 +4714,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Compressor</source>
         <translation>Kompresor</translation>
+    </message>
+    <message>
+        <source>Highlight nominal inspections</source>
+        <translation>Vyznačiť nominálne kontroly</translation>
     </message>
 </context>
 <context>

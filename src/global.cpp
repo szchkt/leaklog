@@ -402,7 +402,9 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
 
 double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QVariantMap & circuit_attributes, bool * ok, bool * null_var)
 {
-    static const QString sum_query("SELECT %1 FROM inspections WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id AND (nominal <> 1 OR nominal IS NULL)");
+    static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
+                                   " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"
+                                   " AND (nominal <> 1 OR nominal IS NULL)");
     if (null_var) *null_var = false;
     QString inspection_date = inspection.value("date").toString();
     FunctionParser fparser;
@@ -413,20 +415,12 @@ double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary &
             value.append(QString::number(inspection.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "sum") {
             double v = 0.0;
-            if (inspection.value("nominal").toInt()) {
-                if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-                v += inspection.value(expression.key(i)).toDouble();
-            } else {
-                MTSqlQuery sum_ins;
-                sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
-                sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
-                sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
-                if (sum_ins.exec()) {
-                    while (sum_ins.next()) {
-                        v += sum_ins.value(0).toDouble();
-                    }
-                }
-            }
+            MTSqlQuery sum_ins;
+            sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
+            sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
+            sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
+            if (sum_ins.exec() && sum_ins.next())
+                v = sum_ins.value(0).toDouble();
             value.append(QString::number(v));
         } else if (expression.value(i) == "circuit_attribute") {
             value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));

@@ -36,7 +36,6 @@ public:
 protected:
     bool saveOther();
 
-protected:
     const QVariant idFieldValue();
     EditInspectionDialogueCompressors * compressors;
 };

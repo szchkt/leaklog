@@ -280,7 +280,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
-    bool nominal_allowed = true;
+    bool nominal_found = false;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE customer = :customer AND circuit = :circuit" + QString(id().isEmpty() ? "" : " AND date <> :date"));
@@ -290,7 +290,8 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
-            if (nominal_allowed && query_used_ids.value(1).toInt()) { nominal_allowed = false; }
+            if (!nominal_found && query_used_ids.value(1).toInt())
+                nominal_found = true;
         }
     }
     md->setUsedIds(used_ids);
@@ -300,7 +301,10 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
     }
     md->addInputWidget(date);
     MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md->widget());
-    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt() && nominal_allowed, nominal_allowed);
+    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt(), true);
+    if (nominal_found)
+        QObject::connect(chb_nominal, SIGNAL(toggled(MTCheckBox *, bool)), this, SLOT(showSecondNominalInspectionWarning(MTCheckBox *, bool)));
+
     md->addInputWidget(chb_nominal);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
     MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md->widget(), attributes.value("repair").toInt(), true);
@@ -320,6 +324,28 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
 
     Variables query(QSqlDatabase(), m_scope);
     query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
+}
+
+void Inspection::showSecondNominalInspectionWarning(MTCheckBox * checkbox, bool state)
+{
+    if (state) {
+        QMessageBox message(checkbox->parentWidget());
+        message.setWindowTitle(tr("Nominal inspection already exists - Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("This circuit already has a nominal inspection."));
+        message.setInformativeText(tr("Are you sure you want to add another?"));
+        message.addButton(tr("&Add Another Nominal Inspection"), QMessageBox::AcceptRole);
+        message.setDefaultButton(message.addButton(tr("Cancel"), QMessageBox::RejectRole));
+        switch (message.exec()) {
+            case 0: // Add
+                break;
+            case 1: // Cancel
+                checkbox->setChecked(false);
+                break;
+        }
+    }
 }
 
 InspectionByInspector::InspectionByInspector(const QString & inspector_id):
@@ -469,7 +495,7 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
         attributes = list();
     }
     md->addInputWidget(new MDLineEdit("id", tr("Name:"), md->widget(), attributes.value("id").toString()));
-    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight the nominal inspection"), md->widget(), attributes.value("highlight_nominal").toInt()));
+    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), attributes.value("highlight_nominal").toInt()));
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
                                       MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
                                                    QStringList()

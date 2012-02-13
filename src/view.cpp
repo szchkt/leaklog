@@ -719,7 +719,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     bool repair = inspection.value("repair").toInt();
     Inspection nom_inspection_record(customer_id, circuit_id, "");
     nom_inspection_record.parents().insert("nominal", "1");
-    QVariantMap nominal_ins = nom_inspection_record.list();
+    nom_inspection_record.addFilter("date <= ?", inspection_date);
+    QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
 
     HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\""),
         * _table;
@@ -885,7 +886,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
 
         VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
 
-        ListOfVariantMaps inspections(Inspection(customer_id, circuit_id, "").listAll("*", "nominal DESC, date ASC"));
+        ListOfVariantMaps inspections(Inspection(customer_id, circuit_id, "").listAll("*", "date ASC"));
         QString last_inspection_date, last_entry_date, date;
         for (int i = 0; i < inspections.count(); ++i) {
             date = inspections.at(i).value("date").toString();
@@ -955,14 +956,6 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
         out << "</td></tr></table>";
 
         // *** Table ***
-        int nominal_inspection_index = -1;
-        for (int i = 0; i < inspections.count(); ++i) {
-            if (inspections.at(i).value("nominal").toInt()) {
-                nominal_inspection_index = i;
-                //var_evaluation.setNominalInspection(inspections[i]);
-                break;
-            }
-        }
         if (table.value("scope").toInt() & Variable::Compressor) {
             HTMLTable * compressors_table = new HTMLTable();
             HTMLTableRow * compressors_table_row = compressors_table->addRow();
@@ -1012,13 +1005,8 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
                 else
                     inspections_compressors_rec.setCustomWhere("inspections_compressors.date > '" + QString::number(year) + "'");
 
-                ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "nominal DESC, date ASC");
+                ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
 
-                if (inspections_compressors.count()
-                        && table.value("highlight_nominal").toInt()
-                        && inspections_compressors.first().value("nominal").toInt()) {
-                    var_evaluation.setNominalInspection(inspections_compressors.first());
-                }
                 if (compressor_ids.count() > 1) {
                     for (int n = 0; n < compressors.count(); ++n) {
                         if (compressor_ids.at(i) == compressors.at(n).value("id").toString()) {
@@ -1028,13 +1016,14 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
                             break;
                         }
                     }
-                } else
+                } else {
                     out << "<br>";
+                }
+
+                var_evaluation.setNominalInspection(QVariantMap());
                 out << writeInspectionsTable(circuit, table, inspections_compressors, var_evaluation)->html();
             }
         } else {
-            if (nominal_inspection_index >= 0)
-                var_evaluation.setNominalInspection(inspections[nominal_inspection_index]);
             out << "<br>" << writeInspectionsTable(circuit, table, inspections, var_evaluation)->html();
         }
 
@@ -1163,6 +1152,10 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
         is_repair = inspections.at(i).value("repair").toInt();
         is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         inspection_date = inspections.at(i).value("date").toString();
+
+        if (is_nominal)
+            var_evaluation.setNominalInspection(inspections.at(i));
+
         row = tbody->addRow();
         if (is_nominal && table_map.value("highlight_nominal").toInt()) {
             row->addClass("nominal");
@@ -1185,10 +1178,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                     compare_nom = subvariable->compareNom() > 0;
                     if (subvariable->value().contains("sum")) {
                         QString i_year = inspection_date.split(".").first();
-                        if (is_nominal) {
-                            rowspan = 1;
-                        } else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() &&
-                                 inspections.at(i-1).value("date").toString().split(".").first() == i_year) {
+                        if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year) {
                             continue;
                         } else {
                             int in = i;
@@ -1208,10 +1198,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                 compare_nom = variable->compareNom() > 0;
                 if (variable->value().contains("sum")) {
                     QString i_year = inspection_date.split(".").first();
-                    if (is_nominal) {
-                        rowspan = 1;
-                    } else if (i > 0 && !inspections.at(i-1).value("nominal").toInt() &&
-                               inspections.at(i-1).value("date").toString().split(".").first() == i_year) {
+                    if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year) {
                         continue;
                     } else {
                         int in = i;
@@ -1253,8 +1240,6 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                         cell = row->addCell();
                         cell->addClass(variable->colBg());
                         bool value_contains_sum = subvariable->value().contains(QRegExp("\\bsum\\b"));
-                        bool skip_nominal = subvariable->value().startsWith("(1-nominal)*") &&
-                                            inspections.count() && inspections.first().value("nominal").toInt();
                         if (is_in_foot) {
                             double value = 0.0; int num_ins = 0;
                             if (subvariable->value().isEmpty()) {
@@ -1264,8 +1249,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                                 }
                             } else {
                                 MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIds());
-                                for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
-                                    if (value_contains_sum && ins > 0 && !inspections.at(ins-1).value("nominal").toInt() &&
+                                for (int ins = 0; ins < inspections.count(); ++ins) {
+                                    if (value_contains_sum && ins > 0 &&
                                         inspections.at(ins - 1).value("date").toString().split(".").first()
                                             == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
@@ -1283,8 +1268,6 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                     cell = row->addCell();
                     cell->addClass(variable->colBg());
                     bool value_contains_sum = variable->value().contains(QRegExp("\\bsum\\b"));
-                    bool skip_nominal = variable->value().startsWith("(1-nominal)*") &&
-                                        inspections.count() && inspections.first().value("nominal").toInt();
                     if (is_in_foot) {
                         double value = 0.0; int num_ins = 0;
                         if (variable->value().isEmpty()) {
@@ -1294,8 +1277,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                             }
                         } else {
                             MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIds());
-                            for (int ins = skip_nominal; ins < inspections.count(); ++ins) {
-                                if (value_contains_sum && ins > 0 && !inspections.at(ins - 1).value("nominal").toInt() &&
+                            for (int ins = 0; ins < inspections.count(); ++ins) {
+                                if (value_contains_sum && ins > 0 &&
                                     inspections.at(ins - 1).value("date").toString().split(".").first()
                                         == inspections.at(ins).value("date").toString().split(".").first())
                                     continue;
@@ -1738,7 +1721,8 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
     MTDictionary nominal_inpection_parents("customer", customer_id);
     nominal_inpection_parents.insert("nominal", "1");
 
-    QVariantMap sums; QVariantMap nominal_inspection;
+    QVariantMap sums;
+    ListOfVariantMaps nominal_inspections;
     QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
@@ -1762,17 +1746,23 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
         if (decommissioning_date < date_from)
             continue;
         refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
-        nominal_inpection_parents.insert("circuit", circuit_id);
-        nominal_inspection = MTRecord("inspections", "date", "", nominal_inpection_parents).list("date, refr_add_am");
-        nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
         refrigerant_amount_begin = 0.0;
         refrigerant_amount_end = refrigerant_amount;
         if (commissioning_date < date_from)
             refrigerant_amount_begin += refrigerant_amount;
-        if (nominal_inspection_date < date_from)
-            refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble();
-        if (nominal_inspection_date < date_until)
-            refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble();
+
+        nominal_inpection_parents.insert("circuit", circuit_id);
+        nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
+        foreach (const QVariantMap & nominal_inspection, nominal_inspections) {
+            nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
+            if (nominal_inspection_date < date_from)
+                refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble()
+                        - nominal_inspection.value("refr_reco", 0.0).toDouble();
+            if (nominal_inspection_date < date_until)
+                refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble()
+                        - nominal_inspection.value("refr_reco", 0.0).toDouble();
+        }
+
         if (decommissioning_date >= date_from && decommissioning_date < date_until)
             refrigerant_amount_end = 0.0;
 
