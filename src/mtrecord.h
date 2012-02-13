@@ -49,6 +49,8 @@ public:
     MTSqlQuery select(const QString & fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
     MTSqlQuery select(const QString & fields, const QString & order_by);
     QVariantMap list(const QString & fields = "*", bool refresh = false);
+    QVariantMap list(const QString & fields, const char * order_by, bool refresh = false);
+    QVariantMap list(const QString & fields, const QString & order_by, bool refresh = false);
     void readValues(const QString & fields = "*");
     inline QVariantMap & values() { return r_values; }
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {

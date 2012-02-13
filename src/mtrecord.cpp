@@ -118,10 +118,20 @@ MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
 
 QVariantMap MTRecord::list(const QString & fields, bool refresh)
 {
+    return list(fields, QString("%1 ASC").arg(r_id_field), refresh);
+}
+
+QVariantMap MTRecord::list(const QString & fields, const char * order_by, bool refresh)
+{
+    return list(fields, QString(order_by), refresh);
+}
+
+QVariantMap MTRecord::list(const QString & fields, const QString & order_by, bool refresh)
+{
     if (!refresh && !r_values.isEmpty())
         return r_values;
     QVariantMap list;
-    MTSqlQuery query = select(fields);
+    MTSqlQuery query = select(fields, order_by);
     query.setForwardOnly(true);
     query.exec();
     if (!query.next()) { return list; }
