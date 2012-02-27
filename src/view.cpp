@@ -1786,12 +1786,17 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
 
     HTMLTable compiled_by;
     HTMLTableRow * row = compiled_by.addRow();
-    *(row->addCell()) << tr("Compiled by:") << " " << inspector.value("person").toString();
-    *(row->addCell()) << tr("Phone:") << " " << inspector.value("phone").toString();
-    *(row->addCell()) << tr("E-mail:") << " " << inspector.value("mail").toString();
+    *(row->addCell()) << tr("Compiled by:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+                      << escapeString(inspector.value("person").toString()) << "\">";
+    *(row->addCell()) << tr("Phone:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+                      << escapeString(inspector.value("phone").toString()) << "\">";
+    *(row->addCell()) << tr("E-mail:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+                      << escapeString(inspector.value("mail").toString()) << "\">";
     row = compiled_by.addRow();
-    *(row->addCell("colspan=\"2\"")) << tr("Place:");
-    *(row->addCell()) << tr("Date:");
+    *(row->addCell("colspan=\"2\"")) << tr("Place:")
+                                     << " <input type=\"text\" style=\"border: 0;\">";
+    *(row->addCell()) << tr("Date:")
+                      << " <input type=\"text\" style=\"border: 0;\">";
     out << compiled_by.html();
 
     return dict_html.value(Navigation::OperatorReport).arg(html);
