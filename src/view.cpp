@@ -1897,12 +1897,15 @@ QString MainWindow::viewAgenda()
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    MTSqlQuery circuits = circuits_record.select("parent, id, name, operation, "
-                                                + circuitRefrigerantAmountQuery()
-                                                + ", hermetic, leak_detector, inspection_interval,"
-                                                " COALESCE((SELECT date FROM inspections"
-                                                " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
-                                                " AND outside_interval = 0 ORDER BY date DESC LIMIT 1), commissioning) AS last_inspection");
+    circuits_record.addJoin("LEFT JOIN inspections ON inspections.customer = circuits.parent"
+                            " AND inspections.circuit = circuits.id AND outside_interval = 0"
+                            " AND inspections.date IN (SELECT MAX(date) FROM inspections"
+                            " WHERE outside_interval = 0 GROUP BY customer, circuit)");
+    MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id, circuits.name, circuits.operation, "
+                                                 + circuitRefrigerantAmountQuery()
+                                                 + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
+                                                 " COALESCE(inspections.date, circuits.commissioning) AS last_inspection,"
+                                                 " inspections.nominal, inspections.refr_add_am");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -1914,6 +1917,8 @@ QString MainWindow::viewAgenda()
             last_inspection_date = QUERY_VALUE(circuits, "last_inspection").toString();
             if (last_inspection_date.isEmpty())
                 continue;
+            if (QUERY_VALUE(circuits, "nominal").toInt() == 0 && QUERY_VALUE(circuits, "refr_add_am").toDouble() > 0.0)
+                inspection_interval = 30;
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
                                             .addDays(inspection_interval).toString("yyyy.MM.dd"),
                                         QStringList()

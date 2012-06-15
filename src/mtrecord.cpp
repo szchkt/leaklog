@@ -40,6 +40,7 @@ MTRecord::MTRecord(const MTRecord & other)
     r_table = other.r_table;
     r_id_field = other.r_id_field;
     r_id = other.r_id;
+    r_joins = other.r_joins;
     r_parents = other.r_parents;
     r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
@@ -53,6 +54,7 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     r_table = other.r_table;
     r_id_field = other.r_id_field;
     r_id = other.r_id;
+    r_joins = other.r_joins;
     r_parents = other.r_parents;
     r_custom_where = other.r_custom_where;
     r_filter = other.r_filter;
@@ -85,6 +87,8 @@ MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
     bool has_id = !r_id.isEmpty();
     int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
+    if (!r_joins.isEmpty())
+        select.append(" " + r_joins.join(" "));
     if (has_id || r_parents.count() || r_filter.count() || !r_custom_where.isEmpty()) { select.append(" WHERE "); }
     if (has_id) { select.append(r_id_field + " = :_id"); }
     for (i = 0; i < r_parents.count(); ++i) {

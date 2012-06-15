@@ -37,6 +37,7 @@ public:
     void addFilter(const QString & column, const QString & filter);
     inline QString table() const { return r_table; }
     void setTable(const QString & table) { r_table = table; }
+    void addJoin(const QString & join) { r_joins << join; }
     void setUnordered(bool unordered) { r_order = !unordered; }
     void setSerialId(bool serial_id) { r_serial_id = serial_id; }
     inline QString idField() const { return r_id_field; }
@@ -74,6 +75,7 @@ private:
     QString r_table;
     QString r_id_field;
     QString r_id;
+    QStringList r_joins;
     MTDictionary r_parents;
     QString r_custom_where;
     MTDictionary r_filter;
