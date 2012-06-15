@@ -29,7 +29,6 @@
 #include "variable_evaluation.h"
 
 #include <QDate>
-#include <QSqlRecord>
 #include <QSqlError>
 #include <QFileInfo>
 
@@ -404,12 +403,12 @@ QString MainWindow::viewRefrigerantManagement(int since)
     query.exec();
     QString date;
     while (query.next()) {
-        date = QUERY("date").toString();
+        date = query.stringValue("date");
         if (since && date.left(4).toInt() < since) continue;
         out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/edit'\" style=\"cursor: pointer;\">";
         out << "<td>" << date << "</td>";
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
-            out << "<td>" << MTVariant(QUERY(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
+            out << "<td>" << MTVariant(query.value(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
         }
         out << "</tr>";
     }
@@ -763,9 +762,9 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
         QStringList table_vars;
         cell = header_row->addHeaderCell("width=\"50%\"");
         if (tables.isValid()) {
-            table_vars = QUERY_VALUE(tables, "variables").toString().split(";");
+            table_vars = tables.stringValue("variables").split(";");
             all_variables.subtract(table_vars.toSet());
-            *cell << QUERY_VALUE(tables, "id").toString();
+            *cell << tables.stringValue("id");
         }
         else {
             table_vars = all_variables.toList();
@@ -1434,14 +1433,14 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
     QString id, attr_value;
     while (repairs.next()) {
-        id = QUERY_VALUE(repairs, "date").toString();
+        id = repairs.stringValue("date");
         if (id.split(".").first().toInt() < year) continue;
         out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
         if (highlighted_id == id)
             out << " class=\"selected\"";
         out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
-            attr_value = QUERY_VALUE(repairs, Repair::attributes().key(n)).toString();
+            attr_value = repairs.stringValue(Repair::attributes().key(n));
             out << "<td>";
             if (Repair::attributes().key(n) == "field") {
                 if (attributeValues().contains("field::" + attr_value)) {
@@ -1730,22 +1729,22 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
-        circuit_id = QUERY_VALUE(circuits, "id").toString();
+        circuit_id = circuits.stringValue("id");
 
         inspections.parents().insert("circuit", circuit_id);
         sums = inspections.sumAll("refr_add_am, refr_reco");
 
-        commissioning_date = QUERY_VALUE(circuits, "commissioning").toString().left(7);
+        commissioning_date = circuits.stringValue("commissioning").left(7);
         if (commissioning_date >= date_until)
             continue;
-        decommissioning_date = QUERY_VALUE(circuits, "decommissioning").toString().left(7);
-        if (QUERY_VALUE(circuits, "disused").toInt() == 0)
+        decommissioning_date = circuits.stringValue("decommissioning").left(7);
+        if (circuits.intValue("disused") == 0)
             decommissioning_date = "9999";
         else if (decommissioning_date.isEmpty())
             decommissioning_date = QString::number(QDate::currentDate().year());
         if (decommissioning_date < date_from)
             continue;
-        refrigerant_amount = QUERY_VALUE(circuits, "refrigerant_amount").toDouble();
+        refrigerant_amount = circuits.doubleValue("refrigerant_amount");
         refrigerant_amount_begin = 0.0;
         refrigerant_amount_end = refrigerant_amount;
         if (commissioning_date < date_from)
@@ -1769,13 +1768,13 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
         out << "<tr onclick=\"window.location = 'customer:" << customer_id
             << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
-        out << "<td>" << QUERY_VALUE(circuits, "refrigerant").toString() << "</td>";
-        out << "<td>" << fieldsOfApplication().firstKey(QUERY_VALUE(circuits, "field").toString()) << "</td>";
+        out << "<td>" << circuits.stringValue("refrigerant") << "</td>";
+        out << "<td>" << fieldsOfApplication().firstKey(circuits.stringValue("field")) << "</td>";
         out << "<td>" << refrigerant_amount_begin << "</td>";
         out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
         out << "<td>" << refrigerant_amount_end << "</td>";
-        out << "<td>" << MTVariant(QUERY_VALUE(circuits, "operation")) << "</td>";
+        out << "<td>" << MTVariant(circuits.value("operation")) << "</td>";
         out << "</tr>";
     }
     out << "</table><br>";
@@ -1909,23 +1908,23 @@ QString MainWindow::viewAgenda()
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
-        inspection_interval = Warnings::circuitInspectionInterval(QUERY_VALUE(circuits, "refrigerant_amount").toDouble(),
-                                                                  QUERY_VALUE(circuits, "hermetic").toInt(),
-                                                                  QUERY_VALUE(circuits, "leak_detector").toInt(),
-                                                                  QUERY_VALUE(circuits, "inspection_interval").toInt());
+        inspection_interval = Warnings::circuitInspectionInterval(circuits.doubleValue("refrigerant_amount"),
+                                                                  circuits.intValue("hermetic"),
+                                                                  circuits.intValue("leak_detector"),
+                                                                  circuits.intValue("inspection_interval"));
         if (inspection_interval) {
-            last_inspection_date = QUERY_VALUE(circuits, "last_inspection").toString();
+            last_inspection_date = circuits.stringValue("last_inspection");
             if (last_inspection_date.isEmpty())
                 continue;
-            if (QUERY_VALUE(circuits, "nominal").toInt() == 0 && QUERY_VALUE(circuits, "refr_add_am").toDouble() > 0.0)
+            if (circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
                 inspection_interval = 30;
             next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
                                             .addDays(inspection_interval).toString("yyyy.MM.dd"),
                                         QStringList()
-                                            << QUERY_VALUE(circuits, "parent").toString()
-                                            << QUERY_VALUE(circuits, "id").toString()
-                                            << QUERY_VALUE(circuits, "name").toString()
-                                            << QUERY_VALUE(circuits, "operation").toString()
+                                            << circuits.stringValue("parent")
+                                            << circuits.stringValue("id")
+                                            << circuits.stringValue("name")
+                                            << circuits.stringValue("operation")
                                             << last_inspection_date);
         }
     }

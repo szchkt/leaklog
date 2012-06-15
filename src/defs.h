@@ -49,9 +49,6 @@ typedef QList<QVariantMap> ListOfVariantMaps;
 typedef QMap<QString, QVariantMap> MapOfVariantMaps;
 typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
 
-#define QUERY(field) query.value(query.record().indexOf(field))
-#define QUERY_VALUE(query, field) query.value(query.record().indexOf(field))
-
 #include <QtGlobal>
 
 #ifdef QT_DEBUG

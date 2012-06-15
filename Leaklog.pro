@@ -109,6 +109,7 @@ SOURCES       += src/global.cpp \
                  src/edit_dialogue_layout.cpp \
                  src/edit_inspection_dialogue_assembly_record_tab.cpp \
                  src/main_window_settings.cpp \
+                 src/mtsqlquery.cpp \
                  src/edit_inspection_dialogue_access.cpp \
                  src/edit_dialogue_with_auto_id.cpp
 QT            += network webkit sql

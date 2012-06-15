@@ -1713,8 +1713,8 @@ void MainWindow::importData()
     // Customers
     query.exec("SELECT * FROM customers ORDER BY company");
     while (query.next()) {
-        QString company_id_justified = QUERY("id").toString().rightJustified(8, '0');
-        Customer customer(QUERY("id").toString());
+        QString company_id_justified = query.stringValue("id").rightJustified(8, '0');
+        Customer customer(query.stringValue("id"));
         if (customer.exists()) {
             attributes = customer.list();
             modified = false;
@@ -1723,7 +1723,7 @@ void MainWindow::importData()
             columns.insert(company_id_justified, "0");
 
             for (int i = 1; i < Customer::attributes().count(); ++i) {
-                attribute = QUERY(Customer::attributes().key(i));
+                attribute = query.value(Customer::attributes().key(i));
                 attribute_modified = attribute != attributes.value(Customer::attributes().key(i));
                 if (attribute_modified) modified = true;
                 if (Customer::attributes().key(i) == "operator_id") {
@@ -1750,20 +1750,20 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, QUERY("id"));
+                item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
             QTreeWidgetItem * item = new QTreeWidgetItem(id->newCustomers());
             item->setText(0, company_id_justified);
             for (int i = 1; i < Customer::attributes().count(); ++i) {
-                item->setText(i, MTVariant(QUERY(Customer::attributes().key(i)),
+                item->setText(i, MTVariant(query.value(Customer::attributes().key(i)),
                                            (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(i))).toString());
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, QUERY("id"));
+            item->setData(0, Qt::UserRole, query.value("id"));
         }
     }
 
@@ -1771,16 +1771,16 @@ void MainWindow::importData()
     query.exec("SELECT persons.*, customers.company FROM persons LEFT JOIN customers ON persons.company_id = customers.id"
                " ORDER BY customers.company, persons.name");
     while (query.next()) {
-        Person person(QUERY("id").toString());
+        Person person(query.stringValue("id"));
         if (person.exists()) {
             attributes = person.list();
             modified = false;
 
             MTDictionary columns(true);
-            columns.insert(QUERY("company").toString(), QUERY("company_id") != attributes.value("company_id") ? "1" : "0");
+            columns.insert(query.stringValue("company"), query.value("company_id") != attributes.value("company_id") ? "1" : "0");
 
             for (int i = 2; i < Person::attributes().count(); ++i) {
-                attribute = QUERY(Person::attributes().key(i));
+                attribute = query.value(Person::attributes().key(i));
                 attribute_modified = attribute != attributes.value(Person::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
@@ -1794,19 +1794,19 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, QUERY("id"));
+                item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
             QTreeWidgetItem * item = new QTreeWidgetItem(id->newPersons());
-            item->setText(0, QUERY("company").toString());
+            item->setText(0, query.stringValue("company"));
             for (int i = 2; i < Person::attributes().count(); ++i) {
-                item->setText(i - 1, QUERY(Person::attributes().key(i)).toString());
+                item->setText(i - 1, query.stringValue(Person::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, QUERY("id"));
+            item->setData(0, Qt::UserRole, query.value("id"));
         }
     }
 
@@ -1828,24 +1828,24 @@ void MainWindow::importData()
     QString last_id;
     QTreeWidgetItem * last_item = NULL;
     while (query.next()) {
-        QString current_id = QString("%1:%2").arg(QUERY("parent").toString()).arg(QUERY("id").toString());
+        QString current_id = QString("%1:%2").arg(query.stringValue("parent")).arg(query.stringValue("id"));
         if (last_id != current_id) {
             if (last_item && last_item->treeWidget() == NULL)
                 delete last_item;
             last_id = current_id;
 
-            QString circuit_id_justified = QUERY("id").toString().rightJustified(5, '0');
-            Circuit circuit(QUERY("parent").toString(), QUERY("id").toString());
+            QString circuit_id_justified = query.stringValue("id").rightJustified(5, '0');
+            Circuit circuit(query.stringValue("parent"), query.stringValue("id"));
             if (circuit.exists()) {
                 attributes = circuit.list();
                 modified = false;
 
                 MTDictionary columns(true);
-                columns.insert(QUERY("company").toString(), "0");
+                columns.insert(query.stringValue("company"), "0");
                 columns.insert(circuit_id_justified, "0");
 
                 for (int i = 1; i < Circuit::attributes().count(); ++i) {
-                    attribute = QUERY(Circuit::attributes().key(i));
+                    attribute = query.value(Circuit::attributes().key(i));
                     attribute_modified = attribute != attributes.value(Circuit::attributes().key(i));
                     if (attribute_modified) {
                         modified = true;
@@ -1861,26 +1861,26 @@ void MainWindow::importData()
                         last_item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                last_item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                last_item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (last_item->checkState(0) == Qt::Unchecked)
                     last_item->setToolTip(0, tr("This record is older than the current record in your database"));
-                last_item->setData(0, Qt::UserRole, QUERY("parent"));
-                last_item->setData(1, Qt::UserRole, QUERY("id"));
+                last_item->setData(0, Qt::UserRole, query.value("parent"));
+                last_item->setData(1, Qt::UserRole, query.value("id"));
             } else {
                 last_item = new QTreeWidgetItem(id->newCircuits());
-                last_item->setText(0, QUERY("company").toString());
+                last_item->setText(0, query.stringValue("company"));
                 last_item->setText(1, circuit_id_justified);
                 for (int i = 1; i < Circuit::attributes().count(); ++i) {
-                    last_item->setText(i + 1, QUERY(Circuit::attributes().key(i)).toString());
+                    last_item->setText(i + 1, query.stringValue(Circuit::attributes().key(i)));
                 }
                 last_item->setCheckState(0, Qt::Checked);
-                last_item->setData(0, Qt::UserRole, QUERY("parent"));
-                last_item->setData(1, Qt::UserRole, QUERY("id"));
+                last_item->setData(0, Qt::UserRole, query.value("parent"));
+                last_item->setData(1, Qt::UserRole, query.value("id"));
             }
         }
 
-        if (last_item && QUERY("compressor_id").toLongLong()) {
-            Compressor compressor(QUERY("compressor_id").toString());
+        if (last_item && query.longLongValue("compressor_id")) {
+            Compressor compressor(query.stringValue("compressor_id"));
             if (compressor.exists()) {
                 attributes = compressor.list();
                 modified = false;
@@ -1888,7 +1888,7 @@ void MainWindow::importData()
                 MTDictionary columns(true);
                 QMapIterator<int, QString> i(compressor_attributes);
                 while (i.hasNext()) { i.next();
-                    attribute = QUERY("compressor_" + i.value());
+                    attribute = query.value("compressor_" + i.value());
                     attribute_modified = attribute != attributes.value(i.value());
                     if (attribute_modified) {
                         modified = true;
@@ -1897,7 +1897,7 @@ void MainWindow::importData()
                     columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
                 }
 
-                if (modified && QUERY("compressor_date_updated").toString() > attributes.value("date_updated").toString()) {
+                if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
                     QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
                     int c = 0;
                     i.toFront();
@@ -1909,16 +1909,16 @@ void MainWindow::importData()
                         }
                         c++;
                     }
-                    item->setData(0, Qt::UserRole, QUERY("compressor_id"));
+                    item->setData(0, Qt::UserRole, query.value("compressor_id"));
                     if (last_item->treeWidget() == NULL)
                         id->modifiedCircuits()->addTopLevelItem(last_item);
                 }
             } else {
                 QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
-                item->setData(0, Qt::UserRole, QUERY("compressor_id"));
+                item->setData(0, Qt::UserRole, query.value("compressor_id"));
                 QMapIterator<int, QString> i(compressor_attributes);
                 while (i.hasNext()) { i.next();
-                    item->setText(i.key(), QUERY("compressor_" + i.value()).toString());
+                    item->setText(i.key(), query.stringValue("compressor_" + i.value()));
                 }
                 if (last_item->treeWidget() == NULL)
                     id->modifiedCircuits()->addTopLevelItem(last_item);
@@ -2074,28 +2074,28 @@ void MainWindow::importData()
     last_item = NULL;
     while (query.next()) {
         QString current_id = QString("%1:%2:%3")
-                .arg(QUERY("customer").toString())
-                .arg(QUERY("circuit").toString())
-                .arg(QUERY("date").toString());
+                .arg(query.stringValue("customer"))
+                .arg(query.stringValue("circuit"))
+                .arg(query.stringValue("date"));
         if (last_id != current_id) {
             if (last_item && last_item->treeWidget() == NULL)
                 delete last_item;
             last_id = current_id;
 
-            QString circuit_id_justified = QUERY("circuit").toString().rightJustified(5, '0');
-            record_locked = Global::isRecordLocked(QUERY("date").toString());
-            Inspection inspection(QUERY("customer").toString(), QUERY("circuit").toString(), QUERY("date").toString());
+            QString circuit_id_justified = query.stringValue("circuit").rightJustified(5, '0');
+            record_locked = Global::isRecordLocked(query.stringValue("date"));
+            Inspection inspection(query.stringValue("customer"), query.stringValue("circuit"), query.stringValue("date"));
             if (inspection.exists()) {
                 attributes = inspection.list();
                 modified = false;
 
                 MTDictionary columns(true);
-                columns.insert(QUERY("company").toString(), "0");
+                columns.insert(query.stringValue("company"), "0");
                 columns.insert(circuit_id_justified, "0");
-                columns.insert(QUERY("date").toString(), "0");
+                columns.insert(query.stringValue("date"), "0");
 
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    attribute = QUERY(variable_names.key(i));
+                    attribute = query.value(variable_names.key(i));
                     attribute_modified = attribute != attributes.value(variable_names.key(i));
                     if (attribute_modified) {
                         modified = true;
@@ -2111,16 +2111,16 @@ void MainWindow::importData()
                         last_item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                last_item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                last_item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (last_item->checkState(0) == Qt::Unchecked)
                     last_item->setToolTip(0, tr("This record is older than the current record in your database"));
             } else {
                 last_item = new QTreeWidgetItem(id->newInspections());
-                last_item->setText(0, QUERY("company").toString());
+                last_item->setText(0, query.stringValue("company"));
                 last_item->setText(1, circuit_id_justified);
-                last_item->setText(2, QUERY("date").toString());
+                last_item->setText(2, query.stringValue("date"));
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    last_item->setText(i + 3, QUERY(variable_names.key(i)).toString());
+                    last_item->setText(i + 3, query.stringValue(variable_names.key(i)));
                 }
                 last_item->setCheckState(0, Qt::Checked);
             }
@@ -2129,16 +2129,16 @@ void MainWindow::importData()
                 last_item->setDisabled(true);
                 last_item->setIcon(2, QIcon(":/images/images/locked16.png"));
             } else {
-                last_item->setData(0, Qt::UserRole, QUERY("customer"));
-                last_item->setData(1, Qt::UserRole, QUERY("circuit"));
-                last_item->setData(2, Qt::UserRole, QUERY("date"));
+                last_item->setData(0, Qt::UserRole, query.value("customer"));
+                last_item->setData(1, Qt::UserRole, query.value("circuit"));
+                last_item->setData(2, Qt::UserRole, query.value("date"));
             }
         }
 
-        if (last_item && QUERY("compressor_id").toInt()) {
+        if (last_item && query.intValue("compressor_id")) {
             MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                                                        QStringList() << QUERY("customer").toString() << QUERY("circuit").toString()
-                                                        << QUERY("date").toString() << QUERY("compressor_compressor_id").toString());
+                                                        QStringList() << query.stringValue("customer") << query.stringValue("circuit")
+                                                        << query.stringValue("date") << query.stringValue("compressor_compressor_id"));
             InspectionsCompressor inpections_compressor(QString(), inspections_compressor_parents);
             if (inpections_compressor.exists()) {
                 attributes = inpections_compressor.list();
@@ -2146,7 +2146,7 @@ void MainWindow::importData()
 
                 MTDictionary columns(true);
                 columns.insert(QString(), "0");
-                columns.insert(QUERY("compressor_name").toString(), "0");
+                columns.insert(query.stringValue("compressor_name"), "0");
                 columns.insert(QString(), "0");
 
                 for (int i = 0; i < variable_names.count(); ++i) {
@@ -2154,7 +2154,7 @@ void MainWindow::importData()
                         columns.insert(QString(), "0");
                         continue;
                     }
-                    attribute = QUERY("compressor_" + variable_names.key(i));
+                    attribute = query.value("compressor_" + variable_names.key(i));
                     attribute_modified = attribute != attributes.value(variable_names.key(i));
                     if (attribute_modified) {
                         modified = true;
@@ -2163,7 +2163,7 @@ void MainWindow::importData()
                     columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
                 }
 
-                if (modified && QUERY("compressor_date_updated").toString() > attributes.value("date_updated").toString()) {
+                if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
                     QTreeWidgetItem * item = new QTreeWidgetItem(last_item, columns.keys());
                     for (int i = 0; i < columns.count(); ++i) {
                         if (columns.value(i).toInt()) {
@@ -2171,19 +2171,19 @@ void MainWindow::importData()
                             item->setForeground(i, QBrush(Qt::white));
                         }
                     }
-                    item->setData(0, Qt::UserRole, QUERY("compressor_compressor_id"));
+                    item->setData(0, Qt::UserRole, query.value("compressor_compressor_id"));
                     if (last_item->treeWidget() == NULL)
                         id->modifiedInspections()->addTopLevelItem(last_item);
                 }
             } else {
                 QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
-                item->setData(0, Qt::UserRole, QUERY("compressor_compressor_id"));
-                item->setText(1, QUERY("compressor_name").toString());
+                item->setData(0, Qt::UserRole, query.value("compressor_compressor_id"));
+                item->setText(1, query.stringValue("compressor_name"));
                 for (int i = 0; i < variable_names.count(); ++i) {
                     if (!query.record().contains("compressor_" + variable_names.key(i)))
                         continue;
                     shown_sections << i + 3;
-                    item->setText(i + 3, QUERY("compressor_" + variable_names.key(i)).toString());
+                    item->setText(i + 3, query.stringValue("compressor_" + variable_names.key(i)));
                 }
                 if (last_item->treeWidget() == NULL)
                     id->modifiedInspections()->addTopLevelItem(last_item);
@@ -2198,18 +2198,18 @@ void MainWindow::importData()
     // Repairs
     query.exec("SELECT * FROM repairs ORDER BY date");
     while (query.next()) {
-        record_locked = Global::isRecordLocked(QUERY("date").toString());
+        record_locked = Global::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem * item = NULL;
-        Repair repair(QUERY("date").toString());
+        Repair repair(query.stringValue("date"));
         if (repair.exists()) {
             attributes = repair.list();
             modified = false;
 
             MTDictionary columns(true);
-            columns.insert(QUERY("date").toString(), "0");
+            columns.insert(query.stringValue("date"), "0");
 
             for (int i = 1; i < Repair::attributes().count(); ++i) {
-                attribute = QUERY(Repair::attributes().key(i));
+                attribute = query.value(Repair::attributes().key(i));
                 attribute_modified = attribute != attributes.value(Repair::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
@@ -2223,15 +2223,15 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRepairs());
-            item->setText(0, QUERY("date").toString());
+            item->setText(0, query.stringValue("date"));
             for (int i = 1; i < Repair::attributes().count(); ++i) {
-                item->setText(i, QUERY(Repair::attributes().key(i)).toString());
+                item->setText(i, query.stringValue(Repair::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
         }
@@ -2241,7 +2241,7 @@ void MainWindow::importData()
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setData(0, Qt::UserRole, QUERY("date"));
+                item->setData(0, Qt::UserRole, query.value("date"));
             }
         }
     }
@@ -2249,18 +2249,18 @@ void MainWindow::importData()
     // Refrigerant management
     query.exec("SELECT * FROM refrigerant_management ORDER BY date");
     while (query.next()) {
-        record_locked = Global::isRecordLocked(QUERY("date").toString());
+        record_locked = Global::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem * item = NULL;
-        RecordOfRefrigerantManagement record(QUERY("date").toString());
+        RecordOfRefrigerantManagement record(query.stringValue("date"));
         if (record.exists()) {
             attributes = record.list();
             modified = false;
 
             MTDictionary columns(true);
-            columns.insert(QUERY("date").toString(), "0");
+            columns.insert(query.stringValue("date"), "0");
 
             for (int i = 1; i < RecordOfRefrigerantManagement::attributes().count(); ++i) {
-                attribute = QUERY(RecordOfRefrigerantManagement::attributes().key(i));
+                attribute = query.value(RecordOfRefrigerantManagement::attributes().key(i));
                 attribute_modified = attribute != attributes.value(RecordOfRefrigerantManagement::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
@@ -2274,15 +2274,15 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRefrigerantManagement());
-            item->setText(0, QUERY("date").toString());
+            item->setText(0, query.stringValue("date"));
             for (int i = 1; i < RecordOfRefrigerantManagement::attributes().count(); ++i) {
-                item->setText(i, QUERY(RecordOfRefrigerantManagement::attributes().key(i)).toString());
+                item->setText(i, query.stringValue(RecordOfRefrigerantManagement::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
         }
@@ -2292,7 +2292,7 @@ void MainWindow::importData()
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setData(0, Qt::UserRole, QUERY("date"));
+                item->setData(0, Qt::UserRole, query.value("date"));
             }
         }
     }
@@ -2300,16 +2300,16 @@ void MainWindow::importData()
     // Inspectors
     query.exec("SELECT * FROM inspectors ORDER BY person");
     while (query.next()) {
-        Inspector inspector(QUERY("id").toString());
+        Inspector inspector(query.stringValue("id"));
         if (inspector.exists()) {
             attributes = inspector.list();
             modified = false;
 
             MTDictionary columns(true);
-            columns.insert(QUERY("id").toString().rightJustified(4, '0'), "0");
+            columns.insert(query.stringValue("id").rightJustified(4, '0'), "0");
 
             for (int i = 1; i < Inspector::attributes().count(); ++i) {
-                attribute = QUERY(Inspector::attributes().key(i));
+                attribute = query.value(Inspector::attributes().key(i));
                 attribute_modified = attribute != attributes.value(Inspector::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
@@ -2323,19 +2323,19 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, QUERY("date_updated").toString() > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, QUERY("id"));
+                item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
             QTreeWidgetItem * item = new QTreeWidgetItem(id->newInspectors());
-            item->setText(0, QUERY("id").toString().rightJustified(4, '0'));
+            item->setText(0, query.stringValue("id").rightJustified(4, '0'));
             for (int i = 1; i < Inspector::attributes().count(); ++i) {
-                item->setText(i, QUERY(Inspector::attributes().key(i)).toString());
+                item->setText(i, query.stringValue(Inspector::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, QUERY("id"));
+            item->setData(0, Qt::UserRole, query.value("id"));
         }
     }
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT

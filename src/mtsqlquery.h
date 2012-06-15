@@ -22,49 +22,27 @@
 
 #include <QSqlQuery>
 
-#ifdef QT_DEBUG
-
-#include <QSqlError>
-#include <QDebug>
-
 class MTSqlQuery : public QSqlQuery
 {
 public:
-    MTSqlQuery(QSqlResult * result): QSqlQuery(result) {}
-    MTSqlQuery(const QString & query = QString(), QSqlDatabase db = QSqlDatabase()):
-        QSqlQuery(query, db) {
-        if (!query.isEmpty())
-            printLastError();
-    }
-    MTSqlQuery(QSqlDatabase db): QSqlQuery(db) {}
-    MTSqlQuery(const QSqlQuery & other): QSqlQuery(other) {}
+    MTSqlQuery(QSqlResult * result);
+    MTSqlQuery(const QString & query = QString(), QSqlDatabase db = QSqlDatabase());
+    MTSqlQuery(QSqlDatabase db);
+    MTSqlQuery(const QSqlQuery & other);
 
-    bool exec(const QString & query) {
-        bool result = QSqlQuery::exec(query);
-        printLastError();
-        return result;
-    }
+    bool exec(const QString & query);
+    bool exec();
 
-    bool exec() {
-        bool result = QSqlQuery::exec();
-        printLastError();
-        return result;
-    }
+    QVariant value(int index) const;
+    QVariant value(const QString & field) const;
+    bool boolValue(const QString & field) const;
+    int intValue(const QString & field) const;
+    qlonglong longLongValue(const QString & field) const;
+    double doubleValue(const QString & field) const;
+    QString stringValue(const QString & field) const;
 
 protected:
-    void printLastError() {
-        QSqlError error = lastError();
-        if (error.type() != QSqlError::NoError) {
-            qDebug() << lastQuery();
-            qDebug() << error.text();
-        }
-    }
+    void printLastError() const;
 };
-
-#else
-
-#define MTSqlQuery QSqlQuery
-
-#endif // QT_DEBUG
 
 #endif // MTSQLQUERY_H
