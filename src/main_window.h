@@ -96,6 +96,7 @@ private slots:
     void editCustomer();
     void duplicateCustomer();
     void removeCustomer();
+    void decommissionAllCircuits();
     void addCircuit();
     void editCircuit();
     void duplicateCircuit();

@@ -223,6 +223,7 @@ MainWindow::MainWindow():
     QObject::connect(actionEdit_customer, SIGNAL(triggered()), this, SLOT(editCustomer()));
     QObject::connect(actionDuplicate_customer, SIGNAL(triggered()), this, SLOT(duplicateCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
+    QObject::connect(actionDecommission_all_circuits, SIGNAL(triggered()), this, SLOT(decommissionAllCircuits()));
     QObject::connect(actionAdd_circuit, SIGNAL(triggered()), this, SLOT(addCircuit()));
     QObject::connect(actionEdit_circuit, SIGNAL(triggered()), this, SLOT(editCircuit()));
     QObject::connect(actionDuplicate_circuit, SIGNAL(triggered()), this, SLOT(duplicateCircuit()));
@@ -1247,6 +1248,7 @@ void MainWindow::enableTools()
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
+    actionDecommission_all_circuits->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);
     actionAdd_circuit->setEnabled(customer_selected);
     actionEdit_circuit->setEnabled(circuit_selected);
@@ -1347,6 +1349,7 @@ void MainWindow::toggleLocked()
         QDialogButtonBox * bb = new QDialogButtonBox(d);
         bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
+        bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
         QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
         QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         gl->addWidget(bb, r, 0, 1, 2);

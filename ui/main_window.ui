@@ -272,6 +272,8 @@
     <addaction name="actionDuplicate_customer"/>
     <addaction name="actionRemove_customer"/>
     <addaction name="separator"/>
+    <addaction name="actionDecommission_all_circuits"/>
+    <addaction name="separator"/>
     <addaction name="actionExport_customer_data"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -2001,6 +2003,17 @@
    </property>
    <property name="shortcut">
     <string>Shift+Backspace</string>
+   </property>
+  </action>
+  <action name="actionDecommission_all_circuits">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Decommission All Circuits...</string>
+   </property>
+   <property name="statusTip">
+    <string>Decommission all of the selected customer's circuits</string>
    </property>
   </action>
  </widget>

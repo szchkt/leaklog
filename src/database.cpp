@@ -821,6 +821,53 @@ void MainWindow::removeCustomer()
     navigation->setView(Navigation::ListOfCustomers);
 }
 
+void MainWindow::decommissionAllCircuits()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!isCustomerSelected()) { return; }
+
+    Customer customer(selectedCustomer());
+
+    QDialog * d = new QDialog(this);
+    d->setWindowTitle(tr("Decommission all circuits - Leaklog"));
+    QGridLayout * gl = new QGridLayout(d);
+
+    QLabel * lbl = new QLabel(tr("Decommission all circuits of: %1").arg(customer.stringValue("company")), d);
+    lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+    gl->addWidget(lbl, 0, 0, 1, 2);
+
+    lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 1, 0);
+
+    QDateEdit * date = new QDateEdit(d);
+    date->setDisplayFormat("yyyy.MM.dd");
+    date->setDate(QDate::currentDate());
+    gl->addWidget(date, 1, 1);
+
+    QDialogButtonBox * bb = new QDialogButtonBox(d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Decommission"));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    bb->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+    gl->addWidget(bb, 2, 0, 1, 2);
+
+    if (d->exec() != QDialog::Accepted) return;
+
+    QVariantMap set;
+    set.insert("disused", 1);
+    set.insert("decommissioning", date->date().toString("yyyy.MM.dd"));
+
+    Circuit circuits(customer.id(), QString());
+    circuits.parents().insert("disused", "0");
+    circuits.update(set, false, true);
+
+    this->setWindowModified(true);
+    refreshView();
+}
+
 void MainWindow::loadCustomer(int customer, bool refresh)
 {
     if (customer < 0) { return; }

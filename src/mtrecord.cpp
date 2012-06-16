@@ -284,7 +284,8 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns, bool force_u
     if ((has_id || (!set.contains(r_id_field) && !r_serial_id && !force_update)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
-        if (!has_id && set.contains(r_parents.key(p))) continue;
+        if (!has_id && !force_update && set.contains(r_parents.key(p)))
+            continue;
         query.bindValue(":_" + r_parents.key(p), r_parents.value(p));
     }
     i.toFront();

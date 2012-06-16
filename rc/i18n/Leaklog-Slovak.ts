@@ -3576,6 +3576,26 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>At the end of the year</source>
         <translation>Na konci roka</translation>
     </message>
+    <message>
+        <source>Decommission All Circuits...</source>
+        <translation>Vyradiť všetky okruhy...</translation>
+    </message>
+    <message>
+        <source>Decommission all of the selected customer&apos;s circuits</source>
+        <translation>Vydariť všetky okruhy vybraného zákazníka</translation>
+    </message>
+    <message>
+        <source>Decommission all circuits - Leaklog</source>
+        <translation>Vyradiť všetky okruhy - Leaklog</translation>
+    </message>
+    <message>
+        <source>Decommission all circuits of: %1</source>
+        <translation>Vyradiť všetky okruhy zákazníka: %1</translation>
+    </message>
+    <message>
+        <source>Decommission</source>
+        <translation>Vyradiť</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>
