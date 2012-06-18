@@ -1290,11 +1290,11 @@ void MainWindow::toggleLocked()
     if (!isDatabaseLocked()) {
         int r = 0;
 
-        QDialog * d = new QDialog(this);
-        d->setWindowTitle(tr("Lock database - Leaklog"));
-        QGridLayout * gl = new QGridLayout(d);
+        QDialog d(this);
+        d.setWindowTitle(tr("Lock database - Leaklog"));
+        QGridLayout * gl = new QGridLayout(&d);
 
-        QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), d);
+        QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), &d);
         lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
         gl->addWidget(lbl, r, 0, 1, 2);
 
@@ -1302,21 +1302,21 @@ void MainWindow::toggleLocked()
 
         QString last_date = DBInfoValueForKey("lock_date");
 
-        QRadioButton * static_lock = new QRadioButton(d);
+        QRadioButton * static_lock = new QRadioButton(&d);
         gl->addWidget(static_lock, r, 0);
 
-        QDateEdit * date = new QDateEdit(d);
+        QDateEdit * date = new QDateEdit(&d);
         date->setDisplayFormat("yyyy.MM.dd");
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, "yyyy.MM.dd"));
         gl->addWidget(date, r, 1);
 
         r++;
 
-        QRadioButton * autolock = new QRadioButton(d);
+        QRadioButton * autolock = new QRadioButton(&d);
         autolock->setChecked(true);
         gl->addWidget(autolock, r, 0);
 
-        QSpinBox * days = new QSpinBox(d);
+        QSpinBox * days = new QSpinBox(&d);
         days->setSuffix(tr(" days"));
         days->setRange(0, 99999);
         days->setValue(7);
@@ -1326,35 +1326,35 @@ void MainWindow::toggleLocked()
 
         QLineEdit * admin = NULL;
         if (isDatabaseRemote()) {
-            lbl = new QLabel(tr("Administrator:"), d);
+            lbl = new QLabel(tr("Administrator:"), &d);
             lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
             gl->addWidget(lbl, r, 0);
 
-            admin = new QLineEdit(d);
+            admin = new QLineEdit(&d);
             admin->setText(DBInfoValueForKey("admin", currentUser()));
             gl->addWidget(admin, r, 1);
 
             r++;
         }
 
-        lbl = new QLabel(tr("Password:"), d);
+        lbl = new QLabel(tr("Password:"), &d);
         lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         gl->addWidget(lbl, r, 0);
 
-        QLineEdit * password = new QLineEdit(d);
+        QLineEdit * password = new QLineEdit(&d);
         gl->addWidget(password, r, 1);
 
         r++;
 
-        QDialogButtonBox * bb = new QDialogButtonBox(d);
+        QDialogButtonBox * bb = new QDialogButtonBox(&d);
         bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
         bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
-        QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
-        QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+        QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+        QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
         gl->addWidget(bb, r, 0, 1, 2);
 
-        if (d->exec() != QDialog::Accepted) return;
+        if (d.exec() != QDialog::Accepted) return;
 
         setDBInfoValueForKey("lock_date", date->date().toString("yyyy.MM.dd"));
         setDBInfoValueForKey("autolock_days", QString::number(days->value()));
