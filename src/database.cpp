@@ -926,6 +926,28 @@ void MainWindow::duplicateCircuit()
     record.id().clear();
     EditDialogue md(&record, this);
     if (md.exec() == QDialog::Accepted) {
+        ListOfVariantMaps compressors = Compressor(QString(),
+                                                   MTDictionary(QStringList() << "customer_id" << "circuit_id",
+                                                                QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+
+        qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+        for (int i = 0; i < compressors.size(); ++i) {
+            compressors[i].insert("id", next_id++);
+            compressors[i].insert("circuit_id", record.id());
+            Compressor().update(compressors[i]);
+        }
+
+        ListOfVariantMaps circuit_units = CircuitUnit(QString(),
+                                                      MTDictionary(QStringList() << "company_id" << "circuit_id",
+                                                                   QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+
+        next_id = CircuitUnit().max("id");
+        for (int i = 0; i < circuit_units.size(); ++i) {
+            circuit_units[i].insert("id", ++next_id);
+            circuit_units[i].insert("circuit_id", record.id());
+            CircuitUnit().update(circuit_units[i]);
+        }
+
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
     }
