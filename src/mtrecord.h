@@ -57,12 +57,25 @@ public:
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
         return r_values.isEmpty() ? list(field).value(field, default_value) : r_values.value(field, default_value);
     }
+    inline bool boolValue(const QString & field, bool default_value = false) {
+        return r_values.isEmpty() ? list(field).value(field, default_value).toInt() : r_values.value(field, default_value).toInt();
+    }
+    inline int intValue(const QString & field, int default_value = 0) {
+        return r_values.isEmpty() ? list(field).value(field, default_value).toInt() : r_values.value(field, default_value).toInt();
+    }
+    inline qlonglong longLongValue(const QString & field, qlonglong default_value = 0L) {
+        return r_values.isEmpty() ? list(field).value(field, default_value).toLongLong() : r_values.value(field, default_value).toLongLong();
+    }
+    inline double doubleValue(const QString & field, double default_value = 0.0) {
+        return r_values.isEmpty() ? list(field).value(field, default_value).toDouble() : r_values.value(field, default_value).toDouble();
+    }
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
         return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
     }
     ListOfVariantMaps listAll(const QString & fields = "*", const QString & order_by = QString());
     QVariantMap sumAll(const QString & fields);
     MultiMapOfVariantMaps mapAll(const QString & map_to, const QString & fields = "*");
+    bool update(const QString & field, const QVariant & value, bool add_columns = false, bool force_update = false);
     bool update(const QVariantMap & values, bool add_columns = false, bool force_update = false);
     virtual bool remove();
     void setCustomWhere(const QString & where) { r_custom_where = where; }

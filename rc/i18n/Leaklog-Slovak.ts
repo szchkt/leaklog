@@ -3589,12 +3589,40 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
         <translation>Vyradiť všetky okruhy - Leaklog</translation>
     </message>
     <message>
-        <source>Decommission all circuits of: %1</source>
-        <translation>Vyradiť všetky okruhy zákazníka: %1</translation>
-    </message>
-    <message>
         <source>Decommission</source>
         <translation>Vyradiť</translation>
+    </message>
+    <message>
+        <source>Duplicate and Decommission Circuit...</source>
+        <translation>Duplikovať a vyradiť okruh...</translation>
+    </message>
+    <message>
+        <source>Duplicate the selected circuit and decommission the original</source>
+        <translation>Duplikovať vybraný okruh a vyradiť pôvodný</translation>
+    </message>
+    <message>
+        <source>Decommission all circuits of:</source>
+        <translation>Vyradiť všetky okruhy zákazníka:</translation>
+    </message>
+    <message>
+        <source>Duplicate and decommission - Leaklog</source>
+        <translation>Duplikovať a vyradiť - Leaklog</translation>
+    </message>
+    <message>
+        <source>Duplicate and decommission circuit:</source>
+        <translation>Duplikovať a vyradiť okruh:</translation>
+    </message>
+    <message>
+        <source>Change ID of the original to:</source>
+        <translation>Zmeniť IČ pôvodného na:</translation>
+    </message>
+    <message>
+        <source>Choose a new ID for the duplicate:</source>
+        <translation>Vybrať nové IČ pre duplikát:</translation>
+    </message>
+    <message>
+        <source>Duplicate and Decommission</source>
+        <translation>Duplikovať a vyradiť</translation>
     </message>
 </context>
 <context>
@@ -4347,6 +4375,10 @@ Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ
     <message>
         <source>Edit warning</source>
         <translation>Upraviť upozornenie</translation>
+    </message>
+    <message>
+        <source>Decommission circuit</source>
+        <translation>Vyradiť okruh</translation>
     </message>
 </context>
 <context>

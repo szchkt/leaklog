@@ -43,6 +43,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QDialogButtonBox>
+#include <QRadioButton>
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QDateTime>
@@ -148,14 +149,10 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
     if (v > 0 && v < 0.9061) {
         Customer customers("");
         MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
-        QVariantMap set;
         MTSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
         while (repairs.next()) {
-            if (customer_ids.contains(repairs.value(1).toString())) {
-                Repair repair(repairs.value(0).toString());
-                set.insert("parent", customer_ids.value(repairs.value(1).toString()).value("id"));
-                repair.update(set);
-            }
+            if (customer_ids.contains(repairs.value(1).toString()))
+                Repair(repairs.value(0).toString()).update("parent", customer_ids.value(repairs.value(1).toString()).value("id"));
         }
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
@@ -829,9 +826,11 @@ void MainWindow::decommissionAllCircuits()
     d.setWindowTitle(tr("Decommission all circuits - Leaklog"));
     QGridLayout * gl = new QGridLayout(&d);
 
-    QLabel * lbl = new QLabel(tr("Decommission all circuits of: %1").arg(customer.stringValue("company")), &d);
-    lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
-    gl->addWidget(lbl, 0, 0, 1, 2);
+    QLabel * lbl = new QLabel(tr("Decommission all circuits of:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 0, 0);
+
+    gl->addWidget(new QLabel(customer.stringValue("company"), &d), 0, 1);
 
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -908,24 +907,7 @@ void MainWindow::editCircuit()
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
-            MTSqlQuery update_inspections;
-            update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-            update_inspections.bindValue(":customer_id", selectedCustomer());
-            update_inspections.bindValue(":old_id", old_id);
-            update_inspections.bindValue(":new_id", record.id());
-            update_inspections.exec();
-            MTSqlQuery update_inspections_compressors;
-            update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-            update_inspections_compressors.bindValue(":customer_id", selectedCustomer());
-            update_inspections_compressors.bindValue(":old_id", old_id);
-            update_inspections_compressors.bindValue(":new_id", record.id());
-            update_inspections_compressors.exec();
-            MTSqlQuery update_inspection_images;
-            update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-            update_inspection_images.bindValue(":customer_id", selectedCustomer());
-            update_inspection_images.bindValue(":old_id", old_id);
-            update_inspection_images.bindValue(":new_id", record.id());
-            update_inspection_images.exec();
+            Circuit::cascadeIDChange(selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
             loadCircuit(record.id().toInt(), true);
         } else {
             refreshView();
@@ -947,6 +929,120 @@ void MainWindow::duplicateCircuit()
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
     }
+}
+
+void MainWindow::duplicateAndDecommissionCircuit()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!isCustomerSelected()) { return; }
+    if (!isCircuitSelected()) { return; }
+    if (!isOperationPermitted("add_circuit")) { return; }
+    if (!isOperationPermitted("decommission_circuit")) { return; }
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Duplicate and decommission - Leaklog"));
+    QGridLayout * gl = new QGridLayout(&d);
+
+    QLabel * lbl = new QLabel(tr("Duplicate and decommission circuit:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 0, 0);
+
+    gl->addWidget(new QLabel(selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+
+    lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 1, 0);
+
+    QDateEdit * date = new QDateEdit(&d);
+    date->setDisplayFormat("yyyy.MM.dd");
+    date->setDate(QDate::currentDate());
+    gl->addWidget(date, 1, 1);
+
+    QRadioButton * set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
+    set_original_id->setChecked(true);
+    gl->addWidget(set_original_id, 2, 0);
+
+    QSpinBox * new_id = new QSpinBox(&d);
+    new_id->setRange(1, 99999);
+    new_id->setValue(Circuit(selectedCustomer(), QString()).max("id") + 1);
+    gl->addWidget(new_id, 2, 1, 2, 1);
+
+    QRadioButton * set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
+    gl->addWidget(set_duplicate_id, 3, 0);
+
+    lbl = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
+    QFont bold;
+    bold.setBold(true);
+    lbl->setFont(bold);
+    lbl->setWordWrap(true);
+    lbl->setVisible(false);
+    gl->addWidget(lbl, 4, 0, 1, 2);
+
+    QDialogButtonBox * bb = new QDialogButtonBox(&d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Duplicate and Decommission"));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    bb->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    gl->addWidget(bb, 5, 0, 1, 2);
+
+    int id = 0;
+    do {
+        if (id)
+            lbl->setVisible(true);
+
+        if (d.exec() != QDialog::Accepted)
+            return;
+
+        id = new_id->value();
+    } while (Circuit(selectedCustomer(), QString::number(id)).exists());
+
+    Circuit circuit(selectedCustomer(), selectedCircuit());
+    QVariantMap attributes = circuit.list();
+
+    ListOfVariantMaps compressors = Compressor(QString(),
+                                               MTDictionary(QStringList() << "customer_id" << "circuit_id",
+                                                            QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+
+    ListOfVariantMaps circuit_units = CircuitUnit(QString(),
+                                                  MTDictionary(QStringList() << "company_id" << "circuit_id",
+                                                               QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+
+    QVariantMap set;
+    set.insert("disused", 1);
+    set.insert("decommissioning", date->date().toString("yyyy.MM.dd"));
+    circuit.update(set);
+
+    int duplicate_id;
+
+    if (set_original_id->isChecked()) {
+        duplicate_id = attributes.value("id").toInt();
+        circuit.update("id", id);
+        Circuit::cascadeIDChange(selectedCustomer().toInt(), duplicate_id, id, true);
+    } else {
+        duplicate_id = id;
+        attributes.insert("id", id);
+    }
+
+    Circuit().update(attributes);
+
+    qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+    for (int i = 0; i < compressors.size(); ++i) {
+        compressors[i].insert("id", next_id++);
+        compressors[i].insert("circuit_id", duplicate_id);
+        Compressor().update(compressors[i]);
+    }
+
+    next_id = CircuitUnit().max("id");
+    for (int i = 0; i < circuit_units.size(); ++i) {
+        circuit_units[i].insert("id", ++next_id);
+        circuit_units[i].insert("circuit_id", duplicate_id);
+        CircuitUnit().update(circuit_units[i]);
+    }
+
+    this->setWindowModified(true);
+    loadCircuit(duplicate_id, true);
 }
 
 void MainWindow::removeCircuit()
@@ -1201,9 +1297,7 @@ void MainWindow::addVariable(bool subvar)
         QTreeWidgetItem * item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
-            QVariantMap set;
-            set.insert("type", "group");
-            VariableRecord(parent_id).update(set);
+            VariableRecord(parent_id).update("type", "group");
         } else {
             item = new QTreeWidgetItem(trw_variables);
         }
@@ -1438,9 +1532,7 @@ void MainWindow::addTableVariable()
         Table record(cb_table_edit->currentText());
         QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
-        QVariantMap set;
-        set.insert("variables", variables.join(";"));
-        record.update(set);
+        record.update("variables", variables.join(";"));
         loadTable(cb_table_edit->currentText());
         this->setWindowModified(true);
         refreshView();
@@ -1504,9 +1596,7 @@ void MainWindow::moveTableVariable(bool up)
         if (i != variables.count()) { i++; } else { i = 0; }
     }
     variables.insert(i, variable);
-    QVariantMap set;
-    set.insert("variables", variables.join(";"));
-    record.update(set);
+    record.update("variables", variables.join(";"));
     loadTable(cb_table_edit->currentText());
     trw_table_variables->setCurrentItem(trw_table_variables->topLevelItem(i));
     this->setWindowModified(true);

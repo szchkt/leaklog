@@ -765,6 +765,7 @@ public:
         dict.insert("remove_customer", QApplication::translate("Permissions", "Remove customer"));
         dict.insert("add_circuit", QApplication::translate("Permissions", "Add circuit"));
         dict.insert("edit_circuit", QApplication::translate("Permissions", "Edit circuit"));
+        dict.insert("decommission_circuit", QApplication::translate("Permissions", "Decommission circuit"));
         dict.insert("remove_circuit", QApplication::translate("Permissions", "Remove circuit"));
         dict.insert("add_inspection", QApplication::translate("Permissions", "Add inspection"));
         dict.insert("edit_inspection", QApplication::translate("Permissions", "Edit inspection"));

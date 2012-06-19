@@ -100,6 +100,7 @@ private slots:
     void addCircuit();
     void editCircuit();
     void duplicateCircuit();
+    void duplicateAndDecommissionCircuit();
     void removeCircuit();
     void addInspection();
     void editInspection();

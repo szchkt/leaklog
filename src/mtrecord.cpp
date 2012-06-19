@@ -206,6 +206,13 @@ MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & f
     return map;
 }
 
+bool MTRecord::update(const QString & field, const QVariant & value, bool add_columns, bool force_update)
+{
+    QVariantMap set;
+    set.insert(field, value);
+    return update(set, add_columns, force_update);
+}
+
 bool MTRecord::update(const QVariantMap & values, bool add_columns, bool force_update)
 {
     bool has_id = !r_id.isEmpty();

@@ -291,6 +291,7 @@
     <addaction name="actionAdd_circuit"/>
     <addaction name="actionEdit_circuit"/>
     <addaction name="actionDuplicate_circuit"/>
+    <addaction name="actionDuplicate_and_decommission_circuit"/>
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_detailed_label"/>
@@ -2014,6 +2015,21 @@
    </property>
    <property name="statusTip">
     <string>Decommission all of the selected customer's circuits</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_and_decommission_circuit">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/duplicate.png</normaloff>:/images/images/duplicate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Duplicate and Decommission Circuit...</string>
+   </property>
+   <property name="statusTip">
+    <string>Duplicate the selected circuit and decommission the original</string>
    </property>
   </action>
  </widget>
