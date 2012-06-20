@@ -31,7 +31,7 @@ class EditInspectionDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectionDialogue(DBRecord *, QWidget * = NULL);
+    EditInspectionDialogue(DBRecord * record, QWidget * parent = NULL, const QString & duplicate_from = QString());
 
 protected:
     bool saveOther();

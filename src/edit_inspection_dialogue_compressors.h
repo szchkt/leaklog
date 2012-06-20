@@ -38,6 +38,8 @@ class EditInspectionDialogueCompressors : public QWidget, public EditDialogueAre
 public:
     EditInspectionDialogueCompressors(const QString &, const QString &, const QString &, QWidget *);
 
+    void clearOriginalInspectionDate() { original_inspection_date.clear(); }
+
     void save(const QVariant &);
 
 private:

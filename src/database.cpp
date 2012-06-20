@@ -1165,7 +1165,7 @@ void MainWindow::duplicateInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.readValues();
     record.id().clear();
-    EditInspectionDialogue md(&record, this);
+    EditInspectionDialogue md(&record, this, selectedInspection());
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);

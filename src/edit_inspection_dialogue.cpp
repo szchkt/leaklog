@@ -31,7 +31,7 @@
 
 #include <QMessageBox>
 
-EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * parent)
+EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * parent, const QString & duplicate_from)
     : TabbedEditDialogue(record, parent),
       compressors(NULL)
 {
@@ -42,10 +42,10 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * pare
     md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, 1, md_grid_main->columnCount() - 1);
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
-        compressors = new EditInspectionDialogueCompressors(md_record->parent("customer"),
-                                                              md_record->parent("circuit"),
-                                                              md_record->id(),
-                                                              this);
+        QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
+        compressors = new EditInspectionDialogueCompressors(md_record->parent("customer"), md_record->parent("circuit"), id, this);
+        if (!duplicate_from.isEmpty())
+            compressors->clearOriginalInspectionDate();
         md_grid_main->addWidget(compressors, md_grid_main->rowCount(), 0, 1, md_grid_main->columnCount());
         tabs.append(compressors);
     }
