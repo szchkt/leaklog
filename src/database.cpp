@@ -81,7 +81,7 @@ bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
     return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
+void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool save_on_upgrade)
 {
     if (transaction) { database.transaction(); }
 { // (SCOPE)
@@ -305,6 +305,25 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction)
             query.exec(index + "index_assembly_record_items_parent ON assembly_record_items (arno ASC)");
             query.exec(unique_index + "index_circuit_units_id ON circuit_units (company_id ASC, circuit_id ASC, id ASC)");
             query.exec(unique_index + "index_styles_id ON styles (id ASC)");
+        }
+
+        if (save_on_upgrade && !transaction && v > 0) {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Database upgraded - Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Information);
+            message.setText(tr("The database has been upgraded to work with this version of Leaklog."
+                               " It is recommended that you save the changes now."));
+            message.setInformativeText(tr("Once saved, you will not be able to use this database with previous versions of Leaklog."
+                                          " Do you want to save the changes?"));
+            message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+            message.addButton(tr("&Later"), QMessageBox::RejectRole);
+            switch (message.exec()) {
+                case 0: // Save
+                    saveDatabase(true, false);
+                    break;
+            }
         }
     }
 } // (SCOPE)
@@ -567,7 +586,7 @@ void MainWindow::saveAndCompact()
     saveDatabase(true);
 }
 
-void MainWindow::saveDatabase(bool compact)
+void MainWindow::saveDatabase(bool compact, bool update_ui)
 {
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
@@ -587,13 +606,15 @@ void MainWindow::saveDatabase(bool compact)
         QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(errors.join("; ")));
         return;
     }
+    if (update_ui) {
 #ifdef Q_WS_MAC
-    this->setWindowTitle(QString("%1[*]").arg(QFileInfo(db.databaseName()).baseName()));
+        this->setWindowTitle(QString("%1[*]").arg(QFileInfo(db.databaseName()).baseName()));
 #else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(db.databaseName()).baseName()));
+        this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(db.databaseName()).baseName()));
 #endif
-    this->setWindowModified(false);
-    refreshView();
+        this->setWindowModified(false);
+        refreshView();
+    }
 }
 
 void MainWindow::closeDatabase(bool save)
@@ -1842,7 +1863,7 @@ void MainWindow::importData()
     }
     data.transaction();
     MTSqlQuery query(data);
-    initDatabase(data, false);
+    initDatabase(data, false, false);
     ImportDialogue * id = new ImportDialogue(this);
     QVariantMap attributes;
     QVariant attribute;

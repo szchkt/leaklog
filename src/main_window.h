@@ -169,10 +169,10 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(const QString &, bool);
-    void initDatabase(QSqlDatabase &, bool = true);
+    void initDatabase(QSqlDatabase & database, bool transaction = true, bool save_on_upgrade = true);
     void initTables(bool = true);
     void openDatabase(QString);
-    void saveDatabase(bool = false);
+    void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool isRecordLocked(const QString &);
     void editRecordOfRefrigerantManagement(const QString &);

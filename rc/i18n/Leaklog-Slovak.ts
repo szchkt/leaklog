@@ -3624,6 +3624,22 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Duplicate and Decommission</source>
         <translation>Duplikovať a vyradiť</translation>
     </message>
+    <message>
+        <source>Database upgraded - Leaklog</source>
+        <translation>Databáza aktualizovaná - Leaklog</translation>
+    </message>
+    <message>
+        <source>The database has been upgraded to work with this version of Leaklog. It is recommended that you save the changes now.</source>
+        <translation>Databáza bola aktualizovaná na prácu s touto verziou programu Leaklog. Odporúča sa teraz tieto zmeny uložiť.</translation>
+    </message>
+    <message>
+        <source>Once saved, you will not be able to use this database with previous versions of Leaklog. Do you want to save the changes?</source>
+        <translation>Po uložení už nebude možné používať túto databázu s predchádzajúcimi verziami programu Leaklog. Chcete tieto zmeny uložiť?</translation>
+    </message>
+    <message>
+        <source>&amp;Later</source>
+        <translation>&amp;Neskôr</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>
