@@ -1623,7 +1623,7 @@
     </message>
     <message>
         <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
-        <translation>Mali by ste pridať záznam o kúpe pre každé chladivo na sklade. Môžete tak urobiť kliknutím na tlačidlo &quot;Pridať záznam o nakladaní s chladivom&quot;.</translation>
+        <translation>Mali by ste pridať záznam o kúpe pre každé chladivo na sklade. Môžete tak urobiť kliknutím na tlačidlo „Pridať záznam o nakladaní s chladivom“.</translation>
     </message>
     <message>
         <source>Permission denied - Leaklog</source>
@@ -1653,7 +1653,7 @@
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného zákazníka?
-Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>REMOVE</source>
@@ -1803,7 +1803,7 @@ Na odstránenie všetkých údajov o zákazníkovi &quot;%1&quot; napíšte ODST
         <source>Are you sure you want to remove the selected style?
 To remove the style &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný vzhľad?
-Na odstránenie vzhľadu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Circuit units</source>
@@ -1917,7 +1917,7 @@ Na odstránenie vzhľadu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <source>Are you sure you want to remove the selected assembly record type?
 To remove all data about the record &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ montážneho listu?
-Na odstránenie všetkých údajov o type montážneho listu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o type montážneho listu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove assembly record item type - Leaklog</source>
@@ -1927,7 +1927,7 @@ Na odstránenie všetkých údajov o type montážneho listu &quot;%1&quot; nap�
         <source>Are you sure you want to remove the selected assembly record item type?
 To remove all data about the record item &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ položky montážneho listu?
-Na odstránenie všetkých údajov o type položky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o type položky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove assembly record item category - Leaklog</source>
@@ -1937,7 +1937,7 @@ Na odstránenie všetkých údajov o type položky &quot;%1&quot; napíšte ODST
         <source>Are you sure you want to remove the selected assembly record item category?
 To remove all data about the item category &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú kategóriu položiek montážneho listu?
-Na odstránenie všetkých údajov o kategórii &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o kategórii „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove circuit unit type - Leaklog</source>
@@ -1947,7 +1947,7 @@ Na odstránenie všetkých údajov o kategórii &quot;%1&quot; napíšte ODSTRÁ
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný typ jednotky okruhu?
-Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>ID</source>
@@ -2065,7 +2065,7 @@ Na odstránenie všetkých údajov o type jednotky okruhu &quot;%1&quot; napíš
         <source>Are you sure you want to remove the selected circuit?
 To remove all data about the circuit &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraný okruh?
-Na odstránenie všetkých údajov o okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o okruhu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove inspection - Leaklog</source>
@@ -2075,7 +2075,7 @@ Na odstránenie všetkých údajov o okruhu &quot;%1&quot; napíšte ODSTRÁNIŤ
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú kontrolu?
-Na odstránenie všetkých údajov o kontrole &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o kontrole „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove variable - Leaklog</source>
@@ -2085,7 +2085,7 @@ Na odstránenie všetkých údajov o kontrole &quot;%1&quot; napíšte ODSTRÁNI
         <source>Are you sure you want to remove the selected variable?
 To remove the variable &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú premennú?
-Na odstránenie premennej &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie premennej „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Remove table - Leaklog</source>
@@ -2095,7 +2095,7 @@ Na odstránenie premennej &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tra
         <source>Are you sure you want to remove the selected table?
 To remove the table &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú tabuľku?
-Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie tabuľky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Add existing variable - Leaklog</source>
@@ -2127,7 +2127,7 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
     </message>
     <message>
         <source>Are you sure you want to remove the variable &quot;%1&quot; from the selected table?</source>
-        <translation>Naozaj chcete odstrániť premennú &quot;%1&quot; z vybranej tabuľky?</translation>
+        <translation>Naozaj chcete odstrániť premennú „%1“ z vybranej tabuľky?</translation>
     </message>
     <message>
         <source>All</source>
@@ -2145,7 +2145,7 @@ Na odstránenie tabuľky &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</tran
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybrané upozornenie?
-Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Tables</source>
@@ -2627,7 +2627,7 @@ Na odstránenie upozornenia &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</t
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybraného kontrolóra?
-Na odstránenie všetkých údajov o kontrolórovi &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -3000,7 +3000,7 @@ Nariadenia (ES) č. 842/2006 a zákona
         <source>Are you sure you want to remove the selected repair?
 To remove all data about the repair &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú opravu?
-Na odstránenie všetkých údajov o oprave &quot;%1&quot; napíšte ODSTRÁNIŤ a potvrďte:</translation>
+Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
         <source>Service company</source>
