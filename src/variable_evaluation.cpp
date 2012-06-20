@@ -59,7 +59,8 @@ void VariableEvaluation::EvaluationContext::init()
             vars_list.append(var);
         }
 
-        var->setId(vars.id());
+        var->setParentID(vars.parentID());
+        var->setID(vars.id());
         var->setName(vars.name());
         var->setType(vars.type());
         var->setUnit(vars.unit());
@@ -82,7 +83,7 @@ void VariableEvaluation::EvaluationContext::init()
     used_ids = listVariableIds();
 }
 
-QString VariableEvaluation::EvaluationContext::variableName(Variable * var, bool is_nominal)
+QString VariableEvaluation::EvaluationContext::variableName(Variable * var, bool is_nominal) const
 {
     if (is_nominal && var->id() == "refr_add_am")
         return QObject::tr("New charge");

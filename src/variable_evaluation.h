@@ -38,15 +38,15 @@ namespace VariableEvaluation {
         void setNominalInspection(const QVariantMap & nominal_ins) { this->nominal_ins = nominal_ins; }
         QVariantMap & nominalInspection() { return nominal_ins; }
 
-        Variable * variable(const QString & name) { return vars_map.value(name); }
+        Variable * variable(const QString & name) const { return vars_map.value(name); }
         QString evaluate(Variable *, QVariantMap &, QString &);
         QString evaluate(const QString &, QVariantMap &, QString &);
 
-        QStringList & usedIds() { return used_ids; }
+        QStringList & usedIDs() { return used_ids; }
 
-        const QList<Variable *> & listVariables() { return vars_list; }
+        QList<Variable *> listVariables() const { return vars_list; }
 
-        QString variableName(Variable *, bool = false);
+        QString variableName(Variable *, bool = false) const;
 
     private:
         void init();
@@ -67,28 +67,29 @@ namespace VariableEvaluation {
 
     class Variable
     {
-
     public:
-        void setName(const QString & name) { this->_name = name; }
-        const QString & name() { return _name; }
-        void setType(const QString & type) { this->_type = type; }
-        const QString & type() { return _type; }
-        void setUnit(const QString & unit) { this->_unit = unit; }
-        const QString & unit() { return _unit; }
-        void setCompareNom(int compare_nom) { this->_compare_nom = compare_nom; }
-        int compareNom() { return _compare_nom; }
-        void setColBg(const QString & col_bg) { this->_col_bg = col_bg; }
-        const QString & colBg() { return _col_bg; }
-        void setTolerance(double tolerance) { this->_tolerance = tolerance; }
-        double tolerance() { return _tolerance; }
-        void setValue(const QString & value) { this->_value = value; }
-        const QString & value() { return _value; }
-        void setId(const QString & id) { this->_id = id; }
-        const QString & id() { return _id; }
+        void setName(const QString & name) { _name = name; }
+        QString name() const { return _name; }
+        void setType(const QString & type) { _type = type; }
+        QString type() const { return _type; }
+        void setUnit(const QString & unit) { _unit = unit; }
+        QString unit() const { return _unit; }
+        void setCompareNom(int compare_nom) { _compare_nom = compare_nom; }
+        int compareNom() const { return _compare_nom; }
+        void setColBg(const QString & col_bg) { _col_bg = col_bg; }
+        QString colBg() const { return _col_bg; }
+        void setTolerance(double tolerance) { _tolerance = tolerance; }
+        double tolerance() const { return _tolerance; }
+        void setValue(const QString & value) { _value = value; }
+        QString value() const { return _value; }
+        void setID(const QString & id) { _id = id; }
+        QString id() const { return _id; }
+        void setParentID(const QString & parent_id) { _parent_id = parent_id; }
+        QString parentID() const { return _parent_id; }
 
         void addSubvariable(Variable * var) { subvars.append(var); }
-        const QList<Variable *> & subvariables() { return subvars; }
-        int countSubvariables() { return subvars.count(); }
+        QList<Variable *> subvariables() const { return subvars; }
+        int countSubvariables() const { return subvars.count(); }
 
         QString evaluate(EvaluationContext &, QVariantMap &, QString &);
 
@@ -101,6 +102,7 @@ namespace VariableEvaluation {
         double _tolerance;
         QString _value;
         QString _id;
+        QString _parent_id;
 
         QList<Variable *> subvars;
     };

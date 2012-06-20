@@ -755,7 +755,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
 
     Variables vars;
     while (vars.next()) {
-        all_variables << vars.id();
+        if (vars.parentID().isEmpty())
+            all_variables << vars.id();
     }
 
     while (tables.next() || all_variables.count()) {
@@ -799,7 +800,8 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
             *(header_row->addHeaderCell("width=\"50%\"")) << compressor.value("name").toString();
             _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
             for (int n = 0; n < compressor_vars.count(); ++n) {
-                showVariableInInspectionTable(compressor_vars[n], compressor_var_evaluation, inspections_compressors[i], _table);
+                if (compressor_vars[n]->parentID().isEmpty())
+                    showVariableInInspectionTable(compressor_vars[n], compressor_var_evaluation, inspections_compressors[i], _table);
             }
         }
         div.newLine();
@@ -1247,7 +1249,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                                     value += inspections.at(ins).value(subvariable->id()).toDouble();
                                 }
                             } else {
-                                MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIds());
+                                MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIDs());
                                 for (int ins = 0; ins < inspections.count(); ++ins) {
                                     if (value_contains_sum && ins > 0 &&
                                         inspections.at(ins - 1).value("date").toString().split(".").first()
@@ -1275,7 +1277,7 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
                                 value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
-                            MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIds());
+                            MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIDs());
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 if (value_contains_sum && ins > 0 &&
                                     inspections.at(ins - 1).value("date").toString().split(".").first()
