@@ -1898,15 +1898,19 @@ QString MainWindow::viewAgenda()
     if (!navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    circuits_record.addJoin("LEFT JOIN inspections ON inspections.customer = circuits.parent"
-                            " AND inspections.circuit = circuits.id AND outside_interval = 0"
-                            " AND inspections.date IN (SELECT MAX(date) FROM inspections"
-                            " WHERE outside_interval = 0 GROUP BY customer, circuit)");
+    circuits_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
+                            " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
+                            " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
+    circuits_record.addJoin("LEFT JOIN (SELECT i.customer, i.circuit, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
+                            " LEFT JOIN inspections AS j ON i.customer = j.customer AND i.circuit = j.circuit"
+                            " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
+                            " ON all_ins.customer = circuits.parent AND all_ins.circuit = circuits.id");
     MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id, circuits.name, circuits.operation, "
                                                  + circuitRefrigerantAmountQuery()
                                                  + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
-                                                 " COALESCE(inspections.date, circuits.commissioning) AS last_inspection,"
-                                                 " inspections.nominal, inspections.refr_add_am");
+                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
+                                                 " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
+                                                 " all_ins.nominal, all_ins.refr_add_am");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -1915,19 +1919,34 @@ QString MainWindow::viewAgenda()
                                                                   circuits.intValue("leak_detector"),
                                                                   circuits.intValue("inspection_interval"));
         if (inspection_interval) {
-            last_inspection_date = circuits.stringValue("last_inspection");
-            if (last_inspection_date.isEmpty())
+            QString last_regular_inspection_date = circuits.stringValue("last_regular_inspection");
+            if (last_regular_inspection_date.isEmpty())
                 continue;
-            if (circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
-                inspection_interval = 30;
-            next_inspections_map.insert(QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
-                                            .addDays(inspection_interval).toString("yyyy.MM.dd"),
+            QString next_regular_inspection_date = QDate::fromString(last_regular_inspection_date.split("-").first(), "yyyy.MM.dd")
+                    .addDays(inspection_interval).toString("yyyy.MM.dd");
+            last_inspection_date = circuits.stringValue("last_inspection");
+            if (!last_inspection_date.isEmpty()) {
+                QString next_inspection_date = QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
+                        .addDays(30).toString("yyyy.MM.dd");
+                if (next_inspection_date < next_regular_inspection_date &&
+                        circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
+                    next_inspections_map.insert(next_inspection_date,
+                                                QStringList()
+                                                    << circuits.stringValue("parent")
+                                                    << circuits.stringValue("id")
+                                                    << circuits.stringValue("name")
+                                                    << circuits.stringValue("operation")
+                                                    << last_inspection_date
+                                                    << "1");
+            }
+            next_inspections_map.insert(next_regular_inspection_date,
                                         QStringList()
                                             << circuits.stringValue("parent")
                                             << circuits.stringValue("id")
                                             << circuits.stringValue("name")
                                             << circuits.stringValue("operation")
-                                            << last_inspection_date);
+                                            << last_regular_inspection_date
+                                            << "0");
         }
     }
 
@@ -1938,6 +1957,7 @@ QString MainWindow::viewAgenda()
     out << "<th>" << tr("Last inspection") << "</th></tr>";
 
     QString next_inspection, colour, customer, circuit, circuit_name, operation;
+    bool reinspection;
     QMapIterator<QString, QStringList> i(next_inspections_map);
     while (i.hasNext()) { i.next();
         customer = i.value().value(0);
@@ -1945,6 +1965,7 @@ QString MainWindow::viewAgenda()
         circuit_name = i.value().value(2);
         operation = i.value().value(3);
         last_inspection_date = i.value().value(4);
+        reinspection = i.value().value(5).toInt();
         int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), "yyyy.MM.dd"));
         switch (days_to) {
             case -1: next_inspection = tr("Yesterday"); break;
@@ -1955,8 +1976,13 @@ QString MainWindow::viewAgenda()
         if (days_to < 0) colour = "tomato";
         else if (days_to < 31) colour = "yellow";
         else colour = "";
-        out << "<tr><td class=\"" << colour << "\">" << next_inspection << "</td>";
-        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
+        out << "<tr><td class=\"" << colour << "\">";
+        if (reinspection)
+            out << "<i>";
+        out << next_inspection;
+        if (reinspection)
+            out << "*</i>";
+        out << "</td><td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
         out << customer.rightJustified(8, '0') << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
         out << circuit.rightJustified(5, '0');
