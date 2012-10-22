@@ -282,6 +282,7 @@ MainWindow::MainWindow():
 
     setDefaultWebPage();
 #ifdef Q_WS_MAC
+    macInitUI();
     show();
 #endif
     loadSettings();
@@ -289,7 +290,8 @@ MainWindow::MainWindow():
         openFile(qApp->arguments().at(1));
     }
 #ifndef Q_WS_MAC
-    show();
+    if (!isVisible())
+        show();
 #endif
 }
 
@@ -1425,9 +1427,16 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SZCHKT", "Leaklog");
     lw_recent_docs->addItems(settings.value("recent_docs").toStringList());
-    this->move(settings.value("pos", this->pos()).toPoint());
-    this->resize(settings.value("size", this->size()).toSize());
-    this->restoreState(settings.value("window_state").toByteArray(), 0);
+    move(settings.value("pos", pos()).toPoint());
+    resize(settings.value("size", size()).toSize());
+    restoreState(settings.value("window_state").toByteArray(), 0);
+#ifdef Q_WS_MAC
+    if (settings.value("fullscreen", isFullScreen()).toBool())
+        showFullScreen();
+#else
+    if (settings.value("maximized", isMaximized()).toBool())
+        showMaximized();
+#endif
     actionShow_icons_only->setChecked(settings.value("toolbar_icons_only", false).toBool());
     showIconsOnly(actionShow_icons_only->isChecked());
     check_for_updates = settings.value("check_for_updates", true).toBool();
@@ -1444,9 +1453,13 @@ void MainWindow::saveSettings()
     for (int i = 0; i < lw_recent_docs->count(); ++i)
         recent << lw_recent_docs->item(i)->text();
     settings.setValue("recent_docs", recent);
-    settings.setValue("pos", this->pos());
-    settings.setValue("size", this->size());
-    settings.setValue("window_state", this->saveState(0));
+    if (!isMaximized() && !isFullScreen()) {
+        settings.setValue("pos", pos());
+        settings.setValue("size", size());
+    }
+    settings.setValue("maximized", isMaximized());
+    settings.setValue("fullscreen", isFullScreen());
+    settings.setValue("window_state", saveState(0));
     settings.setValue("toolbar_icons_only", actionShow_icons_only->isChecked());
     settings.setValue("compare_values", actionCompare_values->isChecked());
 }

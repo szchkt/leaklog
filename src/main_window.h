@@ -156,6 +156,11 @@ private slots:
 
 private:
     // UI
+#ifdef Q_WS_MAC
+    void macInitUI();
+    bool isFullScreen() const;
+    void showFullScreen();
+#endif
     QMenu * createPopupMenu();
     void setDefaultWebPage();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);

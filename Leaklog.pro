@@ -134,6 +134,8 @@ MOC_DIR        = build/win32
 RCC_DIR        = build/win32
 }
 macx {
+LIBS          += -framework Foundation
+OBJECTIVE_SOURCES += src/main_window_macx.mm
 ICON           = rc/images/leaklog.icns
 CONFIG        += x86_64
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
