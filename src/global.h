@@ -70,6 +70,8 @@ namespace Global {
     const MTDictionary & variableNames();
     const QString variableType(const QString &, bool * = 0);
     const MTDictionary & fieldsOfApplication();
+    int fieldOfApplicationToId(const QString & field);
+    QString idToFieldOfApplication(int id);
     const MTDictionary & oils();
     const MTDictionary & attributeValues();
     const MTDictionary & permissions();

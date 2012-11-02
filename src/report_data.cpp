@@ -17,6 +17,7 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
+#include "global.h"
 #include "report_data.h"
 #include "records.h"
 
@@ -40,7 +41,7 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > & store, QList<int
     }
 }
 
-ReportData::ReportData(int since)
+ReportData::ReportData(int since, bool by_field, const QSet<QString> & refrigerants_by_field)
 {
     QVector<double> * sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
@@ -77,7 +78,10 @@ ReportData::ReportData(int since)
         entries_list[ENTRIES::LEAKED] = leaked.toString();
         entries_list[ENTRIES::LEAKED_RECO] = leaked_reco.toString();
         entries_map.insert(date, entries_list);
-        // ----------------------------------------------------
+
+        if (by_field)
+            refrigerant += ":0";
+
         if (!sums_map.contains(QString::number(year))) { sums_map.insert(QString::number(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
             sum_list = new QVector<double>(SUMS::COUNT);
@@ -85,7 +89,7 @@ ReportData::ReportData(int since)
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
-        // ----------------------------------------------------
+
         (*sum_list)[SUMS::PURCHASED] += purchased.toDouble();
         (*sum_list)[SUMS::PURCHASED_RECO] += purchased_reco.toDouble();
         (*sum_list)[SUMS::SOLD] += sold.toDouble();
@@ -95,12 +99,25 @@ ReportData::ReportData(int since)
         (*sum_list)[SUMS::LEAKED] += leaked.toDouble();
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
+
     MTRecord circuits_record("circuits", "id", "", MTDictionary());
     MultiMapOfVariantMaps circuits(circuits_record.mapAll("parent::id", "refrigerant"));
+
     MTRecord inspections_record("inspections", "date", "", MTDictionary());
-    ListOfVariantMaps inspections(inspections_record.listAll("customer, circuit, date, nominal, refr_add_am, refr_reco"));
+    if (by_field)
+        inspections_record.addJoin("LEFT JOIN circuits ON customer = circuits.parent AND circuit = circuits.id");
+    QString fields = "inspections.customer, inspections.circuit, inspections.date, "
+                     "inspections.nominal, inspections.refr_add_am, inspections.refr_reco";
+    if (by_field)
+        fields += ", circuits.field";
+    ListOfVariantMaps inspections(inspections_record.listAll(fields));
+
     Repair repairs_rec("");
-    inspections << repairs_rec.listAll("date, refrigerant, refr_add_am, refr_reco");
+    fields = "date, refrigerant, refr_add_am, refr_reco";
+    if (by_field)
+        fields += ", field";
+    inspections << repairs_rec.listAll(fields);
+
     for (int i = 0; i < inspections.count(); ++i) {
         refr_add_am = inspections.at(i).value("refr_add_am");
         refr_reco = inspections.at(i).value("refr_reco");
@@ -120,11 +137,9 @@ ReportData::ReportData(int since)
                             .arg(inspections.at(i).value("customer").toString())
                             .arg(inspections.at(i).value("circuit").toString()))
                             .value("refrigerant").toString();
-            entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         } else {
             entries_list[ENTRIES::LINK] = QString("repair:%1").arg(date);
             refrigerant = inspections.at(i).value("refrigerant").toString();
-            entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         }
 
         addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());
@@ -141,8 +156,17 @@ ReportData::ReportData(int since)
         entries_list[ENTRIES::NEW_CHARGE] = new_charge.toString();
         entries_list[ENTRIES::REFR_ADD_AM] = refr_add_am.toString();
         entries_list[ENTRIES::REFR_RECO] = refr_reco.toString();
+
+        if (by_field) {
+            if (refrigerants_by_field.isEmpty() || refrigerants_by_field.contains(refrigerant))
+                refrigerant += QString(":%1").arg(Global::fieldOfApplicationToId(inspections.at(i).value("field").toString()));
+            else
+                refrigerant += ":0";
+        }
+
+        entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_map.insert(date, entries_list);
-        // ----------------------------------------------------
+
         if (!sums_map.contains(QString::number(year))) { sums_map.insert(QString::number(year), NULL); }
         if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
             sum_list = new QVector<double>(SUMS::COUNT);
@@ -150,7 +174,7 @@ ReportData::ReportData(int since)
         } else {
             sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
         }
-        // ----------------------------------------------------
+
         (*sum_list)[SUMS::NEW_CHARGE] += new_charge.toDouble();
         (*sum_list)[SUMS::REFR_ADD_AM] += refr_add_am.toDouble();
         (*sum_list)[SUMS::REFR_RECO] += refr_reco.toDouble();

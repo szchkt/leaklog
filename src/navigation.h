@@ -82,6 +82,8 @@ public:
     bool isAssemblyRecordAcquisitionPriceChecked() { return chb_assembly_record_acquisition_price->isChecked(); }
     bool isAssemblyRecordTotalChecked() { return chb_assembly_record_total->isChecked(); }
 
+    bool isByFieldOfApplicationChecked() { return chb_by_field->isChecked(); }
+
 public slots:
     // View
     void viewServiceCompany();

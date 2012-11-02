@@ -21,6 +21,7 @@
 #include "refrigerants.h"
 #include "global.h"
 #include "variables.h"
+#include "report_data.h"
 
 #include <QApplication>
 #include <QSet>
@@ -663,21 +664,21 @@ const QString Global::variableType(const QString & id, bool * ok)
 class FieldsOfApplication
 {
 public:
-    FieldsOfApplication(): dict(true) {
-        dict.insert(QApplication::translate("FieldsOfApplication", "Commercial refrigeration"), "refrigeration");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Industrial refrigeration"), "industrial");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Transport refrigeration"), "transportation");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "airconditioning");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Heat pumps"), "heatpumps");
+    FieldsOfApplication() {
+        dict.insert("refrigeration", QApplication::translate("FieldsOfApplication", "Commercial refrigeration"));
+        dict.insert("industrial", QApplication::translate("FieldsOfApplication", "Industrial refrigeration"));
+        dict.insert("transportation", QApplication::translate("FieldsOfApplication", "Transport refrigeration"));
+        dict.insert("airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
         // OBSOLETE
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "car");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "home");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "commercial");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "agricultural");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "other");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "lowrise");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "highrise");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "institutional");
+        dict.insert("car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("commercial", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("agricultural", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("other", QApplication::translate("FieldsOfApplication", "Commercial refrigeration"));
+        dict.insert("lowrise", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("highrise", QApplication::translate("FieldsOfApplication", "Air conditioning"));
+        dict.insert("institutional", QApplication::translate("FieldsOfApplication", "Air conditioning"));
     }
 
     MTDictionary dict;
@@ -689,16 +690,65 @@ const MTDictionary & Global::fieldsOfApplication()
     return dict.dict;
 }
 
+int Global::fieldOfApplicationToId(const QString & field)
+{
+    if (field == "refrigeration")
+        return FIELD_IDS::COMMERCIAL;
+    else if (field == "industrial")
+        return FIELD_IDS::INDUSTRIAL;
+    else if (field == "transportation")
+        return FIELD_IDS::TRANSPORT;
+    else if (field == "airconditioning")
+        return FIELD_IDS::AC;
+    else if (field == "heatpumps")
+        return FIELD_IDS::HP;
+    // OBSOLETE
+    else if (field == "car")
+        return FIELD_IDS::AC;
+    else if (field == "home")
+        return FIELD_IDS::AC;
+    else if (field == "commercial")
+        return FIELD_IDS::AC;
+    else if (field == "agricultural")
+        return FIELD_IDS::AC;
+    else if (field == "other")
+        return FIELD_IDS::COMMERCIAL;
+    else if (field == "lowrise")
+        return FIELD_IDS::AC;
+    else if (field == "highrise")
+        return FIELD_IDS::AC;
+    else if (field == "institutional")
+        return FIELD_IDS::AC;
+    return 0;
+}
+
+QString Global::idToFieldOfApplication(int id)
+{
+    switch (id) {
+        case FIELD_IDS::COMMERCIAL:
+            return "refrigeration";
+        case FIELD_IDS::INDUSTRIAL:
+            return "industrial";
+        case FIELD_IDS::TRANSPORT:
+            return "transportation";
+        case FIELD_IDS::AC:
+            return "airconditioning";
+        case FIELD_IDS::HP:
+            return "heatpumps";
+    }
+    return QString();
+}
+
 class Oils
 {
 public:
     Oils() {
-        dict.insert(QApplication::translate("Oils", "MO (Mineral oil)"), "mo");
-        dict.insert(QApplication::translate("Oils", "AB (Alkylbenzene oil)"), "ab");
-        dict.insert(QApplication::translate("Oils", "POE (Polyolester oil)"), "poe");
-        dict.insert(QApplication::translate("Oils", "PAO (Polyalphaolefin oil)"), "pao");
-        dict.insert(QApplication::translate("Oils", "PVE (Polyvinylether oil)"), "pve");
-        dict.insert(QApplication::translate("Oils", "PAG (Polyglycol oil)"), "pag");
+        dict.insert("mo", QApplication::translate("Oils", "MO (Mineral oil)"));
+        dict.insert("ab", QApplication::translate("Oils", "AB (Alkylbenzene oil)"));
+        dict.insert("poe", QApplication::translate("Oils", "POE (Polyolester oil)"));
+        dict.insert("pao", QApplication::translate("Oils", "PAO (Polyalphaolefin oil)"));
+        dict.insert("pve", QApplication::translate("Oils", "PVE (Polyvinylether oil)"));
+        dict.insert("pag", QApplication::translate("Oils", "PAG (Polyglycol oil)"));
     }
 
     MTDictionary dict;
@@ -721,17 +771,12 @@ public:
         dict.insert("field::airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
         dict.insert("oil", QApplication::translate("Oils", "Oil"));
-        dict.insert("oil::mo", QApplication::translate("Oils", "MO (Mineral oil)"));
-        dict.insert("oil::ab", QApplication::translate("Oils", "AB (Alkylbenzene oil)"));
-        dict.insert("oil::poe", QApplication::translate("Oils", "POE (Polyolester oil)"));
-        dict.insert("oil::pao", QApplication::translate("Oils", "PAO (Polyalphaolefin oil)"));
-        dict.insert("oil::pve", QApplication::translate("Oils", "PVE (Polyvinylether oil)"));
-        dict.insert("oil::pag", QApplication::translate("Oils", "PAG (Polyglycol oil)"));
+        for (int i = 0; i < Global::oils().count(); ++i)
+            dict.insert(QString("oil::%1").arg(Global::oils().key(i)), Global::oils().value(i));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
         QStringList list_refrigerants = Global::listRefrigerantsToString().split(";");
-        for (int i = 0; i < list_refrigerants.count(); ++i) {
+        for (int i = 0; i < list_refrigerants.count(); ++i)
             dict.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
-        }
         // OBSOLETE
         dict.insert("field::car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
@@ -810,7 +855,7 @@ MTDictionary Global::listInspectors()
     query.setForwardOnly(true);
     if (query.exec("SELECT id, person FROM inspectors")) {
         while (query.next()) {
-            inspectors.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+            inspectors.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
         }
     }
     return inspectors;
@@ -822,7 +867,7 @@ MTDictionary Global::listOperators(const QString & customer)
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1").arg(customer))) {
         while (query.next()) {
-            operators.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+            operators.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
         }
     }
     return operators;
@@ -830,13 +875,13 @@ MTDictionary Global::listOperators(const QString & customer)
 
 MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 {
-    MTDictionary categories(QObject::tr("No category"), "-1"); MTSqlQuery query;
+    MTDictionary categories("-1", QObject::tr("No category")); MTSqlQuery query;
     categories.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM assembly_record_item_categories%1")
         .arg(hide_default ? " WHERE id < 1000" : ""))) {
         while (query.next()) {
-            categories.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+            categories.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
         }
     }
     return categories;
@@ -844,13 +889,13 @@ MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 
 MTDictionary Global::listAssemblyRecordTypes()
 {
-    MTDictionary dict(QObject::tr("No type"), "-1"); MTSqlQuery query;
+    MTDictionary dict("-1", QObject::tr("No type")); MTSqlQuery query;
     dict.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec("SELECT id, name FROM assembly_record_types")) {
         while (query.next()) {
             QString name = QString("%1 - %2").arg(query.value(0).toString()).arg(query.value(1).toString().left(40));
-            dict.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : name, query.value(0).toString());
+            dict.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : name);
         }
     }
     return dict;
@@ -870,7 +915,7 @@ MTDictionary Global::listAllVariables()
                    .arg(variables.parentVariable().name())
                    .arg(variables.name());
 
-        dict.insert(name, variables.id());
+        dict.insert(variables.id(), name);
     }
     return dict;
 }
@@ -878,22 +923,22 @@ MTDictionary Global::listAllVariables()
 MTDictionary Global::listDataTypes()
 {
     MTDictionary dict;
-    dict.insert(QObject::tr("String"), QString::number(Global::String));
-    dict.insert(QObject::tr("Integer"), QString::number(Global::Integer));
-    dict.insert(QObject::tr("Real number"), QString::number(Global::Numeric));
-    dict.insert(QObject::tr("Text"), QString::number(Global::Text));
-    dict.insert(QObject::tr("Boolean"), QString::number(Global::Boolean));
+    dict.insert(QString::number(Global::String), QObject::tr("String"));
+    dict.insert(QString::number(Global::Integer), QObject::tr("Integer"));
+    dict.insert(QString::number(Global::Numeric), QObject::tr("Real number"));
+    dict.insert(QString::number(Global::Text), QObject::tr("Text"));
+    dict.insert(QString::number(Global::Boolean), QObject::tr("Boolean"));
     return dict;
 }
 
 MTDictionary Global::listStyles()
 {
-    MTDictionary styles(QObject::tr("Default"), "-1"); MTSqlQuery query;
+    MTDictionary styles("-1", QObject::tr("Default")); MTSqlQuery query;
     styles.allowDuplicateKeys();
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM styles"))) {
         while (query.next()) {
-            styles.insert(query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString(), query.value(0).toString());
+            styles.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
         }
     }
     return styles;

@@ -86,33 +86,68 @@ void ReportDataController::autofill()
         out << "addEmployee({ \"certification_num\": \"" << i->value("id").toString().rightJustified(4, '0') << "\" });" << endl;
     }
 
-    ReportData data(year);
+    QSet<QString> refrigerants_by_field;
+    refrigerants_by_field << "R134a" << "R404A" << "R407C" << "R410A";
+
+    ReportData data(year, true, refrigerants_by_field);
     QMap<QString, QVector<double> *>::const_iterator sums_iterator = data.sums_map.constFind(QString::number(year));
     QVector<double> * sum_list = NULL;
     QString refrigerant;
-    QStringList sums_fieldnames;
-    sums_fieldnames << "purchased"
-                    << "purchased_reco"
-                    << "sold"
-                    << "sold_reco"
-                    << "new_charge"
-                    << "refr_add_am"
-                    << "refr_reco"
-                    << "refr_rege"
-                    << "refr_disp"
-                    << "leaked"
-                    << "leaked_reco";
+
+    MTDictionary refr_man_fieldnames;
+    refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED), "purchased");
+    refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED_RECO), "purchased_reco");
+    refr_man_fieldnames.insert(QString::number(SUMS::SOLD), "sold");
+    refr_man_fieldnames.insert(QString::number(SUMS::SOLD_RECO), "sold_reco");
+    refr_man_fieldnames.insert(QString::number(SUMS::REFR_REGE), "refr_rege");
+    refr_man_fieldnames.insert(QString::number(SUMS::REFR_DISP), "refr_disp");
+    refr_man_fieldnames.insert(QString::number(SUMS::LEAKED), "leaked");
+    refr_man_fieldnames.insert(QString::number(SUMS::LEAKED_RECO), "leaked_reco");
+
+    MTDictionary refr_use_fieldnames;
+    refr_use_fieldnames.insert(QString::number(SUMS::NEW_CHARGE), "new_charge");
+    refr_use_fieldnames.insert(QString::number(SUMS::REFR_ADD_AM), "refr_add_am");
+    refr_use_fieldnames.insert(QString::number(SUMS::REFR_RECO), "refr_reco");
+
     if (++sums_iterator != data.sums_map.constEnd()) {
         while (sums_iterator != data.sums_map.constEnd() && (sum_list = sums_iterator.value())) {
             refrigerant = sums_iterator.key().split("::").last();
             if (!refrigerant.isEmpty()) {
-                out << "addRefrigerantManagementEntry({" << endl;
-                out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
-                for (int j = 0; j < sums_fieldnames.count(); ++j) {
-                    out << "\t\"" << sums_fieldnames.at(j) << "\": " << sum_list->at(j);
-                    if (j == sums_fieldnames.count() - 1) out << endl; else out << "," << endl;
+                bool add = false;
+                for (int j = 0; j < refr_man_fieldnames.count(); ++j) {
+                    if (sum_list->at(refr_man_fieldnames.key(j).toInt()) != 0.0) {
+                        add = true;
+                        break;
+                    }
                 }
-                out << "});" << endl;
+                if (add) {
+                    out << "addRefrigerantManagementEntry({" << endl;
+                    out << "\t\"refrigerant\": \"" << refrigerant.split(':').first() << ":0\"," << endl;
+                    for (int j = 0; j < refr_man_fieldnames.count(); ++j) {
+                        out << "\t\"" << refr_man_fieldnames.value(j) << "\": ";
+                        out << sum_list->at(refr_man_fieldnames.key(j).toInt());
+                        if (j == refr_man_fieldnames.count() - 1) out << endl; else out << "," << endl;
+                    }
+                    out << "});" << endl;
+                }
+
+                add = false;
+                for (int j = 0; j < refr_use_fieldnames.count(); ++j) {
+                    if (sum_list->at(refr_use_fieldnames.key(j).toInt()) != 0.0) {
+                        add = true;
+                        break;
+                    }
+                }
+                if (add) {
+                    out << "addRefrigerantUseEntry({" << endl;
+                    out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
+                    for (int j = 0; j < refr_use_fieldnames.count(); ++j) {
+                        out << "\t\"" << refr_use_fieldnames.value(j) << "\": ";
+                        out << sum_list->at(refr_use_fieldnames.key(j).toInt());
+                        if (j == refr_use_fieldnames.count() - 1) out << endl; else out << "," << endl;
+                    }
+                    out << "});" << endl;
+                }
             }
             ++sums_iterator;
         }

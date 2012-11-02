@@ -263,6 +263,9 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"centred_with_borders\">";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
+    bool by_field = navigation->isByFieldOfApplicationChecked();
+    if (by_field)
+        out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("VariableNames", "New charge") << "</th>";
@@ -279,7 +282,7 @@ QString MainWindow::viewServiceCompany(int since)
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "</tr>";
-    ReportData data(since);
+    ReportData data(since, by_field);
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerantsToString().split(";");
     list_refrigerants.insert(0, "");
@@ -327,7 +330,10 @@ QString MainWindow::viewServiceCompany(int since)
             if (++sums_iterator != data.sums_map.constEnd()) {
                 while (sums_iterator != data.sums_map.constEnd() && (sum_list = sums_iterator.value())) {
                     if (row_count) { out << "</tr><tr>"; }
-                    out << "<th>" << sums_iterator.key().split("::").last() << "</th>";
+                    refrigerant = sums_iterator.key().split("::").last();
+                    out << "<th>" << refrigerant.split(':').first() << "</th>";
+                    if (by_field)
+                        out << "<th>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</th>";
                     for (int n = 0; n < sum_list->count(); ++n) {
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
@@ -353,7 +359,10 @@ QString MainWindow::viewServiceCompany(int since)
             out << "</a></td><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
-            out << ">" << i.value().at(1) << "</td>";
+            refrigerant = i.value().at(1);
+            out << ">" << refrigerant.split(':').first() << "</td>";
+            if (by_field)
+                out << "<td>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</td>";
             for (int n = 2; n < i.value().count(); ++n) {
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
@@ -1771,7 +1780,7 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
             << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
         out << "<td>" << circuits.stringValue("refrigerant") << "</td>";
-        out << "<td>" << fieldsOfApplication().firstKey(circuits.stringValue("field")) << "</td>";
+        out << "<td>" << fieldsOfApplication().value(circuits.stringValue("field")) << "</td>";
         out << "<td>" << refrigerant_amount_begin << "</td>";
         out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
@@ -2082,7 +2091,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
         for (int n = 1; n < AssemblyRecordItemType::attributes().count(); ++n) {
             out << "<td>";
             if (AssemblyRecordItemType::attributes().key(n) == "category_id")
-                out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString())));
+                out << escapeString(categories.value(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString()));
             else
                 out << escapeString(items.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString());
             out << "</td>";
@@ -2496,7 +2505,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
             else if (CircuitUnitType::attributes().key(n) == "oil")
                 out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
             else if (CircuitUnitType::attributes().key(n) == "category_id")
-                out << escapeString(categories.key(categories.indexOfValue(items.at(i).value(CircuitUnitType::attributes().key(n)).toString())));
+                out << escapeString(categories.value(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()));
             else if (CircuitUnitType::attributes().key(n) == "output")
                 out << escapeString(QString("%1 %2").arg(items.at(i).value("output").toString()).arg(items.at(i).value("output_unit").toString()));
             else
@@ -2676,7 +2685,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
         *(_tr->addCell()) << items.at(i).value("record_name").toString();
         if (!customer_given) *(_tr->addCell()) << items.at(i).value("company").toString();
         if (!circuit_given) *(_tr->addCell()) << items.at(i).value("circuit").toString().rightJustified(4, '0');
-        *(_tr->addCell()) << inspectors.key(inspectors.indexOfValue(items.at(i).value("inspector").toString()));
+        *(_tr->addCell()) << inspectors.value(items.at(i).value("inspector").toString());
         *(_tr->addCell()) << items.at(i).value("operator").toString();
     }
     div << table;

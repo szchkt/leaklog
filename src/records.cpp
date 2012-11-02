@@ -501,15 +501,15 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString(), 0, "", enable_all));
-    MDComboBox * cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), MTDictionary(variableTypes()).swapKeysAndValues(), "", enable_all);
+    MDComboBox * cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), variableTypes(), "", enable_all);
     if (attributes.value("type").toString() == "group")
         cb_type->setEnabled(false);
     md->addInputWidget(cb_type);
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
-                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList()
+                                      MTDictionary(QStringList()
                                                    << QString::number(Variable::Inspection)
-                                                   << QString::number(Variable::Compressor)),
+                                                   << QString::number(Variable::Compressor),
+                                                   QStringList() << tr("Inspection") << tr("Compressor")),
                                       "", id().isEmpty()));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
@@ -533,10 +533,10 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("id", tr("Name:"), md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), attributes.value("highlight_nominal").toInt()));
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
-                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList()
+                                      MTDictionary(QStringList()
                                                    << QString::number(Variable::Inspection)
-                                                   << QString::number(Variable::Compressor))));
+                                                   << QString::number(Variable::Compressor),
+                                                   QStringList() << tr("Inspection") << tr("Compressor"))));
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
@@ -750,10 +750,10 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString(), 0, "", enable_all));
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md->widget(), 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
-                                      MTDictionary(QStringList() << tr("Inspection") << tr("Compressor"),
-                                                   QStringList()
+                                      MTDictionary(QStringList()
                                                    << QString::number(Variable::Inspection)
-                                                   << QString::number(Variable::Compressor))));
+                                                   << QString::number(Variable::Compressor),
+                                                   QStringList() << tr("Inspection") << tr("Compressor"))));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     used_ids << listSupportedFunctions();
@@ -1047,8 +1047,8 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
     md->setWindowTitle(tr("Circuit Unit Type"));
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
     MTDictionary locations;
-    locations.insert(tr("External"), QString::number(CircuitUnitType::External));
-    locations.insert(tr("Internal"), QString::number(CircuitUnitType::Internal));
+    locations.insert(QString::number(CircuitUnitType::External), tr("External"));
+    locations.insert(QString::number(CircuitUnitType::Internal), tr("Internal"));
     MTDictionary output_units;
     output_units.insert("kW", "kW");
     output_units.insert("m3", "m3");

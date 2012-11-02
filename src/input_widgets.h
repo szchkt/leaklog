@@ -234,7 +234,6 @@ public:
     void setNullValue(const QVariant &);
 
 private:
-    MTDictionary cb_items;
     QVariant nullvalue;
 };
 

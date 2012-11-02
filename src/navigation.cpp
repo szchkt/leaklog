@@ -110,6 +110,7 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(tbtn_add_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(addCircuitUnitType()));
     QObject::connect(tbtn_remove_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(removeCircuitUnitType()));
     QObject::connect(tbtn_edit_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(editCircuitUnitType()));
+    QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     emit viewChanged(view());
 }
 
@@ -129,6 +130,7 @@ void Navigation::updateView()
     spb_filter_since->setSpecialValueText(tr("All"));
     cb_filter_column->clear();
     le_filter->clear();
+    bool filter_by_field_visible = false;
     bool filter_keyword_visible = true;
     bool filter_since_visible = true;
     bool filter_month_visible = false;
@@ -137,6 +139,7 @@ void Navigation::updateView()
     switch (btngrp_view->checkedId()) {
         case Navigation::ServiceCompany:
             group = 0;
+            filter_by_field_visible = true;
             filter_keyword_visible = false;
             break;
         case Navigation::RefrigerantManagement:
@@ -275,6 +278,7 @@ void Navigation::updateView()
     }
     if (group >= 0 && current_group != group)
         toggleVisibleGroup(group, false);
+    chb_by_field->setVisible(filter_by_field_visible);
     cb_filter_column->setVisible(filter_keyword_visible);
     cb_filter_type->setVisible(filter_keyword_visible);
     le_filter->setVisible(filter_keyword_visible);

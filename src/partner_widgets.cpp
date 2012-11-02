@@ -35,7 +35,7 @@ PartnerWidgets::PartnerWidgets(const QString & partner_name_str, const QString &
     MTSqlQuery query("SELECT partner, partner_id FROM refrigerant_management WHERE partner IS NOT NULL GROUP BY partner, partner_id");
     while (query.next()) {
         partners_map.insert(query.value(1).toString(), query.value(0).toString());
-        partners_dict.insert(QString("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()), query.value(1).toString());
+        partners_dict.insert(query.value(1).toString(), QString("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()));
     }
 
     partners_cb = new MDComboBox("partners", QObject::tr("Partners:"), md, "", partners_dict);

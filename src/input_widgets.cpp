@@ -254,32 +254,32 @@ MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * 
 QComboBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
-    cb_items = items;
 #ifndef Q_WS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setEnabled(enabled);
     QStringList list; int n = 0;
     for (int i = 0; i < items.count(); ++i) {
-        if (!list.contains(items.key(i))) {
-            list << items.key(i);
-            addItem(items.key(i));
+        if (!list.contains(items.value(i))) {
+            list << items.value(i);
+            addItem(items.value(i), items.key(i));
         }
-        if (items.value(i) == value) { n = list.indexOf(items.key(i)); }
+        if (items.key(i) == value)
+            n = list.indexOf(items.value(i));
     }
     setCurrentIndex(n);
 }
 
 QVariant MDComboBox::variantValue() const
 {
-    QString value = cb_items.value(currentText());
+    QString value = itemData(currentIndex()).toString();
     return value.isEmpty() ? nullvalue : value;
 }
 
 void MDComboBox::setVariantValue(const QVariant & value)
 {
     for (int i = 0; i < count(); ++i) {
-        if (itemText(i) == value.toString() || cb_items.value(i) == value.toString()) {
+        if (itemData(i) == value) {
             setCurrentIndex(i);
             break;
         }

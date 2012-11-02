@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QMultiMap>
+#include <QSet>
 
 namespace ENTRIES {
     enum ENTRIES {
@@ -31,11 +32,22 @@ namespace ENTRIES {
         LEAKED, LEAKED_RECO, COUNT
     };
 }
+
 namespace SUMS {
     enum SUMS {
         PURCHASED = 0, PURCHASED_RECO, SOLD, SOLD_RECO, NEW_CHARGE,
         REFR_ADD_AM, REFR_RECO, REFR_REGE, REFR_DISP,
         LEAKED, LEAKED_RECO, COUNT
+    };
+}
+
+namespace FIELD_IDS {
+    enum FIELD_IDS {
+        COMMERCIAL = 2,
+        AC = 8,
+        TRANSPORT = 32,
+        HP = 64,
+        INDUSTRIAL = 512
     };
 }
 
@@ -47,7 +59,7 @@ protected:
     void addToStore(QMap<int, QMap<QString, double> > &, QList<int> &, int, const QString &, double);
 
 public:
-    ReportData(int = 0);
+    ReportData(int year = 0, bool by_field = false, const QSet<QString> & refrigerants_by_field = QSet<QString>());
     virtual ~ReportData();
 
     QMap<int, QMap<QString, double> > store; QList<int> store_years;

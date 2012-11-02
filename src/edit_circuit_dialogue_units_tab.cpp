@@ -214,7 +214,7 @@ void EditCircuitDialogueTable::updateCircuit()
         refr_amount += unit_type.value("refrigerant_amount").toDouble();
 
         if (!unit_type.value("oil").toString().isEmpty())
-            circuit_vars.setValue("oil", oils.key(oils.indexOfValue(unit_type.value("oil").toString())));
+            circuit_vars.setValue("oil", oils.value(unit_type.value("oil").toString()));
         oil_amount += unit_type.value("oil_amount").toDouble();
 
         if (unit_type.value("location").toInt() == CircuitUnitType::External) {
