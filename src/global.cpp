@@ -664,15 +664,15 @@ class FieldsOfApplication
 {
 public:
     FieldsOfApplication(): dict(true) {
-        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "refrigeration");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Transportation"), "transportation");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Commercial refrigeration"), "refrigeration");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Industrial refrigeration"), "industrial");
+        dict.insert(QApplication::translate("FieldsOfApplication", "Transport refrigeration"), "transportation");
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "airconditioning");
         dict.insert(QApplication::translate("FieldsOfApplication", "Heat pumps"), "heatpumps");
         // OBSOLETE
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "car");
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "home");
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "commercial");
-        dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "industrial");
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "agricultural");
         dict.insert(QApplication::translate("FieldsOfApplication", "Refrigeration"), "other");
         dict.insert(QApplication::translate("FieldsOfApplication", "Air conditioning"), "lowrise");
@@ -715,8 +715,9 @@ class AttributeValues
 public:
     AttributeValues() {
         dict.insert("field", QApplication::translate("FieldsOfApplication", "Field of application"));
-        dict.insert("field::refrigeration", QApplication::translate("FieldsOfApplication", "Refrigeration"));
-        dict.insert("field::transportation", QApplication::translate("FieldsOfApplication", "Transportation"));
+        dict.insert("field::refrigeration", QApplication::translate("FieldsOfApplication", "Commercial refrigeration"));
+        dict.insert("field::industrial", QApplication::translate("FieldsOfApplication", "Industrial refrigeration"));
+        dict.insert("field::transportation", QApplication::translate("FieldsOfApplication", "Transport refrigeration"));
         dict.insert("field::airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
         dict.insert("oil", QApplication::translate("Oils", "Oil"));
@@ -735,7 +736,6 @@ public:
         dict.insert("field::car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::commercial", QApplication::translate("FieldsOfApplication", "Air conditioning"));
-        dict.insert("field::industrial", QApplication::translate("FieldsOfApplication", "Refrigeration"));
         dict.insert("field::agricultural", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::other", QApplication::translate("FieldsOfApplication", "Refrigeration"));
         dict.insert("field::lowrise", QApplication::translate("FieldsOfApplication", "Air conditioning"));
