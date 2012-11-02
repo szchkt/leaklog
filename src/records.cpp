@@ -753,7 +753,8 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
                                       MTDictionary(QStringList()
                                                    << QString::number(Variable::Inspection)
                                                    << QString::number(Variable::Compressor),
-                                                   QStringList() << tr("Inspection") << tr("Compressor"))));
+                                                   QStringList() << tr("Inspection") << tr("Compressor")),
+                                      QString(), enable_all));
     QStringList used_ids;
     used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t";
     used_ids << listSupportedFunctions();
