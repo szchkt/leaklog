@@ -302,6 +302,24 @@ void MainWindow::setDefaultWebPage()
     wv_main->setPage(page);
 }
 
+void MainWindow::clearWindowTitle()
+{
+#ifdef Q_WS_MAC
+    setWindowFilePath(QString());
+#endif
+    setWindowTitle("Leaklog");
+}
+
+void MainWindow::setWindowTitleWithRepresentedFilename(const QString & path)
+{
+#ifdef Q_WS_MAC
+    setWindowFilePath(path.startsWith('/') ? path : QString());
+    setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
+#else
+    setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
+#endif
+}
+
 void MainWindow::openFile(const QString & file)
 {
     QFileInfo file_info(file);
@@ -1501,7 +1519,7 @@ void MainWindow::languageChanged()
     QString current_lang = settings.value("lang", "Slovak").toString();
     if (current_lang != lang) {
         settings.setValue("lang", lang);
-        QMessageBox::information(this, tr("Leaklog"), tr("You need to restart Leaklog for the changes to apply."));
+        QMessageBox::information(this, "Leaklog", tr("You need to restart Leaklog for the changes to apply."));
     }
     if (cb_lang->parent() == NULL) { return; }
     QWidget * w_lang = (QWidget *)cb_lang->parent();
@@ -1531,7 +1549,7 @@ void MainWindow::httpRequestFinished(bool error)
 {
     if (error) {
         if (!check_for_updates) {
-            switch (QMessageBox::critical(this, tr("Leaklog"), tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
+            switch (QMessageBox::critical(this, "Leaklog", tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
                 case 0: // Try again
                     checkForUpdates(); break;
                 case 1: // Cancel
@@ -1572,7 +1590,7 @@ void MainWindow::httpRequestFinished(bool error)
         (f_current_ver < F_LEAKLOG_VERSION && LEAKLOG_PREVIEW_VERSION)) {
         if (!check_for_updates) {
             QMessageBox message(this);
-            message.setWindowTitle(tr("Leaklog"));
+            message.setWindowTitle("Leaklog");
             message.setWindowModality(Qt::WindowModal);
             message.setWindowFlags(message.windowFlags() | Qt::Sheet);
             message.setIcon(QMessageBox::Information);
@@ -1581,7 +1599,7 @@ void MainWindow::httpRequestFinished(bool error)
         }
     } else {
         QMessageBox message(this);
-        message.setWindowTitle(tr("Leaklog"));
+        message.setWindowTitle("Leaklog");
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
         message.setIcon(QMessageBox::Information);

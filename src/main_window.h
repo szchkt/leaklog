@@ -161,6 +161,8 @@ private:
     bool isFullScreen() const;
     void showFullScreen();
 #endif
+    void clearWindowTitle();
+    void setWindowTitleWithRepresentedFilename(const QString & path);
     QMenu * createPopupMenu();
     void setDefaultWebPage();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);

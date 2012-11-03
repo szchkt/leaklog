@@ -391,7 +391,7 @@ void MainWindow::newDatabase()
     db.setDatabaseName(path);
     if (!db.open()) {
         QMessageBox::critical(this, tr("New database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(db.lastError().text()));
-        this->setWindowTitle(tr("Leaklog"));
+        clearWindowTitle();
         return;
     }
     addRecent(path);
@@ -507,21 +507,21 @@ void MainWindow::openDatabase(QString path)
         path = db.databaseName();
         if (!db.isOpen()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
-            this->setWindowTitle(tr("Leaklog"));
+            clearWindowTitle();
             return;
         }
     } else {
         QFile file(path);
         if (!file.exists()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("File %1 does not exist.").arg(path));
-            this->setWindowTitle(tr("Leaklog"));
+            clearWindowTitle();
             return;
         }
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(path);
         if (!db.open()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
-            this->setWindowTitle(tr("Leaklog"));
+            clearWindowTitle();
             return;
         }
         db.transaction();
@@ -559,11 +559,7 @@ void MainWindow::openDatabase(QString path)
     }
 
     updateLockButton();
-#ifdef Q_WS_MAC
-    this->setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
-#else
-    this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
-#endif
+    setWindowTitleWithRepresentedFilename(path);
     this->setWindowModified(false);
     setAllEnabled(true);
     stw_main->setCurrentIndex(1);
@@ -607,11 +603,7 @@ void MainWindow::saveDatabase(bool compact, bool update_ui)
         return;
     }
     if (update_ui) {
-#ifdef Q_WS_MAC
-        this->setWindowTitle(QString("%1[*]").arg(QFileInfo(db.databaseName()).baseName()));
-#else
-        this->setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(db.databaseName()).baseName()));
-#endif
+        setWindowTitleWithRepresentedFilename(db.databaseName());
         this->setWindowModified(false);
         refreshView();
     }
@@ -637,7 +629,7 @@ void MainWindow::closeDatabase(bool save)
     QSqlDatabase::removeDatabase(connection_name);
 
     stw_main->setCurrentIndex(0);
-    this->setWindowTitle(tr("Leaklog"));
+    clearWindowTitle();
     this->setWindowModified(false);
 }
 
