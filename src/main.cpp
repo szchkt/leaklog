@@ -1,45 +1,3 @@
-/******************************************************************************
- *                                  Leaklog                                   *
- * -------------------------------------------------------------------------- *
- * Version:      0.9.6                                                        *
- * Qt version:   4.4.0 or higher required                                     *
- * -------------------------------------------------------------------------- *
- * Leaklog is a leakage control system based on the EU Regulation             *
- * No 842/2006. It keeps track of findings and parameters of direct and       *
- * indirect leakage checks using a log. The result is a history of checks,    *
- * the development of parameters and their comparison with nominal ones and   *
- * calculation of the amount and percentage of leakage.                       *
- * -------------------------------------------------------------------------- *
- * Leaklog is distributed under the terms of the GPL v2, see details below.   *
- ******************************************************************************/
-
-#include "main.h"
-
-#include <QSettings>
-#include <QTranslator>
-
-int main(int argc, char *argv[])
-{
-    MTApplication app(argc, argv);
-
-    QSettings settings("SZCHKT", "Leaklog");
-    QString lang = settings.value("lang").toString();
-    if (lang.isEmpty()) {
-        lang = QLocale::languageToString(QLocale::system().language());
-        if (lang == "Czech") lang = "Slovak";
-        settings.setValue("lang", lang);
-    }
-    if (lang == "C") { lang = "Slovak"; settings.setValue("lang", lang); }
-    if (lang != "English") {
-        QTranslator * translator = new QTranslator;
-        translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
-        app.installTranslator(translator);
-    }
-
-    app.setAppMainWindow(new MainWindow);
-    return app.exec();
-}
-
 /*******************************************************************
  This file is part of Leaklog
  Copyright (C) 2008-2012 Matus & Michal Tomlein
@@ -58,3 +16,35 @@ int main(int argc, char *argv[])
  along with Leaklog; if not, write to the Free Software Foundation,
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
+
+#include "main.h"
+
+#include <QSettings>
+#include <QTranslator>
+
+int main(int argc, char *argv[])
+{
+    MTApplication app(argc, argv);
+
+#ifdef Q_WS_WIN
+    if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
+        QApplication::setStyle("windowsxp");
+#endif
+
+    QSettings settings("SZCHKT", "Leaklog");
+    QString lang = settings.value("lang").toString();
+    if (lang.isEmpty()) {
+        lang = QLocale::languageToString(QLocale::system().language());
+        if (lang == "Czech") lang = "Slovak";
+        settings.setValue("lang", lang);
+    }
+    if (lang == "C") { lang = "Slovak"; settings.setValue("lang", lang); }
+    if (lang != "English") {
+        QTranslator * translator = new QTranslator;
+        translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
+        app.installTranslator(translator);
+    }
+
+    app.setAppMainWindow(new MainWindow);
+    return app.exec();
+}
