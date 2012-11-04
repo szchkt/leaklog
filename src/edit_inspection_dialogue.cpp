@@ -25,28 +25,52 @@
 #include "edit_dialogue_table.h"
 #include "edit_inspection_dialogue_compressors.h"
 #include "edit_inspection_dialogue_assembly_record_tab.h"
-#include "edit_dialogue_layout.h"
+#include "edit_inspection_dialogue_layout.h"
 #include "edit_inspection_dialogue_access.h"
 #include "variables.h"
 
 #include <QMessageBox>
+#include <QSplitter>
+#include <QSettings>
 
 EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * parent, const QString & duplicate_from)
-    : TabbedEditDialogue(record, parent),
+    : TabbedEditDialogue(record, parent, false),
       compressors(NULL)
 {
+    md_grid_main->setHorizontalSpacing(9);
+    md_grid_main->setVerticalSpacing(6);
+    md_grid_main->setContentsMargins(0, 0, 0, 0);
+
     main_tabw->setTabText(0, tr("Inspection"));
 
+    splitter = new QSplitter(Qt::Vertical, this);
+    splitter->setContentsMargins(0, 0, 0, 0);
+    md_grid_main->addWidget(splitter, 0, 0);
+
+    QWidget * widget_trees = new QWidget(this);
+    splitter->addWidget(widget_trees);
+
+    QGridLayout * grid_trees = new QGridLayout(widget_trees);
+    grid_trees->setContentsMargins(6, 6, 6, 6);
+    EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, grid_trees).layout();
+
+    QWidget * widget_rmds = new QWidget(this);
+    splitter->addWidget(widget_rmds);
+
+    QHBoxLayout * hl_rmds = new QHBoxLayout(widget_rmds);
+    hl_rmds->setContentsMargins(9, 9, 9, 9);
+
     MDAbstractInputWidget * rmds = inputWidget("rmds");
-    md_grid_main->addWidget(rmds->label()->widget(), md_grid_main->rowCount(), 0);
-    md_grid_main->addWidget(rmds->widget(), md_grid_main->rowCount() - 1, 1, 1, md_grid_main->columnCount() - 1);
+    hl_rmds->addWidget(rmds->label()->widget());
+    hl_rmds->addWidget(rmds->widget());
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
         compressors = new EditInspectionDialogueCompressors(md_record->parent("customer"), md_record->parent("circuit"), id, this);
         if (!duplicate_from.isEmpty())
             compressors->clearOriginalInspectionDate();
-        md_grid_main->addWidget(compressors, md_grid_main->rowCount(), 0, 1, md_grid_main->columnCount());
+        compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+        splitter->addWidget(compressors);
         tabs.append(compressors);
     }
 
@@ -56,6 +80,19 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * pare
                                                        md_record->parent("customer"),
                                                        md_record->parent("circuit")));
     addTab(new EditInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString()));
+
+    splitter->setSizes(QList<int>() << 1000 << 1 << 200);
+
+    QSettings settings("SZCHKT", "Leaklog");
+    resize(settings.value("inspection_dialogue/size", QSize(900, 550)).toSize());
+    splitter->restoreState(settings.value("inspection_dialogue/splitter_state").toByteArray());
+}
+
+EditInspectionDialogue::~EditInspectionDialogue()
+{
+    QSettings settings("SZCHKT", "Leaklog");
+    settings.setValue("inspection_dialogue/size", size());
+    settings.setValue("inspection_dialogue/splitter_state", splitter->saveState());
 }
 
 const QVariant EditInspectionDialogue::idFieldValue()

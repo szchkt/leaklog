@@ -26,18 +26,22 @@ class EditDialogueBasicTable;
 class EditDialogueGroupsLayout;
 class EditInspectionDialogueCompressors;
 
+class QSplitter;
+
 class EditInspectionDialogue : public TabbedEditDialogue
 {
     Q_OBJECT
 
 public:
     EditInspectionDialogue(DBRecord * record, QWidget * parent = NULL, const QString & duplicate_from = QString());
+    virtual ~EditInspectionDialogue();
 
 protected:
     bool saveOther();
 
     const QVariant idFieldValue();
     EditInspectionDialogueCompressors * compressors;
+    QSplitter * splitter;
 };
 
 class EditInspectionDialogueImagesTab : public EditDialogueTab

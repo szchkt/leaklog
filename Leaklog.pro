@@ -59,7 +59,8 @@ HEADERS       += src/global.h \
                  src/main_window_settings.h \
                  src/mtsqlquery.h \
                  src/edit_inspection_dialogue_access.h \
-                 src/edit_dialogue_with_auto_id.h
+                 src/edit_dialogue_with_auto_id.h \
+                 src/edit_inspection_dialogue_layout.h
 RESOURCES     += rc/resources.qrc \
                  rc/i18n.qrc \
                  rc/html.qrc
@@ -111,7 +112,8 @@ SOURCES       += src/global.cpp \
                  src/main_window_settings.cpp \
                  src/mtsqlquery.cpp \
                  src/edit_inspection_dialogue_access.cpp \
-                 src/edit_dialogue_with_auto_id.cpp
+                 src/edit_dialogue_with_auto_id.cpp \
+                 src/edit_inspection_dialogue_layout.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser

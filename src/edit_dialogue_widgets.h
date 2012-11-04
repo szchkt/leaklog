@@ -21,6 +21,7 @@
 #define EDIT_DIALOGUE_WIDGETS_H
 
 #include <QStringList>
+#include <QMap>
 
 class MDAbstractInputWidget;
 
@@ -30,6 +31,9 @@ public:
     EditDialogueWidgets(): md_rows_in_column(14) {}
 
     void addInputWidget(MDAbstractInputWidget * iw) { md_inputwidgets << iw; }
+    void addInputWidgetGroup(const QString & group_id, const QString & group_name) {
+        md_groups.insert(group_id, group_name);
+    }
     void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget *> &);
 
     void setUsedIds(const QStringList & ids) { md_used_ids = ids; }
@@ -43,6 +47,7 @@ public:
 protected:
     QStringList md_used_ids;
     QList<MDAbstractInputWidget *> md_inputwidgets;
+    QMap<QString, QString> md_groups;
     int md_rows_in_column;
 };
 

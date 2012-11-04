@@ -38,6 +38,23 @@
 class QRadioButton;
 class QGridLayout;
 
+class WheelEventEater : public QObject
+{
+    Q_OBJECT
+
+public:
+    WheelEventEater(QObject * parent): QObject(parent) {}
+
+protected:
+    bool eventFilter(QObject * obj, QEvent * event) {
+        if (event->type() == QEvent::Wheel) {
+            event->ignore();
+            return true;
+        }
+        return QObject::eventFilter(obj, event);
+    }
+};
+
 class MTObject
 {
 public:
@@ -94,6 +111,8 @@ public:
 
     void setLabelText(const QString & t) { QPushButton::setText(t); }
 
+    QSize sizeHint() const;
+
 public slots:
     void toggleAlternativeText(bool alt) { MTLabeledWidget::toggleAlternativeText(alt); }
     void changeState();
@@ -113,6 +132,12 @@ public:
     inline void setId(const QString & id) { iw_id = id; }
     inline MTLabeledWidget * label() const { return iw_label; }
     inline QWidget * widget() const { return iw_widget; }
+
+    inline QString groupId() const { return iw_group_id; }
+    inline void setGroupId(const QString & id) { iw_group_id = id; }
+
+    inline QString colour() const { return iw_colour; }
+    inline void setColour(const QString & colour) { iw_colour = colour; }
 
     bool showInForm() const { return show; }
     void setShowInForm(bool show) { this->show = show; }
@@ -135,6 +160,8 @@ private:
     bool skip_save;
     QString iw_id;
     QWidget * iw_widget;
+    QString iw_group_id;
+    QString iw_colour;
 };
 
 class MDNullableInputWidget : public MDAbstractInputWidget

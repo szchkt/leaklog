@@ -216,7 +216,6 @@ void Variables::initSubvariable(const QString & parent, int scope, const QString
 void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record,
                                         const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
 {
-    MDAbstractInputWidget * iw = NULL;
     while (next()) {
         QString var_type = type();
 
@@ -226,16 +225,17 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
         QString parent_id = parentID();
         VariableContract parent;
         QString var_id = id();
-        QString var_name;
+        QString var_name = QApplication::translate("MainWindow", "%1:").arg(name());
         QString col_bg;
         if (parent_id.isEmpty()) {
-            var_name = QApplication::translate("MainWindow", "%1:").arg(name());
             col_bg = colBg();
         } else {
             parent = variable(parent_id);
-            var_name = QApplication::translate("MainWindow", "%1: %2:").arg(parent.name()).arg(name());
+            md->addInputWidgetGroup(parent_id, parent.name());
             col_bg = parent.colBg();
         }
+
+        MDAbstractInputWidget * iw = NULL;
 
         if (var_id == "inspector") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
@@ -263,8 +263,9 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
             iw->setShowInForm(false);
             md->addInputWidget(iw);
         } else if (var_type == "int") {
-            md->addInputWidget(new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
-                                             attributes.value(var_id).toInt(), unit(), col_bg));
+            iw = new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
+                               attributes.value(var_id).toInt(), unit(), col_bg);
+            md->addInputWidget(iw);
         } else if (var_type == "float") {
             iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
                                              attributes.value(var_id), unit(), col_bg);
@@ -292,15 +293,16 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
             md->addInputWidget(new MDPlainTextEdit(var_id, var_name, md->widget(),
                                                    attributes.value(var_id).toString(), col_bg));
         } else if (var_type == "bool") {
-            QString label;
-            if (!parent_id.isEmpty())
-                label = QApplication::translate("MainWindow", "%1:").arg(parent.name());
             iw = new MDCheckBox(var_id, name(), md->widget(), attributes.value(var_id).toInt());
-            iw->label()->setLabelText(label);
             md->addInputWidget(iw);
         } else {
-            md->addInputWidget(new MDLineEdit(var_id, var_name, md->widget(),
-                                              attributes.value(var_id).toString(), 0, col_bg));
+            iw = new MDLineEdit(var_id, var_name, md->widget(), attributes.value(var_id).toString(), 0, col_bg);
+            md->addInputWidget(iw);
+        }
+
+        if (iw) {
+            iw->setGroupId(parent_id);
+            iw->setColour(col_bg);
         }
     }
 }

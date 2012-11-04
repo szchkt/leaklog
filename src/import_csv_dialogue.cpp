@@ -32,9 +32,6 @@
 #include <QDate>
 #include <QMenu>
 
-#undef QT_TRANSLATE_NOOP
-#define QT_TRANSLATE_NOOP(context, sourceText) context, sourceText
-
 ImportCsvDialogue::ImportCsvDialogue(const QString & path, QList<ImportDialogueTable *> & tables, QWidget * parent):
 QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint),
 file_path(path)

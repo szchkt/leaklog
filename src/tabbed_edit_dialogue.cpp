@@ -27,7 +27,7 @@
 #include <QTabWidget>
 #include <QScrollArea>
 
-TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, QWidget * parent)
+TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, QWidget * parent, bool layout)
     : EditDialogue(parent)
 {
     main_tabw = new QTabWidget;
@@ -36,7 +36,8 @@ TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, QWidget * parent)
 
     md_record->initEditDialogue(this);
 
-    EditDialogueColumnLayout(&md_inputwidgets, md_grid_main, md_rows_in_column).layout();
+    if (layout)
+        EditDialogueColumnLayout(&md_inputwidgets, md_grid_main, md_rows_in_column).layout();
 }
 
 TabbedEditDialogue::~TabbedEditDialogue()

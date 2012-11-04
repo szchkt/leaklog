@@ -21,7 +21,7 @@
 
 #include "records.h"
 #include "variables.h"
-#include "edit_dialogue_layout.h"
+#include "edit_inspection_dialogue_layout.h"
 #include "input_widgets.h"
 
 #include <QVBoxLayout>
@@ -103,7 +103,7 @@ void InspectionCompressorTab::init(const QVariantMap & var_values)
 
     QGridLayout * layout = new QGridLayout(this);
 
-    EditDialogueColumnLayout(&md_inputwidgets, layout, 5).layout();
+    EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, layout).layout();
 }
 
 bool InspectionCompressorTab::save(const QString & customer_id, const QString & circuit_id,

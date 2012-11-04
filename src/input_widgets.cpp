@@ -51,6 +51,13 @@ MTLabeledWidget(text, this)
     QObject::connect(this, SIGNAL(clicked()), this, SLOT(changeState()));
 }
 
+QSize MTButtonLabel::sizeHint() const
+{
+    QSize hint = QPushButton::sizeHint();
+    hint.setWidth(hint.width() + 20);
+    return hint;
+}
+
 void MTButtonLabel::changeState()
 {
     toggleChanged();
@@ -152,6 +159,7 @@ MDSpinBox::MDSpinBox(const QString & id, const QString & labeltext, QWidget * pa
 QSpinBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
 #ifndef Q_WS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
@@ -180,6 +188,7 @@ MDDoubleSpinBox::MDDoubleSpinBox(const QString & id, const QString & labeltext, 
 QDoubleSpinBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
 #ifndef Q_WS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
@@ -208,6 +217,7 @@ MDNullableDoubleSpinBox::MDNullableDoubleSpinBox(const QString & id, const QStri
 QDoubleSpinBox(parent),
 MDNullableInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
 #ifndef Q_WS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
@@ -254,6 +264,7 @@ MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * 
 QComboBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
 #ifndef Q_WS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
@@ -295,6 +306,7 @@ MDColourComboBox::MDColourComboBox(const QString & id, const QString & labeltext
 MTColourComboBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
     for (int i = 0; i < count(); ++i) {
         if (itemText(i) == value) { setCurrentIndex(i); break; }
     }
@@ -305,10 +317,21 @@ QVariant MDColourComboBox::variantValue() const
     return currentText();
 }
 
+void MDColourComboBox::setVariantValue(const QVariant & value)
+{
+    for (int i = 0; i < count(); ++i) {
+        if (itemText(i) == value.toString()) {
+            setCurrentIndex(i);
+            break;
+        }
+    }
+}
+
 MDDateTimeEdit::MDDateTimeEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
 QDateTimeEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
     setDisplayFormat("yyyy.MM.dd-hh:mm");
     setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
 }
@@ -323,20 +346,11 @@ void MDDateTimeEdit::setVariantValue(const QVariant & value)
     setDateTime(QDateTime::fromString(value.toString(), "yyyy.MM.dd-hh:mm"));
 }
 
-void MDColourComboBox::setVariantValue(const QVariant & value)
-{
-    for (int i = 0; i < count(); ++i) {
-        if (itemText(i) == value.toString()) {
-            setCurrentIndex(i);
-            break;
-        }
-    }
-}
-
 MDDateEdit::MDDateEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
 QDateEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
+    installEventFilter(new WheelEventEater(this));
     setDisplayFormat("yyyy.MM.dd");
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
 }
