@@ -83,14 +83,6 @@ void MainWindowSettings::setSelectedInspector(int inspector, const QString & ins
         m_inspector_name = inspector_name;
 }
 
-QString MainWindowSettings::orderByForLastLink() const
-{
-    if (m_last_link)
-        return m_view_orders.value(m_last_link->views(), m_last_link->orderBy());
-
-    return QString();
-}
-
 QString MainWindowSettings::orderByForView(quint64 view) const
 {
     return m_view_orders.value(view);

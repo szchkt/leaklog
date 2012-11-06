@@ -414,7 +414,7 @@ QString MainWindow::viewRefrigerantManagement(int since)
     if (!navigation->isFilterEmpty()) {
         records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QString order_by = m_settings.orderByForLastLink();
+    QString order_by = m_settings.orderByForView(LinkParser::RefrigerantManagement);
     if (order_by.isEmpty())
         order_by = "date";
     MTSqlQuery query = records.select("*", appendDefaultOrderToColumn(order_by));
@@ -458,10 +458,10 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     QString order_by;
-    if (!customer_id.isEmpty() || m_settings.orderByForLastLink().isEmpty())
+    if (!customer_id.isEmpty() || m_settings.orderByForView(LinkParser::AllCustomers).isEmpty())
         order_by = "company ASC, id ASC";
     else
-        order_by = appendDefaultOrderToColumn(m_settings.orderByForLastLink());
+        order_by = appendDefaultOrderToColumn(m_settings.orderByForView(LinkParser::AllCustomers));
     ListOfVariantMaps list = all_customers.listAll("*,"
                                                    " (SELECT COUNT(id) FROM circuits WHERE parent = customers.id) AS circuits_count,"
                                                    " (SELECT COUNT(date) FROM inspections WHERE customer = customers.id) AS inspections_count",
@@ -781,7 +781,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QString order_by = m_settings.orderByForLastLink();
+    QString order_by = m_settings.orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
         order_by = "date";
     ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, "
@@ -2179,7 +2179,7 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForView(LinkParser::AllAssemblyRecordTypes));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -2217,7 +2217,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForView(LinkParser::AllAssemblyRecordItemTypes));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -2259,7 +2259,7 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForView(LinkParser::AllAssemblyRecordItemCategories));
 
     HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;
@@ -2620,7 +2620,7 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForView(LinkParser::AllCircuitUnitTypes));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -2810,7 +2810,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    QString order_by = m_settings.orderByForLastLink();
+    QString order_by = m_settings.orderByForView(LinkParser::AllAssemblyRecords);
     if (order_by.isEmpty())
         order_by = "date";
     ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit,"
