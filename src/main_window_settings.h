@@ -98,11 +98,13 @@ public:
     void setCircuitDetailsVisible(bool circuit_details_visible) { m_circuit_details_visible = circuit_details_visible; }
     void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
+    QString orderByForLastLink() const;
+
     Link * lastLink() const { return m_last_link; }
     void setLastLink(Link *);
 
     Link * receivedLink() const { return m_received_link; }
-    void setReceivedLink(Link * link) { m_received_link = link; }
+    void setReceivedLink(Link * link);
     void loadReceivedLink();
 
     void loadPreviousLink();
@@ -148,6 +150,8 @@ private:
     LinkParser link_parser;
     QList<Link *> m_previous_links;
     QList<Link *> m_next_links;
+
+    QMap<quint64, QString> m_view_orders;
 };
 
 #endif // MAIN_WINDOW_SETTINGS_H

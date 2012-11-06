@@ -47,12 +47,22 @@ void MainWindowSettings::save(QSettings & settings) const
 {
     settings.setValue("main_window/customer_details_visible", m_customer_details_visible);
     settings.setValue("main_window/circuit_details_visible", m_circuit_details_visible);
+
+    settings.beginGroup("main_window/view_orders");
+    for (QMap<quint64, QString>::const_iterator i = m_view_orders.constBegin(); i != m_view_orders.constEnd(); ++i)
+        settings.setValue(QString::number(i.key()), i.value());
+    settings.endGroup();
 }
 
 void MainWindowSettings::restore(QSettings & settings)
 {
     m_customer_details_visible = settings.value("main_window/customer_details_visible", false).toBool();
     m_circuit_details_visible = settings.value("main_window/circuit_details_visible", false).toBool();
+
+    settings.beginGroup("main_window/view_orders");
+    foreach (const QString & key, settings.allKeys())
+        m_view_orders.insert(key.toULongLong(), settings.value(key).toString());
+    settings.endGroup();
 }
 
 void MainWindowSettings::setSelectedCustomer(int customer, const QString & company) {
@@ -73,6 +83,14 @@ void MainWindowSettings::setSelectedInspector(int inspector, const QString & ins
         m_inspector_name = inspector_name;
 }
 
+QString MainWindowSettings::orderByForLastLink() const
+{
+    if (m_last_link)
+        return m_view_orders.value(m_last_link->views(), m_last_link->orderBy());
+
+    return QString();
+}
+
 void MainWindowSettings::setLastLink(Link * link)
 {
     saveToPreviousLinks();
@@ -84,6 +102,13 @@ void MainWindowSettings::setLastLink(Link * link)
         delete m_next_links.takeLast();
 
     enableBackAndForwardButtons();
+}
+
+void MainWindowSettings::setReceivedLink(Link * link)
+{
+     m_received_link = link;
+     if (!link->orderBy().isEmpty())
+        m_view_orders.insert(link->views(), link->orderBy());
 }
 
 void MainWindowSettings::loadReceivedLink()

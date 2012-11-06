@@ -81,20 +81,20 @@ public:
     LinkEntity * addRoute(const QString &, int = -1, bool = true);
     void setRoute(const QString &, LinkEntity *);
 
-    void setView(int view) { this->m_view = view; }
-    int view() { return m_view; }
+    void setView(int view) { m_view = view; }
+    int view() const { return m_view; }
 
-    void setName(const QString & name) { this->m_name = name; }
-    const QString & name() { return m_name; }
+    void setName(const QString & name) { m_name = name; }
+    QString name() const { return m_name; }
 
-    void setHasId(bool has_id) { this->has_id = has_id; }
-    bool hasId() { return has_id; }
+    void setHasId(bool has_id) { m_has_id = has_id; }
+    bool hasId() const { return m_has_id; }
 
     void parse(UrlEntity *, Link *);
 
 private:
     int m_view;
-    bool has_id;
+    bool m_has_id;
     QString m_name;
     QMap<QString, LinkEntity *> routes;
 };
@@ -103,7 +103,8 @@ class Link
 {
 public:
     enum {
-        MinViewDifference = 50
+        MinViewDifference = 50,
+        MaxViewBits = 16
     };
 
     enum Action {
@@ -116,25 +117,27 @@ public:
     void setId(const QString &, const QString &);
 
     int compareViews(const Link & other) const;
-    int viewAt(int i) { return m_views.count() > i ? m_views.at(i) : -1; }
+    int viewAt(int i) const { return m_views.count() > i ? m_views.at(i) : -1; }
     void setView(int view) { m_views << view; }
-    int countViews() { return m_views.count(); }
+    int countViews() const { return m_views.count(); }
+    quint64 views() const;
+    void setViews(quint64 views);
 
     int action() { return m_action; }
     void setAction(int action) { m_action = action; }
 
-    const QString & idValue(const QString &);
-    const QString & lastIdKey();
-    const QString & lastIdValue();
-    int countIds() { return m_ids.count(); }
+    QString idValue(const QString &) const;
+    QString lastIdKey() const;
+    QString lastIdValue() const;
+    int countIds() const { return m_ids.count(); }
 
-    const QString suffixParameters();
+    QString suffixParameters() const;
 
     void setOrderBy(const QString & order_by) { m_order_by = order_by; }
-    const QString & orderBy() const { return m_order_by; }
+    QString orderBy() const { return m_order_by; }
 
     void setOrderDirection(int order) { m_order_direction = order; }
-    int orderDirection() { return m_order_direction; }
+    int orderDirection() const { return m_order_direction; }
 
 private:
     int m_action;
@@ -159,11 +162,11 @@ public:
 
     UrlEntity * addNext(const QStringList & attributes);
     UrlEntity * addNext(const QString & attr1, const QString & attr2 = QString());
-    UrlEntity * next() { return m_next; }
+    UrlEntity * next() const { return m_next; }
 
-    int countAttributes() { return m_attributes.count(); }
-    const QString & name() { return m_attributes.first(); }
-    const QString & attributeAt(int i) { return m_attributes.at(i); }
+    int countAttributes() const { return m_attributes.count(); }
+    QString name() const { return m_attributes.first(); }
+    QString attributeAt(int i) const { return m_attributes.at(i); }
 
 private:
     QStringList m_attributes;

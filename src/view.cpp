@@ -439,10 +439,10 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
     QString order_by;
-    if (!customer_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
+    if (!customer_id.isEmpty() || m_settings.orderByForLastLink().isEmpty())
         order_by = "company ASC, id ASC";
     else
-        order_by = m_settings.lastLink()->orderBy();
+        order_by = m_settings.orderByForLastLink();
     ListOfVariantMaps list = all_customers.listAll("*,"
                                                    " (SELECT COUNT(id) FROM circuits WHERE parent = customers.id) AS circuits_count,"
                                                    " (SELECT COUNT(date) FROM inspections WHERE customer = customers.id) AS inspections_count",
@@ -526,14 +526,11 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     if (circuit_id.isEmpty() && !navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps circuits;
     QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
             " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
             " ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
-    if (!circuit_id.isEmpty() || !m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        circuits = circuits_record.listAll(circuits_query_select);
-    else
-        circuits = circuits_record.listAll(circuits_query_select, m_settings.lastLink()->orderBy());
+    ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
+                                                         circuit_id.isEmpty() ? m_settings.orderByForLastLink() : QString());
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
@@ -703,13 +700,9 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps inspections;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco");
-    else {
-        inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, operator, refr_add_am, refr_reco",
-                                                m_settings.lastLink()->orderBy());
-    }
+    ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, "
+                                                              "arno, inspector, operator, refr_add_am, refr_reco",
+                                                              m_settings.orderByForLastLink());
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -2079,11 +2072,8 @@ QString MainWindow::viewAllAssemblyRecordTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = all_items.listAll();
-    else
-        items = all_items.listAll("*", m_settings.lastLink()->orderBy());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
@@ -2120,11 +2110,7 @@ QString MainWindow::viewAllAssemblyRecordItemTypes(const QString & highlighted_i
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = all_items.listAll();
-    else
-        items = all_items.listAll("*", m_settings.lastLink()->orderBy());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
@@ -2166,11 +2152,7 @@ QString MainWindow::viewAllAssemblyRecordItemCategories(const QString & highligh
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = all_items.listAll();
-    else
-        items = all_items.listAll("*", m_settings.lastLink()->orderBy());
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
 
     HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;
@@ -2531,12 +2513,8 @@ QString MainWindow::viewAllCircuitUnitTypes(const QString & highlighted_id)
     if (!navigation->isFilterEmpty()) {
         all_items.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = all_items.listAll();
-    else {
-        items = all_items.listAll("*", m_settings.lastLink()->orderBy());
-    }
+    ListOfVariantMaps items = all_items.listAll("*", m_settings.orderByForLastLink());
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
@@ -2718,19 +2696,11 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps items;
-    if (!m_settings.lastLink() || m_settings.lastLink()->orderBy().isEmpty())
-        items = record.listAll("inspections.customer, inspections.circuit,"
-                               " inspections.date, inspections.arno,"
-                               " assembly_record_types.name AS record_name,"
-                               " inspections.inspector, customers.company,"
-                               " persons.name AS operator");
-    else
-        items = record.listAll("inspections.customer, inspections.circuit,"
-                               " inspections.date, inspections.arno,"
-                               " assembly_record_types.name AS record_name,"
-                               " inspections.inspector, customers.company,"
-                               " persons.name AS operator", m_settings.lastLink()->orderBy());
+    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit,"
+                                             " inspections.date, inspections.arno,"
+                                             " assembly_record_types.name AS record_name,"
+                                             " inspections.inspector, customers.company,"
+                                             " persons.name AS operator", m_settings.orderByForLastLink());
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;

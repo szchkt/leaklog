@@ -98,7 +98,7 @@ Link * LinkParser::parse(UrlEntity * url_entity)
 
 LinkEntity::LinkEntity(bool has_id):
     m_view(-1),
-    has_id(has_id)
+    m_has_id(has_id)
 {}
 
 LinkEntity * LinkEntity::addRoute(const QString & name, int view, bool has_id)
@@ -169,22 +169,39 @@ int Link::compareViews(const Link & other) const
     return result;
 }
 
-const QString & Link::idValue(const QString & key)
+quint64 Link::views() const
+{
+    quint64 views = 0L;
+    foreach (int view, m_views)
+        views = (views << MaxViewBits) | view;
+    return views;
+}
+
+void Link::setViews(quint64 views)
+{
+    m_views.clear();
+    while (views) {
+        m_views.prepend(views & ((1L << MaxViewBits) - 1L));
+        views >>= MaxViewBits;
+    }
+}
+
+QString Link::idValue(const QString & key) const
 {
     return m_ids.value(key);
 }
 
-const QString & Link::lastIdKey()
+QString Link::lastIdKey() const
 {
     return m_ids.lastKey();
 }
 
-const QString & Link::lastIdValue()
+QString Link::lastIdValue() const
 {
     return m_ids.lastValue();
 }
 
-const QString Link::suffixParameters()
+QString Link::suffixParameters() const
 {
     QString ret;
     if (!m_order_by.isEmpty())
