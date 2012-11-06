@@ -399,6 +399,15 @@ void MainWindow::executeLink(Link * link)
         view_changed = false;
 
     switch (link->viewAt(0)) {
+    case LinkParser::ToggleDetailsVisible:
+        id = link->idValue("toggledetailsvisible");
+        if (id == "customer")
+            m_settings.toggleCustomerDetailsVisible();
+        else if (id == "circuit")
+            m_settings.toggleCircuitDetailsVisible();
+        refreshView();
+        break;
+
     case LinkParser::Customer:
         view_changed = !actionService_company->isChecked();
         select_with_javascript = !view_changed;
@@ -1459,6 +1468,7 @@ void MainWindow::loadSettings()
     showIconsOnly(actionShow_icons_only->isChecked());
     check_for_updates = settings.value("check_for_updates", true).toBool();
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
+    m_settings.restore(settings);
 #ifndef QT_DEBUG
     if (check_for_updates) checkForUpdates();
 #endif
@@ -1480,6 +1490,7 @@ void MainWindow::saveSettings()
     settings.setValue("window_state", saveState(0));
     settings.setValue("toolbar_icons_only", actionShow_icons_only->isChecked());
     settings.setValue("compare_values", actionCompare_values->isChecked());
+    m_settings.save(settings);
 }
 
 void MainWindow::changeLanguage()

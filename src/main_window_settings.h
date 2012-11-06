@@ -26,6 +26,8 @@
 
 #include "link_parser.h"
 
+class QSettings;
+
 class MainWindowSettings : public QObject
 {
     Q_OBJECT
@@ -33,17 +35,20 @@ class MainWindowSettings : public QObject
 public:
     MainWindowSettings();
 
+    void save(QSettings & settings) const;
+    void restore(QSettings & settings);
+
     inline bool isCustomerSelected() const { return m_customer >= 0; }
     inline QString selectedCustomer() const { return QString::number(m_customer); }
     void setSelectedCustomer(int customer, const QString & company = QString());
-    inline void clearSelectedCustomer() { m_customer = -1; m_customer_company.clear(); clearSelectedCircuit(); }
+    void clearSelectedCustomer() { m_customer = -1; m_customer_company.clear(); clearSelectedCircuit(); }
 
     inline const QString & selectedCustomerCompany() const { return m_customer_company; }
 
     inline bool isCircuitSelected() const { return m_circuit >= 0; }
     inline QString selectedCircuit() const { return QString::number(m_circuit); }
     void setSelectedCircuit(int circuit) { clearSelectedCircuit(); m_circuit = circuit; }
-    inline void clearSelectedCircuit() { m_circuit = -1; m_compressor = -1; clearSelectedInspection(); clearSelectedRepair(); }
+    void clearSelectedCircuit() { m_circuit = -1; m_compressor = -1; clearSelectedInspection(); clearSelectedRepair(); }
 
     inline bool isCompressorSelected() const { return m_compressor >= 0; }
     inline QString selectedCompressor() const { return QString::number(m_compressor); }
@@ -52,10 +57,10 @@ public:
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
     void setSelectedInspection(const QString & inspection, bool has_ar = false) { m_inspection = inspection; m_has_assembly_record = has_ar; }
-    inline void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; m_inspection_is_repair = false; }
+    void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; m_inspection_is_repair = false; }
     inline bool hasAssemblyRecord() const { return m_has_assembly_record; }
 
-    bool selectedInspectionIsRepair() const { return m_inspection_is_repair; }
+    inline bool selectedInspectionIsRepair() const { return m_inspection_is_repair; }
     void setSelectedInspectionIsRepair(bool inspection_is_repair) { m_inspection_is_repair = inspection_is_repair; }
 
     inline bool isRepairSelected() const { return !m_repair.isEmpty(); }
@@ -84,6 +89,14 @@ public:
     inline bool isCircuitUnitTypeSelected() const { return m_circuit_unit_type >= 0; }
     inline QString selectedCircuitUnitType() const { return QString::number(m_circuit_unit_type); }
     void setSelectedCircuitUnitType(int circuit_unit_type) { m_circuit_unit_type = circuit_unit_type; }
+
+    inline bool customerDetailsVisible() const { return m_customer_details_visible; }
+    void setCustomerDetailsVisible(bool customer_details_visible) { m_customer_details_visible = customer_details_visible; }
+    void toggleCustomerDetailsVisible() { m_customer_details_visible = !m_customer_details_visible; }
+
+    inline bool circuitDetailsVisible() const { return m_circuit_details_visible; }
+    void setCircuitDetailsVisible(bool circuit_details_visible) { m_circuit_details_visible = circuit_details_visible; }
+    void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
     Link * lastLink() const { return m_last_link; }
     void setLastLink(Link *);
@@ -127,6 +140,8 @@ private:
     int m_assembly_record_item_category;
     int m_circuit_unit_type;
     bool m_has_assembly_record;
+    bool m_customer_details_visible;
+    bool m_circuit_details_visible;
 
     Link * m_last_link;
     Link * m_received_link;

@@ -20,6 +20,8 @@
 #include "main_window_settings.h"
 #include "records.h"
 
+#include <QSettings>
+
 #define MAX_LINKS 10
 
 MainWindowSettings::MainWindowSettings():
@@ -34,9 +36,23 @@ MainWindowSettings::MainWindowSettings():
     m_assembly_record_item_category(-1),
     m_circuit_unit_type(-1),
     m_has_assembly_record(false),
+    m_customer_details_visible(false),
+    m_circuit_details_visible(false),
     m_last_link(NULL),
     m_received_link(NULL)
 {
+}
+
+void MainWindowSettings::save(QSettings & settings) const
+{
+    settings.setValue("main_window/customer_details_visible", m_customer_details_visible);
+    settings.setValue("main_window/circuit_details_visible", m_circuit_details_visible);
+}
+
+void MainWindowSettings::restore(QSettings & settings)
+{
+    m_customer_details_visible = settings.value("main_window/customer_details_visible", false).toBool();
+    m_circuit_details_visible = settings.value("main_window/circuit_details_visible", false).toBool();
 }
 
 void MainWindowSettings::setSelectedCustomer(int customer, const QString & company) {
