@@ -85,14 +85,16 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * pare
 
     QSettings settings("SZCHKT", "Leaklog");
     resize(settings.value("inspection_dialogue/size", QSize(900, 550)).toSize());
-    splitter->restoreState(settings.value("inspection_dialogue/splitter_state").toByteArray());
+    QString splitter_state_key = QString("inspection_dialogue/splitter_state%1").arg(compressors ? "" : "_no_compressors");
+    splitter->restoreState(settings.value(splitter_state_key).toByteArray());
 }
 
 EditInspectionDialogue::~EditInspectionDialogue()
 {
     QSettings settings("SZCHKT", "Leaklog");
     settings.setValue("inspection_dialogue/size", size());
-    settings.setValue("inspection_dialogue/splitter_state", splitter->saveState());
+    QString splitter_state_key = QString("inspection_dialogue/splitter_state%1").arg(compressors ? "" : "_no_compressors");
+    settings.setValue(splitter_state_key, splitter->saveState());
 }
 
 const QVariant EditInspectionDialogue::idFieldValue()
