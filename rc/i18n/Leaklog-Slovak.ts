@@ -1135,10 +1135,6 @@
         <translation>Chladenie</translation>
     </message>
     <message>
-        <source>Transportation</source>
-        <translation>Prepravné chladenie</translation>
-    </message>
-    <message>
         <source>Air conditioning</source>
         <translation>Klimatizácia</translation>
     </message>
@@ -1149,6 +1145,18 @@
     <message>
         <source>Field of application</source>
         <translation>Druh nasadenia</translation>
+    </message>
+    <message>
+        <source>Commercial refrigeration</source>
+        <translation>Komerčné chladenie</translation>
+    </message>
+    <message>
+        <source>Industrial refrigeration</source>
+        <translation>Priemyselné chladenie</translation>
+    </message>
+    <message>
+        <source>Transport refrigeration</source>
+        <translation>Prepravné chladenie</translation>
     </message>
 </context>
 <context>
@@ -3423,10 +3431,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>%1:</translation>
     </message>
     <message>
-        <source>%1: %2:</source>
-        <translation>%1: %2:</translation>
-    </message>
-    <message>
         <source>Refrigerant Management</source>
         <translation>Nakladanie s chladivami</translation>
     </message>
@@ -3639,6 +3643,34 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>&amp;Later</source>
         <translation>&amp;Neskôr</translation>
+    </message>
+    <message>
+        <source>Columns</source>
+        <translation>Stĺpce</translation>
+    </message>
+    <message>
+        <source>Date Updated</source>
+        <translation>Dátum zmeny</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>Autor</translation>
+    </message>
+    <message>
+        <source>Most Recent Records First</source>
+        <translation>Najnovšie záznamy najprv</translation>
+    </message>
+    <message>
+        <source>Show most recent inspections, repairs and records of refrigerant management first</source>
+        <translation>Zobraziť najnovšie kontroly, opravy a záznamy o nakladaní s chladivom najprv</translation>
+    </message>
+    <message>
+        <source>Customer: %1</source>
+        <translation>Zákazník: %1</translation>
+    </message>
+    <message>
+        <source>Circuit: %1 %2</source>
+        <translation>Okruh: %1 %2</translation>
     </message>
 </context>
 <context>
@@ -4227,6 +4259,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>—</source>
         <translation>—</translation>
     </message>
+    <message>
+        <source>By Field of Application</source>
+        <translation>Podľa druhu nasadenia</translation>
+    </message>
 </context>
 <context>
     <name>Oils</name>
@@ -4420,16 +4456,16 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Všetci</translation>
     </message>
     <message>
-        <source>Creator</source>
-        <translation>Autor</translation>
-    </message>
-    <message>
         <source>Save</source>
         <translation>Uložiť</translation>
     </message>
     <message>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>Autor</translation>
     </message>
 </context>
 <context>
