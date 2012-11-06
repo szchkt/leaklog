@@ -218,6 +218,7 @@ private:
     inline QString selectedAssemblyRecordItemCategory() { return m_settings.selectedAssemblyRecordItemCategory(); }
     inline bool isCircuitUnitTypeSelected() { return m_settings.isCircuitUnitTypeSelected(); }
     inline QString selectedCircuitUnitType() { return m_settings.selectedCircuitUnitType(); }
+    QString appendDefaultOrderToColumn(const QString &);
     // VIEW
     QString currentView();
     QString fileNameForCurrentView();

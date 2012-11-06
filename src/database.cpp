@@ -3217,3 +3217,19 @@ void MainWindow::removeStyle()
     this->setWindowModified(true);
     refreshView();
 }
+
+QString MainWindow::appendDefaultOrderToColumn(const QString & column)
+{
+    if (column.isEmpty())
+        return column;
+
+    QString column_name = column.split('.').last();
+
+    int order = Qt::AscendingOrder;
+
+    if ((actionMost_recent_first->isChecked() && column_name == "date") ||
+        column_name == "date_updated")
+        order = Qt::DescendingOrder;
+
+    return QString("%1 %2").arg(column).arg(order == Qt::AscendingOrder ? "ASC" : "DESC");
+}

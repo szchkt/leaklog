@@ -91,6 +91,11 @@ QString MainWindowSettings::orderByForLastLink() const
     return QString();
 }
 
+QString MainWindowSettings::orderByForView(quint64 view) const
+{
+    return m_view_orders.value(view);
+}
+
 void MainWindowSettings::setLastLink(Link * link)
 {
     saveToPreviousLinks();

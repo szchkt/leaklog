@@ -381,11 +381,14 @@ QString MainWindow::viewServiceCompany(int since)
 
 QString MainWindow::viewRefrigerantManagement(int since)
 {
+    bool show_date_updated = actionShow_date_updated->isChecked();
+    bool show_owner = actionShow_owner->isChecked();
+
     QString html; MTTextStream out(&html);
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">";
+    out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
-    out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
+    out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
     out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
@@ -393,6 +396,10 @@ QString MainWindow::viewRefrigerantManagement(int since)
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    if (show_date_updated)
+        out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
+    if (show_owner)
+        out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr><tr>";
     out << "<th>" << QApplication::translate("Customer", "Company") << "</th>";
     out << "<th>" << QApplication::translate("Customer", "ID") << "</th>";
@@ -407,7 +414,10 @@ QString MainWindow::viewRefrigerantManagement(int since)
     if (!navigation->isFilterEmpty()) {
         records.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    MTSqlQuery query = records.select("*", Qt::DescendingOrder);
+    QString order_by = m_settings.orderByForLastLink();
+    if (order_by.isEmpty())
+        order_by = "date";
+    MTSqlQuery query = records.select("*", appendDefaultOrderToColumn(order_by));
     query.setForwardOnly(true);
     query.exec();
     QString date;
@@ -419,6 +429,10 @@ QString MainWindow::viewRefrigerantManagement(int since)
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
             out << "<td>" << MTVariant(query.value(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
         }
+        if (show_date_updated)
+            out << "<td>" << escapeString(query.value("date_updated")) << "</th>";
+        if (show_owner)
+            out << "<td>" << escapeString(query.value("updated_by")) << "</th>";
         out << "</tr>";
     }
     out << "</table>";
@@ -434,6 +448,11 @@ void MainWindow::writeCustomersTable(MTTextStream & out, const QString & custome
 
 HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTable * table)
 {
+    bool disable_hiding_details = navigation->view() == Navigation::AssemblyRecord;
+    bool customer_details_visible = m_settings.customerDetailsVisible() || disable_hiding_details;
+    bool show_date_updated = actionShow_date_updated->isChecked() && !disable_hiding_details;
+    bool show_owner = actionShow_owner->isChecked() && !disable_hiding_details;
+
     Customer all_customers(customer_id);
     if (customer_id.isEmpty() && !navigation->isFilterEmpty()) {
         all_customers.addFilter(navigation->filterColumn(), navigation->filterKeyword());
@@ -442,7 +461,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     if (!customer_id.isEmpty() || m_settings.orderByForLastLink().isEmpty())
         order_by = "company ASC, id ASC";
     else
-        order_by = m_settings.orderByForLastLink();
+        order_by = appendDefaultOrderToColumn(m_settings.orderByForLastLink());
     ListOfVariantMaps list = all_customers.listAll("*,"
                                                    " (SELECT COUNT(id) FROM circuits WHERE parent = customers.id) AS circuits_count,"
                                                    " (SELECT COUNT(date) FROM inspections WHERE customer = customers.id) AS inspections_count",
@@ -457,7 +476,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     int thead_colspan = 2;
     HTMLTableRow * row = NULL;
 
-    if (customer_id.isEmpty() || m_settings.customerDetailsVisible()) {
+    if (customer_id.isEmpty() || customer_details_visible) {
         row = new HTMLTableRow();
 
         for (int n = 0; n < Customer::numBasicAttributes(); ++n) {
@@ -469,6 +488,14 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         }
         *(row->addHeaderCell()) << tr("Number of circuits");
         *(row->addHeaderCell()) << tr("Total number of inspections");
+        if (show_date_updated) {
+            *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            thead_colspan++;
+        }
+        if (show_owner) {
+            *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:updated_by\">" << tr("Author") << "</a>";
+            thead_colspan++;
+        }
     }
 
     HTMLTableCell * cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
@@ -476,8 +503,9 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
     if (customer_id.isEmpty()) {
         *cell << tr("List of Customers");
     } else {
-        *cell << "<a href=\"toggledetailsvisible:customer\">";
-        if (m_settings.customerDetailsVisible() || !list.count()) {
+        if (!disable_hiding_details)
+            *cell << "<a href=\"toggledetailsvisible:customer\">";
+        if (customer_details_visible || !list.count()) {
             *cell << tr("Customer");
         } else {
             QString name = list.first().value("company").toString().trimmed();
@@ -485,10 +513,11 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
                 name = customer_id.rightJustified(8, '0');
             *cell << escapeString(tr("Customer: %1").arg(name));
         }
-        *cell << "</a>";
+        if (!disable_hiding_details)
+            *cell << "</a>";
     }
 
-    if (customer_id.isEmpty() || m_settings.customerDetailsVisible()) {
+    if (customer_id.isEmpty() || customer_details_visible) {
         *table << row;
 
         QString id; QString highlighted_id = selectedCustomer();
@@ -507,6 +536,10 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
                                            (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(n))).toHtml();
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
+            if (show_date_updated)
+                *(row->addCell()) << escapeString(list.at(i).value("date_updated"));
+            if (show_owner)
+                *(row->addCell()) << escapeString(list.at(i).value("updated_by"));
         }
     }
 
@@ -522,6 +555,11 @@ void MainWindow::writeCircuitsTable(MTTextStream & out, const QString & customer
 
 HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QString & circuit_id, int cols_in_row, HTMLTable * table)
 {
+    bool disable_hiding_details = navigation->view() == Navigation::AssemblyRecord;
+    bool circuits_details_visible = m_settings.circuitDetailsVisible() || disable_hiding_details;
+    bool show_date_updated = actionShow_date_updated->isChecked() && !disable_hiding_details;
+    bool show_owner = actionShow_owner->isChecked() && !disable_hiding_details;
+
     Circuit circuits_record(customer_id, circuit_id);
     if (circuit_id.isEmpty() && !navigation->isFilterEmpty()) {
         circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
@@ -529,8 +567,11 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
             " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
             " ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
+    QString order_by = m_settings.orderByForView(LinkParser::Customer);
+    if (order_by.isEmpty())
+        order_by = "id";
     ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
-                                                         circuit_id.isEmpty() ? m_settings.orderByForLastLink() : QString());
+                                                         circuit_id.isEmpty() ? appendDefaultOrderToColumn(order_by) : QString());
     HTMLDiv * div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
@@ -540,7 +581,7 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     int thead_colspan = 3;
     HTMLTableRow * thead = NULL;
 
-    if (circuit_id.isEmpty() || m_settings.circuitDetailsVisible()) {
+    if (circuit_id.isEmpty() || circuits_details_visible) {
         thead = new HTMLTableRow();
 
         for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
@@ -554,6 +595,14 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
         *(thead->addHeaderCell()) << tr("Last inspection");
+        if (show_date_updated) {
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            thead_colspan++;
+        }
+        if (show_owner) {
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:updated_by\">" << tr("Author") << "</a>";
+            thead_colspan++;
+        }
     }
 
     HTMLTableRow * _tr = table->addRow();
@@ -562,8 +611,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
     if (circuit_id.isEmpty()) {
         *_td << tr("List of Circuits");
     } else {
-        *_td << "<a href=\"toggledetailsvisible:circuit\">";
-        if (m_settings.circuitDetailsVisible() || !circuits.count()) {
+        if (!disable_hiding_details)
+            *_td << "<a href=\"toggledetailsvisible:circuit\">";
+        if (circuits_details_visible || !circuits.count()) {
             *_td << tr("Circuit");
         } else {
             QVariantMap circuit = circuits.first();
@@ -576,14 +626,15 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
                 name = QString("(%1)").arg(name);
             *_td << escapeString(tr("Circuit: %1 %2").arg(circuit.value("id").toString().rightJustified(5, '0')).arg(name));
         }
-        *_td << "</a>";
+        if (!disable_hiding_details)
+            *_td << "</a>";
     }
 
     QString id;
     QString highlighted_id = selectedCircuit();
     bool show_disused = false;
 
-    if (circuit_id.isEmpty() || m_settings.circuitDetailsVisible()) {
+    if (circuit_id.isEmpty() || circuits_details_visible) {
         *table << thead;
 
         QString attr_value; QStringList dict_value;
@@ -624,29 +675,52 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
                                    .arg(id)
                                    .arg(circuits.at(i).value("last_inspection").toString())))
                     << circuits.at(i).value("last_inspection").toString().split('-').first();
+            if (show_date_updated)
+                *(_tr->addCell()) << escapeString(circuits.at(i).value("date_updated"));
+            if (show_owner)
+                *(_tr->addCell()) << escapeString(circuits.at(i).value("updated_by"));
         }
     }
 
-    if (cols_in_row < 0) *div << table;
-    else *div << table->customHtml(cols_in_row);
+    if (cols_in_row < 0)
+        *div << table;
+    else
+        *div << table->customHtml(cols_in_row);
+
     if (show_disused) {
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
         _tr = table->addRow();
-        *(_tr->addHeaderCell("colspan=\"6\" style=\"font-size: medium;\"")) << tr("Disused Circuits");
-        _tr = table->addRow();
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("id");
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("manufacturer");
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("type");
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("sn");
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("commissioning");
-        *(_tr->addHeaderCell()) << Circuit::attributes().value("decommissioning");
+
+        QStringList attributes;
+        attributes << "id" << "manufacturer" << "type" << "sn" << "commissioning" << "decommissioning";
+
+        thead_colspan = attributes.count();
+        thead = table->addRow();
+
+        foreach (const QString & key, attributes)
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:" << key << "\">"
+                                      << Circuit::attributes().value(key) << "</a>";
+
+        if (show_date_updated) {
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            thead_colspan++;
+        }
+        if (show_owner) {
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:updated_by\">" << tr("Author") << "</a>";
+            thead_colspan++;
+        }
+
+        *(_tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan))) << tr("Disused Circuits");
+
         for (int i = 0; i < circuits.count(); ++i) {
             if (!circuits.at(i).value("disused").toInt()) continue;
+
             id = circuits.at(i).value("id").toString();
             QString tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_id).arg("circuit:" + id);
             if (id == highlighted_id)
                 tr_attr.append(" class=\"selected\"");
+
             _tr = table->addRow(tr_attr);
             *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id);
             *(_tr->addCell()) << circuits.at(i).value("manufacturer").toString();
@@ -654,6 +728,10 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
             *(_tr->addCell()) << circuits.at(i).value("sn").toString();
             *(_tr->addCell()) << circuits.at(i).value("commissioning").toString();
             *(_tr->addCell()) << circuits.at(i).value("decommissioning").toString();
+            if (show_date_updated)
+                *(_tr->addCell()) << escapeString(circuits.at(i).value("date_updated"));
+            if (show_owner)
+                *(_tr->addCell()) << escapeString(circuits.at(i).value("updated_by"));
         }
         *div << table;
     }
@@ -683,6 +761,9 @@ QString MainWindow::viewCustomer(const QString & customer_id)
 
 QString MainWindow::viewCircuit(const QString & customer_id, const QString & circuit_id, int year)
 {
+    bool show_date_updated = actionShow_date_updated->isChecked();
+    bool show_owner = actionShow_owner->isChecked();
+
     QString html; MTTextStream out(&html);
     writeCustomersTable(out, customer_id);
     out << "<br>";
@@ -700,9 +781,12 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     if (!navigation->isFilterEmpty()) {
         inspection_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, "
-                                                              "arno, inspector, operator, refr_add_am, refr_reco",
-                                                              m_settings.orderByForLastLink());
+    QString order_by = m_settings.orderByForLastLink();
+    if (order_by.isEmpty())
+        order_by = "date";
+    ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, "
+                                                              "operator, refr_add_am, refr_reco, date_updated, updated_by",
+                                                              appendDefaultOrderToColumn(order_by));
     if (year) {
         for (int i = 0; i < inspections.count();) {
             if (inspections.at(i).value("date").toString().split(".").first().toInt() < year) {
@@ -715,7 +799,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     Person operators_record(QString(), customer_id);
     MultiMapOfVariantMaps operators(operators_record.mapAll("id", "name"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"9\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"11\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/table\">";
     out << tr("Inspections and Repairs") << "</a></th></tr>";
     out << "<tr><th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:date\">" << tr("Date") << "</a></th>";
@@ -724,7 +808,12 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:inspector\">" << variableNames().value("inspector") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:operator\">" << variableNames().value("operator") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:arno\">" << variableNames().value("arno") << "</a></th></tr>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:arno\">" << variableNames().value("arno") << "</a></th>";
+    if (show_date_updated)
+        out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
+    if (show_owner)
+        out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
+    out << "</tr>";
     bool is_nominal, is_repair, is_outside_interval;
     QString id; QString highlighted_id = selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {
@@ -757,6 +846,10 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
             out << "<td></td>";
         }
         out << "<td>" << MTVariant(inspections.at(i).value("arno")) << "</td>";
+        if (show_date_updated)
+            out << "<td>" << escapeString(inspections.at(i).value("date_updated")) << "</td>";
+        if (show_owner)
+            out << "<td>" << escapeString(inspections.at(i).value("updated_by")) << "</td>";
         out << "</tr>";
     }
     out << "</table>";
@@ -1472,6 +1565,9 @@ QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QVariantM
 
 QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const QString & customer_id)
 {
+    bool show_date_updated = actionShow_date_updated->isChecked();
+    bool show_owner = actionShow_owner->isChecked();
+
     QString html; MTTextStream out(&html);
     MTDictionary parent;
     if (!customer_id.isEmpty()) {
@@ -1483,14 +1579,21 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
     if (!navigation->isFilterEmpty()) {
         repairs_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
-    MTSqlQuery repairs = repairs_record.select();
+    QString order_by = m_settings.orderByForView(LinkParser::AllRepairs);
+    if (order_by.isEmpty())
+        order_by = "date";
+    MTSqlQuery repairs = repairs_record.select("*", appendDefaultOrderToColumn(order_by));
     repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"12\" style=\"font-size: medium;\">" << tr("List of Repairs") << "</th></tr><tr>";
+    out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">" << tr("List of Repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
-        out << "<th>" << Repair::attributes().value(n) << "</th>";
+        out << "<th><a href=\"allrepairs:/order_by:" << Repair::attributes().key(n) << "\">" << Repair::attributes().value(n) << "</a></th>";
     }
+    if (show_date_updated)
+        out << "<th><a href=\"allrepairs:/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
+    if (show_owner)
+        out << "<th><a href=\"allrepairs:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
     MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
     QString id, attr_value;
@@ -1513,6 +1616,10 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
             }
             out << escapeString(attr_value) << "</td>";
         }
+        if (show_date_updated)
+            out << "<td>" << escapeString(repairs.value("date_updated")) << "</th>";
+        if (show_owner)
+            out << "<td>" << escapeString(repairs.value("updated_by")) << "</th>";
         out << "</tr>";
     }
     out << "</table>";
@@ -1919,7 +2026,7 @@ QString MainWindow::viewLeakagesByApplication()
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
         out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tables.at(t) << "</th>";
-        out << "<th colspan=\"5\">" << tr("Fields") << "</th></tr>";
+        out << "<th colspan=\"6\">" << tr("Fields") << "</th></tr>";
         out << "<tr><th>" << tr("All") << "</th>";
         for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
             out << "<th>" << attributeValues().value(n) << "</th>";
@@ -2299,7 +2406,7 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
         CATEGORY_POSITION = 10,
         DISCOUNT = 11,
         ITEM_TYPE_ID = 12
-               };
+    };
 
     MTSqlQuery categories_query;
     categories_query.prepare("SELECT assembly_record_items.value, assembly_record_items.name,"
@@ -2651,6 +2758,9 @@ HTMLTable * MainWindow::customerContactPersons(const QString & customer_id, HTML
 
 QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QString & circuit_id, int year)
 {
+    bool show_date_updated = actionShow_date_updated->isChecked();
+    bool show_owner = actionShow_owner->isChecked();
+
     HTMLDiv div;
     HTMLTable * table;
     HTMLTableRow * _tr;
@@ -2674,7 +2784,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
 
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     _tr = table->addRow();
-    _td = _tr->addHeaderCell("colspan=\"7\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    _td = _tr->addHeaderCell("colspan=\"9\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << tr("Assembly Records");
     _tr = table->addRow();
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:date")) << tr("Date");
@@ -2684,6 +2794,10 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (!circuit_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:circuit")) << tr("Circuit");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspector")) << tr("Inspector");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:operator")) << tr("Operator");
+    if (show_date_updated)
+        *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.date_updated")) << tr("Date Updated");
+    if (show_owner)
+        *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.updated_by")) << tr("Author");
 
     MTDictionary parents;
     if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
@@ -2696,11 +2810,16 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
     if (!navigation->isFilterEmpty()) {
         record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
     }
+    QString order_by = m_settings.orderByForLastLink();
+    if (order_by.isEmpty())
+        order_by = "date";
     ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit,"
                                              " inspections.date, inspections.arno,"
                                              " assembly_record_types.name AS record_name,"
                                              " inspections.inspector, customers.company,"
-                                             " persons.name AS operator", m_settings.orderByForLastLink());
+                                             " persons.name AS operator,"
+                                             " inspections.date_updated, inspections.updated_by",
+                                             appendDefaultOrderToColumn(order_by));
 
     for (int i = 0; i < items.count(); ++i) {
         if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
@@ -2708,13 +2827,17 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
                             .arg(items.at(i).value("customer").toString())
                             .arg(items.at(i).value("circuit").toString())
                             .arg(items.at(i).value("date").toString()));
-        *(_tr->addCell()) << items.at(i).value("date").toString();
-        *(_tr->addCell()) << items.at(i).value("arno").toString();
-        *(_tr->addCell()) << items.at(i).value("record_name").toString();
-        if (!customer_given) *(_tr->addCell()) << items.at(i).value("company").toString();
-        if (!circuit_given) *(_tr->addCell()) << items.at(i).value("circuit").toString().rightJustified(4, '0');
-        *(_tr->addCell()) << inspectors.value(items.at(i).value("inspector").toString());
-        *(_tr->addCell()) << items.at(i).value("operator").toString();
+        *(_tr->addCell()) << escapeString(items.at(i).value("date"));
+        *(_tr->addCell()) << escapeString(items.at(i).value("arno"));
+        *(_tr->addCell()) << escapeString(items.at(i).value("record_name"));
+        if (!customer_given) *(_tr->addCell()) << escapeString(items.at(i).value("company"));
+        if (!circuit_given) *(_tr->addCell()) << escapeString(items.at(i).value("circuit").toString().rightJustified(4, '0'));
+        *(_tr->addCell()) << escapeString(inspectors.value(items.at(i).value("inspector").toString()));
+        *(_tr->addCell()) << escapeString(items.at(i).value("operator"));
+        if (show_date_updated)
+            *(_tr->addCell()) << escapeString(items.at(i).value("date_updated"));
+        if (show_owner)
+            *(_tr->addCell()) << escapeString(items.at(i).value("updated_by"));
     }
     div << table;
 

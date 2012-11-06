@@ -30,6 +30,7 @@ class QColor;
 class QTextStream;
 
 namespace Global {
+    QString escapeString(const QVariant &, bool = false, bool = false);
     QString escapeString(QString, bool = false, bool = false);
     QString elideRight(const QString &, int);
     QString upArrow();

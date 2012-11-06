@@ -344,6 +344,13 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuColumns">
+     <property name="title">
+      <string>Columns</string>
+     </property>
+     <addaction name="actionShow_date_updated"/>
+     <addaction name="actionShow_owner"/>
+    </widget>
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
     <addaction name="separator"/>
@@ -357,8 +364,10 @@
     <addaction name="actionShow_warnings"/>
     <addaction name="actionShow_styles"/>
     <addaction name="separator"/>
+    <addaction name="menuColumns"/>
     <addaction name="actionPrinter_friendly_version"/>
     <addaction name="actionCompare_values"/>
+    <addaction name="actionMost_recent_first"/>
    </widget>
    <widget class="QMenu" name="menuInspector">
     <property name="title">
@@ -2030,6 +2039,33 @@
    </property>
    <property name="statusTip">
     <string>Duplicate the selected circuit and decommission the original</string>
+   </property>
+  </action>
+  <action name="actionShow_date_updated">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Date Updated</string>
+   </property>
+  </action>
+  <action name="actionShow_owner">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Author</string>
+   </property>
+  </action>
+  <action name="actionMost_recent_first">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Most Recent Records First</string>
+   </property>
+   <property name="statusTip">
+    <string>Show most recent inspections, repairs and records of refrigerant management first</string>
    </property>
   </action>
  </widget>

@@ -71,7 +71,7 @@ QDialog(parent, Qt::Dialog) {
         tree->setItemWidget(item, 1, everyone);
 
         if (isOwnerPermissionApplicable(permissions.key(i))) {
-            QRadioButton * owner = new QRadioButton(tr("Creator"), this);
+            QRadioButton * owner = new QRadioButton(tr("Author"), this);
             group->addButton(owner, 2);
             tree->setItemWidget(item, 2, owner);
 

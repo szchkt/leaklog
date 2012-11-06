@@ -35,6 +35,11 @@
 
 #include <cmath>
 
+QString Global::escapeString(const QVariant & variant, bool escape_backslash, bool insert_linebreaks)
+{
+    return escapeString(variant.toString(), escape_backslash, insert_linebreaks);
+}
+
 QString Global::escapeString(QString s, bool escape_backslash, bool insert_linebreaks)
 {
     if (escape_backslash) s.replace("\\", "\\\\");

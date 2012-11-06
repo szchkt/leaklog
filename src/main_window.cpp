@@ -214,6 +214,9 @@ MainWindow::MainWindow():
     QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_owner, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
@@ -1468,6 +1471,9 @@ void MainWindow::loadSettings()
     showIconsOnly(actionShow_icons_only->isChecked());
     check_for_updates = settings.value("check_for_updates", true).toBool();
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
+    actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
+    actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
+    actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
 #ifndef QT_DEBUG
     if (check_for_updates) checkForUpdates();
@@ -1490,6 +1496,9 @@ void MainWindow::saveSettings()
     settings.setValue("window_state", saveState(0));
     settings.setValue("toolbar_icons_only", actionShow_icons_only->isChecked());
     settings.setValue("compare_values", actionCompare_values->isChecked());
+    settings.setValue("columns/date_updated", actionShow_date_updated->isChecked());
+    settings.setValue("columns/owner", actionShow_owner->isChecked());
+    settings.setValue("most_recent_first", actionMost_recent_first->isChecked());
     m_settings.save(settings);
 }
 

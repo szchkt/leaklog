@@ -99,6 +99,7 @@ public:
     void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
     QString orderByForLastLink() const;
+    QString orderByForView(quint64 view) const;
 
     Link * lastLink() const { return m_last_link; }
     void setLastLink(Link *);
