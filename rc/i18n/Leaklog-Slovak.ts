@@ -4727,13 +4727,13 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Rok oznamovania: %1</translation>
     </message>
     <message>
-        <source>http://szchkt.org/cert/</source>
-        <extracomment>URL to the data report system of the notified body</extracomment>
-        <translation>http://szchkt.org/cert/</translation>
-    </message>
-    <message>
         <source>A newer version of Leaklog is required.</source>
         <translation>Vyžaduje sa novšia verzia programu Leaklog.</translation>
+    </message>
+    <message>
+        <source>http://szchkt.org/report_data/</source>
+        <extracomment>URL to the data report system of the notified body</extracomment>
+        <translation>http://szchkt.org/report_data/</translation>
     </message>
 </context>
 <context>

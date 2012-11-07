@@ -41,7 +41,7 @@ QObject(parent), navigation(parent) {
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
     //: URL to the data report system of the notified body
-    wv_main->load(QUrl(tr("http://szchkt.org/cert/")));
+    wv_main->load(QUrl(tr("http://szchkt.org/report_data/")));
 }
 
 int ReportDataController::currentReportYear()
