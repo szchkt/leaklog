@@ -27,6 +27,7 @@
 #include <QWebView>
 #include <QWebFrame>
 #include <QDate>
+#include <QMessageBox>
 
 ReportDataController::ReportDataController(QWebView * wv, Navigation * parent):
 QObject(parent), navigation(parent) {
@@ -62,11 +63,12 @@ void ReportDataController::updateProgressBar(int progress)
 
 void ReportDataController::enableAutofill()
 {
-    QVariant version_required = wv_main->page()->mainFrame()->evaluateJavaScript("minimumLeaklogVersionRequired();");
+    QVariant version_required = wv_main->page()->mainFrame()->evaluateJavaScript(QString("minimumLeaklogVersionRequired(%1);").arg(F_LEAKLOG_VERSION));
     bool valid = !version_required.toString().isEmpty();
     bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
     navigation->autofillButton()->setEnabled(valid && sufficient);
-    navigation->autofillButton()->setToolTip((valid && !sufficient) ? tr("A newer version of Leaklog is required.") : QString());
+    if (valid && !sufficient)
+        QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
     if (valid) navigation->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
     navigation->reportDataProgressBar()->setVisible(false);
 }
