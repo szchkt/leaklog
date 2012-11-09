@@ -208,7 +208,10 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
             // Create a compressor for each circuit
             ListOfVariantMaps circuits = Circuit().listAll();
             QVariantMap map;
+            qint64 compressor_id = Compressor().max("id");
             for (int i = 0; i < circuits.count(); ++i) {
+                compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+                map.insert("id", compressor_id);
                 map.insert("customer_id", circuits.at(i).value("parent"));
                 map.insert("circuit_id", circuits.at(i).value("id"));
                 map.insert("name", tr("Compressor"));
