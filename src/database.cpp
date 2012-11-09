@@ -224,7 +224,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
             // Copy values of compressor variables from inspections table to inspections_compressors
             ListOfVariantMaps inspections = Inspection().listAll("*, (SELECT MIN(id) FROM compressors WHERE customer_id = inspections.customer AND circuit_id = inspections.circuit) AS compressor_id");
 
-            VariableEvaluation::EvaluationContext variable_evaluation("", "", Variable::Compressor);
+            VariableEvaluation::EvaluationContext variable_evaluation(Variable::Compressor);
             QList<VariableEvaluation::Variable *> vars_list = variable_evaluation.listVariables();
 
             for (int i = 0; i < inspections.count(); ++i) {

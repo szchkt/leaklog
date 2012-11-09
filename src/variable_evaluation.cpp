@@ -25,11 +25,21 @@
 
 using namespace Global;
 
+VariableEvaluation::EvaluationContext::EvaluationContext(int vars_scope):
+    vars_scope(vars_scope)
+{
+    init();
+}
+
 VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id, int vars_scope):
     customer_id(customer_id),
     circuit_id(circuit_id),
     vars_scope(vars_scope)
 {
+    circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
+    persons = Person("", customer_id).mapAll("id", "name");
+    inspectors = Inspector("").mapAll("id", "person");
+
     init();
 }
 
@@ -44,10 +54,6 @@ VariableEvaluation::EvaluationContext::~EvaluationContext()
 
 void VariableEvaluation::EvaluationContext::init()
 {
-    circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
-    persons = Person("", customer_id).mapAll("id", "name");
-    inspectors = Inspector("").mapAll("id", "person");
-
     Variables vars(QSqlDatabase(), vars_scope);
     VariableEvaluation::Variable * parent_var, * var;
 

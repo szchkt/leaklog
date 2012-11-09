@@ -32,6 +32,7 @@ namespace VariableEvaluation {
     class EvaluationContext
     {
     public:
+        EvaluationContext(int = 0);
         EvaluationContext(const QString &, const QString &, int = 0);
         ~EvaluationContext();
 
