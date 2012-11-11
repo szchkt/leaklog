@@ -337,11 +337,13 @@ void MainWindow::initTables(bool transaction)
     if (transaction) { db.transaction(); }
 { // (SCOPE)
     double v = DBInfoValueForKey("db_version").toDouble();
-    if (v > 0 && v < 0.9082) {
+    if (v > 0 && v < 0.909) {
         Table("", "Leakages").remove();
         Table("", "Pressures and temperatures").remove();
         Table("", "Electrical parameters").remove();
         Table("", "Compressors").remove();
+    }
+    if (v > 0 && v < 0.9082) {
         Table(tr("Leakages")).remove();
         Table(tr("Pressures and temperatures")).remove();
         Table(tr("Compressors")).remove();
