@@ -206,46 +206,21 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
             }
 
             // Create a compressor for each circuit
-            ListOfVariantMaps circuits = Circuit().listAll();
             QVariantMap map;
+            map.insert("name", tr("Compressor"));
+            map.insert("manufacturer", QString());
+            map.insert("type", QString());
+            map.insert("sn", QString());
+
             qint64 compressor_id = Compressor().max("id");
+
+            ListOfVariantMaps circuits = Circuit().listAll("parent, id");
             for (int i = 0; i < circuits.count(); ++i) {
                 compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
                 map.insert("id", compressor_id);
                 map.insert("customer_id", circuits.at(i).value("parent"));
                 map.insert("circuit_id", circuits.at(i).value("id"));
-                map.insert("name", tr("Compressor"));
-                map.insert("manufacturer", QString());
-                map.insert("type", QString());
-                map.insert("sn", QString());
                 Compressor().update(map);
-            }
-
-            // Copy values of compressor variables from inspections table to inspections_compressors
-            ListOfVariantMaps inspections = Inspection().listAll("*, (SELECT MIN(id) FROM compressors WHERE customer_id = inspections.customer AND circuit_id = inspections.circuit) AS compressor_id");
-
-            VariableEvaluation::EvaluationContext variable_evaluation(Variable::Compressor);
-            QList<VariableEvaluation::Variable *> vars_list = variable_evaluation.listVariables();
-
-            for (int i = 0; i < inspections.count(); ++i) {
-                if (inspections.at(i).value("compressor_id").isNull())
-                    continue;
-
-                QVariantMap values;
-                values.insert("customer_id", inspections.at(i).value("customer").toString());
-                values.insert("circuit_id", inspections.at(i).value("circuit").toString());
-                values.insert("date", inspections.at(i).value("date").toString());
-                values.insert("compressor_id", inspections.at(i).value("compressor_id").toString());
-
-                for (int n = 0; n < vars_list.count(); ++n) {
-                    if (vars_list.at(n)->countSubvariables())
-                        continue;
-
-                    if (inspections.at(i).contains(vars_list.at(n)->id()) && !inspections.at(i).value(vars_list.at(n)->id()).isNull())
-                        values.insert(vars_list.at(n)->id(), inspections.at(i).value(vars_list.at(n)->id()).toString());
-                }
-
-                InspectionsCompressor().update(values, true);
             }
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
@@ -284,6 +259,29 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
             query.exec("ALTER TABLE persons ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE compressors ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE inspections_compressors ALTER COLUMN compressor_id TYPE BIGINT");
+        }
+    }
+    if (v > 0 && v < 0.909) {
+        // Create a compressor for each circuit that does not yet have one
+        QVariantMap map;
+        map.insert("name", tr("Compressor"));
+        map.insert("manufacturer", QString());
+        map.insert("type", QString());
+        map.insert("sn", QString());
+
+        qint64 compressor_id = Compressor().max("id");
+
+        Circuit circuits_record;
+        circuits_record.addJoin("LEFT JOIN compressors ON circuits.parent = compressors.customer_id AND circuits.id = compressors.circuit_id");
+        circuits_record.setCustomWhere("compressors.id IS NULL");
+        MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id", QString());
+        circuits.exec();
+        while (circuits.next()) {
+            compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+            map.insert("id", compressor_id);
+            map.insert("customer_id", circuits.value("parent"));
+            map.insert("circuit_id", circuits.value("id"));
+            Compressor().update(map);
         }
     }
     if (v < F_DB_VERSION) {
