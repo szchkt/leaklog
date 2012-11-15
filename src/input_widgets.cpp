@@ -20,6 +20,7 @@
 #include "input_widgets.h"
 #include "highlighter.h"
 #include "global.h"
+#include "main_window.h"
 
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -80,6 +81,29 @@ MDAbstractInputWidget::MDAbstractInputWidget(const QString & id, QWidget * widge
     skip_save = false;
 }
 
+MainWindow * MDAbstractInputWidget::parentWindow() const
+{
+    QWidget * parent_widget = iw_widget->parentWidget();
+    MainWindow * main_window;
+    while (parent_widget) {
+        main_window = qobject_cast<MainWindow *>(parent_widget);
+        if (main_window)
+            return main_window;
+        parent_widget = parent_widget->parentWidget();
+    }
+    return NULL;
+}
+
+QPalette MDAbstractInputWidget::paletteForColour(const QString & colour)
+{
+    QPalette palette;
+    palette.setColor(QPalette::Active, QPalette::Base, QColor(colour));
+    palette.setColor(QPalette::Active, QPalette::Text, textColourForBaseColour(colour));
+    palette.setColor(QPalette::Inactive, QPalette::Base, QColor(colour));
+    palette.setColor(QPalette::Inactive, QPalette::Text, textColourForBaseColour(colour));
+    return palette;
+}
+
 MDNullableInputWidget::MDNullableInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget):
 MDAbstractInputWidget(id, widget)
 {
@@ -95,16 +119,6 @@ MDAbstractInputWidget(id, widget)
     MTLabel * lbl = new MTLabel(labeltext, parent);
     lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     iw_label = lbl;
-}
-
-QPalette MDAbstractInputWidget::paletteForColour(const QString & colour)
-{
-    QPalette palette;
-    palette.setColor(QPalette::Active, QPalette::Base, QColor(colour));
-    palette.setColor(QPalette::Active, QPalette::Text, textColourForBaseColour(colour));
-    palette.setColor(QPalette::Inactive, QPalette::Base, QColor(colour));
-    palette.setColor(QPalette::Inactive, QPalette::Text, textColourForBaseColour(colour));
-    return palette;
 }
 
 MDLineEdit::MDLineEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, int maxintvalue, const QString & colour, bool enabled):
@@ -332,18 +346,22 @@ QDateTimeEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-    setDisplayFormat("yyyy.MM.dd-hh:mm");
-    setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, "yyyy.MM.dd-hh:mm"));
+    MainWindow * main_window = parentWindow();
+    if (main_window)
+        setDisplayFormat(main_window->settings().dateTimeFormatString());
+    else
+        setDisplayFormat(DATE_TIME_FORMAT);
+    setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, DATE_TIME_FORMAT));
 }
 
 QVariant MDDateTimeEdit::variantValue() const
 {
-    return dateTime().toString("yyyy.MM.dd-hh:mm");
+    return dateTime().toString(DATE_TIME_FORMAT);
 }
 
 void MDDateTimeEdit::setVariantValue(const QVariant & value)
 {
-    setDateTime(QDateTime::fromString(value.toString(), "yyyy.MM.dd-hh:mm"));
+    setDateTime(QDateTime::fromString(value.toString(), DATE_TIME_FORMAT));
 }
 
 MDDateEdit::MDDateEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
@@ -351,18 +369,22 @@ QDateEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-    setDisplayFormat("yyyy.MM.dd");
-    setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, "yyyy.MM.dd"));
+    MainWindow * main_window = parentWindow();
+    if (main_window)
+        setDisplayFormat(main_window->settings().dateTimeFormatString());
+    else
+        setDisplayFormat(DATE_FORMAT);
+    setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, DATE_FORMAT));
 }
 
 QVariant MDDateEdit::variantValue() const
 {
-    return date().toString("yyyy.MM.dd");
+    return date().toString(DATE_FORMAT);
 }
 
 void MDDateEdit::setVariantValue(const QVariant & value)
 {
-    setDate(QDate::fromString(value.toString(), "yyyy.MM.dd"));
+    setDate(QDate::fromString(value.toString(), DATE_FORMAT));
 }
 
 MDAddressEdit::MDAddressEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):

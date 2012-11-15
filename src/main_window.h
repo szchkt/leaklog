@@ -51,6 +51,8 @@ public:
 
     void openFile(const QString &);
 
+    inline const MainWindowSettings & settings() const { return m_settings; }
+
 private slots:
     // UI
     void showRecentDatabaseContextMenu(const QPoint &);
@@ -68,6 +70,10 @@ private slots:
     void printLabel(bool = false);
     void reportData();
     void reportDataFinished();
+    void dateFormatChanged(MainWindowSettings::DateFormat);
+    void dateFormatChanged(QAction *);
+    void timeFormatChanged(MainWindowSettings::TimeFormat);
+    void timeFormatChanged(QAction *);
     void enableTools();
     void toggleLocked();
     void showOperationNotPermittedMessage();
@@ -274,6 +280,10 @@ private:
     QToolButton * tbtn_export;
     QString last_search_keyword;
     QComboBox * cb_lang;
+    QMap<QAction *, MainWindowSettings::DateFormat> dict_action_date_format;
+    QActionGroup * actgrp_date_format;
+    QMap<QAction *, MainWindowSettings::TimeFormat> dict_action_time_format;
+    QActionGroup * actgrp_time_format;
     QMap<QString, QString> leaklog_i18n;
     bool check_for_updates;
     QHttp * http; QBuffer * http_buffer;

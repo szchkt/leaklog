@@ -3672,6 +3672,85 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Circuit: %1 %2</source>
         <translation>Okruh: %1 %2</translation>
     </message>
+    <message>
+        <source>Date and Time Format</source>
+        <translation>Formát dátumu a času</translation>
+    </message>
+    <message>
+        <source>01/02/2003</source>
+        <translation>01.02.2003</translation>
+    </message>
+    <message>
+        <source>1/2/2003</source>
+        <translation>1.2.2003</translation>
+    </message>
+    <message>
+        <source>01/02/03</source>
+        <translation>01.02.03</translation>
+    </message>
+    <message>
+        <source>1/2/03</source>
+        <translation>1.2.03</translation>
+    </message>
+    <message>
+        <source>1 Feb 2003</source>
+        <translation>1. feb. 2003</translation>
+    </message>
+    <message>
+        <source>1 Feb 03</source>
+        <translation>1. feb. 03</translation>
+    </message>
+    <message>
+        <source>04:05</source>
+        <translation>04:05</translation>
+    </message>
+    <message>
+        <source>4:05</source>
+        <translation>4:05</translation>
+    </message>
+    <message>
+        <source>2003/02/01</source>
+        <translation>2003.02.01</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowSettings</name>
+    <message>
+        <source>yyyy/MM/dd</source>
+        <translation>yyyy.MM.dd</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>dd.MM.yyyy</translation>
+    </message>
+    <message>
+        <source>d/M/yyyy</source>
+        <translation>d.M.yyyy</translation>
+    </message>
+    <message>
+        <source>dd/MM/yy</source>
+        <translation>dd.MM.yy</translation>
+    </message>
+    <message>
+        <source>d/M/yy</source>
+        <translation>d.M.yy</translation>
+    </message>
+    <message>
+        <source>d MMM yyyy</source>
+        <translation>d. MMM. yyyy</translation>
+    </message>
+    <message>
+        <source>d MMM yy</source>
+        <translation>d. MMM. yy</translation>
+    </message>
+    <message>
+        <source>hh:mm</source>
+        <translation>hh:mm</translation>
+    </message>
+    <message>
+        <source>h:mm</source>
+        <translation>h:mm</translation>
+    </message>
 </context>
 <context>
     <name>Navigation</name>

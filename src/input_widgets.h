@@ -38,6 +38,8 @@
 class QRadioButton;
 class QGridLayout;
 
+class MainWindow;
+
 class WheelEventEater : public QObject
 {
     Q_OBJECT
@@ -151,6 +153,8 @@ public:
     }
 
 protected:
+    MainWindow * parentWindow() const;
+
     static QPalette paletteForColour(const QString &);
 
     MTLabeledWidget * iw_label;

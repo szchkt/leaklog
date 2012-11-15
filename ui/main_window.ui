@@ -188,8 +188,8 @@
          <widget class="Navigation" name="navigation" native="true"/>
         </item>
         <item>
-         <widget class="QWebView" name="wv_main">
-          <property name="url">
+         <widget class="QWebView" name="wv_main" native="true">
+          <property name="url" stdset="0">
            <url>
             <string>about:blank</string>
            </url>
@@ -351,6 +351,21 @@
      <addaction name="actionShow_date_updated"/>
      <addaction name="actionShow_owner"/>
     </widget>
+    <widget class="QMenu" name="menuDateTime_Format">
+     <property name="title">
+      <string>Date and Time Format</string>
+     </property>
+     <addaction name="actionDate_yyyyMMdd"/>
+     <addaction name="actionDate_ddMMyyyy"/>
+     <addaction name="actionDate_dMyyyy"/>
+     <addaction name="actionDate_ddMMyy"/>
+     <addaction name="actionDate_dMyy"/>
+     <addaction name="actionDate_dMMMyyyy"/>
+     <addaction name="actionDate_dMMMyy"/>
+     <addaction name="separator"/>
+     <addaction name="actionTime_hhmm"/>
+     <addaction name="actionTime_hmm"/>
+    </widget>
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
     <addaction name="separator"/>
@@ -365,6 +380,7 @@
     <addaction name="actionShow_styles"/>
     <addaction name="separator"/>
     <addaction name="menuColumns"/>
+    <addaction name="menuDateTime_Format"/>
     <addaction name="actionPrinter_friendly_version"/>
     <addaction name="actionCompare_values"/>
     <addaction name="actionMost_recent_first"/>
@@ -2066,6 +2082,78 @@
    </property>
    <property name="statusTip">
     <string>Show most recent inspections, repairs and records of refrigerant management first</string>
+   </property>
+  </action>
+  <action name="actionDate_ddMMyyyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>01/02/2003</string>
+   </property>
+  </action>
+  <action name="actionDate_dMyyyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1/2/2003</string>
+   </property>
+  </action>
+  <action name="actionDate_ddMMyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>01/02/03</string>
+   </property>
+  </action>
+  <action name="actionDate_dMyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1/2/03</string>
+   </property>
+  </action>
+  <action name="actionDate_dMMMyyyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1 Feb 2003</string>
+   </property>
+  </action>
+  <action name="actionDate_dMMMyy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1 Feb 03</string>
+   </property>
+  </action>
+  <action name="actionTime_hhmm">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>04:05</string>
+   </property>
+  </action>
+  <action name="actionTime_hmm">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>4:05</string>
+   </property>
+  </action>
+  <action name="actionDate_yyyyMMdd">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2003/02/01</string>
    </property>
   </action>
  </widget>

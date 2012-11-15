@@ -389,11 +389,11 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
 
         case ImportDialogueTableColumn::Date:
             string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
-            date_value = QDate::fromString(string_value, "yyyy.MM.dd");
+            date_value = QDate::fromString(string_value, DATE_FORMAT);
             if (!date_value.isValid())
                 date_value = QDate::fromString(string_value, "d.M.yyyy");
             if (date_value.isValid())
-                set.insert(columns.at(i)->id(), date_value.toString("yyyy.MM.dd"));
+                set.insert(columns.at(i)->id(), date_value.toString(DATE_FORMAT));
             break;
 
         case ImportDialogueTableColumn::Select:

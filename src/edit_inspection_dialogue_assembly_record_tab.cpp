@@ -97,7 +97,7 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
     QString name_format = type.value("name_format").toString();
 
     if (!name_format.isEmpty()) {
-        QDate current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), "yyyy.MM.dd-hh:mm").date();
+        QDate current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), DATE_TIME_FORMAT).date();
         name_format.replace("year", QString("%1").arg(current_date.year(), 4, 10, QChar('0')));
         name_format.replace("month", QString("%1").arg(current_date.month(), 2, 10, QChar('0')));
         name_format.replace("day", QString("%1").arg(current_date.day(), 2, 10, QChar('0')));

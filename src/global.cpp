@@ -285,7 +285,7 @@ int Global::isDatabaseLocked()
 QString Global::lockDate()
 {
     return DBInfoValueForKey("locked") == "auto" ?
-            QDate::currentDate().addDays(-DBInfoValueForKey("autolock_days").toInt()).toString("yyyy.MM.dd") :
+            QDate::currentDate().addDays(-DBInfoValueForKey("autolock_days").toInt()).toString(DATE_FORMAT) :
             DBInfoValueForKey("lock_date");
 }
 

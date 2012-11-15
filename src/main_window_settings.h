@@ -21,6 +21,7 @@
 #define MAIN_WINDOW_SETTINGS_H
 
 #include <QString>
+#include <QVariant>
 #include <QList>
 #include <QObject>
 
@@ -33,6 +34,25 @@ class MainWindowSettings : public QObject
     Q_OBJECT
 
 public:
+    enum DateFormat {
+        yyyyMMdd,
+        ddMMyyyy,
+        dMyyyy,
+        ddMMyy,
+        dMyy,
+        dMMMyyyy,
+        dMMMyy
+    };
+
+    static QString dateFormatToString(DateFormat date_format);
+
+    enum TimeFormat {
+        hhmm,
+        hmm
+    };
+
+    static QString timeFormatToString(TimeFormat time_format);
+
     MainWindowSettings();
 
     void save(QSettings & settings) const;
@@ -98,6 +118,19 @@ public:
     void setCircuitDetailsVisible(bool circuit_details_visible) { m_circuit_details_visible = circuit_details_visible; }
     void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
+    inline DateFormat dateFormat() const { return m_date_format; }
+    inline QString dateFormatString() const { return m_date_format_string; }
+    void setDateFormat(DateFormat date_format);
+    inline TimeFormat timeFormat() const { return m_time_format; }
+    inline QString timeFormatString() const { return m_time_format_string; }
+    void setTimeFormat(TimeFormat time_format);
+    inline QString dateTimeFormatString(const QString & join_format = "%1 %2") const { return join_format.arg(m_date_format_string).arg(m_time_format_string); }
+
+    inline QString formatDate(const QVariant & date) const { return formatDate(date.toString()); }
+    QString formatDate(const QString & date) const;
+    inline QString formatDateTime(const QVariant & datetime, const QString & join_format = "%1 %2") const { return formatDateTime(datetime.toString(), join_format); }
+    QString formatDateTime(const QString & datetime, const QString & join_format = "%1 %2") const;
+
     QString orderByForView(quint64 view) const;
 
     Link * lastLink() const { return m_last_link; }
@@ -121,6 +154,9 @@ public:
 signals:
     void enableBackButton(bool);
     void enableForwardButton(bool);
+
+    void dateFormatChanged(MainWindowSettings::DateFormat);
+    void timeFormatChanged(MainWindowSettings::TimeFormat);
 
 private:
     void updateLastLink();
@@ -151,6 +187,10 @@ private:
     QList<Link *> m_previous_links;
     QList<Link *> m_next_links;
 
+    DateFormat m_date_format;
+    QString m_date_format_string;
+    TimeFormat m_time_format;
+    QString m_time_format_string;
     QMap<quint64, QString> m_view_orders;
 };
 

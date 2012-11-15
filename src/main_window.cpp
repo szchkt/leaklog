@@ -122,6 +122,29 @@ MainWindow::MainWindow():
     dw_warnings->setVisible(false);
     dw_styles->setVisible(false);
 
+    // Menubar
+    actgrp_date_format = new QActionGroup(this);
+    actgrp_date_format->addAction(actionDate_yyyyMMdd);
+    dict_action_date_format.insert(actionDate_yyyyMMdd, MainWindowSettings::yyyyMMdd);
+    actgrp_date_format->addAction(actionDate_ddMMyyyy);
+    dict_action_date_format.insert(actionDate_ddMMyyyy, MainWindowSettings::ddMMyyyy);
+    actgrp_date_format->addAction(actionDate_dMyyyy);
+    dict_action_date_format.insert(actionDate_dMyyyy, MainWindowSettings::dMyyyy);
+    actgrp_date_format->addAction(actionDate_ddMMyy);
+    dict_action_date_format.insert(actionDate_ddMMyy, MainWindowSettings::ddMMyy);
+    actgrp_date_format->addAction(actionDate_dMyy);
+    dict_action_date_format.insert(actionDate_dMyy, MainWindowSettings::dMyy);
+    actgrp_date_format->addAction(actionDate_dMMMyyyy);
+    dict_action_date_format.insert(actionDate_dMMMyyyy, MainWindowSettings::dMMMyyyy);
+    actgrp_date_format->addAction(actionDate_dMMMyy);
+    dict_action_date_format.insert(actionDate_dMMMyy, MainWindowSettings::dMMMyy);
+
+    actgrp_time_format = new QActionGroup(this);
+    actgrp_time_format->addAction(actionTime_hhmm);
+    dict_action_time_format.insert(actionTime_hhmm, MainWindowSettings::hhmm);
+    actgrp_time_format->addAction(actionTime_hmm);
+    dict_action_time_format.insert(actionTime_hmm, MainWindowSettings::hmm);
+
     // Toolbar
     tbtn_open = new QToolButton(this);
     tbtn_open->setDefaultAction(actionOpen);
@@ -212,6 +235,10 @@ MainWindow::MainWindow():
     QObject::connect(actionBasic_logbook, SIGNAL(triggered()), navigation, SLOT(viewBasicLogbook()));
     QObject::connect(actionDetailed_logbook, SIGNAL(triggered()), navigation, SLOT(viewDetailedLogbook()));
     QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
+    QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
+    QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
+    QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
+    QObject::connect(actgrp_time_format, SIGNAL(triggered(QAction *)), this, SLOT(timeFormatChanged(QAction *)));
     QObject::connect(actionPrinter_friendly_version, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
@@ -878,8 +905,8 @@ void MainWindow::printLabel(bool detailed)
                                                                           attributes.value("inspection_interval").toInt());
             if (inspection_interval)
                 attributes.insert("next_inspection",
-                                  QDate::fromString(inspection.value("date").toString().split("-").first(), "yyyy.MM.dd")
-                                  .addDays(inspection_interval).toString("yyyy.MM.dd"));
+                                  QDate::fromString(inspection.value("date").toString().split("-").first(), DATE_FORMAT)
+                                  .addDays(inspection_interval).toString(DATE_FORMAT));
 
             selected_inspector = inspection.value("inspector").toString();
 
@@ -1234,6 +1261,32 @@ void MainWindow::updateLockButton()
     }
 }
 
+void MainWindow::dateFormatChanged(MainWindowSettings::DateFormat date_format)
+{
+    QMapIterator<QAction *, MainWindowSettings::DateFormat> df(dict_action_date_format);
+    if (df.findNext(date_format))
+        df.key()->setChecked(true);
+}
+
+void MainWindow::dateFormatChanged(QAction * action)
+{
+    m_settings.setDateFormat(dict_action_date_format.value(action));
+    refreshView();
+}
+
+void MainWindow::timeFormatChanged(MainWindowSettings::TimeFormat time_format)
+{
+    QMapIterator<QAction *, MainWindowSettings::TimeFormat> tf(dict_action_time_format);
+    if (tf.findNext(time_format) && !tf.key()->isChecked())
+        tf.key()->setChecked(true);
+}
+
+void MainWindow::timeFormatChanged(QAction * action)
+{
+    m_settings.setTimeFormat(dict_action_time_format.value(action));
+    refreshView();
+}
+
 void MainWindow::enableTools()
 {
     bool customer_selected = m_settings.isCustomerSelected();
@@ -1341,8 +1394,8 @@ void MainWindow::toggleLocked()
         gl->addWidget(static_lock, r, 0);
 
         QDateEdit * date = new QDateEdit(&d);
-        date->setDisplayFormat("yyyy.MM.dd");
-        date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, "yyyy.MM.dd"));
+        date->setDisplayFormat(m_settings.dateFormatString());
+        date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, DATE_FORMAT));
         gl->addWidget(date, r, 1);
 
         r++;
@@ -1391,7 +1444,7 @@ void MainWindow::toggleLocked()
 
         if (d.exec() != QDialog::Accepted) return;
 
-        setDBInfoValueForKey("lock_date", date->date().toString("yyyy.MM.dd"));
+        setDBInfoValueForKey("lock_date", date->date().toString(DATE_FORMAT));
         setDBInfoValueForKey("autolock_days", QString::number(days->value()));
         setDBInfoValueForKey("lock_password", sha256(password->text()));
         setDBInfoValueForKey("locked", static_lock->isChecked() ? "true" : "auto");

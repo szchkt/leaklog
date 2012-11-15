@@ -35,6 +35,10 @@
 
 #define JPEG_QUALITY 90
 
+#define DATE_FORMAT "yyyy.MM.dd"
+#define TIME_FORMAT "hh:mm"
+#define DATE_TIME_FORMAT DATE_FORMAT "-" TIME_FORMAT
+
 class QString;
 class QVariant;
 template<class Key, class T>

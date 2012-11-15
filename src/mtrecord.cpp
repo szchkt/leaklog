@@ -220,7 +220,7 @@ bool MTRecord::update(const QVariantMap & values, bool add_columns, bool force_u
     QSqlDatabase db = QSqlDatabase::database();
     QVariantMap set(values);
     if (!set.contains("date_updated"))
-        set.insert("date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+        set.insert("date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     if (!set.contains("updated_by"))
         set.insert("updated_by", currentUser());
     QMapIterator<QString, QVariant> i(set);

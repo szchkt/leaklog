@@ -176,12 +176,12 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
                 query.bindValue(":value", subvariables.value(5));
                 query.bindValue(":compare_nom", subvariables.value(6));
                 query.bindValue(":tolerance", subvariables.value(7));
-                query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+                query.bindValue(":date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
                 query.bindValue(":updated_by", currentUser());
                 query.exec();
                 query.prepare("UPDATE variables SET type = 'group', date_updated = :date_updated, updated_by = :updated_by WHERE id = :id");
                 query.bindValue(":id", subvariables.value(0));
-                query.bindValue(":date_updated", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+                query.bindValue(":date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
                 query.bindValue(":updated_by", currentUser());
                 query.exec();
             }
@@ -402,7 +402,7 @@ void MainWindow::newDatabase()
     initTables();
     db.transaction();
     setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
-    setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString("yyyy.MM.dd-hh:mm"));
+    setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     openDatabase(QString());
 }
 
@@ -853,7 +853,7 @@ void MainWindow::decommissionAllCircuits()
     gl->addWidget(lbl, 1, 0);
 
     QDateEdit * date = new QDateEdit(&d);
-    date->setDisplayFormat("yyyy.MM.dd");
+    date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
     gl->addWidget(date, 1, 1);
 
@@ -870,7 +870,7 @@ void MainWindow::decommissionAllCircuits()
 
     QVariantMap set;
     set.insert("disused", 1);
-    set.insert("decommissioning", date->date().toString("yyyy.MM.dd"));
+    set.insert("decommissioning", date->date().toString(DATE_FORMAT));
 
     Circuit circuits(customer.id(), QString());
     circuits.parents().insert("disused", "0");
@@ -992,7 +992,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     gl->addWidget(lbl, 1, 0);
 
     QDateEdit * date = new QDateEdit(&d);
-    date->setDisplayFormat("yyyy.MM.dd");
+    date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
     gl->addWidget(date, 1, 1);
 
@@ -1049,7 +1049,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QVariantMap set;
     set.insert("disused", 1);
-    set.insert("decommissioning", date->date().toString("yyyy.MM.dd"));
+    set.insert("decommissioning", date->date().toString(DATE_FORMAT));
     circuit.update(set);
 
     int duplicate_id;

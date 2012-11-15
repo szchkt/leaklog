@@ -355,7 +355,7 @@ QString MainWindow::viewServiceCompany(int since)
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
             out << "><a href=\"" << link << "\">";
-            out << i.key();
+            out << m_settings.formatDateTime(i.key());
             out << "</a></td><td";
             if (bf) out << " style=\"font-weight: bold;\"";
             else if (it) out << " style=\"font-style: italic;\"";
@@ -425,12 +425,12 @@ QString MainWindow::viewRefrigerantManagement(int since)
         date = query.stringValue("date");
         if (since && date.left(4).toInt() < since) continue;
         out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/edit'\" style=\"cursor: pointer;\">";
-        out << "<td>" << date << "</td>";
+        out << "<td>" << m_settings.formatDateTime(date) << "</td>";
         for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
             out << "<td>" << MTVariant(query.value(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
         }
         if (show_date_updated)
-            out << "<td>" << escapeString(query.value("date_updated")) << "</th>";
+            out << "<td>" << m_settings.formatDateTime(query.value("date_updated")) << "</th>";
         if (show_owner)
             out << "<td>" << escapeString(query.value("updated_by")) << "</th>";
         out << "</tr>";
@@ -489,11 +489,17 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
         *(row->addHeaderCell()) << tr("Number of circuits");
         *(row->addHeaderCell()) << tr("Total number of inspections");
         if (show_date_updated) {
-            *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            if (customer_id.isEmpty())
+                *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            else
+                *(row->addHeaderCell()) << tr("Date Updated");
             thead_colspan++;
         }
         if (show_owner) {
-            *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:updated_by\">" << tr("Author") << "</a>";
+            if (customer_id.isEmpty())
+                *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:updated_by\">" << tr("Author") << "</a>";
+            else
+                *(row->addHeaderCell()) << tr("Author");
             thead_colspan++;
         }
     }
@@ -537,7 +543,7 @@ HTMLTable * MainWindow::writeCustomersTable(const QString & customer_id, HTMLTab
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
             if (show_date_updated)
-                *(row->addCell()) << escapeString(list.at(i).value("date_updated"));
+                *(row->addCell()) << m_settings.formatDateTime(list.at(i).value("date_updated"));
             if (show_owner)
                 *(row->addCell()) << escapeString(list.at(i).value("updated_by"));
         }
@@ -596,11 +602,17 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
         *(thead->addHeaderCell()) << tr("Last inspection");
         if (show_date_updated) {
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            if (circuit_id.isEmpty())
+                *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+            else
+                *(thead->addHeaderCell()) << tr("Date Updated");
             thead_colspan++;
         }
         if (show_owner) {
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:updated_by\">" << tr("Author") << "</a>";
+            if (circuit_id.isEmpty())
+                *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:updated_by\">" << tr("Author") << "</a>";
+            else
+                *(thead->addHeaderCell()) << tr("Author");
             thead_colspan++;
         }
     }
@@ -658,6 +670,8 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
                     }
                 } else if (Circuit::attributes().key(n) == "hermetic") {
                     attr_value = attr_value.toInt() ? tr("Yes") : tr("No");
+                } else if (Circuit::attributes().key(n) == "commissioning") {
+                    attr_value = m_settings.formatDate(attr_value);
                 }
                 _td = _tr->addCell();
                 *_td << escapeString(attr_value);
@@ -674,9 +688,9 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
                                    .arg(customer_id)
                                    .arg(id)
                                    .arg(circuits.at(i).value("last_inspection").toString())))
-                    << circuits.at(i).value("last_inspection").toString().split('-').first();
+                    << m_settings.formatDate(circuits.at(i).value("last_inspection").toString().split('-').first());
             if (show_date_updated)
-                *(_tr->addCell()) << escapeString(circuits.at(i).value("date_updated"));
+                *(_tr->addCell()) << m_settings.formatDateTime(circuits.at(i).value("date_updated"));
             if (show_owner)
                 *(_tr->addCell()) << escapeString(circuits.at(i).value("updated_by"));
         }
@@ -726,10 +740,10 @@ HTMLDiv * MainWindow::writeCircuitsTable(const QString & customer_id, const QStr
             *(_tr->addCell()) << circuits.at(i).value("manufacturer").toString();
             *(_tr->addCell()) << circuits.at(i).value("type").toString();
             *(_tr->addCell()) << circuits.at(i).value("sn").toString();
-            *(_tr->addCell()) << circuits.at(i).value("commissioning").toString();
-            *(_tr->addCell()) << circuits.at(i).value("decommissioning").toString();
+            *(_tr->addCell()) << m_settings.formatDate(circuits.at(i).value("commissioning"));
+            *(_tr->addCell()) << m_settings.formatDate(circuits.at(i).value("decommissioning"));
             if (show_date_updated)
-                *(_tr->addCell()) << escapeString(circuits.at(i).value("date_updated"));
+                *(_tr->addCell()) << m_settings.formatDateTime(circuits.at(i).value("date_updated"));
             if (show_owner)
                 *(_tr->addCell()) << escapeString(circuits.at(i).value("updated_by"));
         }
@@ -828,7 +842,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         out << "><td>";
         if (is_nominal) { out << "<b>"; }
         else if (is_repair) { out << "<i>"; }
-        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
+        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", m_settings.formatDateTime(id), customer_id, circuit_id, id);
         if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
@@ -847,7 +861,7 @@ QString MainWindow::viewCircuit(const QString & customer_id, const QString & cir
         }
         out << "<td>" << MTVariant(inspections.at(i).value("arno")) << "</td>";
         if (show_date_updated)
-            out << "<td>" << escapeString(inspections.at(i).value("date_updated")) << "</td>";
+            out << "<td>" << m_settings.formatDateTime(inspections.at(i).value("date_updated")) << "</td>";
         if (show_owner)
             out << "<td>" << escapeString(inspections.at(i).value("updated_by")) << "</td>";
         out << "</tr>";
@@ -891,7 +905,7 @@ QString MainWindow::viewInspection(const QString & customer_id, const QString & 
     if (nominal) *el << tr("Nominal Inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");
-    *el << "&nbsp;" << inspection_date;
+    *el << "&nbsp;" << m_settings.formatDateTime(inspection_date);
     div.newLine();
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
@@ -1098,7 +1112,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
         out << "<td>" << MTVariant(circuit.value("manufacturer")) << "</td>";
         out << "<td>" << MTVariant(circuit.value("type")) << "</td>";
         out << "<td>" << circuit.value("year").toString() << "</td>";
-        out << "<td>" << circuit.value("commissioning").toString() << "</td>";
+        out << "<td>" << m_settings.formatDate(circuit.value("commissioning")) << "</td>";
         out << "<td>" << circuit.value("refrigerant_amount").toString()
             << "&nbsp;" << QApplication::translate("Units", "kg") << " "
             << circuit.value("refrigerant").toString() << "</td>";
@@ -1200,7 +1214,7 @@ QString MainWindow::viewTable(const QString & customer_id, const QString & cc_id
                     warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
                     warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
                     warnings_html.append(inspection_date + "\">");
-                    warnings_html.append(inspection_date + "</a>");
+                    warnings_html.append(m_settings.formatDateTime(inspection_date) + "</a>");
                     warnings_html.append("</td><td>");
                     warnings_html.append(warnings_list.join(", "));
                     warnings_html.append("</td></tr>");
@@ -1317,8 +1331,8 @@ HTMLTable * MainWindow::writeInspectionsTable(const QVariantMap & circuit, const
         el = cell = row->addCell();
         if (is_nominal) { el = cell->bold(); }
         else if (is_repair) { el = cell->italics(); }
-        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
-                           inspection_date, circuit.value("parent").toString(), circuit.value("id").toString(), inspection_date);
+        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", m_settings.formatDateTime(inspection_date),
+                           circuit.value("parent").toString(), circuit.value("id").toString(), inspection_date);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {
@@ -1550,7 +1564,7 @@ QStringList MainWindow::listDelayedWarnings(Warnings & warnings, const QVariantM
             if (interval) { delay = interval; }
             if (delay_out) { *delay_out = delay; }
         } else { entry = &last_entry; }
-        if (QDate::fromString(entry->value("date").toString().split("-").first(), "yyyy.MM.dd").daysTo(QDate::currentDate()) < delay) {
+        if (QDate::fromString(entry->value("date").toString().split("-").first(), DATE_FORMAT).daysTo(QDate::currentDate()) < delay) {
             continue;
         }
         if (!nominal_ins.isEmpty()) {
@@ -1603,7 +1617,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
         out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
         if (highlighted_id == id)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
+        out << " style=\"cursor: pointer;\"><td>" << m_settings.formatDateTime(id) << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
             attr_value = repairs.stringValue(Repair::attributes().key(n));
             out << "<td>";
@@ -1617,7 +1631,7 @@ QString MainWindow::viewRepairs(const QString & highlighted_id, int year, const 
             out << escapeString(attr_value) << "</td>";
         }
         if (show_date_updated)
-            out << "<td>" << escapeString(repairs.value("date_updated")) << "</th>";
+            out << "<td>" << m_settings.formatDateTime(repairs.value("date_updated")) << "</th>";
         if (show_owner)
             out << "<td>" << escapeString(repairs.value("updated_by")) << "</th>";
         out << "</tr>";
@@ -2089,12 +2103,12 @@ QString MainWindow::viewAgenda()
             QString last_regular_inspection_date = circuits.stringValue("last_regular_inspection");
             if (last_regular_inspection_date.isEmpty())
                 continue;
-            QString next_regular_inspection_date = QDate::fromString(last_regular_inspection_date.split("-").first(), "yyyy.MM.dd")
-                    .addDays(inspection_interval).toString("yyyy.MM.dd");
+            QString next_regular_inspection_date = QDate::fromString(last_regular_inspection_date.split("-").first(), DATE_FORMAT)
+                    .addDays(inspection_interval).toString(DATE_FORMAT);
             last_inspection_date = circuits.stringValue("last_inspection");
             if (!last_inspection_date.isEmpty()) {
-                QString next_inspection_date = QDate::fromString(last_inspection_date.split("-").first(), "yyyy.MM.dd")
-                        .addDays(30).toString("yyyy.MM.dd");
+                QString next_inspection_date = QDate::fromString(last_inspection_date.split("-").first(), DATE_FORMAT)
+                        .addDays(30).toString(DATE_FORMAT);
                 if (next_inspection_date < next_regular_inspection_date &&
                         circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
@@ -2133,12 +2147,12 @@ QString MainWindow::viewAgenda()
         operation = i.value().value(3);
         last_inspection_date = i.value().value(4);
         reinspection = i.value().value(5).toInt();
-        int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), "yyyy.MM.dd"));
+        int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         switch (days_to) {
             case -1: next_inspection = tr("Yesterday"); break;
             case 0: next_inspection = tr("Today"); break;
             case 1: next_inspection = tr("Tomorrow"); break;
-            default: next_inspection = i.key(); break;
+            default: next_inspection = m_settings.formatDate(i.key()); break;
         }
         if (days_to < 0) colour = "tomato";
         else if (days_to < 31) colour = "yellow";
@@ -2159,9 +2173,9 @@ QString MainWindow::viewAgenda()
         out << "<td class=\"" << colour << "\">";
         if (last_inspection_date.contains("-"))
             out << "<a href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:"
-                << last_inspection_date << "\">" << last_inspection_date << "</a>";
+                << last_inspection_date << "\">" << m_settings.formatDateTime(last_inspection_date) << "</a>";
         else
-            out << last_inspection_date;
+            out << m_settings.formatDate(last_inspection_date);
         out << "</td></tr>";
     }
     out << "</table>";
@@ -2827,7 +2841,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
                             .arg(items.at(i).value("customer").toString())
                             .arg(items.at(i).value("circuit").toString())
                             .arg(items.at(i).value("date").toString()));
-        *(_tr->addCell()) << escapeString(items.at(i).value("date"));
+        *(_tr->addCell()) << m_settings.formatDateTime(items.at(i).value("date"));
         *(_tr->addCell()) << escapeString(items.at(i).value("arno"));
         *(_tr->addCell()) << escapeString(items.at(i).value("record_name"));
         if (!customer_given) *(_tr->addCell()) << escapeString(items.at(i).value("company"));
@@ -2835,7 +2849,7 @@ QString MainWindow::viewAllAssemblyRecords(const QString & customer_id, const QS
         *(_tr->addCell()) << escapeString(inspectors.value(items.at(i).value("inspector").toString()));
         *(_tr->addCell()) << escapeString(items.at(i).value("operator"));
         if (show_date_updated)
-            *(_tr->addCell()) << escapeString(items.at(i).value("date_updated"));
+            *(_tr->addCell()) << m_settings.formatDateTime(items.at(i).value("date_updated"));
         if (show_owner)
             *(_tr->addCell()) << escapeString(items.at(i).value("updated_by"));
     }
@@ -2868,7 +2882,7 @@ QString MainWindow::viewInspectionImages(const QString & customer_id, const QStr
     if (nominal) *el << tr("Nominal inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");
-    *el << "&nbsp;" << inspection_date;
+    *el << "&nbsp;" << m_settings.formatDateTime(inspection_date);
 
     InspectionImage images_record(customer_id, circuit_id, inspection_date);
     ListOfVariantMaps images = images_record.listAll();
