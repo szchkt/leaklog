@@ -24,9 +24,9 @@
 #include "link_parser.h"
 
 Navigation::Navigation(QWidget * parent):
-QWidget(parent)
+    QWidget(parent),
+    default_view_for_group(GroupCount)
 {
-    default_view_for_group.resize(4);
     restoreDefaults(false);
     setupUi(this);
 
@@ -66,13 +66,13 @@ QWidget(parent)
 
 void Navigation::restoreDefaults(bool apply)
 {
-    current_group = 0;
+    current_group = ServiceCompanyGroup;
     current_view = Navigation::ServiceCompany;
     if (apply) btngrp_view->button(current_view)->setChecked(true);
-    default_view_for_group[0] = Navigation::ServiceCompany;
-    default_view_for_group[1] = Navigation::ListOfCustomers;
-    default_view_for_group[2] = Navigation::ListOfCustomers;
-    default_view_for_group[3] = Navigation::ListOfAssemblyRecordTypes;
+    default_view_for_group[ServiceCompanyGroup] = Navigation::ServiceCompany;
+    default_view_for_group[BasicLogbookGroup] = Navigation::ListOfCustomers;
+    default_view_for_group[DetailedLogbookGroup] = Navigation::ListOfCustomers;
+    default_view_for_group[AssemblyRecordsGroup] = Navigation::ListOfAssemblyRecordTypes;
 }
 
 void Navigation::connectSlots(QObject * receiver)
@@ -135,15 +135,15 @@ void Navigation::updateView()
     bool filter_since_visible = true;
     bool filter_month_visible = false;
     bool filter_visible = true;
-    int group = -1;
+    Group group = NoGroup;
     switch (btngrp_view->checkedId()) {
         case Navigation::ServiceCompany:
-            group = 0;
+            group = ServiceCompanyGroup;
             filter_by_field_visible = true;
             filter_keyword_visible = false;
             break;
         case Navigation::RefrigerantManagement:
-            group = 0;
+            group = ServiceCompanyGroup;
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner"), "partner");
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"), "partner_id");
@@ -158,7 +158,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
             break;
         case Navigation::ListOfCircuits:
-            group = 2;
+            group = DetailedLogbookGroup;
             filter_since_visible = false;
             updateView_ListOfCircuits_CircuitAttributes:
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
@@ -175,7 +175,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
             break;
         case Navigation::ListOfInspections:
-            group = 2;
+            group = DetailedLogbookGroup;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
@@ -183,7 +183,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");
             break;
         case Navigation::ListOfRepairs:
-            group = 1;
+            group = BasicLogbookGroup;
             cb_filter_column->addItem(QApplication::translate("Repair", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Repair", "Customer"), "customer");
             cb_filter_column->addItem(QApplication::translate("Repair", "Device"), "device");
@@ -191,7 +191,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Repair", "Assembly record No."), "arno");
             break;
         case Navigation::ListOfInspectors:
-            group = 0;
+            group = ServiceCompanyGroup;
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Inspector", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
@@ -199,27 +199,27 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
             break;
         case Navigation::Inspector:
-            group = 0;
+            group = ServiceCompanyGroup;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Customer ID"), "customer");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit ID"), "circuit");
             break;
         case Navigation::TableOfInspections:
-            group = 2;
+            group = DetailedLogbookGroup;
             filter_keyword_visible = false;
             break;
         case Navigation::Inspection:
-            group = 2;
+            group = DetailedLogbookGroup;
             filter_visible = false;
             break;
         case Navigation::Agenda:
-            group = 0;
+            group = ServiceCompanyGroup;
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "parent");
             goto updateView_ListOfCircuits_CircuitAttributes;
             break;
         case Navigation::OperatorReport:
-            group = 0;
+            group = ServiceCompanyGroup;
             filter_keyword_visible = false;
             filter_month_visible = true;
             lbl_filter_since->setText(tr("Year:"));
@@ -230,23 +230,23 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Description"), "description");
-            group = 3;
+            group = AssemblyRecordsGroup;
             break;
         case Navigation::ListOfAssemblyRecordItemTypes:
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Category ID"), "category_id");
-            group = 3;
+            group = AssemblyRecordsGroup;
             break;
         case Navigation::ListOfAssemblyRecordItemCategories:
             filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
-            group = 3;
+            group = AssemblyRecordsGroup;
             break;
         case Navigation::AssemblyRecord:
-            group = 2;
+            group = DetailedLogbookGroup;
             filter_visible = false;
             break;
         case Navigation::ListOfCircuitUnitTypes:
@@ -257,26 +257,26 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Oil"), "oil");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Notes"), "notes");
-            group = 3;
+            group = AssemblyRecordsGroup;
             break;
         case Navigation::ListOfAssemblyRecords:
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector ID"), "inspector");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record No."), "arno");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
-            group = 2;
+            group = DetailedLogbookGroup;
             break;
         case Navigation::InspectionImages:
-            group = 2;
+            group = DetailedLogbookGroup;
             filter_visible = false;
             break;
         case Navigation::LeakagesByApplication:
         default:
-            group = 0;
+            group = ServiceCompanyGroup;
             filter_visible = false;
             break;
     }
-    if (group >= 0 && current_group != group)
+    if (group > NoGroup && current_group != group)
         toggleVisibleGroup(group, false);
     chb_by_field->setVisible(filter_by_field_visible);
     cb_filter_column->setVisible(filter_keyword_visible);
@@ -313,49 +313,49 @@ void Navigation::setView(int v, bool emit_signal)
 
 void Navigation::viewServiceCompany()
 {
-    toggleVisibleGroup(0);
+    toggleVisibleGroup(ServiceCompanyGroup);
 }
 
 void Navigation::viewBasicLogbook()
 {
-    toggleVisibleGroup(1);
+    toggleVisibleGroup(BasicLogbookGroup);
 }
 
 void Navigation::viewDetailedLogbook()
 {
-    toggleVisibleGroup(2);
+    toggleVisibleGroup(DetailedLogbookGroup);
 }
 
 void Navigation::viewAssemblyRecords()
 {
-    toggleVisibleGroup(3);
+    toggleVisibleGroup(AssemblyRecordsGroup);
 }
 
-void Navigation::toggleVisibleGroup(int g, bool emit_signal)
+void Navigation::toggleVisibleGroup(Group g, bool emit_signal)
 {
-    if (current_group < 4) {
+    if (current_group < ReportDataGroup) {
         default_view_for_group[current_group] = current_view;
     }
-    if (g < 4 && current_group != g) {
+    if (g < ReportDataGroup && current_group != g) {
         emit groupChanged(g);
     }
     current_group = g;
-    gb_service_company->setVisible(g == 0);
-    gb_statistics->setVisible(g == 0);
-    gb_inspectors->setVisible(g == 0);
-    gb_customers->setVisible(g < 3);
-    gb_repairs->setVisible(g == 1);
-    gb_circuits->setVisible(g == 2);
-    gb_inspections->setVisible(g == 2);
-    gb_tables->setVisible(g == 2);
-    gb_assembly_records->setVisible(g == 2);
-    gb_assembly_record_types->setVisible(g == 3);
-    gb_assembly_record_item_types->setVisible(g == 3);
-    gb_assembly_record_item_categories->setVisible(g == 3);
-    gb_filter->setVisible(g < 4);
-    gb_report_data->setVisible(g == 4);
-    gb_circuit_unit_types->setVisible(g == 3);
-    if (g < 4) {
+    gb_service_company->setVisible(g == ServiceCompanyGroup);
+    gb_statistics->setVisible(g == ServiceCompanyGroup);
+    gb_inspectors->setVisible(g == ServiceCompanyGroup);
+    gb_customers->setVisible(g < AssemblyRecordsGroup);
+    gb_repairs->setVisible(g == BasicLogbookGroup);
+    gb_circuits->setVisible(g == DetailedLogbookGroup);
+    gb_inspections->setVisible(g == DetailedLogbookGroup);
+    gb_tables->setVisible(g == DetailedLogbookGroup);
+    gb_assembly_records->setVisible(g == DetailedLogbookGroup);
+    gb_assembly_record_types->setVisible(g == AssemblyRecordsGroup);
+    gb_assembly_record_item_types->setVisible(g == AssemblyRecordsGroup);
+    gb_assembly_record_item_categories->setVisible(g == AssemblyRecordsGroup);
+    gb_filter->setVisible(g < ReportDataGroup);
+    gb_report_data->setVisible(g == ReportDataGroup);
+    gb_circuit_unit_types->setVisible(g == AssemblyRecordsGroup);
+    if (g < ReportDataGroup) {
         if (emit_signal && current_view != default_view_for_group[current_group]) {
             current_view = default_view_for_group[current_group];
             if (btngrp_view->button(current_view)) btngrp_view->button(current_view)->setChecked(true);
@@ -446,10 +446,10 @@ void Navigation::enableTools(const MainWindowSettings & settings)
 
 void Navigation::setReportDataGroupBoxVisible(bool visible)
 {
-    static int last_group = current_group;
+    static Group last_group = current_group;
     if (visible) {
         last_group = current_group;
-        toggleVisibleGroup(4);
+        toggleVisibleGroup(ReportDataGroup);
     } else {
         toggleVisibleGroup(last_group);
     }

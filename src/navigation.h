@@ -29,6 +29,16 @@ class Navigation : public QWidget, private Ui::Navigation
     Q_OBJECT
 
 public:
+    enum Group {
+        NoGroup = -1,
+        ServiceCompanyGroup,
+        BasicLogbookGroup,
+        DetailedLogbookGroup,
+        AssemblyRecordsGroup,
+        ReportDataGroup,
+        GroupCount
+    };
+
     enum View {
         ServiceCompany,
         RefrigerantManagement,
@@ -49,7 +59,8 @@ public:
         ListOfCircuitUnitTypes,
         ListOfAssemblyRecords,
         Inspector,
-        InspectionImages
+        InspectionImages,
+        ViewCount
     };
 
     Navigation(QWidget *);
@@ -57,6 +68,7 @@ public:
     void connectSlots(QObject *);
 
     // View
+    Group group() const { return current_group; }
     View view();
     void setView(int, bool);
 
@@ -110,13 +122,13 @@ signals:
 
 protected:
     // Groups
-    void toggleVisibleGroup(int, bool = true);
+    void toggleVisibleGroup(Group, bool = true);
     // View
     void updateView();
 
 private:
     QButtonGroup * btngrp_view;
-    int current_group;
+    Group current_group;
     View current_view;
     QVector<View> default_view_for_group;
 };

@@ -1112,7 +1112,8 @@ void MainWindow::clearSelection(bool refresh)
 
 void MainWindow::refreshView()
 {
-    viewChanged(navigation->view());
+    if (navigation->group() != Navigation::ReportDataGroup)
+        viewChanged(navigation->view());
 }
 
 void MainWindow::groupChanged(int g)
@@ -1190,7 +1191,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionHTML->setEnabled(enable || everything);
     actionPrint_preview->setEnabled(enable || everything);
     actionPrint->setEnabled(enable || everything);
-    actionPrinter_friendly_version->setEnabled(enable);
     actgrp_view->setEnabled(enable);
 
     menuDatabase->setEnabled(enable);
