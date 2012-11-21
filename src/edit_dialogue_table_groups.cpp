@@ -96,6 +96,9 @@ QList<MTDictionary> EditDialogueGroupsLayout::allValues()
 
 void EditDialogueGroupsLayout::clear()
 {
+    foreach (EditDialogueAdvancedTable * group_box, *groups)
+        delete group_box;
+
     groups->clear();
 }
 
