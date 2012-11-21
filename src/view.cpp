@@ -17,16 +17,16 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "main_window.h"
+#include "mainwindow.h"
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
 #include "dbfile.h"
-#include "report_data.h"
+#include "reportdata.h"
 #include "mttextstream.h"
 #include "mtaddress.h"
 #include "htmlbuilder.h"
-#include "variable_evaluation.h"
+#include "variableevaluation.h"
 
 #include <QDate>
 #include <QSqlError>
@@ -207,6 +207,7 @@ QString MainWindow::currentView()
         case Navigation::ListOfCircuitUnitTypes: view = QApplication::translate("Navigation", "List of Circuit Unit Types"); break;
         case Navigation::ListOfAssemblyRecords: break;
         case Navigation::InspectionImages: view = QApplication::translate("Navigation", "Inspection Images"); break;
+        default: break;
     }
     return view;
 }

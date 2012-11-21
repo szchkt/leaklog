@@ -21,7 +21,7 @@
 #include "refrigerants.h"
 #include "global.h"
 #include "variables.h"
-#include "report_data.h"
+#include "reportdata.h"
 
 #include <QApplication>
 #include <QSet>

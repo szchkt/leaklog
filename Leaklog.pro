@@ -1,119 +1,119 @@
 CONFIG        += qt warn_on
 TEMPLATE       = app
-FORMS         += ui/main_window.ui \
-                 ui/about_widget.ui \
-                 ui/import_dialogue.ui \
-                 ui/navigation.ui \
-                 ui/import_csv_dialogue.ui
-HEADERS       += src/global.h \
+FORMS         += ui/aboutwidget.ui \
+                 ui/importcsvdialogue.ui \
+                 ui/importdialogue.ui \
+                 ui/mainwindow.ui \
+                 ui/navigation.ui
+HEADERS       += src/aboutwidget.h \
+                 src/dbfile.h \
                  src/defs.h \
-                 src/refrigerants.h \
-                 src/main.h \
-                 src/main_window.h \
-                 src/about_widget.h \
+                 src/editassemblyrecorddialogue.h \
+                 src/editcircuitdialogue.h \
+                 src/editcircuitdialoguecompressorstab.h \
+                 src/editcircuitdialogueunitstab.h \
+                 src/editcustomerdialogue.h \
+                 src/editdialogue.h \
+                 src/editdialoguelayout.h \
+                 src/editdialoguetable.h \
+                 src/editdialoguetablegroups.h \
+                 src/editdialoguewidgets.h \
+                 src/editdialoguewithautoid.h \
+                 src/editinspectiondialogue.h \
+                 src/editinspectiondialogueaccess.h \
+                 src/editinspectiondialogueassemblyrecordtab.h \
+                 src/editinspectiondialoguecompressors.h \
+                 src/editinspectiondialoguelayout.h \
+                 src/editinspectordialogue.h \
+                 src/editwarningdialogue.h \
                  src/extendedlineedit.h \
-                 src/mtwidgetpalettes.h \
-                 src/mtlistwidget.h \
-                 src/edit_dialogue.h \
-                 src/edit_warning_dialogue.h \
-                 src/mtdictionary.h \
-                 src/mtcolourcombobox.h \
-                 src/import_dialogue.h \
-                 src/mtaddress.h \
-                 src/mtrecord.h \
-                 src/mtsqlqueryresult.h \
-                 src/mtcheckboxgroup.h \
-                 src/input_widgets.h \
-                 src/records.h \
-                 src/report_data.h \
-                 src/report_data_controller.h \
-                 src/sha256.h \
-                 src/navigation.h \
+                 src/global.h \
                  src/highlighter.h \
-                 src/variables.h \
-                 src/warnings.h \
+                 src/htmlbuilder.h \
+                 src/importcsvdialogue.h \
+                 src/importdialogue.h \
+                 src/inputwidgets.h \
+                 src/linkparser.h \
+                 src/main.h \
+                 src/mainwindow.h \
+                 src/mainwindowsettings.h \
+                 src/mtaddress.h \
+                 src/mtcheckboxgroup.h \
+                 src/mtcolourcombobox.h \
+                 src/mtdictionary.h \
+                 src/mtlistwidget.h \
+                 src/mtrecord.h \
+                 src/mtsqlquery.h \
+                 src/mtsqlqueryresult.h \
+                 src/mttextstream.h \
                  src/mtvariant.h \
                  src/mtwebpage.h \
-                 src/mttextstream.h \
-                 src/import_csv_dialogue.h \
-                 src/permissions_dialogue.h \
-                 src/tabbed_edit_dialogue.h \
-                 src/dbfile.h \
-                 src/htmlbuilder.h \
-                 src/edit_dialogue_table.h \
-                 src/edit_customer_dialogue.h \
-                 src/variable_evaluation.h \
-                 src/edit_circuit_dialogue.h \
-                 src/edit_inspection_dialogue.h \
-                 src/edit_assembly_record_dialogue.h \
-                 src/edit_dialogue_table_groups.h \
-                 src/edit_inspector_dialogue.h \
-                 src/partner_widgets.h \
-                 src/link_parser.h \
-                 src/edit_circuit_dialogue_units_tab.h \
-                 src/edit_circuit_dialogue_compressors_tab.h \
-                 src/edit_inspection_dialogue_compressors.h \
-                 src/edit_dialogue_widgets.h \
-                 src/edit_dialogue_layout.h \
-                 src/edit_inspection_dialogue_assembly_record_tab.h \
-                 src/main_window_settings.h \
-                 src/mtsqlquery.h \
-                 src/edit_inspection_dialogue_access.h \
-                 src/edit_dialogue_with_auto_id.h \
-                 src/edit_inspection_dialogue_layout.h
-RESOURCES     += rc/resources.qrc \
+                 src/mtwidgetpalettes.h \
+                 src/navigation.h \
+                 src/partnerwidgets.h \
+                 src/permissionsdialogue.h \
+                 src/records.h \
+                 src/refrigerants.h \
+                 src/reportdata.h \
+                 src/reportdatacontroller.h \
+                 src/sha256.h \
+                 src/tabbededitdialogue.h \
+                 src/variableevaluation.h \
+                 src/variables.h \
+                 src/warnings.h
+RESOURCES     += rc/html.qrc \
                  rc/i18n.qrc \
-                 rc/html.qrc
-SOURCES       += src/global.cpp \
-                 src/refrigerants.cpp \
-                 src/main.cpp \
-                 src/main_window.cpp \
-                 src/about_widget.cpp \
+                 rc/resources.qrc
+SOURCES       += src/aboutwidget.cpp \
                  src/database.cpp \
-                 src/view.cpp \
-                 src/edit_dialogue.cpp \
-                 src/edit_warning_dialogue.cpp \
-                 src/import_dialogue.cpp \
+                 src/dbfile.cpp \
+                 src/editassemblyrecorddialogue.cpp \
+                 src/editcircuitdialogue.cpp \
+                 src/editcircuitdialoguecompressorstab.cpp \
+                 src/editcircuitdialogueunitstab.cpp \
+                 src/editcustomerdialogue.cpp \
+                 src/editdialogue.cpp \
+                 src/editdialoguelayout.cpp \
+                 src/editdialoguetable.cpp \
+                 src/editdialoguetablegroups.cpp \
+                 src/editdialoguewidgets.cpp \
+                 src/editdialoguewithautoid.cpp \
+                 src/editinspectiondialogue.cpp \
+                 src/editinspectiondialogueaccess.cpp \
+                 src/editinspectiondialogueassemblyrecordtab.cpp \
+                 src/editinspectiondialoguecompressors.cpp \
+                 src/editinspectiondialoguelayout.cpp \
+                 src/editinspectordialogue.cpp \
+                 src/editwarningdialogue.cpp \
+                 src/global.cpp \
+                 src/highlighter.cpp \
+                 src/htmlbuilder.cpp \
+                 src/importcsvdialogue.cpp \
+                 src/importdialogue.cpp \
+                 src/inputwidgets.cpp \
+                 src/linkparser.cpp \
+                 src/main.cpp \
+                 src/mainwindow.cpp \
+                 src/mainwindowsettings.cpp \
                  src/mtaddress.cpp \
                  src/mtrecord.cpp \
+                 src/mtsqlquery.cpp \
                  src/mtsqlqueryresult.cpp \
-                 src/input_widgets.cpp \
-                 src/records.cpp \
-                 src/report_data.cpp \
-                 src/report_data_controller.cpp \
-                 src/sha256.cpp \
-                 src/navigation.cpp \
-                 src/highlighter.cpp \
-                 src/variables.cpp \
-                 src/warnings.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
-                 src/import_csv_dialogue.cpp \
-                 src/permissions_dialogue.cpp \
-                 src/tabbed_edit_dialogue.cpp \
-                 src/dbfile.cpp \
-                 src/htmlbuilder.cpp \
-                 src/edit_dialogue_table.cpp \
-                 src/edit_customer_dialogue.cpp \
-                 src/variable_evaluation.cpp \
-                 src/edit_circuit_dialogue.cpp \
-                 src/edit_inspection_dialogue.cpp \
-                 src/edit_assembly_record_dialogue.cpp \
-                 src/edit_dialogue_table_groups.cpp \
-                 src/edit_inspector_dialogue.cpp \
-                 src/partner_widgets.cpp \
-                 src/link_parser.cpp \
-                 src/edit_circuit_dialogue_units_tab.cpp \
-                 src/edit_circuit_dialogue_compressors_tab.cpp \
-                 src/edit_inspection_dialogue_compressors.cpp \
-                 src/edit_dialogue_widgets.cpp \
-                 src/edit_dialogue_layout.cpp \
-                 src/edit_inspection_dialogue_assembly_record_tab.cpp \
-                 src/main_window_settings.cpp \
-                 src/mtsqlquery.cpp \
-                 src/edit_inspection_dialogue_access.cpp \
-                 src/edit_dialogue_with_auto_id.cpp \
-                 src/edit_inspection_dialogue_layout.cpp
+                 src/navigation.cpp \
+                 src/partnerwidgets.cpp \
+                 src/permissionsdialogue.cpp \
+                 src/records.cpp \
+                 src/refrigerants.cpp \
+                 src/reportdata.cpp \
+                 src/reportdatacontroller.cpp \
+                 src/sha256.cpp \
+                 src/tabbededitdialogue.cpp \
+                 src/variableevaluation.cpp \
+                 src/variables.cpp \
+                 src/view.cpp \
+                 src/warnings.cpp
 QT            += network webkit sql
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser
@@ -137,7 +137,7 @@ RCC_DIR        = build/win32
 }
 macx {
 LIBS          += -framework Foundation
-OBJECTIVE_SOURCES += src/main_window_macx.mm
+OBJECTIVE_SOURCES += src/mainwindowmacx.mm
 ICON           = rc/images/leaklog.icns
 CONFIG        += x86_64
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5

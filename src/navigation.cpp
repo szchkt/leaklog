@@ -20,8 +20,8 @@
 #include "navigation.h"
 
 #include "global.h"
-#include "main_window_settings.h"
-#include "link_parser.h"
+#include "mainwindowsettings.h"
+#include "linkparser.h"
 
 Navigation::Navigation(QWidget * parent):
     QWidget(parent),

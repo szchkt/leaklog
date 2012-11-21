@@ -19,8 +19,8 @@
 
 #include "variables.h"
 #include "global.h"
-#include "edit_dialogue.h"
-#include "input_widgets.h"
+#include "editdialogue.h"
+#include "inputwidgets.h"
 
 #include <QSet>
 #include <QApplication>

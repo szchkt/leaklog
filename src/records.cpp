@@ -18,13 +18,13 @@
 ********************************************************************/
 
 #include "records.h"
-#include "input_widgets.h"
-#include "edit_dialogue.h"
+#include "inputwidgets.h"
+#include "editdialogue.h"
 #include "global.h"
 #include "variables.h"
 #include "warnings.h"
-#include "partner_widgets.h"
-#include "edit_customer_dialogue.h"
+#include "partnerwidgets.h"
+#include "editcustomerdialogue.h"
 
 #include <QSqlRecord>
 #include <QApplication>

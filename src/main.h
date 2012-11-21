@@ -20,7 +20,7 @@
 #ifndef LEAKLOG_MAIN_H
 #define LEAKLOG_MAIN_H
 
-#include "main_window.h"
+#include "mainwindow.h"
 
 #include <QApplication>
 #include <QPointer>
