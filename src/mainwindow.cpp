@@ -942,8 +942,8 @@ void MainWindow::printLabel(bool detailed)
     printer->setFullPage(true);
 
     QPainter painter;
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.begin(printer);
+    painter.setRenderHint(QPainter::Antialiasing);
     QRect rect = printer->pageRect();
     int margin = rect.width() / 33;
     int w = (rect.width() - 4 * margin) / 2;
