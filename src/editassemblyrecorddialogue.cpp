@@ -84,8 +84,8 @@ void EditAssemblyRecordDialogueTab::init()
     tree = new QTreeWidget;
     tree->setColumnCount(2);
     tree->setHeaderLabels(QStringList() << tr("Category") << tr("Position"));
-    tree->header()->setResizeMode(0, QHeaderView::Stretch);
-    tree->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     layout->addWidget(tree);
 
     MTRecord record(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"

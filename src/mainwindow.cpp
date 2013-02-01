@@ -32,8 +32,9 @@
 
 #include <QSettings>
 #include <QTranslator>
-#include <QHttp>
-#include <QBuffer>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QTextStream>
 #include <QFile>
 #include <QFileInfo>
@@ -65,7 +66,7 @@ MainWindow::MainWindow():
     dict_fieldtypes.insert("operator_address", MTVariant::Address);
 
     // HTML
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
     QString font_size = "9pt";
 #else
@@ -113,8 +114,7 @@ MainWindow::MainWindow():
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
 
-    http = new QHttp(this);
-    http_buffer = new QBuffer(this);
+    network_access_manager = new QNetworkAccessManager(this);
 
     // Dock widgets
     dw_variables->setVisible(false);
@@ -195,15 +195,15 @@ MainWindow::MainWindow():
 
     // Variables
     trw_variables->header()->setSortIndicator(0, Qt::AscendingOrder);
-    trw_variables->header()->setResizeMode(0, QHeaderView::Stretch);
-    trw_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-    trw_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-    trw_variables->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+    trw_variables->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trw_variables->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    trw_variables->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    trw_variables->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
 
     // Tables
-    trw_table_variables->header()->setResizeMode(0, QHeaderView::Stretch);
-    trw_table_variables->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-    trw_table_variables->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    trw_table_variables->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trw_table_variables->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    trw_table_variables->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -305,13 +305,13 @@ MainWindow::MainWindow():
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
-    QObject::connect(http, SIGNAL(done(bool)), this, SLOT(httpRequestFinished(bool)));
+    QObject::connect(network_access_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(httpRequestFinished(QNetworkReply *)));
     QObject::connect(tbtn_add_style, SIGNAL(clicked()), this, SLOT(addStyle()));
     QObject::connect(tbtn_edit_style, SIGNAL(clicked()), this, SLOT(editStyle()));
     QObject::connect(tbtn_remove_style, SIGNAL(clicked()), this, SLOT(removeStyle()));
 
     setDefaultWebPage();
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     macInitUI();
     show();
 #endif
@@ -319,7 +319,7 @@ MainWindow::MainWindow():
     if (qApp->arguments().count() > 1) {
         openFile(qApp->arguments().at(1));
     }
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     if (!isVisible())
         show();
 #endif
@@ -334,7 +334,7 @@ void MainWindow::setDefaultWebPage()
 
 void MainWindow::clearWindowTitle()
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     setWindowFilePath(QString());
 #endif
     setWindowTitle("Leaklog");
@@ -342,7 +342,7 @@ void MainWindow::clearWindowTitle()
 
 void MainWindow::setWindowTitleWithRepresentedFilename(const QString & path)
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     setWindowFilePath(path.startsWith('/') ? path : QString());
     setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
 #else
@@ -967,7 +967,7 @@ void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, 
     painter.save();
     QPen pen; pen.setWidthF(7.0); painter.setPen(pen);
     QFont font; painter.setFont(font);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     font.setPointSize(font.pointSize() - 7);
 #else
     font.setPointSize(font.pointSize() - 2);
@@ -1513,7 +1513,7 @@ void MainWindow::loadSettings()
     move(settings.value("pos", pos()).toPoint());
     resize(settings.value("size", size()).toSize());
     restoreState(settings.value("window_state").toByteArray(), 0);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     if (settings.value("fullscreen", isFullScreen()).toBool())
         showFullScreen();
 #else
@@ -1529,7 +1529,7 @@ void MainWindow::loadSettings()
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
 #ifndef QT_DEBUG
-    if (check_for_updates) checkForUpdates();
+    if (check_for_updates) checkForUpdates(false);
 #endif
 }
 
@@ -1560,7 +1560,7 @@ void MainWindow::changeLanguage()
     QWidget * w_lang = new QWidget(this, Qt::Dialog);
     w_lang->setWindowModality(Qt::WindowModal);
     w_lang->setAttribute(Qt::WA_DeleteOnClose);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     w_lang->setWindowTitle(tr("Change language"));
 #else
     w_lang->setWindowTitle(tr("Change language - Leaklog"));
@@ -1600,63 +1600,59 @@ void MainWindow::languageChanged()
     cb_lang = NULL;
 }
 
-void MainWindow::checkForUpdates()
+void MainWindow::checkForUpdates(bool force)
 {
-    delete http_buffer; http_buffer = new QBuffer(this);
-    http->setHost("leaklog.sourceforge.net");
-    http->get(QString("/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
+    if (!force && !check_for_updates)
+        return;
+
+    network_access_manager->get(QNetworkRequest(QString("http://leaklog.sourceforge.net/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
-#ifdef Q_WS_WIN
-              .arg('W').arg(QSysInfo::WindowsVersion),
-#elif defined Q_WS_MAC
-              .arg('M').arg(QSysInfo::MacintoshVersion),
+#ifdef Q_OS_WIN32
+              .arg('W').arg(QSysInfo::WindowsVersion)));
+#elif defined Q_OS_MAC
+              .arg('M').arg(QSysInfo::MacintoshVersion)));
 #else
-              .arg('O').arg(-1),
+              .arg('O').arg(-1)));
 #endif
-              http_buffer);
 }
 
-void MainWindow::httpRequestFinished(bool error)
+void MainWindow::httpRequestFinished(QNetworkReply * reply)
 {
-    if (error) {
-        if (!check_for_updates) {
-            switch (QMessageBox::critical(this, "Leaklog", tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
-                case 0: // Try again
-                    checkForUpdates(); break;
-                case 1: // Cancel
-                    break;
-            }
-        } else {
-            check_for_updates = false;
-        }
-        return;
-    }
-    QString str(http_buffer->data()); QTextStream in(&str);
-    if (in.readLine() != "[Leaklog.current-version]") { return httpRequestFinished(true); }
+    QString str;
+
+    if (reply->error() == QNetworkReply::NoError && reply->isReadable())
+        str = QString(reply->readAll());
+    else
+        return httpRequestFailed();
+
+    reply->deleteLater();
+
+    QTextStream in(&str);
+    if (in.readLine() != "[Leaklog.current-version]") { return httpRequestFailed(); }
     QString current_ver = in.readLine();
-    if (in.readLine() != "[Leaklog.current-version.float]") { return httpRequestFinished(true); }
+    if (in.readLine() != "[Leaklog.current-version.float]") { return httpRequestFailed(); }
     double f_current_ver = in.readLine().toDouble();
-    if (in.readLine() != "[Leaklog.download-url.src]") { return httpRequestFinished(true); }
-#if !defined Q_WS_MAC && !defined Q_WS_WIN
+    if (in.readLine() != "[Leaklog.download-url.src]") { return httpRequestFailed(); }
+#if !defined Q_OS_MAC && !defined Q_OS_WIN32
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.download-url.macx]") { return httpRequestFinished(true); }
-#ifdef Q_WS_MAC
+    if (in.readLine() != "[Leaklog.download-url.macx]") { return httpRequestFailed(); }
+#ifdef Q_OS_MAC
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.download-url.win32]") { return httpRequestFinished(true); }
-#ifdef Q_WS_WIN
+    if (in.readLine() != "[Leaklog.download-url.win32]") { return httpRequestFailed(); }
+#ifdef Q_OS_WIN32
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.release-notes]") { return httpRequestFinished(true); }
+    if (in.readLine() != "[Leaklog.release-notes]") { return httpRequestFailed(); }
     QString release_notes;
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
     if ((f_current_ver <= F_LEAKLOG_VERSION && !LEAKLOG_PREVIEW_VERSION) ||
@@ -1693,6 +1689,16 @@ void MainWindow::httpRequestFinished(bool error)
         }
     }
     check_for_updates = false;
+}
+
+void MainWindow::httpRequestFailed()
+{
+    switch (QMessageBox::critical(this, "Leaklog", tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
+        case 0: // Try again
+            checkForUpdates(); break;
+        case 1: // Cancel
+            break;
+    }
 }
 
 void MainWindow::about()

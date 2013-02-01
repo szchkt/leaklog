@@ -166,7 +166,7 @@ void MDCheckBox::setVariantValue(const QVariant & value)
 }
 
 MDSpinBox::MDSpinBox(const QString & id, const QString & labeltext, QWidget * parent, int minimum, int maximum, int value, const QString & suffix, const QString &
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     colour
 #endif
     , bool enabled):
@@ -174,7 +174,7 @@ QSpinBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setEnabled(enabled);
@@ -195,7 +195,7 @@ void MDSpinBox::setVariantValue(const QVariant & value)
 }
 
 MDDoubleSpinBox::MDDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, double value, const QString & suffix, const QString &
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     colour
 #endif
     ):
@@ -203,7 +203,7 @@ QDoubleSpinBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setDecimals(3);
@@ -224,7 +224,7 @@ void MDDoubleSpinBox::setVariantValue(const QVariant & value)
 }
 
 MDNullableDoubleSpinBox::MDNullableDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, const QVariant & value, const QString & suffix, const QString &
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     colour
 #endif
     ):
@@ -232,7 +232,7 @@ QDoubleSpinBox(parent),
 MDNullableInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setDecimals(3);
@@ -271,7 +271,7 @@ void MDNullableDoubleSpinBox::labelClicked()
 }
 
 MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const MTDictionary & items, const QString &
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     colour
 #endif
     , bool enabled):
@@ -279,7 +279,7 @@ QComboBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setEnabled(enabled);

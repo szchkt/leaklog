@@ -34,14 +34,6 @@ public:
     QApplication(argc, argv) {}
     MTApplication(int & argc, char ** argv, bool GUIenabled):
     QApplication(argc, argv, GUIenabled) {}
-    MTApplication(int & argc, char ** argv, Type type):
-    QApplication(argc, argv, type) {}
-#ifdef Q_WS_X11
-    MTApplication(Display * display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0):
-    QApplication(display, visual, colormap) {}
-    MTApplication(Display * display, int & argc, char ** argv, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0):
-    QApplication(display, argc, argv, visual, colormap) {}
-#endif
     void setAppMainWindow(MainWindow * w) { app_main_window = w; }
 
 protected:

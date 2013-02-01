@@ -35,8 +35,7 @@ class QPushButton;
 class QCloseEvent;
 class QPainter;
 class QUrl;
-class QHttp;
-class QBuffer;
+class QNetworkAccessManager;
 namespace VariableEvaluation {
     class Variable;
     class EvaluationContext;
@@ -86,8 +85,9 @@ private slots:
     void groupChanged(int);
     void changeLanguage();
     void languageChanged();
-    void checkForUpdates();
-    void httpRequestFinished(bool);
+    void checkForUpdates(bool force = true);
+    void httpRequestFinished(QNetworkReply * reply);
+    void httpRequestFailed();
     // DATABASE
     void openRecent(QListWidgetItem *);
     void newDatabase();
@@ -162,7 +162,7 @@ private slots:
 
 private:
     // UI
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     void macInitUI();
     bool isFullScreen() const;
     void showFullScreen();
@@ -286,6 +286,6 @@ private:
     QActionGroup * actgrp_time_format;
     QMap<QString, QString> leaklog_i18n;
     bool check_for_updates;
-    QHttp * http; QBuffer * http_buffer;
+    QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
 };

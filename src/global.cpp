@@ -66,7 +66,7 @@ QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 
 QString Global::rightTriangle()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN32
     if (QSysInfo::WindowsVersion < QSysInfo::WV_6_0)
         return ">";
 #endif
@@ -557,8 +557,8 @@ public:
         dict.insert("t_sh_evap", QApplication::translate("VariableNames", "evap."));
         dict.insert("t_sh_comp", QApplication::translate("VariableNames", "comp."));
         dict.insert("t_comp_out", QApplication::translate("VariableNames", "Temperature discharge"));
-        dict.insert("delta_t_evap", QApplication::translate("VariableNames", "%1T (evaporating)", 0, QApplication::UnicodeUTF8).arg(Global::delta()));
-        dict.insert("delta_t_c", QApplication::translate("VariableNames", "%1T (condensing)", 0, QApplication::UnicodeUTF8).arg(Global::delta()));
+        dict.insert("delta_t_evap", QApplication::translate("VariableNames", "%1T (evaporating)").arg(Global::delta()));
+        dict.insert("delta_t_c", QApplication::translate("VariableNames", "%1T (condensing)").arg(Global::delta()));
         dict.insert("ep_comp", QApplication::translate("VariableNames", "Comp. el. power input"));
         dict.insert("ec", QApplication::translate("VariableNames", "Electric current"));
         dict.insert("ec_l1", QApplication::translate("VariableNames", "L1"));

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 {
     MTApplication app(argc, argv);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN32
     if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
         QApplication::setStyle("windowsxp");
 #endif

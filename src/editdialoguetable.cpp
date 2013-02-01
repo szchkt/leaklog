@@ -55,10 +55,10 @@ EditDialogueTable::EditDialogueTable(const QString & name, const QList<EditDialo
     tree->setHeaderLabels(header_labels);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
     for (int i = 0; i < header.count(); ++i) {
-        tree->header()->setResizeMode(i, QHeaderView::Stretch);
+        tree->header()->setSectionResizeMode(i, QHeaderView::Stretch);
     }
     tree->header()->setStretchLastSection(false);
-    tree->header()->setResizeMode(header.count(), QHeaderView::Custom);
+    tree->header()->setSectionResizeMode(header.count(), QHeaderView::Custom);
     tree->header()->resizeSection(header.count(), 24);
     tree->setColumnWidth(header.count(), 24);
 

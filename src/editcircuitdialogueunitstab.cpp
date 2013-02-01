@@ -43,10 +43,10 @@ EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString & custome
     tree->setHeaderLabels(header_labels);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
     tree->header()->setStretchLastSection(false);
-    tree->header()->setResizeMode(0, QHeaderView::Stretch);
-    tree->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     tree->header()->setStretchLastSection(false);
-    tree->header()->setResizeMode(2, QHeaderView::Custom);
+    tree->header()->setSectionResizeMode(2, QHeaderView::Custom);
     tree->header()->resizeSection(2, 24);
     tree->setColumnWidth(2, 24);
     QObject::connect(tree, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(manufacturerItemExpanded(QTreeWidgetItem*)));

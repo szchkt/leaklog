@@ -70,7 +70,7 @@ QWidget(parent)
     af_functions << ">=";
     af_functions << ">";
     af_vlayout_main = new QVBoxLayout(this);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     af_vlayout_main->setSpacing(0);
 #else
     af_vlayout_main->setSpacing(6);
@@ -149,7 +149,7 @@ QWidget(parent)
     c_functions << ">=";
     c_functions << ">";
     c_vlayout_main = new QVBoxLayout(this);
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     c_vlayout_main->setSpacing(0);
 #else
     c_vlayout_main->setSpacing(6);

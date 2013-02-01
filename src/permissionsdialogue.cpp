@@ -49,7 +49,7 @@ QDialog(parent, Qt::Dialog) {
     tree->setIndentation(0);
     tree->setHeaderHidden(true);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
-    tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+    tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     tree->setMinimumSize(600, 400);
     gl->addWidget(tree, 1, 0);
 

@@ -31,7 +31,7 @@ AboutWidget::AboutWidget()
     HTMLDocument html_doc("About Leaklog");
 
     HTMLParentElement * style = html_doc.head()->addStyleElement();
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
     QString font_size = "9pt";
 #else

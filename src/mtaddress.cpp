@@ -54,9 +54,15 @@ QString MTAddress::toHtml(MTAddress::AddressFormat format) const
         return QString();
     return MTAddressEdit::addressStringFormat(format)
             .replace("\n", "<br>")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             .arg(Qt::escape(a_street))
             .arg(Qt::escape(a_city))
             .arg(Qt::escape(a_postal_code));
+#else
+            .arg(a_street.toHtmlEscaped())
+            .arg(a_city.toHtmlEscaped())
+            .arg(a_postal_code.toHtmlEscaped());
+#endif
 }
 
 void MTAddress::initWithAddress(const QString & address) {

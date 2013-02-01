@@ -52,8 +52,8 @@ file_path(path)
     cb_separator->addItem(tr("Tab"), '\t');
     loadTableColumns(0);
     trw_columns->header()->setStretchLastSection(false);
-    trw_columns->header()->setResizeMode(0, QHeaderView::Stretch);
-    trw_columns->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    trw_columns->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trw_columns->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     QObject::connect(btn_reload, SIGNAL(clicked()), this, SLOT(load()));
     QObject::connect(cb_table, SIGNAL(currentIndexChanged(int)), this, SLOT(loadTableColumns(int)));
     QObject::connect(trw_columns, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(changeColumnIndex(QTreeWidgetItem *)));

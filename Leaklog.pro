@@ -114,7 +114,12 @@ SOURCES       += src/aboutwidget.cpp \
                  src/variables.cpp \
                  src/view.cpp \
                  src/warnings.cpp
+lessThan(QT_MAJOR_VERSION, 5) {
 QT            += network webkit sql
+}
+else {
+QT            += widgets network webkitwidgets sql
+}
 # QTPLUGIN      += qsqlite qsqlpsql
 # fparser
 HEADERS       += include/fparser/fpconfig.hh include/fparser/fptypes.hh include/fparser/fparser.hh

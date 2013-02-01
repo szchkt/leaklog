@@ -54,7 +54,7 @@ void EditInspectionDialogueLayout::layout()
         QTreeWidget * tree = new UniformRowColourTreeWidget;
         tree->setHeaderHidden(true);
         tree->setHeaderLabels(QStringList() << "1" << "2" << "3");
-        tree->header()->setResizeMode(QHeaderView::ResizeToContents);
+        tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
         tree->setSelectionMode(QAbstractItemView::NoSelection);
         tree->setFocusPolicy(Qt::NoFocus);
 

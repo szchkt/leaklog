@@ -150,7 +150,6 @@ private:
     QMap<QString, QString> select_vals;
 
     int c_type;
-    int index;
 };
 
 class ImportDialogueTableRow
