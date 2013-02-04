@@ -3712,6 +3712,222 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>2003/02/01</source>
         <translation>2003.02.01</translation>
     </message>
+    <message>
+        <source>Undo</source>
+        <translation>Krok späť</translation>
+    </message>
+    <message>
+        <source>Edit record of refrigerant management %1</source>
+        <translation>Upraviť záznam o nakladaní s chladivom %1</translation>
+    </message>
+    <message>
+        <source>Add customer</source>
+        <translation>Pridať zákazníka</translation>
+    </message>
+    <message>
+        <source>Edit customer %1%2</source>
+        <translation>Upraviť zákazníka %1%2</translation>
+    </message>
+    <message>
+        <source>Duplicate customer %1%2</source>
+        <translation>Duplikovať zákazníka %1%2</translation>
+    </message>
+    <message>
+        <source>Remove customer %1%2</source>
+        <translation>Odstrániť zákazníka %1%2</translation>
+    </message>
+    <message>
+        <source>Decommission all circuits of customer %1%2</source>
+        <translation>Vydariť všetky okruhy zákazníka %1%2</translation>
+    </message>
+    <message>
+        <source>Add circuit</source>
+        <translation>Pridať okruh</translation>
+    </message>
+    <message>
+        <source>Edit circuit %1 (%2)</source>
+        <translation>Upraviť okruh %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Duplicate circuit %1 (%2)</source>
+        <translation>Duplikovať okruh %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Duplicate and decommission circuit %1 (%2)</source>
+        <translation>Duplikovať a vyradiť okruh %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Remove circuit %1 (%2)</source>
+        <translation>Odstrániť okruh %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Add inspection</source>
+        <translation>Pridať kontrolu</translation>
+    </message>
+    <message>
+        <source>Edit inspection %1 (%2, circuit %3)</source>
+        <translation>Upraviť kontrolu %1 (%2, okruh %3)</translation>
+    </message>
+    <message>
+        <source>Duplicate inspection %1 (%2, circuit %3)</source>
+        <translation>Duplikovať kontrolu %1 (%2, okruh %3)</translation>
+    </message>
+    <message>
+        <source>Remove inspection %1 (%2, circuit %3)</source>
+        <translation>Odstrániť kontrolu %1 (%2, okruh %3)</translation>
+    </message>
+    <message>
+        <source>Add repair</source>
+        <translation>Pridať opravu</translation>
+    </message>
+    <message>
+        <source>Edit repair %1%2</source>
+        <translation>Upraviť opravu %1%2</translation>
+    </message>
+    <message>
+        <source>Duplicate repair %1%2</source>
+        <translation>Duplikovať opravu %1%2</translation>
+    </message>
+    <message>
+        <source>Remove repair %1%2</source>
+        <translation>Odstrániť opravu %1%2</translation>
+    </message>
+    <message>
+        <source>Add variable</source>
+        <translation>Pridať premennú</translation>
+    </message>
+    <message>
+        <source>Edit variable %1</source>
+        <translation>Upraviť premennú %1</translation>
+    </message>
+    <message>
+        <source>Remove variable %1</source>
+        <translation>Odstrániť premennú %1</translation>
+    </message>
+    <message>
+        <source>Edit table %1</source>
+        <translation>Upraviť tabuľku %1</translation>
+    </message>
+    <message>
+        <source>Remove table %1</source>
+        <translation>Odstrániť tabuľku %1</translation>
+    </message>
+    <message>
+        <source>Add variable %1 to table %2</source>
+        <translation>Pridať premennú %1 do tabuľky %2</translation>
+    </message>
+    <message>
+        <source>Remove variable %1 (%2) from table %3</source>
+        <translation>Odstrániť premennú %1 (%2) z tabuľky %3</translation>
+    </message>
+    <message>
+        <source>Move variable %1 (%2) up in table %3</source>
+        <translation>Posunúť premennú %1 (%2) hore v tabuľke %3</translation>
+    </message>
+    <message>
+        <source>Move variable %1 (%2) down in table %3</source>
+        <translation>Posunúť premennú %1 (%2) dole v tabuľke %3</translation>
+    </message>
+    <message>
+        <source>Add warning</source>
+        <translation>Pridať upozornenie</translation>
+    </message>
+    <message>
+        <source>Edit warning %1</source>
+        <translation>Upraviť upozornenie %1</translation>
+    </message>
+    <message>
+        <source>Remove warning %1</source>
+        <translation>Odstrániť upozornenie %1</translation>
+    </message>
+    <message>
+        <source>Add inspector</source>
+        <translation>Pridať kontrolóra</translation>
+    </message>
+    <message>
+        <source>Edit inspector %1</source>
+        <translation>Upraviť kontrolóra %1</translation>
+    </message>
+    <message>
+        <source>Remove inspector %1</source>
+        <translation>Odstrániť kontrolóra %1</translation>
+    </message>
+    <message>
+        <source>Import database %1</source>
+        <translation>Importovať z databázy %1</translation>
+    </message>
+    <message>
+        <source>Import CSV %1</source>
+        <translation>Importovať z CSV %1</translation>
+    </message>
+    <message>
+        <source>Add assembly record type</source>
+        <translation>Pridať typ montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit assembly record type %1</source>
+        <translation>Upraviť typ montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Remove assembly record type %1</source>
+        <translation>Odstrániť typ montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Add assembly record item type</source>
+        <translation>Pridať typ položky montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit assembly record item type %1</source>
+        <translation>Upraviť typ položky montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Remove assembly record item type %1</source>
+        <translation>Odstrániť typ položky montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Add assembly record item category</source>
+        <translation>Pridať kategóriu položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit assembly record item category %1</source>
+        <translation>Upraviť kategóriu položiek montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Remove assembly record item category %1</source>
+        <translation>Odstrániť kategóriu položiek montážneho listu %1</translation>
+    </message>
+    <message>
+        <source>Add circuit unit type</source>
+        <translation>Pridať typ jednotky okruhu</translation>
+    </message>
+    <message>
+        <source>Edit circuit unit type %1</source>
+        <translation>Upraviť typ jednotky okruhu %1</translation>
+    </message>
+    <message>
+        <source>Remove circuit unit type %1</source>
+        <translation>Odstrániť typ jednotky okruhu %1</translation>
+    </message>
+    <message>
+        <source>Add style</source>
+        <translation>Pridať vzhľad</translation>
+    </message>
+    <message>
+        <source>Edit style %1</source>
+        <translation>Upraviť vzhľad %1</translation>
+    </message>
+    <message>
+        <source>Remove style %1</source>
+        <translation>Odstrániť vzhľad %1</translation>
+    </message>
+    <message>
+        <source>Lock database</source>
+        <translation>Zamknúť databázu</translation>
+    </message>
+    <message>
+        <source>Unlock database</source>
+        <translation>Odomknúť databázu</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4901,6 +5117,13 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Highlight nominal inspections</source>
         <translation>Vyznačiť nominálne kontroly</translation>
+    </message>
+</context>
+<context>
+    <name>UndoStack</name>
+    <message>
+        <source>Unknown operation</source>
+        <translation>Neznáma operácia</translation>
     </message>
 </context>
 <context>
