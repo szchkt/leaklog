@@ -386,7 +386,9 @@ void MainWindow::initTables(bool transaction)
 void MainWindow::newDatabase()
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
-    QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"), tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"),
+                                                QDir::home().absoluteFilePath(tr("untitled.lklg")),
+                                                tr("Leaklog Database (*.lklg)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
@@ -434,7 +436,8 @@ void MainWindow::openRecent(QListWidgetItem * item)
 void MainWindow::open()
 {
     if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), QDir::homePath(),
+                                                tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
     addRecent(path);
     openDatabase(path);
@@ -1810,7 +1813,9 @@ void MainWindow::exportData(const QString & type)
     else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }
     else if (type == "inspection") { title = tr("Export inspection data - Leaklog"); }
     else { title = tr("Export data - Leaklog"); }
-    QString path = QFileDialog::getSaveFileName(this, title, tr("untitled.lklg"), tr("Leaklog Database (*.lklg)"));
+    QString path = QFileDialog::getSaveFileName(this, title,
+                                                QDir::home().absoluteFilePath(tr("untitled.lklg")),
+                                                tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
@@ -1847,7 +1852,8 @@ void MainWindow::importData()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), "", tr("Leaklog Databases (*.lklg);;All files (*.*)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), QDir::homePath(),
+                                                tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
 { // BEGIN IMPORT (SCOPE)
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
@@ -2777,7 +2783,8 @@ void MainWindow::importCSV()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), "", tr("CSV files (*.csv);;All files (*.*)"));
+    QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), QDir::homePath(),
+                                                tr("CSV files (*.csv);;All files (*.*)"));
     if (path.isEmpty()) { return; }
 
     QString string_value;

@@ -791,7 +791,9 @@ void MainWindow::exportPDFLandscape()
 
 void MainWindow::exportPDF(int orientation)
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"), QString("%1.pdf").arg(fileNameForCurrentView()), tr("Adobe PDF (*.pdf)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"),
+                                                QDir::home().absoluteFilePath(QString("%1.pdf").arg(fileNameForCurrentView())),
+                                                tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
     QPrinter printer(QPrinter::HighResolution);
@@ -803,7 +805,9 @@ void MainWindow::exportPDF(int orientation)
 
 void MainWindow::exportHTML()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"), QString("%1.html").arg(fileNameForCurrentView()), tr("Webpage (*.html)"));
+    QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"),
+                                                QDir::home().absoluteFilePath(QString("%1.html").arg(fileNameForCurrentView())),
+                                                tr("Webpage (*.html)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".html", Qt::CaseInsensitive)) { path.append(".html"); }
     QFile file(path);
