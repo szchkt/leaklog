@@ -6,8 +6,8 @@
 class EditDialogueWithAutoId : public EditDialogue
 {
 public:
-    EditDialogueWithAutoId(DBRecord * record, QWidget * parent = NULL, int max_id = -1) :
-        EditDialogue(record, parent), m_max_id(max_id) {}
+    EditDialogueWithAutoId(DBRecord * record, UndoStack * undo_stack, QWidget * parent = NULL, int max_id = -1) :
+        EditDialogue(record, undo_stack, parent), m_max_id(max_id) {}
 
 protected slots:
     virtual void save();

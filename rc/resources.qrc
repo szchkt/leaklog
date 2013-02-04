@@ -72,5 +72,6 @@
         <file>images/csv16.png</file>
         <file>images/back.png</file>
         <file>images/forward.png</file>
+        <file>images/edit_undo.png</file>
     </qresource>
 </RCC>

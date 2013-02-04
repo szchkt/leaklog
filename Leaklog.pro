@@ -58,6 +58,7 @@ HEADERS       += src/aboutwidget.h \
                  src/reportdatacontroller.h \
                  src/sha256.h \
                  src/tabbededitdialogue.h \
+                 src/undostack.h \
                  src/variableevaluation.h \
                  src/variables.h \
                  src/warnings.h
@@ -110,6 +111,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/reportdatacontroller.cpp \
                  src/sha256.cpp \
                  src/tabbededitdialogue.cpp \
+                 src/undostack.cpp \
                  src/variableevaluation.cpp \
                  src/variables.cpp \
                  src/view.cpp \

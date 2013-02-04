@@ -27,7 +27,7 @@ class EditCircuitDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditCircuitDialogue(DBRecord *, QWidget * = NULL);
+    EditCircuitDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
 private slots:
     void updateCircuit(MTDictionary);

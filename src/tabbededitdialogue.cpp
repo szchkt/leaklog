@@ -27,8 +27,8 @@
 #include <QTabWidget>
 #include <QScrollArea>
 
-TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, QWidget * parent, bool layout)
-    : EditDialogue(parent)
+TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent, bool layout)
+    : EditDialogue(undo_stack, parent)
 {
     main_tabw = new QTabWidget;
 

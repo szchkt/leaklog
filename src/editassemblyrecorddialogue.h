@@ -27,7 +27,7 @@ class EditAssemblyRecordDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditAssemblyRecordDialogue(DBRecord *, QWidget * = NULL);
+    EditAssemblyRecordDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
 protected slots:
     virtual void save();

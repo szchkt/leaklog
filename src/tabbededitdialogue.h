@@ -40,7 +40,7 @@ class TabbedEditDialogue : public EditDialogue
     Q_OBJECT
 
 public:
-    TabbedEditDialogue(DBRecord * record, QWidget * parent = NULL, bool layout = true);
+    TabbedEditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent = NULL, bool layout = true);
     ~TabbedEditDialogue();
 
 protected slots:

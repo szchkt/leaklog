@@ -29,6 +29,7 @@
 #include "aboutwidget.h"
 #include "permissionsdialogue.h"
 #include "sha256.h"
+#include "undostack.h"
 
 #include <QSettings>
 #include <QTranslator>
@@ -151,25 +152,39 @@ MainWindow::MainWindow():
     tbtn_open->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_open->setPopupMode(QToolButton::InstantPopup);
     toolBar->insertWidget(actionSave, tbtn_open);
+    actionOpen->setMenu(menuOpen);
+
+    tbtn_undo = new QToolButton(this);
+    tbtn_undo->setDefaultAction(actionUndo);
+    tbtn_undo->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    tbtn_undo->setPopupMode(QToolButton::InstantPopup);
+    toolBar->insertWidget(actionBack, tbtn_undo);
+
+    m_undo_stack = new UndoStack(actionUndo, this);
+    QObject::connect(m_undo_stack, SIGNAL(undoTriggered()), this, SLOT(loadDatabase()));
+
     tbtn_export = new QToolButton(this);
     tbtn_export->setDefaultAction(actionExport);
     tbtn_export->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_export->setPopupMode(QToolButton::InstantPopup);
     toolBar->insertWidget(actionPrint, tbtn_export);
+    actionExport->setMenu(menuExport);
+
     QWidget * spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
-    actionOpen->setMenu(menuOpen);
-    actionExport->setMenu(menuExport);
+
     QMenu * menuAdd_variable = new QMenu(this);
     menuAdd_variable->addAction(actionNew_variable);
     menuAdd_variable->addAction(actionNew_subvariable);
     tbtn_add_variable->setMenu(menuAdd_variable);
+
     actgrp_view = new QActionGroup(this);
     actgrp_view->addAction(actionService_company);
     actgrp_view->addAction(actionBasic_logbook);
     actgrp_view->addAction(actionDetailed_logbook);
     actgrp_view->addAction(actionAssembly_records);
+
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
 
@@ -1155,6 +1170,7 @@ void MainWindow::addRecent(const QString & name)
 
 void MainWindow::clearAll()
 {
+    m_undo_stack->clear();
     clearSelection(false);
     navigation->tableComboBox()->clear();
     cb_table_edit->clear();
@@ -1448,6 +1464,9 @@ void MainWindow::toggleLocked()
 
         if (d.exec() != QDialog::Accepted) return;
 
+        UndoCommand command(m_undo_stack, tr("Lock database"));
+        m_undo_stack->savepoint();
+
         setDBInfoValueForKey("lock_date", date->date().toString(DATE_FORMAT));
         setDBInfoValueForKey("autolock_days", QString::number(days->value()));
         setDBInfoValueForKey("lock_password", sha256(password->text()));
@@ -1469,6 +1488,9 @@ void MainWindow::toggleLocked()
             QMessageBox::warning(this, tr("Unlock database - Leaklog"), tr("Wrong password."));
             return;
         }
+
+        UndoCommand command(m_undo_stack, tr("Unlock database"));
+        m_undo_stack->savepoint();
 
         setDBInfoValueForKey("locked", "false");
         updateLockButton();

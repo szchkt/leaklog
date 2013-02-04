@@ -27,8 +27,8 @@
 #include <QHeaderView>
 #include <QSpinBox>
 
-EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, QWidget * parent):
-    TabbedEditDialogue(record, parent)
+EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent):
+    TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
     addTab(new EditAssemblyRecordDialogueTab(idFieldValue().toInt()));

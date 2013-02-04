@@ -23,6 +23,7 @@
 #include "warnings.h"
 #include "highlighter.h"
 #include "editdialoguelayout.h"
+#include "undostack.h"
 
 #include <QToolButton>
 #include <QMessageBox>
@@ -195,8 +196,8 @@ void Conditions::remove(Condition * condition)
     if (i >= 0) { delete c_conditions.takeAt(i); }
 }
 
-EditWarningDialogue::EditWarningDialogue(WarningRecord * record, QWidget * parent):
-EditDialogue(parent)
+EditWarningDialogue::EditWarningDialogue(WarningRecord * record, UndoStack * undo_stack, QWidget * parent):
+EditDialogue(undo_stack, parent)
 {
     init(record);
 
@@ -248,6 +249,8 @@ void EditWarningDialogue::setWindowTitle(const QString & title)
 
 void EditWarningDialogue::save()
 {
+    md_undo_stack->savepoint();
+
     QVariantMap values;
     if (!md_record->id().isEmpty()) {
         values.insert("id", md_record->id().toInt());
@@ -270,10 +273,13 @@ void EditWarningDialogue::save()
         }
         values.insert("id", ids.first());
     }
+
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         values.insert((*i)->id(), (*i)->variantValue());
     }
+
     md_record->update(values);
+
     if (md_record->id().toInt() < 1000) {
         for (int i = 0; i < md_filters->count(); ++i) {
             MTSqlQuery insert_filter;
@@ -294,5 +300,6 @@ void EditWarningDialogue::save()
             insert_condition.exec();
         }
     }
+
     accept();
 }

@@ -33,7 +33,7 @@ class EditInspectionDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectionDialogue(DBRecord * record, QWidget * parent = NULL, const QString & duplicate_from = QString());
+    EditInspectionDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent = NULL, const QString & duplicate_from = QString());
     virtual ~EditInspectionDialogue();
 
 protected:

@@ -21,6 +21,7 @@
 #include "inputwidgets.h"
 #include "records.h"
 #include "editdialoguelayout.h"
+#include "undostack.h"
 
 #include <QPushButton>
 #include <QDialogButtonBox>
@@ -49,14 +50,16 @@ void EditDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
     md_vlayout_main->addLayout(md_grid_main);
 }
 
-EditDialogue::EditDialogue(QWidget * parent):
+EditDialogue::EditDialogue(UndoStack * undo_stack, QWidget * parent):
     QDialog(parent),
-    EditDialogueWidgets()
+    EditDialogueWidgets(),
+    md_undo_stack(undo_stack)
 {}
 
-EditDialogue::EditDialogue(DBRecord * record, QWidget * parent):
+EditDialogue::EditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent):
     QDialog(parent),
-    EditDialogueWidgets()
+    EditDialogueWidgets(),
+    md_undo_stack(undo_stack)
 {
     init(record);
 
@@ -103,6 +106,9 @@ bool EditDialogue::save(bool call_accept)
     }
     if (!md_record->checkValues(values, this))
         return false;
+
+    md_undo_stack->savepoint();
+
     md_record->update(values, true);
 
     if (call_accept) accept();

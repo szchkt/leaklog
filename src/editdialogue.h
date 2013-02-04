@@ -28,13 +28,14 @@
 class DBRecord;
 class MTRecord;
 class MDAbstractInputWidget;
+class UndoStack;
 
 class EditDialogue : public QDialog, public EditDialogueWidgets
 {
     Q_OBJECT
 
 public:
-    EditDialogue(DBRecord *, QWidget * = NULL);
+    EditDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
     virtual void setWindowTitle(const QString &);
 
@@ -47,7 +48,7 @@ protected slots:
     bool save(bool);
 
 protected:
-    EditDialogue(QWidget * = NULL);
+    EditDialogue(UndoStack *, QWidget * = NULL);
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
@@ -57,6 +58,7 @@ protected:
     virtual const QVariant idFieldValue();
 
     DBRecord * md_record;
+    UndoStack * md_undo_stack;
     QGridLayout * md_grid_main;
 
     friend class Customer;

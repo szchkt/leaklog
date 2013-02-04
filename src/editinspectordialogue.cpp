@@ -24,8 +24,8 @@
 
 #include <QTabWidget>
 
-EditInspectorDialogue::EditInspectorDialogue(DBRecord * record, QWidget * parent)
-    : TabbedEditDialogue(record, parent)
+EditInspectorDialogue::EditInspectorDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent)
+    : TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Inspector"));
 

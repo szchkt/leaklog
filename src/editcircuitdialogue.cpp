@@ -26,8 +26,8 @@
 #include "editcircuitdialoguecompressorstab.h"
 #include "editcircuitdialogueunitstab.h"
 
-EditCircuitDialogue::EditCircuitDialogue(DBRecord * record, QWidget * parent)
-    : TabbedEditDialogue(record, parent)
+EditCircuitDialogue::EditCircuitDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent)
+    : TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
 

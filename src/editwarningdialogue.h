@@ -131,7 +131,7 @@ class EditWarningDialogue : public EditDialogue
     Q_OBJECT
 
 public:
-    EditWarningDialogue(WarningRecord *, QWidget * = NULL);
+    EditWarningDialogue(WarningRecord *, UndoStack *, QWidget * = NULL);
 
     void setWindowTitle(const QString &);
 

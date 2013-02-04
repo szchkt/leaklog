@@ -30,7 +30,7 @@ class EditInspectorDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectorDialogue(DBRecord *, QWidget * = NULL);
+    EditInspectorDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 };
 
 class EditInspectorDialogueTab : public EditDialogueTab

@@ -25,6 +25,7 @@
 
 #include <QSqlDatabase>
 
+class UndoStack;
 class Warnings;
 class MTTextStream;
 class HTMLTable;
@@ -51,6 +52,7 @@ public:
     void openFile(const QString &);
 
     inline const MainWindowSettings & settings() const { return m_settings; }
+    inline UndoStack * undoStack() const { return m_undo_stack; }
 
 private slots:
     // UI
@@ -93,6 +95,7 @@ private slots:
     void newDatabase();
     void open();
     void openRemote();
+    void loadDatabase(bool reload = true);
     void save();
     void saveAndCompact();
     void closeDatabase(bool = true);
@@ -277,6 +280,7 @@ private:
     QLabel * lbl_selected_inspector;
     QPushButton * btn_clear_selection;
     QToolButton * tbtn_open;
+    QToolButton * tbtn_undo;
     QToolButton * tbtn_export;
     QString last_search_keyword;
     QComboBox * cb_lang;
@@ -288,4 +292,5 @@ private:
     bool check_for_updates;
     QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
+    UndoStack * m_undo_stack;
 };

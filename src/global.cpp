@@ -355,14 +355,14 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
                 index = exp.indexOf(expression, index + length);
             }
         }
-        QString id_, f_; bool last_id = false; int last_f = 0;
+        QString id_, f_;
+        int last_f = 0;
         for (int i = 0; i < exp.length(); ++i) {
             if (matched.contains(i)) {
                 if (!f_.isEmpty()) {
                     dict_exp.insert(f_, "function");
                     f_.clear();
                 }
-                last_id = true;
                 id_.append(exp.at(i));
             } else {
                 if (!id_.isEmpty()) {
@@ -376,7 +376,6 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
                     last_f = functions.indexOf(id_) + 1;
                     id_.clear();
                 }
-                last_id = false;
                 f_.append(exp.at(i));
             }
         }

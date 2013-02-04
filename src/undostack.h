@@ -17,52 +17,49 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef EDIT_CUSTOMER_DIALOGUE_H
-#define EDIT_CUSTOMER_DIALOGUE_H
+#ifndef UNDOSTACK_H
+#define UNDOSTACK_H
 
-#include "inputwidgets.h"
-#include "editdialogue.h"
+#include <QObject>
 
-class Customer;
-class EditDialogueBasicTable;
-class QButtonGroup;
+class QAction;
+class QMenu;
 
-class OperatorInputWidget : public MDGroupedInputWidgets
+class UndoStack : public QObject
 {
     Q_OBJECT
 
 public:
-    OperatorInputWidget(const QVariantMap &, QWidget *);
+    UndoStack(QAction * undo_action, QWidget * parent);
 
-    QVariant variantValue() const;
-    void setVariantValue(const QVariant &);
+    int savepoint();
+    bool rollbackToSavepoint(int savepoint);
 
-    void addToEditDialogue(EditDialogueWidgets &);
+    void clear();
+
+signals:
+    void undoTriggered();
 
 private slots:
-    void operatorChoiceChanged(int);
+    void hovered(QAction * action = NULL);
+    void undo(QAction * action);
 
 private:
-    QButtonGroup * operator_choice;
-    MDAbstractInputWidget * operator_id;
-    QList<MDAbstractInputWidget *> input_widgets;
+    QAction * m_undo_action;
+    QMenu * m_undo_menu;
 };
 
-class EditCustomerDialogue : public EditDialogue
+class UndoCommand : QObject
 {
     Q_OBJECT
 
 public:
-    EditCustomerDialogue(Customer *, UndoStack *, QWidget * = NULL);
+    UndoCommand(UndoStack * undo_stack, const QString & description);
 
-protected slots:
-    void save();
+    inline QString description() const { return m_description; }
 
 private:
-    EditDialogueBasicTable * persons_table;
-
-    QString original_customer_id;
-    QList<int> former_ids;
+    QString m_description;
 };
 
-#endif // EDIT_CUSTOMER_DIALOGUE_H
+#endif // UNDOSTACK_H

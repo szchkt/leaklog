@@ -36,6 +36,7 @@
 #include "mtlistwidget.h"
 #include "mtaddress.h"
 #include "mtvariant.h"
+#include "undostack.h"
 
 #include <QBuffer>
 #include <QMessageBox>
@@ -539,14 +540,43 @@ void MainWindow::openDatabase(QString path)
         return;
     }
     initTables(false);
+
+    loadDatabase(false);
+
+    setWindowTitleWithRepresentedFilename(path);
+    this->setWindowModified(false);
+    setAllEnabled(true);
+    stw_main->setCurrentIndex(1);
+    enableTools();
+    navigation->setView(Navigation::ServiceCompany);
+
+    MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
+    if (!query.next())
+        QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+}
+
+void MainWindow::loadDatabase(bool reload)
+{
+    if (reload) {
+        trw_variables->clear();
+
+        cb_table_edit->clear();
+        navigation->tableComboBox()->clear();
+
+        lw_warnings->clear();
+
+        lw_styles->clear();
+    }
+
     loadVariables(trw_variables);
 
-    MTSqlQuery query;
-    query.exec("SELECT id FROM tables ORDER BY uid DESC, id ASC");
+    MTSqlQuery query("SELECT id FROM tables ORDER BY uid DESC, id ASC");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
         navigation->tableComboBox()->addItem(query.value(0).toString());
     }
+
+    // loadTable(cb_table_edit->currentText());
 
     Warnings warnings;
     while (warnings.next()) {
@@ -565,17 +595,9 @@ void MainWindow::openDatabase(QString path)
     }
 
     updateLockButton();
-    setWindowTitleWithRepresentedFilename(path);
-    this->setWindowModified(false);
-    setAllEnabled(true);
-    stw_main->setCurrentIndex(1);
-    enableTools();
-    //loadTable(cb_table_edit->currentText());
-    navigation->setView(Navigation::ServiceCompany);
 
-    query.exec("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
-    if (!query.next())
-        QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+    if (reload)
+        clearSelection();
 }
 
 void MainWindow::save()
@@ -609,6 +631,7 @@ void MainWindow::saveDatabase(bool compact, bool update_ui)
         return;
     }
     if (update_ui) {
+        m_undo_stack->clear();
         setWindowTitleWithRepresentedFilename(db.databaseName());
         this->setWindowModified(false);
         refreshView();
@@ -682,7 +705,8 @@ void MainWindow::editServiceCompany()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
     ServiceCompany record(DBInfoValueForKey("default_service_company"));
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit service company information"));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDBInfoValueForKey("default_service_company", record.id());
         this->setWindowModified(true);
@@ -703,7 +727,10 @@ void MainWindow::editRecordOfRefrigerantManagement(const QString & date)
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
     RecordOfRefrigerantManagement record(date);
     if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, date.isEmpty()
+                        ? tr("Add record of refrigerant management")
+                        : tr("Edit record of refrigerant management %1").arg(m_settings.formatDateTime(date)));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list();
         if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("purchased_reco").toDouble() <= 0.0 &&
@@ -722,7 +749,8 @@ void MainWindow::addCustomer()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record("");
-    EditCustomerDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add customer"));
+    EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCustomer(record.id().toInt(), true);
@@ -735,9 +763,12 @@ void MainWindow::editCustomer()
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
     if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
-    EditCustomerDialogue md(&record, this);
     QString old_id = selectedCustomer();
     QString old_company_name = record.stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Edit customer %1%2")
+                        .arg(old_id.rightJustified(8, '0'))
+                        .arg(old_company_name.isEmpty() ? QString() : QString(" (%1)").arg(old_company_name)));
+    EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         QString company_name = record.stringValue("company");
@@ -800,7 +831,11 @@ void MainWindow::duplicateCustomer()
     Customer record(selectedCustomer());
     record.readValues();
     record.id().clear();
-    EditDialogue md(&record, this);
+    QString company_name = record.stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
+                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCustomer(record.id().toInt(), true);
@@ -812,10 +847,18 @@ void MainWindow::removeCustomer()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isCustomerSelected()) { return; }
     Customer record(selectedCustomer());
+    record.readValues("company, updated_by");
     if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    QString company_name = record.stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Remove customer %1%2")
+                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
+    m_undo_stack->savepoint();
+
     record.remove();
     Circuit circuits(selectedCustomer(), "");
     circuits.remove();
@@ -840,6 +883,7 @@ void MainWindow::decommissionAllCircuits()
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
     Customer customer(selectedCustomer());
+    customer.readValues("company");
 
     QDialog d(this);
     d.setWindowTitle(tr("Decommission all circuits - Leaklog"));
@@ -870,6 +914,12 @@ void MainWindow::decommissionAllCircuits()
     gl->addWidget(bb, 2, 0, 1, 2);
 
     if (d.exec() != QDialog::Accepted) return;
+
+    QString company_name = customer.stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Decommission all circuits of customer %1%2")
+                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
+    m_undo_stack->savepoint();
 
     QVariantMap set;
     set.insert("disused", 1);
@@ -907,7 +957,8 @@ void MainWindow::addCircuit()
     if (!isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(selectedCustomer(), "");
-    EditCircuitDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add circuit"));
+    EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuit(record.id().toInt(), true);
@@ -921,7 +972,11 @@ void MainWindow::editCircuit()
     if (!isCircuitSelected()) { return; }
     Circuit record(selectedCustomer(), selectedCircuit());
     if (!isOperationPermitted("edit_circuit", record.stringValue("updated_by"))) { return; }
-    EditCircuitDialogue md(&record, this);
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Edit circuit %1 (%2)")
+                        .arg(selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+    EditCircuitDialogue md(&record, m_undo_stack, this);
     QString old_id = selectedCircuit();
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
@@ -943,7 +998,11 @@ void MainWindow::duplicateCircuit()
     Circuit record(selectedCustomer(), selectedCircuit());
     record.readValues();
     record.id().clear();
-    EditDialogue md(&record, this);
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
+                        .arg(selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         ListOfVariantMaps compressors = Compressor(QString(),
                                                    MTDictionary(QStringList() << "customer_id" << "circuit_id",
@@ -1039,6 +1098,12 @@ void MainWindow::duplicateAndDecommissionCircuit()
         id = new_id->value();
     } while (Circuit(selectedCustomer(), QString::number(id)).exists());
 
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Duplicate and decommission circuit %1 (%2)")
+                        .arg(selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+    m_undo_stack->savepoint();
+
     Circuit circuit(selectedCustomer(), selectedCircuit());
     QVariantMap attributes = circuit.list();
 
@@ -1096,6 +1161,13 @@ void MainWindow::removeCircuit()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Remove circuit %1 (%2)")
+                        .arg(selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+    m_undo_stack->savepoint();
+
     record.remove();
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id",
                          QStringList() << selectedCustomer() << selectedCircuit());
@@ -1130,7 +1202,8 @@ void MainWindow::addInspection()
     if (!isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(selectedCustomer(), selectedCircuit(), "");
-    EditInspectionDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add inspection"));
+    EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -1146,7 +1219,12 @@ void MainWindow::editInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     if (!isOperationPermitted("edit_inspection", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedInspection())) { return; }
-    EditInspectionDialogue md(&record, this);
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Edit inspection %1 (%2, circuit %3)")
+                        .arg(m_settings.formatDateTime(selectedInspection()))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(selectedCircuit().rightJustified(5, '0')));
+    EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -1163,7 +1241,12 @@ void MainWindow::duplicateInspection()
     Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
     record.readValues();
     record.id().clear();
-    EditInspectionDialogue md(&record, this, selectedInspection());
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
+                        .arg(m_settings.formatDateTime(selectedInspection()))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(selectedCircuit().rightJustified(5, '0')));
+    EditInspectionDialogue md(&record, m_undo_stack, this, selectedInspection());
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspection(record.id(), true);
@@ -1182,6 +1265,14 @@ void MainWindow::removeInspection()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
+                        .arg(m_settings.formatDateTime(selectedInspection()))
+                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(selectedCircuit().rightJustified(5, '0')));
+    m_undo_stack->savepoint();
+
     record.remove();
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date",
                          QStringList() << selectedCustomer() << selectedCircuit() << selectedInspection());
@@ -1216,7 +1307,8 @@ void MainWindow::addRepair()
         record.parents().insert("parent", selectedCustomer());
         record.parents().insert("customer", Customer(selectedCustomer()).stringValue("company"));
     }
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add repair"));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -1228,9 +1320,14 @@ void MainWindow::editRepair()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
+    record.readValues("updated_by, customer");
     if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedRepair())) { return; }
-    EditDialogue md(&record, this);
+    QString company_name = record.stringValue("customer");
+    UndoCommand command(m_undo_stack, tr("Edit repair %1%2")
+                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -1248,7 +1345,11 @@ void MainWindow::duplicateRepair()
     if (!record.stringValue("parent").isEmpty()) {
         record.parents().insert("parent", record.stringValue("parent"));
     }
-    EditDialogue md(&record, this);
+    QString company_name = record.stringValue("customer");
+    UndoCommand command(m_undo_stack, tr("Duplicate repair %1%2")
+                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadRepair(record.id(), true);
@@ -1261,11 +1362,19 @@ void MainWindow::removeRepair()
     if (!isRepairSelected()) { return; }
     QString repair = selectedRepair();
     Repair record(repair);
+    record.readValues("updated_by, customer");
     if (!isOperationPermitted("remove_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(repair)) { return; }
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    QString company_name = record.stringValue("customer");
+    UndoCommand command(m_undo_stack, tr("Remove repair %1%2")
+                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
+    m_undo_stack->savepoint();
+
     record.remove();
     m_settings.clearSelectedRepair();
     enableTools();
@@ -1332,7 +1441,8 @@ void MainWindow::addVariable(bool subvar)
         parent_id = trw_variables->currentItem()->text(1);
     }
     VariableRecord record("", parent_id);
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add variable"));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, unit, scope, tolerance");
         QTreeWidgetItem * item = NULL;
@@ -1368,7 +1478,8 @@ void MainWindow::editVariable()
     QTreeWidgetItem * item = trw_variables->currentItem();
     QString id = item->text(1);
     VariableRecord record(id);
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit variable %1").arg(id));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, unit, scope, tolerance");
         item->setText(0, attributes.value("name").toString());
@@ -1410,6 +1521,9 @@ void MainWindow::removeVariable()
     QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(id), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
+    UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
+    m_undo_stack->savepoint();
+
     MTRecord("variables", "id", "", MTDictionary("parent_id", id)).remove();
     MTRecord("variables", "id", id, MTDictionary()).remove();
     delete item;
@@ -1426,7 +1540,8 @@ void MainWindow::addTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_table")) { return; }
     Table record("");
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add table"));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         navigation->tableComboBox()->addItem(record.id());
         cb_table_edit->addItem(record.id());
@@ -1441,7 +1556,8 @@ void MainWindow::editTable()
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
     Table record(cb_table_edit->currentText());
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
         int j = navigation->tableComboBox()->currentIndex();
@@ -1464,6 +1580,10 @@ void MainWindow::removeTable()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
+    m_undo_stack->savepoint();
+
     Table record(cb_table_edit->currentText());
     record.remove();
     int i = cb_table_edit->currentIndex();
@@ -1508,6 +1628,8 @@ void MainWindow::saveTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { loadTable(cb_table_edit->currentText()); return; }
+    UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
+    m_undo_stack->savepoint();
     Table record(cb_table_edit->currentText());
     QStringList variables, sum, avg; QString value;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
@@ -1570,6 +1692,11 @@ void MainWindow::addTableVariable()
         }
     }
     if (d.exec() == QDialog::Accepted && lw->currentIndex().isValid()) {
+        UndoCommand command(m_undo_stack, tr("Add variable %1 to table %2")
+                            .arg(lw->currentItem()->text())
+                            .arg(cb_table_edit->currentText()));
+        m_undo_stack->savepoint();
+
         Table record(cb_table_edit->currentText());
         QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
         variables << lw->currentItem()->data(Qt::UserRole).toString();
@@ -1593,6 +1720,13 @@ void MainWindow::removeTableVariable()
         case 1: // Cancel
             return; break;
     }
+
+    UndoCommand command(m_undo_stack, tr("Remove variable %1 (%2) from table %3")
+                        .arg(item->text(1))
+                        .arg(item->text(0))
+                        .arg(cb_table_edit->currentText()));
+    m_undo_stack->savepoint();
+
     Table record(cb_table_edit->currentText());
     QVariantMap attributes = record.list("variables, sum");
     QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
@@ -1628,6 +1762,13 @@ void MainWindow::moveTableVariable(bool up)
     if (!isOperationPermitted("edit_table")) { return; }
     int i = trw_table_variables->indexOfTopLevelItem(trw_table_variables->currentItem());
     if (i < 0) { return; }
+
+    UndoCommand command(m_undo_stack, (up ? tr("Move variable %1 (%2) up in table %3") : tr("Move variable %1 (%2) down in table %3"))
+                        .arg(trw_table_variables->currentItem()->text(1))
+                        .arg(trw_table_variables->currentItem()->text(0))
+                        .arg(cb_table_edit->currentText()));
+    m_undo_stack->savepoint();
+
     Table record(cb_table_edit->currentText());
     QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);
@@ -1649,7 +1790,8 @@ void MainWindow::addWarning()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_warning")) { return; }
     WarningRecord record("");
-    EditWarningDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add warning"));
+    EditWarningDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
@@ -1670,7 +1812,8 @@ void MainWindow::editWarning()
     if (!isOperationPermitted("edit_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
     WarningRecord record(item->data(Qt::UserRole).toString());
-    EditWarningDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit warning %1").arg(record.stringValue("name")));
+    EditWarningDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
@@ -1691,6 +1834,10 @@ void MainWindow::removeWarning()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
+    UndoCommand command(m_undo_stack, tr("Remove warning %1").arg(item->text()));
+    m_undo_stack->savepoint();
+
     WarningRecord record(item->data(Qt::UserRole).toString());
     record.remove();
     MTRecord filters("warnings_filters", "", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
@@ -1708,7 +1855,8 @@ void MainWindow::addInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record("");
-    EditInspectorDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add inspector"));
+    EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadInspector(record.id().toInt(), true);
@@ -1722,7 +1870,8 @@ void MainWindow::editInspector()
     if (!isOperationPermitted("edit_inspector")) { return; }
     QString old_id = selectedInspector();
     Inspector record(old_id);
-    EditInspectorDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit inspector %1").arg(record.stringValue("person")));
+    EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -1757,7 +1906,12 @@ void MainWindow::removeInspector()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     Inspector record(selectedInspector());
+
+    UndoCommand command(m_undo_stack, tr("Remove inspector %1").arg(record.stringValue("person")));
+    m_undo_stack->savepoint();
+
     record.remove();
     m_settings.setSelectedInspector(-1);
     enableTools();
@@ -2499,6 +2653,9 @@ void MainWindow::importData()
         }
     }
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
+        UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).baseName()));
+        m_undo_stack->savepoint();
+
         QVariantMap set;
         QSet<QString> fields;
 
@@ -2900,6 +3057,9 @@ void MainWindow::importCSV()
 
     ImportCsvDialogue id(path, tables, this);
     if (id.exec() == QDialog::Accepted) {
+        UndoCommand command(m_undo_stack, tr("Import CSV %1").arg(QFileInfo(path).baseName()));
+        m_undo_stack->savepoint();
+
         int num_failed = id.save();
 
         if (num_failed)
@@ -2916,7 +3076,8 @@ void MainWindow::addAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordType record("");
-    EditAssemblyRecordDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add assembly record type"));
+    EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordType(record.id().toInt(), true);
@@ -2939,7 +3100,8 @@ void MainWindow::editAssemblyRecordType()
     if (!isAssemblyRecordTypeSelected()) { return; }
     QString old_id = selectedAssemblyRecordType();
     AssemblyRecordType record(old_id);
-    EditAssemblyRecordDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit assembly record type %1").arg(record.stringValue("name")));
+    EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -2961,7 +3123,12 @@ void MainWindow::removeAssemblyRecordType()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item - Leaklog"), tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     AssemblyRecordType record(sel_record);
+
+    UndoCommand command(m_undo_stack, tr("Remove assembly record type %1").arg(record.stringValue("name")));
+    m_undo_stack->savepoint();
+
     record.remove();
     m_settings.setSelectedAssemblyRecordType(-1);
     enableTools();
@@ -2973,7 +3140,8 @@ void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemType record("");
-    EditDialogueWithAutoId md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
+    EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemType(record.id().toInt(), true);
@@ -2996,7 +3164,8 @@ void MainWindow::editAssemblyRecordItemType()
     if (!isAssemblyRecordItemTypeSelected()) { return; }
     QString old_id = selectedAssemblyRecordItemType();
     AssemblyRecordItemType record(old_id);
-    EditDialogueWithAutoId md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit assembly record item type %1").arg(record.stringValue("name")));
+    EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -3019,7 +3188,12 @@ void MainWindow::removeAssemblyRecordItemType()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item type - Leaklog"), tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     AssemblyRecordItemType record(sel_record);
+
+    UndoCommand command(m_undo_stack, tr("Remove assembly record item type %1").arg(record.stringValue("name")));
+    m_undo_stack->savepoint();
+
     record.remove();
     m_settings.setSelectedAssemblyRecordItemType(-1);
     enableTools();
@@ -3031,7 +3205,8 @@ void MainWindow::addAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemCategory record("");
-    EditDialogueWithAutoId md(&record, this, 1000);
+    UndoCommand command(m_undo_stack, tr("Add assembly record item category"));
+    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadAssemblyRecordItemCategory(record.id().toInt(), true);
@@ -3054,7 +3229,8 @@ void MainWindow::editAssemblyRecordItemCategory()
     if (!isAssemblyRecordItemCategorySelected()) { return; }
     QString old_id = selectedAssemblyRecordItemCategory();
     AssemblyRecordItemCategory record(old_id);
-    EditDialogueWithAutoId md(&record, this, 1000);
+    UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.stringValue("name")));
+    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -3086,7 +3262,12 @@ void MainWindow::removeAssemblyRecordItemCategory()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item category - Leaklog"), tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:").arg(sel_category), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     AssemblyRecordItemCategory category(sel_category);
+
+    UndoCommand command(m_undo_stack, tr("Remove assembly record item category %1").arg(category.stringValue("name")));
+    m_undo_stack->savepoint();
+
     category.remove();
     m_settings.setSelectedAssemblyRecordItemCategory(-1);
     enableTools();
@@ -3112,7 +3293,8 @@ void MainWindow::addCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     CircuitUnitType unit_type("");
-    EditDialogueWithAutoId md(&unit_type, this);
+    UndoCommand command(m_undo_stack, tr("Add circuit unit type"));
+    EditDialogueWithAutoId md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         loadCircuitUnitType(unit_type.id().toInt(), true);
@@ -3135,7 +3317,8 @@ void MainWindow::editCircuitUnitType()
     if (!isCircuitUnitTypeSelected()) { return; }
     QString old_id = selectedCircuitUnitType();
     CircuitUnitType record(old_id);
-    EditDialogueWithAutoId md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit circuit unit type %1").arg(record.stringValue("type")));
+    EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
         if (old_id != record.id()) {
@@ -3163,7 +3346,12 @@ void MainWindow::removeCircuitUnitType()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove circuit unit type - Leaklog"), tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:").arg(sel_unit_type), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     CircuitUnitType unit_type(sel_unit_type);
+
+    UndoCommand command(m_undo_stack, tr("Remove circuit unit type %1").arg(unit_type.stringValue("type")));
+    m_undo_stack->savepoint();
+
     unit_type.remove();
     m_settings.setSelectedCircuitUnitType(-1);
     enableTools();
@@ -3182,7 +3370,8 @@ void MainWindow::addStyle()
     int id = query.value(0).toInt() + 1;
 
     Style record(QString::number(id));
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Add style"));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("id, name");
         QListWidgetItem * item = new QListWidgetItem;
@@ -3201,7 +3390,8 @@ void MainWindow::editStyle()
     if (!isOperationPermitted("edit_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();
     Style record(item->data(Qt::UserRole).toString());
-    EditDialogue md(&record, this);
+    UndoCommand command(m_undo_stack, tr("Edit style %1").arg(record.stringValue("name")));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("id, name");
         item->setText(attributes.value("name").toString());
@@ -3220,7 +3410,12 @@ void MainWindow::removeStyle()
     bool ok;
     QString confirmation = QInputDialog::getText(this, tr("Remove style - Leaklog"), tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
+
     Style record(item->data(Qt::UserRole).toString());
+
+    UndoCommand command(m_undo_stack, tr("Remove style %1").arg(record.stringValue("name")));
+    m_undo_stack->savepoint();
+
     record.remove();
     delete item;
     enableTools();

@@ -33,8 +33,8 @@
 #include <QSplitter>
 #include <QSettings>
 
-EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, QWidget * parent, const QString & duplicate_from)
-    : TabbedEditDialogue(record, parent, false),
+EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent, const QString & duplicate_from)
+    : TabbedEditDialogue(record, undo_stack, parent, false),
       compressors(NULL)
 {
     md_grid_main->setHorizontalSpacing(9);

@@ -55,22 +55,22 @@ public:
     void readValues(const QString & fields = "*");
     inline QVariantMap & values() { return r_values; }
     inline QVariant value(const QString & field, const QVariant & default_value = QVariant()) {
-        return r_values.isEmpty() ? list(field).value(field, default_value) : r_values.value(field, default_value);
+        return r_values.contains(field) ? r_values.value(field) : list(field).value(field, default_value);
     }
     inline bool boolValue(const QString & field, bool default_value = false) {
-        return r_values.isEmpty() ? list(field).value(field, default_value).toInt() : r_values.value(field, default_value).toInt();
+        return r_values.contains(field) ? r_values.value(field).toInt() : list(field).value(field, default_value).toInt();
     }
     inline int intValue(const QString & field, int default_value = 0) {
-        return r_values.isEmpty() ? list(field).value(field, default_value).toInt() : r_values.value(field, default_value).toInt();
+        return r_values.contains(field) ? r_values.value(field).toInt() : list(field).value(field, default_value).toInt();
     }
     inline qlonglong longLongValue(const QString & field, qlonglong default_value = 0L) {
-        return r_values.isEmpty() ? list(field).value(field, default_value).toLongLong() : r_values.value(field, default_value).toLongLong();
+        return r_values.contains(field) ? r_values.value(field).toLongLong() : list(field).value(field, default_value).toLongLong();
     }
     inline double doubleValue(const QString & field, double default_value = 0.0) {
-        return r_values.isEmpty() ? list(field).value(field, default_value).toDouble() : r_values.value(field, default_value).toDouble();
+        return r_values.contains(field) ? r_values.value(field).toDouble() : list(field).value(field, default_value).toDouble();
     }
     inline QString stringValue(const QString & field, const QString & default_value = QString()) {
-        return r_values.isEmpty() ? list(field).value(field, default_value).toString() : r_values.value(field, default_value).toString();
+        return r_values.contains(field) ? r_values.value(field).toString() : list(field).value(field, default_value).toString();
     }
     ListOfVariantMaps listAll(const QString & fields = "*", const QString & order_by = QString());
     QVariantMap sumAll(const QString & fields);

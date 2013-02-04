@@ -115,8 +115,8 @@ void OperatorInputWidget::operatorChoiceChanged(int id)
     static_cast<QWidget *>(this->parent())->resize(0, 0);
 }
 
-EditCustomerDialogue::EditCustomerDialogue(Customer * record, QWidget * parent):
-    EditDialogue(record, parent),
+EditCustomerDialogue::EditCustomerDialogue(Customer * record, UndoStack * undo_stack, QWidget * parent):
+    EditDialogue(record, undo_stack, parent),
     original_customer_id(idFieldValue().toString())
 {
     QList<EditDialogueTableCell *> cells;
