@@ -2553,12 +2553,12 @@ QString MainWindow::viewAssemblyRecord(const QString & customer_id, const QStrin
             *_td << QString::number(total_discount) << " %";
         }
         if (colspans[++i]) {
-            absolute_total += total;
-            acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
             _td = _tr->addCell(colspan.arg(colspans[i]));
             _td->setId(QString("item_%1_total").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
             *_td << QString::number(total);
         }
+        absolute_total += total;
+        acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
     }
     if (show_total) {
         table = top_table;
