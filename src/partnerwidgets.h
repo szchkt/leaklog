@@ -26,7 +26,6 @@ class QWidget;
 class QString;
 
 #include <QObject>
-#include <QMap>
 
 class PartnerWidgets : public QObject
 {
@@ -46,7 +45,6 @@ private:
     MDLineEdit * partner_id_le;
     MDLineEdit * partner_name_le;
     MDComboBox * partners_cb;
-    QMap<QString, QString> partners_map;
 };
 
 #endif // PARTNER_WIDGETS_H
