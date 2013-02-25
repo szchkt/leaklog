@@ -1039,6 +1039,9 @@ void MainWindow::duplicateAndDecommissionCircuit()
     if (!isOperationPermitted("add_circuit")) { return; }
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
+    Circuit circuit(selectedCustomer(), selectedCircuit());
+    QVariantMap attributes = circuit.list();
+
     QDialog d(this);
     d.setWindowTitle(tr("Duplicate and decommission - Leaklog"));
     QGridLayout * gl = new QGridLayout(&d);
@@ -1070,13 +1073,33 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QRadioButton * set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 3, 0);
 
+    QStringList refrigerants = listRefrigerantsToString().split(';');
+
+    lbl = new QLabel(tr("Previous refrigerant:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 4, 0);
+
+    QComboBox * old_refrigerant = new QComboBox(&d);
+    old_refrigerant->addItems(refrigerants);
+    old_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
+    gl->addWidget(old_refrigerant, 4, 1);
+
+    lbl = new QLabel(tr("New refrigerant:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 5, 0);
+
+    QComboBox * new_refrigerant = new QComboBox(&d);
+    new_refrigerant->addItems(refrigerants);
+    new_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
+    gl->addWidget(new_refrigerant, 5, 1);
+
     lbl = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
     QFont bold;
     bold.setBold(true);
     lbl->setFont(bold);
     lbl->setWordWrap(true);
     lbl->setVisible(false);
-    gl->addWidget(lbl, 4, 0, 1, 2);
+    gl->addWidget(lbl, 6, 0, 1, 2);
 
     QDialogButtonBox * bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1085,7 +1108,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 5, 0, 1, 2);
+    gl->addWidget(bb, 7, 0, 1, 2);
 
     int id = 0;
     do {
@@ -1104,9 +1127,6 @@ void MainWindow::duplicateAndDecommissionCircuit()
                         .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
     m_undo_stack->savepoint();
 
-    Circuit circuit(selectedCustomer(), selectedCircuit());
-    QVariantMap attributes = circuit.list();
-
     ListOfVariantMaps compressors = Compressor(QString(),
                                                MTDictionary(QStringList() << "customer_id" << "circuit_id",
                                                             QStringList() << selectedCustomer() << selectedCircuit())).listAll();
@@ -1118,6 +1138,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QVariantMap set;
     set.insert("disused", 1);
     set.insert("decommissioning", date->date().toString(DATE_FORMAT));
+    set.insert("refrigerant", old_refrigerant->currentText());
     circuit.update(set);
 
     int duplicate_id;
@@ -1131,6 +1152,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
         attributes.insert("id", id);
     }
 
+    attributes.insert("refrigerant", new_refrigerant->currentText());
     Circuit().update(attributes);
 
     qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());

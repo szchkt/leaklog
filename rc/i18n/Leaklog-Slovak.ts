@@ -3928,6 +3928,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Unlock database</source>
         <translation>Odomknúť databázu</translation>
     </message>
+    <message>
+        <source>Previous refrigerant:</source>
+        <translation>Predchádzajúce chladivo:</translation>
+    </message>
+    <message>
+        <source>New refrigerant:</source>
+        <translation>Nové chladivo:</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
