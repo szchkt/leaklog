@@ -124,6 +124,19 @@ Navigation::View Navigation::view()
     return Navigation::ServiceCompany;
 }
 
+void Navigation::addFilterItems(const QString & column, const MTDictionary & items)
+{
+    cb_filter_column->insertSeparator(cb_filter_column->count());
+
+    QSet<QString> used;
+    for (int i = 0; i < items.count(); ++i) {
+        if (!used.contains(items.value(i))) {
+            used << items.value(i);
+            cb_filter_column->addItem(items.value(i), QString("%1 = '%2' AND ? IS NOT NULL").arg(column).arg(items.key(i)));
+        }
+    }
+}
+
 void Navigation::updateView()
 {
     lbl_filter_since->setText(tr("Since:"));
@@ -173,6 +186,7 @@ void Navigation::updateView()
             cb_filter_column->addItem(QApplication::translate("Circuit", "Date of commissioning"), "commissioning");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
+            addFilterItems("field", Global::fieldsOfApplication());
             break;
         case Navigation::ListOfInspections:
             group = DetailedLogbookGroup;
@@ -220,10 +234,13 @@ void Navigation::updateView()
             break;
         case Navigation::OperatorReport:
             group = ServiceCompanyGroup;
-            filter_keyword_visible = false;
             filter_month_visible = true;
             lbl_filter_since->setText(tr("Year:"));
             spb_filter_since->setSpecialValueText(tr("Last"));
+            cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Place of operation"), "operation");
+            addFilterItems("field", Global::fieldsOfApplication());
             break;
         case Navigation::ListOfAssemblyRecordTypes:
             filter_since_visible = false;
@@ -381,7 +398,12 @@ void Navigation::toggleTableForAllCircuits()
 
 void Navigation::emitFilterChanged()
 {
-    if (!isFilterEmpty() && cb_filter_column->count())
+    bool enabled = !filterColumn().contains('?');
+    bool changed = !isFilterEmpty() || enabled != le_filter->isEnabled();
+    cb_filter_type->setEnabled(enabled);
+    le_filter->setEnabled(enabled);
+
+    if (changed && cb_filter_column->count())
         emit filterChanged();
 }
 
@@ -457,6 +479,8 @@ void Navigation::setReportDataGroupBoxVisible(bool visible)
 
 QString Navigation::filterKeyword() const
 {
+    if (filterColumn().contains('?'))
+        return le_filter->text();
     switch (cb_filter_type->currentIndex()) {
         // contains
         case 0: return "%" + le_filter->text() + "%"; break;

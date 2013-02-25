@@ -23,6 +23,7 @@
 #include "ui_navigation.h"
 
 class MainWindowSettings;
+class MTDictionary;
 
 class Navigation : public QWidget, private Ui::Navigation
 {
@@ -80,7 +81,7 @@ public:
     inline int filterMonthFromValue() const { return spb_filter_month_from->value(); }
     inline int filterMonthUntilValue() const { return spb_filter_month_until->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
-    inline bool isFilterEmpty() const { return le_filter->text().isEmpty(); }
+    inline bool isFilterEmpty() const { return le_filter->text().isEmpty() && !filterColumn().contains('?'); }
     QString filterKeyword() const;
 
     // Report data
@@ -121,6 +122,7 @@ signals:
     void filterChanged();
 
 protected:
+    void addFilterItems(const QString & column, const MTDictionary & items);
     // Groups
     void toggleVisibleGroup(Group, bool = true);
     // View

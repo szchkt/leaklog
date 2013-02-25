@@ -1909,7 +1909,13 @@ QString MainWindow::viewOperatorReport(const QString & customer_id, int year, in
     QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
     QString circuit_id;
-    MTSqlQuery circuits = Circuit(customer_id, "").select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
+
+    Circuit circuits_record(customer_id, "");
+    if (!navigation->isFilterEmpty()) {
+        circuits_record.addFilter(navigation->filterColumn(), navigation->filterKeyword());
+    }
+
+    MTSqlQuery circuits = circuits_record.select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
