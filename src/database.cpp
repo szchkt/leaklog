@@ -233,7 +233,7 @@ void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool sa
         while (files.next()) {
             QByteArray png;
             if (isDatabaseRemote(database))
-                png = QByteArray::fromBase64(QByteArray::fromHex(files.value(1).toByteArray()));
+                png = QByteArray::fromBase64(files.value(1).toByteArray());
             else
                 png = files.value(1).toByteArray();
 

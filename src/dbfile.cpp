@@ -39,10 +39,7 @@ File(QString::number(file_id))
 
 void DBFile::setData(const QByteArray & file_data)
 {
-    if (Global::isDatabaseRemote())
-        this->file_data = file_data.toBase64();
-    else
-        this->file_data = file_data;
+    this->file_data = file_data;
 }
 
 void DBFile::setFileName(const QString & file_name)
@@ -103,7 +100,10 @@ int DBFile::save()
     }
 
     QVariantMap update_map;
-    update_map.insert("data", file_data);
+    if (Global::isDatabaseRemote())
+        update_map.insert("data", file_data.toBase64());
+    else
+        update_map.insert("data", file_data);
     update_map.insert("name", file_name);
 
     update(update_map);
@@ -114,27 +114,14 @@ int DBFile::save()
 QByteArray DBFile::data()
 {
     if (!file_data.isNull() || file_id < 0)
-        return Global::isDatabaseRemote() ? QByteArray::fromBase64(file_data) : file_data;
+        return file_data;
 
     if (Global::isDatabaseRemote())
-        file_data = QByteArray::fromHex(list("data").value("data").toByteArray());
-    else
-        return file_data = list("data").value("data").toByteArray();
-
-    return QByteArray::fromBase64(file_data);
-}
-
-QByteArray DBFile::dataToBase64()
-{
-    if (!file_data.isNull() || file_id < 0)
-        return Global::isDatabaseRemote() ? file_data : file_data.toBase64();
-
-    if (Global::isDatabaseRemote())
-        return file_data = QByteArray::fromHex(list("data").value("data").toByteArray());
+        file_data = QByteArray::fromBase64(list("data").value("data").toByteArray());
     else
         file_data = list("data").value("data").toByteArray();
 
-    return file_data.toBase64();
+    return file_data;
 }
 
 DBFileChooser::DBFileChooser(QWidget * parent, int file_id):

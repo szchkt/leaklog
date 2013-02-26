@@ -2607,7 +2607,7 @@ HTMLTable * MainWindow::writeServiceCompany(HTMLTable * table)
     HTMLTableRow * _tr = table->addRow();
     HTMLTableCell * _td;
     if (serv_company.value("image").toInt()) {
-        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).dataToBase64();
+        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data().toBase64();
         if (!byte_array.isNull()) {
             _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
             *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
@@ -2892,10 +2892,10 @@ QString MainWindow::viewInspectionImages(const QString & customer_id, const QStr
     *el << "&nbsp;" << m_settings.formatDateTime(inspection_date);
 
     InspectionImage images_record(customer_id, circuit_id, inspection_date);
-    ListOfVariantMaps images = images_record.listAll();
+    ListOfVariantMaps images = images_record.listAll("*", "file_id");
 
     for (int i = 0; i < images.count(); ++i) {
-        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).dataToBase64();
+        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).data().toBase64();
         if (!byte_array.isNull()) {
             *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
         }

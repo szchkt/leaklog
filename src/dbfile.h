@@ -33,7 +33,6 @@ public:
     DBFile(int = -1);
 
     QByteArray data();
-    QByteArray dataToBase64();
     bool saveData(const QString &);
 
     void setData(const QByteArray & file_data);
