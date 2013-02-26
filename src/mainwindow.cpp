@@ -191,12 +191,15 @@ MainWindow::MainWindow():
     // Statusbar
     lbl_current_selection = new QLabel;
     lbl_current_selection->setVisible(false);
+    lbl_current_selection->setTextFormat(Qt::RichText);
     statusbar->addWidget(lbl_current_selection);
     lbl_selected_repair = new QLabel;
     lbl_selected_repair->setVisible(false);
+    lbl_selected_repair->setTextFormat(Qt::RichText);
     statusbar->addWidget(lbl_selected_repair);
     lbl_selected_inspector = new QLabel;
     lbl_selected_inspector->setVisible(false);
+    lbl_selected_inspector->setTextFormat(Qt::RichText);
     statusbar->addWidget(lbl_selected_inspector);
     btn_clear_selection = new QPushButton(this);
     btn_clear_selection->setFlat(true);
