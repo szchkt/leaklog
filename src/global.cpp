@@ -674,9 +674,9 @@ public:
         dict.insert("transportation", QApplication::translate("FieldsOfApplication", "Transport refrigeration"));
         dict.insert("airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
+        dict.insert("home", QApplication::translate("FieldsOfApplication", "Domestic refrigeration"));
         // OBSOLETE
         dict.insert("car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
-        dict.insert("home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("commercial", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("agricultural", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("other", QApplication::translate("FieldsOfApplication", "Commercial refrigeration"));
@@ -706,10 +706,10 @@ int Global::fieldOfApplicationToId(const QString & field)
         return FIELD_IDS::AC;
     else if (field == "heatpumps")
         return FIELD_IDS::HP;
+    else if (field == "home")
+        return FIELD_IDS::DOMESTIC;
     // OBSOLETE
     else if (field == "car")
-        return FIELD_IDS::AC;
-    else if (field == "home")
         return FIELD_IDS::AC;
     else if (field == "commercial")
         return FIELD_IDS::AC;
@@ -739,6 +739,8 @@ QString Global::idToFieldOfApplication(int id)
             return "airconditioning";
         case FIELD_IDS::HP:
             return "heatpumps";
+        case FIELD_IDS::DOMESTIC:
+            return "home";
     }
     return QString();
 }
@@ -774,6 +776,7 @@ public:
         dict.insert("field::transportation", QApplication::translate("FieldsOfApplication", "Transport refrigeration"));
         dict.insert("field::airconditioning", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::heatpumps", QApplication::translate("FieldsOfApplication", "Heat pumps"));
+        dict.insert("field::home", QApplication::translate("FieldsOfApplication", "Domestic refrigeration"));
         dict.insert("oil", QApplication::translate("Oils", "Oil"));
         for (int i = 0; i < Global::oils().count(); ++i)
             dict.insert(QString("oil::%1").arg(Global::oils().key(i)), Global::oils().value(i));
@@ -783,7 +786,6 @@ public:
             dict.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
         // OBSOLETE
         dict.insert("field::car", QApplication::translate("FieldsOfApplication", "Air conditioning"));
-        dict.insert("field::home", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::commercial", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::agricultural", QApplication::translate("FieldsOfApplication", "Air conditioning"));
         dict.insert("field::other", QApplication::translate("FieldsOfApplication", "Refrigeration"));

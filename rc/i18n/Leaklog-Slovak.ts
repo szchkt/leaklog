@@ -1158,6 +1158,10 @@
         <source>Transport refrigeration</source>
         <translation>Prepravné chladenie</translation>
     </message>
+    <message>
+        <source>Domestic refrigeration</source>
+        <translation>Domáce chladenie</translation>
+    </message>
 </context>
 <context>
     <name>ImportCsvDialogue</name>

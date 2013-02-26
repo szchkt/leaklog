@@ -2047,7 +2047,7 @@ QString MainWindow::viewLeakagesByApplication()
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
     for (int t = 0; t < tables.count(); ++t) {
         out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tables.at(t) << "</th>";
-        out << "<th colspan=\"6\">" << tr("Fields") << "</th></tr>";
+        out << "<th colspan=\"7\">" << tr("Fields") << "</th></tr>";
         out << "<tr><th>" << tr("All") << "</th>";
         for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
             out << "<th>" << attributeValues().value(n) << "</th>";
