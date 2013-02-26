@@ -1342,7 +1342,7 @@ void MainWindow::editRepair()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isRepairSelected()) { return; }
     Repair record(selectedRepair());
-    record.readValues("updated_by, customer");
+    record.readValues();
     if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(selectedRepair())) { return; }
     QString company_name = record.stringValue("customer");
