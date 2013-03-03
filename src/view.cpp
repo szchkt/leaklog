@@ -217,7 +217,9 @@ QString MainWindow::fileNameForCurrentView()
     if (navigation->view() == Navigation::AssemblyRecord)
         return currentView();
 
-    return QString("%1 - %2").arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName()).arg(currentView());
+    return QString("%1 - %2")
+            .arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName())
+            .arg(currentView().replace(':', '.'));
 }
 
 QString MainWindow::viewServiceCompany(int since)
