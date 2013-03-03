@@ -2184,6 +2184,9 @@
    <property name="text">
     <string>Undo</string>
    </property>
+   <property name="statusTip">
+    <string>Undo changes you have made</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="9"/>
@@ -2343,8 +2346,8 @@
      <y>613</y>
     </hint>
     <hint type="destinationlabel">
-     <x>511</x>
-     <y>689</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

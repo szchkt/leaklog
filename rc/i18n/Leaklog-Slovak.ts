@@ -3940,6 +3940,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>New refrigerant:</source>
         <translation>Nové chladivo:</translation>
     </message>
+    <message>
+        <source>Undo changes you have made</source>
+        <translation>Vrátiť späť vykonané zmeny</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
