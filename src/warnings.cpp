@@ -62,7 +62,9 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap & circu
                     if (function == "=" && circuit_attribute == value) {}
                     else if (function == "!=" && circuit_attribute != value) {}
                     else if (function == ">" && circuit_attribute > value) {}
+                    else if (function == ">=" && circuit_attribute >= value) {}
                     else if (function == "<" && circuit_attribute < value) {}
+                    else if (function == "<=" && circuit_attribute <= value) {}
                     else { skip = true; break; }
                 }
             }
