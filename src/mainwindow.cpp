@@ -782,17 +782,17 @@ void MainWindow::saveLink(int view)
 
 void MainWindow::printPreview()
 {
-    QPrintPreviewDialog * d = new QPrintPreviewDialog(this);
-    connect(d, SIGNAL(paintRequested(QPrinter *)), wv_main, SLOT(print(QPrinter *)));
-    d->exec();
+    QPrintPreviewDialog d(this);
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), wv_main, SLOT(print(QPrinter *)));
+    d.exec();
 }
 
 void MainWindow::print()
 {
-    QPrinter printer;
-    QPrintDialog * d = new QPrintDialog(&printer, this);
-    d->setWindowTitle(tr("Print"));
-    if (d->exec() != QDialog::Accepted) { return; }
+    QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog d(&printer, this);
+    d.setWindowTitle(tr("Print"));
+    if (d.exec() != QDialog::Accepted) { return; }
     wv_main->print(&printer);
 }
 
@@ -955,17 +955,19 @@ void MainWindow::printLabel(bool detailed)
         attributes.unite(service_company.list("name, address, mail, phone"));
     }
 
-    QPrinter * printer = new QPrinter(QPrinter::HighResolution);
-    QPrintDialog * dialogue = new QPrintDialog(printer, this);
-    dialogue->setWindowTitle(tr("Print label"));
-    if (dialogue->exec() != QDialog::Accepted) return;
-    printer->setOrientation(QPrinter::Portrait);
-    printer->setFullPage(true);
+    QApplication::processEvents();
+
+    QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog dialogue(&printer, this);
+    dialogue.setWindowTitle(tr("Print label"));
+    if (dialogue.exec() != QDialog::Accepted) return;
+    printer.setOrientation(QPrinter::Portrait);
+    printer.setFullPage(true);
 
     QPainter painter;
-    painter.begin(printer);
+    painter.begin(&printer);
     painter.setRenderHint(QPainter::Antialiasing);
-    QRect rect = printer->pageRect();
+    QRect rect = printer.pageRect();
     int margin = rect.width() / 33;
     int w = (rect.width() - 4 * margin) / 2;
     int h = (rect.height() - 8 * margin) / 4;
@@ -978,8 +980,6 @@ void MainWindow::printLabel(bool detailed)
         }
     }
     painter.end();
-
-    delete printer;
 }
 
 void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
