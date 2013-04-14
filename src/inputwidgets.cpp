@@ -371,7 +371,7 @@ MDInputWidget(id, labeltext, parent, this)
     installEventFilter(new WheelEventEater(this));
     MainWindow * main_window = parentWindow();
     if (main_window)
-        setDisplayFormat(main_window->settings().dateTimeFormatString());
+        setDisplayFormat(main_window->settings().dateFormatString());
     else
         setDisplayFormat(DATE_FORMAT);
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, DATE_FORMAT));
