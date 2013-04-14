@@ -59,8 +59,7 @@
 
 using namespace Global;
 
-MainWindow::MainWindow():
-    check_for_updates(true)
+MainWindow::MainWindow()
 {
     // Dictionaries
     dict_fieldtypes.insert("address", MTVariant::Address);
@@ -1551,14 +1550,14 @@ void MainWindow::loadSettings()
 #endif
     actionShow_icons_only->setChecked(settings.value("toolbar_icons_only", false).toBool());
     showIconsOnly(actionShow_icons_only->isChecked());
-    check_for_updates = settings.value("check_for_updates", true).toBool();
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
     actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
     actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
 #ifndef QT_DEBUG
-    if (check_for_updates) checkForUpdates(false);
+    if (settings.value("check_for_updates", true).toBool())
+        checkForUpdates(true);
 #endif
 }
 
@@ -1629,64 +1628,71 @@ void MainWindow::languageChanged()
     cb_lang = NULL;
 }
 
-void MainWindow::checkForUpdates(bool force)
+void MainWindow::checkForUpdates(bool silent)
 {
-    if (!force && !check_for_updates)
-        return;
-
-    network_access_manager->get(QNetworkRequest(QString("http://leaklog.sourceforge.net/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
+    QNetworkRequest request(QString("http://leaklog.sourceforge.net/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
 #ifdef Q_OS_WIN32
-              .arg('W').arg(QSysInfo::WindowsVersion)));
+              .arg('W').arg(QSysInfo::WindowsVersion));
 #elif defined Q_OS_MAC
-              .arg('M').arg(QSysInfo::MacintoshVersion)));
+              .arg('M').arg(QSysInfo::MacintoshVersion));
 #else
-              .arg('O').arg(-1)));
+              .arg('O').arg(-1));
 #endif
+    QNetworkReply * reply = network_access_manager->get(request);
+    reply->setProperty("silent", silent);
 }
 
 void MainWindow::httpRequestFinished(QNetworkReply * reply)
 {
+    bool silent = reply->property("silent").toBool();
+
     QString str;
 
     if (reply->error() == QNetworkReply::NoError && reply->isReadable())
         str = QString(reply->readAll());
     else
-        return httpRequestFailed();
+        return httpRequestFailed(silent);
 
     reply->deleteLater();
 
     QTextStream in(&str);
-    if (in.readLine() != "[Leaklog.current-version]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.current-version]")
+        return httpRequestFailed(silent);
     QString current_ver = in.readLine();
-    if (in.readLine() != "[Leaklog.current-version.float]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.current-version.float]")
+        return httpRequestFailed(silent);
     double f_current_ver = in.readLine().toDouble();
-    if (in.readLine() != "[Leaklog.download-url.src]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.download-url.src]")
+        return httpRequestFailed(silent);
 #if !defined Q_OS_MAC && !defined Q_OS_WIN32
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.download-url.macx]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.download-url.macx]")
+        return httpRequestFailed(silent);
 #ifdef Q_OS_MAC
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.download-url.win32]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.download-url.win32]")
+        return httpRequestFailed(silent);
 #ifdef Q_OS_WIN32
     QString url = in.readLine();
 #else
     in.readLine();
 #endif
-    if (in.readLine() != "[Leaklog.release-notes]") { return httpRequestFailed(); }
+    if (in.readLine() != "[Leaklog.release-notes]")
+        return httpRequestFailed(silent);
     QString release_notes;
     while (!in.atEnd()) { release_notes.append(in.readLine()); }
     if ((f_current_ver <= F_LEAKLOG_VERSION && !LEAKLOG_PREVIEW_VERSION) ||
         (f_current_ver < F_LEAKLOG_VERSION && LEAKLOG_PREVIEW_VERSION)) {
-        if (!check_for_updates) {
+        if (!silent) {
             QMessageBox message(this);
             message.setWindowTitle("Leaklog");
             message.setWindowModality(Qt::WindowModal);
@@ -1717,11 +1723,13 @@ void MainWindow::httpRequestFinished(QNetworkReply * reply)
                 break;
         }
     }
-    check_for_updates = false;
 }
 
-void MainWindow::httpRequestFailed()
+void MainWindow::httpRequestFailed(bool silent)
 {
+    if (silent)
+        return;
+
     switch (QMessageBox::critical(this, "Leaklog", tr("Failed to check for updates."), tr("&Try again"), tr("Cancel"), 0, 1)) {
         case 0: // Try again
             checkForUpdates(); break;

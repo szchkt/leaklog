@@ -87,9 +87,9 @@ private slots:
     void groupChanged(int);
     void changeLanguage();
     void languageChanged();
-    void checkForUpdates(bool force = true);
+    void checkForUpdates(bool silent = false);
     void httpRequestFinished(QNetworkReply * reply);
-    void httpRequestFailed();
+    void httpRequestFailed(bool silent);
     // DATABASE
     void openRecent(QListWidgetItem *);
     void newDatabase();
@@ -289,7 +289,6 @@ private:
     QMap<QAction *, MainWindowSettings::TimeFormat> dict_action_time_format;
     QActionGroup * actgrp_time_format;
     QMap<QString, QString> leaklog_i18n;
-    bool check_for_updates;
     QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
     UndoStack * m_undo_stack;
