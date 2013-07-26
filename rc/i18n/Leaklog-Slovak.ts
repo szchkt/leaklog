@@ -1513,6 +1513,17 @@
     </message>
 </context>
 <context>
+    <name>LeakagesByApplication</name>
+    <message>
+        <source>Amount of refrigerant in circuits</source>
+        <translation>Množstvo chladiva v okruhoch</translation>
+    </message>
+    <message>
+        <source>Percentage of leakage by application</source>
+        <translation>Percento úniku podľa nasadenia</translation>
+    </message>
+</context>
+<context>
     <name>MTAddressEdit</name>
     <message>
         <source>Street:</source>
@@ -4566,7 +4577,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5045,6 +5056,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>http://szchkt.org/report_data/</source>
         <extracomment>URL to the data report system of the notified body</extracomment>
         <translation>http://szchkt.org/report_data/</translation>
+    </message>
+    <message>
+        <source>all</source>
+        <translation>všetky</translation>
     </message>
 </context>
 <context>

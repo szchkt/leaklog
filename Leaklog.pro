@@ -33,6 +33,7 @@ HEADERS       += src/aboutwidget.h \
                  src/importcsvdialogue.h \
                  src/importdialogue.h \
                  src/inputwidgets.h \
+                 src/leakagesbyapplication.h \
                  src/linkparser.h \
                  src/main.h \
                  src/mainwindow.h \
@@ -92,6 +93,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/importcsvdialogue.cpp \
                  src/importdialogue.cpp \
                  src/inputwidgets.cpp \
+                 src/leakagesbyapplication.cpp \
                  src/linkparser.cpp \
                  src/main.cpp \
                  src/mainwindow.cpp \

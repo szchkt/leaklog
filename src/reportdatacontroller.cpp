@@ -19,9 +19,11 @@
 
 #include "reportdatacontroller.h"
 #include "reportdata.h"
+#include "leakagesbyapplication.h"
 #include "navigation.h"
 #include "records.h"
 #include "defs.h"
+#include "global.h"
 
 #include <QTextStream>
 #include <QWebView>
@@ -29,11 +31,14 @@
 #include <QDate>
 #include <QMessageBox>
 
+using namespace Global;
+
 ReportDataController::ReportDataController(QWebView * wv, Navigation * parent):
 QObject(parent), navigation(parent) {
     wv_main = wv;
     navigation->setReportDataGroupBoxVisible(true);
     navigation->autofillButton()->setEnabled(false);
+    navigation->autofillButton()->setStyleSheet("QToolButton::enabled { background-color: red; color: white; }");
     navigation->reportYearLabel()->setText(tr("Report year: %1").arg(QDate::currentDate().year() - 1));
     navigation->reportDataProgressBar()->setVisible(false);
     QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
@@ -55,6 +60,11 @@ int ReportDataController::currentReportYear()
     return year;
 }
 
+bool ReportDataController::shouldExportLeakages()
+{
+    return wv_main->page()->mainFrame()->evaluateJavaScript("canImportLeakagesByApplication();").toBool();
+}
+
 void ReportDataController::updateProgressBar(int progress)
 {
     navigation->reportDataProgressBar()->setVisible(true);
@@ -67,9 +77,16 @@ void ReportDataController::enableAutofill()
     bool valid = !version_required.toString().isEmpty();
     bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
     navigation->autofillButton()->setEnabled(valid && sufficient);
-    if (valid && !sufficient)
-        QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
-    if (valid) navigation->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
+
+    if (valid) {
+        if (!sufficient)
+            QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
+        else if (shouldExportLeakages())
+            navigation->reportYearLabel()->setText(tr("Report year: %1").arg(tr("all")));
+        else
+            navigation->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
+    }
+
     navigation->reportDataProgressBar()->setVisible(false);
 }
 
@@ -78,6 +95,16 @@ void ReportDataController::autofill()
     emit processing(true);
     QApplication::processEvents();
 
+    if (shouldExportLeakages())
+        reportLeakages();
+    else
+        reportData();
+
+    emit processing(false);
+}
+
+void ReportDataController::reportData()
+{
     int year = currentReportYear();
 
     QString js; QTextStream out(&js);
@@ -156,7 +183,62 @@ void ReportDataController::autofill()
     }
 
     wv_main->page()->mainFrame()->evaluateJavaScript(js);
-    emit processing(false);
+}
+
+void ReportDataController::reportLeakages()
+{
+    QString js; QTextStream out(&js);
+
+    LeakagesByApplication leakages(false);
+
+    QStringList tables;
+    tables << "refr_add_am" << "refrigerant_amount" << "refr_add_per";
+
+    Q_ASSERT(tables.count() == LeakagesByApplication::TableCount);
+
+    out << "importLeakagesByApplication({" << endl;
+
+    for (int year = leakages.startYear(); year <= leakages.endYear(); ++year) {
+        if (year != leakages.startYear())
+            out << "," << endl;
+
+        out << "\t" << year << ": {" << endl;
+
+        bool first_refrigerant = true;
+        foreach (const QString & refrigerant, leakages.usedRefrigerants().keys()) {
+            if (first_refrigerant)
+                first_refrigerant = false;
+            else
+                out << "," << endl;
+
+            out << "\t\t'" << refrigerant << "': {" << endl;
+
+            for (int t = 0; t < tables.count(); ++t) {
+                if (t)
+                    out << "," << endl;
+
+                out << "\t\t\t'" << tables.at(t) << "': { ";
+
+                QStringList values;
+                for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+                    QString field = attributeValues().key(n).remove("field::");
+                    int field_id = fieldOfApplicationToId(field);
+                    values << QString("%1: %2").arg(field_id)
+                              .arg(leakages.value(year, refrigerant, field).at(t));
+                }
+
+                out << values.join(", ") << " }";
+            }
+
+            out << endl << "\t\t}";
+        }
+
+        out << endl << "\t}";
+    }
+
+    out << endl << "});" << endl;
+
+    wv_main->page()->mainFrame()->evaluateJavaScript(js);
 }
 
 void ReportDataController::done()

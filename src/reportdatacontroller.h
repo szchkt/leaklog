@@ -43,6 +43,10 @@ signals:
 
 protected:
     int currentReportYear();
+    bool shouldExportLeakages();
+
+    void reportData();
+    void reportLeakages();
 
 private:
     QWebView * wv_main;

@@ -25,6 +25,8 @@
 int main(int argc, char *argv[])
 {
     MTApplication app(argc, argv);
+    app.setApplicationName("Leaklog");
+    app.setApplicationVersion(LEAKLOG_VERSION);
 
 #ifdef Q_OS_WIN32
     if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
