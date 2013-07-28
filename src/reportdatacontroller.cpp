@@ -38,7 +38,7 @@ QObject(parent), navigation(parent) {
     wv_main = wv;
     navigation->setReportDataGroupBoxVisible(true);
     navigation->autofillButton()->setEnabled(false);
-    navigation->autofillButton()->setStyleSheet("QToolButton::enabled { background-color: red; color: white; }");
+    navigation->autofillButton()->setStyleSheet("QToolButton:enabled { background-color: red; color: white; }");
     navigation->reportYearLabel()->setText(tr("Report year: %1").arg(QDate::currentDate().year() - 1));
     navigation->reportDataProgressBar()->setVisible(false);
     QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));

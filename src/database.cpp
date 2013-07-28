@@ -507,7 +507,7 @@ void MainWindow::openRemote()
 
 void MainWindow::openDatabase(QString path)
 {
-    m_settings.clearSelectedRepair();
+    current_tab->clearSelectedRepair();
     clearAll();
     if (path.isEmpty()) {
         QSqlDatabase db = QSqlDatabase::database();
@@ -548,7 +548,6 @@ void MainWindow::openDatabase(QString path)
     setAllEnabled(true);
     stw_main->setCurrentIndex(1);
     enableTools();
-    navigation->setView(Navigation::ServiceCompany);
 
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next())
@@ -561,7 +560,7 @@ void MainWindow::loadDatabase(bool reload)
         trw_variables->clear();
 
         cb_table_edit->clear();
-        navigation->tableComboBox()->clear();
+        // TODO: clear tables
 
         lw_warnings->clear();
 
@@ -570,11 +569,15 @@ void MainWindow::loadDatabase(bool reload)
 
     loadVariables(trw_variables);
 
+    QStringList tables;
+
     MTSqlQuery query("SELECT id FROM tables ORDER BY uid DESC, id ASC");
     while (query.next()) {
         cb_table_edit->addItem(query.value(0).toString());
-        navigation->tableComboBox()->addItem(query.value(0).toString());
+        tables << query.value(0).toString();
     }
+
+    emit tablesChanged(tables);
 
     // loadTable(cb_table_edit->currentText());
 
@@ -753,7 +756,7 @@ void MainWindow::addCustomer()
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadCustomer(record.id().toInt(), true);
+        current_tab->loadCustomer(record.id().toInt(), true);
     }
 }
 
@@ -809,7 +812,7 @@ void MainWindow::editCustomer()
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
-            loadCustomer(record.id().toInt(), true);
+            current_tab->loadCustomer(record.id().toInt(), true);
         } else if (old_company_name != company_name) {
             MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
@@ -838,7 +841,7 @@ void MainWindow::duplicateCustomer()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadCustomer(record.id().toInt(), true);
+        current_tab->loadCustomer(record.id().toInt(), true);
     }
 }
 
@@ -866,14 +869,14 @@ void MainWindow::removeCustomer()
     inspections.remove();
     MTRecord repairs("repairs", "date", "", MTDictionary("parent", selectedCustomer()));
     repairs.remove();
-    m_settings.setSelectedCustomer(-1);
-    m_settings.setSelectedCircuit(-1);
-    m_settings.setSelectedCompressor(-1);
-    m_settings.clearSelectedInspection();
-    m_settings.clearSelectedRepair();
+    current_tab->setSelectedCustomer(-1);
+    current_tab->setSelectedCircuit(-1);
+    current_tab->setSelectedCompressor(-1);
+    current_tab->clearSelectedInspection();
+    current_tab->clearSelectedRepair();
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfCustomers);
+    current_tab->setView(View::Customers);
 }
 
 void MainWindow::decommissionAllCircuits()
@@ -933,24 +936,6 @@ void MainWindow::decommissionAllCircuits()
     refreshView();
 }
 
-void MainWindow::loadCustomer(int customer, bool refresh)
-{
-    if (customer < 0) { return; }
-    m_settings.setSelectedCustomer(customer, Customer(QString::number(customer)).stringValue("company"));
-    m_settings.setSelectedCircuit(-1);
-    m_settings.setSelectedCompressor(-1);
-    m_settings.clearSelectedInspection();
-    enableTools();
-    if (refresh) {
-        if (actionService_company->isChecked())
-            navigation->setView(Navigation::ListOfCustomers);
-        else if (actionBasic_logbook->isChecked())
-            navigation->setView(Navigation::ListOfRepairs);
-        else
-            navigation->setView(Navigation::ListOfCircuits);
-    }
-}
-
 void MainWindow::addCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
@@ -961,7 +946,7 @@ void MainWindow::addCircuit()
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadCircuit(record.id().toInt(), true);
+        current_tab->loadCircuit(record.id().toInt(), true);
     }
 }
 
@@ -982,7 +967,7 @@ void MainWindow::editCircuit()
         this->setWindowModified(true);
         if (old_id != record.id()) {
             Circuit::cascadeIDChange(selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
-            loadCircuit(record.id().toInt(), true);
+            current_tab->loadCircuit(record.id().toInt(), true);
         } else {
             refreshView();
         }
@@ -1027,7 +1012,7 @@ void MainWindow::duplicateCircuit()
         }
 
         this->setWindowModified(true);
-        loadCircuit(record.id().toInt(), true);
+        current_tab->loadCircuit(record.id().toInt(), true);
     }
 }
 
@@ -1170,7 +1155,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     }
 
     this->setWindowModified(true);
-    loadCircuit(duplicate_id, true);
+    current_tab->loadCircuit(duplicate_id, true);
 }
 
 void MainWindow::removeCircuit()
@@ -1200,21 +1185,10 @@ void MainWindow::removeCircuit()
     InspectionsCompressor("", parents).remove();
     MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit",
                                                        QStringList() << selectedCustomer() << selectedCircuit())).remove();
-    m_settings.clearSelectedCircuit();
+    current_tab->clearSelectedCircuit();
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfCircuits);
-}
-
-void MainWindow::loadCircuit(int circuit, bool refresh)
-{
-    if (!isCustomerSelected()) { return; }
-    if (circuit < 0) { return; }
-    m_settings.setSelectedCircuit(circuit);
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfInspections);
-    }
+    current_tab->setView(View::Circuits);
 }
 
 void MainWindow::addInspection()
@@ -1228,7 +1202,7 @@ void MainWindow::addInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadInspection(record.id(), true);
+        current_tab->loadInspection(record.id(), true);
     }
 }
 
@@ -1249,7 +1223,7 @@ void MainWindow::editInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadInspection(record.id(), true);
+        current_tab->loadInspection(record.id(), true);
     }
 }
 
@@ -1271,7 +1245,7 @@ void MainWindow::duplicateInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this, selectedInspection());
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadInspection(record.id(), true);
+        current_tab->loadInspection(record.id(), true);
     }
 }
 
@@ -1300,24 +1274,10 @@ void MainWindow::removeInspection()
                          QStringList() << selectedCustomer() << selectedCircuit() << selectedInspection());
     InspectionsCompressor("", parents).remove();
     InspectionImage(selectedCustomer(), selectedCircuit(), selectedInspection()).remove();
-    m_settings.clearSelectedInspection();
+    current_tab->clearSelectedInspection();
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfInspections);
-}
-
-void MainWindow::loadInspection(const QString & inspection, bool refresh)
-{
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    if (inspection.isEmpty()) { return; }
-    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
-    m_settings.setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
-    m_settings.setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::Inspection);
-    }
+    current_tab->setView(View::Inspections);
 }
 
 void MainWindow::addRepair()
@@ -1333,7 +1293,7 @@ void MainWindow::addRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadRepair(record.id(), true);
+        current_tab->loadRepair(record.id(), true);
     }
 }
 
@@ -1352,7 +1312,7 @@ void MainWindow::editRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadRepair(record.id(), true);
+        current_tab->loadRepair(record.id(), true);
     }
 }
 
@@ -1374,7 +1334,7 @@ void MainWindow::duplicateRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadRepair(record.id(), true);
+        current_tab->loadRepair(record.id(), true);
     }
 }
 
@@ -1398,23 +1358,10 @@ void MainWindow::removeRepair()
     m_undo_stack->savepoint();
 
     record.remove();
-    m_settings.clearSelectedRepair();
+    current_tab->clearSelectedRepair();
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfRepairs);
-}
-
-void MainWindow::loadRepair(const QString & date, bool refresh)
-{
-    if (date.isEmpty()) { return; }
-    m_settings.setSelectedRepair(date);
-    enableTools();
-    if (refresh) {
-        if (actionBasic_logbook->isChecked() && navigation->view() == Navigation::ListOfCircuits)
-            refreshView();
-        else
-            navigation->setView(Navigation::ListOfRepairs);
-    }
+    current_tab->setView(View::Repairs);
 }
 
 void MainWindow::loadVariables(QTreeWidget * trw, QSqlDatabase database)
@@ -1565,7 +1512,7 @@ void MainWindow::addTable()
     UndoCommand command(m_undo_stack, tr("Add table"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        navigation->tableComboBox()->addItem(record.id());
+        emit tableAdded(-1, record.id());
         cb_table_edit->addItem(record.id());
         this->setWindowModified(true);
         refreshView();
@@ -1582,13 +1529,11 @@ void MainWindow::editTable()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
-        int j = navigation->tableComboBox()->currentIndex();
+        emit tableRemoved(cb_table_edit->currentText());
         cb_table_edit->removeItem(i);
-        navigation->tableComboBox()->removeItem(i);
+        emit tableAdded(i, record.id());
         cb_table_edit->insertItem(i, record.id());
-        navigation->tableComboBox()->insertItem(i, record.id());
         cb_table_edit->setCurrentIndex(i);
-        navigation->tableComboBox()->setCurrentIndex(j);
         this->setWindowModified(true);
         refreshView();
     }
@@ -1606,11 +1551,11 @@ void MainWindow::removeTable()
     UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
+    emit tableRemoved(cb_table_edit->currentText());
     Table record(cb_table_edit->currentText());
     record.remove();
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
-    navigation->tableComboBox()->removeItem(i);
     enableTools();
     this->setWindowModified(true);
     refreshView();
@@ -1620,7 +1565,6 @@ void MainWindow::loadTable(const QString &)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
-    navigation->tableComboBox()->setCurrentIndex(cb_table_edit->currentIndex());
     trw_table_variables->clear();
     Table record(cb_table_edit->currentText());
     QVariantMap attributes = record.list("variables, sum, avg");
@@ -1881,7 +1825,7 @@ void MainWindow::addInspector()
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadInspector(record.id().toInt(), true);
+        current_tab->loadInspector(record.id().toInt(), true);
     }
 }
 
@@ -1913,7 +1857,7 @@ void MainWindow::editInspector()
             update_assembly_record_items.bindValue(":old_id", old_id);
             update_assembly_record_items.bindValue(":new_id", record.id());
             update_assembly_record_items.exec();
-            loadInspector(record.id().toInt(), true);
+            current_tab->loadInspector(record.id().toInt(), true);
         } else {
             refreshView();
         }
@@ -1935,30 +1879,10 @@ void MainWindow::removeInspector()
     m_undo_stack->savepoint();
 
     record.remove();
-    m_settings.setSelectedInspector(-1);
+    current_tab->setSelectedInspector(-1);
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfInspectors);
-}
-
-void MainWindow::loadInspector(int inspector, bool refresh)
-{
-    if (inspector < 0) { return; }
-    m_settings.setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfInspectors);
-    }
-}
-
-void MainWindow::loadInspectorReport(int inspector, bool refresh)
-{
-    if (inspector < 0) { return; }
-    m_settings.setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::Inspector);
-    }
+    current_tab->setView(View::Inspectors);
 }
 
 void MainWindow::exportCustomerData()
@@ -2073,7 +1997,7 @@ void MainWindow::importData()
                         columns.insert(attribute.toString().rightJustified(8, '0'), attribute_modified ? "1" : "0");
                     }
                 } else {
-                    columns.insert(MTVariant(attribute, (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(i))).toString(),
+                    columns.insert(MTVariant(attribute, Customer::attributes().key(i)).toString(),
                         attribute_modified ? "1" : "0");
                 }
             }
@@ -2096,7 +2020,7 @@ void MainWindow::importData()
             item->setText(0, company_id_justified);
             for (int i = 1; i < Customer::attributes().count(); ++i) {
                 item->setText(i, MTVariant(query.value(Customer::attributes().key(i)),
-                                           (MTVariant::Type)dict_fieldtypes.value(Customer::attributes().key(i))).toString());
+                                           Customer::attributes().key(i)).toString());
             }
             item->setCheckState(0, Qt::Checked);
             item->setData(0, Qt::UserRole, query.value("id"));
@@ -3102,17 +3026,7 @@ void MainWindow::addAssemblyRecordType()
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadAssemblyRecordType(record.id().toInt(), true);
-    }
-}
-
-void MainWindow::loadAssemblyRecordType(int assembly_record, bool refresh)
-{
-    if (assembly_record < 0) { return; }
-    m_settings.setSelectedAssemblyRecordType(assembly_record);
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+        current_tab->loadAssemblyRecordType(record.id().toInt(), true);
     }
 }
 
@@ -3133,7 +3047,7 @@ void MainWindow::editAssemblyRecordType()
             update_ar_type.bindValue(":new_id", record.id());
             update_ar_type.exec();
         }
-        loadAssemblyRecordType(record.id().toInt(), true);
+        current_tab->loadAssemblyRecordType(record.id().toInt(), true);
     }
 }
 
@@ -3152,10 +3066,10 @@ void MainWindow::removeAssemblyRecordType()
     m_undo_stack->savepoint();
 
     record.remove();
-    m_settings.setSelectedAssemblyRecordType(-1);
+    current_tab->setSelectedAssemblyRecordType(-1);
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfAssemblyRecordTypes);
+    current_tab->setView(View::AssemblyRecordTypes);
 }
 
 void MainWindow::addAssemblyRecordItemType()
@@ -3166,17 +3080,7 @@ void MainWindow::addAssemblyRecordItemType()
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadAssemblyRecordItemType(record.id().toInt(), true);
-    }
-}
-
-void MainWindow::loadAssemblyRecordItemType(int assembly_record_item, bool refresh)
-{
-    if (assembly_record_item < 0) { return; }
-    m_settings.setSelectedAssemblyRecordItemType(assembly_record_item);
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
+        current_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
     }
 }
 
@@ -3198,7 +3102,7 @@ void MainWindow::editAssemblyRecordItemType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        loadAssemblyRecordItemType(record.id().toInt(), true);
+        current_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
     }
 }
 
@@ -3217,10 +3121,10 @@ void MainWindow::removeAssemblyRecordItemType()
     m_undo_stack->savepoint();
 
     record.remove();
-    m_settings.setSelectedAssemblyRecordItemType(-1);
+    current_tab->setSelectedAssemblyRecordItemType(-1);
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
+    current_tab->setView(View::AssemblyRecordItemTypes);
 }
 
 void MainWindow::addAssemblyRecordItemCategory()
@@ -3231,17 +3135,7 @@ void MainWindow::addAssemblyRecordItemCategory()
     EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadAssemblyRecordItemCategory(record.id().toInt(), true);
-    }
-}
-
-void MainWindow::loadAssemblyRecordItemCategory(int assembly_record_item_category, bool refresh)
-{
-    if (assembly_record_item_category < 0) { return; }
-    m_settings.setSelectedAssemblyRecordItemCategory(assembly_record_item_category);
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
+        current_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
 }
 
@@ -3272,7 +3166,7 @@ void MainWindow::editAssemblyRecordItemCategory()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        loadAssemblyRecordItemCategory(record.id().toInt(), true);
+        current_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
 }
 
@@ -3291,24 +3185,10 @@ void MainWindow::removeAssemblyRecordItemCategory()
     m_undo_stack->savepoint();
 
     category.remove();
-    m_settings.setSelectedAssemblyRecordItemCategory(-1);
+    current_tab->setSelectedAssemblyRecordItemCategory(-1);
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
-}
-
-void MainWindow::loadAssemblyRecord(const QString & inspection, bool refresh)
-{
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    if (inspection.isEmpty()) { return; }
-    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
-    m_settings.setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
-    m_settings.setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::AssemblyRecord);
-    }
+    current_tab->setView(View::AssemblyRecordItemCategories);
 }
 
 void MainWindow::addCircuitUnitType()
@@ -3319,17 +3199,7 @@ void MainWindow::addCircuitUnitType()
     EditDialogueWithAutoId md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         this->setWindowModified(true);
-        loadCircuitUnitType(unit_type.id().toInt(), true);
-    }
-}
-
-void MainWindow::loadCircuitUnitType(int circuit_unit_type, bool refresh)
-{
-    if (circuit_unit_type < 0) { return; }
-    m_settings.setSelectedCircuitUnitType(circuit_unit_type);
-    enableTools();
-    if (refresh) {
-        navigation->setView(Navigation::ListOfCircuitUnitTypes);
+        current_tab->loadCircuitUnitType(unit_type.id().toInt(), true);
     }
 }
 
@@ -3356,7 +3226,7 @@ void MainWindow::editCircuitUnitType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        loadCircuitUnitType(record.id().toInt(), true);
+        current_tab->loadCircuitUnitType(record.id().toInt(), true);
     }
 }
 
@@ -3375,10 +3245,10 @@ void MainWindow::removeCircuitUnitType()
     m_undo_stack->savepoint();
 
     unit_type.remove();
-    m_settings.setSelectedCircuitUnitType(-1);
+    current_tab->setSelectedCircuitUnitType(-1);
     enableTools();
     this->setWindowModified(true);
-    navigation->setView(Navigation::ListOfCircuitUnitTypes);
+    current_tab->setView(View::CircuitUnitTypes);
 }
 
 void MainWindow::addStyle()

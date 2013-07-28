@@ -20,16 +20,15 @@
 #include "mainwindow.h"
 #include "global.h"
 #include "records.h"
-#include "reportdatacontroller.h"
 #include "variables.h"
 #include "warnings.h"
 #include "mtvariant.h"
 #include "mtaddress.h"
-#include "mtwebpage.h"
 #include "aboutwidget.h"
 #include "permissionsdialogue.h"
 #include "sha256.h"
 #include "undostack.h"
+#include "viewtab.h"
 
 #include <QSettings>
 #include <QTranslator>
@@ -55,55 +54,11 @@
 #include <QDate>
 #include <QDateEdit>
 #include <QDesktopServices>
-#include <QWebFrame>
 
 using namespace Global;
 
 MainWindow::MainWindow()
 {
-    // Dictionaries
-    dict_fieldtypes.insert("address", MTVariant::Address);
-    dict_fieldtypes.insert("operator_address", MTVariant::Address);
-
-    // HTML
-#ifdef Q_OS_MAC
-    QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
-    QString font_size = "9pt";
-#else
-    QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
-    QString font_size = "small";
-#endif
-    QFile file; QTextStream in(&file); in.setCodec("UTF-8");
-
-#define readFile(name, id) \
-    file.setFileName(":/html/" #name ".html"); \
-    file.open(QIODevice::ReadOnly | QIODevice::Text); \
-    dict_html.insert(id, in.readAll().arg(font).arg(font_size)); \
-    file.close()
-
-    readFile(service_company, Navigation::ServiceCompany);
-    readFile(refrigerant_management, Navigation::RefrigerantManagement);
-    readFile(customers, Navigation::ListOfCustomers);
-    readFile(customer, Navigation::ListOfCircuits);
-    readFile(circuit, Navigation::ListOfInspections);
-    readFile(inspection, Navigation::Inspection);
-    readFile(table, Navigation::TableOfInspections);
-    readFile(repairs, Navigation::ListOfRepairs);
-    readFile(inspectors, Navigation::ListOfInspectors);
-    readFile(inspector, Navigation::Inspector);
-    readFile(operator_report, Navigation::OperatorReport);
-    readFile(leakages, Navigation::LeakagesByApplication);
-    readFile(agenda, Navigation::Agenda);
-    readFile(assembly_record_types, Navigation::ListOfAssemblyRecordTypes);
-    readFile(assembly_record_item_types, Navigation::ListOfAssemblyRecordItemTypes);
-    readFile(assembly_record_item_categories, Navigation::ListOfAssemblyRecordItemCategories);
-    readFile(assembly_record, Navigation::AssemblyRecord);
-    readFile(circuit_unit_types, Navigation::ListOfCircuitUnitTypes);
-    readFile(assembly_records, Navigation::ListOfAssemblyRecords);
-    readFile(inspection_images, Navigation::InspectionImages);
-
-#undef readFile
-
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
@@ -113,6 +68,11 @@ MainWindow::MainWindow()
     if (tr("LTR") == "RTL")
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
+
+    ViewTab * viewtab = new ViewTab(this);
+    tabw_main->addTab(viewtab, tr("Tab"));
+    navigation = viewtab->navigation();
+    current_tab = viewtab;
 
     network_access_manager = new QNetworkAccessManager(this);
 
@@ -178,12 +138,6 @@ MainWindow::MainWindow()
     menuAdd_variable->addAction(actionNew_subvariable);
     tbtn_add_variable->setMenu(menuAdd_variable);
 
-    actgrp_view = new QActionGroup(this);
-    actgrp_view->addAction(actionService_company);
-    actgrp_view->addAction(actionBasic_logbook);
-    actgrp_view->addAction(actionDetailed_logbook);
-    actgrp_view->addAction(actionAssembly_records);
-
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
 
@@ -244,14 +198,11 @@ MainWindow::MainWindow()
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
-    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(loadPreviousLink()));
+    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(goBack()));
     QObject::connect(&m_settings, SIGNAL(enableBackButton(bool)), actionBack, SLOT(setEnabled(bool)));
-    QObject::connect(actionForward, SIGNAL(triggered()), this, SLOT(loadNextLink()));
+    QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
+    QObject::connect(actionForward, SIGNAL(triggered()), this, SLOT(goForward()));
     QObject::connect(&m_settings, SIGNAL(enableForwardButton(bool)), actionForward, SLOT(setEnabled(bool)));
-    QObject::connect(actionService_company, SIGNAL(triggered()), navigation, SLOT(viewServiceCompany()));
-    QObject::connect(actionBasic_logbook, SIGNAL(triggered()), navigation, SLOT(viewBasicLogbook()));
-    QObject::connect(actionDetailed_logbook, SIGNAL(triggered()), navigation, SLOT(viewDetailedLogbook()));
-    QObject::connect(actionAssembly_records, SIGNAL(triggered()), navigation, SLOT(viewAssemblyRecords()));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -263,7 +214,6 @@ MainWindow::MainWindow()
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
-    QObject::connect(actionReport_data, SIGNAL(triggered()), this, SLOT(reportData()));
     QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -313,21 +263,19 @@ MainWindow::MainWindow()
     QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
-    QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
-    QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
     QObject::connect(btn_clear_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    QObject::connect(wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
     QObject::connect(network_access_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(httpRequestFinished(QNetworkReply *)));
     QObject::connect(tbtn_add_style, SIGNAL(clicked()), this, SLOT(addStyle()));
     QObject::connect(tbtn_edit_style, SIGNAL(clicked()), this, SLOT(editStyle()));
     QObject::connect(tbtn_remove_style, SIGNAL(clicked()), this, SLOT(removeStyle()));
 
-    setDefaultWebPage();
 #ifdef Q_OS_MAC
     macInitUI();
     show();
@@ -340,13 +288,6 @@ MainWindow::MainWindow()
     if (!isVisible())
         show();
 #endif
-}
-
-void MainWindow::setDefaultWebPage()
-{
-    MTWebPage * page = new MTWebPage(wv_main);
-    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    wv_main->setPage(page);
 }
 
 void MainWindow::clearWindowTitle()
@@ -410,380 +351,14 @@ void MainWindow::showIconsOnly(bool show)
     Qt::ToolButtonStyle tbtn_style = show ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon;
     tbtn_open->setToolButtonStyle(tbtn_style);
     tbtn_export->setToolButtonStyle(tbtn_style);
+    tbtn_undo->setToolButtonStyle(tbtn_style);
     toolBar->setToolButtonStyle(tbtn_style);
-}
-
-void MainWindow::loadPreviousLink()
-{
-    m_settings.loadPreviousLink();
-    executeLink(m_settings.receivedLink());
-}
-
-void MainWindow::loadNextLink()
-{
-    m_settings.loadNextLink();
-    executeLink(m_settings.receivedLink());
-}
-
-void MainWindow::executeLink(const QUrl & url)
-{
-    Link * link = m_settings.linkParser().parse(url.toString());
-    if (link) {
-        m_settings.setReceivedLink(link);
-        executeLink(link);
-    }
-}
-
-void MainWindow::executeLink(Link * link)
-{
-    QString id;
-    bool ok = false;
-
-    bool select_with_javascript = false;
-    bool view_changed = true;
-    Link * last_link = m_settings.lastLink();
-    if (last_link != NULL && link->compareViews(*last_link) < Link::MinViewDifference)
-        view_changed = false;
-
-    switch (link->viewAt(0)) {
-    case LinkParser::ToggleDetailsVisible:
-        id = link->idValue("toggledetailsvisible");
-        if (id == "customer")
-            m_settings.toggleCustomerDetailsVisible();
-        else if (id == "circuit")
-            m_settings.toggleCircuitDetailsVisible();
-        refreshView();
-        break;
-
-    case LinkParser::Customer:
-        view_changed = !actionService_company->isChecked();
-        select_with_javascript = !view_changed;
-        id = link->idValue("customer");
-        if (id != selectedCustomer()) {
-            loadCustomer(id.toInt(), view_changed && link->countViews() <= 1 && link->action() == Link::View);
-        } else if (link->countViews() <= 1 && link->action() == Link::View) {
-            if (actionBasic_logbook->isChecked())
-                navigation->setView(Navigation::ListOfRepairs);
-            else if (actionDetailed_logbook->isChecked())
-                navigation->setView(Navigation::ListOfCircuits);
-        }
-
-        if (link->countViews() <= 1 && link->action() == Link::Edit)
-            editCustomer();
-        break;
-
-    case LinkParser::Repair:
-        select_with_javascript = !view_changed;
-        loadRepair(link->idValue("repair"), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editRepair();
-        break;
-
-    case LinkParser::ServiceCompany:
-        if (link->action() == Link::Edit)
-            editServiceCompany();
-        else
-            navigation->setView(Navigation::ServiceCompany);
-        break;
-
-    case LinkParser::Inspector:
-        select_with_javascript = !view_changed;
-        loadInspector(link->idValue("inspector").toInt(), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editInspector();
-        break;
-
-    case LinkParser::InspectorReport:
-        loadInspectorReport(link->idValue("inspectorreport").toInt(), link->action() == Link::View);
-        break;
-
-    case LinkParser::AllCustomers:
-        navigation->setView(Navigation::ListOfCustomers);
-        break;
-
-    case LinkParser::ToggleDetailedView:
-        id = link->idValue("toggledetailedview");
-        if (years_expanded_in_service_company_view.contains(id.toInt())) {
-            years_expanded_in_service_company_view.remove(id.toInt());
-        } else {
-            years_expanded_in_service_company_view << id.toInt();
-        }
-        refreshView();
-        wv_main->page()->mainFrame()->evaluateJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
-        break;
-
-    case LinkParser::RefrigerantManagement:
-        navigation->setView(Navigation::RefrigerantManagement);
-        break;
-
-    case LinkParser::RecordOfRefrigerantManagement:
-        if (link->action() == Link::Edit)
-            editRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
-        break;
-
-    case LinkParser::LeakagesByApplication:
-        navigation->setView(Navigation::LeakagesByApplication);
-        break;
-
-    case LinkParser::Agenda:
-        navigation->setView(Navigation::Agenda);
-        break;
-
-    case LinkParser::AssemblyRecordType:
-        select_with_javascript = !view_changed;
-        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editAssemblyRecordType();
-        break;
-
-    case LinkParser::AssemblyRecordItemType:
-        select_with_javascript = !view_changed;
-        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editAssemblyRecordItemType();
-        break;
-
-    case LinkParser::AssemblyRecordCategory:
-        select_with_javascript = !view_changed;
-        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editAssemblyRecordItemCategory();
-        break;
-
-    case LinkParser::CircuitUnitType:
-        select_with_javascript = !view_changed;
-        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
-            editCircuitUnitType();
-        break;
-
-    case LinkParser::AllAssemblyRecords:
-        navigation->setView(Navigation::ListOfAssemblyRecords);
-        break;
-
-    case LinkParser::AllInspectors:
-        navigation->setView(Navigation::ListOfInspectors);
-        break;
-
-    case LinkParser::AllAssemblyRecordTypes:
-        navigation->setView(Navigation::ListOfAssemblyRecordTypes);
-        break;
-
-    case LinkParser::AllAssemblyRecordItemTypes:
-        navigation->setView(Navigation::ListOfAssemblyRecordItemTypes);
-        break;
-
-    case LinkParser::AllAssemblyRecordItemCategories:
-        navigation->setView(Navigation::ListOfAssemblyRecordItemCategories);
-        break;
-
-    case LinkParser::AllCircuitUnitTypes:
-        navigation->setView(Navigation::ListOfCircuitUnitTypes);
-        break;
-
-    case LinkParser::AllRepairs:
-        navigation->setView(Navigation::ListOfRepairs);
-        break;
-    }
-
-    switch (link->viewAt(1)) {
-    case LinkParser::Circuit:
-        if (link->idValue("circuit") != selectedCircuit())
-            loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
-        else if (link->countViews() <= 2 && link->action() == Link::View)
-            navigation->setView(Navigation::ListOfInspections);
-
-        if (link->countViews() <= 2 && link->action() == Link::Edit)
-            editCircuit();
-        break;
-
-    case LinkParser::AllAssemblyRecords:
-        navigation->setView(Navigation::ListOfAssemblyRecords);
-        break;
-
-    case LinkParser::OperatorReport:
-        navigation->setView(Navigation::OperatorReport);
-        break;
-
-    case LinkParser::AllRepairs:
-        navigation->setView(Navigation::ListOfRepairs);
-        break;
-    }
-
-    switch (link->viewAt(2)) {
-    case LinkParser::Inspection:
-        if (link->idValue("inspection") != selectedInspection())
-            loadInspection(link->idValue("inspection"), link->countViews() <= 3 && link->action() == Link::View);
-        else if (link->countViews() <= 3 && link->action() == Link::View)
-            navigation->setView(Navigation::Inspection);
-
-        if (link->action() == Link::Edit)
-            editInspection();
-        break;
-
-    case LinkParser::AssemblyRecord:
-        id = link->lastIdValue();
-        id.remove(0, id.indexOf(":") + 1);
-        if (id != selectedInspection())
-            loadAssemblyRecord(id, link->action() == Link::View);
-        else if (link->action() == Link::View)
-            navigation->setView(Navigation::AssemblyRecord);
-        break;
-
-    case LinkParser::TableOfInspections:
-        navigation->setView(Navigation::TableOfInspections);
-        break;
-
-    case LinkParser::Compressor:
-        ok = false;
-        m_settings.setSelectedCompressor(link->idValue("compressor").toInt(&ok));
-        if (!ok) m_settings.setSelectedCompressor(-1);
-        break;
-
-    case LinkParser::AllAssemblyRecords:
-        navigation->setView(Navigation::ListOfAssemblyRecords);
-        break;
-    }
-
-    switch (link->viewAt(3)) {
-    case LinkParser::AssemblyRecord:
-        navigation->setView(Navigation::AssemblyRecord);
-        break;
-
-    case LinkParser::TableOfInspections:
-        navigation->setView(Navigation::TableOfInspections);
-        break;
-
-    case LinkParser::InspectionImages:
-        navigation->setView(Navigation::InspectionImages);
-        break;
-    }
-
-    if (!link->countIds())
-        select_with_javascript = false;
-    if (select_with_javascript) {
-        m_settings.loadReceivedLink();
-        wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
-    }
-}
-
-void MainWindow::saveLink(int view)
-{
-    UrlEntity * url_entity = NULL, * e = NULL;
-
-    switch (view) {
-    case Navigation::ServiceCompany:
-        url_entity = new UrlEntity("servicecompany");
-        break;
-
-    case Navigation::RefrigerantManagement:
-        url_entity = new UrlEntity("refrigerantmanagement");
-        break;
-
-    case Navigation::ListOfCustomers:
-        url_entity = new UrlEntity("allcustomers");
-        break;
-
-    case Navigation::ListOfCircuits:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        break;
-
-    case Navigation::ListOfInspections:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        url_entity->addNext("circuit", m_settings.selectedCircuit());
-        break;
-
-    case Navigation::ListOfRepairs:
-        url_entity = new UrlEntity;
-        if (m_settings.isCustomerSelected())
-            url_entity->addNext("customer", m_settings.selectedCustomer());
-        url_entity->addNext("allrepairs");
-        break;
-
-    case Navigation::ListOfInspectors:
-        url_entity = new UrlEntity("allinspectors");
-        break;
-
-    case Navigation::Inspector:
-        url_entity = new UrlEntity("inspector", m_settings.selectedInspector());
-        break;
-
-    case Navigation::TableOfInspections:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        e = url_entity->addNext("circuit", m_settings.selectedCircuit());
-        if (m_settings.isCompressorSelected())
-            e = e->addNext("compressor", m_settings.selectedCompressor());
-        e->addNext("table");
-        break;
-
-    case Navigation::Inspection:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        url_entity->addNext("circuit", m_settings.selectedCircuit())
-                ->addNext("inspection", m_settings.selectedInspection());
-        break;
-
-    case Navigation::Agenda:
-        url_entity = new UrlEntity("agenda");
-        break;
-
-    case Navigation::OperatorReport:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        url_entity->addNext("operatorreport");
-        break;
-
-    case Navigation::ListOfAssemblyRecordTypes:
-        url_entity = new UrlEntity("allassemblyrecordtypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecordItemTypes:
-        url_entity = new UrlEntity("allassemblyrecorditemtypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecordItemCategories:
-        url_entity = new UrlEntity("allassemblyrecorditemcategories");
-        break;
-
-    case Navigation::AssemblyRecord:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        url_entity->addNext("circuit", m_settings.selectedCircuit())
-                ->addNext("assemblyrecord", m_settings.selectedInspection());
-        break;
-
-    case Navigation::ListOfCircuitUnitTypes:
-        url_entity = new UrlEntity("allcircuitunittypes");
-        break;
-
-    case Navigation::ListOfAssemblyRecords:
-        e = url_entity = new UrlEntity;
-        if (m_settings.isCustomerSelected())
-            e = e->addNext("customer", m_settings.selectedCustomer());
-        if (m_settings.isCircuitSelected())
-            e = e->addNext("circuit", m_settings.selectedCircuit());
-        e->addNext("allassemblyrecords");
-        break;
-
-    case Navigation::InspectionImages:
-        url_entity = new UrlEntity("customer", m_settings.selectedCustomer());
-        url_entity->addNext("circuit", m_settings.selectedCircuit())
-                ->addNext("inspection", m_settings.selectedInspection())
-                ->addNext("images");
-        break;
-
-    case Navigation::LeakagesByApplication:
-        url_entity = new UrlEntity("leakagesbyapplication");
-        break;
-
-    default:
-        break;
-    }
-    if (url_entity)
-        m_settings.setLastLink(m_settings.linkParser().parse(url_entity));
 }
 
 void MainWindow::printPreview()
 {
     QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), wv_main, SLOT(print(QPrinter *)));
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), current_tab->webView(), SLOT(print(QPrinter *)));
     d.exec();
 }
 
@@ -793,7 +368,7 @@ void MainWindow::print()
     QPrintDialog d(&printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    wv_main->print(&printer);
+    current_tab->webView()->print(&printer);
 }
 
 void MainWindow::exportPDFPortrait()
@@ -817,7 +392,7 @@ void MainWindow::exportPDF(int orientation)
     printer.setOrientation((QPrinter::Orientation)orientation);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(path);
-    wv_main->print(&printer);
+    current_tab->webView()->print(&printer);
 }
 
 void MainWindow::exportHTML()
@@ -832,7 +407,11 @@ void MainWindow::exportHTML()
         QMessageBox::critical(this, tr("Export HTML - Leaklog"), tr("Cannot write file %1:\n%2.").arg(path).arg(file.errorString()));
         return;
     }
-    QString html = viewChanged(navigation->view());
+
+    if (current_tab->currentView() == View::ViewCount)
+        return;
+
+    QString html = current_tab->view(current_tab->currentView())->renderHTML();
     if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -910,8 +489,8 @@ void MainWindow::printLabel(bool detailed)
         MTSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id"
                       " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
-        query.bindValue(":customer_id", m_settings.selectedCustomer());
-        query.bindValue(":circuit_id", m_settings.selectedCircuit());
+        query.bindValue(":customer_id", current_tab->selectedCustomer());
+        query.bindValue(":circuit_id", current_tab->selectedCircuit());
         query.exec();
         if (query.next()) {
             QVariantMap inspection;
@@ -1082,19 +661,29 @@ void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, 
     painter.restore();
 }
 
-void MainWindow::reportData()
+void MainWindow::reportData(bool checked)
 {
+    if (!checked)
+        return;
+
     setAllEnabled(false, true);
-    ReportDataController * controller = new ReportDataController(wv_main, navigation);
-    QObject::connect(controller, SIGNAL(processing(bool)), this, SLOT(setDisabled(bool)));
-    QObject::connect(controller, SIGNAL(destroyed()), this, SLOT(reportDataFinished()));
+    current_tab->reportData();
 }
 
 void MainWindow::reportDataFinished()
 {
+    actionReporting->setChecked(false);
     setAllEnabled(true, true);
-    setDefaultWebPage();
-    refreshView();
+}
+
+void MainWindow::goBack()
+{
+    current_tab->loadPreviousLink();
+}
+
+void MainWindow::goForward()
+{
+    current_tab->loadNextLink();
 }
 
 void MainWindow::find()
@@ -1104,7 +693,7 @@ void MainWindow::find()
     QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
     if (ok && !keyword.isEmpty()) {
         last_search_keyword = keyword;
-        wv_main->findText(last_search_keyword);
+        current_tab->webView()->findText(last_search_keyword);
     }
 }
 
@@ -1112,19 +701,19 @@ void MainWindow::findNext()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
-    wv_main->findText(last_search_keyword);
+    current_tab->webView()->findText(last_search_keyword);
 }
 
 void MainWindow::findPrevious()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
-    wv_main->findText(last_search_keyword, QWebPage::FindBackward);
+    current_tab->webView()->findText(last_search_keyword, QWebPage::FindBackward);
 }
 
 void MainWindow::clearSelection(bool refresh)
 {
-    m_settings.clear();
+    current_tab->restoreDefaults();
     if (refresh) {
         enableTools();
         refreshView();
@@ -1133,30 +722,7 @@ void MainWindow::clearSelection(bool refresh)
 
 void MainWindow::refreshView()
 {
-    if (navigation->group() != Navigation::ReportDataGroup)
-        viewChanged(navigation->view());
-}
-
-void MainWindow::groupChanged(int g)
-{
-    switch (g) {
-        case 0:
-            if (!actionService_company->isChecked())
-                actionService_company->setChecked(true);
-            break;
-        case 1:
-            if (!actionBasic_logbook->isChecked())
-                actionBasic_logbook->setChecked(true);
-            break;
-        case 2:
-            if (!actionDetailed_logbook->isChecked())
-                actionDetailed_logbook->setChecked(true);
-            break;
-        case 3:
-            if (!actionAssembly_records->isChecked())
-                actionAssembly_records->setChecked(true);
-            break;
-    }
+    current_tab->refreshView();
 }
 
 void MainWindow::addRecent(const QString & name)
@@ -1174,16 +740,14 @@ void MainWindow::clearAll()
 {
     m_undo_stack->clear();
     clearSelection(false);
-    navigation->tableComboBox()->clear();
+    // TODO: navigation->tableComboBox()->clear();
     cb_table_edit->clear();
     trw_variables->clear();
     trw_table_variables->clear();
     lw_warnings->clear();
-    actionService_company->setChecked(true);
     navigation->restoreDefaults();
-    navigation->viewServiceCompany();
     // ----
-    years_expanded_in_service_company_view.clear();
+    // TODO: years_expanded_in_store_view.clear();
 }
 
 void MainWindow::setAllEnabled(bool enable, bool everything)
@@ -1195,7 +759,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionRemote_database->setEnabled(enable);
 
         if (enable) {
-            m_settings.enableBackAndForwardButtons();
+            current_tab->enableBackAndForwardButtons();
         } else {
             actionBack->setEnabled(false);
             actionForward->setEnabled(false);
@@ -1213,7 +777,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionHTML->setEnabled(enable || everything);
     actionPrint_preview->setEnabled(enable || everything);
     actionPrint->setEnabled(enable || everything);
-    actgrp_view->setEnabled(enable);
 
     menuDatabase->setEnabled(enable);
     menuCustomer->setEnabled(enable);
@@ -1227,6 +790,8 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 
     tbtn_export->setEnabled(enable || everything);
 
+    actionReporting->setEnabled(enable);
+
     actionFind->setEnabled(enable);
     actionFind_next->setEnabled(enable);
     actionFind_previous->setEnabled(enable);
@@ -1234,7 +799,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionLock->setEnabled(enable);
     actionConfigure_permissions->setEnabled(enable);
 
-    actionReport_data->setEnabled(enable);
     actionEdit_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
 
@@ -1311,49 +875,50 @@ void MainWindow::timeFormatChanged(QAction * action)
 
 void MainWindow::enableTools()
 {
-    bool customer_selected = m_settings.isCustomerSelected();
-    bool circuit_selected = m_settings.isCircuitSelected();
-    bool inspection_selected = m_settings.isInspectionSelected();
-    bool repair_selected = m_settings.isRepairSelected();
-    bool inspector_selected = m_settings.isInspectorSelected();
+    bool customer_selected = current_tab->isCustomerSelected();
+    bool circuit_selected = current_tab->isCircuitSelected();
+    bool inspection_selected = current_tab->isInspectionSelected();
+    bool repair_selected = current_tab->isRepairSelected();
+    bool inspector_selected = current_tab->isInspectorSelected();
     QString current_selection;
     if (customer_selected)
         current_selection.append(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
-            .arg(Navigation::ListOfCircuits)
+            .arg(View::Circuits)
             .arg(tr("<b>Customer:</b> %1%2")
                 .arg(selectedCustomer().rightJustified(8, '0'))
-                .arg(m_settings.selectedCustomerCompany().isEmpty() ? "" : QString(" (%1)").arg(m_settings.selectedCustomerCompany()))));
+                .arg(current_tab->selectedCustomerCompany().isEmpty() ? "" : QString(" (%1)").arg(current_tab->selectedCustomerCompany()))));
     if (circuit_selected)
         current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
             .arg(rightTriangle())
-            .arg(Navigation::ListOfInspections)
+            .arg(View::Inspections)
             .arg(tr("<b>Circuit:</b> %1")
                 .arg(selectedCircuit().rightJustified(5, '0'))));
     if (inspection_selected) {
         current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
             .arg(rightTriangle())
-            .arg(Navigation::Inspection)
-            .arg((m_settings.selectedInspectionIsRepair() ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
-                .arg(m_settings.selectedInspection())));
+            .arg(View::InspectionDetails)
+            .arg((current_tab->selectedInspectionIsRepair() ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
+                .arg(current_tab->selectedInspection())));
     }
     lbl_current_selection->setText(current_selection + "&nbsp;&nbsp;");
     lbl_current_selection->setVisible(!current_selection.isEmpty());
     if (repair_selected) {
         lbl_selected_repair->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
-            .arg(Navigation::ListOfRepairs)
+            .arg(View::Repairs)
             .arg(tr("<b>Repair:</b> %1")
                 .arg(selectedRepair())));
     }
     lbl_selected_repair->setVisible(repair_selected);
     if (inspector_selected) {
         lbl_selected_inspector->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
-            .arg(Navigation::ListOfInspectors)
+            .arg(View::Inspectors)
             .arg(tr("<b>Inspector:</b> %1")
-                .arg(m_settings.selectedInspectorName())));
+                .arg(current_tab->selectedInspectorName())));
     }
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
-    navigation->enableTools(m_settings);
+    current_tab->enableTools();
+    navigation->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

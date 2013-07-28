@@ -73,5 +73,21 @@
         <file>images/back.png</file>
         <file>images/forward.png</file>
         <file>images/edit_undo.png</file>
+        <file>images/inspection_view.png</file>
+        <file>images/image.png</file>
+        <file>images/inspector_view.png</file>
+        <file>images/inspectors_view.png</file>
+        <file>images/customers_view.png</file>
+        <file>images/agenda_view.png</file>
+        <file>images/leakages_view.png</file>
+        <file>images/report_view.png</file>
+        <file>images/repair_view.png</file>
+        <file>images/assembly_record_view.png</file>
+        <file>images/assembly_records_view.png</file>
+        <file>images/table_view.png</file>
+        <file>images/circuit_view.png</file>
+        <file>images/store_view.png</file>
+        <file>images/management_view.png</file>
+        <file>images/reporting.png</file>
     </qresource>
 </RCC>

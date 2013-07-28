@@ -203,14 +203,15 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="Navigation" name="navigation" native="true"/>
-        </item>
-        <item>
-         <widget class="QWebView" name="wv_main">
-          <property name="url">
-           <url>
-            <string>about:blank</string>
-           </url>
+         <widget class="QTabWidget" name="tabw_main">
+          <property name="documentMode">
+           <bool>true</bool>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -343,8 +344,6 @@
     <addaction name="actionLock"/>
     <addaction name="actionConfigure_permissions"/>
     <addaction name="separator"/>
-    <addaction name="actionReport_data"/>
-    <addaction name="separator"/>
     <addaction name="actionEdit_service_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
    </widget>
@@ -389,10 +388,7 @@
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
     <addaction name="separator"/>
-    <addaction name="actionService_company"/>
-    <addaction name="actionBasic_logbook"/>
-    <addaction name="actionDetailed_logbook"/>
-    <addaction name="actionAssembly_records"/>
+    <addaction name="actionReporting"/>
     <addaction name="separator"/>
     <addaction name="actionShow_variables"/>
     <addaction name="actionShow_tables"/>
@@ -434,6 +430,9 @@
    <property name="windowTitle">
     <string>Tool bar</string>
    </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
    <property name="iconSize">
     <size>
      <width>32</width>
@@ -455,10 +454,7 @@
    <addaction name="actionBack"/>
    <addaction name="actionForward"/>
    <addaction name="separator"/>
-   <addaction name="actionService_company"/>
-   <addaction name="actionBasic_logbook"/>
-   <addaction name="actionDetailed_logbook"/>
-   <addaction name="actionAssembly_records"/>
+   <addaction name="actionReporting"/>
    <addaction name="separator"/>
    <addaction name="actionFind"/>
    <addaction name="actionPrint"/>
@@ -1794,17 +1790,6 @@
     <string>Lock the database</string>
    </property>
   </action>
-  <action name="actionReport_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Report Data to the Notified Body...</string>
-   </property>
-   <property name="statusTip">
-    <string>Report data to the notified body</string>
-   </property>
-  </action>
   <action name="actionPrint_label">
    <property name="enabled">
     <bool>false</bool>
@@ -1821,54 +1806,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
-   </property>
-  </action>
-  <action name="actionService_company">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/service_company.png</normaloff>:/images/images/service_company.png</iconset>
-   </property>
-   <property name="text">
-    <string>Service Company</string>
-   </property>
-   <property name="statusTip">
-    <string>Switch view to service company</string>
-   </property>
-  </action>
-  <action name="actionBasic_logbook">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/logbook_basic.png</normaloff>:/images/images/logbook_basic.png</iconset>
-   </property>
-   <property name="text">
-    <string>Basic Logbook</string>
-   </property>
-   <property name="statusTip">
-    <string>Switch view to basic logbook</string>
-   </property>
-  </action>
-  <action name="actionDetailed_logbook">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/logbook_detailed.png</normaloff>:/images/images/logbook_detailed.png</iconset>
-   </property>
-   <property name="text">
-    <string>Detailed Logbook</string>
-   </property>
-   <property name="statusTip">
-    <string>Switch view to detailed logbook</string>
    </property>
   </action>
   <action name="actionImport_CSV">
@@ -1968,21 +1905,6 @@
    </property>
    <property name="shortcut">
     <string>Meta+D</string>
-   </property>
-  </action>
-  <action name="actionAssembly_records">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/assembly_records.png</normaloff>:/images/images/assembly_records.png</iconset>
-   </property>
-   <property name="text">
-    <string>Assembly Records</string>
-   </property>
-   <property name="statusTip">
-    <string>Switch view to assembly records</string>
    </property>
   </action>
   <action name="actionConfigure_permissions">
@@ -2188,21 +2110,26 @@
     <string>Undo changes you have made</string>
    </property>
   </action>
+  <action name="actionReporting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/reporting.png</normaloff>:/images/images/reporting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reporting</string>
+   </property>
+   <property name="statusTip">
+    <string>Report data to the notified body</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="9"/>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
-  <customwidget>
-   <class>Navigation</class>
-   <extends>QWidget</extends>
-   <header>navigation.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../rc/resources.qrc"/>
  </resources>

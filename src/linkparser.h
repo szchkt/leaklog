@@ -33,7 +33,7 @@ class LinkParser
 public:
     enum View {
         ToggleDetailsVisible = 1,
-        ServiceCompany = 100,
+        Store = 100,
         ToggleDetailedView = 101,
         RefrigerantManagement = 200,
         RecordOfRefrigerantManagement = 201,

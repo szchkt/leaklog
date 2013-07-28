@@ -54,7 +54,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             continue;
 
         int year = inspections.value(3).toString().left(4).toInt();
-        if (year > current_year)
+        if (!total && year > current_year)
             continue;
 
         if (min_year > year)

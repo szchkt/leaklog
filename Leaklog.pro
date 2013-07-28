@@ -4,7 +4,8 @@ FORMS         += ui/aboutwidget.ui \
                  ui/importcsvdialogue.ui \
                  ui/importdialogue.ui \
                  ui/mainwindow.ui \
-                 ui/navigation.ui
+                 ui/navigation.ui \
+                 ui/viewtab.ui
 HEADERS       += src/aboutwidget.h \
                  src/dbfile.h \
                  src/defs.h \
@@ -49,6 +50,7 @@ HEADERS       += src/aboutwidget.h \
                  src/mttextstream.h \
                  src/mtvariant.h \
                  src/mtwebpage.h \
+                 src/mtwidget.h \
                  src/mtwidgetpalettes.h \
                  src/navigation.h \
                  src/partnerwidgets.h \
@@ -62,6 +64,29 @@ HEADERS       += src/aboutwidget.h \
                  src/undostack.h \
                  src/variableevaluation.h \
                  src/variables.h \
+                 src/view.h \
+                 src/views/agendaview.h \
+                 src/views/assemblyrecorddetailsview.h \
+                 src/views/assemblyrecorditemcategoriesview.h \
+                 src/views/assemblyrecorditemtypesview.h \
+                 src/views/assemblyrecordsview.h \
+                 src/views/assemblyrecordtypesview.h \
+                 src/views/circuitsview.h \
+                 src/views/circuitunittypesview.h \
+                 src/views/customersview.h \
+                 src/views/inspectiondetailsview.h \
+                 src/views/inspectionimagesview.h \
+                 src/views/inspectionsview.h \
+                 src/views/inspectordetailsview.h \
+                 src/views/inspectorsview.h \
+                 src/views/leakagesbyapplicationview.h \
+                 src/views/operatorreportview.h \
+                 src/views/refrigerantmanagementview.h \
+                 src/views/repairsview.h \
+                 src/views/storeview.h \
+                 src/views/tableview.h \
+                 src/viewtab.h \
+                 src/viewtabsettings.h \
                  src/warnings.h
 RESOURCES     += rc/html.qrc \
                  rc/i18n.qrc \
@@ -104,6 +129,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/mtsqlqueryresult.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
+                 src/mtwidget.cpp \
                  src/navigation.cpp \
                  src/partnerwidgets.cpp \
                  src/permissionsdialogue.cpp \
@@ -117,6 +143,28 @@ SOURCES       += src/aboutwidget.cpp \
                  src/variableevaluation.cpp \
                  src/variables.cpp \
                  src/view.cpp \
+                 src/views/agendaview.cpp \
+                 src/views/assemblyrecorddetailsview.cpp \
+                 src/views/assemblyrecorditemcategoriesview.cpp \
+                 src/views/assemblyrecorditemtypesview.cpp \
+                 src/views/assemblyrecordsview.cpp \
+                 src/views/assemblyrecordtypesview.cpp \
+                 src/views/circuitsview.cpp \
+                 src/views/circuitunittypesview.cpp \
+                 src/views/customersview.cpp \
+                 src/views/inspectiondetailsview.cpp \
+                 src/views/inspectionimagesview.cpp \
+                 src/views/inspectionsview.cpp \
+                 src/views/inspectordetailsview.cpp \
+                 src/views/inspectorsview.cpp \
+                 src/views/leakagesbyapplicationview.cpp \
+                 src/views/operatorreportview.cpp \
+                 src/views/refrigerantmanagementview.cpp \
+                 src/views/repairsview.cpp \
+                 src/views/storeview.cpp \
+                 src/views/tableview.cpp \
+                 src/viewtab.cpp \
+                 src/viewtabsettings.cpp \
                  src/warnings.cpp
 lessThan(QT_MAJOR_VERSION, 5) {
 QT            += network webkit sql
@@ -135,7 +183,7 @@ HEADERS       += include/csvparser/mtcsvparser.h
 SOURCES       += include/csvparser/mtcsvparser.cpp
 # *******
 DESTDIR        = bin
-INCLUDEPATH   += src include
+INCLUDEPATH   += src src/views include
 UI_HEADERS_DIR = ui/include
 UI_SOURCES_DIR = ui
 win32 {

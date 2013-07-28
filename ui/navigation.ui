@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>3294</width>
-    <height>181</height>
+    <width>1968</width>
+    <height>479</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -437,45 +437,33 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>12</number>
+    <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="gb_service_company">
-     <property name="title">
-      <string>Service Company</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_report_data" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_service_company">
+       <widget class="QToolButton" name="tbtn_autofill">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -483,31 +471,89 @@
          </sizepolicy>
         </property>
         <property name="statusTip">
-         <string>View service company</string>
+         <string>Autofill the form with values from the database</string>
         </property>
         <property name="text">
-         <string>Service Company</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+         <string>Autofill</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_report_year"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_11">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>1703</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="progressbar_loadprogress">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_done">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Finish reporting data</string>
+        </property>
+        <property name="text">
+         <string>Done</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_view" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="lbl_view">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_service_company">
@@ -522,38 +568,6 @@
         </property>
         <property name="text">
          <string>Edit Service Company Information...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbtn_view_refrigerant_management">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View records of refrigerant management</string>
-        </property>
-        <property name="text">
-         <string>Refrigerant Management</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
        </widget>
       </item>
@@ -580,62 +594,6 @@
           <width>16</width>
           <height>16</height>
          </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_customers">
-     <property name="title">
-      <string>Customers</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QToolButton" name="tbtn_view_customers">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of customers</string>
-        </property>
-        <property name="text">
-         <string>List of Customers</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -670,6 +628,558 @@
          <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_repair">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new repair</string>
+        </property>
+        <property name="text">
+         <string>Add Repair...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_inspector">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new inspector</string>
+        </property>
+        <property name="text">
+         <string>Add Inspector...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_circuit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new circuit to the selected customer</string>
+        </property>
+        <property name="text">
+         <string>Add Circuit...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_inspection">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new inspection to the selected circuit</string>
+        </property>
+        <property name="text">
+         <string>Add Inspection...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_assembly_record_type">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new assembly record type</string>
+        </property>
+        <property name="text">
+         <string>Add Record Type...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_assembly_record_item_category">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new assembly record item category</string>
+        </property>
+        <property name="text">
+         <string>Add Item Category...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_assembly_record_item_type">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new assembly record item type</string>
+        </property>
+        <property name="text">
+         <string>Add Item Type...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_add_circuit_unit_type">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Add a new circuit unit type</string>
+        </property>
+        <property name="text">
+         <string>Add Unit Type...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_filter" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="cb_filter_column">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Choose a column to filter by</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cb_filter_type">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Select a filter type</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>contains:</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>is:</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>starts with:</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ends with:</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="ExtendedLineEdit" name="le_filter">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="statusTip">
+         <string>Type a word to filter by</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_by_field">
+        <property name="text">
+         <string>By Field of Application</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_table_all_circuits">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>All Circuits</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_10">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>958</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_filter_since">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Since:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spb_filter_since">
+        <property name="statusTip">
+         <string>Show records entered since</string>
+        </property>
+        <property name="specialValueText">
+         <string>All</string>
+        </property>
+        <property name="minimum">
+         <number>1999</number>
+        </property>
+        <property name="maximum">
+         <number>3000</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_filter_month">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Month:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spb_filter_month_from">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>12</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_filter_month_dash">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>—</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="spb_filter_month_until">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>12</number>
+        </property>
+        <property name="value">
+         <number>12</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_inspector" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="lbl_inspector"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>288</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_edit_inspector">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Edit the selected inspector</string>
+        </property>
+        <property name="text">
+         <string>Edit Inspector...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/inspector_edit22.png</normaloff>:/images/images/inspector_edit22.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbtn_remove_inspector">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Remove the selected inspector</string>
+        </property>
+        <property name="text">
+         <string>Remove Inspector...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../rc/resources.qrc">
+          <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_customer" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="lbl_customer"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>1585</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_customer">
@@ -739,409 +1249,29 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_statistics">
-     <property name="title">
-      <string>Statistics and Reports</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_repair" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_operator_report">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View operator report</string>
-        </property>
-        <property name="text">
-         <string>Operator Report</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_repair"/>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_view_leakages">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>View leakages by application</string>
-        </property>
-        <property name="text">
-         <string>Leakages by Application</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbtn_view_agenda">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View agenda</string>
-        </property>
-        <property name="text">
-         <string>Agenda</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbtn_report_data">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Report data to the notified body</string>
-        </property>
-        <property name="text">
-         <string>Report Data to the Notified Body...</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_inspectors">
-     <property name="title">
-      <string>Inspectors</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <property name="horizontalSpacing">
-       <number>6</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>3</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="tbtn_view_inspectors">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of inspectors</string>
-        </property>
-        <property name="text">
-         <string>List of Inspectors</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="tbtn_add_inspector">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Add a new inspector</string>
-        </property>
-        <property name="text">
-         <string>Add Inspector...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspector_add.png</normaloff>:/images/images/inspector_add.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QToolButton" name="tbtn_edit_inspector">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Edit the selected inspector</string>
-        </property>
-        <property name="text">
-         <string>Edit Inspector...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspector_edit22.png</normaloff>:/images/images/inspector_edit22.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QToolButton" name="tbtn_remove_inspector">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Remove the selected inspector</string>
-        </property>
-        <property name="text">
-         <string>Remove Inspector...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspector_remove.png</normaloff>:/images/images/inspector_remove.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="tbtn_view_inspector">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View inspector activity</string>
-        </property>
-        <property name="text">
-         <string>Inspector</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_repairs">
-     <property name="title">
-      <string>Repairs</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QToolButton" name="tbtn_view_repairs">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of repairs</string>
-        </property>
-        <property name="text">
-         <string>List of Repairs</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbtn_add_repair">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Add a new repair</string>
-        </property>
-        <property name="text">
-         <string>Add Repair...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/repair_add.png</normaloff>:/images/images/repair_add.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_repair">
@@ -1211,89 +1341,29 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_circuits">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Circuits</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_8">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_circuit" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_circuits">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of circuits</string>
-        </property>
-        <property name="text">
-         <string>List of Circuits</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_circuit"/>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_add_circuit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>Add a new circuit to the selected customer</string>
-        </property>
-        <property name="text">
-         <string>Add Circuit...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_circuit">
@@ -1363,94 +1433,31 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_inspections">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Inspections</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_inspection" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
-      <property name="horizontalSpacing">
-       <number>6</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>3</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="tbtn_view_inspections">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item>
+       <widget class="QLabel" name="lbl_inspection"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>View list of inspections</string>
-        </property>
-        <property name="text">
-         <string>List of Inspections</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="tbtn_add_inspection">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Add a new inspection to the selected circuit</string>
-        </property>
-        <property name="text">
-         <string>Add Inspection...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item>
        <widget class="QToolButton" name="tbtn_edit_inspection">
         <property name="enabled">
          <bool>false</bool>
@@ -1482,7 +1489,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item>
        <widget class="QToolButton" name="tbtn_remove_inspection">
         <property name="enabled">
          <bool>false</bool>
@@ -1514,246 +1521,33 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="tbtn_view_inspection">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View inspection details</string>
-        </property>
-        <property name="text">
-         <string>Inspection Details</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QToolButton" name="tbtn_view_inspection_images">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View inspection images</string>
-        </property>
-        <property name="text">
-         <string>Inspection Images</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_tables">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Tables</string>
-     </property>
-     <layout class="QVBoxLayout" name="gl_tables">
-      <property name="spacing">
-       <number>5</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_ar_type" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_13">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_table">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View table of inspections</string>
-        </property>
-        <property name="text">
-         <string>Table of Inspections</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_ar_type"/>
       </item>
       <item>
-       <widget class="QComboBox" name="cb_view_table">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Choose a table to view</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chb_table_all_circuits">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>26</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>All Circuits</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_2">
+       <spacer name="horizontalSpacer_12">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>20</width>
-          <height>0</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_assembly_record_types">
-     <property name="title">
-      <string>Assembly Record Types</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_7">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QToolButton" name="tbtn_view_assembly_record_types">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of assembly record types</string>
-        </property>
-        <property name="text">
-         <string>List of Record Types</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbtn_add_assembly_record_type">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Add a new assembly record type</string>
-        </property>
-        <property name="text">
-         <string>Add Record Type...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_assembly_record_type">
@@ -1823,86 +1617,29 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_assembly_record_item_categories">
-     <property name="title">
-      <string>Assembly Record Item Categories</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_10">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_ar_item_category" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_10">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_assembly_record_item_categories">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of assembly record item categories</string>
-        </property>
-        <property name="text">
-         <string>List of Item Categories</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_ar_item_category"/>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_add_assembly_record_item_category">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>Add a new assembly record item category</string>
-        </property>
-        <property name="text">
-         <string>Add Item Category...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_assembly_record_item_category">
@@ -1972,86 +1709,29 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_assembly_record_item_types">
-     <property name="title">
-      <string>Assembly Record Item Types</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_9">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_ar_item_type" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_11">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_assembly_record_item_types">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of assembly record item types</string>
-        </property>
-        <property name="text">
-         <string>List of Item Types</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_ar_item_type"/>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_add_assembly_record_item_type">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>Add a new assembly record item type</string>
-        </property>
-        <property name="text">
-         <string>Add Item Type...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_assembly_record_item_type">
@@ -2121,86 +1801,29 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_circuit_unit_types">
-     <property name="title">
-      <string>Circuit Unit Types</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_11">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_circuit_unit_type" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_12">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_circuit_unit_types">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>View list of circuit unit types</string>
-        </property>
-        <property name="text">
-         <string>List of Unit Types</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbl_circuit_unit_type"/>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_add_circuit_unit_type">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="statusTip">
-         <string>Add a new circuit unit type</string>
-        </property>
-        <property name="text">
-         <string>Add Unit Type...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
-        </property>
-        <property name="iconSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16</width>
-          <height>16</height>
+          <width>288</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_circuit_unit_type">
@@ -2270,463 +1893,59 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="gb_assembly_records">
-     <property name="title">
-      <string>Assembly Records</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
+    <widget class="QWidget" name="widget_assembly_records" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
        <number>6</number>
       </property>
       <property name="bottomMargin">
        <number>6</number>
       </property>
       <item>
-       <widget class="QToolButton" name="tbtn_view_assembly_records">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QLabel" name="lbl_assembly_records_show">
+        <property name="text">
+         <string>Show:</string>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_assembly_record_list_price">
         <property name="statusTip">
-         <string>View list of assembly records</string>
+         <string>Show list price on assembly record</string>
         </property>
         <property name="text">
-         <string>List of Assembly Records</string>
+         <string>List price</string>
         </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/assembly_records.png</normaloff>:/images/images/assembly_records.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
+        <property name="checked">
          <bool>true</bool>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbtn_view_assembly_record">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QCheckBox" name="chb_assembly_record_acquisition_price">
         <property name="statusTip">
-         <string>View assembly record</string>
+         <string>Show acquisition price on assembly record</string>
         </property>
         <property name="text">
-         <string>Assembly Record</string>
+         <string>Acquisition price</string>
         </property>
-        <property name="icon">
-         <iconset resource="../rc/resources.qrc">
-          <normaloff>:/images/images/assembly_record.png</normaloff>:/images/images/assembly_record.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="checkable">
+        <property name="checked">
          <bool>true</bool>
         </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
        </widget>
       </item>
       <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QWidget" name="ar_show_options_widget" native="true">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <property name="horizontalSpacing">
-          <number>9</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>6</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="lbl_assembly_records_show">
-           <property name="text">
-            <string>Show:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="chb_assembly_record_list_price">
-           <property name="statusTip">
-            <string>Show list price on assembly record</string>
-           </property>
-           <property name="text">
-            <string>List price</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="chb_assembly_record_total">
-           <property name="statusTip">
-            <string>Show total on assembly record</string>
-           </property>
-           <property name="text">
-            <string>Total</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QCheckBox" name="chb_assembly_record_acquisition_price">
-           <property name="statusTip">
-            <string>Show acquisition price on assembly record</string>
-           </property>
-           <property name="text">
-            <string>Acquisition price</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_filter">
-     <property name="title">
-      <string>Filter</string>
-     </property>
-     <layout class="QGridLayout" name="gl_filter">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <property name="spacing">
-       <number>4</number>
-      </property>
-      <item row="5" column="1" colspan="3">
-       <widget class="QSpinBox" name="spb_filter_since">
+       <widget class="QCheckBox" name="chb_assembly_record_total">
         <property name="statusTip">
-         <string>Show records entered since</string>
-        </property>
-        <property name="specialValueText">
-         <string>All</string>
-        </property>
-        <property name="minimum">
-         <number>1999</number>
-        </property>
-        <property name="maximum">
-         <number>3000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QSpinBox" name="spb_filter_month_from">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>12</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QComboBox" name="cb_filter_type">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Select a filter type</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>contains:</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>is:</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>starts with:</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ends with:</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="4">
-       <widget class="QComboBox" name="cb_filter_column">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Choose a column to filter by</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QSpinBox" name="spb_filter_month_until">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>12</number>
-        </property>
-        <property name="value">
-         <number>12</number>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="lbl_filter_since">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+         <string>Show total on assembly record</string>
         </property>
         <property name="text">
-         <string>Since:</string>
+         <string>Total</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="4">
-       <spacer name="spacer_filter">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="lbl_filter_month">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Month:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
-      </item>
-      <item row="0" column="0" colspan="4">
-       <widget class="QCheckBox" name="chb_by_field">
-        <property name="text">
-         <string>By Field of Application</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="3">
-       <widget class="ExtendedLineEdit" name="le_filter">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="statusTip">
-         <string>Type a word to filter by</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QLabel" name="lbl_filter_month_dash">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>—</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>22</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gb_report_data">
-     <property name="title">
-      <string>Report Data</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="tbtn_autofill">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Autofill the form with values from the database</string>
-        </property>
-        <property name="text">
-         <string>Autofill</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="lbl_report_year"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="tbtn_done">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Finish reporting data</string>
-        </property>
-        <property name="text">
-         <string>Done</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QProgressBar" name="progressbar_loadprogress">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>

@@ -45,7 +45,7 @@ LinkParser::LinkParser()
     root_entity->addRoute("assemblyrecorditemcategory", AssemblyRecordCategory);
     root_entity->addRoute("allcircuitunittypes", AllCircuitUnitTypes, false);
     root_entity->addRoute("circuitunittype", CircuitUnitType);
-    root_entity->addRoute("servicecompany", ServiceCompany, false);
+    root_entity->addRoute("servicecompany", Store, false);
     root_entity->addRoute("allassemblyrecords", AllAssemblyRecords, false);
     root_entity->addRoute("toggledetailsvisible", ToggleDetailsVisible);
 

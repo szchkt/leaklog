@@ -398,14 +398,14 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
 
 Refrigerants refrigerants;
 
-double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok, bool * null_var)
+double Global::evaluateExpression(const QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok, bool * null_var)
 {
     MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
     QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
 }
 
-double Global::evaluateExpression(QVariantMap & inspection, const MTDictionary & expression, const QVariantMap & circuit_attributes, bool * ok, bool * null_var)
+double Global::evaluateExpression(const QVariantMap & inspection, const MTDictionary & expression, const QVariantMap & circuit_attributes, bool * ok, bool * null_var)
 {
     static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
                                    " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"

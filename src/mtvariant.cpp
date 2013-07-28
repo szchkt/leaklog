@@ -21,6 +21,15 @@
 #include "global.h"
 #include "mtaddress.h"
 
+MTVariant::MTVariant(const QVariant & v, const QString & t):
+    v_value(v)
+{
+    if (t.endsWith("address"))
+        v_type = Address;
+    else
+        v_type = Default;
+}
+
 QString MTVariant::toString() const {
     switch (v_type) {
         case Address: return MTAddress(v_value.toString()).toPlainText(); break;

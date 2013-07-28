@@ -21,8 +21,9 @@
 #define NAVIGATION_H
 
 #include "ui_navigation.h"
+#include "view.h"
 
-class MainWindowSettings;
+class ViewTabSettings;
 class MTDictionary;
 
 class Navigation : public QWidget, private Ui::Navigation
@@ -30,54 +31,15 @@ class Navigation : public QWidget, private Ui::Navigation
     Q_OBJECT
 
 public:
-    enum Group {
-        NoGroup = -1,
-        ServiceCompanyGroup,
-        BasicLogbookGroup,
-        DetailedLogbookGroup,
-        AssemblyRecordsGroup,
-        ReportDataGroup,
-        GroupCount
-    };
-
-    enum View {
-        ServiceCompany,
-        RefrigerantManagement,
-        ListOfCustomers,
-        ListOfCircuits,
-        ListOfInspections,
-        Inspection,
-        TableOfInspections,
-        ListOfRepairs,
-        ListOfInspectors,
-        OperatorReport,
-        LeakagesByApplication,
-        Agenda,
-        ListOfAssemblyRecordTypes,
-        ListOfAssemblyRecordItemTypes,
-        ListOfAssemblyRecordItemCategories,
-        AssemblyRecord,
-        ListOfCircuitUnitTypes,
-        ListOfAssemblyRecords,
-        Inspector,
-        InspectionImages,
-        ViewCount
-    };
-
-    Navigation(QWidget *);
+    Navigation(QWidget * parent);
+    void setSettings(ViewTabSettings * settings) { _settings = settings; viewChanged(View::Store); setReportDataGroupBoxVisible(false); }
     void restoreDefaults(bool = true);
     void connectSlots(QObject *);
 
-    // View
-    Group group() const { return current_group; }
-    View view();
-    void setView(int, bool);
-
     // Widgets
-    void enableTools(const MainWindowSettings &);
-    inline QComboBox * tableComboBox() const { return cb_view_table; }
+    void enableTools();
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
-    inline int filterSinceValue() const { return spb_filter_since->value(); }
+    inline int filterSinceValue() const { return spb_filter_since->value() == 1999 ? 0 : spb_filter_since->value(); }
     inline int filterMonthFromValue() const { return spb_filter_month_from->value(); }
     inline int filterMonthUntilValue() const { return spb_filter_month_until->value(); }
     inline QString filterColumn() const { return cb_filter_column->itemData(cb_filter_column->currentIndex(), Qt::UserRole).toString(); }
@@ -98,41 +60,22 @@ public:
     bool isByFieldOfApplicationChecked() { return chb_by_field->isChecked(); }
 
 public slots:
-    // View
-    void viewServiceCompany();
-    void viewBasicLogbook();
-    void viewDetailedLogbook();
-    void viewAssemblyRecords();
-    void setView(int);
-    void setView(const QString &);
+    void viewChanged(View::ViewID view);
 
 private slots:
-    void tableChanged(int);
     void toggleTableForAllCircuits();
     void emitFilterChanged();
     void monthFromChanged(int);
     void monthUntilChanged(int);
 
 signals:
-    // Groups
-    void groupChanged(int);
-    // View
-    void viewChanged(int);
-    // Widgets
     void filterChanged();
 
 protected:
     void addFilterItems(const QString & column, const MTDictionary & items);
-    // Groups
-    void toggleVisibleGroup(Group, bool = true);
-    // View
-    void updateView();
 
-private:
-    QButtonGroup * btngrp_view;
-    Group current_group;
-    View current_view;
-    QVector<View> default_view_for_group;
+    View::ViewID _view;
+    ViewTabSettings * _settings;
 };
 
 #endif // NAVIGATION_H
