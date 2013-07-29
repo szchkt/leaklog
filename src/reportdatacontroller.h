@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-class Navigation;
+class ToolBarStack;
 class QWebView;
 
 class ReportDataController : public QObject
@@ -30,7 +30,7 @@ class ReportDataController : public QObject
     Q_OBJECT
 
 public:
-    ReportDataController(QWebView *, Navigation *);
+    ReportDataController(QWebView *, ToolBarStack *);
 
 private slots:
     void updateProgressBar(int);
@@ -50,7 +50,7 @@ protected:
 
 private:
     QWebView * wv_main;
-    Navigation * navigation;
+    ToolBarStack * toolbarstack;
 };
 
 #endif // REPORT_DATA_CONTROLLER_H

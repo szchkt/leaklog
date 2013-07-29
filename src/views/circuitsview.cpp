@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -57,14 +57,14 @@ void CircuitsView::writeCircuitsTable(MTTextStream & out, const QString & custom
 
 HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QString & circuit_id, int cols_in_row, HTMLTable * table)
 {
-    bool disable_hiding_details = false; // TODO: settings->navigation()->view() == Navigation::AssemblyRecord;
+    bool disable_hiding_details = false; // TODO: settings->toolbarstack()->view() == ToolBarStack::AssemblyRecord;
     bool circuits_details_visible = settings->mainWindowSettings().circuitDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
 
     Circuit circuits_record(customer_id, circuit_id);
-    if (circuit_id.isEmpty() && !settings->navigation()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (circuit_id.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
+        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
             " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"

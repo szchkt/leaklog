@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 #include "variableevaluation.h"
 #include "variables.h"

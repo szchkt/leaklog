@@ -81,5 +81,5 @@ QString LeakagesByApplicationView::renderHTML()
 
 QString LeakagesByApplicationView::title() const
 {
-    return QApplication::translate("Navigation", "Leakages by Application");
+    return QApplication::translate("ToolBarStack", "Leakages by Application");
 }

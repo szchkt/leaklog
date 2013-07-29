@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 
 using namespace Global;
 
@@ -37,7 +37,7 @@ QString RepairsView::renderHTML()
 {
     QString customer_id = settings->selectedCustomer();
     QString highlighted_id = settings->selectedRepair();
-    int year = settings->navigation()->filterSinceValue();
+    int year = settings->toolBarStack()->filterSinceValue();
 
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
@@ -50,8 +50,8 @@ QString RepairsView::renderHTML()
         out << "<br>";
     }
     MTRecord repairs_record("repairs", "date", "", parent);
-    if (!settings->navigation()->isFilterEmpty()) {
-        repairs_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        repairs_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::AllRepairs);
     if (order_by.isEmpty())
@@ -102,5 +102,5 @@ QString RepairsView::renderHTML()
 
 QString RepairsView::title() const
 {
-    return QApplication::translate("Navigation", "List of Repairs");
+    return QApplication::translate("ToolBarStack", "List of Repairs");
 }

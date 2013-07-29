@@ -59,7 +59,7 @@ ViewTab::ViewTab(QWidget * parent):
                      this, SLOT(viewChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     QObject::connect(this, SIGNAL(viewChanged(View::ViewID)),
-                     ui->navigation, SLOT(viewChanged(View::ViewID)));
+                     ui->toolbarstack, SLOT(viewChanged(View::ViewID)));
 
     QObject::connect(ui->wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 
@@ -94,7 +94,7 @@ ViewTab::ViewTab(QWidget * parent):
     for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i)
         ui->trw_navigation->topLevelItem(i)->setExpanded(true);
 
-    ui->navigation->setSettings(this);
+    ui->toolbarstack->setSettings(this);
 }
 
 ViewTab::~ViewTab()
@@ -327,9 +327,9 @@ MainWindowSettings & ViewTab::mainWindowSettings()
     return parentWindow()->settings();
 }
 
-Navigation * ViewTab::navigation() const
+ToolBarStack * ViewTab::toolBarStack() const
 {
-    return ui->navigation;
+    return ui->toolbarstack;
 }
 
 QWebView * ViewTab::webView() const
@@ -803,7 +803,7 @@ void ViewTab::reportData()
 {
     ui->trw_navigation->setVisible(false);
 
-    ReportDataController * controller = new ReportDataController(ui->wv_main, ui->navigation);
+    ReportDataController * controller = new ReportDataController(ui->wv_main, ui->toolbarstack);
     QObject::connect(controller, SIGNAL(processing(bool)), this, SLOT(setDisabled(bool)));
     QObject::connect(controller, SIGNAL(destroyed()), this, SLOT(reportDataFinished()));
 }

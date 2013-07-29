@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 #include <QDate>
@@ -40,9 +40,9 @@ OperatorReportView::OperatorReportView(ViewTabSettings *settings):
 QString OperatorReportView::renderHTML()
 {
     QString customer_id = settings->selectedCustomer();
-    int year = settings->navigation()->filterSinceValue();
-    int month_from = settings->navigation()->filterMonthFromValue();
-    int month_until = settings->navigation()->filterMonthUntilValue();
+    int year = settings->toolBarStack()->filterSinceValue();
+    int month_from = settings->toolBarStack()->filterMonthFromValue();
+    int month_until = settings->toolBarStack()->filterMonthUntilValue();
 
     if (year == 0)
         year = QDate::currentDate().year() - 1;
@@ -121,8 +121,8 @@ QString OperatorReportView::renderHTML()
     QString circuit_id;
 
     Circuit circuits_record(customer_id, "");
-    if (!settings->navigation()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
 
     MTSqlQuery circuits = circuits_record.select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
@@ -203,6 +203,6 @@ QString OperatorReportView::renderHTML()
 
 QString OperatorReportView::title() const
 {
-    return QApplication::translate("Navigation", "Operator Report")
+    return QApplication::translate("ToolBarStack", "Operator Report")
             + " - " + Customer(settings->selectedCustomer()).stringValue("company");
 }

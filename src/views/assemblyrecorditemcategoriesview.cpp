@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -39,8 +39,8 @@ QString AssemblyRecordItemCategoriesView::renderHTML()
     QString highlighted_id = settings->selectedAssemblyRecordItemCategory();
 
     AssemblyRecordItemCategory all_items("");
-    if (!settings->navigation()->isFilterEmpty()) {
-        all_items.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        all_items.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     ListOfVariantMaps items = all_items.listAll("*", settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecordItemCategories));
 
@@ -92,5 +92,5 @@ void AssemblyRecordItemCategoriesView::addDisplayOptionsCellToCategoriesTable(HT
 
 QString AssemblyRecordItemCategoriesView::title() const
 {
-    return QApplication::translate("Navigation", "List of Assembly Record Item Categories");
+    return QApplication::translate("ToolBarStack", "List of Assembly Record Item Categories");
 }

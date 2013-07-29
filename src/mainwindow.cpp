@@ -71,7 +71,7 @@ MainWindow::MainWindow()
 
     ViewTab * viewtab = new ViewTab(this);
     tabw_main->addTab(viewtab, tr("Tab"));
-    navigation = viewtab->navigation();
+    toolbarstack = viewtab->toolBarStack();
     current_tab = viewtab;
 
     network_access_manager = new QNetworkAccessManager(this);
@@ -180,7 +180,7 @@ MainWindow::MainWindow()
 
     setAllEnabled(false);
 
-    navigation->connectSlots(this);
+    toolbarstack->connectSlots(this);
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
@@ -263,9 +263,9 @@ MainWindow::MainWindow()
     QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    // TODO: QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
-    // TODO: QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
-    // TODO: QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), navigation, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
+    // TODO: QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
     QObject::connect(btn_clear_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
@@ -740,12 +740,12 @@ void MainWindow::clearAll()
 {
     m_undo_stack->clear();
     clearSelection(false);
-    // TODO: navigation->tableComboBox()->clear();
+    // TODO: toolbarstack->tableComboBox()->clear();
     cb_table_edit->clear();
     trw_variables->clear();
     trw_table_variables->clear();
     lw_warnings->clear();
-    navigation->restoreDefaults();
+    toolbarstack->restoreDefaults();
     // ----
     // TODO: years_expanded_in_store_view.clear();
 }
@@ -918,7 +918,7 @@ void MainWindow::enableTools()
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     current_tab->enableTools();
-    navigation->enableTools();
+    toolbarstack->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

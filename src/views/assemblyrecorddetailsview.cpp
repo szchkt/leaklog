@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "variableevaluation.h"
 #include "htmlbuilder.h"
 #include "dbfile.h"
@@ -168,9 +168,9 @@ QString AssemblyRecordDetailsView::renderHTML()
     int last_category = -1;
     int num_columns = 6, i, n;
     int colspans[num_columns];
-    bool show_list_price = settings->navigation()->isAssemblyRecordListPriceChecked();
-    bool show_acquisition_price = settings->navigation()->isAssemblyRecordAcquisitionPriceChecked();
-    bool show_total = settings->navigation()->isAssemblyRecordTotalChecked();
+    bool show_list_price = settings->toolBarStack()->isAssemblyRecordListPriceChecked();
+    bool show_acquisition_price = settings->toolBarStack()->isAssemblyRecordAcquisitionPriceChecked();
+    bool show_total = settings->toolBarStack()->isAssemblyRecordTotalChecked();
     double absolute_total = 0.0, total, acquisition_total = 0.0;
     QString colspan = "colspan=\"%1\"";
     QString item_value;

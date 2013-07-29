@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "reportdata.h"
 
 using namespace Global;
@@ -78,7 +78,7 @@ QString StoreView::renderHTML()
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"centred_with_borders\">";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
-    bool by_field = settings->navigation()->isByFieldOfApplicationChecked();
+    bool by_field = settings->toolBarStack()->isByFieldOfApplicationChecked();
     if (by_field)
         out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
@@ -97,7 +97,7 @@ QString StoreView::renderHTML()
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "</tr>";
-    ReportData data(settings->navigation()->filterSinceValue(), by_field);
+    ReportData data(settings->toolBarStack()->filterSinceValue(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerantsToString().split(";");
     list_refrigerants.insert(0, "");
@@ -108,7 +108,7 @@ QString StoreView::renderHTML()
     QList<int>::const_iterator y = data.store_years.constEnd();
     while (y != data.store_years.constBegin()) {
         y--;
-        if (*y < settings->navigation()->filterSinceValue()) break;
+        if (*y < settings->toolBarStack()->filterSinceValue()) break;
         store_map = data.store.value(*y);
         store_recovered_map = data.store_recovered.value(*y);
         store_leaked_map = data.store_leaked.value(*y);
@@ -196,7 +196,7 @@ QString StoreView::renderHTML()
 
 QString StoreView::title() const
 {
-    return QApplication::translate("Navigation", "Store");
+    return QApplication::translate("ToolBarStack", "Store");
 }
 
 void StoreView::toggleYear(int year)

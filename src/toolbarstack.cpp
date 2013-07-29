@@ -17,13 +17,13 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "navigation.h"
+#include "toolbarstack.h"
 
 #include "global.h"
 #include "viewtabsettings.h"
 #include "linkparser.h"
 
-Navigation::Navigation(QWidget * parent):
+ToolBarStack::ToolBarStack(QWidget * parent):
     QWidget(parent)
 {
     restoreDefaults(false);
@@ -45,11 +45,11 @@ Navigation::Navigation(QWidget * parent):
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
 }
 
-void Navigation::restoreDefaults(bool)
+void ToolBarStack::restoreDefaults(bool)
 {
 }
 
-void Navigation::connectSlots(QObject * receiver)
+void ToolBarStack::connectSlots(QObject * receiver)
 {
     QObject::connect(this, SIGNAL(filterChanged()), receiver, SLOT(refreshView()));
     QObject::connect(tbtn_edit_service_company, SIGNAL(clicked()), receiver, SLOT(editServiceCompany()));
@@ -84,7 +84,7 @@ void Navigation::connectSlots(QObject * receiver)
     QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
-void Navigation::addFilterItems(const QString & column, const MTDictionary & items)
+void ToolBarStack::addFilterItems(const QString & column, const MTDictionary & items)
 {
     cb_filter_column->insertSeparator(cb_filter_column->count());
 
@@ -97,7 +97,7 @@ void Navigation::addFilterItems(const QString & column, const MTDictionary & ite
     }
 }
 
-void Navigation::viewChanged(View::ViewID view)
+void ToolBarStack::viewChanged(View::ViewID view)
 {
     _view = view;
 
@@ -261,11 +261,11 @@ void Navigation::viewChanged(View::ViewID view)
     widget_filter->setVisible(filter_visible);
 }
 
-void Navigation::toggleTableForAllCircuits()
+void ToolBarStack::toggleTableForAllCircuits()
 {
 }
 
-void Navigation::emitFilterChanged()
+void ToolBarStack::emitFilterChanged()
 {
     bool enabled = !filterColumn().contains('?');
     bool changed = !isFilterEmpty() || enabled != le_filter->isEnabled();
@@ -276,39 +276,42 @@ void Navigation::emitFilterChanged()
         emit filterChanged();
 }
 
-void Navigation::monthFromChanged(int value)
+void ToolBarStack::monthFromChanged(int value)
 {
     if (spb_filter_month_until->value() < value)
         spb_filter_month_until->setValue(value);
     emit filterChanged();
 }
 
-void Navigation::monthUntilChanged(int value)
+void ToolBarStack::monthUntilChanged(int value)
 {
     if (spb_filter_month_from->value() > value)
         spb_filter_month_from->setValue(value);
     emit filterChanged();
 }
 
-void Navigation::enableTools()
+void ToolBarStack::enableTools()
 {
     if (_settings->isInspectorSelected())
-        lbl_inspector->setText(_settings->selectedInspectorName());
+        lbl_inspector->setText(tr("Inspector: %1").arg(_settings->selectedInspectorName()));
     widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails) && _settings->isInspectorSelected());
 
     if (_settings->isCustomerSelected())
-        lbl_customer->setText(_settings->selectedCustomerCompany());
+        lbl_customer->setText(tr("Customer: %1").arg(_settings->selectedCustomerCompany()));
     widget_customer->setVisible((_view == View::Customers ||
                                  _view == View::Circuits ||
-                                 _view == View::Repairs) &&
+                                 _view == View::Repairs ||
+                                 _view == View::Inspections ||
+                                 _view == View::InspectionDetails ||
+                                 _view == View::InspectionImages) &&
                                 _settings->isCustomerSelected());
 
     if (_settings->isRepairSelected())
-        lbl_repair->setText(_settings->selectedRepair());
+        lbl_repair->setText(tr("Repair: %1").arg(_settings->selectedRepair()));
     widget_repair->setVisible(_view == View::Repairs && _settings->isRepairSelected());
 
     if (_settings->isCircuitSelected())
-        lbl_circuit->setText(_settings->selectedCircuit());
+        lbl_circuit->setText(tr("Circuit: %1").arg(_settings->selectedCircuit()));
     widget_circuit->setVisible((_view == View::Circuits ||
                                 _view == View::Inspections ||
                                 _view == View::InspectionDetails ||
@@ -316,34 +319,34 @@ void Navigation::enableTools()
                                _settings->isCircuitSelected());
 
     if (_settings->isInspectionSelected())
-        lbl_inspection->setText(_settings->selectedInspection());
+        lbl_inspection->setText(tr("Inspection: %1").arg(_settings->selectedInspection()));
     widget_inspection->setVisible((_view == View::Inspections ||
                                    _view == View::InspectionDetails ||
-                                   _view == View::InspectionImages) &&
+                                   _view == View::InspectionImages ||
+                                   _view == View::AssemblyRecords ||
+                                   _view == View::AssemblyRecordDetails) &&
                                   _settings->isInspectionSelected());
 
     if (_settings->isAssemblyRecordTypeSelected())
-        lbl_ar_type->setText(_settings->selectedAssemblyRecordType());
+        lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(_settings->selectedAssemblyRecordType()));
     widget_ar_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
                                && _settings->isAssemblyRecordTypeSelected());
 
     if (_settings->isAssemblyRecordItemCategorySelected())
-        lbl_ar_item_category->setText(_settings->selectedAssemblyRecordItemCategory());
+        lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(_settings->selectedAssemblyRecordItemCategory()));
     widget_ar_item_category->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
                                         && _settings->isAssemblyRecordItemCategorySelected());
 
     if (_settings->isAssemblyRecordItemTypeSelected())
-        lbl_ar_item_type->setText(_settings->selectedAssemblyRecordItemType());
+        lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(_settings->selectedAssemblyRecordItemType()));
     widget_ar_item_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
                                     && _settings->isAssemblyRecordItemTypeSelected());
 
     if (_settings->isCircuitUnitTypeSelected())
-            lbl_circuit_unit_type->setText(_settings->selectedCircuitUnitType());
+            lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(_settings->selectedCircuitUnitType()));
     widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
                                          && _settings->isCircuitUnitTypeSelected());
 
-    if (_settings->isInspectionSelected())
-            lbl_inspection->setText(_settings->selectedInspection());
     widget_assembly_records->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
                                         && _settings->isInspectionSelected());
 
@@ -380,7 +383,7 @@ void Navigation::enableTools()
     chb_assembly_record_total->setChecked(enabled);
 }
 
-void Navigation::setReportDataGroupBoxVisible(bool visible)
+void ToolBarStack::setReportDataGroupBoxVisible(bool visible)
 {
     if (visible) {
         widget_inspector->setVisible(!visible);
@@ -403,7 +406,7 @@ void Navigation::setReportDataGroupBoxVisible(bool visible)
     widget_report_data->setVisible(visible);
 }
 
-QString Navigation::filterKeyword() const
+QString ToolBarStack::filterKeyword() const
 {
     if (filterColumn().contains('?'))
         return le_filter->text();

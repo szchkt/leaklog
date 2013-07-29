@@ -17,21 +17,21 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef NAVIGATION_H
-#define NAVIGATION_H
+#ifndef TOOLBARSTACK_H
+#define TOOLBARSTACK_H
 
-#include "ui_navigation.h"
+#include "ui_toolbarstack.h"
 #include "view.h"
 
 class ViewTabSettings;
 class MTDictionary;
 
-class Navigation : public QWidget, private Ui::Navigation
+class ToolBarStack : public QWidget, private Ui::ToolBarStack
 {
     Q_OBJECT
 
 public:
-    Navigation(QWidget * parent);
+    ToolBarStack(QWidget * parent);
     void setSettings(ViewTabSettings * settings) { _settings = settings; viewChanged(View::Store); setReportDataGroupBoxVisible(false); }
     void restoreDefaults(bool = true);
     void connectSlots(QObject *);
@@ -78,4 +78,4 @@ protected:
     ViewTabSettings * _settings;
 };
 
-#endif // NAVIGATION_H
+#endif // TOOLBARSTACK_H

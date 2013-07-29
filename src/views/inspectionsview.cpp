@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -36,7 +36,7 @@ InspectionsView::InspectionsView(ViewTabSettings *settings):
 
 QString InspectionsView::renderHTML()
 {
-    int year = settings->navigation()->filterSinceValue();
+    int year = settings->toolBarStack()->filterSinceValue();
     QString customer_id = settings->selectedCustomer();
     QString circuit_id = settings->selectedCircuit();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
@@ -56,8 +56,8 @@ QString InspectionsView::renderHTML()
     }
 
     Inspection inspection_record(customer_id, circuit_id, "");
-    if (!settings->navigation()->isFilterEmpty()) {
-        inspection_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        inspection_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
@@ -140,5 +140,5 @@ QString InspectionsView::title() const
     QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
     return Customer(settings->selectedCustomer()).stringValue("company")
             + " - " + QString(title.isEmpty() ? settings->selectedCircuit() : title)
-            + " - " + QApplication::translate("Navigation", "List of Inspections");
+            + " - " + QApplication::translate("ToolBarStack", "List of Inspections");
 }

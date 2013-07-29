@@ -86,7 +86,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="Navigation" name="navigation" native="true"/>
+        <widget class="ToolBarStack" name="toolbarstack" native="true"/>
        </item>
        <item>
         <widget class="QWebView" name="wv_main">
@@ -110,9 +110,9 @@
    <header>QtWebKitWidgets/QWebView</header>
   </customwidget>
   <customwidget>
-   <class>Navigation</class>
+   <class>ToolBarStack</class>
    <extends>QWidget</extends>
-   <header>navigation.h</header>
+   <header>toolbarstack.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

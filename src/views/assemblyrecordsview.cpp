@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -38,7 +38,7 @@ QString AssemblyRecordsView::renderHTML()
 {
     QString customer_id = settings->selectedCustomer();
     QString circuit_id = settings->selectedCircuit();
-    int year = settings->navigation()->filterSinceValue();
+    int year = settings->toolBarStack()->filterSinceValue();
 
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
@@ -89,8 +89,8 @@ QString AssemblyRecordsView::renderHTML()
                     " LEFT JOIN persons ON inspections.operator = CAST(persons.id AS text)",
                     "inspections.date", "", parents);
     record.setCustomWhere("arno <> ''");
-    if (!settings->navigation()->isFilterEmpty()) {
-        record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecords);
     if (order_by.isEmpty())
@@ -128,5 +128,5 @@ QString AssemblyRecordsView::renderHTML()
 
 QString AssemblyRecordsView::title() const
 {
-    return QApplication::translate("Navigation", "Assembly Records");
+    return QApplication::translate("ToolBarStack", "Assembly Records");
 }

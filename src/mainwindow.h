@@ -25,7 +25,7 @@
 #include "mtdictionary.h"
 #include "mainwindowsettings.h"
 #include "viewtab.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 
 #include <QSqlDatabase>
 
@@ -266,7 +266,7 @@ private:
     QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
     UndoStack * m_undo_stack;
-    Navigation * navigation;
+    ToolBarStack * toolbarstack;
     ViewTab * current_tab;
 };
 

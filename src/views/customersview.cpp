@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -50,14 +50,14 @@ void CustomersView::writeCustomersTable(MTTextStream & out, const QString & cust
 
 HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTMLTable * table)
 {
-    bool disable_hiding_details = false; // TODO: settings->navigation()->view() == Navigation::AssemblyRecord;
+    bool disable_hiding_details = false; // TODO: settings->toolbarstack()->view() == ToolBarStack::AssemblyRecord;
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
 
     Customer all_customers(customer_id);
-    if (customer_id.isEmpty() && !settings->navigation()->isFilterEmpty()) {
-        all_customers.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (customer_id.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
+        all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by;
     if (!customer_id.isEmpty() || settings->mainWindowSettings().orderByForView(LinkParser::AllCustomers).isEmpty())
@@ -179,5 +179,5 @@ HTMLTable * CustomersView::customerContactPersons(const QString & customer_id, H
 
 QString CustomersView::title() const
 {
-    return QApplication::translate("Navigation", "List of Customers");
+    return QApplication::translate("ToolBarStack", "List of Customers");
 }

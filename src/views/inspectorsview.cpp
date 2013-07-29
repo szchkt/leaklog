@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -45,8 +45,8 @@ QString InspectorsView::renderHTML()
 HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id, const QString & inspector_id)
 {
     Inspector inspectors_record(inspector_id);
-    if (!settings->navigation()->isFilterEmpty()) {
-        inspectors_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        inspectors_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
        " (SELECT COUNT(date) FROM inspections WHERE inspector = CAST(inspectors.id AS text)) AS inspections_count,"
@@ -93,5 +93,5 @@ HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id,
 
 QString InspectorsView::title() const
 {
-    return QApplication::translate("Navigation", "List of Inspectors");
+    return QApplication::translate("ToolBarStack", "List of Inspectors");
 }

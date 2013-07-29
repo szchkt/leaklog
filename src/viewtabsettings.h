@@ -25,7 +25,7 @@
 
 #include <QString>
 
-class Navigation;
+class ToolBarStack;
 class MainWindowSettings;
 
 class QObject;
@@ -41,7 +41,7 @@ public:
 
     virtual MainWindowSettings & mainWindowSettings() = 0;
 
-    virtual Navigation * navigation() const = 0;
+    virtual ToolBarStack * toolBarStack() const = 0;
     virtual QWebView * webView() const = 0;
 
     virtual void setView(View::ViewID view) = 0;

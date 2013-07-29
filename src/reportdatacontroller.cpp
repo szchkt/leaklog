@@ -20,7 +20,7 @@
 #include "reportdatacontroller.h"
 #include "reportdata.h"
 #include "leakagesbyapplication.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "records.h"
 #include "defs.h"
 #include "global.h"
@@ -33,16 +33,16 @@
 
 using namespace Global;
 
-ReportDataController::ReportDataController(QWebView * wv, Navigation * parent):
-QObject(parent), navigation(parent) {
+ReportDataController::ReportDataController(QWebView * wv, ToolBarStack * parent):
+QObject(parent), toolbarstack(parent) {
     wv_main = wv;
-    navigation->setReportDataGroupBoxVisible(true);
-    navigation->autofillButton()->setEnabled(false);
-    navigation->autofillButton()->setStyleSheet("QToolButton:enabled { background-color: red; color: white; }");
-    navigation->reportYearLabel()->setText(tr("Report year: %1").arg(QDate::currentDate().year() - 1));
-    navigation->reportDataProgressBar()->setVisible(false);
-    QObject::connect(navigation->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
-    QObject::connect(navigation->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
+    toolbarstack->setReportDataGroupBoxVisible(true);
+    toolbarstack->autofillButton()->setEnabled(false);
+    toolbarstack->autofillButton()->setStyleSheet("QToolButton:enabled { background-color: red; color: white; }");
+    toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(QDate::currentDate().year() - 1));
+    toolbarstack->reportDataProgressBar()->setVisible(false);
+    QObject::connect(toolbarstack->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
+    QObject::connect(toolbarstack->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
     wv_main->setPage(new QWebPage(wv_main));
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
@@ -67,8 +67,8 @@ bool ReportDataController::shouldExportLeakages()
 
 void ReportDataController::updateProgressBar(int progress)
 {
-    navigation->reportDataProgressBar()->setVisible(true);
-    navigation->reportDataProgressBar()->setValue(progress);
+    toolbarstack->reportDataProgressBar()->setVisible(true);
+    toolbarstack->reportDataProgressBar()->setValue(progress);
 }
 
 void ReportDataController::enableAutofill()
@@ -76,18 +76,18 @@ void ReportDataController::enableAutofill()
     QVariant version_required = wv_main->page()->mainFrame()->evaluateJavaScript(QString("minimumLeaklogVersionRequired(%1);").arg(F_LEAKLOG_VERSION));
     bool valid = !version_required.toString().isEmpty();
     bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
-    navigation->autofillButton()->setEnabled(valid && sufficient);
+    toolbarstack->autofillButton()->setEnabled(valid && sufficient);
 
     if (valid) {
         if (!sufficient)
             QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
         else if (shouldExportLeakages())
-            navigation->reportYearLabel()->setText(tr("Report year: %1").arg(tr("all")));
+            toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(tr("all")));
         else
-            navigation->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
+            toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
     }
 
-    navigation->reportDataProgressBar()->setVisible(false);
+    toolbarstack->reportDataProgressBar()->setVisible(false);
 }
 
 void ReportDataController::autofill()
@@ -243,6 +243,6 @@ void ReportDataController::reportLeakages()
 
 void ReportDataController::done()
 {
-    navigation->setReportDataGroupBoxVisible(false);
+    toolbarstack->setReportDataGroupBoxVisible(false);
     deleteLater();
 }

@@ -4,7 +4,7 @@ FORMS         += ui/aboutwidget.ui \
                  ui/importcsvdialogue.ui \
                  ui/importdialogue.ui \
                  ui/mainwindow.ui \
-                 ui/navigation.ui \
+                 ui/toolbarstack.ui \
                  ui/viewtab.ui
 HEADERS       += src/aboutwidget.h \
                  src/dbfile.h \
@@ -52,7 +52,6 @@ HEADERS       += src/aboutwidget.h \
                  src/mtwebpage.h \
                  src/mtwidget.h \
                  src/mtwidgetpalettes.h \
-                 src/navigation.h \
                  src/partnerwidgets.h \
                  src/permissionsdialogue.h \
                  src/records.h \
@@ -61,6 +60,7 @@ HEADERS       += src/aboutwidget.h \
                  src/reportdatacontroller.h \
                  src/sha256.h \
                  src/tabbededitdialogue.h \
+                 src/toolbarstack.h \
                  src/undostack.h \
                  src/variableevaluation.h \
                  src/variables.h \
@@ -130,7 +130,6 @@ SOURCES       += src/aboutwidget.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
                  src/mtwidget.cpp \
-                 src/navigation.cpp \
                  src/partnerwidgets.cpp \
                  src/permissionsdialogue.cpp \
                  src/records.cpp \
@@ -139,6 +138,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/reportdatacontroller.cpp \
                  src/sha256.cpp \
                  src/tabbededitdialogue.cpp \
+                 src/toolbarstack.cpp \
                  src/undostack.cpp \
                  src/variableevaluation.cpp \
                  src/variables.cpp \

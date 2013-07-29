@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Navigation</class>
- <widget class="QWidget" name="Navigation">
+ <class>ToolBarStack</class>
+ <widget class="QWidget" name="ToolBarStack">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -432,7 +432,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Navigation</string>
+   <string>ToolBarStack</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>

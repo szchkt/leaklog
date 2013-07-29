@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 #include "variableevaluation.h"
 #include "variables.h"
@@ -43,7 +43,7 @@ QString TableView::renderHTML()
     QString customer_id = settings->selectedCustomer();
     QString cc_id = settings->selectedCircuit();
     QString table_id = settings->currentTable();
-    int year = settings->navigation()->filterSinceValue();
+    int year = settings->toolBarStack()->filterSinceValue();
     QString compressor_id = settings->isCompressorSelected() ? settings->selectedCompressor() : QString();
 
     QString html; MTTextStream out(&html);
@@ -553,5 +553,5 @@ QString TableView::title() const
     QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
     return Customer(settings->selectedCustomer()).stringValue("company")
             + " - " + QString(title.isEmpty() ? settings->selectedCircuit() : title)
-            + " - " + QApplication::translate("Navigation", "Table of Inspections");
+            + " - " + QApplication::translate("ToolBarStack", "Table of Inspections");
 }

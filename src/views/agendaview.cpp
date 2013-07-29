@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "warnings.h"
 
 #include <QDate>
@@ -47,8 +47,8 @@ QString AgendaView::renderHTML()
     MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
 
     MTRecord circuits_record("circuits", "id", "", MTDictionary("disused", "0"));
-    if (!settings->navigation()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     circuits_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
                             " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
@@ -159,5 +159,5 @@ QString AgendaView::renderHTML()
 
 QString AgendaView::title() const
 {
-    return QApplication::translate("Navigation", "Agenda");
+    return QApplication::translate("ToolBarStack", "Agenda");
 }

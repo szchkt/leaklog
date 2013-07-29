@@ -4118,421 +4118,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
 </context>
 <context>
-    <name>Navigation</name>
-    <message>
-        <source>Navigation</source>
-        <translation>Navigácia</translation>
-    </message>
-    <message>
-        <source>Add record of refrigerant management</source>
-        <translation>Pridať záznam o nakladaní s chladivom</translation>
-    </message>
-    <message>
-        <source>Add a new inspector</source>
-        <translation>Pridať nového kontrolóra</translation>
-    </message>
-    <message>
-        <source>Remove the selected inspector</source>
-        <translation>Odstrániť vybraného kontrolóra</translation>
-    </message>
-    <message>
-        <source>Add a new customer</source>
-        <translation>Pridať nového zákazníka</translation>
-    </message>
-    <message>
-        <source>Remove the selected customer</source>
-        <translation>Odstrániť vybraného zákazníka</translation>
-    </message>
-    <message>
-        <source>Add a new repair</source>
-        <translation>Pridať novú opravu</translation>
-    </message>
-    <message>
-        <source>Remove the selected repair</source>
-        <translation>Odstrániť vybranú opravu</translation>
-    </message>
-    <message>
-        <source>Add a new circuit to the selected customer</source>
-        <translation>Pridať nový okruh vybranému zákazníkovi</translation>
-    </message>
-    <message>
-        <source>Remove the selected circuit</source>
-        <translation>Odstrániť vybraný okruh</translation>
-    </message>
-    <message>
-        <source>Add a new inspection to the selected circuit</source>
-        <translation>Pridať novú kontrolu vybraného okruhu</translation>
-    </message>
-    <message>
-        <source>Remove the selected inspection</source>
-        <translation>Odstrániť vybranú kontrolu</translation>
-    </message>
-    <message>
-        <source>Add a new assembly record type</source>
-        <translation>Pridať nový typ montážneho listu</translation>
-    </message>
-    <message>
-        <source>Remove the selected assembly record type</source>
-        <translation>Odstrániť vybraný typ montážneho listu</translation>
-    </message>
-    <message>
-        <source>Add a new assembly record item type</source>
-        <translation>Pridať nový typ položky montážneho listu</translation>
-    </message>
-    <message>
-        <source>Remove the selected assembly record item type</source>
-        <translation>Odstrániť vybraný typ položky montážneho listu</translation>
-    </message>
-    <message>
-        <source>Add a new assembly record item category</source>
-        <translation>Pridať novú kategóriu položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Remove the selected assembly record item category</source>
-        <translation>Odstrániť vybranú kategóriu položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Add a new circuit unit type</source>
-        <translation>Pridať nový typ jednotky okruh</translation>
-    </message>
-    <message>
-        <source>Remove the selected circuit unit type</source>
-        <translation>Odstrániť vybraný typ jednotky okruhu</translation>
-    </message>
-    <message>
-        <source>Show:</source>
-        <translation>Zobraziť:</translation>
-    </message>
-    <message>
-        <source>Show list price on assembly record</source>
-        <translation>Zobraziť cenníkovú cenu na montážnom liste</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cenníková cena</translation>
-    </message>
-    <message>
-        <source>Show total on assembly record</source>
-        <translation>Zobraziť celkovú cenu na montážnom liste</translation>
-    </message>
-    <message>
-        <source>Total</source>
-        <translation>Celkom</translation>
-    </message>
-    <message>
-        <source>Show acquisition price on assembly record</source>
-        <translation>Zobraziť obstarávaciu cenu na montážnom liste</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
-    </message>
-    <message>
-        <source>Choose a column to filter by</source>
-        <translation>Vyberte stĺpec, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
-    </message>
-    <message>
-        <source>Type a word to filter by</source>
-        <translation>Zadajte slovo, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
-    </message>
-    <message>
-        <source>Since:</source>
-        <translation>Od roku:</translation>
-    </message>
-    <message>
-        <source>Show records entered since</source>
-        <translation>Zobraziť záznamy od roku</translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation>Všetky</translation>
-    </message>
-    <message>
-        <source>Select a filter type</source>
-        <translation>Vyberte typ filtra</translation>
-    </message>
-    <message>
-        <source>contains:</source>
-        <translation>obsahuje:</translation>
-    </message>
-    <message>
-        <source>is:</source>
-        <translation>je:</translation>
-    </message>
-    <message>
-        <source>starts with:</source>
-        <translation>začína na:</translation>
-    </message>
-    <message>
-        <source>ends with:</source>
-        <translation>končí na:</translation>
-    </message>
-    <message>
-        <source>Autofill the form with values from the database</source>
-        <translation>Automaticky vyplniť formulár hodnotami z databázy</translation>
-    </message>
-    <message>
-        <source>Autofill</source>
-        <translation>Vyplniť</translation>
-    </message>
-    <message>
-        <source>Finish reporting data</source>
-        <translation>Ukončiť oznamovanie údajov</translation>
-    </message>
-    <message>
-        <source>Done</source>
-        <translation>Dokončiť</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
-    </message>
-    <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Upraviť informácie o servisnej organizácii...</translation>
-    </message>
-    <message>
-        <source>Add Record of Refrigerant Management...</source>
-        <translation>Pridať záznam o nakladaní s chladivom...</translation>
-    </message>
-    <message>
-        <source>Add Customer...</source>
-        <translation>Pridať zákazníka...</translation>
-    </message>
-    <message>
-        <source>Edit the selected customer</source>
-        <translation>Upraviť vybraného zákazníka</translation>
-    </message>
-    <message>
-        <source>Edit Customer...</source>
-        <translation>Upraviť zákazníka...</translation>
-    </message>
-    <message>
-        <source>Remove Customer...</source>
-        <translation>Odstrániť zákazníka...</translation>
-    </message>
-    <message>
-        <source>Add Inspector...</source>
-        <translation>Pridať kontrolóra...</translation>
-    </message>
-    <message>
-        <source>Edit the selected inspector</source>
-        <translation>Upraviť vybraného kontrolóra</translation>
-    </message>
-    <message>
-        <source>Edit Inspector...</source>
-        <translation>Upraviť kontrolóra...</translation>
-    </message>
-    <message>
-        <source>Remove Inspector...</source>
-        <translation>Odstrániť kontrolóra...</translation>
-    </message>
-    <message>
-        <source>Add Repair...</source>
-        <translation>Pridať opravu...</translation>
-    </message>
-    <message>
-        <source>Edit the selected repair</source>
-        <translation>Upraviť vybranú opravu</translation>
-    </message>
-    <message>
-        <source>Edit Repair...</source>
-        <translation>Upraviť opravu...</translation>
-    </message>
-    <message>
-        <source>Remove Repair...</source>
-        <translation>Odstrániť opravu...</translation>
-    </message>
-    <message>
-        <source>Add Circuit...</source>
-        <translation>Pridať okruh...</translation>
-    </message>
-    <message>
-        <source>Edit the selected circuit</source>
-        <translation>Upraviť vybraný okruh</translation>
-    </message>
-    <message>
-        <source>Edit Circuit...</source>
-        <translation>Upraviť okruh...</translation>
-    </message>
-    <message>
-        <source>Remove Circuit...</source>
-        <translation>Odstrániť okruh...</translation>
-    </message>
-    <message>
-        <source>Add Inspection...</source>
-        <translation>Pridať kontrolu...</translation>
-    </message>
-    <message>
-        <source>Edit the selected inspection</source>
-        <translation>Upraviť vybranú kontrolu</translation>
-    </message>
-    <message>
-        <source>Edit Inspection...</source>
-        <translation>Upraviť kontrolu...</translation>
-    </message>
-    <message>
-        <source>Remove Inspection...</source>
-        <translation>Odstrániť kontrolu...</translation>
-    </message>
-    <message>
-        <source>Add Record Type...</source>
-        <translation>Pridať typ montážneho listu...</translation>
-    </message>
-    <message>
-        <source>Edit the selected assembly record type</source>
-        <translation>Upraviť vybraný typ montážneho listu</translation>
-    </message>
-    <message>
-        <source>Edit Record Type...</source>
-        <translation>Upraviť typ montážneho listu...</translation>
-    </message>
-    <message>
-        <source>Remove Record Type...</source>
-        <translation>Odstrániť typ montážneho listu...</translation>
-    </message>
-    <message>
-        <source>Add Item Category...</source>
-        <translation>Pridať kategóriu položiek...</translation>
-    </message>
-    <message>
-        <source>Edit the selected assembly record item category</source>
-        <translation>Upraviť vybranú kategóriu položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Edit Item Category...</source>
-        <translation>Upraviť kategóriu položiek...</translation>
-    </message>
-    <message>
-        <source>Remove Item Category...</source>
-        <translation>Odstrániť kategóriu položiek...</translation>
-    </message>
-    <message>
-        <source>Add Item Type...</source>
-        <translation>Pridať typ položky...</translation>
-    </message>
-    <message>
-        <source>Edit the selected assembly record item type</source>
-        <translation>Upraviť vybraný typ položky montážneho listu</translation>
-    </message>
-    <message>
-        <source>Edit Item Type...</source>
-        <translation>Upraviť typ položky...</translation>
-    </message>
-    <message>
-        <source>Remove Item Type...</source>
-        <translation>Odstrániť typ položky...</translation>
-    </message>
-    <message>
-        <source>Add Unit Type...</source>
-        <translation>Pridať typ jednotky...</translation>
-    </message>
-    <message>
-        <source>Edit the selected circuit unit type</source>
-        <translation>Upraviť vybraný typ jednotky okruhu</translation>
-    </message>
-    <message>
-        <source>Edit Unit Type...</source>
-        <translation>Upraviť typ jednotky...</translation>
-    </message>
-    <message>
-        <source>Remove Unit Type...</source>
-        <translation>Odstrániť typ jednotky...</translation>
-    </message>
-    <message>
-        <source>All Circuits</source>
-        <translation>Všetky okruhy</translation>
-    </message>
-    <message>
-        <source>Month:</source>
-        <translation>Mesiac:</translation>
-    </message>
-    <message utf8="true">
-        <source>—</source>
-        <translation>—</translation>
-    </message>
-    <message>
-        <source>By Field of Application</source>
-        <translation>Podľa druhu nasadenia</translation>
-    </message>
-    <message>
-        <source>Store</source>
-        <translation>Sklad</translation>
-    </message>
-    <message>
-        <source>Year:</source>
-        <translation>Rok:</translation>
-    </message>
-    <message>
-        <source>Last</source>
-        <translation>Posledný</translation>
-    </message>
-    <message>
-        <source>Agenda</source>
-        <translation>Agenda</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Item Categories</source>
-        <translation>Zoznam kategórií položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Item Types</source>
-        <translation>Zoznam typov položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Assembly Records</source>
-        <translation>Montážne listy</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Types</source>
-        <translation>Zoznam typov montážneho listu</translation>
-    </message>
-    <message>
-        <source>List of Circuit Unit Types</source>
-        <translation>Zoznam typov jednotiek okruhu</translation>
-    </message>
-    <message>
-        <source>List of Customers</source>
-        <translation>Zoznam zákazníkov</translation>
-    </message>
-    <message>
-        <source>Inspection Images</source>
-        <translation>Obrázky z kontroly</translation>
-    </message>
-    <message>
-        <source>List of Inspections</source>
-        <translation>Zoznam kontrol</translation>
-    </message>
-    <message>
-        <source>Inspector</source>
-        <translation>Kontrolór</translation>
-    </message>
-    <message>
-        <source>List of Inspectors</source>
-        <translation>Zoznam kontrolórov</translation>
-    </message>
-    <message>
-        <source>Leakages by Application</source>
-        <translation>Úniky podľa nasadenia</translation>
-    </message>
-    <message>
-        <source>Operator Report</source>
-        <translation>Oznámenie prevádzkovateľa</translation>
-    </message>
-    <message>
-        <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
-    </message>
-    <message>
-        <source>List of Repairs</source>
-        <translation>Zoznam opráv</translation>
-    </message>
-    <message>
-        <source>Table of Inspections</source>
-        <translation>Tabuľka kontrol</translation>
-    </message>
-</context>
-<context>
     <name>Oils</name>
     <message>
         <source>MO (Mineral oil)</source>
@@ -5320,6 +4905,457 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>No</source>
         <translation>Nie</translation>
+    </message>
+</context>
+<context>
+    <name>ToolBarStack</name>
+    <message>
+        <source>Add record of refrigerant management</source>
+        <translation>Pridať záznam o nakladaní s chladivom</translation>
+    </message>
+    <message>
+        <source>Add a new inspector</source>
+        <translation>Pridať nového kontrolóra</translation>
+    </message>
+    <message>
+        <source>Remove the selected inspector</source>
+        <translation>Odstrániť vybraného kontrolóra</translation>
+    </message>
+    <message>
+        <source>Add a new customer</source>
+        <translation>Pridať nového zákazníka</translation>
+    </message>
+    <message>
+        <source>Remove the selected customer</source>
+        <translation>Odstrániť vybraného zákazníka</translation>
+    </message>
+    <message>
+        <source>Add a new repair</source>
+        <translation>Pridať novú opravu</translation>
+    </message>
+    <message>
+        <source>Remove the selected repair</source>
+        <translation>Odstrániť vybranú opravu</translation>
+    </message>
+    <message>
+        <source>Add a new circuit to the selected customer</source>
+        <translation>Pridať nový okruh vybranému zákazníkovi</translation>
+    </message>
+    <message>
+        <source>Remove the selected circuit</source>
+        <translation>Odstrániť vybraný okruh</translation>
+    </message>
+    <message>
+        <source>Add a new inspection to the selected circuit</source>
+        <translation>Pridať novú kontrolu vybraného okruhu</translation>
+    </message>
+    <message>
+        <source>Remove the selected inspection</source>
+        <translation>Odstrániť vybranú kontrolu</translation>
+    </message>
+    <message>
+        <source>Add a new assembly record type</source>
+        <translation>Pridať nový typ montážneho listu</translation>
+    </message>
+    <message>
+        <source>Remove the selected assembly record type</source>
+        <translation>Odstrániť vybraný typ montážneho listu</translation>
+    </message>
+    <message>
+        <source>Add a new assembly record item type</source>
+        <translation>Pridať nový typ položky montážneho listu</translation>
+    </message>
+    <message>
+        <source>Remove the selected assembly record item type</source>
+        <translation>Odstrániť vybraný typ položky montážneho listu</translation>
+    </message>
+    <message>
+        <source>Add a new assembly record item category</source>
+        <translation>Pridať novú kategóriu položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Remove the selected assembly record item category</source>
+        <translation>Odstrániť vybranú kategóriu položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Add a new circuit unit type</source>
+        <translation>Pridať nový typ jednotky okruh</translation>
+    </message>
+    <message>
+        <source>Remove the selected circuit unit type</source>
+        <translation>Odstrániť vybraný typ jednotky okruhu</translation>
+    </message>
+    <message>
+        <source>Show:</source>
+        <translation>Zobraziť:</translation>
+    </message>
+    <message>
+        <source>Show list price on assembly record</source>
+        <translation>Zobraziť cenníkovú cenu na montážnom liste</translation>
+    </message>
+    <message>
+        <source>List price</source>
+        <translation>Cenníková cena</translation>
+    </message>
+    <message>
+        <source>Show total on assembly record</source>
+        <translation>Zobraziť celkovú cenu na montážnom liste</translation>
+    </message>
+    <message>
+        <source>Total</source>
+        <translation>Celkom</translation>
+    </message>
+    <message>
+        <source>Show acquisition price on assembly record</source>
+        <translation>Zobraziť obstarávaciu cenu na montážnom liste</translation>
+    </message>
+    <message>
+        <source>Acquisition price</source>
+        <translation>Obstarávacia cena</translation>
+    </message>
+    <message>
+        <source>Choose a column to filter by</source>
+        <translation>Vyberte stĺpec, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
+    </message>
+    <message>
+        <source>Type a word to filter by</source>
+        <translation>Zadajte slovo, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
+    </message>
+    <message>
+        <source>Since:</source>
+        <translation>Od roku:</translation>
+    </message>
+    <message>
+        <source>Show records entered since</source>
+        <translation>Zobraziť záznamy od roku</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>Všetky</translation>
+    </message>
+    <message>
+        <source>Select a filter type</source>
+        <translation>Vyberte typ filtra</translation>
+    </message>
+    <message>
+        <source>contains:</source>
+        <translation>obsahuje:</translation>
+    </message>
+    <message>
+        <source>is:</source>
+        <translation>je:</translation>
+    </message>
+    <message>
+        <source>starts with:</source>
+        <translation>začína na:</translation>
+    </message>
+    <message>
+        <source>ends with:</source>
+        <translation>končí na:</translation>
+    </message>
+    <message>
+        <source>Autofill the form with values from the database</source>
+        <translation>Automaticky vyplniť formulár hodnotami z databázy</translation>
+    </message>
+    <message>
+        <source>Autofill</source>
+        <translation>Vyplniť</translation>
+    </message>
+    <message>
+        <source>Finish reporting data</source>
+        <translation>Ukončiť oznamovanie údajov</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation>Dokončiť</translation>
+    </message>
+    <message>
+        <source>Edit service company information</source>
+        <translation>Upraviť informácie o servisnej organizácii</translation>
+    </message>
+    <message>
+        <source>Edit Service Company Information...</source>
+        <translation>Upraviť informácie o servisnej organizácii...</translation>
+    </message>
+    <message>
+        <source>Add Record of Refrigerant Management...</source>
+        <translation>Pridať záznam o nakladaní s chladivom...</translation>
+    </message>
+    <message>
+        <source>Add Customer...</source>
+        <translation>Pridať zákazníka...</translation>
+    </message>
+    <message>
+        <source>Edit the selected customer</source>
+        <translation>Upraviť vybraného zákazníka</translation>
+    </message>
+    <message>
+        <source>Edit Customer...</source>
+        <translation>Upraviť zákazníka...</translation>
+    </message>
+    <message>
+        <source>Remove Customer...</source>
+        <translation>Odstrániť zákazníka...</translation>
+    </message>
+    <message>
+        <source>Add Inspector...</source>
+        <translation>Pridať kontrolóra...</translation>
+    </message>
+    <message>
+        <source>Edit the selected inspector</source>
+        <translation>Upraviť vybraného kontrolóra</translation>
+    </message>
+    <message>
+        <source>Edit Inspector...</source>
+        <translation>Upraviť kontrolóra...</translation>
+    </message>
+    <message>
+        <source>Remove Inspector...</source>
+        <translation>Odstrániť kontrolóra...</translation>
+    </message>
+    <message>
+        <source>Add Repair...</source>
+        <translation>Pridať opravu...</translation>
+    </message>
+    <message>
+        <source>Edit the selected repair</source>
+        <translation>Upraviť vybranú opravu</translation>
+    </message>
+    <message>
+        <source>Edit Repair...</source>
+        <translation>Upraviť opravu...</translation>
+    </message>
+    <message>
+        <source>Remove Repair...</source>
+        <translation>Odstrániť opravu...</translation>
+    </message>
+    <message>
+        <source>Add Circuit...</source>
+        <translation>Pridať okruh...</translation>
+    </message>
+    <message>
+        <source>Edit the selected circuit</source>
+        <translation>Upraviť vybraný okruh</translation>
+    </message>
+    <message>
+        <source>Edit Circuit...</source>
+        <translation>Upraviť okruh...</translation>
+    </message>
+    <message>
+        <source>Remove Circuit...</source>
+        <translation>Odstrániť okruh...</translation>
+    </message>
+    <message>
+        <source>Add Inspection...</source>
+        <translation>Pridať kontrolu...</translation>
+    </message>
+    <message>
+        <source>Edit the selected inspection</source>
+        <translation>Upraviť vybranú kontrolu</translation>
+    </message>
+    <message>
+        <source>Edit Inspection...</source>
+        <translation>Upraviť kontrolu...</translation>
+    </message>
+    <message>
+        <source>Remove Inspection...</source>
+        <translation>Odstrániť kontrolu...</translation>
+    </message>
+    <message>
+        <source>Add Record Type...</source>
+        <translation>Pridať typ montážneho listu...</translation>
+    </message>
+    <message>
+        <source>Edit the selected assembly record type</source>
+        <translation>Upraviť vybraný typ montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit Record Type...</source>
+        <translation>Upraviť typ montážneho listu...</translation>
+    </message>
+    <message>
+        <source>Remove Record Type...</source>
+        <translation>Odstrániť typ montážneho listu...</translation>
+    </message>
+    <message>
+        <source>Add Item Category...</source>
+        <translation>Pridať kategóriu položiek...</translation>
+    </message>
+    <message>
+        <source>Edit the selected assembly record item category</source>
+        <translation>Upraviť vybranú kategóriu položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit Item Category...</source>
+        <translation>Upraviť kategóriu položiek...</translation>
+    </message>
+    <message>
+        <source>Remove Item Category...</source>
+        <translation>Odstrániť kategóriu položiek...</translation>
+    </message>
+    <message>
+        <source>Add Item Type...</source>
+        <translation>Pridať typ položky...</translation>
+    </message>
+    <message>
+        <source>Edit the selected assembly record item type</source>
+        <translation>Upraviť vybraný typ položky montážneho listu</translation>
+    </message>
+    <message>
+        <source>Edit Item Type...</source>
+        <translation>Upraviť typ položky...</translation>
+    </message>
+    <message>
+        <source>Remove Item Type...</source>
+        <translation>Odstrániť typ položky...</translation>
+    </message>
+    <message>
+        <source>Add Unit Type...</source>
+        <translation>Pridať typ jednotky...</translation>
+    </message>
+    <message>
+        <source>Edit the selected circuit unit type</source>
+        <translation>Upraviť vybraný typ jednotky okruhu</translation>
+    </message>
+    <message>
+        <source>Edit Unit Type...</source>
+        <translation>Upraviť typ jednotky...</translation>
+    </message>
+    <message>
+        <source>Remove Unit Type...</source>
+        <translation>Odstrániť typ jednotky...</translation>
+    </message>
+    <message>
+        <source>All Circuits</source>
+        <translation>Všetky okruhy</translation>
+    </message>
+    <message>
+        <source>Month:</source>
+        <translation>Mesiac:</translation>
+    </message>
+    <message utf8="true">
+        <source>—</source>
+        <translation>—</translation>
+    </message>
+    <message>
+        <source>By Field of Application</source>
+        <translation>Podľa druhu nasadenia</translation>
+    </message>
+    <message>
+        <source>Store</source>
+        <translation>Sklad</translation>
+    </message>
+    <message>
+        <source>Year:</source>
+        <translation>Rok:</translation>
+    </message>
+    <message>
+        <source>Last</source>
+        <translation>Posledný</translation>
+    </message>
+    <message>
+        <source>Agenda</source>
+        <translation>Agenda</translation>
+    </message>
+    <message>
+        <source>List of Assembly Record Item Categories</source>
+        <translation>Zoznam kategórií položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>List of Assembly Record Item Types</source>
+        <translation>Zoznam typov položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Assembly Records</source>
+        <translation>Montážne listy</translation>
+    </message>
+    <message>
+        <source>List of Assembly Record Types</source>
+        <translation>Zoznam typov montážneho listu</translation>
+    </message>
+    <message>
+        <source>List of Circuit Unit Types</source>
+        <translation>Zoznam typov jednotiek okruhu</translation>
+    </message>
+    <message>
+        <source>List of Customers</source>
+        <translation>Zoznam zákazníkov</translation>
+    </message>
+    <message>
+        <source>Inspection Images</source>
+        <translation>Obrázky z kontroly</translation>
+    </message>
+    <message>
+        <source>List of Inspections</source>
+        <translation>Zoznam kontrol</translation>
+    </message>
+    <message>
+        <source>Inspector</source>
+        <translation>Kontrolór</translation>
+    </message>
+    <message>
+        <source>List of Inspectors</source>
+        <translation>Zoznam kontrolórov</translation>
+    </message>
+    <message>
+        <source>Leakages by Application</source>
+        <translation>Úniky podľa nasadenia</translation>
+    </message>
+    <message>
+        <source>Operator Report</source>
+        <translation>Oznámenie prevádzkovateľa</translation>
+    </message>
+    <message>
+        <source>Refrigerant Management</source>
+        <translation>Nakladanie s chladivami</translation>
+    </message>
+    <message>
+        <source>List of Repairs</source>
+        <translation>Zoznam opráv</translation>
+    </message>
+    <message>
+        <source>Table of Inspections</source>
+        <translation>Tabuľka kontrol</translation>
+    </message>
+    <message>
+        <source>ToolBarStack</source>
+        <translation>Panely nástrojov</translation>
+    </message>
+    <message>
+        <source>Inspector: %1</source>
+        <translation>Kontrolór: %1</translation>
+    </message>
+    <message>
+        <source>Customer: %1</source>
+        <translation>Zákazník: %1</translation>
+    </message>
+    <message>
+        <source>Repair: %1</source>
+        <translation>Oprava: %1</translation>
+    </message>
+    <message>
+        <source>Circuit: %1</source>
+        <translation>Okruh: %1</translation>
+    </message>
+    <message>
+        <source>Inspection: %1</source>
+        <translation>Kontrola: %1</translation>
+    </message>
+    <message>
+        <source>Assembly Record Type: %1</source>
+        <translation>Typ montážneho listu: %1</translation>
+    </message>
+    <message>
+        <source>Assembly Record Item Category: %1</source>
+        <translation>Kategória položiek montážneho listu: %1</translation>
+    </message>
+    <message>
+        <source>Assembly Record Item Type: %1</source>
+        <translation>Typ položky montážneho listu: %1</translation>
+    </message>
+    <message>
+        <source>Circuit Unit Type: %1</source>
+        <translation>Typ jednotky okruhu: %1</translation>
     </message>
 </context>
 <context>

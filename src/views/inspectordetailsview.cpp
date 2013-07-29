@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 #include "htmlbuilder.h"
 
 using namespace Global;
@@ -54,8 +54,8 @@ QString InspectorDetailsView::renderHTML()
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
     AssemblyRecordItemByInspector ar_item_record(inspector_id);
-    if (!settings->navigation()->isFilterEmpty()) {
-        ar_item_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        ar_item_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer, inspections.circuit, inspections.date, assembly_record_items.*"));
 
@@ -137,8 +137,8 @@ QString InspectorDetailsView::renderHTML()
     *(_tr->addHeaderCell()) << tr("Circuit name");
 
     InspectionByInspector inspection_record(inspector_id);
-    if (!settings->navigation()->isFilterEmpty()) {
-        inspection_record.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        inspection_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     ListOfVariantMaps inspections(inspection_record.listAll("date, customer, customers.company, circuit, circuits.name AS circuit_name, repair, nominal"));
 
@@ -173,5 +173,5 @@ QString InspectorDetailsView::renderHTML()
 
 QString InspectorDetailsView::title() const
 {
-    return QApplication::translate("Navigation", "Inspector");
+    return QApplication::translate("ToolBarStack", "Inspector");
 }

@@ -24,7 +24,7 @@
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
-#include "navigation.h"
+#include "toolbarstack.h"
 
 using namespace Global;
 
@@ -35,7 +35,7 @@ RefrigerantManagementView::RefrigerantManagementView(ViewTabSettings *settings):
 
 QString RefrigerantManagementView::renderHTML()
 {
-    int since = settings->navigation()->filterSinceValue();
+    int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
 
@@ -66,8 +66,8 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "</tr>";
     RecordOfRefrigerantManagement records("");
-    if (!settings->navigation()->isFilterEmpty()) {
-        records.addFilter(settings->navigation()->filterColumn(), settings->navigation()->filterKeyword());
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::RefrigerantManagement);
     if (order_by.isEmpty())
@@ -96,5 +96,5 @@ QString RefrigerantManagementView::renderHTML()
 
 QString RefrigerantManagementView::title() const
 {
-    return QApplication::translate("Navigation", "Refrigerant Management");
+    return QApplication::translate("ToolBarStack", "Refrigerant Management");
 }

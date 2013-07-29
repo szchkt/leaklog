@@ -25,7 +25,7 @@
 #include "mtwidget.h"
 #include "linkparser.h"
 
-class Navigation;
+class ToolBarStack;
 class QTreeWidgetItem;
 class QWebView;
 class QUrl;
@@ -47,7 +47,7 @@ public:
 
     MainWindowSettings & mainWindowSettings();
 
-    Navigation * navigation() const;
+    ToolBarStack * toolBarStack() const;
     QWebView * webView() const;
 
     View * view(View::ViewID view) { return views[view]; }
