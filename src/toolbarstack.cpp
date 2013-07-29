@@ -29,12 +29,18 @@ ToolBarStack::ToolBarStack(QWidget * parent):
     restoreDefaults(false);
     setupUi(this);
 
+#ifdef Q_OS_MAC
     setStyleSheet(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
                              "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
                   "QToolButton { border-color: #888888; border-style: solid; border-width: 1px; border-radius: 3px; min-height: 16px;"
                                 "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F9F9F9, stop: 1 #D6D6D6); }"
                   "QToolButton:pressed { color: white;"
                                         "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6F6F6F, stop: 1 #9C9C9C); }");
+#else
+    setStyleSheet(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
+                             "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
+                  "QToolButton { min-height: 16px; }");
+#endif
 
     QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
