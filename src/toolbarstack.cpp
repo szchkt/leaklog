@@ -24,7 +24,7 @@
 #include "linkparser.h"
 
 ToolBarStack::ToolBarStack(QWidget * parent):
-    QWidget(parent)
+    QWidget(parent), _view(View::ViewCount), _settings(NULL)
 {
     restoreDefaults(false);
     setupUi(this);
@@ -99,6 +99,9 @@ void ToolBarStack::addFilterItems(const QString & column, const MTDictionary & i
 
 void ToolBarStack::viewChanged(View::ViewID view)
 {
+    if (_view == view)
+        return;
+
     _view = view;
 
     tbtn_add_assembly_record_item_category->setVisible(view == View::AssemblyRecordItemCategories);

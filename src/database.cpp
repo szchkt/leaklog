@@ -507,7 +507,6 @@ void MainWindow::openRemote()
 
 void MainWindow::openDatabase(QString path)
 {
-    current_tab->clearSelectedRepair();
     clearAll();
     if (path.isEmpty()) {
         QSqlDatabase db = QSqlDatabase::database();
@@ -539,6 +538,12 @@ void MainWindow::openDatabase(QString path)
         closeDatabase(false);
         return;
     }
+
+    ViewTab * viewtab = new ViewTab(this);
+    tabw_main->addTab(viewtab, tr("Tab 1"));
+    current_tab = viewtab;
+    current_tab->toolBarStack()->connectSlots(this);
+
     initTables(false);
 
     loadDatabase(false);
@@ -650,6 +655,9 @@ void MainWindow::closeDatabase(bool save)
     clearAll();
     enableTools();
     setAllEnabled(false);
+    tabw_main->removeTab(0);
+    delete current_tab;
+    current_tab = NULL;
 
     QString connection_name;
     {

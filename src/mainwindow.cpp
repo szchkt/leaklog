@@ -57,7 +57,8 @@
 
 using namespace Global;
 
-MainWindow::MainWindow()
+MainWindow::MainWindow():
+    current_tab(NULL)
 {
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -68,11 +69,6 @@ MainWindow::MainWindow()
     if (tr("LTR") == "RTL")
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
-
-    ViewTab * viewtab = new ViewTab(this);
-    tabw_main->addTab(viewtab, tr("Tab"));
-    toolbarstack = viewtab->toolBarStack();
-    current_tab = viewtab;
 
     network_access_manager = new QNetworkAccessManager(this);
 
@@ -180,7 +176,6 @@ MainWindow::MainWindow()
 
     setAllEnabled(false);
 
-    toolbarstack->connectSlots(this);
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
@@ -713,7 +708,8 @@ void MainWindow::findPrevious()
 
 void MainWindow::clearSelection(bool refresh)
 {
-    current_tab->restoreDefaults();
+    if (current_tab)
+        current_tab->restoreDefaults();
     if (refresh) {
         enableTools();
         refreshView();
@@ -745,7 +741,6 @@ void MainWindow::clearAll()
     trw_variables->clear();
     trw_table_variables->clear();
     lw_warnings->clear();
-    toolbarstack->restoreDefaults();
     // ----
     // TODO: years_expanded_in_store_view.clear();
 }
@@ -918,7 +913,6 @@ void MainWindow::enableTools()
     lbl_selected_inspector->setVisible(inspector_selected);
     btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     current_tab->enableTools();
-    toolbarstack->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);

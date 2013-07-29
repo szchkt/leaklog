@@ -266,7 +266,6 @@ private:
     QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
     UndoStack * m_undo_stack;
-    ToolBarStack * toolbarstack;
     ViewTab * current_tab;
 };
 

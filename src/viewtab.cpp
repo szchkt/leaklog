@@ -95,6 +95,8 @@ ViewTab::ViewTab(QWidget * parent):
         ui->trw_navigation->topLevelItem(i)->setExpanded(true);
 
     ui->toolbarstack->setSettings(this);
+
+    setView(View::Store);
 }
 
 ViewTab::~ViewTab()
@@ -320,6 +322,8 @@ void ViewTab::enableTools()
     view_items[View::AssemblyRecords]->setDisabled(!isCircuitSelected());
     view_items[View::InspectorDetails]->setDisabled(!isInspectorSelected());
     view_items[View::InspectionImages]->setDisabled(!isInspectionSelected());
+
+    ui->toolbarstack->enableTools();
 }
 
 MainWindowSettings & ViewTab::mainWindowSettings()
@@ -343,6 +347,7 @@ void ViewTab::setView(View::ViewID view)
         ui->trw_navigation->setCurrentItem(view_items[view]);
     else if (view == View::TableOfInspections)
         ui->trw_navigation->setCurrentItem(group_tables->child(0));
+    refreshView();
 }
 
 void ViewTab::refreshView()
