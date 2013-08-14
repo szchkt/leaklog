@@ -137,29 +137,6 @@ MainWindow::MainWindow():
     actionShow_icons_only = new QAction(tr("Show icons only"), this);
     actionShow_icons_only->setCheckable(true);
 
-    // Statusbar
-    lbl_current_selection = new QLabel;
-    lbl_current_selection->setVisible(false);
-    lbl_current_selection->setTextFormat(Qt::RichText);
-    statusbar->addWidget(lbl_current_selection);
-    lbl_selected_repair = new QLabel;
-    lbl_selected_repair->setVisible(false);
-    lbl_selected_repair->setTextFormat(Qt::RichText);
-    statusbar->addWidget(lbl_selected_repair);
-    lbl_selected_inspector = new QLabel;
-    lbl_selected_inspector->setVisible(false);
-    lbl_selected_inspector->setTextFormat(Qt::RichText);
-    statusbar->addWidget(lbl_selected_inspector);
-    btn_clear_selection = new QPushButton(this);
-    btn_clear_selection->setFlat(true);
-    btn_clear_selection->setMaximumSize(18, 18);
-    btn_clear_selection->setIcon(QIcon(QString::fromUtf8(layoutDirection() == Qt::LeftToRight ?
-                                                             ":/images/images/clear.png" :
-                                                             ":/images/images/clear_rtl.png")));
-    btn_clear_selection->setToolTip(tr("Clear current selection"));
-    btn_clear_selection->setVisible(false);
-    statusbar->addWidget(btn_clear_selection);
-
     // Variables
     trw_variables->header()->setSortIndicator(0, Qt::AscendingOrder);
     trw_variables->header()->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -258,10 +235,6 @@ MainWindow::MainWindow():
     QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    // TODO: QObject::connect(lbl_current_selection, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
-    // TODO: QObject::connect(lbl_selected_repair, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
-    // TODO: QObject::connect(lbl_selected_inspector, SIGNAL(linkActivated(const QString &)), toolbarstack, SLOT(setView(const QString &)));
-    QObject::connect(btn_clear_selection, SIGNAL(clicked()), this, SLOT(clearSelection()));
     QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editWarning()));
@@ -736,13 +709,10 @@ void MainWindow::clearAll()
 {
     m_undo_stack->clear();
     clearSelection(false);
-    // TODO: toolbarstack->tableComboBox()->clear();
     cb_table_edit->clear();
     trw_variables->clear();
     trw_table_variables->clear();
     lw_warnings->clear();
-    // ----
-    // TODO: years_expanded_in_store_view.clear();
 }
 
 void MainWindow::setAllEnabled(bool enable, bool everything)
@@ -779,9 +749,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     menuInspection->setEnabled(enable);
     menuRepair->setEnabled(enable);
     menuInspector->setEnabled(enable);
-
-    lbl_current_selection->setEnabled(enable);
-    btn_clear_selection->setEnabled(enable);
 
     tbtn_export->setEnabled(enable || everything);
 
@@ -875,43 +842,6 @@ void MainWindow::enableTools()
     bool inspection_selected = current_tab->isInspectionSelected();
     bool repair_selected = current_tab->isRepairSelected();
     bool inspector_selected = current_tab->isInspectorSelected();
-    QString current_selection;
-    if (customer_selected)
-        current_selection.append(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>")
-            .arg(View::Circuits)
-            .arg(tr("<b>Customer:</b> %1%2")
-                .arg(selectedCustomer().rightJustified(8, '0'))
-                .arg(current_tab->selectedCustomerCompany().isEmpty() ? "" : QString(" (%1)").arg(current_tab->selectedCustomerCompany()))));
-    if (circuit_selected)
-        current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
-            .arg(rightTriangle())
-            .arg(View::Inspections)
-            .arg(tr("<b>Circuit:</b> %1")
-                .arg(selectedCircuit().rightJustified(5, '0'))));
-    if (inspection_selected) {
-        current_selection.append(QString(" %1 <a style=\"color: #000000; text-decoration: none;\" href=\"%2\">%3</a>")
-            .arg(rightTriangle())
-            .arg(View::InspectionDetails)
-            .arg((current_tab->selectedInspectionIsRepair() ? tr("<b>Repair:</b> %1") : tr("<b>Inspection:</b> %1"))
-                .arg(current_tab->selectedInspection())));
-    }
-    lbl_current_selection->setText(current_selection + "&nbsp;&nbsp;");
-    lbl_current_selection->setVisible(!current_selection.isEmpty());
-    if (repair_selected) {
-        lbl_selected_repair->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
-            .arg(View::Repairs)
-            .arg(tr("<b>Repair:</b> %1")
-                .arg(selectedRepair())));
-    }
-    lbl_selected_repair->setVisible(repair_selected);
-    if (inspector_selected) {
-        lbl_selected_inspector->setText(QString("<a style=\"color: #000000; text-decoration: none;\" href=\"%1\">%2</a>&nbsp;&nbsp;")
-            .arg(View::Inspectors)
-            .arg(tr("<b>Inspector:</b> %1")
-                .arg(current_tab->selectedInspectorName())));
-    }
-    lbl_selected_inspector->setVisible(inspector_selected);
-    btn_clear_selection->setVisible(!current_selection.isEmpty() || repair_selected || inspector_selected);
     current_tab->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);

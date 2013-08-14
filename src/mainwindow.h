@@ -249,10 +249,6 @@ private:
     QString fileNameForCurrentView();
 
     QAction * actionShow_icons_only;
-    QLabel * lbl_current_selection;
-    QLabel * lbl_selected_repair;
-    QLabel * lbl_selected_inspector;
-    QPushButton * btn_clear_selection;
     QToolButton * tbtn_open;
     QToolButton * tbtn_undo;
     QToolButton * tbtn_export;
