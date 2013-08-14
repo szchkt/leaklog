@@ -19,21 +19,10 @@
 
 #include "view.h"
 #include "viewtabsettings.h"
-#include "mainwindow.h"
 #include "global.h"
-#include "variables.h"
-#include "warnings.h"
-#include "dbfile.h"
-#include "reportdata.h"
-#include "mttextstream.h"
-#include "mtaddress.h"
-#include "htmlbuilder.h"
-#include "variableevaluation.h"
 
-#include <QDate>
-#include <QSqlError>
-#include <QFileInfo>
-#include <QWebView>
+#include <QFile>
+#include <QTextStream>
 
 using namespace Global;
 
@@ -64,18 +53,4 @@ QString View::viewTemplate(const QString & view_template)
         file.close();
     }
     return view_templates.value(view_template);
-}
-
-QString MainWindow::fileNameForCurrentView()
-{
-    QString title;
-    if (current_tab->currentView() != View::ViewCount)
-        title = current_tab->view(current_tab->currentView())->title();
-
-    if (current_tab->currentView() == View::AssemblyRecordDetails)
-        return title;
-
-    return QString("%1 - %2")
-            .arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName())
-            .arg(title.replace(':', '.'));
 }

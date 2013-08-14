@@ -205,6 +205,7 @@ private:
     void setWindowTitleWithRepresentedFilename(const QString & path);
     QMenu * createPopupMenu();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);
+    QString fileNameForCurrentView();
     void exportPDF(int);
     void addRecent(const QString &);
     void clearAll();
@@ -245,8 +246,6 @@ private:
     inline QString selectedAssemblyRecordItemCategory() { return current_tab->selectedAssemblyRecordItemCategory(); }
     inline bool isCircuitUnitTypeSelected() { return current_tab->isCircuitUnitTypeSelected(); }
     inline QString selectedCircuitUnitType() { return current_tab->selectedCircuitUnitType(); }
-    // VIEW
-    QString fileNameForCurrentView();
 
     QAction * actionShow_icons_only;
     QToolButton * tbtn_open;

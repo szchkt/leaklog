@@ -339,6 +339,20 @@ void MainWindow::print()
     current_tab->webView()->print(&printer);
 }
 
+QString MainWindow::fileNameForCurrentView()
+{
+    QString title;
+    if (current_tab->currentView() != View::ViewCount)
+        title = current_tab->view(current_tab->currentView())->title();
+
+    if (current_tab->currentView() == View::AssemblyRecordDetails)
+        return title;
+
+    return QString("%1 - %2")
+            .arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName())
+            .arg(title.replace(':', '.'));
+}
+
 void MainWindow::exportPDFPortrait()
 {
     exportPDF(QPrinter::Portrait);
