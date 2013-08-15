@@ -41,7 +41,7 @@ TableView::TableView(ViewTabSettings *settings):
 QString TableView::renderHTML()
 {
     QString customer_id = settings->selectedCustomer();
-    QString cc_id = settings->selectedCircuit();
+    QString cc_id = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuit();
     QString table_id = settings->currentTable();
     int year = settings->toolBarStack()->filterSinceValue();
     QString compressor_id = settings->isCompressorSelected() ? settings->selectedCompressor() : QString();

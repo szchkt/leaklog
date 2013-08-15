@@ -542,7 +542,7 @@ void MainWindow::openDatabase(QString path)
     ViewTab * viewtab = new ViewTab(this);
     tabw_main->addTab(viewtab, tr("Tab 1"));
     current_tab = viewtab;
-    current_tab->toolBarStack()->connectSlots(this);
+    current_tab->connectSlots(this);
 
     initTables(false);
 

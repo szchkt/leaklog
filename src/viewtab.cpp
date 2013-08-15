@@ -310,6 +310,11 @@ void ViewTab::removeTable(const QString & table)
     }
 }
 
+void ViewTab::connectSlots(QObject * receiver)
+{
+    ui->toolbarstack->connectSlots(receiver);
+}
+
 void ViewTab::enableTools()
 {
     view_items[View::Circuits]->setDisabled(!isCustomerSelected());

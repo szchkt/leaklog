@@ -57,7 +57,7 @@ void CircuitsView::writeCircuitsTable(MTTextStream & out, const QString & custom
 
 HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QString & circuit_id, int cols_in_row, HTMLTable * table)
 {
-    bool disable_hiding_details = false; // TODO: settings->toolbarstack()->view() == ToolBarStack::AssemblyRecord;
+    bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool circuits_details_visible = settings->mainWindowSettings().circuitDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;

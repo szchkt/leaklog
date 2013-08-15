@@ -42,6 +42,7 @@ public:
     explicit ViewTab(QWidget * parent = 0);
     ~ViewTab();
     QObject * object() { return this; }
+    void connectSlots(QObject *);
 
     void enableTools();
 

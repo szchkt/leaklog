@@ -50,7 +50,7 @@ void CustomersView::writeCustomersTable(MTTextStream & out, const QString & cust
 
 HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTMLTable * table)
 {
-    bool disable_hiding_details = false; // TODO: settings->toolbarstack()->view() == ToolBarStack::AssemblyRecord;
+    bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;

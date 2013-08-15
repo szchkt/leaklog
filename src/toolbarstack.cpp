@@ -26,7 +26,6 @@
 ToolBarStack::ToolBarStack(QWidget * parent):
     QWidget(parent), _view(View::ViewCount), _settings(NULL)
 {
-    restoreDefaults(false);
     setupUi(this);
 
 #ifdef Q_OS_MAC
@@ -51,8 +50,11 @@ ToolBarStack::ToolBarStack(QWidget * parent):
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
 }
 
-void ToolBarStack::restoreDefaults(bool)
+void ToolBarStack::setSettings(ViewTabSettings * settings)
 {
+    _settings = settings;
+    viewChanged(View::Store);
+    setReportDataGroupBoxVisible(false);
 }
 
 void ToolBarStack::connectSlots(QObject * receiver)
@@ -272,6 +274,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
 
 void ToolBarStack::toggleTableForAllCircuits()
 {
+    _settings->refreshView();
 }
 
 void ToolBarStack::emitFilterChanged()

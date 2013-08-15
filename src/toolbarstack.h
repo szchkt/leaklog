@@ -32,12 +32,12 @@ class ToolBarStack : public QWidget, private Ui::ToolBarStack
 
 public:
     ToolBarStack(QWidget * parent);
-    void setSettings(ViewTabSettings * settings) { _settings = settings; viewChanged(View::Store); setReportDataGroupBoxVisible(false); }
-    void restoreDefaults(bool = true);
+    void setSettings(ViewTabSettings * settings);
     void connectSlots(QObject *);
 
     // Widgets
     void enableTools();
+
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
     inline int filterSinceValue() const { return spb_filter_since->value() == 1999 ? 0 : spb_filter_since->value(); }
     inline int filterMonthFromValue() const { return spb_filter_month_from->value(); }
@@ -46,18 +46,18 @@ public:
     inline bool isFilterEmpty() const { return le_filter->text().isEmpty() && !filterColumn().contains('?'); }
     QString filterKeyword() const;
 
-    // Report data
+    bool isAssemblyRecordListPriceChecked() const { return chb_assembly_record_list_price->isChecked(); }
+    bool isAssemblyRecordAcquisitionPriceChecked() const { return chb_assembly_record_acquisition_price->isChecked(); }
+    bool isAssemblyRecordTotalChecked() const { return chb_assembly_record_total->isChecked(); }
+
+    bool isByFieldOfApplicationChecked() const { return chb_by_field->isChecked(); }
+
+    // Reporting
     void setReportDataGroupBoxVisible(bool visible);
     inline QToolButton * autofillButton() const { return tbtn_autofill; }
     inline QToolButton * doneButton() const { return tbtn_done; }
     inline QLabel * reportYearLabel() const { return lbl_report_year; }
     inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
-
-    bool isAssemblyRecordListPriceChecked() { return chb_assembly_record_list_price->isChecked(); }
-    bool isAssemblyRecordAcquisitionPriceChecked() { return chb_assembly_record_acquisition_price->isChecked(); }
-    bool isAssemblyRecordTotalChecked() { return chb_assembly_record_total->isChecked(); }
-
-    bool isByFieldOfApplicationChecked() { return chb_by_field->isChecked(); }
 
 public slots:
     void viewChanged(View::ViewID view);

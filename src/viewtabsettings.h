@@ -37,7 +37,7 @@ public:
     ViewTabSettings();
     virtual QObject * object() = 0;
 
-    virtual void enableTools() = 0; // TODO: remove
+    virtual void enableTools() = 0;
 
     virtual MainWindowSettings & mainWindowSettings() = 0;
 
