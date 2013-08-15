@@ -42,11 +42,11 @@ ViewTabSettings::ViewTabSettings():
 void ViewTabSettings::restoreDefaults()
 {
     clearSelectedCustomer();
-    setSelectedInspector(-1);
-    setSelectedAssemblyRecordType(-1);
-    setSelectedAssemblyRecordItemType(-1);
-    setSelectedAssemblyRecordItemCategory(-1);
-    setSelectedCircuitUnitType(-1);
+    clearSelectedInspector();
+    clearSelectedAssemblyRecordType();
+    clearSelectedAssemblyRecordItemType();
+    clearSelectedAssemblyRecordItemCategory();
+    clearSelectedCircuitUnitType();
 
     if (m_last_link) delete m_last_link;
     if (m_received_link) delete m_received_link;

@@ -72,6 +72,8 @@ signals:
     void tableRemoved(const QString &);
 
 public slots:
+    void enableTools();
+
     void reportData(bool);
     void reportDataFinished();
 
@@ -168,7 +170,6 @@ private slots:
     void dateFormatChanged(QAction *);
     void timeFormatChanged(MainWindowSettings::TimeFormat);
     void timeFormatChanged(QAction *);
-    void enableTools();
     void toggleLocked();
     void showOperationNotPermittedMessage();
     void configurePermissions();

@@ -44,6 +44,7 @@ public:
     QObject * object() { return this; }
     void connectSlots(QObject *);
 
+    void enableAllTools();
     void enableTools();
 
     MainWindowSettings & mainWindowSettings();

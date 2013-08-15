@@ -1887,7 +1887,7 @@ void MainWindow::removeInspector()
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->setSelectedInspector(-1);
+    current_tab->clearSelectedInspector();
     enableTools();
     this->setWindowModified(true);
     current_tab->setView(View::Inspectors);
@@ -3074,7 +3074,7 @@ void MainWindow::removeAssemblyRecordType()
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->setSelectedAssemblyRecordType(-1);
+    current_tab->clearSelectedAssemblyRecordType();
     enableTools();
     this->setWindowModified(true);
     current_tab->setView(View::AssemblyRecordTypes);
@@ -3129,7 +3129,7 @@ void MainWindow::removeAssemblyRecordItemType()
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->setSelectedAssemblyRecordItemType(-1);
+    current_tab->clearSelectedAssemblyRecordItemType();
     enableTools();
     this->setWindowModified(true);
     current_tab->setView(View::AssemblyRecordItemTypes);
@@ -3193,7 +3193,7 @@ void MainWindow::removeAssemblyRecordItemCategory()
     m_undo_stack->savepoint();
 
     category.remove();
-    current_tab->setSelectedAssemblyRecordItemCategory(-1);
+    current_tab->clearSelectedAssemblyRecordItemCategory();
     enableTools();
     this->setWindowModified(true);
     current_tab->setView(View::AssemblyRecordItemCategories);
@@ -3253,7 +3253,7 @@ void MainWindow::removeCircuitUnitType()
     m_undo_stack->savepoint();
 
     unit_type.remove();
-    current_tab->setSelectedCircuitUnitType(-1);
+    current_tab->clearSelectedCircuitUnitType();
     enableTools();
     this->setWindowModified(true);
     current_tab->setView(View::CircuitUnitTypes);

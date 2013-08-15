@@ -60,6 +60,16 @@ public:
     inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
 
 public slots:
+    void clearInspector();
+    void clearCustomer();
+    void clearCircuit();
+    void clearInspection();
+    void clearRepair();
+    void clearAssemblyRecordType();
+    void clearAssemblyRecordItemType();
+    void clearAssemblyRecordItemCategory();
+    void clearCircuitUnitType();
+
     void viewChanged(View::ViewID view);
 
 private slots:

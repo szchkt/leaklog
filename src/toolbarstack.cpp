@@ -48,6 +48,16 @@ ToolBarStack::ToolBarStack(QWidget * parent):
     QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
     QObject::connect(cb_filter_column, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
+
+    QObject::connect(btn_clear_inspector, SIGNAL(clicked()), this, SLOT(clearInspector()));
+    QObject::connect(btn_clear_customer, SIGNAL(clicked()), this, SLOT(clearCustomer()));
+    QObject::connect(btn_clear_circuit, SIGNAL(clicked()), this, SLOT(clearCircuit()));
+    QObject::connect(btn_clear_inspection, SIGNAL(clicked()), this, SLOT(clearInspection()));
+    QObject::connect(btn_clear_repair, SIGNAL(clicked()), this, SLOT(clearRepair()));
+    QObject::connect(btn_clear_assembly_record_type, SIGNAL(clicked()), this, SLOT(clearAssemblyRecordType()));
+    QObject::connect(btn_clear_assembly_record_item_type, SIGNAL(clicked()), this, SLOT(clearAssemblyRecordItemType()));
+    QObject::connect(btn_clear_assembly_record_item_category, SIGNAL(clicked()), this, SLOT(clearAssemblyRecordItemCategory()));
+    QObject::connect(btn_clear_circuit_unit_type, SIGNAL(clicked()), this, SLOT(clearCircuitUnitType()));
 }
 
 void ToolBarStack::setSettings(ViewTabSettings * settings)
@@ -341,25 +351,25 @@ void ToolBarStack::enableTools()
 
     if (_settings->isAssemblyRecordTypeSelected())
         lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(_settings->selectedAssemblyRecordType()));
-    widget_ar_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
+    widget_ar_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                && _settings->isAssemblyRecordTypeSelected());
 
     if (_settings->isAssemblyRecordItemCategorySelected())
         lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(_settings->selectedAssemblyRecordItemCategory()));
-    widget_ar_item_category->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
+    widget_ar_item_category->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                         && _settings->isAssemblyRecordItemCategorySelected());
 
     if (_settings->isAssemblyRecordItemTypeSelected())
         lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(_settings->selectedAssemblyRecordItemType()));
-    widget_ar_item_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
+    widget_ar_item_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                     && _settings->isAssemblyRecordItemTypeSelected());
 
     if (_settings->isCircuitUnitTypeSelected())
             lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(_settings->selectedCircuitUnitType()));
-    widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
+    widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                          && _settings->isCircuitUnitTypeSelected());
 
-    widget_assembly_records->setVisible(_view >= View::AssemblyRecordTypes && _view <= View::AssemblyRecords
+    widget_assembly_records->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                         && _settings->isInspectionSelected());
 
     tbtn_edit_inspector->setEnabled(_settings->isInspectorSelected());
@@ -393,6 +403,69 @@ void ToolBarStack::enableTools()
 
     chb_assembly_record_total->setEnabled(enabled);
     chb_assembly_record_total->setChecked(enabled);
+}
+
+void ToolBarStack::clearInspector()
+{
+    _settings->clearSelectedInspector();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearCustomer()
+{
+    _settings->clearSelectedCustomer();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearCircuit()
+{
+    _settings->clearSelectedCircuit();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearInspection()
+{
+    _settings->clearSelectedInspection();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearRepair()
+{
+    _settings->clearSelectedRepair();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearAssemblyRecordType()
+{
+    _settings->clearSelectedAssemblyRecordType();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearAssemblyRecordItemType()
+{
+    _settings->clearSelectedAssemblyRecordItemType();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearAssemblyRecordItemCategory()
+{
+    _settings->clearSelectedAssemblyRecordItemCategory();
+    _settings->enableAllTools();
+    _settings->refreshView();
+}
+
+void ToolBarStack::clearCircuitUnitType()
+{
+    _settings->clearSelectedCircuitUnitType();
+    _settings->enableAllTools();
+    _settings->refreshView();
 }
 
 void ToolBarStack::setReportDataGroupBoxVisible(bool visible)

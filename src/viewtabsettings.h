@@ -37,6 +37,7 @@ public:
     ViewTabSettings();
     virtual QObject * object() = 0;
 
+    virtual void enableAllTools() = 0;
     virtual void enableTools() = 0;
 
     virtual MainWindowSettings & mainWindowSettings() = 0;
@@ -93,24 +94,29 @@ public:
     inline bool isInspectorSelected() const { return m_inspector >= 0; }
     inline QString selectedInspector() const { return QString::number(m_inspector); }
     void setSelectedInspector(int inspector, const QString & inspector_name = QString());
+    inline void clearSelectedInspector() { m_inspector = -1; m_inspector_name.clear(); }
 
     inline const QString & selectedInspectorName() const { return m_inspector_name; }
 
     inline QString selectedAssemblyRecordType() const { return QString::number(m_assembly_record_type); }
     inline bool isAssemblyRecordTypeSelected() const { return m_assembly_record_type >= 0; }
     void setSelectedAssemblyRecordType(int assembly_record_type) { m_assembly_record_type = assembly_record_type; }
+    inline void clearSelectedAssemblyRecordType() { m_assembly_record_type = -1; }
 
     inline bool isAssemblyRecordItemTypeSelected() const { return m_assembly_record_item_type >= 0; }
     inline QString selectedAssemblyRecordItemType() const { return QString::number(m_assembly_record_item_type); }
     void setSelectedAssemblyRecordItemType(int assembly_record_item_type) { m_assembly_record_item_type = assembly_record_item_type; }
+    inline void clearSelectedAssemblyRecordItemType() { m_assembly_record_item_type = -1; }
 
     inline bool isAssemblyRecordItemCategorySelected() const { return m_assembly_record_item_category >= 0; }
     inline QString selectedAssemblyRecordItemCategory() const { return QString::number(m_assembly_record_item_category); }
     void setSelectedAssemblyRecordItemCategory(int assembly_record_item_category) { m_assembly_record_item_category = assembly_record_item_category; }
+    inline void clearSelectedAssemblyRecordItemCategory() { m_assembly_record_item_category = -1; }
 
     inline bool isCircuitUnitTypeSelected() const { return m_circuit_unit_type >= 0; }
     inline QString selectedCircuitUnitType() const { return QString::number(m_circuit_unit_type); }
     void setSelectedCircuitUnitType(int circuit_unit_type) { m_circuit_unit_type = circuit_unit_type; }
+    inline void clearSelectedCircuitUnitType() { m_circuit_unit_type = -1; }
 
     void loadCustomer(int, bool);
     void loadCircuit(int, bool);

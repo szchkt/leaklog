@@ -856,7 +856,6 @@ void MainWindow::enableTools()
     bool inspection_selected = current_tab->isInspectionSelected();
     bool repair_selected = current_tab->isRepairSelected();
     bool inspector_selected = current_tab->isInspectorSelected();
-    current_tab->enableTools();
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
@@ -891,6 +890,8 @@ void MainWindow::enableTools()
     tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
     actionEdit_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
+
+    current_tab->enableTools();
 }
 
 void MainWindow::toggleLocked()
