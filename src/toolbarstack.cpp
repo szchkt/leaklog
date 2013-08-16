@@ -148,24 +148,24 @@ void ToolBarStack::viewChanged(View::ViewID view)
     le_filter->clear();
 
     bool filter_by_field_visible = false;
-    bool filter_keyword_visible = true;
-    bool filter_since_visible = true;
+    bool filter_all_circuits_visible = false;
+    bool filter_since_visible = false;
     bool filter_month_visible = false;
-    bool filter_visible = true;
+    bool assembly_record_widgets_visible = false;
 
     switch (view) {
         case View::Store:
             filter_by_field_visible = true;
-            filter_keyword_visible = false;
+            filter_since_visible = true;
             break;
         case View::RefrigerantManagement:
+            filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner"), "partner");
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"), "partner_id");
             cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"), "refrigerant");
             break;
         case View::Customers:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Customer", "Company"), "company");
             cb_filter_column->addItem(QApplication::translate("Customer", "Address"), "address");
@@ -173,7 +173,6 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
             break;
         case View::Circuits:
-            filter_since_visible = false;
             updateView_ListOfCircuits_CircuitAttributes:
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit name"), "name");
@@ -190,6 +189,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             addFilterItems("field", fieldsOfApplication());
             break;
         case View::Inspections:
+            filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
@@ -197,6 +197,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");
             break;
         case View::Repairs:
+            filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Repair", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Repair", "Customer"), "customer");
             cb_filter_column->addItem(QApplication::translate("Repair", "Device"), "device");
@@ -204,26 +205,27 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Repair", "Assembly record No."), "arno");
             break;
         case View::Inspectors:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Inspector", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
             cb_filter_column->addItem(QApplication::translate("Inspector", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
             break;
         case View::InspectorDetails:
+            filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Customer ID"), "customer");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit ID"), "circuit");
             break;
         case View::TableOfInspections:
-            filter_keyword_visible = false;
+            filter_since_visible = true;
+            filter_all_circuits_visible = true;
             break;
         case View::Agenda:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "parent");
             goto updateView_ListOfCircuits_CircuitAttributes;
             break;
         case View::OperatorReport:
+            filter_since_visible = true;
             filter_month_visible = true;
             lbl_filter_since->setText(tr("Year:"));
             spb_filter_since->setSpecialValueText(tr("Last"));
@@ -233,25 +235,20 @@ void ToolBarStack::viewChanged(View::ViewID view)
             addFilterItems("field", fieldsOfApplication());
             break;
         case View::AssemblyRecordTypes:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Description"), "description");
             break;
         case View::AssemblyRecordItemTypes:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Category ID"), "category_id");
             break;
         case View::AssemblyRecordItemCategories:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
-            filter_visible = false;
             break;
         case View::CircuitUnitTypes:
-            filter_since_visible = false;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Manufacturer"), "manufacturer");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Type"), "type");
@@ -260,31 +257,49 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Notes"), "notes");
             break;
         case View::AssemblyRecords:
+            filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector ID"), "inspector");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record No."), "arno");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
             break;
-        case View::InspectionDetails:
         case View::AssemblyRecordDetails:
+            assembly_record_widgets_visible = true;
+            break;
+        case View::InspectionDetails:
         case View::InspectionImages:
         case View::LeakagesByApplication:
         default:
-            filter_visible = false;
             break;
     }
 
     chb_by_field->setVisible(filter_by_field_visible);
-    cb_filter_column->setVisible(filter_keyword_visible);
-    cb_filter_type->setVisible(filter_keyword_visible);
-    le_filter->setVisible(filter_keyword_visible);
+
+    chb_table_all_circuits->setVisible(filter_all_circuits_visible);
+
+    cb_filter_column->setVisible(cb_filter_column->count());
+    cb_filter_type->setVisible(cb_filter_column->count());
+    le_filter->setVisible(cb_filter_column->count());
+
     lbl_filter_since->setVisible(filter_since_visible);
     spb_filter_since->setVisible(filter_since_visible);
+
     lbl_filter_month->setVisible(filter_month_visible);
     spb_filter_month_from->setVisible(filter_month_visible);
     lbl_filter_month_dash->setVisible(filter_month_visible);
     spb_filter_month_until->setVisible(filter_month_visible);
-    widget_filter->setVisible(filter_visible);
+
+    lbl_assembly_records_show->setVisible(assembly_record_widgets_visible);
+    chb_assembly_record_acquisition_price->setVisible(assembly_record_widgets_visible);
+    chb_assembly_record_list_price->setVisible(assembly_record_widgets_visible);
+    chb_assembly_record_total->setVisible(assembly_record_widgets_visible);
+
+    widget_filter->setVisible(cb_filter_column->count() ||
+                              filter_by_field_visible ||
+                              filter_all_circuits_visible ||
+                              filter_since_visible ||
+                              filter_month_visible ||
+                              assembly_record_widgets_visible);
 }
 
 void ToolBarStack::toggleTableForAllCircuits()
@@ -461,9 +476,6 @@ void ToolBarStack::enableTools()
     widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                          && _settings->isCircuitUnitTypeSelected());
 
-    widget_assembly_records->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
-                                        && _settings->isInspectionSelected());
-
     tbtn_edit_inspector->setEnabled(_settings->isInspectorSelected());
     tbtn_remove_inspector->setEnabled(_settings->isInspectorSelected());
     tbtn_edit_customer->setEnabled(_settings->isCustomerSelected());
@@ -572,7 +584,6 @@ void ToolBarStack::setReportDataGroupBoxVisible(bool visible)
         widget_ar_item_category->setVisible(!visible);
         widget_ar_item_type->setVisible(!visible);
         widget_circuit_unit_type->setVisible(!visible);
-        widget_assembly_records->setVisible(!visible);
 
         widget_filter->setVisible(!visible);
     } else {
