@@ -44,7 +44,7 @@ QString TableView::renderHTML()
     QString cc_id = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuit();
     QString table_id = settings->currentTable();
     int year = settings->toolBarStack()->filterSinceValue();
-    QString compressor_id = settings->isCompressorSelected() ? settings->selectedCompressor() : QString();
+    QString compressor_id = settings->selectedCompressor();
 
     QString html; MTTextStream out(&html);
 

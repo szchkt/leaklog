@@ -61,28 +61,10 @@ void ViewTabSettings::restoreDefaults()
     enableBackAndForwardButtons();
 }
 
-void ViewTabSettings::setSelectedCustomer(int customer, const QString & company) {
-    clearSelectedCircuit();
-    m_customer = customer;
-    if (customer >= 0 && company.isNull())
-        m_customer_company = Customer(QString::number(customer)).stringValue("company");
-    else
-        m_customer_company = company;
-}
-
-void ViewTabSettings::setSelectedInspector(int inspector, const QString & inspector_name)
-{
-    m_inspector = inspector;
-    if (inspector >= 0 && inspector_name.isNull())
-        m_inspector_name = Inspector(QString::number(inspector)).stringValue("person");
-    else
-        m_inspector_name = inspector_name;
-}
-
 void ViewTabSettings::loadCustomer(int customer, bool refresh)
 {
     if (customer < 0) { return; }
-    setSelectedCustomer(customer, Customer(QString::number(customer)).stringValue("company"));
+    setSelectedCustomer(customer);
     setSelectedCircuit(-1);
     setSelectedCompressor(-1);
     clearSelectedInspection();
@@ -130,7 +112,7 @@ void ViewTabSettings::loadRepair(const QString & date, bool refresh)
 void ViewTabSettings::loadInspector(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
-    setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
+    setSelectedInspector(inspector);
     enableTools();
     if (refresh) {
         setView(View::Inspectors);
@@ -140,7 +122,7 @@ void ViewTabSettings::loadInspector(int inspector, bool refresh)
 void ViewTabSettings::loadInspectorReport(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
-    setSelectedInspector(inspector, Inspector(selectedInspector()).stringValue("person"));
+    setSelectedInspector(inspector);
     enableTools();
     if (refresh) {
         setView(View::InspectorDetails);

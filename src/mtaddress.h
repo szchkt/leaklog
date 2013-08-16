@@ -34,6 +34,7 @@ public:
     MTAddress() {}
     MTAddress(const QString & address) { initWithAddress(address); }
 
+    inline bool isEmpty() const { return a_street.isEmpty() && a_city.isEmpty() && a_postal_code.isEmpty(); }
     void clear();
     inline void fromString(const QString & address) { initWithAddress(address); }
     QString toString() const;

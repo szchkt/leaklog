@@ -62,19 +62,17 @@ public:
     void restoreDefaults();
 
     inline bool isCustomerSelected() const { return m_customer >= 0; }
-    inline QString selectedCustomer() const { return QString::number(m_customer); }
-    void setSelectedCustomer(int customer, const QString & company = QString());
-    void clearSelectedCustomer() { m_customer = -1; m_customer_company.clear(); clearSelectedCircuit(); }
-
-    inline const QString & selectedCustomerCompany() const { return m_customer_company; }
+    inline QString selectedCustomer() const { return isCustomerSelected() ? QString::number(m_customer) : QString(); }
+    void setSelectedCustomer(int customer) { clearSelectedCircuit(); m_customer = customer; }
+    void clearSelectedCustomer() { m_customer = -1; clearSelectedCircuit(); }
 
     inline bool isCircuitSelected() const { return m_circuit >= 0; }
-    inline QString selectedCircuit() const { return QString::number(m_circuit); }
+    inline QString selectedCircuit() const { return isCircuitSelected() ? QString::number(m_circuit) : QString(); }
     void setSelectedCircuit(int circuit) { clearSelectedCircuit(); m_circuit = circuit; }
     void clearSelectedCircuit() { m_circuit = -1; m_compressor = -1; clearSelectedInspection(); clearSelectedRepair(); }
 
     inline bool isCompressorSelected() const { return m_compressor >= 0; }
-    inline QString selectedCompressor() const { return QString::number(m_compressor); }
+    inline QString selectedCompressor() const { return isCompressorSelected() ? QString::number(m_compressor) : QString(); }
     void setSelectedCompressor(int compressor) { m_compressor = compressor; }
 
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
@@ -92,29 +90,27 @@ public:
     inline void clearSelectedRepair() { m_repair.clear(); }
 
     inline bool isInspectorSelected() const { return m_inspector >= 0; }
-    inline QString selectedInspector() const { return QString::number(m_inspector); }
-    void setSelectedInspector(int inspector, const QString & inspector_name = QString());
-    inline void clearSelectedInspector() { m_inspector = -1; m_inspector_name.clear(); }
+    inline QString selectedInspector() const { return isInspectorSelected() ? QString::number(m_inspector) : QString(); }
+    void setSelectedInspector(int inspector) { m_inspector = inspector; }
+    inline void clearSelectedInspector() { m_inspector = -1; }
 
-    inline const QString & selectedInspectorName() const { return m_inspector_name; }
-
-    inline QString selectedAssemblyRecordType() const { return QString::number(m_assembly_record_type); }
     inline bool isAssemblyRecordTypeSelected() const { return m_assembly_record_type >= 0; }
+    inline QString selectedAssemblyRecordType() const { return isAssemblyRecordTypeSelected() ? QString::number(m_assembly_record_type) : QString(); }
     void setSelectedAssemblyRecordType(int assembly_record_type) { m_assembly_record_type = assembly_record_type; }
     inline void clearSelectedAssemblyRecordType() { m_assembly_record_type = -1; }
 
     inline bool isAssemblyRecordItemTypeSelected() const { return m_assembly_record_item_type >= 0; }
-    inline QString selectedAssemblyRecordItemType() const { return QString::number(m_assembly_record_item_type); }
+    inline QString selectedAssemblyRecordItemType() const { return isAssemblyRecordItemTypeSelected() ? QString::number(m_assembly_record_item_type) : QString(); }
     void setSelectedAssemblyRecordItemType(int assembly_record_item_type) { m_assembly_record_item_type = assembly_record_item_type; }
     inline void clearSelectedAssemblyRecordItemType() { m_assembly_record_item_type = -1; }
 
     inline bool isAssemblyRecordItemCategorySelected() const { return m_assembly_record_item_category >= 0; }
-    inline QString selectedAssemblyRecordItemCategory() const { return QString::number(m_assembly_record_item_category); }
+    inline QString selectedAssemblyRecordItemCategory() const { return isAssemblyRecordItemCategorySelected() ? QString::number(m_assembly_record_item_category) : QString(); }
     void setSelectedAssemblyRecordItemCategory(int assembly_record_item_category) { m_assembly_record_item_category = assembly_record_item_category; }
     inline void clearSelectedAssemblyRecordItemCategory() { m_assembly_record_item_category = -1; }
 
     inline bool isCircuitUnitTypeSelected() const { return m_circuit_unit_type >= 0; }
-    inline QString selectedCircuitUnitType() const { return QString::number(m_circuit_unit_type); }
+    inline QString selectedCircuitUnitType() const { return isCircuitUnitTypeSelected() ? QString::number(m_circuit_unit_type) : QString(); }
     void setSelectedCircuitUnitType(int circuit_unit_type) { m_circuit_unit_type = circuit_unit_type; }
     inline void clearSelectedCircuitUnitType() { m_circuit_unit_type = -1; }
 
@@ -157,14 +153,12 @@ private:
     void saveToNextLinks();
 
     int m_customer;
-    QString m_customer_company;
     int m_circuit;
     int m_compressor;
     QString m_inspection;
     bool m_inspection_is_repair;
     QString m_repair;
     int m_inspector;
-    QString m_inspector_name;
     int m_assembly_record_type;
     int m_assembly_record_item_type;
     int m_assembly_record_item_category;

@@ -21,7 +21,12 @@
 
 #include "global.h"
 #include "viewtabsettings.h"
+#include "mainwindowsettings.h"
 #include "linkparser.h"
+#include "records.h"
+#include "mtaddress.h"
+
+using namespace Global;
 
 ToolBarStack::ToolBarStack(QWidget * parent):
     QWidget(parent), _view(View::ViewCount), _settings(NULL)
@@ -182,7 +187,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Circuit", "Date of commissioning"), "commissioning");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
-            addFilterItems("field", Global::fieldsOfApplication());
+            addFilterItems("field", fieldsOfApplication());
             break;
         case View::Inspections:
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
@@ -225,7 +230,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Place of operation"), "operation");
-            addFilterItems("field", Global::fieldsOfApplication());
+            addFilterItems("field", fieldsOfApplication());
             break;
         case View::AssemblyRecordTypes:
             filter_since_visible = false;
@@ -314,12 +319,34 @@ void ToolBarStack::monthUntilChanged(int value)
 
 void ToolBarStack::enableTools()
 {
-    if (_settings->isInspectorSelected())
-        lbl_inspector->setText(tr("Inspector: %1").arg(_settings->selectedInspectorName()));
+    if (_settings->isInspectorSelected()) {
+        Inspector inspector(_settings->selectedInspector());
+        inspector.readValues("person");
+
+        QStringList description;
+        description << _settings->selectedInspector().rightJustified(4, '0');
+        if (!inspector.stringValue("person").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(inspector.stringValue("person")));
+
+        lbl_inspector->setText(tr("Inspector: %1").arg(description.join(", ")));
+    }
     widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails) && _settings->isInspectorSelected());
 
-    if (_settings->isCustomerSelected())
-        lbl_customer->setText(tr("Customer: %1").arg(_settings->selectedCustomerCompany()));
+    if (_settings->isCustomerSelected()) {
+        Customer customer(_settings->selectedCustomer());
+        customer.readValues("company, address");
+
+        QStringList description;
+        description << _settings->selectedCustomer().rightJustified(8, '0');
+        if (!customer.stringValue("company").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(customer.stringValue("company")));
+
+        MTAddress address(customer.stringValue("address"));
+        if (!address.isEmpty())
+            description << address.toHtml();
+
+        lbl_customer->setText(tr("Customer: %1").arg(description.join(", ")));
+    }
     widget_customer->setVisible((_view == View::Customers ||
                                  _view == View::Circuits ||
                                  _view == View::Repairs ||
@@ -329,11 +356,33 @@ void ToolBarStack::enableTools()
                                 _settings->isCustomerSelected());
 
     if (_settings->isRepairSelected())
-        lbl_repair->setText(tr("Repair: %1").arg(_settings->selectedRepair()));
+        lbl_repair->setText(tr("Repair: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(_settings->selectedRepair())));
     widget_repair->setVisible(_view == View::Repairs && _settings->isRepairSelected());
 
-    if (_settings->isCircuitSelected())
-        lbl_circuit->setText(tr("Circuit: %1").arg(_settings->selectedCircuit()));
+    if (_settings->isCircuitSelected()) {
+        QStringList attributes;
+        attributes << "name" << "operation" << "building" << "device";
+
+        Circuit circuit(_settings->selectedCustomer(), _settings->selectedCircuit());
+        circuit.readValues(attributes.join(", ") + ", field, refrigerant, " + circuitRefrigerantAmountQuery());
+
+        QStringList description;
+        description << _settings->selectedCircuit().rightJustified(5, '0');
+
+        foreach (const QString & attribute, attributes)
+            if (!circuit.stringValue(attribute).isEmpty())
+                description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.stringValue(attribute)));
+
+        if (attributeValues().contains("field::" + circuit.stringValue("field")))
+            description << attributeValues().value("field::" + circuit.stringValue("field"));
+
+        description << QString("%1 %2 %3")
+                       .arg(circuit.stringValue("refrigerant_amount"))
+                       .arg(QApplication::translate("Units", "kg"))
+                       .arg(circuit.stringValue("refrigerant"));
+
+        lbl_circuit->setText(tr("Circuit: %1").arg(description.join(", ")));
+    }
     widget_circuit->setVisible((_view == View::Circuits ||
                                 _view == View::Inspections ||
                                 _view == View::InspectionDetails ||
@@ -341,7 +390,7 @@ void ToolBarStack::enableTools()
                                _settings->isCircuitSelected());
 
     if (_settings->isInspectionSelected())
-        lbl_inspection->setText(tr("Inspection: %1").arg(_settings->selectedInspection()));
+        lbl_inspection->setText(tr("Inspection: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(_settings->selectedInspection())));
     widget_inspection->setVisible((_view == View::Inspections ||
                                    _view == View::InspectionDetails ||
                                    _view == View::InspectionImages ||
@@ -349,23 +398,66 @@ void ToolBarStack::enableTools()
                                    _view == View::AssemblyRecordDetails) &&
                                   _settings->isInspectionSelected());
 
-    if (_settings->isAssemblyRecordTypeSelected())
-        lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(_settings->selectedAssemblyRecordType()));
+    if (_settings->isAssemblyRecordTypeSelected()) {
+        AssemblyRecordType type(_settings->selectedAssemblyRecordType());
+        type.readValues("name");
+
+        QStringList description;
+        description << _settings->selectedAssemblyRecordType();
+        if (!type.stringValue("name").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(type.stringValue("name")));
+
+        lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(description.join(", ")));
+    }
     widget_ar_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                && _settings->isAssemblyRecordTypeSelected());
 
-    if (_settings->isAssemblyRecordItemCategorySelected())
-        lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(_settings->selectedAssemblyRecordItemCategory()));
+    if (_settings->isAssemblyRecordItemCategorySelected()) {
+        AssemblyRecordItemCategory category(_settings->selectedAssemblyRecordItemCategory());
+        category.readValues("name");
+
+        QStringList description;
+        description << _settings->selectedAssemblyRecordItemCategory();
+        if (!category.stringValue("name").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(category.stringValue("name")));
+
+        lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(description.join(", ")));
+    }
     widget_ar_item_category->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                         && _settings->isAssemblyRecordItemCategorySelected());
 
-    if (_settings->isAssemblyRecordItemTypeSelected())
-        lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(_settings->selectedAssemblyRecordItemType()));
+    if (_settings->isAssemblyRecordItemTypeSelected()) {
+        AssemblyRecordItemType item_type(_settings->selectedAssemblyRecordItemType());
+        item_type.readValues("name");
+
+        QStringList description;
+        description << _settings->selectedAssemblyRecordItemType();
+        if (!item_type.stringValue("name").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(item_type.stringValue("name")));
+
+        lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(description.join(", ")));
+    }
     widget_ar_item_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                     && _settings->isAssemblyRecordItemTypeSelected());
 
-    if (_settings->isCircuitUnitTypeSelected())
-            lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(_settings->selectedCircuitUnitType()));
+    if (_settings->isCircuitUnitTypeSelected()) {
+        CircuitUnitType unit_type(_settings->selectedCircuitUnitType());
+        unit_type.readValues("manufacturer, type, refrigerant, refrigerant_amount");
+
+        QStringList description;
+        description << _settings->selectedCircuitUnitType();
+        if (!unit_type.stringValue("manufacturer").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(unit_type.stringValue("manufacturer")));
+        if (!unit_type.stringValue("type").isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(unit_type.stringValue("type")));
+
+        description << QString("%1 %2 %3")
+                       .arg(unit_type.stringValue("refrigerant_amount"))
+                       .arg(QApplication::translate("Units", "kg"))
+                       .arg(unit_type.stringValue("refrigerant"));
+
+        lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(description.join(", ")));
+    }
     widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                          && _settings->isCircuitUnitTypeSelected());
 
@@ -393,11 +485,11 @@ void ToolBarStack::enableTools()
     chb_table_all_circuits->setEnabled(_settings->isCircuitSelected());
     chb_table_all_circuits->setChecked(!_settings->isCircuitSelected());
 
-    bool enabled = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
+    bool enabled = isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     chb_assembly_record_acquisition_price->setEnabled(enabled);
     chb_assembly_record_acquisition_price->setChecked(enabled);
 
-    enabled = Global::isOperationPermitted("access_assembly_record_list_price") > 0;
+    enabled = isOperationPermitted("access_assembly_record_list_price") > 0;
     chb_assembly_record_list_price->setEnabled(enabled);
     chb_assembly_record_list_price->setChecked(enabled);
 

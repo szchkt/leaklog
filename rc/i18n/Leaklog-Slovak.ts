@@ -3168,10 +3168,6 @@ person and company ID</source>
 osoby a IČO firmy</translation>
     </message>
     <message>
-        <source>Clear current selection</source>
-        <translation>Vynulovať aktuálny výber</translation>
-    </message>
-    <message>
         <source>Open containing folder</source>
         <translation>Otvoriť nadradený priečinok</translation>
     </message>
@@ -3234,26 +3230,6 @@ Nariadenia (ES) č. 842/2006 a zákona
     <message>
         <source>Lock</source>
         <translation>Zamknúť</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Customer:&lt;/b&gt; %1%2</source>
-        <translation>&lt;b&gt;Zákazník:&lt;/b&gt; %1%2</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Circuit:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Okruh:&lt;/b&gt; %1</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Repair:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Oprava:&lt;/b&gt; %1</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Inspection:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Kontrola:&lt;/b&gt; %1</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Inspector:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Kontrolór:&lt;/b&gt; %1</translation>
     </message>
     <message>
         <source>Lock database - Leaklog</source>
@@ -4070,12 +4046,12 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Vrátiť späť vykonané zmeny</translation>
     </message>
     <message>
-        <source>Tab</source>
-        <translation>Tabulátor</translation>
-    </message>
-    <message>
         <source>Reporting</source>
         <translation>Oznamovanie</translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation>Tab 1</translation>
     </message>
 </context>
 <context>
@@ -5330,16 +5306,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zákazník: %1</translation>
     </message>
     <message>
-        <source>Repair: %1</source>
-        <translation>Oprava: %1</translation>
-    </message>
-    <message>
         <source>Circuit: %1</source>
         <translation>Okruh: %1</translation>
-    </message>
-    <message>
-        <source>Inspection: %1</source>
-        <translation>Kontrola: %1</translation>
     </message>
     <message>
         <source>Assembly Record Type: %1</source>
@@ -5356,6 +5324,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Circuit Unit Type: %1</source>
         <translation>Typ jednotky okruhu: %1</translation>
+    </message>
+    <message>
+        <source>Clear selection</source>
+        <translation>Zrušiť výber</translation>
+    </message>
+    <message>
+        <source>Repair: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Oprava: &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Inspection: &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Kontrola: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
 </context>
 <context>

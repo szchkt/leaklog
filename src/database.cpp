@@ -827,8 +827,10 @@ void MainWindow::editCustomer()
             update_repairs.bindValue(":id", record.id());
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
+            enableTools();
             refreshView();
         } else {
+            enableTools();
             refreshView();
         }
     }
@@ -977,6 +979,7 @@ void MainWindow::editCircuit()
             Circuit::cascadeIDChange(selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
             current_tab->loadCircuit(record.id().toInt(), true);
         } else {
+            enableTools();
             refreshView();
         }
     }
@@ -1867,6 +1870,7 @@ void MainWindow::editInspector()
             update_assembly_record_items.exec();
             current_tab->loadInspector(record.id().toInt(), true);
         } else {
+            enableTools();
             refreshView();
         }
     }
