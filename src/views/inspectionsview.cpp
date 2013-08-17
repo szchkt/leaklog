@@ -140,5 +140,5 @@ QString InspectionsView::title() const
     QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
     return Customer(settings->selectedCustomer()).stringValue("company")
             + " - " + QString(title.isEmpty() ? settings->selectedCircuit() : title)
-            + " - " + QApplication::translate("ToolBarStack", "List of Inspections");
+            + " - " + tr("List of Inspections");
 }

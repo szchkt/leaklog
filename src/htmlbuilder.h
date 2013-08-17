@@ -67,6 +67,8 @@ public:
     virtual void html(QTextStream &);
     virtual const QString html();
 
+    inline int childCount() const { return children.count(); }
+
     HTMLBold * bold();
     HTMLItalics * italics();
     HTMLLink * link(const QString &, const QString & = QString());

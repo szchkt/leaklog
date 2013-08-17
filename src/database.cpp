@@ -3136,7 +3136,7 @@ void MainWindow::removeAssemblyRecordItemType()
     current_tab->clearSelectedAssemblyRecordItemType();
     enableTools();
     this->setWindowModified(true);
-    current_tab->setView(View::AssemblyRecordItemTypes);
+    current_tab->setView(View::AssemblyRecordItems);
 }
 
 void MainWindow::addAssemblyRecordItemCategory()
@@ -3200,7 +3200,7 @@ void MainWindow::removeAssemblyRecordItemCategory()
     current_tab->clearSelectedAssemblyRecordItemCategory();
     enableTools();
     this->setWindowModified(true);
-    current_tab->setView(View::AssemblyRecordItemCategories);
+    current_tab->setView(View::AssemblyRecordItems);
 }
 
 void MainWindow::addCircuitUnitType()

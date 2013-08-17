@@ -145,7 +145,7 @@ void ViewTabSettings::loadAssemblyRecordItemType(int assembly_record_item, bool 
     setSelectedAssemblyRecordItemType(assembly_record_item);
     enableTools();
     if (refresh) {
-        setView(View::AssemblyRecordItemTypes);
+        setView(View::AssemblyRecordItems);
     }
 }
 
@@ -155,7 +155,7 @@ void ViewTabSettings::loadAssemblyRecordItemCategory(int assembly_record_item_ca
     setSelectedAssemblyRecordItemCategory(assembly_record_item_category);
     enableTools();
     if (refresh) {
-        setView(View::AssemblyRecordItemCategories);
+        setView(View::AssemblyRecordItems);
     }
 }
 

@@ -93,5 +93,5 @@ HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id,
 
 QString InspectorsView::title() const
 {
-    return QApplication::translate("ToolBarStack", "List of Inspectors");
+    return tr("List of Inspectors");
 }

@@ -128,5 +128,5 @@ QString AssemblyRecordsView::renderHTML()
 
 QString AssemblyRecordsView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Assembly Records");
+    return tr("Assembly Records");
 }

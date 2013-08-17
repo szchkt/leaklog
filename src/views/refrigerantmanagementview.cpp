@@ -96,5 +96,5 @@ QString RefrigerantManagementView::renderHTML()
 
 QString RefrigerantManagementView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Refrigerant Management");
+    return tr("Refrigerant Management");
 }

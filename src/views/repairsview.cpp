@@ -102,5 +102,5 @@ QString RepairsView::renderHTML()
 
 QString RepairsView::title() const
 {
-    return QApplication::translate("ToolBarStack", "List of Repairs");
+    return tr("List of Repairs");
 }

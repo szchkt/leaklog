@@ -67,8 +67,7 @@ HEADERS       += src/aboutwidget.h \
                  src/view.h \
                  src/views/agendaview.h \
                  src/views/assemblyrecorddetailsview.h \
-                 src/views/assemblyrecorditemcategoriesview.h \
-                 src/views/assemblyrecorditemtypesview.h \
+                 src/views/assemblyrecorditemsview.h \
                  src/views/assemblyrecordsview.h \
                  src/views/assemblyrecordtypesview.h \
                  src/views/circuitsview.h \
@@ -145,8 +144,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/view.cpp \
                  src/views/agendaview.cpp \
                  src/views/assemblyrecorddetailsview.cpp \
-                 src/views/assemblyrecorditemcategoriesview.cpp \
-                 src/views/assemblyrecorditemtypesview.cpp \
+                 src/views/assemblyrecorditemsview.cpp \
                  src/views/assemblyrecordsview.cpp \
                  src/views/assemblyrecordtypesview.cpp \
                  src/views/circuitsview.cpp \

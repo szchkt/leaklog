@@ -56,10 +56,9 @@ public:
         AssemblyRecord = 1401,
         AllAssemblyRecordTypes = 1500,
         AssemblyRecordType = 1501,
-        AllAssemblyRecordItemTypes = 1600,
+        AllAssemblyRecordItems = 1600,
         AssemblyRecordItemType = 1601,
-        AllAssemblyRecordItemCategories = 1700,
-        AssemblyRecordCategory = 1701,
+        AssemblyRecordCategory = 1602,
         AllCircuitUnitTypes = 1800,
         CircuitUnitType = 1801
     };

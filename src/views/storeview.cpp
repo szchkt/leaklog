@@ -196,7 +196,7 @@ QString StoreView::renderHTML()
 
 QString StoreView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Store");
+    return tr("Store");
 }
 
 void StoreView::toggleYear(int year)

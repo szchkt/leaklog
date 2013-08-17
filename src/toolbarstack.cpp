@@ -127,8 +127,8 @@ void ToolBarStack::viewChanged(View::ViewID view)
 
     _view = view;
 
-    tbtn_add_assembly_record_item_category->setVisible(view == View::AssemblyRecordItemCategories);
-    tbtn_add_assembly_record_item_type->setVisible(view == View::AssemblyRecordItemTypes);
+    tbtn_add_assembly_record_item_category->setVisible(view == View::AssemblyRecordItems);
+    tbtn_add_assembly_record_item_type->setVisible(view == View::AssemblyRecordItems);
     tbtn_add_assembly_record_type->setVisible(view == View::AssemblyRecordTypes);
     tbtn_add_circuit->setVisible(view == View::Circuits);
     tbtn_add_circuit_unit_type->setVisible(view == View::CircuitUnitTypes);
@@ -235,21 +235,13 @@ void ToolBarStack::viewChanged(View::ViewID view)
             addFilterItems("field", fieldsOfApplication());
             break;
         case View::AssemblyRecordTypes:
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Description"), "description");
             break;
-        case View::AssemblyRecordItemTypes:
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Category ID"), "category_id");
-            break;
-        case View::AssemblyRecordItemCategories:
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
+        case View::AssemblyRecordItems:
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Name"), "name");
             break;
         case View::CircuitUnitTypes:
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "ID"), "id");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Manufacturer"), "manufacturer");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Type"), "type");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Refrigerant"), "refrigerant");

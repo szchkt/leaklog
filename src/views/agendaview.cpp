@@ -159,5 +159,5 @@ QString AgendaView::renderHTML()
 
 QString AgendaView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Agenda");
+    return tr("Agenda");
 }

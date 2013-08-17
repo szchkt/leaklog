@@ -39,9 +39,8 @@ LinkParser::LinkParser()
     root_entity->addRoute("agenda", Agenda, false);
     root_entity->addRoute("allassemblyrecordtypes", AllAssemblyRecordTypes, false);
     root_entity->addRoute("assemblyrecordtype", AssemblyRecordType);
-    root_entity->addRoute("allassemblyrecorditemtypes", AllAssemblyRecordItemTypes, false);
+    root_entity->addRoute("allassemblyrecorditems", AllAssemblyRecordItems, false);
     root_entity->addRoute("assemblyrecorditemtype", AssemblyRecordItemType);
-    root_entity->addRoute("allassemblyrecorditemcategories", AllAssemblyRecordItemCategories, false);
     root_entity->addRoute("assemblyrecorditemcategory", AssemblyRecordCategory);
     root_entity->addRoute("allcircuitunittypes", AllCircuitUnitTypes, false);
     root_entity->addRoute("circuitunittype", CircuitUnitType);

@@ -11,11 +11,11 @@ td {
 	padding: 2px;
 }
 @media screen {
-	table.highlight > tbody > tr:hover:not(.selected) > td {
+	table.highlight > tbody > tr:hover:not(.selected):not(.no_highlight) > td {
 		background-color: rgb(242, 248, 255) !important;
 		color: #000000;
 	}
-	table.highlight > tbody > tr:hover:not(.selected) > td > table > tbody > tr > td {
+	table.highlight > tbody > tr:hover:not(.selected):not(.no_highlight) > td > table > tbody > tr > td {
 		background-color: rgb(242, 248, 255) !important;
 		color: #000000;
 	}

@@ -553,5 +553,5 @@ QString TableView::title() const
     QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
     return Customer(settings->selectedCustomer()).stringValue("company")
             + " - " + QString(title.isEmpty() ? settings->selectedCircuit() : title)
-            + " - " + QApplication::translate("ToolBarStack", "Table of Inspections");
+            + " - " + tr("Table of Inspections");
 }

@@ -173,5 +173,5 @@ QString InspectorDetailsView::renderHTML()
 
 QString InspectorDetailsView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Inspector");
+    return tr("Inspector");
 }

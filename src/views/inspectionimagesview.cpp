@@ -82,5 +82,5 @@ QString InspectionImagesView::renderHTML()
 
 QString InspectionImagesView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Inspection Images");
+    return tr("Inspection Images");
 }

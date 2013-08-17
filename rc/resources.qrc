@@ -89,5 +89,8 @@
         <file>images/store_view.png</file>
         <file>images/management_view.png</file>
         <file>images/reporting.png</file>
+        <file>images/assembly_record_items_view.png</file>
+        <file>images/assembly_record_types_view.png</file>
+        <file>images/circuit_unit_types_view.png</file>
     </qresource>
 </RCC>

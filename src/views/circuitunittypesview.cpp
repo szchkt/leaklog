@@ -47,7 +47,7 @@ QString CircuitUnitTypesView::renderHTML()
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
-        thead.append("<th><a href=\"circuitunittype:/order_by:"
+        thead.append("<th><a href=\"allcircuitunittypes:/order_by:"
                      + CircuitUnitType::attributes().key(n) + "\">"
                      + CircuitUnitType::attributes().value(n) + "</a></th>");
         thead_colspan++;
@@ -85,5 +85,5 @@ QString CircuitUnitTypesView::renderHTML()
 
 QString CircuitUnitTypesView::title() const
 {
-    return QApplication::translate("ToolBarStack", "List of Circuit Unit Types");
+    return tr("List of Circuit Unit Types");
 }

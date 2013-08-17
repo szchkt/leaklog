@@ -102,20 +102,12 @@
 <context>
     <name>AssemblyRecord</name>
     <message>
-        <source>ID</source>
-        <translation>IČ</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
     <message>
         <source>Description</source>
         <translation>Popis</translation>
-    </message>
-    <message>
-        <source>Category ID</source>
-        <translation>IČ kategórie</translation>
     </message>
     <message>
         <source>Manufacturer</source>
@@ -230,45 +222,6 @@
     <message>
         <source>List price</source>
         <translation>Cenníková cena</translation>
-    </message>
-</context>
-<context>
-    <name>AssemblyRecordItemCategoriesView</name>
-    <message>
-        <source>Show</source>
-        <translation>Zobraziť</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Item Categories</source>
-        <translation>Zoznam kategórií položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation>Hodnota</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cenníková cena</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Zľava</translation>
-    </message>
-    <message>
-        <source>Total</source>
-        <translation>Celkom</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation>Áno</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nie</translation>
     </message>
 </context>
 <context>
@@ -406,10 +359,42 @@
     </message>
 </context>
 <context>
-    <name>AssemblyRecordItemTypesView</name>
+    <name>AssemblyRecordItemsView</name>
     <message>
-        <source>List of Assembly Record Item Types</source>
-        <translation>Zoznam typov položiek montážneho listu</translation>
+        <source>Show</source>
+        <translation>Zobraziť</translation>
+    </message>
+    <message>
+        <source>List of Assembly Record Item Categories and Types</source>
+        <translation>Zoznam kategórií a typov položiek montážneho listu</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation>Hodnota</translation>
+    </message>
+    <message>
+        <source>Acquisition price</source>
+        <translation>Obstarávacia cena</translation>
+    </message>
+    <message>
+        <source>List price</source>
+        <translation>Cenníková cena</translation>
+    </message>
+    <message>
+        <source>Discount</source>
+        <translation>Zľava</translation>
+    </message>
+    <message>
+        <source>Total</source>
+        <translation>Celkom</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation>Áno</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation>Nie</translation>
     </message>
 </context>
 <context>
@@ -1794,6 +1779,10 @@
         <source>Inspection:</source>
         <translation>Kontrola:</translation>
     </message>
+    <message>
+        <source>Inspection Images</source>
+        <translation>Obrázky z kontroly</translation>
+    </message>
 </context>
 <context>
     <name>InspectionsView</name>
@@ -1812,6 +1801,10 @@
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+    <message>
+        <source>List of Inspections</source>
+        <translation>Zoznam kontrol</translation>
     </message>
 </context>
 <context>
@@ -1922,6 +1915,10 @@
     <message>
         <source>Circuit name</source>
         <translation>Názov okruhu</translation>
+    </message>
+    <message>
+        <source>Inspector</source>
+        <translation>Kontrolór</translation>
     </message>
 </context>
 <context>
@@ -4187,6 +4184,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Date:</source>
         <translation>Dátum:</translation>
     </message>
+    <message>
+        <source>Operator Report</source>
+        <translation>Oznámenie prevádzkovateľa</translation>
+    </message>
 </context>
 <context>
     <name>PartnerWidgets</name>
@@ -4882,6 +4883,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>No</source>
         <translation>Nie</translation>
     </message>
+    <message>
+        <source>Table of Inspections</source>
+        <translation>Tabuľka kontrol</translation>
+    </message>
 </context>
 <context>
     <name>ToolBarStack</name>
@@ -5218,80 +5223,12 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Podľa druhu nasadenia</translation>
     </message>
     <message>
-        <source>Store</source>
-        <translation>Sklad</translation>
-    </message>
-    <message>
         <source>Year:</source>
         <translation>Rok:</translation>
     </message>
     <message>
         <source>Last</source>
         <translation>Posledný</translation>
-    </message>
-    <message>
-        <source>Agenda</source>
-        <translation>Agenda</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Item Categories</source>
-        <translation>Zoznam kategórií položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Item Types</source>
-        <translation>Zoznam typov položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>Assembly Records</source>
-        <translation>Montážne listy</translation>
-    </message>
-    <message>
-        <source>List of Assembly Record Types</source>
-        <translation>Zoznam typov montážneho listu</translation>
-    </message>
-    <message>
-        <source>List of Circuit Unit Types</source>
-        <translation>Zoznam typov jednotiek okruhu</translation>
-    </message>
-    <message>
-        <source>List of Customers</source>
-        <translation>Zoznam zákazníkov</translation>
-    </message>
-    <message>
-        <source>Inspection Images</source>
-        <translation>Obrázky z kontroly</translation>
-    </message>
-    <message>
-        <source>List of Inspections</source>
-        <translation>Zoznam kontrol</translation>
-    </message>
-    <message>
-        <source>Inspector</source>
-        <translation>Kontrolór</translation>
-    </message>
-    <message>
-        <source>List of Inspectors</source>
-        <translation>Zoznam kontrolórov</translation>
-    </message>
-    <message>
-        <source>Leakages by Application</source>
-        <translation>Úniky podľa nasadenia</translation>
-    </message>
-    <message>
-        <source>Operator Report</source>
-        <translation>Oznámenie prevádzkovateľa</translation>
-    </message>
-    <message>
-        <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
-    </message>
-    <message>
-        <source>List of Repairs</source>
-        <translation>Zoznam opráv</translation>
-    </message>
-    <message>
-        <source>Table of Inspections</source>
-        <translation>Tabuľka kontrol</translation>
     </message>
     <message>
         <source>ToolBarStack</source>
@@ -5767,16 +5704,12 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Typy</translation>
     </message>
     <message>
-        <source>Item Categories</source>
-        <translation>Kategórie položiek</translation>
-    </message>
-    <message>
-        <source>Item Types</source>
-        <translation>Typy položiek</translation>
-    </message>
-    <message>
         <source>Circuit Unit Types</source>
         <translation>Typy jednotiek okruhov</translation>
+    </message>
+    <message>
+        <source>Items</source>
+        <translation>Položky</translation>
     </message>
 </context>
 <context>

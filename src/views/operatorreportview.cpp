@@ -203,6 +203,6 @@ QString OperatorReportView::renderHTML()
 
 QString OperatorReportView::title() const
 {
-    return QApplication::translate("ToolBarStack", "Operator Report")
+    return tr("Operator Report")
             + " - " + Customer(settings->selectedCustomer()).stringValue("company");
 }

@@ -53,8 +53,7 @@ public:
         AssemblyRecords,              CircuitRequiredEnd = AssemblyRecords,
                                       CustomerRequiredEnd = AssemblyRecords,
         AssemblyRecordTypes,
-        AssemblyRecordItemTypes,
-        AssemblyRecordItemCategories,
+        AssemblyRecordItems,
         CircuitUnitTypes,             AssemblyRecordsRelatedEnd = CircuitUnitTypes,
         ViewCount
     };

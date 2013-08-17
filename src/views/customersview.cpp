@@ -179,5 +179,5 @@ HTMLTable * CustomersView::customerContactPersons(const QString & customer_id, H
 
 QString CustomersView::title() const
 {
-    return QApplication::translate("ToolBarStack", "List of Customers");
+    return tr("List of Customers");
 }

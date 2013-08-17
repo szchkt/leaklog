@@ -38,8 +38,7 @@
 #include "assemblyrecordsview.h"
 #include "assemblyrecorddetailsview.h"
 #include "assemblyrecordtypesview.h"
-#include "assemblyrecorditemcategoriesview.h"
-#include "assemblyrecorditemtypesview.h"
+#include "assemblyrecorditemsview.h"
 #include "circuitunittypesview.h"
 #include "mtwebpage.h"
 #include "reportdatacontroller.h"
@@ -123,8 +122,7 @@ void ViewTab::createViewItems()
     views[View::AssemblyRecords] = new AssemblyRecordsView(this);
     views[View::AssemblyRecordDetails] = new AssemblyRecordDetailsView(this);
     views[View::AssemblyRecordTypes] = new AssemblyRecordTypesView(this);
-    views[View::AssemblyRecordItemCategories] = new AssemblyRecordItemCategoriesView(this);
-    views[View::AssemblyRecordItemTypes] = new AssemblyRecordItemTypesView(this);
+    views[View::AssemblyRecordItems] = new AssemblyRecordItemsView(this);
     views[View::CircuitUnitTypes] = new CircuitUnitTypesView(this);
 
     QTreeWidgetItem * group_service_company = new QTreeWidgetItem(ui->trw_navigation);
@@ -241,25 +239,19 @@ void ViewTab::createViewItems()
     QTreeWidgetItem * item_assembly_record_types = new QTreeWidgetItem(group_assembly_records);
     item_assembly_record_types->setText(0, tr("Types"));
     item_assembly_record_types->setData(0, Qt::UserRole, View::AssemblyRecordTypes);
-    item_assembly_record_types->setIcon(0, QIcon(":/images/images/view.png"));
+    item_assembly_record_types->setIcon(0, QIcon(":/images/images/assembly_record_types_view.png"));
     view_items[View::AssemblyRecordTypes] = item_assembly_record_types;
 
-    QTreeWidgetItem * item_assembly_record_item_categories = new QTreeWidgetItem(group_assembly_records);
-    item_assembly_record_item_categories->setText(0, tr("Item Categories"));
-    item_assembly_record_item_categories->setData(0, Qt::UserRole, View::AssemblyRecordItemCategories);
-    item_assembly_record_item_categories->setIcon(0, QIcon(":/images/images/view.png"));
-    view_items[View::AssemblyRecordItemCategories] = item_assembly_record_item_categories;
-
-    QTreeWidgetItem * item_assembly_record_item_types = new QTreeWidgetItem(group_assembly_records);
-    item_assembly_record_item_types->setText(0, tr("Item Types"));
-    item_assembly_record_item_types->setData(0, Qt::UserRole, View::AssemblyRecordItemTypes);
-    item_assembly_record_item_types->setIcon(0, QIcon(":/images/images/view.png"));
-    view_items[View::AssemblyRecordItemTypes] = item_assembly_record_item_types;
+    QTreeWidgetItem * item_assembly_record_items = new QTreeWidgetItem(group_assembly_records);
+    item_assembly_record_items->setText(0, tr("Items"));
+    item_assembly_record_items->setData(0, Qt::UserRole, View::AssemblyRecordItems);
+    item_assembly_record_items->setIcon(0, QIcon(":/images/images/assembly_record_items_view.png"));
+    view_items[View::AssemblyRecordItems] = item_assembly_record_items;
 
     QTreeWidgetItem * item_circuit_unit_types = new QTreeWidgetItem(group_assembly_records);
     item_circuit_unit_types->setText(0, tr("Circuit Unit Types"));
     item_circuit_unit_types->setData(0, Qt::UserRole, View::CircuitUnitTypes);
-    item_circuit_unit_types->setIcon(0, QIcon(":/images/images/view.png"));
+    item_circuit_unit_types->setIcon(0, QIcon(":/images/images/circuit_unit_types_view.png"));
     view_items[View::CircuitUnitTypes] = item_circuit_unit_types;
 }
 
@@ -613,12 +605,8 @@ void ViewTab::executeLink(Link * link)
         setView(View::AssemblyRecordTypes);
         break;
 
-    case LinkParser::AllAssemblyRecordItemTypes:
-        setView(View::AssemblyRecordItemTypes);
-        break;
-
-    case LinkParser::AllAssemblyRecordItemCategories:
-        setView(View::AssemblyRecordItemCategories);
+    case LinkParser::AllAssemblyRecordItems:
+        setView(View::AssemblyRecordItems);
         break;
 
     case LinkParser::AllCircuitUnitTypes:
@@ -779,12 +767,8 @@ void ViewTab::saveLink(int view)
         url_entity = new UrlEntity("allassemblyrecordtypes");
         break;
 
-    case View::AssemblyRecordItemTypes:
-        url_entity = new UrlEntity("allassemblyrecorditemtypes");
-        break;
-
-    case View::AssemblyRecordItemCategories:
-        url_entity = new UrlEntity("allassemblyrecorditemcategories");
+    case View::AssemblyRecordItems:
+        url_entity = new UrlEntity("allassemblyrecorditems");
         break;
 
     case View::AssemblyRecordDetails:

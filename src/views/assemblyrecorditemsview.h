@@ -17,21 +17,26 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef ASSEMBLYRECORDITEMTYPESVIEW_H
-#define ASSEMBLYRECORDITEMTYPESVIEW_H
+#ifndef ASSEMBLYRECORDITEMSVIEW_H
+#define ASSEMBLYRECORDITEMSVIEW_H
 
 #include "view.h"
 
-class AssemblyRecordItemTypesView : public View
+class HTMLTableRow;
+
+class AssemblyRecordItemsView : public View
 {
     Q_OBJECT
 
 public:
-    AssemblyRecordItemTypesView(ViewTabSettings * settings);
+    AssemblyRecordItemsView(ViewTabSettings * settings);
 
     QString renderHTML();
 
     QString title() const;
+
+protected:
+    void addDisplayOptionsCellToCategoriesTable(HTMLTableRow *, int, int);
 };
 
-#endif // ASSEMBLYRECORDITEMTYPESVIEW_H
+#endif // ASSEMBLYRECORDITEMSVIEW_H

@@ -47,7 +47,7 @@ QString AssemblyRecordTypesView::renderHTML()
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
-        thead.append("<th><a href=\"assemblyrecordtype:/order_by:"
+        thead.append("<th><a href=\"allassemblyrecordtypes:/order_by:"
                      + AssemblyRecordType::attributes().key(n) + "\">"
                      + AssemblyRecordType::attributes().value(n) + "</a></th>");
         thead_colspan++;
@@ -75,5 +75,5 @@ QString AssemblyRecordTypesView::renderHTML()
 
 QString AssemblyRecordTypesView::title() const
 {
-    return QApplication::translate("ToolBarStack", "List of Assembly Record Types");
+    return tr("List of Assembly Record Types");
 }
