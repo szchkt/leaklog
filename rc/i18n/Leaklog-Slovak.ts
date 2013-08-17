@@ -5640,10 +5640,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Kontrolóri</translation>
     </message>
     <message>
-        <source>Inspector Details</source>
-        <translation>Podrobnosti o kontrolórovi</translation>
-    </message>
-    <message>
         <source>Customers</source>
         <translation>Zákazníci</translation>
     </message>
@@ -5680,10 +5676,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Kontroly</translation>
     </message>
     <message>
-        <source>Inspection Details</source>
-        <translation>Podrobnosti o kontrole</translation>
-    </message>
-    <message>
         <source>Inspection Images</source>
         <translation>Obrázky z kontroly</translation>
     </message>
@@ -5710,6 +5702,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Items</source>
         <translation>Položky</translation>
+    </message>
+    <message>
+        <source>Inspector</source>
+        <translation>Kontrolór</translation>
+    </message>
+    <message>
+        <source>Inspection</source>
+        <translation>Kontrola</translation>
     </message>
 </context>
 <context>

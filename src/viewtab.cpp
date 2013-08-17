@@ -160,7 +160,7 @@ void ViewTab::createViewItems()
     view_items[View::Inspectors] = item_inspectors;
 
     QTreeWidgetItem * item_inspector_details = new QTreeWidgetItem(group_service_company);
-    item_inspector_details->setText(0, tr("Inspector Details"));
+    item_inspector_details->setText(0, tr("Inspector"));
     item_inspector_details->setData(0, Qt::UserRole, View::InspectorDetails);
     item_inspector_details->setIcon(0, QIcon(":/images/images/inspector_view.png"));
     view_items[View::InspectorDetails] = item_inspector_details;
@@ -204,7 +204,7 @@ void ViewTab::createViewItems()
     view_items[View::Inspections] = item_inspections;
 
     QTreeWidgetItem * item_inspection_details = new QTreeWidgetItem(group_detailed_logbook);
-    item_inspection_details->setText(0, tr("Inspection Details"));
+    item_inspection_details->setText(0, tr("Inspection"));
     item_inspection_details->setData(0, Qt::UserRole, View::InspectionDetails);
     item_inspection_details->setIcon(0, QIcon(":/images/images/inspection_view.png"));
     view_items[View::InspectionDetails] = item_inspection_details;
