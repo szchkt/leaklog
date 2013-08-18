@@ -170,11 +170,9 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
-    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(goBack()));
-    QObject::connect(&m_settings, SIGNAL(enableBackButton(bool)), actionBack, SLOT(setEnabled(bool)));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
+    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(goBack()));
     QObject::connect(actionForward, SIGNAL(triggered()), this, SLOT(goForward()));
-    QObject::connect(&m_settings, SIGNAL(enableForwardButton(bool)), actionForward, SLOT(setEnabled(bool)));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -738,7 +736,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionRemote_database->setEnabled(enable);
 
         if (enable) {
-            current_tab->enableBackAndForwardButtons();
+            enableBackAndForwardButtons();
         } else {
             actionBack->setEnabled(false);
             actionForward->setEnabled(false);
@@ -847,6 +845,12 @@ void MainWindow::timeFormatChanged(QAction * action)
 {
     m_settings.setTimeFormat(dict_action_time_format.value(action));
     refreshView();
+}
+
+void MainWindow::enableBackAndForwardButtons()
+{
+    actionBack->setEnabled(current_tab->hasPreviousLinks());
+    actionForward->setEnabled(current_tab->hasNextLinks());
 }
 
 void MainWindow::enableTools()

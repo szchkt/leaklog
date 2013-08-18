@@ -74,13 +74,12 @@ public slots:
     void reportDataFinished();
 
 signals:
-    void enableBackButton(bool);
-    void enableForwardButton(bool);
+    void enableBackAndForwardButtons();
 
     void viewChanged(View::ViewID);
 
 protected:
-    void emitEnableBackAndForwardButtons(bool enableBack, bool enableForward);
+    void emitEnableBackAndForwardButtons();
 
 private slots:
     void reloadTables(const QStringList & tables);

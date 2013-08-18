@@ -58,7 +58,7 @@ void ViewTabSettings::restoreDefaults()
     for (int i = m_next_links.count() - 1; i >= 0; --i)
         delete m_next_links.takeAt(i);
 
-    enableBackAndForwardButtons();
+    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::loadCustomer(int customer, bool refresh)
@@ -193,7 +193,7 @@ void ViewTabSettings::setLastLink(Link * link)
     while (m_next_links.count())
         delete m_next_links.takeLast();
 
-    enableBackAndForwardButtons();
+    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::setReceivedLink(Link * link)
@@ -206,7 +206,7 @@ void ViewTabSettings::setReceivedLink(Link * link)
 void ViewTabSettings::loadReceivedLink()
 {
     updateLastLink();
-    enableBackAndForwardButtons();
+    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::updateLastLink()
@@ -226,7 +226,7 @@ void ViewTabSettings::loadPreviousLink()
         saveToNextLinks();
         setReceivedLink(m_previous_links.takeLast());
     }
-    enableBackAndForwardButtons();
+    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::saveToNextLinks()
@@ -246,7 +246,7 @@ void ViewTabSettings::loadNextLink()
         saveToPreviousLinks();
         setReceivedLink(m_next_links.takeLast());
     }
-    enableBackAndForwardButtons();
+    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::saveToPreviousLinks()
@@ -257,9 +257,4 @@ void ViewTabSettings::saveToPreviousLinks()
             delete m_previous_links.takeFirst();
     }
     m_last_link = NULL;
-}
-
-void ViewTabSettings::enableBackAndForwardButtons()
-{
-    emitEnableBackAndForwardButtons(m_previous_links.count() > 0, m_next_links.count() > 0);
 }

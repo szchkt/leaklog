@@ -304,6 +304,8 @@ void ViewTab::removeTable(const QString & table)
 
 void ViewTab::connectSlots(QObject * receiver)
 {
+    QObject::connect(this, SIGNAL(enableBackAndForwardButtons()), receiver, SLOT(enableBackAndForwardButtons()));
+
     ui->toolbarstack->connectSlots(receiver);
 }
 
@@ -419,10 +421,9 @@ QString ViewTab::appendDefaultOrderToColumn(const QString & column) const
     return parentWindow()->appendDefaultOrderToColumn(column);
 }
 
-void ViewTab::emitEnableBackAndForwardButtons(bool enableBack, bool enableForward)
+void ViewTab::emitEnableBackAndForwardButtons()
 {
-    emit enableBackButton(enableBack);
-    emit enableForwardButton(enableForward);
+    emit enableBackAndForwardButtons();
 }
 
 void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)

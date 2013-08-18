@@ -141,10 +141,8 @@ public:
 
     LinkParser & linkParser() { return link_parser; }
 
-    void enableBackAndForwardButtons();
-
 protected:
-    virtual void emitEnableBackAndForwardButtons(bool enableBack, bool enableForward) = 0;
+    virtual void emitEnableBackAndForwardButtons() = 0;
 
 private:
     void updateLastLink();

@@ -72,6 +72,7 @@ signals:
     void tableRemoved(const QString &);
 
 public slots:
+    void enableBackAndForwardButtons();
     void enableTools();
 
     void reportData(bool);
