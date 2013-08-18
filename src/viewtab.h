@@ -54,6 +54,7 @@ public:
 
     View * view(View::ViewID view) { return views[view]; }
     View::ViewID currentView() const;
+    QString currentViewTitle() const;
     QString currentTable() const;
 
     bool isShowDateUpdatedChecked() const;

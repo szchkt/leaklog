@@ -323,5 +323,5 @@ HTMLTable * CircuitsView::circuitUnitsTable(const QString & customer_id, const Q
 
 QString CircuitsView::title() const
 {
-    return Customer(settings->selectedCustomer()).stringValue("company");
+    return tr("List of Circuits") + " - " + Customer(settings->selectedCustomer()).stringValue("company");
 }

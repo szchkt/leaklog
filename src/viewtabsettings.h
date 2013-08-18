@@ -50,6 +50,7 @@ public:
 
     virtual View * view(View::ViewID view) = 0;
     virtual View::ViewID currentView() const = 0;
+    virtual QString currentViewTitle() const = 0;
     virtual QString currentTable() const = 0;
 
     virtual bool isShowDateUpdatedChecked() const = 0;

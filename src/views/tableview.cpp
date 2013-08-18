@@ -550,8 +550,12 @@ QString TableView::tableVarValue(const QString & var_type, const QString & ins_v
 
 QString TableView::title() const
 {
-    QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
-    return Customer(settings->selectedCustomer()).stringValue("company")
-            + " - " + QString(title.isEmpty() ? settings->selectedCircuit() : title)
-            + " - " + tr("Table of Inspections");
+    QString title;
+    if (settings->isCircuitSelected()) {
+        title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
+        if (title.isEmpty())
+            title = settings->selectedCircuit().rightJustified(5, '0');
+        title.prepend(" - ");
+    }
+    return tr("Table of Inspections") + " - " + Customer(settings->selectedCustomer()).stringValue("company") + title;
 }

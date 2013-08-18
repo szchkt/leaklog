@@ -364,11 +364,16 @@ QWebView * ViewTab::webView() const
 
 void ViewTab::setView(View::ViewID view)
 {
-    if (view_items[view])
+    if (view_items[view]) {
         ui->trw_navigation->setCurrentItem(view_items[view]);
-    else if (view == View::TableOfInspections)
-        ui->trw_navigation->setCurrentItem(group_tables->child(0));
-    refreshView();
+    } else if (view == View::TableOfInspections) {
+        QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+
+        if (!item || item->parent() != group_tables)
+            ui->trw_navigation->setCurrentItem(group_tables->child(0));
+        else
+            refreshView();
+    }
 }
 
 void ViewTab::refreshView()
@@ -384,6 +389,16 @@ View::ViewID ViewTab::currentView() const
         return (View::ViewID)item->data(0, Qt::UserRole).toInt();
 
     return View::ViewCount;
+}
+
+QString ViewTab::currentViewTitle() const
+{
+    QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+
+    if (item)
+        return item->text(0);
+
+    return QString();
 }
 
 QString ViewTab::currentTable() const
@@ -428,6 +443,9 @@ void ViewTab::emitEnableBackAndForwardButtons()
 
 void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
+    if (current == previous)
+        return;
+
 #ifdef Q_OS_MAC
     if (previous && previous->parent()) {
         QFont font = previous->font(0);

@@ -122,6 +122,8 @@ void ToolBarStack::addFilterItems(const QString & column, const MTDictionary & i
 
 void ToolBarStack::viewChanged(View::ViewID view)
 {
+    lbl_view->setText(_settings->currentViewTitle());
+
     if (_view == view)
         return;
 
@@ -135,12 +137,11 @@ void ToolBarStack::viewChanged(View::ViewID view)
     tbtn_add_customer->setVisible(view == View::Customers);
     tbtn_add_inspection->setVisible(view == View::Inspections);
     tbtn_add_inspector->setVisible(view == View::Inspectors);
-    tbtn_add_record_of_refrigerant_management->setVisible(view == View::Store);
+    tbtn_add_record_of_refrigerant_management->setVisible(view == View::Store || view == View::RefrigerantManagement);
     tbtn_add_repair->setVisible(view == View::Repairs);
+    tbtn_edit_service_company->setVisible(view == View::Store);
 
     enableTools();
-
-    lbl_view->setText(_settings->view(view)->title());
 
     lbl_filter_since->setText(tr("Since:"));
     spb_filter_since->setSpecialValueText(tr("All"));
