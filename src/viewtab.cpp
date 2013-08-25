@@ -42,12 +42,14 @@
 #include "circuitunittypesview.h"
 #include "mtwebpage.h"
 #include "reportdatacontroller.h"
+#include "records.h"
 
 #include <QWebFrame>
 
 ViewTab::ViewTab(QWidget * parent):
     MTWidget(parent),
-    ui(new Ui::ViewTab)
+    ui(new Ui::ViewTab),
+    needs_refresh(false)
 {
     ui->setupUi(this);
 
@@ -94,8 +96,6 @@ ViewTab::ViewTab(QWidget * parent):
         ui->trw_navigation->topLevelItem(i)->setExpanded(true);
 
     ui->toolbarstack->setSettings(this);
-
-    setView(View::Store);
 }
 
 ViewTab::~ViewTab()
@@ -270,6 +270,12 @@ void ViewTab::formatGroupItem(QTreeWidgetItem * item)
     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
 }
 
+void ViewTab::setNeedsRefresh()
+{
+    if (parentWindow()->currentTab() != this)
+        needs_refresh = true;
+}
+
 void ViewTab::reloadTables(const QStringList & tables)
 {
     foreach (QTreeWidgetItem * item, group_tables->takeChildren())
@@ -304,6 +310,8 @@ void ViewTab::removeTable(const QString & table)
 
 void ViewTab::connectSlots(QObject * receiver)
 {
+    QObject::connect(receiver, SIGNAL(databaseModified()), this, SLOT(setNeedsRefresh()));
+    QObject::connect(this, SIGNAL(tabTextChanged(QWidget *, const QString &)), receiver, SLOT(tabTextChanged(QWidget *, const QString &)));
     QObject::connect(this, SIGNAL(enableBackAndForwardButtons()), receiver, SLOT(enableBackAndForwardButtons()));
 
     ui->toolbarstack->connectSlots(receiver);
@@ -362,23 +370,49 @@ QWebView * ViewTab::webView() const
     return ui->wv_main;
 }
 
-void ViewTab::setView(View::ViewID view)
+void ViewTab::setView(View::ViewID view, const QString & table)
 {
     if (view_items[view]) {
         ui->trw_navigation->setCurrentItem(view_items[view]);
     } else if (view == View::TableOfInspections) {
         QTreeWidgetItem * item = ui->trw_navigation->currentItem();
 
-        if (!item || item->parent() != group_tables)
-            ui->trw_navigation->setCurrentItem(group_tables->child(0));
-        else
+        if (!group_tables->childCount())
+            return;
+
+        if (item && item->parent() == group_tables && item->text(0) == table) {
             refreshView();
+            return;
+        }
+
+        int i = 0;
+        for (int j = 0; j < group_tables->childCount(); ++j) {
+            if (group_tables->child(j)->text(0) == table) {
+                i = j;
+                break;
+            }
+        }
+
+        ui->trw_navigation->setCurrentItem(group_tables->child(i));
     }
+}
+
+void ViewTab::setView(int view, const QString & table)
+{
+    setView((View::ViewID)view, table);
 }
 
 void ViewTab::refreshView()
 {
     viewChanged(ui->trw_navigation->currentItem(), NULL);
+}
+
+void ViewTab::refreshViewIfNeeded()
+{
+    if (needs_refresh) {
+        needs_refresh = false;
+        refreshView();
+    }
 }
 
 View::ViewID ViewTab::currentView() const
@@ -473,7 +507,19 @@ void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 
     emit viewChanged(view);
 
-    ui->wv_main->setHtml(views[view]->renderHTML(), QUrl("qrc:/html/"));
+    QString tabText = current->text(0);
+    if (isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
+        QString customer = Customer(selectedCustomer()).stringValue("company");
+        if (customer.isEmpty())
+            customer = selectedCustomer().rightJustified(8, '0');
+        tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer));
+    }
+    emit tabTextChanged(this, tabText);
+
+    if (parentWindow()->currentTab() == this)
+        ui->wv_main->setHtml(views[view]->renderHTML(), QUrl("qrc:/html/"));
+    else
+        setNeedsRefresh();
 }
 
 void ViewTab::loadPreviousLink()

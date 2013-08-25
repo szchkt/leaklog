@@ -21,19 +21,19 @@
 #include "mainwindowsettings.h"
 #include "records.h"
 
+#include <QSettings>
+
 #define MAX_LINKS 10
 
 ViewTabSettings::ViewTabSettings():
     m_customer(-1),
     m_circuit(-1),
     m_compressor(-1),
-    m_inspection_is_repair(false),
     m_inspector(-1),
     m_assembly_record_type(-1),
     m_assembly_record_item_type(-1),
     m_assembly_record_item_category(-1),
     m_circuit_unit_type(-1),
-    m_has_assembly_record(false),
     m_last_link(NULL),
     m_received_link(NULL)
 {
@@ -59,6 +59,53 @@ void ViewTabSettings::restoreDefaults()
         delete m_next_links.takeAt(i);
 
     emitEnableBackAndForwardButtons();
+}
+
+void ViewTabSettings::saveSettings(QSettings & settings) const
+{
+    if (isCustomerSelected())
+        settings.setValue("selected_customer", m_customer);
+    if (isCircuitSelected())
+        settings.setValue("selected_circuit", m_circuit);
+    if (isCompressorSelected())
+        settings.setValue("selected_compressor", m_compressor);
+    if (isInspectionSelected())
+        settings.setValue("selected_inspection", m_inspection);
+    if (isRepairSelected())
+        settings.setValue("selected_repair", m_repair);
+    if (isInspectorSelected())
+        settings.setValue("selected_inspector", m_inspector);
+    if (isAssemblyRecordTypeSelected())
+        settings.setValue("selected_assembly_record_type", m_assembly_record_type);
+    if (isAssemblyRecordItemTypeSelected())
+        settings.setValue("selected_assembly_record_item_type", m_assembly_record_item_type);
+    if (isAssemblyRecordItemCategorySelected())
+        settings.setValue("selected_assembly_record_item_category", m_assembly_record_item_category);
+    if (isCircuitUnitTypeSelected())
+        settings.setValue("selected_circuit_unit_type", m_circuit_unit_type);
+
+    settings.setValue("current_view", currentView());
+    if (!currentTable().isEmpty())
+        settings.setValue("current_table", currentTable());
+}
+
+void ViewTabSettings::restoreSettings(QSettings & settings)
+{
+    m_customer = settings.value("selected_customer", -1).toInt();
+    m_circuit = settings.value("selected_circuit", -1).toInt();
+    m_compressor = settings.value("selected_compressor", -1).toInt();
+    m_inspection = settings.value("selected_inspection").toString();
+    m_repair = settings.value("selected_repair").toString();
+    m_inspector = settings.value("selected_inspector", -1).toInt();
+    m_assembly_record_type = settings.value("selected_assembly_record_type", -1).toInt();
+    m_assembly_record_item_type = settings.value("selected_assembly_record_item_type", -1).toInt();
+    m_assembly_record_item_category = settings.value("selected_assembly_record_item_category", -1).toInt();
+    m_circuit_unit_type = settings.value("selected_circuit_unit_type", -1).toInt();
+
+    enableTools();
+    QMetaObject::invokeMethod(object(), "setView", Qt::QueuedConnection,
+                              Q_ARG(int, settings.value("current_view").toInt()),
+                              Q_ARG(QString, settings.value("current_table").toString()));
 }
 
 void ViewTabSettings::loadCustomer(int customer, bool refresh)
@@ -90,9 +137,7 @@ void ViewTabSettings::loadInspection(const QString & inspection, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
-    setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
-    setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
+    setSelectedInspection(inspection);
     enableTools();
     if (refresh) {
         setView(View::InspectionDetails);
@@ -164,9 +209,7 @@ void ViewTabSettings::loadAssemblyRecord(const QString & inspection, bool refres
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
-    Inspection inspection_rec(selectedCustomer(), selectedCircuit(), inspection);
-    setSelectedInspection(inspection, !inspection_rec.value("arno").toString().isEmpty());
-    setSelectedInspectionIsRepair(inspection_rec.value("repair").toBool());
+    setSelectedInspection(inspection);
     enableTools();
     if (refresh) {
         setView(View::AssemblyRecordDetails);

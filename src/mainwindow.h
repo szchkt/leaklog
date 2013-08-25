@@ -58,6 +58,7 @@ public:
 
     inline MainWindowSettings & settings() { return m_settings; }
     inline UndoStack * undoStack() const { return m_undo_stack; }
+    inline ViewTab * currentTab() const { return m_tab; }
 
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
@@ -67,6 +68,7 @@ public:
     QString appendDefaultOrderToColumn(const QString &);
 
 signals:
+    void databaseModified();
     void tablesChanged(const QStringList &);
     void tableAdded(int index, const QString &);
     void tableRemoved(const QString &);
@@ -179,7 +181,7 @@ private slots:
     void find();
     void findNext();
     void findPrevious();
-    void clearSelection(bool = true);
+    void clearSelection();
     void refreshView();
     void changeLanguage();
     void languageChanged();
@@ -195,6 +197,13 @@ private slots:
     void save();
     void saveAndCompact();
     void closeDatabase(bool = true);
+    void setDatabaseModified(bool modified);
+    // TABS
+    void newTab(bool init = true);
+    void closeTab();
+    void closeTab(int);
+    void tabChanged(int index);
+    void tabTextChanged(QWidget * tab, const QString & text);
 
 private:
     // UI
@@ -210,7 +219,6 @@ private:
     QString fileNameForCurrentView();
     void exportPDF(int);
     void addRecent(const QString &);
-    void clearAll();
     void setAllEnabled(bool, bool = false);
     void updateLockButton();
     void closeEvent(QCloseEvent *);
@@ -220,7 +228,7 @@ private:
     bool saveChangesBeforeProceeding(const QString &, bool);
     void initDatabase(QSqlDatabase & database, bool transaction = true, bool save_on_upgrade = true);
     void initTables(bool = true);
-    void openDatabase(QString);
+    void openDatabase(QString path, const QString & connection_string);
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool isRecordLocked(const QString &);
@@ -228,26 +236,6 @@ private:
     void addVariable(bool);
     void moveTableVariable(bool);
     void exportData(const QString &);
-    inline bool isCustomerSelected() { return current_tab->isCustomerSelected(); }
-    inline QString selectedCustomer() { return current_tab->selectedCustomer(); }
-    inline bool isCircuitSelected() { return current_tab->isCircuitSelected(); }
-    inline QString selectedCircuit() { return current_tab->selectedCircuit(); }
-    inline bool isCompressorSelected() { return current_tab->isCompressorSelected(); }
-    inline QString selectedCompressor() { return current_tab->selectedCompressor(); }
-    inline bool isInspectionSelected() { return current_tab->isInspectionSelected(); }
-    inline QString selectedInspection() { return current_tab->selectedInspection(); }
-    inline bool isRepairSelected() { return current_tab->isRepairSelected(); }
-    inline QString selectedRepair() { return current_tab->selectedRepair(); }
-    inline bool isInspectorSelected() { return current_tab->isInspectorSelected(); }
-    inline QString selectedInspector() { return current_tab->selectedInspector(); }
-    inline QString selectedAssemblyRecordType() { return current_tab->selectedAssemblyRecordType(); }
-    inline bool isAssemblyRecordTypeSelected() { return current_tab->isAssemblyRecordTypeSelected(); }
-    inline bool isAssemblyRecordItemTypeSelected() { return current_tab->isAssemblyRecordItemTypeSelected(); }
-    inline bool isAssemblyRecordItemCategorySelected() { return current_tab->isAssemblyRecordItemCategorySelected(); }
-    inline QString selectedAssemblyRecordItemType() { return current_tab->selectedAssemblyRecordItemType(); }
-    inline QString selectedAssemblyRecordItemCategory() { return current_tab->selectedAssemblyRecordItemCategory(); }
-    inline bool isCircuitUnitTypeSelected() { return current_tab->isCircuitUnitTypeSelected(); }
-    inline QString selectedCircuitUnitType() { return current_tab->selectedCircuitUnitType(); }
 
     QAction * actionShow_icons_only;
     QToolButton * tbtn_open;
@@ -263,7 +251,8 @@ private:
     QNetworkAccessManager * network_access_manager;
     MainWindowSettings m_settings;
     UndoStack * m_undo_stack;
-    ViewTab * current_tab;
+    ViewTab * m_tab;
+    QString m_connection_string;
 };
 
 #endif // MAINWINDOW_H

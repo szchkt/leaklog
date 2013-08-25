@@ -29,6 +29,7 @@ class ToolBarStack;
 class MainWindowSettings;
 
 class QObject;
+class QSettings;
 class QWebView;
 
 class ViewTabSettings
@@ -45,7 +46,7 @@ public:
     virtual ToolBarStack * toolBarStack() const = 0;
     virtual QWebView * webView() const = 0;
 
-    virtual void setView(View::ViewID view) = 0;
+    virtual void setView(View::ViewID view, const QString & table = QString()) = 0;
     virtual void refreshView() = 0;
 
     virtual View * view(View::ViewID view) = 0;
@@ -61,6 +62,8 @@ public:
     virtual QString appendDefaultOrderToColumn(const QString &) const = 0;
 
     void restoreDefaults();
+    void saveSettings(QSettings & settings) const;
+    void restoreSettings(QSettings & settings);
 
     inline bool isCustomerSelected() const { return m_customer >= 0; }
     inline QString selectedCustomer() const { return isCustomerSelected() ? QString::number(m_customer) : QString(); }
@@ -78,12 +81,8 @@ public:
 
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
-    void setSelectedInspection(const QString & inspection, bool has_ar = false) { m_inspection = inspection; m_has_assembly_record = has_ar; }
-    void clearSelectedInspection() { m_inspection.clear(); m_has_assembly_record = false; m_inspection_is_repair = false; }
-    inline bool hasAssemblyRecord() const { return m_has_assembly_record; }
-
-    inline bool selectedInspectionIsRepair() const { return m_inspection_is_repair; }
-    void setSelectedInspectionIsRepair(bool inspection_is_repair) { m_inspection_is_repair = inspection_is_repair; }
+    void setSelectedInspection(const QString & inspection) { m_inspection = inspection; }
+    void clearSelectedInspection() { m_inspection.clear(); }
 
     inline bool isRepairSelected() const { return !m_repair.isEmpty(); }
     inline QString selectedRepair() const { return m_repair; }
@@ -155,14 +154,12 @@ private:
     int m_circuit;
     int m_compressor;
     QString m_inspection;
-    bool m_inspection_is_repair;
     QString m_repair;
     int m_inspector;
     int m_assembly_record_type;
     int m_assembly_record_item_type;
     int m_assembly_record_item_category;
     int m_circuit_unit_type;
-    bool m_has_assembly_record;
 
     Link * m_last_link;
     Link * m_received_link;

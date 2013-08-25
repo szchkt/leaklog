@@ -4047,8 +4047,28 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Oznamovanie</translation>
     </message>
     <message>
-        <source>Tab 1</source>
-        <translation>Tab 1</translation>
+        <source>Ctrl+Shift+W</source>
+        <translation>Ctrl+Shift+W</translation>
+    </message>
+    <message>
+        <source>New Tab</source>
+        <translation>Nová karta</translation>
+    </message>
+    <message>
+        <source>Open a new tab</source>
+        <translation>Otvoriť novú kartu</translation>
+    </message>
+    <message>
+        <source>Ctrl+T</source>
+        <translation>Ctrl+T</translation>
+    </message>
+    <message>
+        <source>Close Tab</source>
+        <translation>Zatvoriť kartu</translation>
+    </message>
+    <message>
+        <source>Close the current tab</source>
+        <translation>Zatvoriť aktuálnu kartu</translation>
     </message>
 </context>
 <context>

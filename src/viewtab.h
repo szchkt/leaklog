@@ -68,13 +68,16 @@ public slots:
     void loadPreviousLink();
     void loadNextLink();
 
-    void setView(View::ViewID view);
+    void setView(View::ViewID view, const QString & table = QString());
+    void setView(int view, const QString & table = QString());
     void refreshView();
+    void refreshViewIfNeeded();
 
     void reportData();
     void reportDataFinished();
 
 signals:
+    void tabTextChanged(QWidget *, const QString &);
     void enableBackAndForwardButtons();
 
     void viewChanged(View::ViewID);
@@ -83,6 +86,8 @@ protected:
     void emitEnableBackAndForwardButtons();
 
 private slots:
+    void setNeedsRefresh();
+
     void reloadTables(const QStringList & tables);
     void addTable(int index, const QString & table);
     void removeTable(const QString & table);
@@ -103,6 +108,7 @@ private:
     View * views[View::ViewCount];
     QTreeWidgetItem * group_tables;
     QTreeWidgetItem * view_items[View::ViewCount];
+    bool needs_refresh;
 };
 
 #endif // VIEWTAB_H

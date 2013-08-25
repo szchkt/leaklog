@@ -274,6 +274,9 @@
     <addaction name="actionSave_and_compact"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
+    <addaction name="actionNew_Tab"/>
+    <addaction name="actionClose_Tab"/>
+    <addaction name="separator"/>
     <addaction name="menuImport"/>
     <addaction name="menuExport"/>
     <addaction name="separator"/>
@@ -1090,7 +1093,7 @@
     <string>Close the database</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string>Ctrl+Shift+W</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -2126,6 +2129,48 @@
    </property>
    <property name="statusTip">
     <string>Report data to the notified body</string>
+   </property>
+  </action>
+  <action name="actionNew_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/tab_new16.png</normaloff>:/images/images/tab_new16.png</iconset>
+   </property>
+   <property name="text">
+    <string>New Tab</string>
+   </property>
+   <property name="statusTip">
+    <string>Open a new tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionClose_Tab">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/tab_close16.png</normaloff>:/images/images/tab_close16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close Tab</string>
+   </property>
+   <property name="statusTip">
+    <string>Close the current tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
  </widget>

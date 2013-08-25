@@ -37,6 +37,7 @@
 #include "mtaddress.h"
 #include "mtvariant.h"
 #include "undostack.h"
+#include "sha256.h"
 
 #include <QBuffer>
 #include <QMessageBox>
@@ -48,6 +49,7 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QDateTime>
+#include <QSettings>
 
 using namespace Global;
 
@@ -406,7 +408,7 @@ void MainWindow::newDatabase()
     db.transaction();
     setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-    openDatabase(QString());
+    openDatabase(QString(), path);
 }
 
 void MainWindow::openRecent(QListWidgetItem * item)
@@ -428,9 +430,9 @@ void MainWindow::openRecent(QListWidgetItem * item)
             db.transaction();
             initDatabase(db, false);
         }
-        openDatabase(QString());
+        openDatabase(QString(), s);
     } else {
-        openDatabase(s);
+        openDatabase(s, s);
     }
 }
 
@@ -441,12 +443,13 @@ void MainWindow::open()
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
     addRecent(path);
-    openDatabase(path);
+    openDatabase(path, path);
 }
 
 void MainWindow::openRemote()
 {
     if (saveChangesBeforeProceeding(tr("Open remote database - Leaklog"), true)) { return; }
+
     QDialog * d = new QDialog(this);
 	d->setWindowTitle(tr("Open remote database - Leaklog"));
         QGridLayout * gl = new QGridLayout(d);
@@ -490,6 +493,7 @@ void MainWindow::openRemote()
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
         gl->addWidget(bb, 6, 0, 1, 2);
     if (d->exec() != QDialog::Accepted) { return; }
+
     int port = spb_port->value() == 0 ? 5432 : spb_port->value();
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName(le_server->text());
@@ -497,17 +501,26 @@ void MainWindow::openRemote()
     db.setDatabaseName(le_db_name->text());
     db.setUserName(le_user_name->text());
     db.setPassword(le_password->text());
+
+    QString connection_string = QString("db:QPSQL:%1@%2@%3:%4")
+            .arg(le_user_name->text())
+            .arg(le_db_name->text())
+            .arg(le_server->text())
+            .arg(port);
+
     if (db.open()) {
-        addRecent(QString("db:QPSQL:%1@%2@%3:%4").arg(le_user_name->text()).arg(le_db_name->text()).arg(le_server->text()).arg(port));
+        addRecent(connection_string);
         db.transaction();
         initDatabase(db, false);
     }
-    openDatabase(QString());
+
+    openDatabase(QString(), connection_string);
 }
 
-void MainWindow::openDatabase(QString path)
+void MainWindow::openDatabase(QString path, const QString & connection_string)
 {
-    clearAll();
+    m_connection_string = connection_string;
+
     if (path.isEmpty()) {
         QSqlDatabase db = QSqlDatabase::database();
         path = db.databaseName();
@@ -533,26 +546,46 @@ void MainWindow::openDatabase(QString path)
         db.transaction();
         initDatabase(db, false);
     }
+
     if (DBInfoValueForKey("min_leaklog_version", DBInfoValueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
         closeDatabase(false);
         return;
     }
 
-    ViewTab * viewtab = new ViewTab(this);
-    tabw_main->addTab(viewtab, tr("Tab 1"));
-    current_tab = viewtab;
-    current_tab->connectSlots(this);
+    QSettings settings("SZCHKT", "Leaklog");
+    settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));
+
+    tabw_main->blockSignals(true);
+    if (settings.childGroups().isEmpty()) {
+        newTab();
+    } else {
+        foreach (const QString & index, settings.childGroups()) {
+            newTab(false);
+            settings.beginGroup(index);
+            m_tab->restoreSettings(settings);
+            settings.endGroup();
+        }
+
+        tabw_main->setCurrentIndex(settings.value("current_index").toInt());
+    }
+    tabw_main->blockSignals(false);
+    tabChanged(tabw_main->currentIndex());
+
+    settings.endGroup();
 
     initTables(false);
 
     loadDatabase(false);
 
     setWindowTitleWithRepresentedFilename(path);
-    this->setWindowModified(false);
+    setDatabaseModified(false);
+
+    QApplication::processEvents();
+
     setAllEnabled(true);
-    stw_main->setCurrentIndex(1);
     enableTools();
+    stw_main->setCurrentIndex(1);
 
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next())
@@ -565,7 +598,6 @@ void MainWindow::loadDatabase(bool reload)
         trw_variables->clear();
 
         cb_table_edit->clear();
-        // TODO: clear tables
 
         lw_warnings->clear();
 
@@ -604,8 +636,11 @@ void MainWindow::loadDatabase(bool reload)
 
     updateLockButton();
 
-    if (reload)
-        clearSelection();
+    if (reload) {
+        clearSelection(); // TODO
+        enableTools();
+        refreshView();
+    }
 }
 
 void MainWindow::save()
@@ -641,7 +676,7 @@ void MainWindow::saveDatabase(bool compact, bool update_ui)
     if (update_ui) {
         m_undo_stack->clear();
         setWindowTitleWithRepresentedFilename(db.databaseName());
-        this->setWindowModified(false);
+        setDatabaseModified(false);
         refreshView();
     }
 }
@@ -651,13 +686,36 @@ void MainWindow::closeDatabase(bool save)
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false))
         return;
 
+    QSettings settings("SZCHKT", "Leaklog");
+    settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));
+    settings.remove(QString());
+
+    for (int i = 0; i < tabw_main->count(); ++i) {
+        ViewTab * tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
+        settings.beginGroup(QString::number(i));
+        tab->saveSettings(settings);
+        settings.endGroup();
+    }
+
+    settings.setValue("current_index", tabw_main->currentIndex());
+    settings.endGroup();
+
     parsed_expressions.clear();
-    clearAll();
+    m_undo_stack->clear();
+    cb_table_edit->clear();
+    trw_variables->clear();
+    trw_table_variables->clear();
+    lw_warnings->clear();
+
+    tabw_main->blockSignals(true);
+    while (tabw_main->count())
+        delete tabw_main->widget(0);
+    tabw_main->blockSignals(false);
+
+    m_tab = NULL;
+
     enableTools();
     setAllEnabled(false);
-    tabw_main->removeTab(0);
-    delete current_tab;
-    current_tab = NULL;
 
     QString connection_name;
     {
@@ -668,9 +726,71 @@ void MainWindow::closeDatabase(bool save)
     }
     QSqlDatabase::removeDatabase(connection_name);
 
+    m_connection_string.clear();
+
     stw_main->setCurrentIndex(0);
     clearWindowTitle();
-    this->setWindowModified(false);
+    setDatabaseModified(false);
+}
+
+void MainWindow::setDatabaseModified(bool modified)
+{
+    setWindowModified(modified);
+
+    if (modified)
+        emit databaseModified();
+}
+
+void MainWindow::newTab(bool init)
+{
+    ViewTab * viewtab = new ViewTab(this);
+    tabw_main->addTab(viewtab, QString());
+    m_tab = viewtab;
+    m_tab->connectSlots(this);
+
+    if (init) {
+        if (cb_table_edit->count()) {
+            QStringList tables;
+            for (int i = 0; i < cb_table_edit->count(); ++i)
+                tables << cb_table_edit->itemText(i);
+            emit tablesChanged(tables);
+        }
+
+        m_tab->setView(View::Store);
+        tabw_main->setCurrentWidget(m_tab);
+    }
+}
+
+void MainWindow::closeTab()
+{
+    if (tabw_main->count() < 2)
+        return;
+
+    delete m_tab;
+}
+
+void MainWindow::closeTab(int index)
+{
+    if (tabw_main->count() < 2)
+        return;
+
+    delete tabw_main->widget(index);
+}
+
+void MainWindow::tabChanged(int index)
+{
+    if (index < 0) {
+        m_tab = NULL;
+    } else {
+        m_tab = qobject_cast<ViewTab *>(tabw_main->widget(index));
+        m_tab->refreshViewIfNeeded();
+        enableTools();
+    }
+}
+
+void MainWindow::tabTextChanged(QWidget * tab, const QString & text)
+{
+    tabw_main->setTabText(tabw_main->indexOf(tab), text);
 }
 
 bool MainWindow::isOperationPermitted(const QString & operation, const QString & record_owner)
@@ -720,7 +840,7 @@ void MainWindow::editServiceCompany()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDBInfoValueForKey("default_service_company", record.id());
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -750,7 +870,7 @@ void MainWindow::editRecordOfRefrigerantManagement(const QString & date)
             attributes.value("leaked").toDouble() <= 0.0 && attributes.value("leaked_reco").toDouble() <= 0.0) {
             record.remove();
         }
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -763,25 +883,25 @@ void MainWindow::addCustomer()
     UndoCommand command(m_undo_stack, tr("Add customer"));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadCustomer(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadCustomer(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    Customer record(selectedCustomer());
+    if (!m_tab->isCustomerSelected()) { return; }
+    Customer record(m_tab->selectedCustomer());
     if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
-    QString old_id = selectedCustomer();
+    QString old_id = m_tab->selectedCustomer();
     QString old_company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit customer %1%2")
                         .arg(old_id.rightJustified(8, '0'))
                         .arg(old_company_name.isEmpty() ? QString() : QString(" (%1)").arg(old_company_name)));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         QString company_name = record.stringValue("company");
         if (old_id != record.id()) {
             MTSqlQuery update_circuits;
@@ -820,7 +940,7 @@ void MainWindow::editCustomer()
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
-            current_tab->loadCustomer(record.id().toInt(), true);
+            m_tab->loadCustomer(record.id().toInt(), true);
         } else if (old_company_name != company_name) {
             MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
@@ -839,63 +959,65 @@ void MainWindow::editCustomer()
 void MainWindow::duplicateCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
-    Customer record(selectedCustomer());
+    Customer record(m_tab->selectedCustomer());
     record.readValues();
     record.id().clear();
     QString company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
-                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadCustomer(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadCustomer(record.id().toInt(), true);
     }
 }
 
 void MainWindow::removeCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    Customer record(selectedCustomer());
+    if (!m_tab->isCustomerSelected()) { return; }
+    Customer record(m_tab->selectedCustomer());
     record.readValues("company, updated_by");
     if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"), tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:").arg(selectedCustomer()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:")
+                                                 .arg(m_tab->selectedCustomer()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     QString company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove customer %1%2")
-                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
     record.remove();
-    Circuit circuits(selectedCustomer(), "");
+    Circuit circuits(m_tab->selectedCustomer(), "");
     circuits.remove();
-    MTRecord inspections("inspections", "date", "", MTDictionary("customer", selectedCustomer()));
+    MTRecord inspections("inspections", "date", "", MTDictionary("customer", m_tab->selectedCustomer()));
     inspections.remove();
-    MTRecord repairs("repairs", "date", "", MTDictionary("parent", selectedCustomer()));
+    MTRecord repairs("repairs", "date", "", MTDictionary("parent", m_tab->selectedCustomer()));
     repairs.remove();
-    current_tab->setSelectedCustomer(-1);
-    current_tab->setSelectedCircuit(-1);
-    current_tab->setSelectedCompressor(-1);
-    current_tab->clearSelectedInspection();
-    current_tab->clearSelectedRepair();
+    m_tab->setSelectedCustomer(-1);
+    m_tab->setSelectedCircuit(-1);
+    m_tab->setSelectedCompressor(-1);
+    m_tab->clearSelectedInspection();
+    m_tab->clearSelectedRepair();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::Customers);
+    setDatabaseModified(true);
+    m_tab->setView(View::Customers);
 }
 
 void MainWindow::decommissionAllCircuits()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
-    Customer customer(selectedCustomer());
+    Customer customer(m_tab->selectedCustomer());
     customer.readValues("company");
 
     QDialog d(this);
@@ -930,7 +1052,7 @@ void MainWindow::decommissionAllCircuits()
 
     QString company_name = customer.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Decommission all circuits of customer %1%2")
-                        .arg(selectedCustomer().rightJustified(8, '0'))
+                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
@@ -942,42 +1064,42 @@ void MainWindow::decommissionAllCircuits()
     circuits.parents().insert("disused", "0");
     circuits.update(set, false, true);
 
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
 void MainWindow::addCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
-    Circuit record(selectedCustomer(), "");
+    Circuit record(m_tab->selectedCustomer(), "");
     UndoCommand command(m_undo_stack, tr("Add circuit"));
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadCircuit(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadCircuit(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    Circuit record(selectedCustomer(), selectedCircuit());
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     if (!isOperationPermitted("edit_circuit", record.stringValue("updated_by"))) { return; }
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit circuit %1 (%2)")
-                        .arg(selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
     EditCircuitDialogue md(&record, m_undo_stack, this);
-    QString old_id = selectedCircuit();
+    QString old_id = m_tab->selectedCircuit();
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
-            Circuit::cascadeIDChange(selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
-            current_tab->loadCircuit(record.id().toInt(), true);
+            Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
+            m_tab->loadCircuit(record.id().toInt(), true);
         } else {
             enableTools();
             refreshView();
@@ -988,21 +1110,22 @@ void MainWindow::editCircuit()
 void MainWindow::duplicateCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
-    Circuit record(selectedCustomer(), selectedCircuit());
+    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     record.readValues();
     record.id().clear();
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
-                        .arg(selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         ListOfVariantMaps compressors = Compressor(QString(),
                                                    MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                                QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+                                                                QStringList() << m_tab->selectedCustomer()
+                                                                              << m_tab->selectedCircuit())).listAll();
 
         qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
         for (int i = 0; i < compressors.size(); ++i) {
@@ -1013,7 +1136,8 @@ void MainWindow::duplicateCircuit()
 
         ListOfVariantMaps circuit_units = CircuitUnit(QString(),
                                                       MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                                                   QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+                                                                   QStringList() << m_tab->selectedCustomer()
+                                                                                 << m_tab->selectedCircuit())).listAll();
 
         next_id = CircuitUnit().max("id");
         for (int i = 0; i < circuit_units.size(); ++i) {
@@ -1022,20 +1146,20 @@ void MainWindow::duplicateCircuit()
             CircuitUnit().update(circuit_units[i]);
         }
 
-        this->setWindowModified(true);
-        current_tab->loadCircuit(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadCircuit(record.id().toInt(), true);
     }
 }
 
 void MainWindow::duplicateAndDecommissionCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
-    Circuit circuit(selectedCustomer(), selectedCircuit());
+    Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     QVariantMap attributes = circuit.list();
 
     QDialog d(this);
@@ -1046,7 +1170,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
 
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -1063,7 +1187,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QSpinBox * new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
-    new_id->setValue(Circuit(selectedCustomer(), QString()).max("id") + 1);
+    new_id->setValue(Circuit(m_tab->selectedCustomer(), QString()).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
     QRadioButton * set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
@@ -1115,21 +1239,23 @@ void MainWindow::duplicateAndDecommissionCircuit()
             return;
 
         id = new_id->value();
-    } while (Circuit(selectedCustomer(), QString::number(id)).exists());
+    } while (Circuit(m_tab->selectedCustomer(), QString::number(id)).exists());
 
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate and decommission circuit %1 (%2)")
-                        .arg(selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
     m_undo_stack->savepoint();
 
     ListOfVariantMaps compressors = Compressor(QString(),
                                                MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                            QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+                                                            QStringList() << m_tab->selectedCustomer()
+                                                                          << m_tab->selectedCircuit())).listAll();
 
     ListOfVariantMaps circuit_units = CircuitUnit(QString(),
                                                   MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                                               QStringList() << selectedCustomer() << selectedCircuit())).listAll();
+                                                               QStringList() << m_tab->selectedCustomer()
+                                                                             << m_tab->selectedCircuit())).listAll();
 
     QVariantMap set;
     set.insert("disused", 1);
@@ -1142,7 +1268,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     if (set_original_id->isChecked()) {
         duplicate_id = attributes.value("id").toInt();
         circuit.update("id", id);
-        Circuit::cascadeIDChange(selectedCustomer().toInt(), duplicate_id, id, true);
+        Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), duplicate_id, id, true);
     } else {
         duplicate_id = id;
         attributes.insert("id", id);
@@ -1165,130 +1291,137 @@ void MainWindow::duplicateAndDecommissionCircuit()
         CircuitUnit().update(circuit_units[i]);
     }
 
-    this->setWindowModified(true);
-    current_tab->loadCircuit(duplicate_id, true);
+    setDatabaseModified(true);
+    m_tab->loadCircuit(duplicate_id, true);
 }
 
 void MainWindow::removeCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    Circuit record(selectedCustomer(), selectedCircuit());
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     if (!isOperationPermitted("remove_circuit", record.stringValue("updated_by"))) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"), tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:").arg(selectedCircuit()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:")
+                                                 .arg(m_tab->selectedCircuit()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove circuit %1 (%2)")
-                        .arg(selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
     m_undo_stack->savepoint();
 
     record.remove();
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id",
-                         QStringList() << selectedCustomer() << selectedCircuit());
+                         QStringList() << m_tab->selectedCustomer() << m_tab->selectedCircuit());
     Compressor("", parents).remove();
     CircuitUnit("", MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                 QStringList() << selectedCustomer() << selectedCircuit())).remove();
-    Inspection(selectedCustomer(), selectedCircuit(), "").remove();
+                                 QStringList() << m_tab->selectedCustomer() << m_tab->selectedCircuit())).remove();
+    Inspection(m_tab->selectedCustomer(), m_tab->selectedCircuit(), "").remove();
     InspectionsCompressor("", parents).remove();
     MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit",
-                                                       QStringList() << selectedCustomer() << selectedCircuit())).remove();
-    current_tab->clearSelectedCircuit();
+                                                       QStringList() << m_tab->selectedCustomer()
+                                                                     << m_tab->selectedCircuit())).remove();
+    m_tab->clearSelectedCircuit();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::Circuits);
+    setDatabaseModified(true);
+    m_tab->setView(View::Circuits);
 }
 
 void MainWindow::addInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
-    Inspection record(selectedCustomer(), selectedCircuit(), "");
+    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), "");
     UndoCommand command(m_undo_stack, tr("Add inspection"));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadInspection(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadInspection(record.id(), true);
     }
 }
 
 void MainWindow::editInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    if (!isInspectionSelected()) { return; }
-    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!m_tab->isInspectionSelected()) { return; }
+    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
     if (!isOperationPermitted("edit_inspection", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(selectedInspection())) { return; }
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    if (isRecordLocked(m_tab->selectedInspection())) { return; }
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(selectedInspection()))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
-                        .arg(selectedCircuit().rightJustified(5, '0')));
+                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadInspection(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadInspection(record.id(), true);
     }
 }
 
 void MainWindow::duplicateInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    if (!isInspectionSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!m_tab->isInspectionSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
-    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
     record.readValues();
     record.id().clear();
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(selectedInspection()))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
-                        .arg(selectedCircuit().rightJustified(5, '0')));
-    EditInspectionDialogue md(&record, m_undo_stack, this, selectedInspection());
+                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
+    EditInspectionDialogue md(&record, m_undo_stack, this, m_tab->selectedInspection());
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadInspection(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadInspection(record.id(), true);
     }
 }
 
 void MainWindow::removeInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
-    if (!isCircuitSelected()) { return; }
-    if (!isInspectionSelected()) { return; }
-    Inspection record(selectedCustomer(), selectedCircuit(), selectedInspection());
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!m_tab->isInspectionSelected()) { return; }
+    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
     if (!isOperationPermitted("remove_inspection", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(selectedInspection())) { return; }
+    if (isRecordLocked(m_tab->selectedInspection())) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"), tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:").arg(selectedInspection()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:")
+                                                 .arg(m_tab->selectedInspection()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
-    QString company_name = Customer(selectedCustomer()).stringValue("company");
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(selectedInspection()))
-                        .arg(company_name.isEmpty() ? selectedCustomer().rightJustified(8, '0') : company_name)
-                        .arg(selectedCircuit().rightJustified(5, '0')));
+                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     m_undo_stack->savepoint();
 
     record.remove();
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date",
-                         QStringList() << selectedCustomer() << selectedCircuit() << selectedInspection());
+                         QStringList() << m_tab->selectedCustomer()
+                                       << m_tab->selectedCircuit()
+                                       << m_tab->selectedInspection());
     InspectionsCompressor("", parents).remove();
-    InspectionImage(selectedCustomer(), selectedCircuit(), selectedInspection()).remove();
-    current_tab->clearSelectedInspection();
+    InspectionImage(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection()).remove();
+    m_tab->clearSelectedInspection();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::Inspections);
+    setDatabaseModified(true);
+    m_tab->setView(View::Inspections);
 }
 
 void MainWindow::addRepair()
@@ -1296,43 +1429,43 @@ void MainWindow::addRepair()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record("");
-    if (isCustomerSelected()) {
-        record.parents().insert("parent", selectedCustomer());
-        record.parents().insert("customer", Customer(selectedCustomer()).stringValue("company"));
+    if (m_tab->isCustomerSelected()) {
+        record.parents().insert("parent", m_tab->selectedCustomer());
+        record.parents().insert("customer", Customer(m_tab->selectedCustomer()).stringValue("company"));
     }
     UndoCommand command(m_undo_stack, tr("Add repair"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadRepair(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadRepair(record.id(), true);
     }
 }
 
 void MainWindow::editRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isRepairSelected()) { return; }
-    Repair record(selectedRepair());
+    if (!m_tab->isRepairSelected()) { return; }
+    Repair record(m_tab->selectedRepair());
     record.readValues();
     if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(selectedRepair())) { return; }
+    if (isRecordLocked(m_tab->selectedRepair())) { return; }
     QString company_name = record.stringValue("customer");
     UndoCommand command(m_undo_stack, tr("Edit repair %1%2")
-                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadRepair(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadRepair(record.id(), true);
     }
 }
 
 void MainWindow::duplicateRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isRepairSelected()) { return; }
+    if (!m_tab->isRepairSelected()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
-    Repair record(selectedRepair());
+    Repair record(m_tab->selectedRepair());
     record.readValues();
     record.id().clear();
     if (!record.stringValue("parent").isEmpty()) {
@@ -1340,39 +1473,41 @@ void MainWindow::duplicateRepair()
     }
     QString company_name = record.stringValue("customer");
     UndoCommand command(m_undo_stack, tr("Duplicate repair %1%2")
-                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadRepair(record.id(), true);
+        setDatabaseModified(true);
+        m_tab->loadRepair(record.id(), true);
     }
 }
 
 void MainWindow::removeRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isRepairSelected()) { return; }
-    QString repair = selectedRepair();
+    if (!m_tab->isRepairSelected()) { return; }
+    QString repair = m_tab->selectedRepair();
     Repair record(repair);
     record.readValues("updated_by, customer");
     if (!isOperationPermitted("remove_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(repair)) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"), tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:").arg(repair), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:")
+                                                 .arg(repair), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     QString company_name = record.stringValue("customer");
     UndoCommand command(m_undo_stack, tr("Remove repair %1%2")
-                        .arg(m_settings.formatDateTime(selectedRepair()))
+                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->clearSelectedRepair();
+    m_tab->clearSelectedRepair();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::Repairs);
+    setDatabaseModified(true);
+    m_tab->setView(View::Repairs);
 }
 
 void MainWindow::loadVariables(QTreeWidget * trw, QSqlDatabase database)
@@ -1443,7 +1578,7 @@ void MainWindow::addVariable(bool subvar)
         if (scope & Variable::Compressor)
             addColumn(record.id(), "inspections_compressors", db);
         parsed_expressions.clear();
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1482,7 +1617,7 @@ void MainWindow::editVariable()
             update_subvariables.bindValue(":new_id", record.id());
             update_subvariables.exec();
         }
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1498,7 +1633,9 @@ void MainWindow::removeVariable()
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
     bool ok;
-    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:").arg(id), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:")
+                                                 .arg(id), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
@@ -1511,7 +1648,7 @@ void MainWindow::removeVariable()
     dropColumn(id, "inspections_compressors", db);
     parsed_expressions.clear();
     enableTools();
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1525,7 +1662,7 @@ void MainWindow::addTable()
     if (md.exec() == QDialog::Accepted) {
         emit tableAdded(-1, record.id());
         cb_table_edit->addItem(record.id());
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1545,7 +1682,7 @@ void MainWindow::editTable()
         emit tableAdded(i, record.id());
         cb_table_edit->insertItem(i, record.id());
         cb_table_edit->setCurrentIndex(i);
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1556,7 +1693,9 @@ void MainWindow::removeTable()
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("remove_table")) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"), tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:").arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:")
+                                                 .arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
@@ -1568,7 +1707,7 @@ void MainWindow::removeTable()
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
     enableTools();
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1620,7 +1759,7 @@ void MainWindow::saveTable()
     set.insert("sum", sum.join(";"));
     set.insert("avg", avg.join(";"));
     record.update(set);
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1679,7 +1818,7 @@ void MainWindow::addTableVariable()
         variables << lw->currentItem()->data(Qt::UserRole).toString();
         record.update("variables", variables.join(";"));
         loadTable(cb_table_edit->currentText());
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1717,7 +1856,7 @@ void MainWindow::removeTableVariable()
     set.insert("avg", avg.join(";"));
     record.update(set);
     loadTable(cb_table_edit->currentText());
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1758,7 +1897,7 @@ void MainWindow::moveTableVariable(bool up)
     record.update("variables", variables.join(";"));
     loadTable(cb_table_edit->currentText());
     trw_table_variables->setCurrentItem(trw_table_variables->topLevelItem(i));
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1777,7 +1916,7 @@ void MainWindow::addWarning()
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
         item->setData(Qt::UserRole, record.id());
         lw_warnings->addItem(item);
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1797,7 +1936,7 @@ void MainWindow::editWarning()
         QString description = attributes.value("description").toString();
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
         item->setData(Qt::UserRole, record.id());
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1809,7 +1948,9 @@ void MainWindow::removeWarning()
     if (!isOperationPermitted("remove_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"), tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:")
+                                                 .arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     UndoCommand command(m_undo_stack, tr("Remove warning %1").arg(item->text()));
@@ -1823,7 +1964,7 @@ void MainWindow::removeWarning()
     conditions.remove();
     delete item;
     enableTools();
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 
@@ -1835,22 +1976,22 @@ void MainWindow::addInspector()
     UndoCommand command(m_undo_stack, tr("Add inspector"));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadInspector(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadInspector(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editInspector()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isInspectorSelected()) { return; }
+    if (!m_tab->isInspectorSelected()) { return; }
     if (!isOperationPermitted("edit_inspector")) { return; }
-    QString old_id = selectedInspector();
+    QString old_id = m_tab->selectedInspector();
     Inspector record(old_id);
     UndoCommand command(m_undo_stack, tr("Edit inspector %1").arg(record.stringValue("person")));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
@@ -1868,7 +2009,7 @@ void MainWindow::editInspector()
             update_assembly_record_items.bindValue(":old_id", old_id);
             update_assembly_record_items.bindValue(":new_id", record.id());
             update_assembly_record_items.exec();
-            current_tab->loadInspector(record.id().toInt(), true);
+            m_tab->loadInspector(record.id().toInt(), true);
         } else {
             enableTools();
             refreshView();
@@ -1879,22 +2020,24 @@ void MainWindow::editInspector()
 void MainWindow::removeInspector()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isInspectorSelected()) { return; }
+    if (!m_tab->isInspectorSelected()) { return; }
     if (!isOperationPermitted("remove_inspector")) { return; }
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"), tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:").arg(selectedInspector()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:")
+                                                 .arg(m_tab->selectedInspector()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
-    Inspector record(selectedInspector());
+    Inspector record(m_tab->selectedInspector());
 
     UndoCommand command(m_undo_stack, tr("Remove inspector %1").arg(record.stringValue("person")));
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->clearSelectedInspector();
+    m_tab->clearSelectedInspector();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::Inspectors);
+    setDatabaseModified(true);
+    m_tab->setView(View::Inspectors);
 }
 
 void MainWindow::exportCustomerData()
@@ -1904,14 +2047,14 @@ void MainWindow::exportCustomerData()
 
 void MainWindow::exportCircuitData()
 {
-    if (!isCircuitSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
     exportData("circuit");
 }
 
 void MainWindow::exportInspectionData()
 {
-    if (!isCircuitSelected()) { return; }
-    if (!isInspectionSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!m_tab->isInspectionSelected()) { return; }
     exportData("inspection");
 }
 
@@ -1919,7 +2062,7 @@ void MainWindow::exportData(const QString & type)
 {
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
-    if (!isCustomerSelected()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
     QString title;
     if (type == "customer") { title = tr("Export customer data - Leaklog"); }
     else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }
@@ -1942,17 +2085,17 @@ void MainWindow::exportData(const QString & type)
         data.transaction();
         copyTable("variables", db, data);
         copyTable("tables", db, data);
-        copyTable("customers", db, data, QString("id = %1").arg(selectedCustomer()));
+        copyTable("customers", db, data, QString("id = %1").arg(m_tab->selectedCustomer()));
         if (type == "customer") {
-            copyTable("circuits", db, data, QString("parent = %1").arg(selectedCustomer()));
-            copyTable("inspections", db, data, QString("customer = %1").arg(selectedCustomer()));
+            copyTable("circuits", db, data, QString("parent = %1").arg(m_tab->selectedCustomer()));
+            copyTable("inspections", db, data, QString("customer = %1").arg(m_tab->selectedCustomer()));
         } else if (type == "circuit") {
-            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
-            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
         } else if (type == "inspection") {
-            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(selectedCustomer()).arg(selectedCircuit()));
+            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
             copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'")
-                      .arg(selectedCustomer()).arg(selectedCircuit()).arg(selectedInspection()));
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
         }
         data.commit();
         data.close();
@@ -2885,7 +3028,7 @@ void MainWindow::importData()
                 Inspector(i_id).update(set);
             }
         }
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     } // END IMPORT
     data.rollback();
@@ -3025,7 +3168,7 @@ void MainWindow::importCSV()
         else
             QMessageBox::information(this, tr("Import CSV - Leaklog"), tr("Successfully imported %n record(s).", "", id.fileContent().count()));
 
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -3037,21 +3180,21 @@ void MainWindow::addAssemblyRecordType()
     UndoCommand command(m_undo_stack, tr("Add assembly record type"));
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadAssemblyRecordType(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadAssemblyRecordType(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordTypeSelected()) { return; }
-    QString old_id = selectedAssemblyRecordType();
+    if (!m_tab->isAssemblyRecordTypeSelected()) { return; }
+    QString old_id = m_tab->selectedAssemblyRecordType();
     AssemblyRecordType record(old_id);
     UndoCommand command(m_undo_stack, tr("Edit assembly record type %1").arg(record.stringValue("name")));
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_type;
             update_ar_type.prepare("UPDATE inspections SET ar_type = :new_id WHERE ar_type = :old_id");
@@ -3059,17 +3202,19 @@ void MainWindow::editAssemblyRecordType()
             update_ar_type.bindValue(":new_id", record.id());
             update_ar_type.exec();
         }
-        current_tab->loadAssemblyRecordType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordType(record.id().toInt(), true);
     }
 }
 
 void MainWindow::removeAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordTypeSelected()) { return; }
-    QString sel_record = selectedAssemblyRecordType();
+    if (!m_tab->isAssemblyRecordTypeSelected()) { return; }
+    QString sel_record = m_tab->selectedAssemblyRecordType();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item - Leaklog"), tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:")
+                                                 .arg(sel_record), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     AssemblyRecordType record(sel_record);
@@ -3078,10 +3223,10 @@ void MainWindow::removeAssemblyRecordType()
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->clearSelectedAssemblyRecordType();
+    m_tab->clearSelectedAssemblyRecordType();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::AssemblyRecordTypes);
+    setDatabaseModified(true);
+    m_tab->setView(View::AssemblyRecordTypes);
 }
 
 void MainWindow::addAssemblyRecordItemType()
@@ -3091,21 +3236,21 @@ void MainWindow::addAssemblyRecordItemType()
     UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordItemTypeSelected()) { return; }
-    QString old_id = selectedAssemblyRecordItemType();
+    if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
+    QString old_id = m_tab->selectedAssemblyRecordItemType();
     AssemblyRecordItemType record(old_id);
     UndoCommand command(m_undo_stack, tr("Edit assembly record item type %1").arg(record.stringValue("name")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_items;
             update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
@@ -3114,17 +3259,19 @@ void MainWindow::editAssemblyRecordItemType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        current_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
     }
 }
 
 void MainWindow::removeAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordItemTypeSelected()) { return; }
-    QString sel_record = selectedAssemblyRecordItemType();
+    if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
+    QString sel_record = m_tab->selectedAssemblyRecordItemType();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item type - Leaklog"), tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:").arg(sel_record), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item type - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:")
+                                                 .arg(sel_record), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     AssemblyRecordItemType record(sel_record);
@@ -3133,10 +3280,10 @@ void MainWindow::removeAssemblyRecordItemType()
     m_undo_stack->savepoint();
 
     record.remove();
-    current_tab->clearSelectedAssemblyRecordItemType();
+    m_tab->clearSelectedAssemblyRecordItemType();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::AssemblyRecordItems);
+    setDatabaseModified(true);
+    m_tab->setView(View::AssemblyRecordItems);
 }
 
 void MainWindow::addAssemblyRecordItemCategory()
@@ -3146,21 +3293,21 @@ void MainWindow::addAssemblyRecordItemCategory()
     UndoCommand command(m_undo_stack, tr("Add assembly record item category"));
     EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
 }
 
 void MainWindow::editAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordItemCategorySelected()) { return; }
-    QString old_id = selectedAssemblyRecordItemCategory();
+    if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
+    QString old_id = m_tab->selectedAssemblyRecordItemCategory();
     AssemblyRecordItemCategory record(old_id);
     UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.stringValue("name")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_item_types;
             update_ar_item_types.prepare("UPDATE assembly_record_item_types SET category_id = :new_id WHERE category_id = :old_id");
@@ -3178,17 +3325,19 @@ void MainWindow::editAssemblyRecordItemCategory()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        current_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
 }
 
 void MainWindow::removeAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isAssemblyRecordItemCategorySelected()) { return; }
-    QString sel_category = selectedAssemblyRecordItemCategory();
+    if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
+    QString sel_category = m_tab->selectedAssemblyRecordItemCategory();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item category - Leaklog"), tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:").arg(sel_category), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item category - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:")
+                                                 .arg(sel_category), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     AssemblyRecordItemCategory category(sel_category);
@@ -3197,10 +3346,10 @@ void MainWindow::removeAssemblyRecordItemCategory()
     m_undo_stack->savepoint();
 
     category.remove();
-    current_tab->clearSelectedAssemblyRecordItemCategory();
+    m_tab->clearSelectedAssemblyRecordItemCategory();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::AssemblyRecordItems);
+    setDatabaseModified(true);
+    m_tab->setView(View::AssemblyRecordItems);
 }
 
 void MainWindow::addCircuitUnitType()
@@ -3210,21 +3359,21 @@ void MainWindow::addCircuitUnitType()
     UndoCommand command(m_undo_stack, tr("Add circuit unit type"));
     EditDialogueWithAutoId md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
-        current_tab->loadCircuitUnitType(unit_type.id().toInt(), true);
+        setDatabaseModified(true);
+        m_tab->loadCircuitUnitType(unit_type.id().toInt(), true);
     }
 }
 
 void MainWindow::editCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCircuitUnitTypeSelected()) { return; }
-    QString old_id = selectedCircuitUnitType();
+    if (!m_tab->isCircuitUnitTypeSelected()) { return; }
+    QString old_id = m_tab->selectedCircuitUnitType();
     CircuitUnitType record(old_id);
     UndoCommand command(m_undo_stack, tr("Edit circuit unit type %1").arg(record.stringValue("type")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_circuit_units;
             update_circuit_units.prepare("UPDATE circuit_units SET unit_type_id = :new_id WHERE unit_type_id = :old_id");
@@ -3238,17 +3387,19 @@ void MainWindow::editCircuitUnitType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
-        current_tab->loadCircuitUnitType(record.id().toInt(), true);
+        m_tab->loadCircuitUnitType(record.id().toInt(), true);
     }
 }
 
 void MainWindow::removeCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isCircuitUnitTypeSelected()) { return; }
-    QString sel_unit_type = selectedCircuitUnitType();
+    if (!m_tab->isCircuitUnitTypeSelected()) { return; }
+    QString sel_unit_type = m_tab->selectedCircuitUnitType();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove circuit unit type - Leaklog"), tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:").arg(sel_unit_type), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove circuit unit type - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:")
+                                                 .arg(sel_unit_type), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     CircuitUnitType unit_type(sel_unit_type);
@@ -3257,10 +3408,10 @@ void MainWindow::removeCircuitUnitType()
     m_undo_stack->savepoint();
 
     unit_type.remove();
-    current_tab->clearSelectedCircuitUnitType();
+    m_tab->clearSelectedCircuitUnitType();
     enableTools();
-    this->setWindowModified(true);
-    current_tab->setView(View::CircuitUnitTypes);
+    setDatabaseModified(true);
+    m_tab->setView(View::CircuitUnitTypes);
 }
 
 void MainWindow::addStyle()
@@ -3282,7 +3433,7 @@ void MainWindow::addStyle()
         item->setText(attributes.value("name").toString());
         item->setData(Qt::UserRole, attributes.value("id"));
         lw_styles->addItem(item);
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -3300,7 +3451,7 @@ void MainWindow::editStyle()
         QVariantMap attributes = record.list("id, name");
         item->setText(attributes.value("name").toString());
         item->setData(Qt::UserRole, attributes.value("id"));
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -3312,7 +3463,9 @@ void MainWindow::removeStyle()
     if (!isOperationPermitted("remove_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();
     bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove style - Leaklog"), tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:").arg(item->text()), QLineEdit::Normal, "", &ok);
+    QString confirmation = QInputDialog::getText(this, tr("Remove style - Leaklog"),
+                                                 tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:")
+                                                 .arg(item->text()), QLineEdit::Normal, "", &ok);
     if (!ok || confirmation != tr("REMOVE")) { return; }
 
     Style record(item->data(Qt::UserRole).toString());
@@ -3323,7 +3476,7 @@ void MainWindow::removeStyle()
     record.remove();
     delete item;
     enableTools();
-    this->setWindowModified(true);
+    setDatabaseModified(true);
     refreshView();
 }
 

@@ -92,5 +92,7 @@
         <file>images/assembly_record_items_view.png</file>
         <file>images/assembly_record_types_view.png</file>
         <file>images/circuit_unit_types_view.png</file>
+        <file>images/tab_close16.png</file>
+        <file>images/tab_new16.png</file>
     </qresource>
 </RCC>

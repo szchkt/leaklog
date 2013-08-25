@@ -58,7 +58,7 @@
 using namespace Global;
 
 MainWindow::MainWindow():
-    current_tab(NULL)
+    m_tab(NULL)
 {
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -161,6 +161,10 @@ MainWindow::MainWindow():
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
     QObject::connect(actionSave_and_compact, SIGNAL(triggered()), this, SLOT(saveAndCompact()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
+    QObject::connect(actionNew_Tab, SIGNAL(triggered()), this, SLOT(newTab()));
+    QObject::connect(actionClose_Tab, SIGNAL(triggered()), this, SLOT(closeTab()));
+    QObject::connect(tabw_main, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+    QObject::connect(tabw_main, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     QObject::connect(actionPrint_preview, SIGNAL(triggered()), this, SLOT(printPreview()));
     QObject::connect(actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     QObject::connect(actionPDF_Portrait, SIGNAL(triggered()), this, SLOT(exportPDFPortrait()));
@@ -279,7 +283,7 @@ void MainWindow::openFile(const QString & file)
     QFileInfo file_info(file);
     if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
         addRecent(file_info.absoluteFilePath());
-        openDatabase(file_info.absoluteFilePath());
+        openDatabase(file_info.absoluteFilePath(), file_info.absoluteFilePath());
     }
 }
 
@@ -324,7 +328,7 @@ void MainWindow::showIconsOnly(bool show)
 void MainWindow::printPreview()
 {
     QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), current_tab->webView(), SLOT(print(QPrinter *)));
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), m_tab->webView(), SLOT(print(QPrinter *)));
     d.exec();
 }
 
@@ -334,16 +338,16 @@ void MainWindow::print()
     QPrintDialog d(&printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    current_tab->webView()->print(&printer);
+    m_tab->webView()->print(&printer);
 }
 
 QString MainWindow::fileNameForCurrentView()
 {
     QString title;
-    if (current_tab->currentView() != View::ViewCount)
-        title = current_tab->view(current_tab->currentView())->title();
+    if (m_tab->currentView() != View::ViewCount)
+        title = m_tab->view(m_tab->currentView())->title();
 
-    if (current_tab->currentView() == View::AssemblyRecordDetails)
+    if (m_tab->currentView() == View::AssemblyRecordDetails)
         return title;
 
     return QString("%1 - %2")
@@ -372,7 +376,7 @@ void MainWindow::exportPDF(int orientation)
     printer.setOrientation((QPrinter::Orientation)orientation);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(path);
-    current_tab->webView()->print(&printer);
+    m_tab->webView()->print(&printer);
 }
 
 void MainWindow::exportHTML()
@@ -388,10 +392,10 @@ void MainWindow::exportHTML()
         return;
     }
 
-    if (current_tab->currentView() == View::ViewCount)
+    if (m_tab->currentView() == View::ViewCount)
         return;
 
-    QString html = current_tab->view(current_tab->currentView())->renderHTML();
+    QString html = m_tab->view(m_tab->currentView())->renderHTML();
     if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -427,9 +431,9 @@ void MainWindow::printDetailedLabel()
 void MainWindow::printLabel(bool detailed)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (detailed && !isCustomerSelected()) { return; }
-    if (detailed && !isCircuitSelected()) { return; }
-    if (!detailed && !isInspectorSelected()) { return; }
+    if (detailed && !m_tab->isCustomerSelected()) { return; }
+    if (detailed && !m_tab->isCircuitSelected()) { return; }
+    if (!detailed && !m_tab->isInspectorSelected()) { return; }
 
     QMap<QString, QCheckBox *> label_positions;
     QDialog * d = new QDialog(this);
@@ -458,19 +462,19 @@ void MainWindow::printLabel(bool detailed)
     }
     if (!ok) { return; }
 
-    QString selected_inspector = selectedInspector();
+    QString selected_inspector = m_tab->selectedInspector();
     QVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", selectedCustomer().rightJustified(8, '0') + "." + selectedCircuit().rightJustified(5, '0'));
-        Circuit circuit(selectedCustomer(), selectedCircuit());
+        attributes.insert("circuit_id", m_tab->selectedCustomer().rightJustified(8, '0') + "." + m_tab->selectedCircuit().rightJustified(5, '0'));
+        Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
         attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery()
                                       + ", hermetic, leak_detector, inspection_interval"));
 
         MTSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id"
                       " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
-        query.bindValue(":customer_id", current_tab->selectedCustomer());
-        query.bindValue(":circuit_id", current_tab->selectedCircuit());
+        query.bindValue(":customer_id", m_tab->selectedCustomer());
+        query.bindValue(":circuit_id", m_tab->selectedCircuit());
         query.exec();
         if (query.next()) {
             QVariantMap inspection;
@@ -496,7 +500,7 @@ void MainWindow::printLabel(bool detailed)
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
                 attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids),
-                                                                     selectedCustomer(), selectedCircuit()));
+                                                                     m_tab->selectedCustomer(), m_tab->selectedCircuit()));
             }
         }
     }
@@ -647,7 +651,7 @@ void MainWindow::reportData(bool checked)
         return;
 
     setAllEnabled(false, true);
-    current_tab->reportData();
+    m_tab->reportData();
 }
 
 void MainWindow::reportDataFinished()
@@ -658,12 +662,12 @@ void MainWindow::reportDataFinished()
 
 void MainWindow::goBack()
 {
-    current_tab->loadPreviousLink();
+    m_tab->loadPreviousLink();
 }
 
 void MainWindow::goForward()
 {
-    current_tab->loadNextLink();
+    m_tab->loadNextLink();
 }
 
 void MainWindow::find()
@@ -673,7 +677,7 @@ void MainWindow::find()
     QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
     if (ok && !keyword.isEmpty()) {
         last_search_keyword = keyword;
-        current_tab->webView()->findText(last_search_keyword);
+        m_tab->webView()->findText(last_search_keyword);
     }
 }
 
@@ -681,29 +685,25 @@ void MainWindow::findNext()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
-    current_tab->webView()->findText(last_search_keyword);
+    m_tab->webView()->findText(last_search_keyword);
 }
 
 void MainWindow::findPrevious()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (last_search_keyword.isEmpty()) { return; }
-    current_tab->webView()->findText(last_search_keyword, QWebPage::FindBackward);
+    m_tab->webView()->findText(last_search_keyword, QWebPage::FindBackward);
 }
 
-void MainWindow::clearSelection(bool refresh)
+void MainWindow::clearSelection()
 {
-    if (current_tab)
-        current_tab->restoreDefaults();
-    if (refresh) {
-        enableTools();
-        refreshView();
-    }
+    if (m_tab)
+        m_tab->restoreDefaults();
 }
 
 void MainWindow::refreshView()
 {
-    current_tab->refreshView();
+    m_tab->refreshView();
 }
 
 void MainWindow::addRecent(const QString & name)
@@ -715,16 +715,6 @@ void MainWindow::addRecent(const QString & name)
     }
     lw_recent_docs->insertItem(0, name);
     lw_recent_docs->setCurrentRow(0);
-}
-
-void MainWindow::clearAll()
-{
-    m_undo_stack->clear();
-    clearSelection(false);
-    cb_table_edit->clear();
-    trw_variables->clear();
-    trw_table_variables->clear();
-    lw_warnings->clear();
 }
 
 void MainWindow::setAllEnabled(bool enable, bool everything)
@@ -746,6 +736,9 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionSave->setEnabled(enable);
     actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
+    actionNew_Tab->setEnabled(enable);
+    if (!enable)
+        actionClose_Tab->setEnabled(enable);
     actionImport_data->setEnabled(enable);
     actionImport_CSV->setEnabled(enable);
     actionExport->setEnabled(enable || everything);
@@ -849,53 +842,65 @@ void MainWindow::timeFormatChanged(QAction * action)
 
 void MainWindow::enableBackAndForwardButtons()
 {
-    actionBack->setEnabled(current_tab->hasPreviousLinks());
-    actionForward->setEnabled(current_tab->hasNextLinks());
+    actionBack->setEnabled(m_tab->hasPreviousLinks());
+    actionForward->setEnabled(m_tab->hasNextLinks());
 }
 
 void MainWindow::enableTools()
 {
-    bool customer_selected = current_tab->isCustomerSelected();
-    bool circuit_selected = current_tab->isCircuitSelected();
-    bool inspection_selected = current_tab->isInspectionSelected();
-    bool repair_selected = current_tab->isRepairSelected();
-    bool inspector_selected = current_tab->isInspectorSelected();
+    bool customer_selected = m_tab && m_tab->isCustomerSelected();
+    bool circuit_selected = m_tab && m_tab->isCircuitSelected();
+    bool inspection_selected = m_tab && m_tab->isInspectionSelected();
+    bool repair_selected = m_tab && m_tab->isRepairSelected();
+    bool inspector_selected = m_tab && m_tab->isInspectorSelected();
+
+    tabw_main->setTabsClosable(tabw_main->count() > 1);
+    actionClose_Tab->setEnabled(tabw_main->count() > 1);
+
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionDecommission_all_circuits->setEnabled(customer_selected);
     actionExport_customer_data->setEnabled(customer_selected);
+
     actionAdd_circuit->setEnabled(customer_selected);
     actionEdit_circuit->setEnabled(circuit_selected);
     actionDuplicate_circuit->setEnabled(circuit_selected);
     actionDuplicate_and_decommission_circuit->setEnabled(circuit_selected);
     actionRemove_circuit->setEnabled(circuit_selected);
     actionExport_circuit_data->setEnabled(circuit_selected);
+
     actionAdd_inspection->setEnabled(circuit_selected);
     actionEdit_inspection->setEnabled(inspection_selected);
     actionDuplicate_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
+
     actionEdit_repair->setEnabled(repair_selected);
     actionDuplicate_repair->setEnabled(repair_selected);
     actionRemove_repair->setEnabled(repair_selected);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
     actionExport_inspection_data->setEnabled(inspection_selected);
+
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !variableNames().contains(trw_variables->currentItem()->text(1)));
     tbtn_edit_variable->setEnabled(trw_variables->currentIndex().isValid());
     tbtn_remove_variable->setEnabled(trw_variables->currentIndex().isValid() && !variableNames().contains(trw_variables->currentItem()->text(1)));
+
     tbtn_edit_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_remove_table->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_add_variable->setEnabled(cb_table_edit->currentIndex() >= 0);
     tbtn_table_remove_variable->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_up->setEnabled(trw_table_variables->currentIndex().isValid());
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
+
     tbtn_edit_warning->setEnabled(lw_warnings->currentIndex().isValid());
     tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
+
     actionEdit_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
 
-    current_tab->enableTools();
+    if (m_tab)
+        m_tab->enableTools();
 }
 
 void MainWindow::toggleLocked()
@@ -985,7 +990,7 @@ void MainWindow::toggleLocked()
             setDBInfoValueForKey("admin", admin->text());
         updateLockButton();
         enableTools();
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     } else {
         bool ok;
@@ -1005,7 +1010,7 @@ void MainWindow::toggleLocked()
         setDBInfoValueForKey("locked", "false");
         updateLockButton();
         enableTools();
-        this->setWindowModified(true);
+        setDatabaseModified(true);
         refreshView();
     }
 }
@@ -1031,7 +1036,7 @@ void MainWindow::configurePermissions()
     }
     PermissionsDialogue d(this);
     if (d.exec() == QDialog::Accepted)
-        this->setWindowModified(true);
+        setDatabaseModified(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)
