@@ -357,6 +357,7 @@
     <addaction name="actionUndo"/>
     <addaction name="separator"/>
     <addaction name="actionFind"/>
+    <addaction name="actionFind_All"/>
     <addaction name="actionFind_next"/>
     <addaction name="actionFind_previous"/>
     <addaction name="separator"/>
@@ -452,7 +453,6 @@
    <addaction name="actionSave"/>
    <addaction name="actionReporting"/>
    <addaction name="separator"/>
-   <addaction name="actionFind"/>
    <addaction name="actionPrint"/>
    <addaction name="actionLock"/>
   </widget>
@@ -2128,6 +2128,21 @@
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionFind_All">
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/find16.png</normaloff>:/images/images/find16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find All</string>
+   </property>
+   <property name="statusTip">
+    <string>Find all occurrences of the searched word</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
    </property>
   </action>
  </widget>

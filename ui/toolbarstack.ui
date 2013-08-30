@@ -1967,7 +1967,7 @@
        </widget>
       </item>
       <item>
-       <widget class="ExtendedLineEdit" name="le_filter">
+       <widget class="SearchLineEdit" name="le_filter">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -2174,9 +2174,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ExtendedLineEdit</class>
+   <class>SearchLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>extendedlineedit.h</header>
+   <header>searchlineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

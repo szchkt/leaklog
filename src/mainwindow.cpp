@@ -129,6 +129,10 @@ MainWindow::MainWindow():
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
 
+    le_search = new SearchLineEdit(this, true);
+    le_search->setMaximumWidth(200);
+    toolBar->insertWidget(actionLock, le_search);
+
     QMenu * menuAdd_variable = new QMenu(this);
     menuAdd_variable->addAction(actionNew_variable);
     menuAdd_variable->addAction(actionNew_subvariable);
@@ -170,7 +174,9 @@ MainWindow::MainWindow():
     QObject::connect(actionPDF_Portrait, SIGNAL(triggered()), this, SLOT(exportPDFPortrait()));
     QObject::connect(actionPDF_Landscape, SIGNAL(triggered()), this, SLOT(exportPDFLandscape()));
     QObject::connect(actionHTML, SIGNAL(triggered()), this, SLOT(exportHTML()));
-    QObject::connect(actionFind, SIGNAL(triggered()), this, SLOT(find()));
+    QObject::connect(le_search, SIGNAL(textChanged(QString)), this, SLOT(find()));
+    QObject::connect(actionFind, SIGNAL(triggered()), le_search, SLOT(setFocus()));
+    QObject::connect(actionFind_All, SIGNAL(triggered()), this, SLOT(findAll()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
@@ -661,26 +667,27 @@ void MainWindow::reportDataFinished()
 void MainWindow::find()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    bool ok;
-    QString keyword = QInputDialog::getText(this, tr("Find - Leaklog"), tr("Find:"), QLineEdit::Normal, last_search_keyword, &ok);
-    if (ok && !keyword.isEmpty()) {
-        last_search_keyword = keyword;
-        m_tab->webView()->findText(last_search_keyword);
-    }
+    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
+    m_tab->webView()->findText(le_search->text(), QWebPage::FindWrapsAroundDocument);
+}
+
+void MainWindow::findAll()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
+    m_tab->webView()->findText(le_search->text(), QWebPage::HighlightAllOccurrences);
 }
 
 void MainWindow::findNext()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (last_search_keyword.isEmpty()) { return; }
-    m_tab->webView()->findText(last_search_keyword);
+    m_tab->webView()->findText(le_search->text());
 }
 
 void MainWindow::findPrevious()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (last_search_keyword.isEmpty()) { return; }
-    m_tab->webView()->findText(last_search_keyword, QWebPage::FindBackward);
+    m_tab->webView()->findText(le_search->text(), QWebPage::FindBackward);
 }
 
 void MainWindow::clearSelection()

@@ -2575,14 +2575,6 @@ Na odstránenie tabuľky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
         <translation>Pridať existujúcu premennú - Leaklog</translation>
     </message>
     <message>
-        <source>Find - Leaklog</source>
-        <translation>Nájsť - Leaklog</translation>
-    </message>
-    <message>
-        <source>Find:</source>
-        <translation>Nájsť:</translation>
-    </message>
-    <message>
         <source>Edit</source>
         <translation>Upraviť</translation>
     </message>
@@ -3647,30 +3639,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Kompresory</translation>
     </message>
     <message>
-        <source>Back</source>
-        <translation>Naspäť</translation>
-    </message>
-    <message>
-        <source>View the last page</source>
-        <translation>Zobraziť poslednú stránku</translation>
-    </message>
-    <message>
-        <source>Backspace</source>
-        <translation>Backspace</translation>
-    </message>
-    <message>
-        <source>Forward</source>
-        <translation>Dopredu</translation>
-    </message>
-    <message>
-        <source>View the next page</source>
-        <translation>Zobraziť nasledujúcu stránku</translation>
-    </message>
-    <message>
-        <source>Shift+Backspace</source>
-        <translation>Shift+Backspace</translation>
-    </message>
-    <message>
         <source>Compressor name</source>
         <translation>Názov kompresora</translation>
     </message>
@@ -4069,6 +4037,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Close the current tab</source>
         <translation>Zatvoriť aktuálnu kartu</translation>
+    </message>
+    <message>
+        <source>Find All</source>
+        <translation>Nájsť všetky</translation>
+    </message>
+    <message>
+        <source>Find all occurrences of the searched word</source>
+        <translation>Nájsť všetky výskyty hľadaného slova</translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+F</source>
+        <translation>Ctrl+Shift+F</translation>
     </message>
 </context>
 <context>

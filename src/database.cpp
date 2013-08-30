@@ -1780,7 +1780,7 @@ void MainWindow::addTableVariable()
             QHBoxLayout * hl = new QHBoxLayout;
             hl->setMargin(0); hl->setSpacing(6);
                 QLabel * lbl = new QLabel(tr("Search:"), &d);
-                ExtendedLineEdit * sle = new ExtendedLineEdit(&d);
+                SearchLineEdit * sle = new SearchLineEdit(&d);
             hl->addWidget(lbl);
             hl->addWidget(sle);
         vl->addLayout(hl);

@@ -27,7 +27,7 @@ HEADERS       += src/aboutwidget.h \
                  src/editinspectiondialoguelayout.h \
                  src/editinspectordialogue.h \
                  src/editwarningdialogue.h \
-                 src/extendedlineedit.h \
+                 src/searchlineedit.h \
                  src/global.h \
                  src/highlighter.h \
                  src/htmlbuilder.h \

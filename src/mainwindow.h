@@ -176,6 +176,7 @@ private slots:
     void showOperationNotPermittedMessage();
     void configurePermissions();
     void find();
+    void findAll();
     void findNext();
     void findPrevious();
     void clearSelection();
@@ -238,7 +239,7 @@ private:
     QToolButton * tbtn_open;
     QToolButton * tbtn_undo;
     QToolButton * tbtn_export;
-    QString last_search_keyword;
+    QLineEdit * le_search;
     QComboBox * cb_lang;
     QMap<QAction *, MainWindowSettings::DateFormat> dict_action_date_format;
     QActionGroup * actgrp_date_format;
