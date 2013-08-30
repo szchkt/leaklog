@@ -47,6 +47,7 @@ HEADERS       += src/aboutwidget.h \
                  src/mtrecord.h \
                  src/mtsqlquery.h \
                  src/mtsqlqueryresult.h \
+                 src/mttabwidget.h \
                  src/mttextstream.h \
                  src/mtvariant.h \
                  src/mtwebpage.h \
@@ -126,6 +127,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/mtrecord.cpp \
                  src/mtsqlquery.cpp \
                  src/mtsqlqueryresult.cpp \
+                 src/mttabwidget.cpp \
                  src/mtvariant.cpp \
                  src/mtwebpage.cpp \
                  src/mtwidget.cpp \

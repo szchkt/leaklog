@@ -203,7 +203,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QTabWidget" name="tabw_main">
+         <widget class="MTTabWidget" name="tabw_main">
           <property name="documentMode">
            <bool>true</bool>
           </property>
@@ -2132,6 +2132,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="9"/>
+ <customwidgets>
+  <customwidget>
+   <class>MTTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>mttabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../rc/resources.qrc"/>
  </resources>

@@ -712,6 +712,8 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionOpen->setEnabled(enable);
         actionLocal_database->setEnabled(enable);
         actionRemote_database->setEnabled(enable);
+
+        tabw_main->setTabBarVisible(enable);
     }
 
     actionSave->setEnabled(enable);
