@@ -23,8 +23,6 @@
 
 #include <QSettings>
 
-#define MAX_LINKS 10
-
 ViewTabSettings::ViewTabSettings():
     m_customer(-1),
     m_circuit(-1),
@@ -33,9 +31,7 @@ ViewTabSettings::ViewTabSettings():
     m_assembly_record_type(-1),
     m_assembly_record_item_type(-1),
     m_assembly_record_item_category(-1),
-    m_circuit_unit_type(-1),
-    m_last_link(NULL),
-    m_received_link(NULL)
+    m_circuit_unit_type(-1)
 {
 }
 
@@ -47,18 +43,6 @@ void ViewTabSettings::restoreDefaults()
     clearSelectedAssemblyRecordItemType();
     clearSelectedAssemblyRecordItemCategory();
     clearSelectedCircuitUnitType();
-
-    if (m_last_link) delete m_last_link;
-    if (m_received_link) delete m_received_link;
-    m_last_link = NULL; m_received_link = NULL;
-
-    for (int i = m_previous_links.count() - 1; i >= 0; --i)
-        delete m_previous_links.takeAt(i);
-
-    for (int i = m_next_links.count() - 1; i >= 0; --i)
-        delete m_next_links.takeAt(i);
-
-    emitEnableBackAndForwardButtons();
 }
 
 void ViewTabSettings::saveSettings(QSettings & settings) const
@@ -224,80 +208,4 @@ void ViewTabSettings::loadCircuitUnitType(int circuit_unit_type, bool refresh)
     if (refresh) {
         setView(View::CircuitUnitTypes);
     }
-}
-
-void ViewTabSettings::setLastLink(Link * link)
-{
-    saveToPreviousLinks();
-
-    m_last_link = link;
-    m_received_link = NULL;
-
-    while (m_next_links.count())
-        delete m_next_links.takeLast();
-
-    emitEnableBackAndForwardButtons();
-}
-
-void ViewTabSettings::setReceivedLink(Link * link)
-{
-     m_received_link = link;
-     if (!link->orderBy().isEmpty())
-         mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
-}
-
-void ViewTabSettings::loadReceivedLink()
-{
-    updateLastLink();
-    emitEnableBackAndForwardButtons();
-}
-
-void ViewTabSettings::updateLastLink()
-{
-    if (m_received_link) {
-        saveToPreviousLinks();
-
-        m_last_link = m_received_link;
-        m_received_link = NULL;
-    }
-}
-
-void ViewTabSettings::loadPreviousLink()
-{
-    updateLastLink();
-    if (m_previous_links.count()) {
-        saveToNextLinks();
-        setReceivedLink(m_previous_links.takeLast());
-    }
-    emitEnableBackAndForwardButtons();
-}
-
-void ViewTabSettings::saveToNextLinks()
-{
-    if (m_last_link) {
-        m_next_links.append(m_last_link);
-        if (m_next_links.count() > MAX_LINKS)
-            delete m_next_links.takeFirst();
-    }
-    m_last_link = NULL;
-}
-
-void ViewTabSettings::loadNextLink()
-{
-    updateLastLink();
-    if (m_next_links.count()) {
-        saveToPreviousLinks();
-        setReceivedLink(m_next_links.takeLast());
-    }
-    emitEnableBackAndForwardButtons();
-}
-
-void ViewTabSettings::saveToPreviousLinks()
-{
-    if (m_last_link) {
-        m_previous_links.append(m_last_link);
-        if (m_previous_links.count() > MAX_LINKS)
-            delete m_previous_links.takeFirst();
-    }
-    m_last_link = NULL;
 }

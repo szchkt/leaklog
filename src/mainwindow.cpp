@@ -113,7 +113,7 @@ MainWindow::MainWindow():
     tbtn_undo->setDefaultAction(actionUndo);
     tbtn_undo->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_undo->setPopupMode(QToolButton::InstantPopup);
-    toolBar->insertWidget(actionBack, tbtn_undo);
+    toolBar->insertWidget(toolBar->insertSeparator(actionReporting), tbtn_undo);
 
     m_undo_stack = new UndoStack(actionUndo, this);
     QObject::connect(m_undo_stack, SIGNAL(undoTriggered()), this, SLOT(loadDatabase()));
@@ -175,8 +175,6 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
-    QObject::connect(actionBack, SIGNAL(triggered()), this, SLOT(goBack()));
-    QObject::connect(actionForward, SIGNAL(triggered()), this, SLOT(goForward()));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -660,16 +658,6 @@ void MainWindow::reportDataFinished()
     setAllEnabled(true, true);
 }
 
-void MainWindow::goBack()
-{
-    m_tab->loadPreviousLink();
-}
-
-void MainWindow::goForward()
-{
-    m_tab->loadNextLink();
-}
-
 void MainWindow::find()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
@@ -724,13 +712,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionOpen->setEnabled(enable);
         actionLocal_database->setEnabled(enable);
         actionRemote_database->setEnabled(enable);
-
-        if (enable) {
-            enableBackAndForwardButtons();
-        } else {
-            actionBack->setEnabled(false);
-            actionForward->setEnabled(false);
-        }
     }
 
     actionSave->setEnabled(enable);
@@ -838,12 +819,6 @@ void MainWindow::timeFormatChanged(QAction * action)
 {
     m_settings.setTimeFormat(dict_action_time_format.value(action));
     refreshView();
-}
-
-void MainWindow::enableBackAndForwardButtons()
-{
-    actionBack->setEnabled(m_tab->hasPreviousLinks());
-    actionForward->setEnabled(m_tab->hasNextLinks());
 }
 
 void MainWindow::enableTools()

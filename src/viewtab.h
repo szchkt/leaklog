@@ -65,9 +65,6 @@ public:
     QString appendDefaultOrderToColumn(const QString & column) const;
 
 public slots:
-    void loadPreviousLink();
-    void loadNextLink();
-
     void setView(View::ViewID view, const QString & table = QString());
     void setView(int view, const QString & table = QString());
     void refreshView();
@@ -78,12 +75,8 @@ public slots:
 
 signals:
     void tabTextChanged(QWidget *, const QString &);
-    void enableBackAndForwardButtons();
 
     void viewChanged(View::ViewID);
-
-protected:
-    void emitEnableBackAndForwardButtons();
 
 private slots:
     void setNeedsRefresh();
@@ -96,7 +89,6 @@ private slots:
 
     void executeLink(const QUrl &);
     void executeLink(Link * link);
-    void saveLink(int);
 
 private:
     void createViewItems();

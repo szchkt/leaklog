@@ -119,7 +119,7 @@ void LinkEntity::setRoute(const QString & name, LinkEntity * entity)
 
 void LinkEntity::parse(UrlEntity * url, Link * link)
 {
-    if (view() >= 0) link->setView(view());
+    if (view() >= 0) link->addView(view());
 
     if (!url || !url->countAttributes()) {
         link->setAction(Link::View);
@@ -183,6 +183,107 @@ void Link::setViews(quint64 views)
         m_views.prepend(views & ((1L << MaxViewBits) - 1L));
         views >>= MaxViewBits;
     }
+}
+
+View::ViewID Link::viewId() const
+{
+    switch (viewAt(3)) {
+    case LinkParser::AssemblyRecord:
+        return View::AssemblyRecordDetails;
+
+    case LinkParser::TableOfInspections:
+        return View::TableOfInspections;
+
+    case LinkParser::InspectionImages:
+        return View::InspectionImages;
+    }
+
+    switch (viewAt(2)) {
+    case LinkParser::Inspection:
+        return View::InspectionDetails;
+
+    case LinkParser::AllAssemblyRecords:
+        return View::AssemblyRecords;
+
+    case LinkParser::AssemblyRecord:
+        return View::AssemblyRecordDetails;
+
+    case LinkParser::TableOfInspections:
+        return View::TableOfInspections;
+    }
+
+    switch (viewAt(1)) {
+    case LinkParser::AllRepairs:
+        return View::Repairs;
+
+    case LinkParser::Circuit:
+        return View::Inspections;
+
+    case LinkParser::AllAssemblyRecords:
+        return View::AssemblyRecords;
+
+    case LinkParser::OperatorReport:
+        return View::OperatorReport;
+    }
+
+    switch (viewAt(0)) {
+    case LinkParser::Store:
+    case LinkParser::ToggleDetailedView:
+        return View::Store;
+
+    case LinkParser::RefrigerantManagement:
+    case LinkParser::RecordOfRefrigerantManagement:
+        return View::RefrigerantManagement;
+
+    case LinkParser::LeakagesByApplication:
+        return View::LeakagesByApplication;
+
+    case LinkParser::Agenda:
+        return View::Agenda;
+
+    case LinkParser::AllCustomers:
+        return View::Customers;
+
+    case LinkParser::Customer:
+        return View::Circuits;
+
+    case LinkParser::AllRepairs:
+    case LinkParser::Repair:
+        return View::Repairs;
+
+    case LinkParser::Inspector:
+        return View::Inspectors;
+
+    case LinkParser::InspectorReport:
+        return View::InspectorDetails;
+
+    case LinkParser::AssemblyRecordType:
+        return View::AssemblyRecordTypes;
+
+    case LinkParser::AssemblyRecordItemType:
+    case LinkParser::AssemblyRecordCategory:
+        return View::AssemblyRecordItems;
+
+    case LinkParser::CircuitUnitType:
+        return View::CircuitUnitTypes;
+
+    case LinkParser::AllAssemblyRecords:
+        return View::AssemblyRecords;
+
+    case LinkParser::AllInspectors:
+        return View::Inspectors;
+
+    case LinkParser::AllAssemblyRecordTypes:
+        return View::AssemblyRecordTypes;
+
+    case LinkParser::AllAssemblyRecordItems:
+        return View::AssemblyRecordItems;
+
+    case LinkParser::AllCircuitUnitTypes:
+        return View::CircuitUnitTypes;
+    }
+
+    return View::ViewCount;
 }
 
 QString Link::idValue(const QString & key) const

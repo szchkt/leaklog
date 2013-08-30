@@ -21,8 +21,7 @@
 #define LINK_PARSER_H
 
 #include "mtdictionary.h"
-
-#include <QMap>
+#include "view.h"
 
 class LinkEntity;
 class Link;
@@ -117,10 +116,11 @@ public:
 
     int compareViews(const Link & other) const;
     int viewAt(int i) const { return m_views.count() > i ? m_views.at(i) : -1; }
-    void setView(int view) { m_views << view; }
+    void addView(int view) { m_views << view; }
     int countViews() const { return m_views.count(); }
     quint64 views() const;
     void setViews(quint64 views);
+    View::ViewID viewId() const;
 
     int action() { return m_action; }
     void setAction(int action) { m_action = action; }

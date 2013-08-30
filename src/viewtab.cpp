@@ -312,7 +312,6 @@ void ViewTab::connectSlots(QObject * receiver)
 {
     QObject::connect(receiver, SIGNAL(databaseModified()), this, SLOT(setNeedsRefresh()));
     QObject::connect(this, SIGNAL(tabTextChanged(QWidget *, const QString &)), receiver, SLOT(tabTextChanged(QWidget *, const QString &)));
-    QObject::connect(this, SIGNAL(enableBackAndForwardButtons()), receiver, SLOT(enableBackAndForwardButtons()));
 
     ui->toolbarstack->connectSlots(receiver);
 }
@@ -380,7 +379,7 @@ void ViewTab::setView(View::ViewID view, const QString & table)
         if (!group_tables->childCount())
             return;
 
-        if (item && item->parent() == group_tables && item->text(0) == table) {
+        if (item && item->parent() == group_tables && (table.isEmpty() || item->text(0) == table)) {
             refreshView();
             return;
         }
@@ -470,11 +469,6 @@ QString ViewTab::appendDefaultOrderToColumn(const QString & column) const
     return parentWindow()->appendDefaultOrderToColumn(column);
 }
 
-void ViewTab::emitEnableBackAndForwardButtons()
-{
-    emit enableBackAndForwardButtons();
-}
-
 void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
     if (current == previous)
@@ -499,12 +493,6 @@ void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 
     View::ViewID view = (View::ViewID)current->data(0, Qt::UserRole).toInt();
 
-    if (receivedLink()) {
-        loadReceivedLink();
-    } else {
-        saveLink(view);
-    }
-
     emit viewChanged(view);
 
     QString tabText = current->text(0);
@@ -522,37 +510,24 @@ void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
         setNeedsRefresh();
 }
 
-void ViewTab::loadPreviousLink()
-{
-    ViewTabSettings::loadPreviousLink();
-    executeLink(receivedLink());
-}
-
-void ViewTab::loadNextLink()
-{
-    ViewTabSettings::loadNextLink();
-    executeLink(receivedLink());
-}
-
 void ViewTab::executeLink(const QUrl & url)
 {
     Link * link = linkParser().parse(url.toString());
     if (link) {
-        setReceivedLink(link);
         executeLink(link);
     }
 }
 
 void ViewTab::executeLink(Link * link)
 {
+    if (!link->orderBy().isEmpty())
+        mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
+
     QString id;
     bool ok = false;
 
     bool select_with_javascript = false;
-    bool view_changed = true;
-    Link * last_link = lastLink();
-    if (last_link != NULL && link->compareViews(*last_link) < Link::MinViewDifference)
-        view_changed = false;
+    bool view_changed = link->viewId() != currentView();
 
     switch (link->viewAt(0)) {
     case LinkParser::ToggleDetailsVisible:
@@ -759,118 +734,8 @@ void ViewTab::executeLink(Link * link)
     if (!link->countIds())
         select_with_javascript = false;
     if (select_with_javascript) {
-        loadReceivedLink();
         ui->wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
     }
-}
-
-void ViewTab::saveLink(int view)
-{
-    UrlEntity * url_entity = NULL, * e = NULL;
-
-    switch (view) {
-    case View::Store:
-        url_entity = new UrlEntity("servicecompany");
-        break;
-
-    case View::RefrigerantManagement:
-        url_entity = new UrlEntity("refrigerantmanagement");
-        break;
-
-    case View::Customers:
-        url_entity = new UrlEntity("allcustomers");
-        break;
-
-    case View::Circuits:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        break;
-
-    case View::Inspections:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        url_entity->addNext("circuit", selectedCircuit());
-        break;
-
-    case View::Repairs:
-        url_entity = new UrlEntity;
-        if (isCustomerSelected())
-            url_entity->addNext("customer", selectedCustomer());
-        url_entity->addNext("allrepairs");
-        break;
-
-    case View::Inspectors:
-        url_entity = new UrlEntity("allinspectors");
-        break;
-
-    case View::InspectorDetails:
-        url_entity = new UrlEntity("inspector", selectedInspector());
-        break;
-
-    case View::TableOfInspections:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        e = url_entity->addNext("circuit", selectedCircuit());
-        if (isCompressorSelected())
-            e = e->addNext("compressor", selectedCompressor());
-        e->addNext("table");
-        break;
-
-    case View::InspectionDetails:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        url_entity->addNext("circuit", selectedCircuit())
-                ->addNext("inspection", selectedInspection());
-        break;
-
-    case View::Agenda:
-        url_entity = new UrlEntity("agenda");
-        break;
-
-    case View::OperatorReport:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        url_entity->addNext("operatorreport");
-        break;
-
-    case View::AssemblyRecordTypes:
-        url_entity = new UrlEntity("allassemblyrecordtypes");
-        break;
-
-    case View::AssemblyRecordItems:
-        url_entity = new UrlEntity("allassemblyrecorditems");
-        break;
-
-    case View::AssemblyRecordDetails:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        url_entity->addNext("circuit", selectedCircuit())
-                ->addNext("assemblyrecord", selectedInspection());
-        break;
-
-    case View::CircuitUnitTypes:
-        url_entity = new UrlEntity("allcircuitunittypes");
-        break;
-
-    case View::AssemblyRecords:
-        e = url_entity = new UrlEntity;
-        if (isCustomerSelected())
-            e = e->addNext("customer", selectedCustomer());
-        if (isCircuitSelected())
-            e = e->addNext("circuit", selectedCircuit());
-        e->addNext("allassemblyrecords");
-        break;
-
-    case View::InspectionImages:
-        url_entity = new UrlEntity("customer", selectedCustomer());
-        url_entity->addNext("circuit", selectedCircuit())
-                ->addNext("inspection", selectedInspection())
-                ->addNext("images");
-        break;
-
-    case View::LeakagesByApplication:
-        url_entity = new UrlEntity("leakagesbyapplication");
-        break;
-
-    default:
-        break;
-    }
-    if (url_entity)
-        setLastLink(linkParser().parse(url_entity));
 }
 
 void ViewTab::setDefaultWebPage()

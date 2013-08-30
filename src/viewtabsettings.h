@@ -126,30 +126,9 @@ public:
     void loadAssemblyRecord(const QString &, bool);
     void loadCircuitUnitType(int, bool);
 
-    Link * lastLink() const { return m_last_link; }
-    void setLastLink(Link *);
-
-    Link * receivedLink() const { return m_received_link; }
-    void setReceivedLink(Link * link);
-    void loadReceivedLink();
-
-    virtual void loadPreviousLink();
-    virtual void loadNextLink();
-
-    bool hasPreviousLinks() const { return m_previous_links.count() > 0; }
-    bool hasNextLinks() const { return m_next_links.count() > 0; }
-
     LinkParser & linkParser() { return link_parser; }
 
-protected:
-    virtual void emitEnableBackAndForwardButtons() = 0;
-
 private:
-    void updateLastLink();
-
-    void saveToPreviousLinks();
-    void saveToNextLinks();
-
     int m_customer;
     int m_circuit;
     int m_compressor;
@@ -161,11 +140,7 @@ private:
     int m_assembly_record_item_category;
     int m_circuit_unit_type;
 
-    Link * m_last_link;
-    Link * m_received_link;
     LinkParser link_parser;
-    QList<Link *> m_previous_links;
-    QList<Link *> m_next_links;
 };
 
 #endif // VIEWTABSETTINGS_H

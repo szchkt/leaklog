@@ -388,9 +388,6 @@
      <addaction name="actionTime_hhmm"/>
      <addaction name="actionTime_hmm"/>
     </widget>
-    <addaction name="actionBack"/>
-    <addaction name="actionForward"/>
-    <addaction name="separator"/>
     <addaction name="actionReporting"/>
     <addaction name="separator"/>
     <addaction name="actionShow_variables"/>
@@ -453,10 +450,6 @@
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionSave"/>
-   <addaction name="separator"/>
-   <addaction name="actionBack"/>
-   <addaction name="actionForward"/>
-   <addaction name="separator"/>
    <addaction name="actionReporting"/>
    <addaction name="separator"/>
    <addaction name="actionFind"/>
@@ -1938,42 +1931,6 @@
    </property>
    <property name="text">
     <string>Compare Values With the Nominal Inspection</string>
-   </property>
-  </action>
-  <action name="actionBack">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/back.png</normaloff>:/images/images/back.png</iconset>
-   </property>
-   <property name="text">
-    <string>Back</string>
-   </property>
-   <property name="statusTip">
-    <string>View the last page</string>
-   </property>
-   <property name="shortcut">
-    <string>Backspace</string>
-   </property>
-  </action>
-  <action name="actionForward">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/forward.png</normaloff>:/images/images/forward.png</iconset>
-   </property>
-   <property name="text">
-    <string>Forward</string>
-   </property>
-   <property name="statusTip">
-    <string>View the next page</string>
-   </property>
-   <property name="shortcut">
-    <string>Shift+Backspace</string>
    </property>
   </action>
   <action name="actionDecommission_all_circuits">

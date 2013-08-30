@@ -10,6 +10,9 @@ body,td,th {
 td {
 	padding: 2px;
 }
+::selection {
+	background-color: yellow;
+}
 @media screen {
 	table.highlight > tbody > tr:hover:not(.selected):not(.no_highlight) > td {
 		background-color: rgb(242, 248, 255) !important;

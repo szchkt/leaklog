@@ -53,8 +53,7 @@ HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id,
        " (SELECT COUNT(date) FROM repairs WHERE repairman = CAST(inspectors.id AS text)) AS repairs_count"));
 
     HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-    if (inspector_id.isEmpty())
-        table->addClass("highlight");
+    table->addClass("highlight");
     HTMLTableRow * _tr;
 
     _tr = new HTMLTableRow;

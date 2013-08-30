@@ -74,7 +74,6 @@ signals:
     void tableRemoved(const QString &);
 
 public slots:
-    void enableBackAndForwardButtons();
     void enableTools();
 
     void reportData(bool);
@@ -176,8 +175,6 @@ private slots:
     void toggleLocked();
     void showOperationNotPermittedMessage();
     void configurePermissions();
-    void goBack();
-    void goForward();
     void find();
     void findNext();
     void findPrevious();
