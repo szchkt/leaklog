@@ -2133,10 +2133,6 @@ To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</s
 Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
     </message>
     <message>
-        <source>REMOVE</source>
-        <translation>ODSTRÁNIŤ</translation>
-    </message>
-    <message>
         <source>This record is older than the current record in your database</source>
         <translation>Tento záznam je starší ako aktuálny záznam vo vašej databáze</translation>
     </message>
@@ -2385,10 +2381,6 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
             <numerusform>%n záznamy úspešne importované.</numerusform>
             <numerusform>%n záznamov úspešne importovaných.</numerusform>
         </translation>
-    </message>
-    <message>
-        <source>Remove assembly record item - Leaklog</source>
-        <translation>Odstrániť položku montážneho listu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected assembly record type?
@@ -4050,6 +4042,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Ctrl+Shift+F</source>
         <translation>Ctrl+Shift+F</translation>
     </message>
+    <message>
+        <source>Remove assembly record type - Leaklog</source>
+        <translation>Odstrániť typ montážneho listu - Leaklog</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4568,6 +4564,13 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+</context>
+<context>
+    <name>RemoveDialogue</name>
+    <message>
+        <source>REMOVE</source>
+        <translation>ODSTRÁNIŤ</translation>
     </message>
 </context>
 <context>

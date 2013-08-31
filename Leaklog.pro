@@ -57,6 +57,7 @@ HEADERS       += src/aboutwidget.h \
                  src/permissionsdialogue.h \
                  src/records.h \
                  src/refrigerants.h \
+                 src/removedialogue.h \
                  src/reportdata.h \
                  src/reportdatacontroller.h \
                  src/sha256.h \

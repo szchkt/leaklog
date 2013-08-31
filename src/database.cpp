@@ -33,6 +33,7 @@
 #include "importdialogue.h"
 #include "importcsvdialogue.h"
 #include "records.h"
+#include "removedialogue.h"
 #include "mtlistwidget.h"
 #include "mtaddress.h"
 #include "mtvariant.h"
@@ -982,11 +983,10 @@ void MainWindow::removeCustomer()
     Customer record(m_tab->selectedCustomer());
     record.readValues("company, updated_by");
     if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove customer - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:")
-                                                 .arg(m_tab->selectedCustomer()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove customer - Leaklog"),
+                                tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:")
+                                .arg(m_tab->selectedCustomer())) != QDialog::Accepted)
+        return;
 
     QString company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove customer %1%2")
@@ -1302,11 +1302,10 @@ void MainWindow::removeCircuit()
     if (!m_tab->isCircuitSelected()) { return; }
     Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     if (!isOperationPermitted("remove_circuit", record.stringValue("updated_by"))) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove circuit - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:")
-                                                 .arg(m_tab->selectedCircuit()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove circuit - Leaklog"),
+                                tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:")
+                                .arg(m_tab->selectedCircuit())) != QDialog::Accepted)
+        return;
 
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove circuit %1 (%2)")
@@ -1398,11 +1397,10 @@ void MainWindow::removeInspection()
     Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
     if (!isOperationPermitted("remove_inspection", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(m_tab->selectedInspection())) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove inspection - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:")
-                                                 .arg(m_tab->selectedInspection()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove inspection - Leaklog"),
+                                tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:")
+                                .arg(m_settings.formatDateTime(m_tab->selectedInspection()))) != QDialog::Accepted)
+        return;
 
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
@@ -1491,15 +1489,14 @@ void MainWindow::removeRepair()
     record.readValues("updated_by, customer");
     if (!isOperationPermitted("remove_repair", record.stringValue("updated_by"))) { return; }
     if (isRecordLocked(repair)) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove repair - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:")
-                                                 .arg(repair), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove repair - Leaklog"),
+                                tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:")
+                                .arg(m_settings.formatDateTime(repair))) != QDialog::Accepted)
+        return;
 
     QString company_name = record.stringValue("customer");
     UndoCommand command(m_undo_stack, tr("Remove repair %1%2")
-                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
+                        .arg(m_settings.formatDateTime(repair))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
@@ -1632,11 +1629,10 @@ void MainWindow::removeVariable()
     if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:")
-                                                 .arg(id), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"),
+                                tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:")
+                                .arg(id)) != QDialog::Accepted)
+        return;
 
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
     m_undo_stack->savepoint();
@@ -1692,11 +1688,10 @@ void MainWindow::removeTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("remove_table")) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove table - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:")
-                                                 .arg(cb_table_edit->currentText()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove table - Leaklog"),
+                                tr("Are you sure you want to remove the selected table?\nTo remove the table \"%1\" type REMOVE and confirm:")
+                                .arg(cb_table_edit->currentText())) != QDialog::Accepted)
+        return;
 
     UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
@@ -1947,11 +1942,10 @@ void MainWindow::removeWarning()
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_warning")) { return; }
     QListWidgetItem * item = lw_warnings->currentItem();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove warning - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:")
-                                                 .arg(item->text()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove warning - Leaklog"),
+                                tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:")
+                                .arg(item->text())) != QDialog::Accepted)
+        return;
 
     UndoCommand command(m_undo_stack, tr("Remove warning %1").arg(item->text()));
     m_undo_stack->savepoint();
@@ -2022,11 +2016,10 @@ void MainWindow::removeInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isInspectorSelected()) { return; }
     if (!isOperationPermitted("remove_inspector")) { return; }
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove inspector - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:")
-                                                 .arg(m_tab->selectedInspector()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove inspector - Leaklog"),
+                                tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:")
+                                .arg(m_tab->selectedInspector())) != QDialog::Accepted)
+        return;
 
     Inspector record(m_tab->selectedInspector());
 
@@ -3260,11 +3253,10 @@ void MainWindow::removeAssemblyRecordType()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordTypeSelected()) { return; }
     QString sel_record = m_tab->selectedAssemblyRecordType();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:")
-                                                 .arg(sel_record), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove assembly record type - Leaklog"),
+                                tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:")
+                                .arg(sel_record)) != QDialog::Accepted)
+        return;
 
     AssemblyRecordType record(sel_record);
 
@@ -3317,11 +3309,10 @@ void MainWindow::removeAssemblyRecordItemType()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
     QString sel_record = m_tab->selectedAssemblyRecordItemType();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item type - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:")
-                                                 .arg(sel_record), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove assembly record item type - Leaklog"),
+                                tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:")
+                                .arg(sel_record)) != QDialog::Accepted)
+        return;
 
     AssemblyRecordItemType record(sel_record);
 
@@ -3383,11 +3374,10 @@ void MainWindow::removeAssemblyRecordItemCategory()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
     QString sel_category = m_tab->selectedAssemblyRecordItemCategory();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove assembly record item category - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:")
-                                                 .arg(sel_category), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove assembly record item category - Leaklog"),
+                                tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:")
+                                .arg(sel_category)) != QDialog::Accepted)
+        return;
 
     AssemblyRecordItemCategory category(sel_category);
 
@@ -3445,11 +3435,10 @@ void MainWindow::removeCircuitUnitType()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCircuitUnitTypeSelected()) { return; }
     QString sel_unit_type = m_tab->selectedCircuitUnitType();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove circuit unit type - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:")
-                                                 .arg(sel_unit_type), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove circuit unit type - Leaklog"),
+                                tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:")
+                                .arg(sel_unit_type)) != QDialog::Accepted)
+        return;
 
     CircuitUnitType unit_type(sel_unit_type);
 
@@ -3511,11 +3500,10 @@ void MainWindow::removeStyle()
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_style")) { return; }
     QListWidgetItem * item = lw_styles->currentItem();
-    bool ok;
-    QString confirmation = QInputDialog::getText(this, tr("Remove style - Leaklog"),
-                                                 tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:")
-                                                 .arg(item->text()), QLineEdit::Normal, "", &ok);
-    if (!ok || confirmation != tr("REMOVE")) { return; }
+    if (RemoveDialogue::confirm(this, tr("Remove style - Leaklog"),
+                                tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:")
+                                .arg(item->text())) != QDialog::Accepted)
+        return;
 
     Style record(item->data(Qt::UserRole).toString());
 
