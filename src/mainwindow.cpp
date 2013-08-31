@@ -716,6 +716,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 {
     if (everything) {
         actionNew->setEnabled(enable);
+        menuOpen->setEnabled(enable);
         actionOpen->setEnabled(enable);
         actionLocal_database->setEnabled(enable);
         actionRemote_database->setEnabled(enable);
@@ -726,11 +727,14 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionSave->setEnabled(enable);
     actionSave_and_compact->setEnabled(enable);
     actionClose->setEnabled(enable);
+    actionUndo->setEnabled(enable && !actionUndo->menu()->isEmpty());
     actionNew_Tab->setEnabled(enable);
     if (!enable)
         actionClose_Tab->setEnabled(enable);
+    menuImport->setEnabled(enable);
     actionImport_data->setEnabled(enable);
     actionImport_CSV->setEnabled(enable);
+    menuExport->setEnabled(enable || everything);
     actionExport->setEnabled(enable || everything);
     actionPDF_Portrait->setEnabled(enable || everything);
     actionPDF_Landscape->setEnabled(enable || everything);
@@ -738,6 +742,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionPrint_preview->setEnabled(enable || everything);
     actionPrint->setEnabled(enable || everything);
 
+    menuView->setEnabled(enable);
     menuDatabase->setEnabled(enable);
     menuCustomer->setEnabled(enable);
     menuCooling_circuit->setEnabled(enable);
@@ -745,13 +750,12 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     menuRepair->setEnabled(enable);
     menuInspector->setEnabled(enable);
 
-    tbtn_export->setEnabled(enable || everything);
-
     actionReporting->setEnabled(enable);
 
-    actionFind->setEnabled(enable);
-    actionFind_next->setEnabled(enable);
-    actionFind_previous->setEnabled(enable);
+    actionFind->setEnabled(enable || everything);
+    actionFind_All->setEnabled(enable || everything);
+    actionFind_next->setEnabled(enable || everything);
+    actionFind_previous->setEnabled(enable || everything);
 
     actionLock->setEnabled(enable);
     actionConfigure_permissions->setEnabled(enable);
