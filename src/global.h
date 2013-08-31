@@ -49,7 +49,7 @@ namespace Global {
     void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
     void dropColumn(const QString &, const QString &, const QSqlDatabase &);
     QString DBInfoValueForKey(const QString &, const QString & = QString());
-    QSqlError setDBInfoValueForKey(const QString &, const QString &);
+    QSqlError setDBInfoValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isCurrentUserAdmin();
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());

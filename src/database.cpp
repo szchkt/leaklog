@@ -2063,17 +2063,21 @@ void MainWindow::exportData(const QString & type)
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
+
     QString title;
     if (type == "customer") { title = tr("Export customer data - Leaklog"); }
     else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }
     else if (type == "inspection") { title = tr("Export inspection data - Leaklog"); }
     else { title = tr("Export data - Leaklog"); }
+
     QString path = QFileDialog::getSaveFileName(this, title,
                                                 QDir::home().absoluteFilePath(tr("untitled.lklg")),
                                                 tr("Leaklog Database (*.lklg)"));
 	if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
+
     QFile file(path); if (file.exists()) { file.remove(); }
+
     { // BEGIN EXPORT (SCOPE)
         QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
         data.setDatabaseName(path);
@@ -2081,25 +2085,70 @@ void MainWindow::exportData(const QString & type)
             QMessageBox::critical(this, title, tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
             return;
         }
+
         initDatabase(data);
         data.transaction();
+
+        copyTable("service_companies", db, data);
+        copyTable("refrigerant_management", db, data);
+        copyTable("inspectors", db, data);
         copyTable("variables", db, data);
         copyTable("tables", db, data);
+        copyTable("assembly_record_types", db, data);
+        copyTable("assembly_record_item_types", db, data);
+        copyTable("assembly_record_type_categories", db, data);
+        copyTable("assembly_record_item_categories", db, data);
+        copyTable("circuit_unit_types", db, data);
         copyTable("customers", db, data, QString("id = %1").arg(m_tab->selectedCustomer()));
+
         if (type == "customer") {
+            copyTable("repairs", db, data, QString("parent IS NOT NULL AND parent = %1").arg(m_tab->selectedCustomer()));
             copyTable("circuits", db, data, QString("parent = %1").arg(m_tab->selectedCustomer()));
+            copyTable("compressors", db, data, QString("customer_id = %1").arg(m_tab->selectedCustomer()));
+            copyTable("circuit_units", db, data, QString("company_id = %1").arg(m_tab->selectedCustomer()));
             copyTable("inspections", db, data, QString("customer = %1").arg(m_tab->selectedCustomer()));
+            copyTable("inspections_compressors", db, data, QString("customer_id = %1").arg(m_tab->selectedCustomer()));
+            copyTable("inspection_images", db, data, QString("customer = %1").arg(m_tab->selectedCustomer()));
+            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1)"
+                                                 " OR id IN (SELECT image FROM service_companies)")
+                      .arg(m_tab->selectedCustomer()));
+            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1)")
+                      .arg(m_tab->selectedCustomer()));
         } else if (type == "circuit") {
             copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("circuit_units", db, data, QString("company_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
             copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("inspections_compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("inspection_images", db, data, QString("customer = %1 AND circuit = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1 AND circuit = %2)"
+                                                 " OR id IN (SELECT image FROM service_companies)")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1 AND circuit = %2)")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
         } else if (type == "inspection") {
             copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
+            copyTable("circuit_units", db, data, QString("company_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
             copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'")
                       .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
+            copyTable("inspections_compressors", db, data, QString("customer_id = %1 AND circuit_id = %2 AND date = '%3'")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
+            copyTable("inspection_images", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
+            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1 AND circuit = %2 AND date = '%3')"
+                                                 " OR id IN (SELECT image FROM service_companies)")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
+            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1 AND circuit = %2 AND date = '%3')")
+                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
         }
+
+        setDBInfoValueForKey("default_service_company", DBInfoValueForKey("default_service_company"), data);
+
         data.commit();
         data.close();
     } // END EXPORT (SCOPE)
+
     QSqlDatabase::removeDatabase("exportData");
 }
 

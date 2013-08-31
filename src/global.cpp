@@ -136,7 +136,7 @@ MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabas
 {
     MTDictionary field_names;
     MTSqlQuery query(database);
-    query.exec("SELECT * FROM " + table);
+    query.exec(QString("SELECT * FROM \"%1\"").arg(table));
     for (int i = 0; i < query.record().count(); ++i) {
         field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
     }
@@ -146,15 +146,15 @@ MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabas
 void Global::copyTable(const QString & table, const QSqlDatabase & from, const QSqlDatabase & to, const QString & filter)
 {
     MTSqlQuery select(from);
-    select.exec("SELECT * FROM " + table + QString(filter.isEmpty() ? "" : (" WHERE " + filter)));
+    select.exec(QString("SELECT * FROM \"%1\"%2").arg(table).arg(QString(filter.isEmpty() ? "" : (" WHERE " + filter))));
     if (select.next() && select.record().count()) {
-        QString copy("INSERT INTO " + table + " (");
+        QString copy(QString("INSERT INTO \"%1\" (").arg(table));
         MTDictionary field_names = getTableFieldNames(table, to);
         QString field_name;
         for (int i = 0; i < select.record().count(); ++i) {
             field_name = select.record().fieldName(i);
             copy.append(i == 0 ? "" : ", ");
-            copy.append(field_name);
+            copy.append(QString("\"%1\"").arg(field_name));
             if (!field_names.contains(field_name)) {
                 addColumn(field_name + " " + variantTypeToSqlType(select.record().field(i).type()), table, to);
             }
@@ -181,17 +181,23 @@ void Global::addColumn(const QString & column, const QString & table, const QSql
     if (getTableFieldNames(table, database).contains(column))
         return;
 
-    QString col = column;
-    if (column.split(" ").count() < 2) { col.append(" TEXT"); }
+    QStringList col = column.split(' ');
+    if (!col.count())
+        return;
+
+    col[0] = QString("\"%1\"").arg(col.first());
+    if (col.count() < 2)
+        col << "TEXT";
+
     MTSqlQuery add_column(database);
-    add_column.exec("ALTER TABLE " + table + " ADD COLUMN " + col);
+    add_column.exec(QString("ALTER TABLE \"%1\" ADD COLUMN %2").arg(table).arg(col.join(" ")));
 }
 
 void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, const QSqlDatabase & database)
 {
     if (isDatabaseRemote(database)) {
         MTSqlQuery rename_column(database);
-        rename_column.exec("ALTER TABLE " + table + " RENAME COLUMN " + column + " TO " + new_name);
+        rename_column.exec(QString("ALTER TABLE \"%1\" RENAME COLUMN \"%2\" TO \"%3\"").arg(table).arg(column).arg(new_name));
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
         QString column_type;
@@ -199,17 +205,20 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
             column_type = " " + all_field_names.value(column);
             all_field_names.remove(column);
         }
-        QString fields; QString field_names = all_field_names.keys().join(", ");
+
+        QString fields;
+        QString field_names = QString("\"%1\"").arg(all_field_names.keys().join("\", \""));
         for (int i = 0; i < all_field_names.count(); ++i) {
             if (i) { fields.append(", "); }
-            fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
+            fields.append(QString("\"%1\" %2").arg(all_field_names.key(i)).arg(all_field_names.value(i)));
         }
+
         MTSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1, _tmpcol%2)").arg(fields).arg(column_type));
-        query.exec(QString("INSERT INTO _tmp SELECT %1, %2 FROM %3").arg(field_names).arg(column).arg(table));
-        query.exec(QString("DROP TABLE %1").arg(table));
-        query.exec(QString("CREATE TABLE %1 (%2, %3%4)").arg(table).arg(fields).arg(new_name).arg(column_type));
-        query.exec(QString("INSERT INTO %1 SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
+        query.exec(QString("INSERT INTO _tmp SELECT %1, \"%2\" FROM \"%3\"").arg(field_names).arg(column).arg(table));
+        query.exec(QString("DROP TABLE \"%1\"").arg(table));
+        query.exec(QString("CREATE TABLE \"%1\" (%2, \"%3\"%4)").arg(table).arg(fields).arg(new_name).arg(column_type));
+        query.exec(QString("INSERT INTO \"%1\" SELECT %2, _tmpcol FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
 }
@@ -221,21 +230,24 @@ void Global::dropColumn(const QString & column, const QString & table, const QSq
 
     if (isDatabaseRemote(database)) {
         MTSqlQuery drop_column(database);
-        drop_column.exec("ALTER TABLE " + table + " DROP COLUMN " + column);
+        drop_column.exec(QString("ALTER TABLE \"%1\" DROP COLUMN \"%2\"").arg(table).arg(column));
     } else {
         MTDictionary all_field_names = getTableFieldNames(table, database);
         all_field_names.remove(column);
-        QString fields; QString field_names = all_field_names.keys().join(", ");
+
+        QString fields;
+        QString field_names = QString("\"%1\"").arg(all_field_names.keys().join("\", \""));
         for (int i = 0; i < all_field_names.count(); ++i) {
             if (i) { fields.append(", "); }
-            fields.append(all_field_names.key(i) + " " + all_field_names.value(i));
+            fields.append(QString("\"%1\" %2").arg(all_field_names.key(i)).arg(all_field_names.value(i)));
         }
+
         MTSqlQuery query(database);
         query.exec(QString("CREATE TEMPORARY TABLE _tmp (%1)").arg(fields));
-        query.exec(QString("INSERT INTO _tmp SELECT %1 FROM %2").arg(field_names).arg(table));
-        query.exec(QString("DROP TABLE %1").arg(table));
-        query.exec(QString("CREATE TABLE %1 (%2)").arg(table).arg(fields));
-        query.exec(QString("INSERT INTO %1 SELECT %2 FROM _tmp").arg(table).arg(field_names));
+        query.exec(QString("INSERT INTO _tmp SELECT %1 FROM \"%2\"").arg(field_names).arg(table));
+        query.exec(QString("DROP TABLE \"%1\"").arg(table));
+        query.exec(QString("CREATE TABLE \"%1\" (%2)").arg(table).arg(fields));
+        query.exec(QString("INSERT INTO \"%1\" SELECT %2 FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
 }
@@ -248,12 +260,12 @@ QString Global::DBInfoValueForKey(const QString & key, const QString & default_v
     return query.value(0).toString();
 }
 
-QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value)
+QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value, const QSqlDatabase & database)
 {
-    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key), database);
     if (query.next())
-        return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key)).lastError();
-    return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value)).lastError();
+        return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key), database).lastError();
+    return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value), database).lastError();
 }
 
 QString Global::currentUser(const QSqlDatabase & database)
