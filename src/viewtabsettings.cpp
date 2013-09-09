@@ -86,7 +86,7 @@ void ViewTabSettings::restoreSettings(QSettings & settings)
     m_assembly_record_item_category = settings.value("selected_assembly_record_item_category", -1).toInt();
     m_circuit_unit_type = settings.value("selected_circuit_unit_type", -1).toInt();
 
-    enableTools();
+    enableAllTools();
     QMetaObject::invokeMethod(object(), "setView", Qt::QueuedConnection,
                               Q_ARG(int, settings.value("current_view").toInt()),
                               Q_ARG(QString, settings.value("current_table").toString()));
@@ -99,7 +99,7 @@ void ViewTabSettings::loadCustomer(int customer, bool refresh)
     setSelectedCircuit(-1);
     setSelectedCompressor(-1);
     clearSelectedInspection();
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::Circuits);
     }
@@ -110,7 +110,7 @@ void ViewTabSettings::loadCircuit(int circuit, bool refresh)
     if (!isCustomerSelected()) { return; }
     if (circuit < 0) { return; }
     setSelectedCircuit(circuit);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::Inspections);
     }
@@ -122,7 +122,7 @@ void ViewTabSettings::loadInspection(const QString & inspection, bool refresh)
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
     setSelectedInspection(inspection);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::InspectionDetails);
     }
@@ -132,7 +132,7 @@ void ViewTabSettings::loadRepair(const QString & date, bool refresh)
 {
     if (date.isEmpty()) { return; }
     setSelectedRepair(date);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         refreshView();
     }
@@ -142,7 +142,7 @@ void ViewTabSettings::loadInspector(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
     setSelectedInspector(inspector);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::Inspectors);
     }
@@ -152,7 +152,7 @@ void ViewTabSettings::loadInspectorReport(int inspector, bool refresh)
 {
     if (inspector < 0) { return; }
     setSelectedInspector(inspector);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::InspectorDetails);
     }
@@ -162,7 +162,7 @@ void ViewTabSettings::loadAssemblyRecordType(int assembly_record, bool refresh)
 {
     if (assembly_record < 0) { return; }
     setSelectedAssemblyRecordType(assembly_record);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordTypes);
     }
@@ -172,7 +172,7 @@ void ViewTabSettings::loadAssemblyRecordItemType(int assembly_record_item, bool 
 {
     if (assembly_record_item < 0) { return; }
     setSelectedAssemblyRecordItemType(assembly_record_item);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordItems);
     }
@@ -182,7 +182,7 @@ void ViewTabSettings::loadAssemblyRecordItemCategory(int assembly_record_item_ca
 {
     if (assembly_record_item_category < 0) { return; }
     setSelectedAssemblyRecordItemCategory(assembly_record_item_category);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordItems);
     }
@@ -194,7 +194,7 @@ void ViewTabSettings::loadAssemblyRecord(const QString & inspection, bool refres
     if (!isCircuitSelected()) { return; }
     if (inspection.isEmpty()) { return; }
     setSelectedInspection(inspection);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordDetails);
     }
@@ -204,7 +204,7 @@ void ViewTabSettings::loadCircuitUnitType(int circuit_unit_type, bool refresh)
 {
     if (circuit_unit_type < 0) { return; }
     setSelectedCircuitUnitType(circuit_unit_type);
-    enableTools();
+    enableAllTools();
     if (refresh) {
         setView(View::CircuitUnitTypes);
     }
