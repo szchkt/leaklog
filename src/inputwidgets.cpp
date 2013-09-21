@@ -25,6 +25,7 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QRadioButton>
+#include <QCalendarWidget>
 
 using namespace Global;
 
@@ -352,6 +353,9 @@ MDInputWidget(id, labeltext, parent, this)
     else
         setDisplayFormat(DATE_TIME_FORMAT);
     setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, DATE_TIME_FORMAT));
+    setCalendarPopup(true);
+    calendarWidget()->setLocale(QLocale());
+    calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
 }
 
 QVariant MDDateTimeEdit::variantValue() const
@@ -375,6 +379,9 @@ MDInputWidget(id, labeltext, parent, this)
     else
         setDisplayFormat(DATE_FORMAT);
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, DATE_FORMAT));
+    setCalendarPopup(true);
+    calendarWidget()->setLocale(QLocale());
+    calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
 }
 
 QVariant MDDateEdit::variantValue() const

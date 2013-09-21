@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
         translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
         app.installTranslator(translator);
     }
+    QLocale::setDefault(QApplication::translate("MainWindow", "en_GB"));
 
     app.setAppMainWindow(new MainWindow);
     return app.exec();
