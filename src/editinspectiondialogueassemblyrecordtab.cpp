@@ -342,7 +342,7 @@ int EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary 
         AssemblyRecordItemType item_type(QString::number(id));
         QVariantMap map;
         map.insert("name", dict.value("name"));
-        map.insert("acquisition_price", dict.value("acquisition_price"));
+        map.insert("acquisition_price", dict.contains("acquisition_price") ? dict.value("acquisition_price") : dict.value("list_price"));
         map.insert("list_price", dict.value("list_price"));
         map.insert("category_id", dict.value("category_id"));
         item_type.update(map);
