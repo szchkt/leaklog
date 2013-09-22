@@ -4046,6 +4046,42 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Remove assembly record type - Leaklog</source>
         <translation>Odstrániť typ montážneho listu - Leaklog</translation>
     </message>
+    <message>
+        <source>Auto Save...</source>
+        <translation>Automatické ukladanie...</translation>
+    </message>
+    <message>
+        <source>Configure automatic saving for this database</source>
+        <translation>Nastaviť automatické ukladanie pre túto databázu</translation>
+    </message>
+    <message>
+        <source>Database modified - Leaklog</source>
+        <translation>Databáza upravená - Leaklog</translation>
+    </message>
+    <message>
+        <source>Configure Auto Save - Leaklog</source>
+        <translation>Nastaviť automatické ukladanie - Leaklog</translation>
+    </message>
+    <message>
+        <source>Do not save automatically</source>
+        <translation>Neukladať automaticky</translation>
+    </message>
+    <message>
+        <source>Save all changes immediately</source>
+        <translation>Okamžite uložiť všetky zmeny</translation>
+    </message>
+    <message>
+        <source>This will disable the Undo function.</source>
+        <translation>Táto možnosť deaktivuje funkciu Krok späť.</translation>
+    </message>
+    <message>
+        <source>Save all changes after 10 minutes of inactivity</source>
+        <translation>Uložiť všetky zmeny po 10 minútach nečinnosti</translation>
+    </message>
+    <message>
+        <source>Ask to save changes after 10 minutes of inactivity</source>
+        <translation>Opýtať sa po 10 minútach nečinnosti</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5217,7 +5253,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>

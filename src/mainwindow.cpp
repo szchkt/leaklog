@@ -113,7 +113,7 @@ MainWindow::MainWindow():
     tbtn_undo->setDefaultAction(actionUndo);
     tbtn_undo->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     tbtn_undo->setPopupMode(QToolButton::InstantPopup);
-    toolBar->insertWidget(toolBar->insertSeparator(actionReporting), tbtn_undo);
+    tbtn_undo_action = toolBar->insertWidget(toolBar->insertSeparator(actionReporting), tbtn_undo);
 
     m_undo_stack = new UndoStack(actionUndo, this);
     QObject::connect(m_undo_stack, SIGNAL(undoTriggered()), this, SLOT(loadDatabase()));
@@ -192,6 +192,7 @@ MainWindow::MainWindow():
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
+    QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
     QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -262,6 +263,18 @@ MainWindow::MainWindow():
     if (!isVisible())
         show();
 #endif
+}
+
+bool MainWindow::hasActiveModalWidget()
+{
+    QList<QDialog *> list = findChildren<QDialog *>();
+
+    foreach (QDialog * d, list) {
+        if (d->isModal() && d->isVisible())
+            return true;
+    }
+
+    return false;
 }
 
 void MainWindow::clearWindowTitle()
@@ -759,6 +772,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 
     actionLock->setEnabled(enable);
     actionConfigure_permissions->setEnabled(enable);
+    actionAutosave->setEnabled(enable);
 
     actionEdit_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
@@ -1025,6 +1039,74 @@ void MainWindow::configurePermissions()
     PermissionsDialogue d(this);
     if (d.exec() == QDialog::Accepted)
         setDatabaseModified(true);
+}
+
+void MainWindow::configureAutosave()
+{
+    if (!QSqlDatabase::database().isOpen())
+        return;
+
+    QString autosave_mode = DBInfoValueForKey("autosave");
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Configure Auto Save - Leaklog"));
+    d.setWindowModality(Qt::WindowModal);
+    d.setWindowFlags(d.windowFlags() | Qt::Sheet);
+
+    QVBoxLayout * layout = new QVBoxLayout(&d);
+
+    QRadioButton * rbtn_off = new QRadioButton(tr("Do not save automatically"), &d);
+    rbtn_off->setChecked(autosave_mode.isEmpty());
+    layout->addWidget(rbtn_off);
+
+    layout->addSpacing(12);
+
+    QRadioButton * rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), &d);
+    rbtn_immediate->setChecked(autosave_mode == "immediate");
+    layout->addWidget(rbtn_immediate);
+
+    QLabel * lbl_immediate = new QLabel(tr("This will disable the Undo function."), &d);
+    QFont font = lbl_immediate->font();
+    font.setItalic(true);
+    lbl_immediate->setFont(font);
+    layout->addWidget(lbl_immediate);
+
+    layout->addSpacing(12);
+
+    QRadioButton * rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), &d);
+    rbtn_delayed->setChecked(autosave_mode == "delayed");
+    layout->addWidget(rbtn_delayed);
+
+    layout->addSpacing(12);
+
+    QRadioButton * rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), &d);
+    rbtn_ask->setChecked(autosave_mode == "ask");
+    layout->addWidget(rbtn_ask);
+
+    layout->addSpacing(12);
+
+    QDialogButtonBox * bb = new QDialogButtonBox(&d);
+    bb->addButton(tr("&Save"), QDialogButtonBox::AcceptRole);
+    bb->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    layout->addWidget(bb);
+
+    if (d.exec() == QDialog::Accepted) {
+        if (rbtn_immediate->isChecked())
+            autosave_mode = "immediate";
+        else if (rbtn_delayed->isChecked())
+            autosave_mode = "delayed";
+        else if (rbtn_ask->isChecked())
+            autosave_mode = "ask";
+        else
+            autosave_mode.clear();
+
+        if (DBInfoValueForKey("autosave") != autosave_mode) {
+            setDBInfoValueForKey("autosave", autosave_mode);
+            setDatabaseModified(true);
+        }
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

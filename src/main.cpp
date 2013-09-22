@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "main.h"
+#include "activityeventfilter.h"
 
 #include <QSettings>
 #include <QTranslator>
@@ -48,6 +49,12 @@ int main(int argc, char *argv[])
     }
     QLocale::setDefault(QApplication::translate("MainWindow", "en_GB"));
 
-    app.setAppMainWindow(new MainWindow);
+    MainWindow * window = new MainWindow;
+    app.setAppMainWindow(window);
+
+    ActivityEventFilter * filter = new ActivityEventFilter(&app);
+    QObject::connect(filter, SIGNAL(timeout()), window, SLOT(autosave()));
+    app.installEventFilter(filter);
+
     return app.exec();
 }

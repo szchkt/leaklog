@@ -7,6 +7,7 @@ FORMS         += ui/aboutwidget.ui \
                  ui/toolbarstack.ui \
                  ui/viewtab.ui
 HEADERS       += src/aboutwidget.h \
+                 src/activityeventfilter.h \
                  src/dbfile.h \
                  src/defs.h \
                  src/editassemblyrecorddialogue.h \
@@ -93,6 +94,7 @@ RESOURCES     += rc/html.qrc \
                  rc/i18n.qrc \
                  rc/resources.qrc
 SOURCES       += src/aboutwidget.cpp \
+                 src/activityeventfilter.cpp \
                  src/database.cpp \
                  src/dbfile.cpp \
                  src/editassemblyrecorddialogue.cpp \

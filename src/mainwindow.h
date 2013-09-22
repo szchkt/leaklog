@@ -175,6 +175,7 @@ private slots:
     void toggleLocked();
     void showOperationNotPermittedMessage();
     void configurePermissions();
+    void configureAutosave();
     void find();
     void findAll();
     void findNext();
@@ -194,6 +195,7 @@ private slots:
     void loadDatabase(bool reload = true);
     void save();
     void saveAndCompact();
+    void autosave();
     void closeDatabase(bool = true);
     void setDatabaseModified(bool modified);
     // TABS
@@ -210,6 +212,7 @@ private:
     bool isFullScreen() const;
     void showFullScreen();
 #endif
+    bool hasActiveModalWidget();
     void clearWindowTitle();
     void setWindowTitleWithRepresentedFilename(const QString & path);
     QMenu * createPopupMenu();
@@ -238,6 +241,7 @@ private:
     QAction * actionShow_icons_only;
     QToolButton * tbtn_open;
     QToolButton * tbtn_undo;
+    QAction * tbtn_undo_action;
     QToolButton * tbtn_export;
     QLineEdit * le_search;
     QComboBox * cb_lang;

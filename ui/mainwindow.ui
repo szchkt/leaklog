@@ -346,6 +346,7 @@
     </property>
     <addaction name="actionLock"/>
     <addaction name="actionConfigure_permissions"/>
+    <addaction name="actionAutosave"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_service_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
@@ -2143,6 +2144,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F</string>
+   </property>
+  </action>
+  <action name="actionAutosave">
+   <property name="text">
+    <string>Auto Save...</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure automatic saving for this database</string>
    </property>
   </action>
  </widget>

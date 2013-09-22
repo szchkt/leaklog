@@ -51,6 +51,7 @@
 #include <QSqlError>
 #include <QDateTime>
 #include <QSettings>
+#include <QTimer>
 
 using namespace Global;
 
@@ -674,12 +675,54 @@ void MainWindow::saveDatabase(bool compact, bool update_ui)
         QMessageBox::critical(this, tr("Save database - Leaklog"), tr("Cannot write file %1:\n%2.").arg(db.databaseName()).arg(errors.join("; ")));
         return;
     }
+
+    m_undo_stack->clear();
+    setDatabaseModified(false);
+
     if (update_ui) {
-        m_undo_stack->clear();
         setWindowTitleWithRepresentedFilename(db.databaseName());
-        setDatabaseModified(false);
         refreshView();
     }
+}
+
+void MainWindow::autosave()
+{
+    if (!isWindowModified())
+        return;
+
+    if (!QSqlDatabase::database().isOpen())
+        return;
+
+    QString autosave_mode = DBInfoValueForKey("autosave");
+    if (autosave_mode.isEmpty() || autosave_mode == "immediate")
+        return;
+
+    if (autosave_mode == "ask") {
+        if (hasActiveModalWidget()) {
+            QTimer::singleShot(10000, this, SLOT(autosave()));
+            return;
+        }
+
+        QMessageBox message(this);
+        message.setWindowTitle(tr("Database modified - Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Information);
+        message.setText(tr("The database has been modified."));
+        message.setInformativeText(tr("Do you want to save your changes?"));
+        message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+        message.addButton(tr("&Later"), QMessageBox::RejectRole);
+        message.setDefaultButton(QMessageBox::Cancel);
+        switch (message.exec()) {
+            case 0: // Save
+                break;
+            case 1: // Later
+                return;
+        }
+    }
+
+    if (autosave_mode == "ask" || autosave_mode == "delayed")
+        saveDatabase(false);
 }
 
 void MainWindow::closeDatabase(bool save)
@@ -740,6 +783,22 @@ void MainWindow::setDatabaseModified(bool modified)
 
     if (modified)
         emit databaseModified();
+
+    if (QSqlDatabase::database().isOpen() && DBInfoValueForKey("autosave") == "immediate") {
+        actionSave->setVisible(false);
+        actionSave_and_compact->setVisible(false);
+        actionUndo->setVisible(false);
+        tbtn_undo_action->setVisible(false);
+
+        if (modified)
+            saveDatabase(false, false);
+    } else {
+        actionSave->setVisible(true);
+        actionSave_and_compact->setVisible(true);
+        actionUndo->setVisible(true);
+        tbtn_undo_action->setVisible(true);
+        tbtn_undo_action->setEnabled(actionUndo->isEnabled());
+    }
 }
 
 void MainWindow::newTab(bool init)
@@ -902,7 +961,6 @@ void MainWindow::editCustomer()
                         .arg(old_company_name.isEmpty() ? QString() : QString(" (%1)").arg(old_company_name)));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         QString company_name = record.stringValue("company");
         if (old_id != record.id()) {
             MTSqlQuery update_circuits;
@@ -954,6 +1012,7 @@ void MainWindow::editCustomer()
             enableTools();
             refreshView();
         }
+        setDatabaseModified(true);
     }
 }
 
@@ -1096,7 +1155,6 @@ void MainWindow::editCircuit()
     EditCircuitDialogue md(&record, m_undo_stack, this);
     QString old_id = m_tab->selectedCircuit();
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
             m_tab->loadCircuit(record.id().toInt(), true);
@@ -1104,6 +1162,7 @@ void MainWindow::editCircuit()
             enableTools();
             refreshView();
         }
+        setDatabaseModified(true);
     }
 }
 
@@ -1985,7 +2044,6 @@ void MainWindow::editInspector()
     UndoCommand command(m_undo_stack, tr("Edit inspector %1").arg(record.stringValue("person")));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_inspections;
             update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
@@ -2008,6 +2066,7 @@ void MainWindow::editInspector()
             enableTools();
             refreshView();
         }
+        setDatabaseModified(true);
     }
 }
 
@@ -3236,7 +3295,6 @@ void MainWindow::editAssemblyRecordType()
     UndoCommand command(m_undo_stack, tr("Edit assembly record type %1").arg(record.stringValue("name")));
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_type;
             update_ar_type.prepare("UPDATE inspections SET ar_type = :new_id WHERE ar_type = :old_id");
@@ -3244,6 +3302,7 @@ void MainWindow::editAssemblyRecordType()
             update_ar_type.bindValue(":new_id", record.id());
             update_ar_type.exec();
         }
+        setDatabaseModified(true);
         m_tab->loadAssemblyRecordType(record.id().toInt(), true);
     }
 }
@@ -3291,7 +3350,6 @@ void MainWindow::editAssemblyRecordItemType()
     UndoCommand command(m_undo_stack, tr("Edit assembly record item type %1").arg(record.stringValue("name")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_items;
             update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
@@ -3300,6 +3358,7 @@ void MainWindow::editAssemblyRecordItemType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
+        setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
     }
 }
@@ -3347,7 +3406,6 @@ void MainWindow::editAssemblyRecordItemCategory()
     UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.stringValue("name")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_ar_item_types;
             update_ar_item_types.prepare("UPDATE assembly_record_item_types SET category_id = :new_id WHERE category_id = :old_id");
@@ -3365,6 +3423,7 @@ void MainWindow::editAssemblyRecordItemCategory()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
+        setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
     }
 }
@@ -3412,7 +3471,6 @@ void MainWindow::editCircuitUnitType()
     UndoCommand command(m_undo_stack, tr("Edit circuit unit type %1").arg(record.stringValue("type")));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDatabaseModified(true);
         if (old_id != record.id()) {
             MTSqlQuery update_circuit_units;
             update_circuit_units.prepare("UPDATE circuit_units SET unit_type_id = :new_id WHERE unit_type_id = :old_id");
@@ -3426,6 +3484,7 @@ void MainWindow::editCircuitUnitType()
             update_ar_items.bindValue(":new_id", record.id());
             update_ar_items.exec();
         }
+        setDatabaseModified(true);
         m_tab->loadCircuitUnitType(record.id().toInt(), true);
     }
 }
