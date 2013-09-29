@@ -25,6 +25,10 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_MAC
+    QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
+#endif
+
     MTApplication app(argc, argv);
     app.setApplicationName("Leaklog");
     app.setApplicationVersion(LEAKLOG_VERSION);
