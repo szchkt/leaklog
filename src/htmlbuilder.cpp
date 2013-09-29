@@ -31,83 +31,83 @@ HTMLParent::~HTMLParent()
     }
 }
 
-HTMLBold * HTMLParent::bold()
+HTMLBold *HTMLParent::bold()
 {
-    HTMLBold * b = new HTMLBold();
+    HTMLBold *b = new HTMLBold();
     children.append(b);
     return b;
 }
 
-HTMLItalics * HTMLParent::italics()
+HTMLItalics *HTMLParent::italics()
 {
-    HTMLItalics * i = new HTMLItalics();
+    HTMLItalics *i = new HTMLItalics();
     children.append(i);
     return i;
 }
 
-HTMLLink * HTMLParent::link(const QString & url, const QString & args)
+HTMLLink *HTMLParent::link(const QString &url, const QString &args)
 {
-    HTMLLink * a = new HTMLLink(url, args);
+    HTMLLink *a = new HTMLLink(url, args);
     children.append(a);
     return a;
 }
 
-HTMLTable * HTMLParent::table(const QString & args, int cols_in_row)
+HTMLTable *HTMLParent::table(const QString &args, int cols_in_row)
 {
-    HTMLTable * table = new HTMLTable(args, cols_in_row);
+    HTMLTable *table = new HTMLTable(args, cols_in_row);
     children.append(table);
     return table;
 }
 
-HTMLHeading * HTMLParent::heading()
+HTMLHeading *HTMLParent::heading()
 {
-    HTMLHeading * heading = new HTMLHeading();
+    HTMLHeading *heading = new HTMLHeading();
     children.append(heading);
     return heading;
 }
 
-HTMLSubHeading * HTMLParent::subHeading()
+HTMLSubHeading *HTMLParent::subHeading()
 {
-    HTMLSubHeading * heading = new HTMLSubHeading();
+    HTMLSubHeading *heading = new HTMLSubHeading();
     children.append(heading);
     return heading;
 }
 
-HTMLSubSubHeading * HTMLParent::subSubHeading()
+HTMLSubSubHeading *HTMLParent::subSubHeading()
 {
-    HTMLSubSubHeading * heading = new HTMLSubSubHeading();
+    HTMLSubSubHeading *heading = new HTMLSubSubHeading();
     children.append(heading);
     return heading;
 }
 
-HTMLParagraph * HTMLParent::paragraph(const QString & args)
+HTMLParagraph *HTMLParent::paragraph(const QString &args)
 {
-    HTMLParagraph * paragraph = new HTMLParagraph(args);
+    HTMLParagraph *paragraph = new HTMLParagraph(args);
     children.append(paragraph);
     return paragraph;
 }
 
-HTMLStyle * HTMLParent::addStyleElement(const QString & css)
+HTMLStyle *HTMLParent::addStyleElement(const QString &css)
 {
-    HTMLStyle * style = new HTMLStyle;
+    HTMLStyle *style = new HTMLStyle;
     if (!css.isEmpty()) *style << css;
     children.append(style);
     return style;
 }
 
-HTMLParent & HTMLParent::operator<<(const QString & str)
+HTMLParent &HTMLParent::operator<<(const QString &str)
 {
     children.append(new HTMLDataElement(str));
     return *this;
 }
 
-HTMLParent & HTMLParent::operator<<(HTMLElement * child)
+HTMLParent &HTMLParent::operator<<(HTMLElement *child)
 {
     if (child) children.append(child);
     return *this;
 }
 
-HTMLDataElement::HTMLDataElement(const QString & body)
+HTMLDataElement::HTMLDataElement(const QString &body)
 {
     this->body = body;
 }
@@ -117,7 +117,7 @@ const QString HTMLDataElement::html()
     return body;
 }
 
-void HTMLParent::html(QTextStream & out)
+void HTMLParent::html(QTextStream &out)
 {
     for (int i = 0; i < children.count(); ++i) {
         out << children.at(i)->html();
@@ -134,15 +134,15 @@ const QString HTMLParent::html()
     return str;
 }
 
-HTMLParentElement::HTMLParentElement(const QString & args):
+HTMLParentElement::HTMLParentElement(const QString &args):
 HTMLParent()
 {
     this->args = args;
 }
 
-HTMLTable * HTMLDivMain::table(const QString & args, int cols_in_row)
+HTMLTable *HTMLDivMain::table(const QString &args, int cols_in_row)
 {
-    HTMLTable * table = new HTMLDivTable(args, cols_in_row);
+    HTMLTable *table = new HTMLDivTable(args, cols_in_row);
     children.append(table);
     return table;
 }
@@ -165,7 +165,7 @@ const QString HTMLParentElement::html()
     return str;
 }
 
-HTMLDocument::HTMLDocument(const QString & title_str):
+HTMLDocument::HTMLDocument(const QString &title_str):
 HTMLParentElement()
 {
     tag_name = "html";
@@ -173,7 +173,7 @@ HTMLParentElement()
     html_head = new HTMLCustomTaggedParentElement("head");
     *html_head << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
 
-    HTMLParentElement * title = new HTMLCustomTaggedParentElement("title");
+    HTMLParentElement *title = new HTMLCustomTaggedParentElement("title");
     *title << title_str;
     *html_head << title;
 
@@ -185,7 +185,7 @@ HTMLParentElement()
     *this << html_body;
 }
 
-HTMLTable::HTMLTable(const QString & args, int cols_in_row):
+HTMLTable::HTMLTable(const QString &args, int cols_in_row):
 HTMLParentElement(args),
 cols_in_row(cols_in_row)
 {
@@ -219,59 +219,59 @@ const QString HTMLTable::customHtml(int cols_in_row)
     return str;
 }
 
-HTMLTableRow * HTMLTable::addRow(const QString & row_args)
+HTMLTableRow *HTMLTable::addRow(const QString &row_args)
 {
-    HTMLTableRow * row = new HTMLTableRow(row_args);
+    HTMLTableRow *row = new HTMLTableRow(row_args);
     children.append(row);
     return row;
 }
 
-HTMLTableHead * HTMLTable::thead(const QString & args)
+HTMLTableHead *HTMLTable::thead(const QString &args)
 {
-    HTMLTableHead * thead = new HTMLTableHead(args);
+    HTMLTableHead *thead = new HTMLTableHead(args);
     children.append(thead);
     return thead;
 }
 
-HTMLTableBody * HTMLTable::tbody(const QString & args)
+HTMLTableBody *HTMLTable::tbody(const QString &args)
 {
-    HTMLTableBody * tbody = new HTMLTableBody(args);
+    HTMLTableBody *tbody = new HTMLTableBody(args);
     children.append(tbody);
     return tbody;
 }
 
-HTMLTableFoot * HTMLTable::tfoot(const QString & args)
+HTMLTableFoot *HTMLTable::tfoot(const QString &args)
 {
-    HTMLTableFoot * tfoot = new HTMLTableFoot(args);
+    HTMLTableFoot *tfoot = new HTMLTableFoot(args);
     children.append(tfoot);
     return tfoot;
 }
 
-HTMLTableHead::HTMLTableHead(const QString & args, int cols_in_row):
+HTMLTableHead::HTMLTableHead(const QString &args, int cols_in_row):
 HTMLTable(args, cols_in_row)
 {
     tag_name = "thead";
 }
 
-HTMLTableBody::HTMLTableBody(const QString & args, int cols_in_row):
+HTMLTableBody::HTMLTableBody(const QString &args, int cols_in_row):
 HTMLTable(args, cols_in_row)
 {
     tag_name = "tbody";
 }
 
-HTMLTableFoot::HTMLTableFoot(const QString & args, int cols_in_row):
+HTMLTableFoot::HTMLTableFoot(const QString &args, int cols_in_row):
 HTMLTable(args, cols_in_row)
 {
     tag_name = "tfoot";
 }
 
-HTMLTableRow::HTMLTableRow(const QString & args):
+HTMLTableRow::HTMLTableRow(const QString &args):
 HTMLParentElement(args)
 {
     tag_name = "tr";
 }
 
-const QString HTMLTableRow::customHtml(int n, int cols_in_row, bool & cols_left)
+const QString HTMLTableRow::customHtml(int n, int cols_in_row, bool &cols_left)
 {
     QString str;
     QTextStream out(&str);
@@ -287,81 +287,81 @@ const QString HTMLTableRow::customHtml(int n, int cols_in_row, bool & cols_left)
     return str;
 }
 
-HTMLTableCell * HTMLTableRow::addCell(const QString & cell_args)
+HTMLTableCell *HTMLTableRow::addCell(const QString &cell_args)
 {
-    HTMLTableCell * cell = new HTMLTableCell(cell_args);
+    HTMLTableCell *cell = new HTMLTableCell(cell_args);
     children.append(cell);
     return cell;
 }
 
-HTMLHeaderTableCell * HTMLTableRow::addHeaderCell(const QString & cell_args)
+HTMLHeaderTableCell *HTMLTableRow::addHeaderCell(const QString &cell_args)
 {
-    HTMLHeaderTableCell * cell = new HTMLHeaderTableCell(cell_args);
+    HTMLHeaderTableCell *cell = new HTMLHeaderTableCell(cell_args);
     children.append(cell);
     return cell;
 }
 
-HTMLTableCell::HTMLTableCell(const QString & args):
+HTMLTableCell::HTMLTableCell(const QString &args):
 HTMLParentElement(args)
 {
     tag_name = "td";
 }
 
-HTMLHeaderTableCell::HTMLHeaderTableCell(const QString & args):
+HTMLHeaderTableCell::HTMLHeaderTableCell(const QString &args):
 HTMLTableCell(args)
 {
     tag_name = "th";
 }
 
-HTMLDiv::HTMLDiv(const QString & args):
+HTMLDiv::HTMLDiv(const QString &args):
 HTMLParentElement(args)
 {
     tag_name = "div";
 }
 
-HTMLDivTable::HTMLDivTable(const QString & args, int cols_in_row):
+HTMLDivTable::HTMLDivTable(const QString &args, int cols_in_row):
 HTMLTable(args, cols_in_row)
 {
     tag_name = "div";
     addClass("table");
 }
 
-HTMLTableRow * HTMLDivTable::addRow(const QString & row_args)
+HTMLTableRow *HTMLDivTable::addRow(const QString &row_args)
 {
-    HTMLDivTableRow * row = new HTMLDivTableRow(row_args);
+    HTMLDivTableRow *row = new HTMLDivTableRow(row_args);
     children.append(row);
     return row;
 }
 
-HTMLDivTableRow::HTMLDivTableRow(const QString & args):
+HTMLDivTableRow::HTMLDivTableRow(const QString &args):
 HTMLTableRow(args)
 {
     tag_name = "div";
     addClass("table_row");
 }
 
-HTMLTableCell * HTMLDivTableRow::addCell(const QString & cell_args)
+HTMLTableCell *HTMLDivTableRow::addCell(const QString &cell_args)
 {
-    HTMLDivTableCell * cell = new HTMLDivTableCell(cell_args);
+    HTMLDivTableCell *cell = new HTMLDivTableCell(cell_args);
     children.append(cell);
     return cell;
 }
 
-HTMLHeaderTableCell * HTMLDivTableRow::addHeaderCell(const QString & cell_args)
+HTMLHeaderTableCell *HTMLDivTableRow::addHeaderCell(const QString &cell_args)
 {
-    HTMLDivHeaderTableCell * cell = new HTMLDivHeaderTableCell(cell_args);
+    HTMLDivHeaderTableCell *cell = new HTMLDivHeaderTableCell(cell_args);
     children.append(cell);
     return cell;
 }
 
-HTMLDivTableCell::HTMLDivTableCell(const QString & args):
+HTMLDivTableCell::HTMLDivTableCell(const QString &args):
 HTMLTableCell(args)
 {
     tag_name = "div";
     addClass("table_cell");
 }
 
-HTMLDivHeaderTableCell::HTMLDivHeaderTableCell(const QString & args):
+HTMLDivHeaderTableCell::HTMLDivHeaderTableCell(const QString &args):
 HTMLHeaderTableCell(args)
 {
     tag_name = "div";
@@ -380,7 +380,7 @@ HTMLParentElement()
     tag_name = "i";
 }
 
-HTMLLink::HTMLLink(const QString & url, const QString & args):
+HTMLLink::HTMLLink(const QString &url, const QString &args):
 HTMLParentElement(QString("href=\"%1\" %2").arg(url).arg(args))
 {
     tag_name = "a";
@@ -404,7 +404,7 @@ HTMLParentElement()
     tag_name = "h3";
 }
 
-HTMLParagraph::HTMLParagraph(const QString & args):
+HTMLParagraph::HTMLParagraph(const QString &args):
 HTMLParentElement(args)
 {
     tag_name = "p";

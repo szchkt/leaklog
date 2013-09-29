@@ -33,7 +33,7 @@
 #include <QSplitter>
 #include <QSettings>
 
-EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent, const QString & duplicate_from)
+EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent, const QString &duplicate_from)
     : TabbedEditDialogue(record, undo_stack, parent, false),
       compressors(NULL)
 {
@@ -47,20 +47,20 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord * record, UndoStack * un
     splitter->setContentsMargins(0, 0, 0, 0);
     md_grid_main->addWidget(splitter, 0, 0);
 
-    QWidget * widget_trees = new QWidget(this);
+    QWidget *widget_trees = new QWidget(this);
     splitter->addWidget(widget_trees);
 
-    QGridLayout * grid_trees = new QGridLayout(widget_trees);
+    QGridLayout *grid_trees = new QGridLayout(widget_trees);
     grid_trees->setContentsMargins(6, 6, 6, 6);
     EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, grid_trees).layout();
 
-    QWidget * widget_rmds = new QWidget(this);
+    QWidget *widget_rmds = new QWidget(this);
     splitter->addWidget(widget_rmds);
 
-    QHBoxLayout * hl_rmds = new QHBoxLayout(widget_rmds);
+    QHBoxLayout *hl_rmds = new QHBoxLayout(widget_rmds);
     hl_rmds->setContentsMargins(9, 9, 9, 9);
 
-    MDAbstractInputWidget * rmds = inputWidget("rmds");
+    MDAbstractInputWidget *rmds = inputWidget("rmds");
     hl_rmds->addWidget(rmds->label()->widget());
     hl_rmds->addWidget(rmds->widget());
 
@@ -99,14 +99,14 @@ EditInspectionDialogue::~EditInspectionDialogue()
 
 const QVariant EditInspectionDialogue::idFieldValue()
 {
-    MDAbstractInputWidget * iw = inputWidget("date");
+    MDAbstractInputWidget *iw = inputWidget("date");
     if (iw)
         return iw->variantValue();
     else
         return QVariant();
 }
 
-EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString & customer_id, const QString & circuit_id, const QString & inspection_id)
+EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &customer_id, const QString &circuit_id, const QString &inspection_id)
 {
     this->customer_id = customer_id;
     this->circuit_id = circuit_id;
@@ -116,14 +116,14 @@ EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &
     init(inspection_id);
 }
 
-void EditInspectionDialogueImagesTab::init(const QString & inspection_id)
+void EditInspectionDialogueImagesTab::init(const QString &inspection_id)
 {
     original_inspection_id = inspection_id;
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
 
     QList<EditDialogueTableCell *> cells;
-    EditDialogueTableCell * cell = new EditDialogueTableCell(tr("Description"), Global::Text);
+    EditDialogueTableCell *cell = new EditDialogueTableCell(tr("Description"), Global::Text);
     cell->setId("description");
     cells.append(cell);
     cell = new EditDialogueTableCell(tr("Image"), Global::File);
@@ -135,13 +135,13 @@ void EditInspectionDialogueImagesTab::init(const QString & inspection_id)
     loadItemInputWidgets(inspection_id);
 }
 
-void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString & inspection_id)
+void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspection_id)
 {
     InspectionImage images_record(customer_id, circuit_id, inspection_id);
     ListOfVariantMaps images = images_record.listAll();
 
     QMap<QString, EditDialogueTableCell *> image_data;
-    EditDialogueTableCell * cell;
+    EditDialogueTableCell *cell;
 
     for (int i = 0; i < images.count(); ++i) {
         cell = new EditDialogueTableCell(images.at(i).value("description"), Global::Text);
@@ -156,7 +156,7 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString & inspe
     if (!images.count()) table->addNewRow();
 }
 
-void EditInspectionDialogueImagesTab::save(const QVariant & inspection_id)
+void EditInspectionDialogueImagesTab::save(const QVariant &inspection_id)
 {
     QList<MTDictionary> dicts = table->allValues();
     QList<int> undeleted_files;

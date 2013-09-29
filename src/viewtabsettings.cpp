@@ -45,7 +45,7 @@ void ViewTabSettings::restoreDefaults()
     clearSelectedCircuitUnitType();
 }
 
-void ViewTabSettings::saveSettings(QSettings & settings) const
+void ViewTabSettings::saveSettings(QSettings &settings) const
 {
     if (isCustomerSelected())
         settings.setValue("selected_customer", m_customer);
@@ -73,7 +73,7 @@ void ViewTabSettings::saveSettings(QSettings & settings) const
         settings.setValue("current_table", currentTable());
 }
 
-void ViewTabSettings::restoreSettings(QSettings & settings)
+void ViewTabSettings::restoreSettings(QSettings &settings)
 {
     m_customer = settings.value("selected_customer", -1).toInt();
     m_circuit = settings.value("selected_circuit", -1).toInt();
@@ -116,7 +116,7 @@ void ViewTabSettings::loadCircuit(int circuit, bool refresh)
     }
 }
 
-void ViewTabSettings::loadInspection(const QString & inspection, bool refresh)
+void ViewTabSettings::loadInspection(const QString &inspection, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
@@ -128,7 +128,7 @@ void ViewTabSettings::loadInspection(const QString & inspection, bool refresh)
     }
 }
 
-void ViewTabSettings::loadRepair(const QString & date, bool refresh)
+void ViewTabSettings::loadRepair(const QString &date, bool refresh)
 {
     if (date.isEmpty()) { return; }
     setSelectedRepair(date);
@@ -188,7 +188,7 @@ void ViewTabSettings::loadAssemblyRecordItemCategory(int assembly_record_item_ca
     }
 }
 
-void ViewTabSettings::loadAssemblyRecord(const QString & inspection, bool refresh)
+void ViewTabSettings::loadAssemblyRecord(const QString &inspection, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }

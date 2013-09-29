@@ -37,12 +37,12 @@ File(QString::number(file_id))
     this->file_id = file_id;
 }
 
-void DBFile::setData(const QByteArray & file_data)
+void DBFile::setData(const QByteArray &file_data)
 {
     this->file_data = file_data;
 }
 
-void DBFile::setFileName(const QString & file_name)
+void DBFile::setFileName(const QString &file_name)
 {
     this->file_name = file_name;
     if (file_name.isEmpty())
@@ -55,7 +55,7 @@ void DBFile::setFileName(const QString & file_name)
     setData(file.readAll());
 }
 
-void DBFile::setImage(const QString & file_name)
+void DBFile::setImage(const QString &file_name)
 {
     this->file_name = file_name;
     if (file_name.isEmpty())
@@ -68,7 +68,7 @@ void DBFile::setImage(const QString & file_name)
     setImage(image);
 }
 
-void DBFile::setImage(QImage & image)
+void DBFile::setImage(QImage &image)
 {
     QBuffer buffer;
     buffer.open(QIODevice::WriteOnly);
@@ -79,7 +79,7 @@ void DBFile::setImage(QImage & image)
     setData(buffer.data());
 }
 
-bool DBFile::saveData(const QString & file_name)
+bool DBFile::saveData(const QString &file_name)
 {
     QByteArray data = this->data();
     if (data.isEmpty())
@@ -124,18 +124,18 @@ QByteArray DBFile::data()
     return file_data;
 }
 
-DBFileChooser::DBFileChooser(QWidget * parent, int file_id):
+DBFileChooser::DBFileChooser(QWidget *parent, int file_id):
 QWidget(parent)
 {
     db_file = new DBFile(file_id);
     changed = false;
 
-    QHBoxLayout * layout = new QHBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout(this);
 
     name_lbl = new QLabel(tr("Select an image"), this);
     layout->addWidget(name_lbl);
 
-    QPushButton * browse_btn = new QPushButton(tr("Browse"), this);
+    QPushButton *browse_btn = new QPushButton(tr("Browse"), this);
     QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
     layout->addWidget(browse_btn);
 

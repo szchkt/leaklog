@@ -22,7 +22,7 @@
 #include <QEvent>
 #include <QTimer>
 
-ActivityEventFilter::ActivityEventFilter(QObject * parent)
+ActivityEventFilter::ActivityEventFilter(QObject *parent)
     : QObject(parent)
 {
     timer = new QTimer(this);
@@ -35,7 +35,7 @@ ActivityEventFilter::ActivityEventFilter(QObject * parent)
     QObject::connect(timer, SIGNAL(timeout()), this, SIGNAL(timeout()));
 }
 
-bool ActivityEventFilter::eventFilter(QObject * obj, QEvent * event)
+bool ActivityEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress ||
         event->type() == QEvent::MouseButtonPress)

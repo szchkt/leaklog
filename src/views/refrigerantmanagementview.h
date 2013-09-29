@@ -27,7 +27,7 @@ class RefrigerantManagementView : public View
     Q_OBJECT
 
 public:
-    RefrigerantManagementView(ViewTabSettings * settings);
+    RefrigerantManagementView(ViewTabSettings *settings);
 
     QString renderHTML();
 

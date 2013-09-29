@@ -97,7 +97,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             keys << Key(refrigerant, Key::All);
             keys << Key(Key::All, field_name);
 
-            foreach (const Key & key, keys)
+            foreach (const Key &key, keys)
                 addToValues(key, RefrigerantAmount, refrigerant_amount);
 
             values[Key()][RefrigerantAmount] += refrigerant_amount;
@@ -124,7 +124,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents)
                     .listAll("date, refr_add_am, refr_reco", "date ASC");
 
-            foreach (const QVariantMap & nominal_inspection, nominal_inspections) {
+            foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
                 int nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();
 
                 for (int year = qMax(nominal_inspection_year, min_year); year <= max_year; ++year)
@@ -157,7 +157,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
     }
 }
 
-void LeakagesByApplication::addToValues(const Key & key, Table table, double value)
+void LeakagesByApplication::addToValues(const Key &key, Table table, double value)
 {
     if (!values[key].size())
         values[key].resize(TableCount);

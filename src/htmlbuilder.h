@@ -69,20 +69,20 @@ public:
 
     inline int childCount() const { return children.count(); }
 
-    HTMLBold * bold();
-    HTMLItalics * italics();
-    HTMLLink * link(const QString &, const QString & = QString());
-    virtual HTMLTable * table(const QString & = QString(), int = 0);
-    HTMLHeading * heading();
-    HTMLSubHeading * subHeading();
-    HTMLSubSubHeading * subSubHeading();
-    HTMLParagraph * paragraph(const QString & = QString());
-    HTMLStyle * addStyleElement(const QString & = QString());
+    HTMLBold *bold();
+    HTMLItalics *italics();
+    HTMLLink *link(const QString &, const QString & = QString());
+    virtual HTMLTable *table(const QString & = QString(), int = 0);
+    HTMLHeading *heading();
+    HTMLSubHeading *subHeading();
+    HTMLSubSubHeading *subSubHeading();
+    HTMLParagraph *paragraph(const QString & = QString());
+    HTMLStyle *addStyleElement(const QString & = QString());
 
     void newLine() { children.append(new HTMLDataElement("<br>")); }
 
-    HTMLParent & operator<<(const QString &);
-    HTMLParent & operator<<(HTMLElement *);
+    HTMLParent &operator<<(const QString &);
+    HTMLParent &operator<<(HTMLElement *);
 
 protected:
     QList<HTMLElement *> children;
@@ -97,11 +97,11 @@ public:
     inline const QString tagName() { return tag_name; }
     virtual const QString html();
 
-    const QString & id() { return tag_id; }
-    void setId(const QString & tag_id) { this->tag_id = tag_id; }
-    void addClass(const QString & tag_class) { tag_classes.append(tag_class); }
+    const QString &id() { return tag_id; }
+    void setId(const QString &tag_id) { this->tag_id = tag_id; }
+    void addClass(const QString &tag_class) { tag_classes.append(tag_class); }
     const QString classesInString() { return tag_classes.join(" "); }
-    const QStringList & classes() { return tag_classes; }
+    const QStringList &classes() { return tag_classes; }
 
 protected:
     QString tag_id;
@@ -112,7 +112,7 @@ protected:
 class HTMLCustomTaggedParentElement : public HTMLParentElement
 {
 public:
-    HTMLCustomTaggedParentElement(const QString & tag_name, const QString & args = QString()) : HTMLParentElement(args)
+    HTMLCustomTaggedParentElement(const QString &tag_name, const QString &args = QString()) : HTMLParentElement(args)
         { this->tag_name = tag_name; }
 };
 
@@ -121,12 +121,12 @@ class HTMLDocument : public HTMLParentElement
 public:
     HTMLDocument(const QString &);
 
-    HTMLParentElement * body() { return html_body; }
-    HTMLParentElement * head() { return html_head; }
+    HTMLParentElement *body() { return html_body; }
+    HTMLParentElement *head() { return html_head; }
 
 private:
-    HTMLParentElement * html_body;
-    HTMLParentElement * html_head;
+    HTMLParentElement *html_body;
+    HTMLParentElement *html_head;
 };
 
 class HTMLMain : public HTMLParent
@@ -140,7 +140,7 @@ class HTMLDivMain : public HTMLParent
 public:
     HTMLDivMain() : HTMLParent() {}
 
-    HTMLTable * table(const QString & = QString(), int = 0);
+    HTMLTable *table(const QString & = QString(), int = 0);
 };
 
 class HTMLTable : public HTMLParentElement
@@ -148,14 +148,14 @@ class HTMLTable : public HTMLParentElement
 public:
     HTMLTable(const QString & = QString(), int = 0);
 
-    virtual HTMLTableRow * addRow(const QString & = QString());
+    virtual HTMLTableRow *addRow(const QString & = QString());
 
     const QString html();
     const QString customHtml(int);
 
-    HTMLTableHead * thead(const QString & = QString());
-    HTMLTableBody * tbody(const QString & = QString());
-    HTMLTableFoot * tfoot(const QString & = QString());
+    HTMLTableHead *thead(const QString & = QString());
+    HTMLTableBody *tbody(const QString & = QString());
+    HTMLTableFoot *tfoot(const QString & = QString());
 
 protected:
     int cols_in_row;
@@ -184,8 +184,8 @@ class HTMLTableRow : public HTMLParentElement
 public:
     HTMLTableRow(const QString & = QString());
 
-    virtual HTMLTableCell * addCell(const QString & = QString());
-    virtual HTMLHeaderTableCell * addHeaderCell(const QString & = QString());
+    virtual HTMLTableCell *addCell(const QString & = QString());
+    virtual HTMLHeaderTableCell *addHeaderCell(const QString & = QString());
 
     const QString customHtml(int, int, bool &);
 };
@@ -213,7 +213,7 @@ class HTMLDivTable : public HTMLTable
 public:
     HTMLDivTable(const QString & = QString(), int = 0);
 
-    HTMLTableRow * addRow(const QString & = QString());
+    HTMLTableRow *addRow(const QString & = QString());
 };
 
 class HTMLDivTableRow : public HTMLTableRow
@@ -221,8 +221,8 @@ class HTMLDivTableRow : public HTMLTableRow
 public:
     HTMLDivTableRow(const QString & = QString());
 
-    HTMLTableCell * addCell(const QString & = QString());
-    HTMLHeaderTableCell * addHeaderCell(const QString & = QString());
+    HTMLTableCell *addCell(const QString & = QString());
+    HTMLHeaderTableCell *addHeaderCell(const QString & = QString());
 };
 
 class HTMLDivTableCell : public HTMLTableCell

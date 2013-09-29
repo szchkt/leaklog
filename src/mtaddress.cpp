@@ -65,7 +65,7 @@ QString MTAddress::toHtml(MTAddress::AddressFormat format) const
 #endif
 }
 
-void MTAddress::initWithAddress(const QString & address) {
+void MTAddress::initWithAddress(const QString &address) {
     clear();
     QStringList list = address.split('\n', QString::SkipEmptyParts);
     for (QStringList::const_iterator i = list.constBegin(); i != list.constEnd(); ++i) {
@@ -75,9 +75,9 @@ void MTAddress::initWithAddress(const QString & address) {
     }
 }
 
-QLabel * newLabel(const QString & text, QWidget * parent = NULL)
+QLabel *newLabel(const QString &text, QWidget *parent = NULL)
 {
-    QLabel * lbl = new QLabel(text, parent);
+    QLabel *lbl = new QLabel(text, parent);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     return lbl;
 }
@@ -85,7 +85,7 @@ QLabel * newLabel(const QString & text, QWidget * parent = NULL)
 void MTAddressEdit::init()
 {
     setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
-    QGridLayout * grid_layout = new QGridLayout(this);
+    QGridLayout *grid_layout = new QGridLayout(this);
     grid_layout->setSpacing(6);
     grid_layout->setContentsMargins(6, 6, 6, 6);
     grid_layout->addWidget(newLabel(tr("Street:"), this), 0, 0);
@@ -97,7 +97,7 @@ void MTAddressEdit::init()
     grid_layout->addWidget(ae_postal_code = new QLineEdit(this), 2, 1);
 }
 
-void MTAddressEdit::setAddress(const MTAddress & address)
+void MTAddressEdit::setAddress(const MTAddress &address)
 {
     ae_street->setText(address.street());
     ae_city->setText(address.city());

@@ -20,11 +20,11 @@
 #include "mtwidget.h"
 #include "mainwindow.h"
 
-MainWindow * MTWidget::parentWindow()
+MainWindow *MTWidget::parentWindow()
 {
     if (!parent_window) {
-        QWidget * parent_widget = parentWidget();
-        MainWindow * main_window;
+        QWidget *parent_widget = parentWidget();
+        MainWindow *main_window;
 
         while (parent_widget) {
             main_window = qobject_cast<MainWindow *>(parent_widget);
@@ -39,10 +39,10 @@ MainWindow * MTWidget::parentWindow()
     return parent_window;
 }
 
-MainWindow * MTWidget::parentWindow() const
+MainWindow *MTWidget::parentWindow() const
 {
-    QWidget * parent_widget = parentWidget();
-    MainWindow * main_window = NULL;
+    QWidget *parent_widget = parentWidget();
+    MainWindow *main_window = NULL;
 
     while (parent_widget) {
         main_window = qobject_cast<MainWindow *>(parent_widget);

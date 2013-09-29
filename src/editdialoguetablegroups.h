@@ -41,16 +41,16 @@ public:
 
     void addHeaderItem(int, const QString &, const QString &, int);
     void addItem(const QString &, int, QMap<QString, EditDialogueTableCell *> &, int, bool);
-    EditDialogueAdvancedTable * createGroup(const QString &, int, int);
+    EditDialogueAdvancedTable *createGroup(const QString &, int, int);
 
     QList<MTDictionary> allValues();
 
     void clear();
 
 private:
-    QMap<QString, EditDialogueAdvancedTable *> * groups;
+    QMap<QString, EditDialogueAdvancedTable *> *groups;
     QList<EditDialogueGroupHeaderItem *> header_items;
-    QVBoxLayout * layout;
+    QVBoxLayout *layout;
 };
 
 class EditDialogueGroupHeaderItem
@@ -59,7 +59,7 @@ public:
     EditDialogueGroupHeaderItem(int, const QString &, const QString &, int);
 
     int id() { return item_id; }
-    EditDialogueTableCell * tableCell();
+    EditDialogueTableCell *tableCell();
 
 private:
     int item_id;

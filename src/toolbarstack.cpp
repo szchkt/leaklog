@@ -28,7 +28,7 @@
 
 using namespace Global;
 
-ToolBarStack::ToolBarStack(QWidget * parent):
+ToolBarStack::ToolBarStack(QWidget *parent):
     QWidget(parent), _view(View::ViewCount), _settings(NULL)
 {
     setupUi(this);
@@ -65,14 +65,14 @@ ToolBarStack::ToolBarStack(QWidget * parent):
     QObject::connect(btn_clear_circuit_unit_type, SIGNAL(clicked()), this, SLOT(clearCircuitUnitType()));
 }
 
-void ToolBarStack::setSettings(ViewTabSettings * settings)
+void ToolBarStack::setSettings(ViewTabSettings *settings)
 {
     _settings = settings;
     viewChanged(View::Store);
     setReportDataGroupBoxVisible(false);
 }
 
-void ToolBarStack::connectSlots(QObject * receiver)
+void ToolBarStack::connectSlots(QObject *receiver)
 {
     QObject::connect(this, SIGNAL(filterChanged()), receiver, SLOT(refreshView()));
     QObject::connect(tbtn_edit_service_company, SIGNAL(clicked()), receiver, SLOT(editServiceCompany()));
@@ -107,7 +107,7 @@ void ToolBarStack::connectSlots(QObject * receiver)
     QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
-void ToolBarStack::addFilterItems(const QString & column, const MTDictionary & items)
+void ToolBarStack::addFilterItems(const QString &column, const MTDictionary &items)
 {
     cb_filter_column->insertSeparator(cb_filter_column->count());
 
@@ -377,7 +377,7 @@ void ToolBarStack::enableTools()
         QStringList description;
         description << _settings->selectedCircuit().rightJustified(5, '0');
 
-        foreach (const QString & attribute, attributes)
+        foreach (const QString &attribute, attributes)
             if (!circuit.stringValue(attribute).isEmpty())
                 description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.stringValue(attribute)));
 

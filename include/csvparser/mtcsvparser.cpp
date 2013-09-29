@@ -22,7 +22,7 @@
 #include <QTextStream>
 #include <QStringList>
 
-MTCSVParser::MTCSVParser(QTextStream * stream):
+MTCSVParser::MTCSVParser(QTextStream *stream):
 in(stream), skip_lines(0), enclosure_char('"'), separator(','), line_terminator('\n')
 {}
 

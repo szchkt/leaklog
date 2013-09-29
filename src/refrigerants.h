@@ -8,10 +8,10 @@ class Refrigerants
 {
 public:
     Refrigerants();
-    inline double pressureToTemperature(const QString & c, double r) {
+    inline double pressureToTemperature(const QString &c, double r) {
         return dict_pressureToTemperature.value(c).value(r, -273.15);
     };
-    inline QMap<QString, QMap<double, double> > * pressureToTemperature() {
+    inline QMap<QString, QMap<double, double> > *pressureToTemperature() {
         return &dict_pressureToTemperature;
     };
 private:

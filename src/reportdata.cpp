@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QVector>
 
-void ReportData::addToStore(QMap<int, QMap<QString, double> > & store, QList<int> & years, int year, const QString & refrigerant, double value)
+void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int> &years, int year, const QString &refrigerant, double value)
 {
     if (!years.contains(year)) {
         years << year;
@@ -41,9 +41,9 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > & store, QList<int
     }
 }
 
-ReportData::ReportData(int since, bool by_field, const QSet<QString> & refrigerants_by_field)
+ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigerants_by_field)
 {
-    QVector<double> * sum_list; int year = 0; QString date, refrigerant;
+    QVector<double> *sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
     RecordOfRefrigerantManagement refr_man_record("");
     ListOfVariantMaps refr_man(refr_man_record.listAll());

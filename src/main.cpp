@@ -47,16 +47,16 @@ int main(int argc, char *argv[])
     }
     if (lang == "C") { lang = "Slovak"; settings.setValue("lang", lang); }
     if (lang != "English") {
-        QTranslator * translator = new QTranslator;
+        QTranslator *translator = new QTranslator;
         translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
         app.installTranslator(translator);
     }
     QLocale::setDefault(QApplication::translate("MainWindow", "en_GB"));
 
-    MainWindow * window = new MainWindow;
+    MainWindow *window = new MainWindow;
     app.setAppMainWindow(window);
 
-    ActivityEventFilter * filter = new ActivityEventFilter(&app);
+    ActivityEventFilter *filter = new ActivityEventFilter(&app);
     QObject::connect(filter, SIGNAL(timeout()), window, SLOT(autosave()));
     app.installEventFilter(filter);
 

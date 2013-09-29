@@ -36,20 +36,20 @@ class ViewTabSettings
 {
 public:
     ViewTabSettings();
-    virtual QObject * object() = 0;
+    virtual QObject *object() = 0;
 
     virtual void enableAllTools() = 0;
     virtual void enableTools() = 0;
 
-    virtual MainWindowSettings & mainWindowSettings() = 0;
+    virtual MainWindowSettings &mainWindowSettings() = 0;
 
-    virtual ToolBarStack * toolBarStack() const = 0;
-    virtual QWebView * webView() const = 0;
+    virtual ToolBarStack *toolBarStack() const = 0;
+    virtual QWebView *webView() const = 0;
 
-    virtual void setView(View::ViewID view, const QString & table = QString()) = 0;
+    virtual void setView(View::ViewID view, const QString &table = QString()) = 0;
     virtual void refreshView() = 0;
 
-    virtual View * view(View::ViewID view) = 0;
+    virtual View *view(View::ViewID view) = 0;
     virtual View::ViewID currentView() const = 0;
     virtual QString currentViewTitle() const = 0;
     virtual QString currentTable() const = 0;
@@ -62,8 +62,8 @@ public:
     virtual QString appendDefaultOrderToColumn(const QString &) const = 0;
 
     void restoreDefaults();
-    void saveSettings(QSettings & settings) const;
-    void restoreSettings(QSettings & settings);
+    void saveSettings(QSettings &settings) const;
+    void restoreSettings(QSettings &settings);
 
     inline bool isCustomerSelected() const { return m_customer >= 0; }
     inline QString selectedCustomer() const { return isCustomerSelected() ? QString::number(m_customer) : QString(); }
@@ -81,12 +81,12 @@ public:
 
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
-    void setSelectedInspection(const QString & inspection) { m_inspection = inspection; }
+    void setSelectedInspection(const QString &inspection) { m_inspection = inspection; }
     void clearSelectedInspection() { m_inspection.clear(); }
 
     inline bool isRepairSelected() const { return !m_repair.isEmpty(); }
     inline QString selectedRepair() const { return m_repair; }
-    void setSelectedRepair(const QString & repair) { m_repair = repair; }
+    void setSelectedRepair(const QString &repair) { m_repair = repair; }
     inline void clearSelectedRepair() { m_repair.clear(); }
 
     inline bool isInspectorSelected() const { return m_inspector >= 0; }
@@ -126,7 +126,7 @@ public:
     void loadAssemblyRecord(const QString &, bool);
     void loadCircuitUnitType(int, bool);
 
-    LinkParser & linkParser() { return link_parser; }
+    LinkParser &linkParser() { return link_parser; }
 
 private:
     int m_customer;

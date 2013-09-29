@@ -27,14 +27,14 @@ class AssemblyRecordDetailsView : public TableView
     Q_OBJECT
 
 public:
-    AssemblyRecordDetailsView(ViewTabSettings * settings);
+    AssemblyRecordDetailsView(ViewTabSettings *settings);
 
     QString renderHTML();
 
     QString title() const;
 
 protected:
-    HTMLTable * writeServiceCompany(HTMLTable * = NULL);
+    HTMLTable *writeServiceCompany(HTMLTable * = NULL);
 };
 
 #endif // ASSEMBLYRECORDDETAILSVIEW_H

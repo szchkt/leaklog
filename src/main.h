@@ -30,14 +30,14 @@ class MTApplication : public QApplication
     Q_OBJECT
 
 public:
-    MTApplication(int & argc, char ** argv):
+    MTApplication(int &argc, char **argv):
     QApplication(argc, argv) {}
-    MTApplication(int & argc, char ** argv, bool GUIenabled):
+    MTApplication(int &argc, char **argv, bool GUIenabled):
     QApplication(argc, argv, GUIenabled) {}
-    void setAppMainWindow(MainWindow * w) { app_main_window = w; }
+    void setAppMainWindow(MainWindow *w) { app_main_window = w; }
 
 protected:
-    bool event(QEvent * event) {
+    bool event(QEvent *event) {
         switch (event->type()) {
             case QEvent::FileOpen:
                 if (app_main_window) {

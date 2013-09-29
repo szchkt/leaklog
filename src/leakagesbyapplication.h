@@ -36,10 +36,10 @@ public:
     public:
         static const QString All;
 
-        explicit Key(const QString & refrigerant = All, const QString & field = All):
+        explicit Key(const QString &refrigerant = All, const QString &field = All):
             year(0), refrigerant(refrigerant), field(field)
         {}
-        explicit Key(int year, const QString & refrigerant, const QString & field):
+        explicit Key(int year, const QString &refrigerant, const QString &field):
             year(year), refrigerant(refrigerant), field(field)
         {}
 
@@ -47,7 +47,7 @@ public:
         QString refrigerant;
         QString field;
 
-        inline bool operator<(const Key & other) const {
+        inline bool operator<(const Key &other) const {
             return (year < other.year || (year == other.year && (refrigerant < other.refrigerant || (refrigerant == other.refrigerant && field < other.field))));
         }
     };
@@ -66,15 +66,15 @@ public:
     inline QStringList tableNames() const { return tables; }
     inline MTDictionary usedRefrigerants() const { return used_refrigerants; }
 
-    inline QVector<double> value(const QString & refrigerant = Key::All, const QString & field = Key::All) const {
+    inline QVector<double> value(const QString &refrigerant = Key::All, const QString &field = Key::All) const {
         return values.value(Key(refrigerant, field), QVector<double>(TableCount));
     }
-    inline QVector<double> value(int year, const QString & refrigerant, const QString & field) const {
+    inline QVector<double> value(int year, const QString &refrigerant, const QString &field) const {
         return values.value(Key(year, refrigerant, field), QVector<double>(TableCount));
     }
 
 protected:
-    void addToValues(const Key & key, Table table, double value);
+    void addToValues(const Key &key, Table table, double value);
 
     int min_year;
     int max_year;

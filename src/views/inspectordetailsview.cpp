@@ -42,10 +42,10 @@ QString InspectorDetailsView::renderHTML()
     div << writeInspectorsTable(QString(), inspector_id);
     div.newLine();
 
-    HTMLTable * table;
-    HTMLTableRow * _tr;
-    HTMLTableCell * _td;
-    HTMLParentElement * elem;
+    HTMLTable *table;
+    HTMLTableRow *_tr;
+    HTMLTableCell *_td;
+    HTMLParentElement *elem;
 
     bool is_nominal, is_repair, is_outside_interval;
     bool show_acquisition_price = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;

@@ -31,8 +31,8 @@ class ToolBarStack : public QWidget, private Ui::ToolBarStack
     Q_OBJECT
 
 public:
-    ToolBarStack(QWidget * parent);
-    void setSettings(ViewTabSettings * settings);
+    ToolBarStack(QWidget *parent);
+    void setSettings(ViewTabSettings *settings);
     void connectSlots(QObject *);
 
     // Widgets
@@ -54,10 +54,10 @@ public:
 
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);
-    inline QToolButton * autofillButton() const { return tbtn_autofill; }
-    inline QToolButton * doneButton() const { return tbtn_done; }
-    inline QLabel * reportYearLabel() const { return lbl_report_year; }
-    inline QProgressBar * reportDataProgressBar() const { return progressbar_loadprogress; }
+    inline QToolButton *autofillButton() const { return tbtn_autofill; }
+    inline QToolButton *doneButton() const { return tbtn_done; }
+    inline QLabel *reportYearLabel() const { return lbl_report_year; }
+    inline QProgressBar *reportDataProgressBar() const { return progressbar_loadprogress; }
 
 public slots:
     void clearInspector();
@@ -82,10 +82,10 @@ signals:
     void filterChanged();
 
 protected:
-    void addFilterItems(const QString & column, const MTDictionary & items);
+    void addFilterItems(const QString &column, const MTDictionary &items);
 
     View::ViewID _view;
-    ViewTabSettings * _settings;
+    ViewTabSettings *_settings;
 };
 
 #endif // TOOLBARSTACK_H

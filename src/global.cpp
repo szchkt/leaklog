@@ -35,7 +35,7 @@
 
 #include <cmath>
 
-QString Global::escapeString(const QVariant & variant, bool escape_backslash, bool insert_linebreaks)
+QString Global::escapeString(const QVariant &variant, bool escape_backslash, bool insert_linebreaks)
 {
     return escapeString(variant.toString(), escape_backslash, insert_linebreaks);
 }
@@ -52,7 +52,7 @@ QString Global::escapeString(QString s, bool escape_backslash, bool insert_lineb
     return s;
 }
 
-QString Global::elideRight(const QString & s, int n)
+QString Global::elideRight(const QString &s, int n)
 {
     QString result = s.trimmed();
     if (result.length() > n)
@@ -96,7 +96,7 @@ QString Global::longMonthName(int month)
     return QString();
 }
 
-QColor Global::textColourForBaseColour(const QColor & c)
+QColor Global::textColourForBaseColour(const QColor &c)
 {
     if ((((c.red() * 299.0) + (c.green() * 587.0) + (c.blue() * 114.0)) / 1000.0) > 125.0 &&
         (c.red() + c.green() + c.blue()) > 500) {
@@ -106,7 +106,7 @@ QColor Global::textColourForBaseColour(const QColor & c)
     }
 }
 
-QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase & db)
+QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase &db)
 {
     if (!isDatabaseRemote(db)) {
         sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
@@ -125,14 +125,14 @@ QString Global::variantTypeToSqlType(int type)
     return "TEXT";
 }
 
-QString Global::variableTypeToSqlType(const QString & type)
+QString Global::variableTypeToSqlType(const QString &type)
 {
     if (type == "float") return "NUMERIC";
     else if (type == "int" || type == "bool") return "INTEGER";
     return "TEXT";
 }
 
-MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabase & database)
+MTDictionary Global::getTableFieldNames(const QString &table, const QSqlDatabase &database)
 {
     MTDictionary field_names;
     MTSqlQuery query(database);
@@ -143,7 +143,7 @@ MTDictionary Global::getTableFieldNames(const QString & table, const QSqlDatabas
     return field_names;
 }
 
-void Global::copyTable(const QString & table, const QSqlDatabase & from, const QSqlDatabase & to, const QString & filter)
+void Global::copyTable(const QString &table, const QSqlDatabase &from, const QSqlDatabase &to, const QString &filter)
 {
     MTSqlQuery select(from);
     select.exec(QString("SELECT * FROM \"%1\"%2").arg(table).arg(QString(filter.isEmpty() ? "" : (" WHERE " + filter))));
@@ -176,7 +176,7 @@ void Global::copyTable(const QString & table, const QSqlDatabase & from, const Q
     }
 }
 
-void Global::addColumn(const QString & column, const QString & table, const QSqlDatabase & database)
+void Global::addColumn(const QString &column, const QString &table, const QSqlDatabase &database)
 {
     if (getTableFieldNames(table, database).contains(column))
         return;
@@ -193,7 +193,7 @@ void Global::addColumn(const QString & column, const QString & table, const QSql
     add_column.exec(QString("ALTER TABLE \"%1\" ADD COLUMN %2").arg(table).arg(col.join(" ")));
 }
 
-void Global::renameColumn(const QString & column, const QString & new_name, const QString & table, const QSqlDatabase & database)
+void Global::renameColumn(const QString &column, const QString &new_name, const QString &table, const QSqlDatabase &database)
 {
     if (isDatabaseRemote(database)) {
         MTSqlQuery rename_column(database);
@@ -223,7 +223,7 @@ void Global::renameColumn(const QString & column, const QString & new_name, cons
     }
 }
 
-void Global::dropColumn(const QString & column, const QString & table, const QSqlDatabase & database)
+void Global::dropColumn(const QString &column, const QString &table, const QSqlDatabase &database)
 {
     if (!getTableFieldNames(table, database).contains(column))
         return;
@@ -252,7 +252,7 @@ void Global::dropColumn(const QString & column, const QString & table, const QSq
     }
 }
 
-QString Global::DBInfoValueForKey(const QString & key, const QString & default_value)
+QString Global::DBInfoValueForKey(const QString &key, const QString &default_value)
 {
     MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
     if (!query.next())
@@ -260,7 +260,7 @@ QString Global::DBInfoValueForKey(const QString & key, const QString & default_v
     return query.value(0).toString();
 }
 
-QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & value, const QSqlDatabase & database)
+QSqlError Global::setDBInfoValueForKey(const QString &key, const QString &value, const QSqlDatabase &database)
 {
     MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key), database);
     if (query.next())
@@ -268,7 +268,7 @@ QSqlError Global::setDBInfoValueForKey(const QString & key, const QString & valu
     return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value), database).lastError();
 }
 
-QString Global::currentUser(const QSqlDatabase & database)
+QString Global::currentUser(const QSqlDatabase &database)
 {
     return database.userName();
 }
@@ -279,7 +279,7 @@ bool Global::isCurrentUserAdmin()
     return DBInfoValueForKey("admin", current_user) == current_user;
 }
 
-bool Global::isDatabaseRemote(const QSqlDatabase & database)
+bool Global::isDatabaseRemote(const QSqlDatabase &database)
 {
     return !database.driverName().contains("SQLITE");
 }
@@ -301,14 +301,14 @@ QString Global::lockDate()
             DBInfoValueForKey("lock_date");
 }
 
-bool Global::isRecordLocked(const QString & date)
+bool Global::isRecordLocked(const QString &date)
 {
     if (isDatabaseLocked())
         return date < lockDate();
     return false;
 }
 
-bool Global::isOwnerPermissionApplicable(const QString & permission)
+bool Global::isOwnerPermissionApplicable(const QString &permission)
 {
     return (isDatabaseRemote() &&
             (permission.startsWith("edit_") ||
@@ -320,7 +320,7 @@ bool Global::isOwnerPermissionApplicable(const QString & permission)
              permission.endsWith("_repair")));
 }
 
-int Global::isOperationPermitted(const QString & operation, const QString & record_owner)
+int Global::isOperationPermitted(const QString &operation, const QString &record_owner)
 {
     if (!isDatabaseLocked())
         return 4;
@@ -334,7 +334,7 @@ int Global::isOperationPermitted(const QString & operation, const QString & reco
     return -1;
 }
 
-QString Global::circuitRefrigerantAmountQuery(const QString & return_as)
+QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
 {
     return "(COALESCE(circuits.refrigerant_amount, 0)"
             " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
@@ -343,7 +343,7 @@ QString Global::circuitRefrigerantAmountQuery(const QString & return_as)
 
 QMap<QString, MTDictionary> Global::parsed_expressions;
 
-MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids)
+MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
 {
     MTDictionary dict_exp(true);
     if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
@@ -410,14 +410,14 @@ MTDictionary Global::parseExpression(const QString & exp, QStringList & used_ids
 
 Refrigerants refrigerants;
 
-double Global::evaluateExpression(const QVariantMap & inspection, const MTDictionary & expression, const QString & customer_id, const QString & circuit_id, bool * ok, bool * null_var)
+double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_id, const QString &circuit_id, bool *ok, bool *null_var)
 {
     MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
     QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
 }
 
-double Global::evaluateExpression(const QVariantMap & inspection, const MTDictionary & expression, const QVariantMap & circuit_attributes, bool * ok, bool * null_var)
+double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QVariantMap &circuit_attributes, bool *ok, bool *null_var)
 {
     static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
                                    " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"
@@ -470,7 +470,7 @@ QString Global::compareValues(double value1, double value2, double tolerance, co
     }
 }
 
-QString Global::toolTipLink(const QString & type, const QString & text, const QString & l1, const QString & l2, const QString & l3, bool edit_allowed)
+QString Global::toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2, const QString &l3, bool edit_allowed)
 {
     QString link = "<a ";
     if (edit_allowed)
@@ -522,7 +522,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::databaseTables()
+const MTDictionary &Global::databaseTables()
 {
     static DatabaseTables dict;
     return dict.dict;
@@ -543,7 +543,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::variableTypes()
+const MTDictionary &Global::variableTypes()
 {
     static VariableTypes dict;
     return dict.dict;
@@ -610,7 +610,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::variableNames()
+const MTDictionary &Global::variableNames()
 {
     static VariableNames dict;
     return dict.dict;
@@ -670,7 +670,7 @@ public:
     QHash<QString, QString> dict;
 };
 
-const QString Global::variableType(const QString & id, bool * ok)
+const QString Global::variableType(const QString &id, bool *ok)
 {
     static VariableType types;
     if (ok) *ok = types.dict.contains(id);
@@ -700,13 +700,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::fieldsOfApplication()
+const MTDictionary &Global::fieldsOfApplication()
 {
     static FieldsOfApplication dict;
     return dict.dict;
 }
 
-int Global::fieldOfApplicationToId(const QString & field)
+int Global::fieldOfApplicationToId(const QString &field)
 {
     if (field == "refrigeration")
         return FIELD_IDS::COMMERCIAL;
@@ -772,7 +772,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::oils()
+const MTDictionary &Global::oils()
 {
     static Oils dict;
     return dict.dict;
@@ -810,7 +810,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::attributeValues()
+const MTDictionary &Global::attributeValues()
 {
     static AttributeValues dict;
     return dict.dict;
@@ -856,7 +856,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Global::permissions()
+const MTDictionary &Global::permissions()
 {
     static Permissions dict;
     return dict.dict;
@@ -879,7 +879,7 @@ MTDictionary Global::listInspectors()
     return inspectors;
 }
 
-MTDictionary Global::listOperators(const QString & customer)
+MTDictionary Global::listOperators(const QString &customer)
 {
     MTDictionary operators(true); MTSqlQuery query;
     query.setForwardOnly(true);

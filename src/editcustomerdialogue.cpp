@@ -27,7 +27,7 @@
 #include <QButtonGroup>
 #include <QApplication>
 
-OperatorInputWidget::OperatorInputWidget(const QVariantMap & attributes, QWidget * parent):
+OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget *parent):
     MDGroupedInputWidgets(QApplication::translate("Customer", "Operator:"), parent)
 {
     setSkipSave(false);
@@ -35,13 +35,13 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap & attributes, QWidget
 
     operator_choice = new QButtonGroup(this);
 
-    QRadioButton * customer = new QRadioButton(QApplication::translate("Customer", "Customer"), this);
+    QRadioButton *customer = new QRadioButton(QApplication::translate("Customer", "Customer"), this);
     operator_choice->addButton(customer, 0);
     grid->addWidget(customer, grid->rowCount(), 0, 1, 2);
-    QRadioButton * service_company = new QRadioButton(QApplication::translate("Customer", "Service company"), this);
+    QRadioButton *service_company = new QRadioButton(QApplication::translate("Customer", "Service company"), this);
     operator_choice->addButton(service_company, 1);
     grid->addWidget(service_company, grid->rowCount(), 0, 1, 2);
-    QRadioButton * other = new QRadioButton(QApplication::translate("Customer", "Other"), this);
+    QRadioButton *other = new QRadioButton(QApplication::translate("Customer", "Other"), this);
     operator_choice->addButton(other, 2);
     grid->addWidget(other, grid->rowCount(), 0, 1, 2);
 
@@ -57,7 +57,7 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap & attributes, QWidget
     input_widgets << new MDLineEdit("operator_mail", QApplication::translate("Customer", "E-mail:"), this, attributes.value("operator_mail").toString());
     input_widgets << new MDLineEdit("operator_phone", QApplication::translate("Customer", "Phone:"), this, attributes.value("operator_phone").toString());
 
-    foreach (MDAbstractInputWidget * widget, input_widgets) {
+    foreach (MDAbstractInputWidget *widget, input_widgets) {
         widget->setShowInForm(false);
         widget->setVisible(false);
         addWidget(widget);
@@ -77,7 +77,7 @@ QVariant OperatorInputWidget::variantValue() const
     return 0;
 }
 
-void OperatorInputWidget::setVariantValue(const QVariant & value)
+void OperatorInputWidget::setVariantValue(const QVariant &value)
 {
     switch (value.toInt()) {
     case -1:
@@ -96,11 +96,11 @@ void OperatorInputWidget::setVariantValue(const QVariant & value)
     }
 }
 
-void OperatorInputWidget::addToEditDialogue(EditDialogueWidgets & md)
+void OperatorInputWidget::addToEditDialogue(EditDialogueWidgets &md)
 {
     md.addInputWidget(this);
 
-    foreach (MDAbstractInputWidget * widget, input_widgets)
+    foreach (MDAbstractInputWidget *widget, input_widgets)
         md.addInputWidget(widget);
 }
 
@@ -108,19 +108,19 @@ void OperatorInputWidget::operatorChoiceChanged(int id)
 {
     operator_id->setVisible(id == 2);
 
-    foreach (MDAbstractInputWidget * widget, input_widgets)
+    foreach (MDAbstractInputWidget *widget, input_widgets)
         widget->setVisible(id == 2);
 
     QApplication::processEvents();
     static_cast<QWidget *>(this->parent())->resize(0, 0);
 }
 
-EditCustomerDialogue::EditCustomerDialogue(Customer * record, UndoStack * undo_stack, QWidget * parent):
+EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_stack, QWidget *parent):
     EditDialogue(record, undo_stack, parent),
     original_customer_id(idFieldValue().toString())
 {
     QList<EditDialogueTableCell *> cells;
-    EditDialogueTableCell * cell = new EditDialogueTableCell(tr("Name"), Global::String);
+    EditDialogueTableCell *cell = new EditDialogueTableCell(tr("Name"), Global::String);
     cell->setId("name");
     cells.append(cell);
     cell = new EditDialogueTableCell(tr("E-mail"), Global::String);

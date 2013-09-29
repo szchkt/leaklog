@@ -92,7 +92,7 @@ class VariableContract : public QMap<int, QVariant>, public VariableContractBase
 {
 public:
     VariableContract(): QMap<int, QVariant>() {}
-    VariableContract(const QMap<int, QVariant> & other): QMap<int, QVariant>(other) {}
+    VariableContract(const QMap<int, QVariant> &other): QMap<int, QVariant>(other) {}
 
 protected:
     QVariant variantValue(int i) const {
@@ -104,7 +104,7 @@ class Variables : public MTSqlQueryResultBase<int>, public VariableContractBase
 {
 public:
     Variables(QSqlDatabase = QSqlDatabase(), int = 0xFFFF);
-    static Variables * defaultVariables(int = 0xFFFF);
+    static Variables *defaultVariables(int = 0xFFFF);
 
     VariableContract variable(const QString &);
     inline VariableContract parentVariable() {

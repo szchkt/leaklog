@@ -24,7 +24,7 @@
 
 #include <QTabWidget>
 
-EditInspectorDialogue::EditInspectorDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent)
+EditInspectorDialogue::EditInspectorDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent)
     : TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Inspector"));
@@ -36,7 +36,7 @@ EditInspectorDialogue::EditInspectorDialogue(DBRecord * record, UndoStack * undo
     addTab(new EditInspectorDialogueTab(tab_inputwidgets, this));
 }
 
-EditInspectorDialogueTab::EditInspectorDialogueTab(QList<MDAbstractInputWidget *> inputwidgets, QWidget * parent)
+EditInspectorDialogueTab::EditInspectorDialogueTab(QList<MDAbstractInputWidget *> inputwidgets, QWidget *parent)
     : EditDialogueTab(parent)
 {
     setName(tr("Assembly record"));
@@ -52,7 +52,7 @@ void EditInspectorDialogueTab::init()
         inputwidgets.at(i)->setShowInForm(true);
     }
 
-    QGridLayout * grid = new QGridLayout;
+    QGridLayout *grid = new QGridLayout;
     EditDialogueColumnLayout(&inputwidgets, grid).layout();
 
     setLayout(grid);

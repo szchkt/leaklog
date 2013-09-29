@@ -33,15 +33,15 @@ class EditInspectionDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectionDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent = NULL, const QString & duplicate_from = QString());
+    EditInspectionDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent = NULL, const QString &duplicate_from = QString());
     virtual ~EditInspectionDialogue();
 
 protected:
     bool saveOther();
 
     const QVariant idFieldValue();
-    EditInspectionDialogueCompressors * compressors;
-    QSplitter * splitter;
+    EditInspectionDialogueCompressors *compressors;
+    QSplitter *splitter;
 };
 
 class EditInspectionDialogueImagesTab : public EditDialogueTab
@@ -61,7 +61,7 @@ private:
     QString circuit_id;
     QString original_inspection_id;
 
-    EditDialogueBasicTable * table;
+    EditDialogueBasicTable *table;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_H

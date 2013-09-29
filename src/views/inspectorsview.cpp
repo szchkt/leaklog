@@ -42,7 +42,7 @@ QString InspectorsView::renderHTML()
     return viewTemplate("inspectors").arg(div.html());
 }
 
-HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id, const QString & inspector_id)
+HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, const QString &inspector_id)
 {
     Inspector inspectors_record(inspector_id);
     if (!settings->toolBarStack()->isFilterEmpty()) {
@@ -52,9 +52,9 @@ HTMLTable * InspectorsView::writeInspectorsTable(const QString & highlighted_id,
        " (SELECT COUNT(date) FROM inspections WHERE inspector = CAST(inspectors.id AS text)) AS inspections_count,"
        " (SELECT COUNT(date) FROM repairs WHERE repairman = CAST(inspectors.id AS text)) AS repairs_count"));
 
-    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    HTMLTable *table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("highlight");
-    HTMLTableRow * _tr;
+    HTMLTableRow *_tr;
 
     _tr = new HTMLTableRow;
     int thead_colspan = 2;

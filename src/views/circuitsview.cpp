@@ -48,14 +48,14 @@ QString CircuitsView::renderHTML()
     return viewTemplate("customer").arg(main.html());
 }
 
-void CircuitsView::writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id, int cols_in_row)
+void CircuitsView::writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id, int cols_in_row)
 {
-    HTMLDiv * div = writeCircuitsTable(customer_id, circuit_id, cols_in_row);
+    HTMLDiv *div = writeCircuitsTable(customer_id, circuit_id, cols_in_row);
     out << div->html();
     delete div;
 }
 
-HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QString & circuit_id, int cols_in_row, HTMLTable * table)
+HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QString &circuit_id, int cols_in_row, HTMLTable *table)
 {
     bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool circuits_details_visible = settings->mainWindowSettings().circuitDetailsVisible() || disable_hiding_details;
@@ -74,14 +74,14 @@ HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QS
         order_by = "id";
     ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
                                                          circuit_id.isEmpty() ? settings->appendDefaultOrderToColumn(order_by) : QString());
-    HTMLDiv * div = new HTMLDiv();
+    HTMLDiv *div = new HTMLDiv();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("circuits");
     if (circuit_id.isEmpty())
         table->addClass("highlight");
 
     int thead_colspan = 3;
-    HTMLTableRow * thead = NULL;
+    HTMLTableRow *thead = NULL;
 
     if (circuit_id.isEmpty() || circuits_details_visible) {
         thead = new HTMLTableRow();
@@ -113,8 +113,8 @@ HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QS
         }
     }
 
-    HTMLTableRow * _tr = table->addRow();
-    HTMLTableCell * _td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
+    HTMLTableRow *_tr = table->addRow();
+    HTMLTableCell *_td = _tr->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
 
     if (circuit_id.isEmpty()) {
         *_td << tr("List of Circuits");
@@ -208,7 +208,7 @@ HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QS
         thead_colspan = attributes.count();
         thead = table->addRow();
 
-        foreach (const QString & key, attributes)
+        foreach (const QString &key, attributes)
             *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:" << key << "\">"
                                       << Circuit::attributes().value(key) << "</a>";
 
@@ -249,14 +249,14 @@ HTMLDiv * CircuitsView::writeCircuitsTable(const QString & customer_id, const QS
     return div;
 }
 
-HTMLTable * CircuitsView::circuitCompressorsTable(const QString & customer_id, const QString & circuit_id, HTMLTable * table)
+HTMLTable *CircuitsView::circuitCompressorsTable(const QString &customer_id, const QString &circuit_id, HTMLTable *table)
 {
     Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
                                                        QStringList() << customer_id << circuit_id));
     ListOfVariantMaps compressors = compressors_rec.listAll();
     if (compressors.count()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-        HTMLTableRow * _tr;
+        HTMLTableRow *_tr;
 
         _tr = table->addRow();
         *(_tr->addHeaderCell()) << tr("Compressors");
@@ -277,7 +277,7 @@ HTMLTable * CircuitsView::circuitCompressorsTable(const QString & customer_id, c
     return NULL;
 }
 
-HTMLTable * CircuitsView::circuitUnitsTable(const QString & customer_id, const QString & circuit_id, HTMLTable * table)
+HTMLTable *CircuitsView::circuitUnitsTable(const QString &customer_id, const QString &circuit_id, HTMLTable *table)
 {
     enum QUERY_RESULTS
     {
@@ -300,7 +300,7 @@ HTMLTable * CircuitsView::circuitUnitsTable(const QString & customer_id, const Q
     if (query.next()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         table->addClass("circuit_units");
-        HTMLTableRow * _tr;
+        HTMLTableRow *_tr;
 
         _tr = table->addRow();
         *(_tr->addHeaderCell()) << tr("Circuit units");

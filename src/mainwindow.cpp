@@ -125,7 +125,7 @@ MainWindow::MainWindow():
     toolBar->insertWidget(actionPrint, tbtn_export);
     actionExport->setMenu(menuExport);
 
-    QWidget * spacer = new QWidget();
+    QWidget *spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
 
@@ -133,7 +133,7 @@ MainWindow::MainWindow():
     le_search->setMaximumWidth(200);
     toolBar->insertWidget(actionLock, le_search);
 
-    QMenu * menuAdd_variable = new QMenu(this);
+    QMenu *menuAdd_variable = new QMenu(this);
     menuAdd_variable->addAction(actionNew_variable);
     menuAdd_variable->addAction(actionNew_subvariable);
     tbtn_add_variable->setMenu(menuAdd_variable);
@@ -269,7 +269,7 @@ bool MainWindow::hasActiveModalWidget()
 {
     QList<QDialog *> list = findChildren<QDialog *>();
 
-    foreach (QDialog * d, list) {
+    foreach (QDialog *d, list) {
         if (d->isModal() && d->isVisible())
             return true;
     }
@@ -285,7 +285,7 @@ void MainWindow::clearWindowTitle()
     setWindowTitle("Leaklog");
 }
 
-void MainWindow::setWindowTitleWithRepresentedFilename(const QString & path)
+void MainWindow::setWindowTitleWithRepresentedFilename(const QString &path)
 {
 #ifdef Q_OS_MAC
     setWindowFilePath(path.startsWith('/') ? path : QString());
@@ -295,7 +295,7 @@ void MainWindow::setWindowTitleWithRepresentedFilename(const QString & path)
 #endif
 }
 
-void MainWindow::openFile(const QString & file)
+void MainWindow::openFile(const QString &file)
 {
     QFileInfo file_info(file);
     if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
@@ -304,17 +304,17 @@ void MainWindow::openFile(const QString & file)
     }
 }
 
-QMenu * MainWindow::createPopupMenu()
+QMenu *MainWindow::createPopupMenu()
 {
-    QMenu * popup_menu = this->QMainWindow::createPopupMenu();
+    QMenu *popup_menu = this->QMainWindow::createPopupMenu();
     popup_menu->addSeparator();
     popup_menu->addAction(actionShow_icons_only);
     return popup_menu;
 }
 
-void MainWindow::showRecentDatabaseContextMenu(const QPoint & pos)
+void MainWindow::showRecentDatabaseContextMenu(const QPoint &pos)
 {
-    QListWidgetItem * item = lw_recent_docs->itemAt(pos);
+    QListWidgetItem *item = lw_recent_docs->itemAt(pos);
     if (!item) return;
     QAction show(tr("Open containing folder"), this);
     show.setStatusTip(tr("Open the folder which contains this database"));
@@ -325,7 +325,7 @@ void MainWindow::showRecentDatabaseContextMenu(const QPoint & pos)
     if (!item->text().startsWith("db:"))
         actions << &show << &separator;
     actions << &remove;
-    QAction * clicked = QMenu::exec(actions, lw_recent_docs->mapToGlobal(pos));
+    QAction *clicked = QMenu::exec(actions, lw_recent_docs->mapToGlobal(pos));
     if (clicked == &show) {
         QDesktopServices::openUrl(QUrl("file://" + QFileInfo(item->text()).absolutePath(), QUrl::TolerantMode));
     } else if (clicked == &remove) {
@@ -453,20 +453,20 @@ void MainWindow::printLabel(bool detailed)
     if (!detailed && !m_tab->isInspectorSelected()) { return; }
 
     QMap<QString, QCheckBox *> label_positions;
-    QDialog * d = new QDialog(this);
+    QDialog *d = new QDialog(this);
         d->setWindowTitle(detailed ? tr("Print detailed label - Leaklog") : tr("Print label - Leaklog"));
-        QGridLayout * gl = new QGridLayout(d);
-            QLabel * lbl_print_labels = new QLabel(tr("Choose the position of the label on the paper:"), d);
+        QGridLayout *gl = new QGridLayout(d);
+            QLabel *lbl_print_labels = new QLabel(tr("Choose the position of the label on the paper:"), d);
         gl->addWidget(lbl_print_labels, 0, 0, 1, 2);
             for (int c = 0; c < 2; ++c) {
                 for (int r = 0; r < 4; ++r) {
-                    QCheckBox * chb = new QCheckBox(d);
+                    QCheckBox *chb = new QCheckBox(d);
                     chb->setText(tr("Row %1 Column %2").arg(r + 1).arg(c + 1));
                     label_positions.insert(QString("%1;%2").arg(r).arg(c), chb);
                     gl->addWidget(chb, r + 1, c);
                 }
             }
-            QDialogButtonBox * bb = new QDialogButtonBox(d);
+            QDialogButtonBox *bb = new QDialogButtonBox(d);
             bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
             QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
@@ -562,7 +562,7 @@ void MainWindow::printLabel(bool detailed)
     painter.end();
 }
 
-void MainWindow::paintLabel(const QVariantMap & attributes, QPainter & painter, int x, int y, int w, int h)
+void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, int x, int y, int w, int h)
 {
     bool detailed = attributes.contains("circuit_id");
     painter.save();
@@ -714,7 +714,7 @@ void MainWindow::refreshView()
     m_tab->refreshView();
 }
 
-void MainWindow::addRecent(const QString & name)
+void MainWindow::addRecent(const QString &name)
 {
     for (int i = 0; i < lw_recent_docs->count();) {
         if (lw_recent_docs->item(i)->text() == name) {
@@ -829,7 +829,7 @@ void MainWindow::dateFormatChanged(MainWindowSettings::DateFormat date_format)
         df.key()->setChecked(true);
 }
 
-void MainWindow::dateFormatChanged(QAction * action)
+void MainWindow::dateFormatChanged(QAction *action)
 {
     m_settings.setDateFormat(dict_action_date_format.value(action));
     refreshView();
@@ -842,7 +842,7 @@ void MainWindow::timeFormatChanged(MainWindowSettings::TimeFormat time_format)
         tf.key()->setChecked(true);
 }
 
-void MainWindow::timeFormatChanged(QAction * action)
+void MainWindow::timeFormatChanged(QAction *action)
 {
     m_settings.setTimeFormat(dict_action_time_format.value(action));
     refreshView();
@@ -917,9 +917,9 @@ void MainWindow::toggleLocked()
 
         QDialog d(this);
         d.setWindowTitle(tr("Lock database - Leaklog"));
-        QGridLayout * gl = new QGridLayout(&d);
+        QGridLayout *gl = new QGridLayout(&d);
 
-        QLabel * lbl = new QLabel(tr("Lock inspections and repairs older than:"), &d);
+        QLabel *lbl = new QLabel(tr("Lock inspections and repairs older than:"), &d);
         lbl->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
         gl->addWidget(lbl, r, 0, 1, 2);
 
@@ -927,21 +927,21 @@ void MainWindow::toggleLocked()
 
         QString last_date = DBInfoValueForKey("lock_date");
 
-        QRadioButton * static_lock = new QRadioButton(&d);
+        QRadioButton *static_lock = new QRadioButton(&d);
         gl->addWidget(static_lock, r, 0);
 
-        QDateEdit * date = new QDateEdit(&d);
+        QDateEdit *date = new QDateEdit(&d);
         date->setDisplayFormat(m_settings.dateFormatString());
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, DATE_FORMAT));
         gl->addWidget(date, r, 1);
 
         r++;
 
-        QRadioButton * autolock = new QRadioButton(&d);
+        QRadioButton *autolock = new QRadioButton(&d);
         autolock->setChecked(true);
         gl->addWidget(autolock, r, 0);
 
-        QSpinBox * days = new QSpinBox(&d);
+        QSpinBox *days = new QSpinBox(&d);
         days->setSuffix(tr(" days"));
         days->setRange(0, 99999);
         days->setValue(7);
@@ -949,7 +949,7 @@ void MainWindow::toggleLocked()
 
         r++;
 
-        QLineEdit * admin = NULL;
+        QLineEdit *admin = NULL;
         if (isDatabaseRemote()) {
             lbl = new QLabel(tr("Administrator:"), &d);
             lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -966,12 +966,12 @@ void MainWindow::toggleLocked()
         lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         gl->addWidget(lbl, r, 0);
 
-        QLineEdit * password = new QLineEdit(&d);
+        QLineEdit *password = new QLineEdit(&d);
         gl->addWidget(password, r, 1);
 
         r++;
 
-        QDialogButtonBox * bb = new QDialogButtonBox(&d);
+        QDialogButtonBox *bb = new QDialogButtonBox(&d);
         bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         bb->button(QDialogButtonBox::Ok)->setText(tr("Lock"));
         bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -1053,19 +1053,19 @@ void MainWindow::configureAutosave()
     d.setWindowModality(Qt::WindowModal);
     d.setWindowFlags(d.windowFlags() | Qt::Sheet);
 
-    QVBoxLayout * layout = new QVBoxLayout(&d);
+    QVBoxLayout *layout = new QVBoxLayout(&d);
 
-    QRadioButton * rbtn_off = new QRadioButton(tr("Do not save automatically"), &d);
+    QRadioButton *rbtn_off = new QRadioButton(tr("Do not save automatically"), &d);
     rbtn_off->setChecked(autosave_mode.isEmpty());
     layout->addWidget(rbtn_off);
 
     layout->addSpacing(12);
 
-    QRadioButton * rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), &d);
+    QRadioButton *rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), &d);
     rbtn_immediate->setChecked(autosave_mode == "immediate");
     layout->addWidget(rbtn_immediate);
 
-    QLabel * lbl_immediate = new QLabel(tr("This will disable the Undo function."), &d);
+    QLabel *lbl_immediate = new QLabel(tr("This will disable the Undo function."), &d);
     QFont font = lbl_immediate->font();
     font.setItalic(true);
     lbl_immediate->setFont(font);
@@ -1073,19 +1073,19 @@ void MainWindow::configureAutosave()
 
     layout->addSpacing(12);
 
-    QRadioButton * rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), &d);
     rbtn_delayed->setChecked(autosave_mode == "delayed");
     layout->addWidget(rbtn_delayed);
 
     layout->addSpacing(12);
 
-    QRadioButton * rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), &d);
     rbtn_ask->setChecked(autosave_mode == "ask");
     layout->addWidget(rbtn_ask);
 
     layout->addSpacing(12);
 
-    QDialogButtonBox * bb = new QDialogButtonBox(&d);
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->addButton(tr("&Save"), QDialogButtonBox::AcceptRole);
     bb->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
@@ -1109,7 +1109,7 @@ void MainWindow::configureAutosave()
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (!saveChangesBeforeProceeding(tr("Quit Leaklog"), true)) {
         saveSettings();
@@ -1168,7 +1168,7 @@ void MainWindow::saveSettings()
 
 void MainWindow::changeLanguage()
 {
-    QWidget * w_lang = new QWidget(this, Qt::Dialog);
+    QWidget *w_lang = new QWidget(this, Qt::Dialog);
     w_lang->setWindowModality(Qt::WindowModal);
     w_lang->setAttribute(Qt::WA_DeleteOnClose);
 #ifdef Q_OS_MAC
@@ -1176,9 +1176,9 @@ void MainWindow::changeLanguage()
 #else
     w_lang->setWindowTitle(tr("Change language - Leaklog"));
 #endif
-    QGridLayout * glayout_lang = new QGridLayout(w_lang);
+    QGridLayout *glayout_lang = new QGridLayout(w_lang);
     glayout_lang->setMargin(6); glayout_lang->setSpacing(6);
-    QLabel * lbl_lang = new QLabel(w_lang);
+    QLabel *lbl_lang = new QLabel(w_lang);
     lbl_lang->setText(tr("Select your preferred language"));
     glayout_lang->addWidget(lbl_lang, 0, 0);
     cb_lang = new QComboBox(w_lang);
@@ -1188,7 +1188,7 @@ void MainWindow::changeLanguage()
         if (langs.at(i) == "English") { cb_lang->setCurrentIndex(i); }
     }
     glayout_lang->addWidget(cb_lang, 1, 0);
-    QDialogButtonBox * bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
+    QDialogButtonBox *bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
     QObject::connect(bb_lang, SIGNAL(accepted()), this, SLOT(languageChanged()));
     QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(close()));
     glayout_lang->addWidget(bb_lang, 2, 0);
@@ -1206,7 +1206,7 @@ void MainWindow::languageChanged()
         QMessageBox::information(this, "Leaklog", tr("You need to restart Leaklog for the changes to apply."));
     }
     if (cb_lang->parent() == NULL) { return; }
-    QWidget * w_lang = (QWidget *)cb_lang->parent();
+    QWidget *w_lang = (QWidget *)cb_lang->parent();
     w_lang->close();
     cb_lang = NULL;
 }
@@ -1224,11 +1224,11 @@ void MainWindow::checkForUpdates(bool silent)
 #else
               .arg('O').arg(-1));
 #endif
-    QNetworkReply * reply = network_access_manager->get(request);
+    QNetworkReply *reply = network_access_manager->get(request);
     reply->setProperty("silent", silent);
 }
 
-void MainWindow::httpRequestFinished(QNetworkReply * reply)
+void MainWindow::httpRequestFinished(QNetworkReply *reply)
 {
     bool silent = reply->property("silent").toBool();
 
@@ -1323,7 +1323,7 @@ void MainWindow::httpRequestFailed(bool silent)
 
 void MainWindow::about()
 {
-    AboutWidget * leaklog_about = new AboutWidget;
+    AboutWidget *leaklog_about = new AboutWidget;
     leaklog_about->setParent(this);
     leaklog_about->setWindowFlags(Qt::Dialog /*| Qt::WindowMaximizeButtonHint*/ | Qt::WindowStaysOnTopHint);
     leaklog_about->show();

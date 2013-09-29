@@ -29,14 +29,14 @@ class InspectorsView : public View
     Q_OBJECT
 
 public:
-    InspectorsView(ViewTabSettings * settings);
+    InspectorsView(ViewTabSettings *settings);
 
     QString renderHTML();
 
     QString title() const;
 
 protected:
-    HTMLTable * writeInspectorsTable(const QString &, const QString & = QString());
+    HTMLTable *writeInspectorsTable(const QString &, const QString & = QString());
 };
 
 #endif // INSPECTORSVIEW_H

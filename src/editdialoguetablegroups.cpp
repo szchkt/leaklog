@@ -24,7 +24,7 @@
 #include <QMap>
 #include <QVBoxLayout>
 
-EditDialogueGroupsLayout::EditDialogueGroupsLayout(QWidget * parent):
+EditDialogueGroupsLayout::EditDialogueGroupsLayout(QWidget *parent):
 QWidget(parent)
 {
     layout = new QVBoxLayout(this);
@@ -40,14 +40,14 @@ EditDialogueGroupsLayout::~EditDialogueGroupsLayout()
     for (int i = header_items.count() - 1; i >= 0; --i) { delete header_items.takeAt(i); }
 }
 
-void EditDialogueGroupsLayout::addHeaderItem(int id, const QString & name, const QString & full_name, int data_type)
+void EditDialogueGroupsLayout::addHeaderItem(int id, const QString &name, const QString &full_name, int data_type)
 {
     header_items.append(new EditDialogueGroupHeaderItem(id, name, full_name, data_type));
 }
 
-void EditDialogueGroupsLayout::addItem(const QString & group_name, int category_id, QMap<QString, EditDialogueTableCell *> & values, int category_display, bool display)
+void EditDialogueGroupsLayout::addItem(const QString &group_name, int category_id, QMap<QString, EditDialogueTableCell *> &values, int category_display, bool display)
 {
-    EditDialogueAdvancedTable * group_box;
+    EditDialogueAdvancedTable *group_box;
     if (!groups->contains(group_name)) {
         group_box = createGroup(group_name, category_id, category_display);
     } else {
@@ -57,13 +57,13 @@ void EditDialogueGroupsLayout::addItem(const QString & group_name, int category_
     group_box->addRow(values, display);
 }
 
-EditDialogueAdvancedTable * EditDialogueGroupsLayout::createGroup(const QString & group_name, int category_id, int display_options)
+EditDialogueAdvancedTable *EditDialogueGroupsLayout::createGroup(const QString &group_name, int category_id, int display_options)
 {
     int show_prices = 0;
 
     QList<EditDialogueTableCell *> cells;
     for (int i = 0; i < header_items.count(); ++i) {
-        if ((display_options & header_items.at(i)->id()) || header_items.at(i)->id() < 0) {
+        if ((display_options &header_items.at(i)->id()) || header_items.at(i)->id() < 0) {
             cells.append(header_items.at(i)->tableCell());
 
             if ((header_items.at(i)->id() == AssemblyRecordItemCategory::ShowAcquisitionPrice)
@@ -72,7 +72,7 @@ EditDialogueAdvancedTable * EditDialogueGroupsLayout::createGroup(const QString 
         }
     }
 
-    EditDialogueAdvancedTable * group_box;
+    EditDialogueAdvancedTable *group_box;
 
     if (category_id == INSPECTORS_CATEGORY_ID && show_prices > 1)
         group_box = new EditDialogueTableWithAdjustableTotal(group_name, category_id, cells, this);
@@ -87,7 +87,7 @@ QList<MTDictionary> EditDialogueGroupsLayout::allValues()
 {
     QList<MTDictionary> values;
 
-    foreach (EditDialogueAdvancedTable * group_box, *groups) {
+    foreach (EditDialogueAdvancedTable *group_box, *groups) {
         values.append(group_box->allValues());
     }
 
@@ -96,13 +96,13 @@ QList<MTDictionary> EditDialogueGroupsLayout::allValues()
 
 void EditDialogueGroupsLayout::clear()
 {
-    foreach (EditDialogueAdvancedTable * group_box, *groups)
+    foreach (EditDialogueAdvancedTable *group_box, *groups)
         delete group_box;
 
     groups->clear();
 }
 
-EditDialogueGroupHeaderItem::EditDialogueGroupHeaderItem(int id, const QString & name, const QString & full_name, int data_type)
+EditDialogueGroupHeaderItem::EditDialogueGroupHeaderItem(int id, const QString &name, const QString &full_name, int data_type)
 {
     this->item_id = id;
     this->item_name = name;
@@ -110,7 +110,7 @@ EditDialogueGroupHeaderItem::EditDialogueGroupHeaderItem(int id, const QString &
     this->data_type = data_type;
 }
 
-EditDialogueTableCell * EditDialogueGroupHeaderItem::tableCell()
+EditDialogueTableCell *EditDialogueGroupHeaderItem::tableCell()
 {
     return new EditDialogueTableCell(item_full_name, item_name, data_type);
 }

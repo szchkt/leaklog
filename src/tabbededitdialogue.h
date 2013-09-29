@@ -40,7 +40,7 @@ class TabbedEditDialogue : public EditDialogue
     Q_OBJECT
 
 public:
-    TabbedEditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent = NULL, bool layout = true);
+    TabbedEditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent = NULL, bool layout = true);
     ~TabbedEditDialogue();
 
 protected slots:
@@ -51,7 +51,7 @@ protected:
 
     void addTab(EditDialogueTab *);
 
-    QTabWidget * main_tabw;
+    QTabWidget *main_tabw;
     QList<EditDialogueArea *> tabs;
 };
 
@@ -70,11 +70,11 @@ public:
 
     void setLayout(QLayout *);
 
-    const QString & name() { return tab_name; }
+    const QString &name() { return tab_name; }
     virtual void save(const QVariant &) = 0;
 
-    virtual QWidget * widget();
-    QScrollArea * createScrollArea();
+    virtual QWidget *widget();
+    QScrollArea *createScrollArea();
 
 protected:
     void setName(const QString tab_name) { this->tab_name = tab_name; }

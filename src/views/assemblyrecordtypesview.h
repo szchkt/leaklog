@@ -27,7 +27,7 @@ class AssemblyRecordTypesView : public View
     Q_OBJECT
 
 public:
-    AssemblyRecordTypesView(ViewTabSettings * settings);
+    AssemblyRecordTypesView(ViewTabSettings *settings);
 
     QString renderHTML();
 

@@ -27,7 +27,7 @@ void MainWindow::macInitUI()
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (QSysInfo::MacintoshVersion > QSysInfo::MV_10_6) {
-        NSView * view = (NSView *)winId();
+        NSView *view = (NSView *)winId();
         [[view window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
 #endif
@@ -38,7 +38,7 @@ bool MainWindow::isFullScreen() const
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (QSysInfo::MacintoshVersion <= QSysInfo::MV_10_6)
         return QWidget::isFullScreen();
-    NSView * view = (NSView *)winId();
+    NSView *view = (NSView *)winId();
     return ([[view window] styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask;
 #else
     return QWidget::isFullScreen();
@@ -54,7 +54,7 @@ void MainWindow::showFullScreen()
     }
     if (!isVisible())
         show();
-    NSView * view = (NSView *)winId();
+    NSView *view = (NSView *)winId();
     [[view window] toggleFullScreen:nil];
 #else
     QWidget::showFullScreen();

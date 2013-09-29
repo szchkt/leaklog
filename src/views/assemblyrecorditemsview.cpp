@@ -47,7 +47,7 @@ QString AssemblyRecordItemsView::renderHTML()
 
     HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;
-    HTMLTableRow * row = new HTMLTableRow();
+    HTMLTableRow *row = new HTMLTableRow();
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
         *(row->addHeaderCell("rowspan=\"2\"")->link("allassemblyrecorditems:/order_by:"
                                   + AssemblyRecordItemCategory::attributes().key(n)))
@@ -145,7 +145,7 @@ QString AssemblyRecordItemsView::renderHTML()
     return viewTemplate("assembly_record_items").arg(table.html());
 }
 
-void AssemblyRecordItemsView::addDisplayOptionsCellToCategoriesTable(HTMLTableRow * row, int display_options, int value)
+void AssemblyRecordItemsView::addDisplayOptionsCellToCategoriesTable(HTMLTableRow *row, int display_options, int value)
 {
     *(row->addCell()) << (display_options & value ? tr("Yes") : tr("No"));
 }

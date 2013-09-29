@@ -27,7 +27,7 @@ class InspectorDetailsView : public InspectorsView
     Q_OBJECT
 
 public:
-    InspectorDetailsView(ViewTabSettings * settings);
+    InspectorDetailsView(ViewTabSettings *settings);
 
     QString renderHTML();
 

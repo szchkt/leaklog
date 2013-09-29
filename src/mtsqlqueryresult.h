@@ -31,7 +31,7 @@ template<class Key>
 class MTSqlQueryResultBase
 {
 public:
-    MTSqlQueryResultBase(const QString & q, QSqlDatabase db = QSqlDatabase()) {
+    MTSqlQueryResultBase(const QString &q, QSqlDatabase db = QSqlDatabase()) {
         _query = new MTSqlQuery(db.isValid() ? db : QSqlDatabase::database());
         _query->exec(q);
         _pos = -1;
@@ -46,15 +46,15 @@ public:
         if (_query) { delete _query; }
     }
 
-    void bindValue(const QString & placeholder, const QVariant & value, QSql::ParamType type = QSql::In) {
+    void bindValue(const QString &placeholder, const QVariant &value, QSql::ParamType type = QSql::In) {
         _query->bindValue(placeholder, value, type);
     }
 
-    QVariant boundValue(const QString & placeholder) const {
+    QVariant boundValue(const QString &placeholder) const {
         return _query->boundValue(placeholder);
     }
 
-    bool exec(const QString & q) {
+    bool exec(const QString &q) {
         bool ok = _query->exec(q);
         if (ok) { saveResult(); }
         return ok;
@@ -72,11 +72,11 @@ public:
         return true;
     }
 
-    bool prepare(const QString & q) {
+    bool prepare(const QString &q) {
         return _query->prepare(q);
     }
 
-    MTSqlQuery * query() {
+    MTSqlQuery *query() {
         return _query;
     }
 
@@ -84,7 +84,7 @@ public:
         return _query->record();
     }
 
-    QVariant value(const Key & key) const {
+    QVariant value(const Key &key) const {
         if (_pos < 0)
             return QVariant();
         return _result.at(_pos).value(key);
@@ -95,18 +95,18 @@ public:
     }
 
 protected:
-    int * pos() {
+    int *pos() {
         return &_pos;
     }
 
-    QList<QMap<Key, QVariant> > * result() {
+    QList<QMap<Key, QVariant> > *result() {
         return &_result;
     }
 
     virtual void saveResult() = 0;
 
 private:
-    MTSqlQuery * _query;
+    MTSqlQuery *_query;
     QList<QMap<Key, QVariant> > _result;
     int _pos;
 

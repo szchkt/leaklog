@@ -29,7 +29,7 @@ class StoreView : public View
     Q_OBJECT
 
 public:
-    StoreView(ViewTabSettings * settings);
+    StoreView(ViewTabSettings *settings);
 
     QString renderHTML();
 

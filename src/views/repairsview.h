@@ -27,7 +27,7 @@ class RepairsView : public CustomersView
     Q_OBJECT
 
 public:
-    RepairsView(ViewTabSettings * settings);
+    RepairsView(ViewTabSettings *settings);
 
     QString renderHTML();
 

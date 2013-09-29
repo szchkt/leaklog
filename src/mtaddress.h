@@ -32,20 +32,20 @@ public:
     enum AddressFormat { Singleline, Multiline };
 
     MTAddress() {}
-    MTAddress(const QString & address) { initWithAddress(address); }
+    MTAddress(const QString &address) { initWithAddress(address); }
 
     inline bool isEmpty() const { return a_street.isEmpty() && a_city.isEmpty() && a_postal_code.isEmpty(); }
     void clear();
-    inline void fromString(const QString & address) { initWithAddress(address); }
+    inline void fromString(const QString &address) { initWithAddress(address); }
     QString toString() const;
     QString toPlainText(AddressFormat = Singleline) const;
     QString toHtml(AddressFormat = Singleline) const;
 
-    inline void setStreet(const QString & street) { a_street = street.simplified(); }
+    inline void setStreet(const QString &street) { a_street = street.simplified(); }
     inline QString street() const { return a_street; }
-    inline void setCity(const QString & city) { a_city = city.simplified(); }
+    inline void setCity(const QString &city) { a_city = city.simplified(); }
     inline QString city() const { return a_city; }
-    inline void setPostalCode(const QString & postal_code) { a_postal_code = postal_code.simplified(); }
+    inline void setPostalCode(const QString &postal_code) { a_postal_code = postal_code.simplified(); }
     inline QString postalCode() const { return a_postal_code; }
 
 protected:
@@ -65,20 +65,20 @@ protected:
     void init();
 
 public:
-    MTAddressEdit(QWidget * parent = 0, Qt::WindowFlags f = 0):
+    MTAddressEdit(QWidget *parent = 0, Qt::WindowFlags f = 0):
     QFrame(parent, f) { init(); }
-    MTAddressEdit(const MTAddress & address, QWidget * parent = 0, Qt::WindowFlags f = 0):
+    MTAddressEdit(const MTAddress &address, QWidget *parent = 0, Qt::WindowFlags f = 0):
     QFrame(parent, f) { init(); setAddress(address); }
 
-    void setAddress(const MTAddress & address);
+    void setAddress(const MTAddress &address);
     MTAddress address() const;
 
     static QString addressStringFormat(MTAddress::AddressFormat);
 
 private:
-    QLineEdit * ae_street;
-    QLineEdit * ae_city;
-    QLineEdit * ae_postal_code;
+    QLineEdit *ae_street;
+    QLineEdit *ae_city;
+    QLineEdit *ae_postal_code;
 };
 
 #endif // MTADDRESS_H

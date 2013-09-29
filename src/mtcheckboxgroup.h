@@ -27,11 +27,11 @@ class MTCheckBox : public QCheckBox
     Q_OBJECT
 
 public:
-    MTCheckBox(QWidget * parent = NULL):
+    MTCheckBox(QWidget *parent = NULL):
     QCheckBox(parent) {
         QObject::connect(this, SIGNAL(toggled(bool)), this, SLOT(emitToggled(bool)));
     }
-    MTCheckBox(const QString & text, QWidget * parent = NULL):
+    MTCheckBox(const QString &text, QWidget *parent = NULL):
     QCheckBox(text, parent) {
         QObject::connect(this, SIGNAL(toggled(bool)), this, SLOT(emitToggled(bool)));
     }
@@ -50,16 +50,16 @@ class MTCheckBoxGroup : public QObject
     Q_OBJECT
 
 public:
-    MTCheckBoxGroup(QObject * parent = NULL):
+    MTCheckBoxGroup(QObject *parent = NULL):
     QObject(parent) {}
 
-    void addCheckBox(MTCheckBox * chb) {
+    void addCheckBox(MTCheckBox *chb) {
         QObject::connect(chb, SIGNAL(toggled(MTCheckBox *, bool)), this, SLOT(updateCheckStates(MTCheckBox *, bool)));
         checkboxes << chb;
     }
 
 private slots:
-    void updateCheckStates(MTCheckBox * chb, bool checked) {
+    void updateCheckStates(MTCheckBox *chb, bool checked) {
         if (!checked) return;
         for (QList<MTCheckBox *>::const_iterator i = checkboxes.constBegin(); i != checkboxes.constEnd(); ++i) {
             if (*i != chb)

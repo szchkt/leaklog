@@ -32,7 +32,7 @@
 #include <QTreeWidget>
 #include <QHeaderView>
 
-EditDialogueTable::EditDialogueTable(const QString & name, const QList<EditDialogueTableCell *> & header, QWidget * parent):
+EditDialogueTable::EditDialogueTable(const QString &name, const QList<EditDialogueTableCell *> &header, QWidget *parent):
         QWidget(parent)
 {
     this->header = header;
@@ -79,9 +79,9 @@ EditDialogueTable::~EditDialogueTable()
     delete tree;
 }
 
-void EditDialogueTable::addRow(const QMap<QString, EditDialogueTableCell *> & values, bool display)
+void EditDialogueTable::addRow(const QMap<QString, EditDialogueTableCell *> &values, bool display)
 {
-    EditDialogueTableRow * row = new EditDialogueTableRow(values, display, tree);
+    EditDialogueTableRow *row = new EditDialogueTableRow(values, display, tree);
     QObject::connect(row, SIGNAL(removed(EditDialogueTableRow*)), this, SLOT(rowRemoved(EditDialogueTableRow*)));
     rows.append(row);
 
@@ -92,11 +92,11 @@ void EditDialogueTable::addRow(const QMap<QString, EditDialogueTableCell *> & va
     }
 }
 
-void EditDialogueTable::addRow(EditDialogueTableRow * row)
+void EditDialogueTable::addRow(EditDialogueTableRow *row)
 {
-    MDTInputWidget * iw;
+    MDTInputWidget *iw;
 
-    EditDialogueTableCell * cell;
+    EditDialogueTableCell *cell;
     for (int i = 0; i < header.count(); ++i) {
         cell = row->valuesMap().value(header.at(i)->id());
 
@@ -140,7 +140,7 @@ void EditDialogueTable::addRow(EditDialogueTableRow * row)
     tree->setItemWidget(row->treeItem(), header.count(), row->removeButton());
 }
 
-void EditDialogueTable::rowRemoved(EditDialogueTableRow * row)
+void EditDialogueTable::rowRemoved(EditDialogueTableRow *row)
 {
     int index = tree->indexOfTopLevelItem(row->takeTreeItem());
     if (index >= 0) {
@@ -182,7 +182,7 @@ QList<MTDictionary> EditDialogueTable::allValues() const
     return values;
 }
 
-EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, int category_id, const QList<EditDialogueTableCell *> & header, QWidget * parent):
+EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, int category_id, const QList<EditDialogueTableCell *> &header, QWidget *parent):
         EditDialogueTable(name, header, parent)
 {
     this->category_id = category_id;
@@ -191,9 +191,9 @@ EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, int ca
     layout->addLayout(addRowControlsLayout());
 }
 
-QLayout * EditDialogueAdvancedTable::addRowControlsLayout()
+QLayout *EditDialogueAdvancedTable::addRowControlsLayout()
 {
-    QHBoxLayout * layout = new QHBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(6);
     add_row_cb = new QComboBox(this);
@@ -201,13 +201,13 @@ QLayout * EditDialogueAdvancedTable::addRowControlsLayout()
 
     layout->addWidget(add_row_cb);
 
-    QPushButton * add_btn = new QPushButton(tr("Add"), this);
+    QPushButton *add_btn = new QPushButton(tr("Add"), this);
     QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(activateRow()));
     layout->addWidget(add_btn);
 
     layout->addStretch();
 
-    QToolButton * add_new_btn = new QToolButton(this);
+    QToolButton *add_new_btn = new QToolButton(this);
     add_new_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     add_new_btn->setText(tr("Add custom item"));
     add_new_btn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -217,14 +217,14 @@ QLayout * EditDialogueAdvancedTable::addRowControlsLayout()
     return layout;
 }
 
-void EditDialogueAdvancedTable::addHiddenRow(EditDialogueTableRow * row)
+void EditDialogueAdvancedTable::addHiddenRow(EditDialogueTableRow *row)
 {
     add_row_cb->addItem(row->value("name"), row->valuesMap().value("item_type_id")->value());
 }
 
 void EditDialogueAdvancedTable::activateRow()
 {
-    EditDialogueTableRow * row = NULL;
+    EditDialogueTableRow *row = NULL;
     QString type_id = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
 
     for (int i = 0; i < rows.count(); ++i) {
@@ -243,7 +243,7 @@ void EditDialogueAdvancedTable::activateRow()
 QList<EditDialogueTableCell *> EditDialogueAdvancedTable::hiddenAttributes()
 {
     QList<EditDialogueTableCell *> attrs;
-    EditDialogueTableCell * cell = new EditDialogueTableCell(category_id);
+    EditDialogueTableCell *cell = new EditDialogueTableCell(category_id);
     cell->setId("category_id");
     attrs.append(cell);
     cell = new EditDialogueTableCell(smallest_index--);
@@ -256,24 +256,24 @@ QList<EditDialogueTableCell *> EditDialogueAdvancedTable::hiddenAttributes()
     return attrs;
 }
 
-EditDialogueBasicTable::EditDialogueBasicTable(const QString & name, const QList<EditDialogueTableCell *> & header, QWidget * parent):
+EditDialogueBasicTable::EditDialogueBasicTable(const QString &name, const QList<EditDialogueTableCell *> &header, QWidget *parent):
         EditDialogueTable(name, header, parent)
 {
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
-    QToolButton * add_btn = new QToolButton;
+    QToolButton *add_btn = new QToolButton;
     add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     QObject::connect(add_btn, SIGNAL(clicked()), this, SLOT(addNewRow()));
     title_layout->addWidget(add_btn);
 }
 
-EditDialogueTableWithAdjustableTotal::EditDialogueTableWithAdjustableTotal(const QString & name, int category_id, const QList<EditDialogueTableCell *> & header, QWidget * parent):
+EditDialogueTableWithAdjustableTotal::EditDialogueTableWithAdjustableTotal(const QString &name, int category_id, const QList<EditDialogueTableCell *> &header, QWidget *parent):
     EditDialogueAdvancedTable(name, category_id, header, parent)
 {
     total_w = new QDoubleSpinBox(this);
     total_w->setMaximum(99999999.9);
 
-    QLabel * lbl = new QLabel(tr("Total list price:"), this);
+    QLabel *lbl = new QLabel(tr("Total list price:"), this);
     title_layout->addWidget(lbl);
     title_layout->addWidget(total_w);
 
@@ -314,14 +314,14 @@ void EditDialogueTableWithAdjustableTotal::activateRow()
     reloadTotal();
 }
 
-void EditDialogueTableWithAdjustableTotal::addRow(EditDialogueTableRow * row)
+void EditDialogueTableWithAdjustableTotal::addRow(EditDialogueTableRow *row)
 {
     QObject::connect(row, SIGNAL(valuesChanged()), this, SLOT(reloadTotal()));
     EditDialogueTable::addRow(row);
     reloadTotal();
 }
 
-EditDialogueTableRow::EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> & values, bool in_table, QTreeWidget * tree):
+EditDialogueTableRow::EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> &values, bool in_table, QTreeWidget *tree):
     m_tree(tree),
     m_tree_item(NULL)
 {
@@ -379,7 +379,7 @@ double EditDialogueTableRow::acquisitionOrListPrice() const
         return 0.0;
 }
 
-QVariant EditDialogueTableRow::widgetValue(const QString & col_id) const
+QVariant EditDialogueTableRow::widgetValue(const QString &col_id) const
 {
     if (widgets.contains(col_id))
         return widgets.value(col_id)->variantValue();
@@ -387,7 +387,7 @@ QVariant EditDialogueTableRow::widgetValue(const QString & col_id) const
         return QVariant();
 }
 
-void EditDialogueTableRow::addWidget(const QString & name, MDTInputWidget * le)
+void EditDialogueTableRow::addWidget(const QString &name, MDTInputWidget *le)
 {
     if (values.value(name)->dataType() == Global::Numeric) {
         QObject::connect((MDTDoubleSpinBox *) le, SIGNAL(valueChanged(double)), this, SIGNAL(valuesChanged()));
@@ -427,7 +427,7 @@ void EditDialogueTableRow::remove()
      i.toBack();
      while (i.hasPrevious()) {
          i.previous();
-         MDTInputWidget * iw = widgets.take(i.key());
+         MDTInputWidget *iw = widgets.take(i.key());
 
          switch (values.value(i.key())->dataType()) {
          case Global::Boolean:
@@ -468,7 +468,7 @@ void EditDialogueTableRow::remove()
      emit removed(this);
 }
 
-QToolButton * EditDialogueTableRow::removeButton()
+QToolButton *EditDialogueTableRow::removeButton()
 {
     if (!remove_btn) {
         remove_btn = new QToolButton;
@@ -487,7 +487,7 @@ const QString EditDialogueTableRow::value(const QString &name) const
         return QString();
 }
 
-QTreeWidgetItem * EditDialogueTableRow::treeItem()
+QTreeWidgetItem *EditDialogueTableRow::treeItem()
 {
     if (m_tree_item)
         return  m_tree_item;
@@ -496,9 +496,9 @@ QTreeWidgetItem * EditDialogueTableRow::treeItem()
     return m_tree_item;
 }
 
-QTreeWidgetItem * EditDialogueTableRow::takeTreeItem()
+QTreeWidgetItem *EditDialogueTableRow::takeTreeItem()
 {
-    QTreeWidgetItem * item = m_tree_item;
+    QTreeWidgetItem *item = m_tree_item;
     m_tree_item = NULL;
     return item;
 }

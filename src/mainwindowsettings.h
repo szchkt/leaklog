@@ -53,8 +53,8 @@ public:
 
     MainWindowSettings();
 
-    void save(QSettings & settings) const;
-    void restore(QSettings & settings);
+    void save(QSettings &settings) const;
+    void restore(QSettings &settings);
 
     inline bool customerDetailsVisible() const { return m_customer_details_visible; }
     void setCustomerDetailsVisible(bool customer_details_visible) { m_customer_details_visible = customer_details_visible; }
@@ -70,14 +70,14 @@ public:
     inline TimeFormat timeFormat() const { return m_time_format; }
     inline QString timeFormatString() const { return m_time_format_string; }
     void setTimeFormat(TimeFormat time_format);
-    inline QString dateTimeFormatString(const QString & join_format = "%1 %2") const { return join_format.arg(m_date_format_string).arg(m_time_format_string); }
+    inline QString dateTimeFormatString(const QString &join_format = "%1 %2") const { return join_format.arg(m_date_format_string).arg(m_time_format_string); }
 
-    inline QString formatDate(const QVariant & date) const { return formatDate(date.toString()); }
-    QString formatDate(const QString & date) const;
-    inline QString formatDateTime(const QVariant & datetime, const QString & join_format = "%1 %2") const { return formatDateTime(datetime.toString(), join_format); }
-    QString formatDateTime(const QString & datetime, const QString & join_format = "%1 %2") const;
+    inline QString formatDate(const QVariant &date) const { return formatDate(date.toString()); }
+    QString formatDate(const QString &date) const;
+    inline QString formatDateTime(const QVariant &datetime, const QString &join_format = "%1 %2") const { return formatDateTime(datetime.toString(), join_format); }
+    QString formatDateTime(const QString &datetime, const QString &join_format = "%1 %2") const;
 
-    void setOrderByForView(quint64 view, const QString & order_by);
+    void setOrderByForView(quint64 view, const QString &order_by);
     QString orderByForView(quint64 view) const;
 
 signals:

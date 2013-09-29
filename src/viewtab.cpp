@@ -46,7 +46,7 @@
 
 #include <QWebFrame>
 
-ViewTab::ViewTab(QWidget * parent):
+ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
     ui(new Ui::ViewTab),
     needs_refresh(false)
@@ -125,103 +125,103 @@ void ViewTab::createViewItems()
     views[View::AssemblyRecordItems] = new AssemblyRecordItemsView(this);
     views[View::CircuitUnitTypes] = new CircuitUnitTypesView(this);
 
-    QTreeWidgetItem * group_service_company = new QTreeWidgetItem(ui->trw_navigation);
+    QTreeWidgetItem *group_service_company = new QTreeWidgetItem(ui->trw_navigation);
     group_service_company->setText(0, tr("Service Company"));
     formatGroupItem(group_service_company);
 
-    QTreeWidgetItem * item_store = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_store = new QTreeWidgetItem(group_service_company);
     item_store->setText(0, tr("Store"));
     item_store->setData(0, Qt::UserRole, View::Store);
     item_store->setIcon(0, QIcon(":/images/images/store_view.png"));
     view_items[View::Store] = item_store;
 
-    QTreeWidgetItem * item_refrigerant_management = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_refrigerant_management = new QTreeWidgetItem(group_service_company);
     item_refrigerant_management->setText(0, tr("Refrigerant Management"));
     item_refrigerant_management->setData(0, Qt::UserRole, View::RefrigerantManagement);
     item_refrigerant_management->setIcon(0, QIcon(":/images/images/management_view.png"));
     view_items[View::RefrigerantManagement] = item_refrigerant_management;
 
-    QTreeWidgetItem * item_leakages = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_leakages = new QTreeWidgetItem(group_service_company);
     item_leakages->setText(0, tr("Leakages by Application"));
     item_leakages->setData(0, Qt::UserRole, View::LeakagesByApplication);
     item_leakages->setIcon(0, QIcon(":/images/images/leakages_view.png"));
     view_items[View::LeakagesByApplication] = item_leakages;
 
-    QTreeWidgetItem * item_agenda = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_agenda = new QTreeWidgetItem(group_service_company);
     item_agenda->setText(0, tr("Agenda"));
     item_agenda->setData(0, Qt::UserRole, View::Agenda);
     item_agenda->setIcon(0, QIcon(":/images/images/agenda_view.png"));
     view_items[View::Agenda] = item_agenda;
 
-    QTreeWidgetItem * item_inspectors = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_inspectors = new QTreeWidgetItem(group_service_company);
     item_inspectors->setText(0, tr("Inspectors"));
     item_inspectors->setData(0, Qt::UserRole, View::Inspectors);
     item_inspectors->setIcon(0, QIcon(":/images/images/inspectors_view.png"));
     view_items[View::Inspectors] = item_inspectors;
 
-    QTreeWidgetItem * item_inspector_details = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_inspector_details = new QTreeWidgetItem(group_service_company);
     item_inspector_details->setText(0, tr("Inspector"));
     item_inspector_details->setData(0, Qt::UserRole, View::InspectorDetails);
     item_inspector_details->setIcon(0, QIcon(":/images/images/inspector_view.png"));
     view_items[View::InspectorDetails] = item_inspector_details;
 
-    QTreeWidgetItem * item_customers = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_customers = new QTreeWidgetItem(group_service_company);
     item_customers->setText(0, tr("Customers"));
     item_customers->setData(0, Qt::UserRole, View::Customers);
     item_customers->setIcon(0, QIcon(":/images/images/customers_view.png"));
     view_items[View::Customers] = item_customers;
 
-    QTreeWidgetItem * item_operator_report = new QTreeWidgetItem(group_service_company);
+    QTreeWidgetItem *item_operator_report = new QTreeWidgetItem(group_service_company);
     item_operator_report->setText(0, tr("Operator Report"));
     item_operator_report->setData(0, Qt::UserRole, View::OperatorReport);
     item_operator_report->setIcon(0, QIcon(":/images/images/report_view.png"));
     view_items[View::OperatorReport] = item_operator_report;
 
-    QTreeWidgetItem * group_basic_logbook = new QTreeWidgetItem(ui->trw_navigation);
+    QTreeWidgetItem *group_basic_logbook = new QTreeWidgetItem(ui->trw_navigation);
     group_basic_logbook->setText(0, tr("Basic Logbook"));
     formatGroupItem(group_basic_logbook);
 
-    QTreeWidgetItem * item_repairs = new QTreeWidgetItem(group_basic_logbook);
+    QTreeWidgetItem *item_repairs = new QTreeWidgetItem(group_basic_logbook);
     item_repairs->setText(0, tr("Repairs"));
     item_repairs->setData(0, Qt::UserRole, View::Repairs);
     item_repairs->setIcon(0, QIcon(":/images/images/repair_view.png"));
     view_items[View::Repairs] = item_repairs;
 
-    QTreeWidgetItem * group_detailed_logbook = new QTreeWidgetItem(ui->trw_navigation);
+    QTreeWidgetItem *group_detailed_logbook = new QTreeWidgetItem(ui->trw_navigation);
     group_detailed_logbook->setText(0, tr("Detailed Logbook"));
     formatGroupItem(group_detailed_logbook);
 
-    QTreeWidgetItem * item_circuits = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_circuits = new QTreeWidgetItem(group_detailed_logbook);
     item_circuits->setText(0, tr("Circuits"));
     item_circuits->setData(0, Qt::UserRole, View::Circuits);
     item_circuits->setIcon(0, QIcon(":/images/images/circuit_view.png"));
     view_items[View::Circuits] = item_circuits;
 
-    QTreeWidgetItem * item_inspections = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_inspections = new QTreeWidgetItem(group_detailed_logbook);
     item_inspections->setText(0, tr("Inspections"));
     item_inspections->setData(0, Qt::UserRole, View::Inspections);
     item_inspections->setIcon(0, QIcon(":/images/images/inspection_view.png"));
     view_items[View::Inspections] = item_inspections;
 
-    QTreeWidgetItem * item_inspection_details = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_inspection_details = new QTreeWidgetItem(group_detailed_logbook);
     item_inspection_details->setText(0, tr("Inspection"));
     item_inspection_details->setData(0, Qt::UserRole, View::InspectionDetails);
     item_inspection_details->setIcon(0, QIcon(":/images/images/inspection_view.png"));
     view_items[View::InspectionDetails] = item_inspection_details;
 
-    QTreeWidgetItem * item_inspection_images = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_inspection_images = new QTreeWidgetItem(group_detailed_logbook);
     item_inspection_images->setText(0, tr("Inspection Images"));
     item_inspection_images->setData(0, Qt::UserRole, View::InspectionImages);
     item_inspection_images->setIcon(0, QIcon(":/images/images/image.png"));
     view_items[View::InspectionImages] = item_inspection_images;
 
-    QTreeWidgetItem * item_assembly_records = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_assembly_records = new QTreeWidgetItem(group_detailed_logbook);
     item_assembly_records->setText(0, tr("Assembly Records"));
     item_assembly_records->setData(0, Qt::UserRole, View::AssemblyRecords);
     item_assembly_records->setIcon(0, QIcon(":/images/images/assembly_records_view.png"));
     view_items[View::AssemblyRecords] = item_assembly_records;
 
-    QTreeWidgetItem * item_assembly_record_details = new QTreeWidgetItem(group_detailed_logbook);
+    QTreeWidgetItem *item_assembly_record_details = new QTreeWidgetItem(group_detailed_logbook);
     item_assembly_record_details->setText(0, tr("Assembly Record"));
     item_assembly_record_details->setData(0, Qt::UserRole, View::AssemblyRecordDetails);
     item_assembly_record_details->setIcon(0, QIcon(":/images/images/assembly_record_view.png"));
@@ -232,30 +232,30 @@ void ViewTab::createViewItems()
     formatGroupItem(group_tables);
     view_items[View::TableOfInspections] = NULL;
 
-    QTreeWidgetItem * group_assembly_records = new QTreeWidgetItem(ui->trw_navigation);
+    QTreeWidgetItem *group_assembly_records = new QTreeWidgetItem(ui->trw_navigation);
     group_assembly_records->setText(0, tr("Assembly Records"));
     formatGroupItem(group_assembly_records);
 
-    QTreeWidgetItem * item_assembly_record_types = new QTreeWidgetItem(group_assembly_records);
+    QTreeWidgetItem *item_assembly_record_types = new QTreeWidgetItem(group_assembly_records);
     item_assembly_record_types->setText(0, tr("Types"));
     item_assembly_record_types->setData(0, Qt::UserRole, View::AssemblyRecordTypes);
     item_assembly_record_types->setIcon(0, QIcon(":/images/images/assembly_record_types_view.png"));
     view_items[View::AssemblyRecordTypes] = item_assembly_record_types;
 
-    QTreeWidgetItem * item_assembly_record_items = new QTreeWidgetItem(group_assembly_records);
+    QTreeWidgetItem *item_assembly_record_items = new QTreeWidgetItem(group_assembly_records);
     item_assembly_record_items->setText(0, tr("Items"));
     item_assembly_record_items->setData(0, Qt::UserRole, View::AssemblyRecordItems);
     item_assembly_record_items->setIcon(0, QIcon(":/images/images/assembly_record_items_view.png"));
     view_items[View::AssemblyRecordItems] = item_assembly_record_items;
 
-    QTreeWidgetItem * item_circuit_unit_types = new QTreeWidgetItem(group_assembly_records);
+    QTreeWidgetItem *item_circuit_unit_types = new QTreeWidgetItem(group_assembly_records);
     item_circuit_unit_types->setText(0, tr("Circuit Unit Types"));
     item_circuit_unit_types->setData(0, Qt::UserRole, View::CircuitUnitTypes);
     item_circuit_unit_types->setIcon(0, QIcon(":/images/images/circuit_unit_types_view.png"));
     view_items[View::CircuitUnitTypes] = item_circuit_unit_types;
 }
 
-void ViewTab::formatGroupItem(QTreeWidgetItem * item)
+void ViewTab::formatGroupItem(QTreeWidgetItem *item)
 {
     QFont font = item->font(0);
 #ifdef Q_OS_MAC
@@ -276,18 +276,18 @@ void ViewTab::setNeedsRefresh()
         needs_refresh = true;
 }
 
-void ViewTab::reloadTables(const QStringList & tables)
+void ViewTab::reloadTables(const QStringList &tables)
 {
-    foreach (QTreeWidgetItem * item, group_tables->takeChildren())
+    foreach (QTreeWidgetItem *item, group_tables->takeChildren())
         delete item;
 
-    foreach (const QString & table, tables)
+    foreach (const QString &table, tables)
         addTable(-1, table);
 }
 
-void ViewTab::addTable(int index, const QString & table)
+void ViewTab::addTable(int index, const QString &table)
 {
-    QTreeWidgetItem * item_table = new QTreeWidgetItem;
+    QTreeWidgetItem *item_table = new QTreeWidgetItem;
     item_table->setText(0, table);
     item_table->setData(0, Qt::UserRole, View::TableOfInspections);
     item_table->setIcon(0, QIcon(":/images/images/table_view.png"));
@@ -297,10 +297,10 @@ void ViewTab::addTable(int index, const QString & table)
         group_tables->insertChild(index, item_table);
 }
 
-void ViewTab::removeTable(const QString & table)
+void ViewTab::removeTable(const QString &table)
 {
     for (int i = 0; i < group_tables->childCount(); ++i) {
-        QTreeWidgetItem * item = group_tables->child(i);
+        QTreeWidgetItem *item = group_tables->child(i);
         if (item->text(0) == table) {
             delete item;
             break;
@@ -308,7 +308,7 @@ void ViewTab::removeTable(const QString & table)
     }
 }
 
-void ViewTab::connectSlots(QObject * receiver)
+void ViewTab::connectSlots(QObject *receiver)
 {
     QObject::connect(receiver, SIGNAL(databaseModified()), this, SLOT(setNeedsRefresh()));
     QObject::connect(this, SIGNAL(tabTextChanged(QWidget *, const QString &)), receiver, SLOT(tabTextChanged(QWidget *, const QString &)));
@@ -354,27 +354,27 @@ void ViewTab::enableTools()
     ui->toolbarstack->enableTools();
 }
 
-MainWindowSettings & ViewTab::mainWindowSettings()
+MainWindowSettings &ViewTab::mainWindowSettings()
 {
     return parentWindow()->settings();
 }
 
-ToolBarStack * ViewTab::toolBarStack() const
+ToolBarStack *ViewTab::toolBarStack() const
 {
     return ui->toolbarstack;
 }
 
-QWebView * ViewTab::webView() const
+QWebView *ViewTab::webView() const
 {
     return ui->wv_main;
 }
 
-void ViewTab::setView(View::ViewID view, const QString & table)
+void ViewTab::setView(View::ViewID view, const QString &table)
 {
     if (view_items[view]) {
         ui->trw_navigation->setCurrentItem(view_items[view]);
     } else if (view == View::TableOfInspections) {
-        QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+        QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
         if (!group_tables->childCount())
             return;
@@ -396,7 +396,7 @@ void ViewTab::setView(View::ViewID view, const QString & table)
     }
 }
 
-void ViewTab::setView(int view, const QString & table)
+void ViewTab::setView(int view, const QString &table)
 {
     setView((View::ViewID)view, table);
 }
@@ -416,7 +416,7 @@ void ViewTab::refreshViewIfNeeded()
 
 View::ViewID ViewTab::currentView() const
 {
-    QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+    QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
     if (item)
         return (View::ViewID)item->data(0, Qt::UserRole).toInt();
@@ -426,7 +426,7 @@ View::ViewID ViewTab::currentView() const
 
 QString ViewTab::currentViewTitle() const
 {
-    QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+    QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
     if (item)
         return item->text(0);
@@ -436,7 +436,7 @@ QString ViewTab::currentViewTitle() const
 
 QString ViewTab::currentTable() const
 {
-    QTreeWidgetItem * item = ui->trw_navigation->currentItem();
+    QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
     if (item && item->parent() == group_tables)
         return item->text(0);
@@ -464,12 +464,12 @@ bool ViewTab::isPrinterFriendlyVersionChecked() const
     return parentWindow()->isPrinterFriendlyVersionChecked();
 }
 
-QString ViewTab::appendDefaultOrderToColumn(const QString & column) const
+QString ViewTab::appendDefaultOrderToColumn(const QString &column) const
 {
     return parentWindow()->appendDefaultOrderToColumn(column);
 }
 
-void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     if (current == previous)
         return;
@@ -510,15 +510,15 @@ void ViewTab::viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
         setNeedsRefresh();
 }
 
-void ViewTab::executeLink(const QUrl & url)
+void ViewTab::executeLink(const QUrl &url)
 {
-    Link * link = linkParser().parse(url.toString());
+    Link *link = linkParser().parse(url.toString());
     if (link) {
         executeLink(link);
     }
 }
 
-void ViewTab::executeLink(Link * link)
+void ViewTab::executeLink(Link *link)
 {
     if (!link->orderBy().isEmpty())
         mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
@@ -740,7 +740,7 @@ void ViewTab::executeLink(Link * link)
 
 void ViewTab::setDefaultWebPage()
 {
-    MTWebPage * page = new MTWebPage(ui->wv_main);
+    MTWebPage *page = new MTWebPage(ui->wv_main);
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
 }
@@ -749,7 +749,7 @@ void ViewTab::reportData()
 {
     ui->trw_navigation->setVisible(false);
 
-    ReportDataController * controller = new ReportDataController(ui->wv_main, ui->toolbarstack);
+    ReportDataController *controller = new ReportDataController(ui->wv_main, ui->toolbarstack);
     QObject::connect(controller, SIGNAL(processing(bool)), this, SLOT(setDisabled(bool)));
     QObject::connect(controller, SIGNAL(destroyed()), this, SLOT(reportDataFinished()));
 }

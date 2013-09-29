@@ -21,7 +21,7 @@
 
 #include <QNetworkRequest>
 
-bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest & request, QWebPage::NavigationType type)
+bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest &request, QWebPage::NavigationType type)
 {
     if (type == NavigationTypeLinkClicked || type == NavigationTypeOther) {
         switch (linkDelegationPolicy()) {

@@ -27,7 +27,7 @@
 #include <QHeaderView>
 #include <QSpinBox>
 
-EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent):
+EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent):
     TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
@@ -36,7 +36,7 @@ EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord * record, UndoSt
 
 void EditAssemblyRecordDialogue::save()
 {
-    MDAbstractInputWidget * id_iw = inputWidget("id");
+    MDAbstractInputWidget *id_iw = inputWidget("id");
     QString id = id_iw->variantValue().toString();
     if (id.isEmpty()) {
         id_iw->setVariantValue(AssemblyRecordType("").max("id") + (qint64)1);
@@ -44,7 +44,7 @@ void EditAssemblyRecordDialogue::save()
     TabbedEditDialogue::save();
 }
 
-EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget * parent):
+EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget *parent):
     EditDialogueTab(parent),
     record_id(record_id)
 {
@@ -53,7 +53,7 @@ EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWid
     init();
 }
 
-void EditAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
+void EditAssemblyRecordDialogueTab::save(const QVariant &record_id_variant)
 {
     AssemblyRecordTypeCategory(QString("%1").arg(record_id)).remove();
 
@@ -62,7 +62,7 @@ void EditAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
     QVariantMap map;
     map.insert("record_type_id", record_id);
 
-    QTreeWidgetItem * item;
+    QTreeWidgetItem *item;
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         item = tree->topLevelItem(i);
 
@@ -76,7 +76,7 @@ void EditAssemblyRecordDialogueTab::save(const QVariant & record_id_variant)
 
 void EditAssemblyRecordDialogueTab::init()
 {
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
 
     layout->addWidget(new QLabel(tr("Assembly record categories:")));
@@ -96,7 +96,7 @@ void EditAssemblyRecordDialogueTab::init()
     ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.id,"
                                                     " assembly_record_type_categories.record_type_id, assembly_record_type_categories.position"));
 
-    QTreeWidgetItem * item;
+    QTreeWidgetItem *item;
     for (int i = 0; i < all_categories.count(); ++i) {
         item = new QTreeWidgetItem;
         item->setText(0, all_categories.at(i).value("name").toString());
@@ -105,7 +105,7 @@ void EditAssemblyRecordDialogueTab::init()
         if (!all_categories.at(i).value("record_type_id").isNull()) item->setCheckState(0, Qt::Checked);
         else item->setCheckState(0, Qt::Unchecked);
         tree->addTopLevelItem(item);
-        QSpinBox * spin_box = new QSpinBox();
+        QSpinBox *spin_box = new QSpinBox();
         spin_box->setValue(all_categories.at(i).value("position").toInt());
         tree->setItemWidget(item, 1, spin_box);
     }

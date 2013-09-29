@@ -6,7 +6,7 @@
 
 void EditDialogueWithAutoId::save()
 {
-    MDAbstractInputWidget * id_iw = inputWidget(record()->idField());
+    MDAbstractInputWidget *id_iw = inputWidget(record()->idField());
     QString id = id_iw->variantValue().toString();
     if (id.isEmpty()) {
         MTRecord rec(record()->table(), record()->idField(), "", MTDictionary());

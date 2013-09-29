@@ -32,11 +32,11 @@
 #include <QPlainTextEdit>
 #include <QApplication>
 
-AttributeFilter::AttributeFilter(AttributeFilters * parent):
+AttributeFilter::AttributeFilter(AttributeFilters *parent):
 QWidget(parent)
 {
     this->parent = parent;
-    QHBoxLayout * hlayout = new QHBoxLayout(this);
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
     hlayout->setSpacing(6);
     hlayout->setContentsMargins(0, 0, 0, 0);
     attribute = new QComboBox(this);
@@ -45,7 +45,7 @@ QWidget(parent)
     hlayout->addWidget(function);
     value = new QLineEdit(this);
     hlayout->addWidget(value);
-    QToolButton * remove = new QToolButton(this);
+    QToolButton *remove = new QToolButton(this);
     remove->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
     QObject::connect(remove, SIGNAL(clicked()), this, SLOT(remove()));
     hlayout->addWidget(remove);
@@ -53,7 +53,7 @@ QWidget(parent)
 
 void AttributeFilter::remove() { emit removeFilter(this); }
 
-AttributeFilters::AttributeFilters(QWidget * parent):
+AttributeFilters::AttributeFilters(QWidget *parent):
 QWidget(parent)
 {
     af_attributes.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
@@ -87,9 +87,9 @@ QString AttributeFilters::function(int i) { return af_filters.at(i)->function->c
 
 QString AttributeFilters::value(int i) { return af_filters.at(i)->value->text(); }
 
-void AttributeFilters::add(const QString & attribute, const QString & function, const QString & value)
+void AttributeFilters::add(const QString &attribute, const QString &function, const QString &value)
 {
-    AttributeFilter * filter = add();
+    AttributeFilter *filter = add();
     for (int i = 0; i < filter->attribute->count(); ++i) {
         if (af_attributes.firstKey(filter->attribute->itemText(i)) == attribute) { filter->attribute->setCurrentIndex(i); break; }
     }
@@ -99,9 +99,9 @@ void AttributeFilters::add(const QString & attribute, const QString & function, 
     filter->value->setText(value);
 }
 
-AttributeFilter * AttributeFilters::add()
+AttributeFilter *AttributeFilters::add()
 {
-    AttributeFilter * filter = new AttributeFilter(this);
+    AttributeFilter *filter = new AttributeFilter(this);
     filter->attribute->addItems(af_attributes.values());
     filter->function->addItems(af_functions);
     filter->function->setCurrentIndex(af_functions.indexOf("="));
@@ -111,17 +111,17 @@ AttributeFilter * AttributeFilters::add()
     return filter;
 }
 
-void AttributeFilters::remove(AttributeFilter * filter)
+void AttributeFilters::remove(AttributeFilter *filter)
 {
     int i = af_filters.indexOf(filter);
     if (i >= 0) { delete af_filters.takeAt(i); }
 }
 
-Condition::Condition(Conditions * parent):
+Condition::Condition(Conditions *parent):
 QWidget(parent)
 {
     this->parent = parent;
-    QHBoxLayout * hlayout = new QHBoxLayout(this);
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
     hlayout->setSpacing(6);
     hlayout->setContentsMargins(0, 0, 0, 0);
     expression_ins = new QPlainTextEdit(this);
@@ -132,7 +132,7 @@ QWidget(parent)
     expression_nom = new QPlainTextEdit(this);
     expression_nom->setMinimumSize(200, 30);
     hlayout->addWidget(expression_nom);
-    QToolButton * remove = new QToolButton(this);
+    QToolButton *remove = new QToolButton(this);
     remove->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
     QObject::connect(remove, SIGNAL(clicked()), this, SLOT(remove()));
     hlayout->addWidget(remove);
@@ -140,7 +140,7 @@ QWidget(parent)
 
 void Condition::remove() { emit removeCondition(this); }
 
-Conditions::Conditions(const QStringList & used_ids, QWidget * parent):
+Conditions::Conditions(const QStringList &used_ids, QWidget *parent):
 QWidget(parent)
 {
     c_used_ids = used_ids;
@@ -166,9 +166,9 @@ QString Conditions::function(int i) { return c_conditions.at(i)->function->curre
 
 QString Conditions::expressionNom(int i) { return c_conditions.at(i)->expression_nom->toPlainText(); }
 
-void Conditions::add(const QString & exp_ins, const QString & function, const QString & exp_nom)
+void Conditions::add(const QString &exp_ins, const QString &function, const QString &exp_nom)
 {
-    Condition * condition = add();
+    Condition *condition = add();
     condition->expression_ins->setPlainText(exp_ins);
     condition->expression_nom->setPlainText(exp_nom);
     for (int i = 0; i < condition->function->count(); ++i) {
@@ -176,9 +176,9 @@ void Conditions::add(const QString & exp_ins, const QString & function, const QS
     }
 }
 
-Condition * Conditions::add()
+Condition *Conditions::add()
 {
-    Condition * condition = new Condition(this);
+    Condition *condition = new Condition(this);
     condition->expression_nom->setPalette(searchLineEditPalettes.search_active_palette);
     new Highlighter(c_used_ids, condition->expression_ins->document());
     new Highlighter(c_used_ids, condition->expression_nom->document());
@@ -190,13 +190,13 @@ Condition * Conditions::add()
     return condition;
 }
 
-void Conditions::remove(Condition * condition)
+void Conditions::remove(Condition *condition)
 {
     int i = c_conditions.indexOf(condition);
     if (i >= 0) { delete c_conditions.takeAt(i); }
 }
 
-EditWarningDialogue::EditWarningDialogue(WarningRecord * record, UndoStack * undo_stack, QWidget * parent):
+EditWarningDialogue::EditWarningDialogue(WarningRecord *record, UndoStack *undo_stack, QWidget *parent):
 EditDialogue(undo_stack, parent)
 {
     init(record);
@@ -212,7 +212,7 @@ EditDialogue(undo_stack, parent)
     md_layout.layout();
     bool disable_input = md_record->id().toInt() >= 1000;
     md_layout.addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
-    QToolButton * tbtn_add_filter = new QToolButton(this);
+    QToolButton *tbtn_add_filter = new QToolButton(this);
     tbtn_add_filter->setDisabled(disable_input);
     tbtn_add_filter->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     md_layout.addWidget(tbtn_add_filter, r, 3);
@@ -221,7 +221,7 @@ EditDialogue(undo_stack, parent)
     QObject::connect(tbtn_add_filter, SIGNAL(clicked()), md_filters, SLOT(add()));
     md_layout.addWidget(md_filters, r + 1, 0, 1, 4);
     md_layout.addWidget(new QLabel(tr("Conditions:"), this), r + 2, 0, 1, 3);
-    QToolButton * tbtn_add_condition = new QToolButton(this);
+    QToolButton *tbtn_add_condition = new QToolButton(this);
     tbtn_add_condition->setDisabled(disable_input);
     tbtn_add_condition->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     md_layout.addWidget(tbtn_add_condition, r + 2, 3);
@@ -242,7 +242,7 @@ EditDialogue(undo_stack, parent)
     this->resize(450, 20);
 }
 
-void EditWarningDialogue::setWindowTitle(const QString & title)
+void EditWarningDialogue::setWindowTitle(const QString &title)
 {
     this->QDialog::setWindowTitle(title);
 }

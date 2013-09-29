@@ -58,16 +58,16 @@ public:
         ViewCount
     };
 
-    View(ViewTabSettings * settings);
+    View(ViewTabSettings *settings);
 
     virtual QString renderHTML() = 0;
 
     virtual QString title() const = 0;
 
 protected:
-    static QString viewTemplate(const QString & view_template);
+    static QString viewTemplate(const QString &view_template);
 
-    ViewTabSettings * settings;
+    ViewTabSettings *settings;
 
 private:
     static QMap<QString, QString> view_templates;

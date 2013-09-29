@@ -25,13 +25,13 @@
 #include <QToolButton>
 #include <QHeaderView>
 
-EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
+EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &customer_id, const QString &circuit_id, QWidget *parent)
     : EditDialogueTab(parent)
 {
     setName(tr("Units"));
     this->customer_id = customer_id;
 
-    QGridLayout * grid = new QGridLayout(this);
+    QGridLayout *grid = new QGridLayout(this);
     grid->setContentsMargins(9, 9, 9, 9);
 
     tree = new QTreeWidget(this);
@@ -67,7 +67,7 @@ EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString & custome
     loadRows(customer_id, circuit_id);
 }
 
-void EditCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QString & circuit_id)
+void EditCircuitDialogueUnitsTab::loadRows(const QString &customer_id, const QString &circuit_id)
 {
     QMap<QString, EditDialogueTableCell *> cells;
 
@@ -102,7 +102,7 @@ void EditCircuitDialogueUnitsTab::loadRows(const QString & customer_id, const QS
     }
 }
 
-void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
+void EditCircuitDialogueUnitsTab::save(const QVariant &circuit_id)
 {
     QList<MTDictionary> all_values = table->allValues();
 
@@ -137,7 +137,7 @@ void EditCircuitDialogueUnitsTab::save(const QVariant & circuit_id)
 
 void EditCircuitDialogueUnitsTab::loadManufacturers()
 {
-    EditCircuitDialogueTreeItem * item;
+    EditCircuitDialogueTreeItem *item;
     MTSqlQuery query("SELECT DISTINCT manufacturer FROM circuit_unit_types ORDER BY manufacturer");
     while (query.next()) {
         item = new EditCircuitDialogueTreeItem(tree);
@@ -147,10 +147,10 @@ void EditCircuitDialogueUnitsTab::loadManufacturers()
     }
 }
 
-void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * qitem)
+void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem *qitem)
 {
-    EditCircuitDialogueTreeItem * parent_item = (EditCircuitDialogueTreeItem *) qitem;
-    EditCircuitDialogueTreeItem * item = NULL;
+    EditCircuitDialogueTreeItem *parent_item = (EditCircuitDialogueTreeItem *) qitem;
+    EditCircuitDialogueTreeItem *item = NULL;
     if (parent_item->isType() || parent_item->childCount()) return;
 
     MTSqlQuery query;
@@ -162,7 +162,7 @@ void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * qit
         item = new EditCircuitDialogueTreeItem(parent_item);
         item->setText(0, query.value(1).toString());
         item->setText(1, CircuitUnitType::locationToString(query.value(2).toInt()));
-        QToolButton * add_btn = new QToolButton;
+        QToolButton *add_btn = new QToolButton;
         add_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
         QObject::connect(add_btn, SIGNAL(clicked()), item, SLOT(addClicked()));
         tree->setItemWidget(item, 2, add_btn);
@@ -173,7 +173,7 @@ void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem * qit
     }
 }
 
-void EditCircuitDialogueUnitsTab::addToTable(EditCircuitDialogueTreeItem * item)
+void EditCircuitDialogueUnitsTab::addToTable(EditCircuitDialogueTreeItem *item)
 {
     QMap<QString, EditDialogueTableCell *> cells;
     cells.insert("manufacturer", new EditDialogueTableCell(item->manufacturer(), "manufacturer"));
@@ -184,13 +184,13 @@ void EditCircuitDialogueUnitsTab::addToTable(EditCircuitDialogueTreeItem * item)
     table->addRow(cells);
 }
 
-EditCircuitDialogueTable::EditCircuitDialogueTable(const QString & name, const QList<EditDialogueTableCell *> & header, QWidget * parent)
+EditCircuitDialogueTable::EditCircuitDialogueTable(const QString &name, const QList<EditDialogueTableCell *> &header, QWidget *parent)
     : EditDialogueTable(name, header, parent)
 {
-    QPushButton * update_circuit_btn = new QPushButton(tr("Update circuit"), this);
+    QPushButton *update_circuit_btn = new QPushButton(tr("Update circuit"), this);
     QObject::connect(update_circuit_btn, SIGNAL(clicked()), this, SLOT(updateCircuit()));
 
-    QHBoxLayout * hlayout = new QHBoxLayout;
+    QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(update_circuit_btn);
     hlayout->setContentsMargins(0, 0, 0, 0);

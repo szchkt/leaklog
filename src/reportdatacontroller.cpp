@@ -33,7 +33,7 @@
 
 using namespace Global;
 
-ReportDataController::ReportDataController(QWebView * wv, ToolBarStack * parent):
+ReportDataController::ReportDataController(QWebView *wv, ToolBarStack *parent):
 QObject(parent), toolbarstack(parent) {
     wv_main = wv;
     toolbarstack->setReportDataGroupBoxVisible(true);
@@ -120,7 +120,7 @@ void ReportDataController::reportData()
 
     ReportData data(year, true, refrigerants_by_field);
     QMap<QString, QVector<double> *>::const_iterator sums_iterator = data.sums_map.constFind(QString::number(year));
-    QVector<double> * sum_list = NULL;
+    QVector<double> *sum_list = NULL;
     QString refrigerant;
 
     MTDictionary refr_man_fieldnames;
@@ -205,7 +205,7 @@ void ReportDataController::reportLeakages()
         out << "\t" << year << ": {" << endl;
 
         bool first_refrigerant = true;
-        foreach (const QString & refrigerant, leakages.usedRefrigerants().keys()) {
+        foreach (const QString &refrigerant, leakages.usedRefrigerants().keys()) {
             if (first_refrigerant)
                 first_refrigerant = false;
             else

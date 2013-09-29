@@ -30,16 +30,16 @@ class CustomersView : public View
     Q_OBJECT
 
 public:
-    CustomersView(ViewTabSettings * settings);
+    CustomersView(ViewTabSettings *settings);
 
     QString renderHTML();
 
     QString title() const;
 
 protected:
-    void writeCustomersTable(MTTextStream & out, const QString & customer_id = QString());
-    HTMLTable * writeCustomersTable(const QString & customer_id, HTMLTable * table = NULL);
-    HTMLTable * customerContactPersons(const QString &, HTMLTable * = NULL);
+    void writeCustomersTable(MTTextStream &out, const QString &customer_id = QString());
+    HTMLTable *writeCustomersTable(const QString &customer_id, HTMLTable *table = NULL);
+    HTMLTable *customerContactPersons(const QString &, HTMLTable * = NULL);
 };
 
 #endif // CUSTOMERSVIEW_H

@@ -29,13 +29,13 @@ class MTWidget : public QWidget
     Q_OBJECT
 
 public:
-    MTWidget(QWidget * parent = NULL): QWidget(parent), parent_window(NULL) {}
+    MTWidget(QWidget *parent = NULL): QWidget(parent), parent_window(NULL) {}
 
-    MainWindow * parentWindow();
-    MainWindow * parentWindow() const;
+    MainWindow *parentWindow();
+    MainWindow *parentWindow() const;
 
 private:
-    MainWindow * parent_window;
+    MainWindow *parent_window;
 };
 
 #endif // MTWIDGET_H

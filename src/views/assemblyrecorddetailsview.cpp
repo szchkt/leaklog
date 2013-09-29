@@ -49,7 +49,7 @@ QString AssemblyRecordDetailsView::renderHTML()
     bool locked = Global::isRecordLocked(inspection_date);
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
-    VariableEvaluation::Variable * variable;
+    VariableEvaluation::Variable *variable;
     QString nom_value;
     QString currency = DBInfoValueForKey("currency", "EUR");
 
@@ -57,7 +57,7 @@ QString AssemblyRecordDetailsView::renderHTML()
     QVariantMap ar_type = ar_type_record.list();
     int type_display_options = ar_type.value("display_options").toInt();
 
-    HTMLParent * main = NULL;
+    HTMLParent *main = NULL;
 
     QString custom_style;
     if (ar_type.value("style", -1).toInt() >= 0) {
@@ -69,10 +69,10 @@ QString AssemblyRecordDetailsView::renderHTML()
     if (!main)
         main = new HTMLMain();
 
-    HTMLTable * table, * top_table;
-    HTMLTableRow * _tr;
-    HTMLTableCell * _td;
-    HTMLParentElement * elem;
+    HTMLTable *table, *top_table;
+    HTMLTableRow *_tr;
+    HTMLTableCell *_td;
+    HTMLParentElement *elem;
 
     if (type_display_options & AssemblyRecordType::ShowServiceCompany) {
         writeServiceCompany(main->table());
@@ -310,14 +310,14 @@ QString AssemblyRecordDetailsView::renderHTML()
     return ret;
 }
 
-HTMLTable * AssemblyRecordDetailsView::writeServiceCompany(HTMLTable * table)
+HTMLTable *AssemblyRecordDetailsView::writeServiceCompany(HTMLTable *table)
 {
     ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("service_company");
-    HTMLTableRow * _tr = table->addRow();
-    HTMLTableCell * _td;
+    HTMLTableRow *_tr = table->addRow();
+    HTMLTableCell *_td;
     if (serv_company.value("image").toInt()) {
         QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data().toBase64();
         if (!byte_array.isNull()) {

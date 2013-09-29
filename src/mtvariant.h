@@ -26,13 +26,13 @@ class MTVariant
 {
 public:
     enum Type { Default = 0, Address = 128 };
-    MTVariant(const QVariant & v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
-    MTVariant(const QVariant & v, const QString & t);
+    MTVariant(const QVariant &v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
+    MTVariant(const QVariant &v, const QString &t);
 
     inline void setType(Type t) { v_type = t; }
     inline Type type() const { return v_type; }
     inline QVariant::Type variantType() const { return v_value.type(); }
-    inline void setValue(const QVariant & v) { v_value = v; }
+    inline void setValue(const QVariant &v) { v_value = v; }
     inline QVariant value() const { return v_value; }
 
     QString toString() const;

@@ -36,10 +36,10 @@ public:
         BackgroundColourRole = Qt::UserRole + 1
     };
 
-    UniformRowColourTreeWidget(QWidget * parent = 0): QTreeWidget(parent) {}
+    UniformRowColourTreeWidget(QWidget *parent = 0): QTreeWidget(parent) {}
 
 protected:
-    void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    void drawRow(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 class EditInspectionDialogueLayout : public EditDialogueLayout
@@ -50,7 +50,7 @@ public:
     void layout();
 
 private:
-    QMap<QString, QString> * groups;
+    QMap<QString, QString> *groups;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_LAYOUT_H

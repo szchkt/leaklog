@@ -44,9 +44,9 @@ QString AssemblyRecordsView::renderHTML()
     bool show_owner = settings->isShowOwnerChecked();
 
     HTMLDiv div;
-    HTMLTable * table;
-    HTMLTableRow * _tr;
-    HTMLTableCell * _td;
+    HTMLTable *table;
+    HTMLTableRow *_tr;
+    HTMLTableCell *_td;
 
     bool customer_given = customer_id.toInt() >= 0, circuit_given = circuit_id.toInt() >= 0;
 

@@ -39,9 +39,9 @@ public:
 
     virtual void setWindowTitle(const QString &);
 
-    inline DBRecord * record() { return md_record; }
+    inline DBRecord *record() { return md_record; }
 
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
 protected slots:
     virtual void save();
@@ -53,13 +53,13 @@ protected:
     virtual void addMainGridLayout(QVBoxLayout *);
 
     int inputWidgetCount() { return md_inputwidgets.count(); }
-    MDAbstractInputWidget * inputWidget(const QString);
+    MDAbstractInputWidget *inputWidget(const QString);
 
     virtual const QVariant idFieldValue();
 
-    DBRecord * md_record;
-    UndoStack * md_undo_stack;
-    QGridLayout * md_grid_main;
+    DBRecord *md_record;
+    UndoStack *md_undo_stack;
+    QGridLayout *md_grid_main;
 
     friend class Customer;
     friend class Circuit;

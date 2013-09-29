@@ -25,21 +25,21 @@
 class MTSqlQuery : public QSqlQuery
 {
 public:
-    MTSqlQuery(QSqlResult * result);
-    MTSqlQuery(const QString & query = QString(), QSqlDatabase db = QSqlDatabase());
+    MTSqlQuery(QSqlResult *result);
+    MTSqlQuery(const QString &query = QString(), QSqlDatabase db = QSqlDatabase());
     MTSqlQuery(QSqlDatabase db);
-    MTSqlQuery(const QSqlQuery & other);
+    MTSqlQuery(const QSqlQuery &other);
 
-    bool exec(const QString & query);
+    bool exec(const QString &query);
     bool exec();
 
     QVariant value(int index) const;
-    QVariant value(const QString & field) const;
-    bool boolValue(const QString & field) const;
-    int intValue(const QString & field) const;
-    qlonglong longLongValue(const QString & field) const;
-    double doubleValue(const QString & field) const;
-    QString stringValue(const QString & field) const;
+    QVariant value(const QString &field) const;
+    bool boolValue(const QString &field) const;
+    int intValue(const QString &field) const;
+    qlonglong longLongValue(const QString &field) const;
+    double doubleValue(const QString &field) const;
+    QString stringValue(const QString &field) const;
 
 protected:
     void printLastError() const;

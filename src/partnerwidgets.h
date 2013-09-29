@@ -34,17 +34,17 @@ class PartnerWidgets : public QObject
 public:
     PartnerWidgets(const QString &, const QString &, QWidget *);
 
-    MDLineEdit * partnerIdWidget() { return partner_id_le; }
-    MDLineEdit * partnerNameWidget() { return partner_name_le; }
-    MDComboBox * partnersWidget() { return partners_cb; }
+    MDLineEdit *partnerIdWidget() { return partner_id_le; }
+    MDLineEdit *partnerNameWidget() { return partner_name_le; }
+    MDComboBox *partnersWidget() { return partners_cb; }
 
 private slots:
     void partnerChanged(int);
 
 private:
-    MDLineEdit * partner_id_le;
-    MDLineEdit * partner_name_le;
-    MDComboBox * partners_cb;
+    MDLineEdit *partner_id_le;
+    MDLineEdit *partner_name_le;
+    MDComboBox *partners_cb;
 };
 
 #endif // PARTNER_WIDGETS_H

@@ -19,7 +19,7 @@
 
 #include "highlighter.h"
 
-Highlighter::Highlighter(QStringList used_ids, QTextDocument * parent):
+Highlighter::Highlighter(QStringList used_ids, QTextDocument *parent):
 QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
@@ -35,7 +35,7 @@ QSyntaxHighlighter(parent)
     }
 }
 
-void Highlighter::highlightBlock(const QString & text)
+void Highlighter::highlightBlock(const QString &text)
 {
     foreach (HighlightingRule rule, highlightingRules) {
         QRegExp expression(rule.pattern);

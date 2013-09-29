@@ -27,7 +27,7 @@ class AgendaView : public View
     Q_OBJECT
 
 public:
-    AgendaView(ViewTabSettings * settings);
+    AgendaView(ViewTabSettings *settings);
 
     QString renderHTML();
 

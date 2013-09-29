@@ -59,12 +59,12 @@ QString InspectionDetailsView::renderHTML()
     nom_inspection_record.addFilter("date <= ?", inspection_date);
     QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
 
-    HTMLTable * table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\""),
-        * _table;
-    HTMLTableRow * header_row = table->addRow();
-    HTMLTableRow * table_row = table->addRow();
-    HTMLTableCell * cell;
-    HTMLParentElement * el;
+    HTMLTable *table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\""),
+        *_table;
+    HTMLTableRow *header_row = table->addRow();
+    HTMLTableRow *table_row = table->addRow();
+    HTMLTableCell *cell;
+    HTMLParentElement *el;
     HTMLDiv div;
 
     div << html;
@@ -80,7 +80,7 @@ QString InspectionDetailsView::renderHTML()
     div.newLine();
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
-    VariableEvaluation::Variable * variable = NULL;
+    VariableEvaluation::Variable *variable = NULL;
 
     var_evaluation.setNominalInspection(nominal_ins);
 
@@ -161,12 +161,12 @@ QString InspectionDetailsView::renderHTML()
     return viewTemplate("inspection").arg(div.html());
 }
 
-void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Variable * variable,
-                                                          VariableEvaluation::EvaluationContext & var_evaluation,
-                                                          QVariantMap & inspection, HTMLTable * _table)
+void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Variable *variable,
+                                                          VariableEvaluation::EvaluationContext &var_evaluation,
+                                                          QVariantMap &inspection, HTMLTable *_table)
 {
     bool compare_nom = false; QString ins_value; QString nom_value;
-    VariableEvaluation::Variable * subvariable = NULL;
+    VariableEvaluation::Variable *subvariable = NULL;
     QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
     if (!subvariables.count()) subvariables.append(variable);
     bool nominal = inspection.value("nominal").toInt();
@@ -192,7 +192,7 @@ void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Va
 
     if (!subvar_values.count()) return;
 
-    HTMLTableRow * _tr = _table->addRow();
+    HTMLTableRow *_tr = _table->addRow();
     *(_tr->addCell(QString("rowspan=\"%1\" colspan=\"%2\"")
                    .arg(subvar_values.count())
                    .arg(subvariables.count() == 1 ? 2 : 1))) << var_evaluation.variableName(variable, nominal);
@@ -207,8 +207,8 @@ void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Va
     }
 }
 
-QStringList InspectionDetailsView::listWarnings(Warnings & warnings, const QVariantMap & circuit_attributes,
-                                                const QVariantMap & nominal_ins, const QVariantMap & inspection)
+QStringList InspectionDetailsView::listWarnings(Warnings &warnings, const QVariantMap &circuit_attributes,
+                                                const QVariantMap &nominal_ins, const QVariantMap &inspection)
 {
     QStringList warnings_list;
     while (warnings.next()) {
@@ -221,7 +221,7 @@ QStringList InspectionDetailsView::listWarnings(Warnings & warnings, const QVari
     return warnings_list;
 }
 
-bool InspectionDetailsView::checkWarningConditions(Warnings & warnings, const QVariantMap & circuit_attributes, const QVariantMap & nominal_ins, const QVariantMap & inspection)
+bool InspectionDetailsView::checkWarningConditions(Warnings &warnings, const QVariantMap &circuit_attributes, const QVariantMap &nominal_ins, const QVariantMap &inspection)
 {
     int id = warnings.value("id").toInt();
     int num_conditions = warnings.warningConditionFunctionCount(id);
@@ -248,8 +248,8 @@ bool InspectionDetailsView::checkWarningConditions(Warnings & warnings, const QV
     return true;
 }
 
-QString InspectionDetailsView::tableVarValue(const QString & var_type, const QString & ins_value, const QString & nom_value,
-                                             const QString & bg_class, bool compare_nom, double tolerance, bool expand_text)
+QString InspectionDetailsView::tableVarValue(const QString &var_type, const QString &ins_value, const QString &nom_value,
+                                             const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
         if (expand_text) return escapeString(ins_value);

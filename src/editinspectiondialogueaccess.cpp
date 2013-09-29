@@ -22,12 +22,12 @@
 #include "editinspectiondialogue.h"
 #include "inputwidgets.h"
 
-EditInspectionDialogueAccess::EditInspectionDialogueAccess(EditInspectionDialogue * parent)
+EditInspectionDialogueAccess::EditInspectionDialogueAccess(EditInspectionDialogue *parent)
 : m_inspection_dialogue(parent)
 {
 }
 
-const QVariant EditInspectionDialogueAccess::getVariableValue(const QString & name)
+const QVariant EditInspectionDialogueAccess::getVariableValue(const QString &name)
 {
     return m_inspection_dialogue->inputWidget(name)->variantValue();
 }

@@ -21,7 +21,7 @@
 
 #include "inputwidgets.h"
 
-EditDialogueLayout::EditDialogueLayout(QList<MDAbstractInputWidget *> * md_inputwidgets, QGridLayout * md_grid_main)
+EditDialogueLayout::EditDialogueLayout(QList<MDAbstractInputWidget *> *md_inputwidgets, QGridLayout *md_grid_main)
 {
     this->md_inputwidgets = md_inputwidgets;
     this->md_grid_main = md_grid_main;
@@ -39,7 +39,7 @@ void EditDialogueLayout::layout()
     }
 }
 
-EditDialogueColumnLayout::EditDialogueColumnLayout(QList<MDAbstractInputWidget *> * inputwidgets, QGridLayout * grid_main, int rows_in_column)
+EditDialogueColumnLayout::EditDialogueColumnLayout(QList<MDAbstractInputWidget *> *inputwidgets, QGridLayout *grid_main, int rows_in_column)
     : EditDialogueLayout(inputwidgets, grid_main)
 {
     this->rows_in_column = rows_in_column;
@@ -63,12 +63,12 @@ void EditDialogueColumnLayout::layout()
     }
 }
 
-void EditDialogueLayout::addWidget(QWidget * widget, int row, int column, Qt::Alignment alignment)
+void EditDialogueLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment)
 {
     md_grid_main->addWidget(widget, row, column, alignment);
 }
 
-void EditDialogueLayout::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment)
+void EditDialogueLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment)
 {
     md_grid_main->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
 }

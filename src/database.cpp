@@ -55,7 +55,7 @@
 
 using namespace Global;
 
-bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
+bool MainWindow::saveChangesBeforeProceeding(const QString &title, bool close_)
 {
     bool db_open = QSqlDatabase::database().isOpen();
     if (db_open && this->isWindowModified()) {
@@ -86,13 +86,13 @@ bool MainWindow::saveChangesBeforeProceeding(const QString & title, bool close_)
     return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase & database, bool transaction, bool save_on_upgrade)
+void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool save_on_upgrade)
 {
     if (transaction) { database.transaction(); }
 { // (SCOPE)
     MTSqlQuery query(database);
     QStringList tables = database.tables();
-    Variables * variables = Variables::defaultVariables();
+    Variables *variables = Variables::defaultVariables();
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
             query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + sqlStringForDatabaseType(databaseTables().value(i), database) + ")");
@@ -413,7 +413,7 @@ void MainWindow::newDatabase()
     openDatabase(QString(), path);
 }
 
-void MainWindow::openRecent(QListWidgetItem * item)
+void MainWindow::openRecent(QListWidgetItem *item)
 {
     QString s = item->text();
     addRecent(s);
@@ -452,44 +452,44 @@ void MainWindow::openRemote()
 {
     if (saveChangesBeforeProceeding(tr("Open remote database - Leaklog"), true)) { return; }
 
-    QDialog * d = new QDialog(this);
+    QDialog *d = new QDialog(this);
 	d->setWindowTitle(tr("Open remote database - Leaklog"));
-        QGridLayout * gl = new QGridLayout(d);
-            QLabel * lbl_driver_ = new QLabel(tr("Driver:"), d);
+        QGridLayout *gl = new QGridLayout(d);
+            QLabel *lbl_driver_ = new QLabel(tr("Driver:"), d);
             lbl_driver_->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_driver_, 0, 0);
-            QLabel * lbl_driver = new QLabel("PostgreSQL", d);
+            QLabel *lbl_driver = new QLabel("PostgreSQL", d);
         gl->addWidget(lbl_driver, 0, 1);
-            QLabel * lbl_server = new QLabel(tr("Server:"), d);
+            QLabel *lbl_server = new QLabel(tr("Server:"), d);
             lbl_server->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_server, 1, 0);
-            QLineEdit * le_server = new QLineEdit(d);
+            QLineEdit *le_server = new QLineEdit(d);
         gl->addWidget(le_server, 1, 1);
-            QLabel * lbl_port = new QLabel(tr("Port:"), d);
+            QLabel *lbl_port = new QLabel(tr("Port:"), d);
             lbl_port->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_port, 2, 0);
-            QSpinBox * spb_port = new QSpinBox(d);
+            QSpinBox *spb_port = new QSpinBox(d);
             spb_port->setRange(0, 999999);
             spb_port->setValue(0);
             spb_port->setSpecialValueText(tr("Default"));
         gl->addWidget(spb_port, 2, 1);
-            QLabel * lbl_db_name = new QLabel(tr("Database name:"), d);
+            QLabel *lbl_db_name = new QLabel(tr("Database name:"), d);
             lbl_db_name->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_db_name, 3, 0);
-            QLineEdit * le_db_name = new QLineEdit(d);
+            QLineEdit *le_db_name = new QLineEdit(d);
         gl->addWidget(le_db_name, 3, 1);
-            QLabel * lbl_user_name = new QLabel(tr("User name:"), d);
+            QLabel *lbl_user_name = new QLabel(tr("User name:"), d);
             lbl_user_name->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_user_name, 4, 0);
-            QLineEdit * le_user_name = new QLineEdit(d);
+            QLineEdit *le_user_name = new QLineEdit(d);
         gl->addWidget(le_user_name, 4, 1);
-            QLabel * lbl_password = new QLabel(tr("Password:"), d);
+            QLabel *lbl_password = new QLabel(tr("Password:"), d);
             lbl_password->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         gl->addWidget(lbl_password, 5, 0);
-            QLineEdit * le_password = new QLineEdit(d);
+            QLineEdit *le_password = new QLineEdit(d);
             le_password->setEchoMode(QLineEdit::Password);
         gl->addWidget(le_password, 5, 1);
-            QDialogButtonBox * bb = new QDialogButtonBox(d);
+            QDialogButtonBox *bb = new QDialogButtonBox(d);
             bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
             QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
@@ -519,7 +519,7 @@ void MainWindow::openRemote()
     openDatabase(QString(), connection_string);
 }
 
-void MainWindow::openDatabase(QString path, const QString & connection_string)
+void MainWindow::openDatabase(QString path, const QString &connection_string)
 {
     m_connection_string = connection_string;
 
@@ -562,7 +562,7 @@ void MainWindow::openDatabase(QString path, const QString & connection_string)
     if (settings.childGroups().isEmpty()) {
         newTab();
     } else {
-        foreach (const QString & index, settings.childGroups()) {
+        foreach (const QString &index, settings.childGroups()) {
             newTab(false);
             settings.beginGroup(index);
             m_tab->restoreSettings(settings);
@@ -622,7 +622,7 @@ void MainWindow::loadDatabase(bool reload)
 
     Warnings warnings;
     while (warnings.next()) {
-        QListWidgetItem * item = new QListWidgetItem;
+        QListWidgetItem *item = new QListWidgetItem;
         item->setText(warnings.value("description").toString().isEmpty() ? warnings.value("name").toString() : tr("%1 (%2)").arg(warnings.value("name").toString()).arg(warnings.value("description").toString()));
         item->setData(Qt::UserRole, warnings.value("id").toString());
         lw_warnings->addItem(item);
@@ -630,7 +630,7 @@ void MainWindow::loadDatabase(bool reload)
 
     ListOfVariantMaps styles = Style().listAll("id, name");
     for (int i = 0; i < styles.count(); ++i) {
-        QListWidgetItem * item = new QListWidgetItem;
+        QListWidgetItem *item = new QListWidgetItem;
         item->setText(styles.at(i).value("name").toString());
         item->setData(Qt::UserRole, styles.at(i).value("id"));
         lw_styles->addItem(item);
@@ -735,7 +735,7 @@ void MainWindow::closeDatabase(bool save)
     settings.remove(QString());
 
     for (int i = 0; i < tabw_main->count(); ++i) {
-        ViewTab * tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
+        ViewTab *tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
         settings.beginGroup(QString::number(i));
         tab->saveSettings(settings);
         settings.endGroup();
@@ -803,7 +803,7 @@ void MainWindow::setDatabaseModified(bool modified)
 
 void MainWindow::newTab(bool init)
 {
-    ViewTab * viewtab = new ViewTab(this);
+    ViewTab *viewtab = new ViewTab(this);
     tabw_main->addTab(viewtab, QString());
     m_tab = viewtab;
     m_tab->connectSlots(this);
@@ -848,12 +848,12 @@ void MainWindow::tabChanged(int index)
     }
 }
 
-void MainWindow::tabTextChanged(QWidget * tab, const QString & text)
+void MainWindow::tabTextChanged(QWidget *tab, const QString &text)
 {
     tabw_main->setTabText(tabw_main->indexOf(tab), text);
 }
 
-bool MainWindow::isOperationPermitted(const QString & operation, const QString & record_owner)
+bool MainWindow::isOperationPermitted(const QString &operation, const QString &record_owner)
 {
     int permitted = Global::isOperationPermitted(operation, record_owner);
     if (permitted <= 0) {
@@ -874,7 +874,7 @@ bool MainWindow::isOperationPermitted(const QString & operation, const QString &
     return true;
 }
 
-bool MainWindow::isRecordLocked(const QString & date)
+bool MainWindow::isRecordLocked(const QString &date)
 {
     if (Global::isRecordLocked(date)) {
         QMessageBox message(this);
@@ -912,7 +912,7 @@ void MainWindow::addRecordOfRefrigerantManagement()
     editRecordOfRefrigerantManagement("");
 }
 
-void MainWindow::editRecordOfRefrigerantManagement(const QString & date)
+void MainWindow::editRecordOfRefrigerantManagement(const QString &date)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
@@ -1081,9 +1081,9 @@ void MainWindow::decommissionAllCircuits()
 
     QDialog d(this);
     d.setWindowTitle(tr("Decommission all circuits - Leaklog"));
-    QGridLayout * gl = new QGridLayout(&d);
+    QGridLayout *gl = new QGridLayout(&d);
 
-    QLabel * lbl = new QLabel(tr("Decommission all circuits of:"), &d);
+    QLabel *lbl = new QLabel(tr("Decommission all circuits of:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
@@ -1093,12 +1093,12 @@ void MainWindow::decommissionAllCircuits()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 1, 0);
 
-    QDateEdit * date = new QDateEdit(&d);
+    QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
     gl->addWidget(date, 1, 1);
 
-    QDialogButtonBox * bb = new QDialogButtonBox(&d);
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Decommission"));
     bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -1223,9 +1223,9 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QDialog d(this);
     d.setWindowTitle(tr("Duplicate and decommission - Leaklog"));
-    QGridLayout * gl = new QGridLayout(&d);
+    QGridLayout *gl = new QGridLayout(&d);
 
-    QLabel * lbl = new QLabel(tr("Duplicate and decommission circuit:"), &d);
+    QLabel *lbl = new QLabel(tr("Duplicate and decommission circuit:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
@@ -1235,21 +1235,21 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 1, 0);
 
-    QDateEdit * date = new QDateEdit(&d);
+    QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
     gl->addWidget(date, 1, 1);
 
-    QRadioButton * set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
+    QRadioButton *set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
     set_original_id->setChecked(true);
     gl->addWidget(set_original_id, 2, 0);
 
-    QSpinBox * new_id = new QSpinBox(&d);
+    QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
     new_id->setValue(Circuit(m_tab->selectedCustomer(), QString()).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
-    QRadioButton * set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
+    QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 3, 0);
 
     QStringList refrigerants = listRefrigerantsToString().split(';');
@@ -1258,7 +1258,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 4, 0);
 
-    QComboBox * old_refrigerant = new QComboBox(&d);
+    QComboBox *old_refrigerant = new QComboBox(&d);
     old_refrigerant->addItems(refrigerants);
     old_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
     gl->addWidget(old_refrigerant, 4, 1);
@@ -1267,7 +1267,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 5, 0);
 
-    QComboBox * new_refrigerant = new QComboBox(&d);
+    QComboBox *new_refrigerant = new QComboBox(&d);
     new_refrigerant->addItems(refrigerants);
     new_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
     gl->addWidget(new_refrigerant, 5, 1);
@@ -1280,7 +1280,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setVisible(false);
     gl->addWidget(lbl, 6, 0, 1, 2);
 
-    QDialogButtonBox * bb = new QDialogButtonBox(&d);
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Duplicate and Decommission"));
     bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -1566,12 +1566,12 @@ void MainWindow::removeRepair()
     m_tab->setView(View::Repairs);
 }
 
-void MainWindow::loadVariables(QTreeWidget * trw, QSqlDatabase database)
+void MainWindow::loadVariables(QTreeWidget *trw, QSqlDatabase database)
 {
     Variables variables(database);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem * item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
         if (!item) {
             if (variables.parentID().isEmpty())
                 item = new QTreeWidgetItem(trw);
@@ -1581,7 +1581,7 @@ void MainWindow::loadVariables(QTreeWidget * trw, QSqlDatabase database)
         }
 
         if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem * parent_item = variable_items.value(variables.parentID(), NULL);
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(trw);
                 variable_items.insert(variables.parentID(), parent_item);
@@ -1616,7 +1616,7 @@ void MainWindow::addVariable(bool subvar)
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("name, unit, scope, tolerance");
-        QTreeWidgetItem * item = NULL;
+        QTreeWidgetItem *item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
             VariableRecord(parent_id).update("type", "group");
@@ -1646,7 +1646,7 @@ void MainWindow::editVariable()
     if (!trw_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_variable")) { return; }
 
-    QTreeWidgetItem * item = trw_variables->currentItem();
+    QTreeWidgetItem *item = trw_variables->currentItem();
     QString id = item->text(1);
     VariableRecord record(id);
     UndoCommand command(m_undo_stack, tr("Edit variable %1").arg(id));
@@ -1684,7 +1684,7 @@ void MainWindow::removeVariable()
     if (!db.isOpen()) { return; }
     if (!trw_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_variable")) { return; }
-    QTreeWidgetItem * item = trw_variables->currentItem();
+    QTreeWidgetItem *item = trw_variables->currentItem();
     if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
@@ -1777,10 +1777,10 @@ void MainWindow::loadTable(const QString &)
     QStringList avg = attributes.value("avg").toString().split(";", QString::SkipEmptyParts);
     for (int i = 0; i < variables.count(); ++i) {
         Variable variable(variables.at(i));
-        QTreeWidgetItem * item = new QTreeWidgetItem(trw_table_variables);
+        QTreeWidgetItem *item = new QTreeWidgetItem(trw_table_variables);
         if (variable.next()) { item->setText(0, variable.name()); }
         item->setText(1, variables.at(i));
-        QComboBox * cb_foot = new QComboBox;
+        QComboBox *cb_foot = new QComboBox;
         cb_foot->addItem(tr("None"));
         cb_foot->addItem(tr("Sum"));
         cb_foot->addItem(tr("Average"));
@@ -1829,20 +1829,20 @@ void MainWindow::addTableVariable()
     QDialog d(this);
     d.setWindowTitle(tr("Add existing variable - Leaklog"));
     d.setMinimumSize(QSize(300, 350));
-        QVBoxLayout * vl = new QVBoxLayout(&d);
+        QVBoxLayout *vl = new QVBoxLayout(&d);
         vl->setMargin(6); vl->setSpacing(6);
-            QHBoxLayout * hl = new QHBoxLayout;
+            QHBoxLayout *hl = new QHBoxLayout;
             hl->setMargin(0); hl->setSpacing(6);
-                QLabel * lbl = new QLabel(tr("Search:"), &d);
-                SearchLineEdit * sle = new SearchLineEdit(&d);
+                QLabel *lbl = new QLabel(tr("Search:"), &d);
+                SearchLineEdit *sle = new SearchLineEdit(&d);
             hl->addWidget(lbl);
             hl->addWidget(sle);
         vl->addLayout(hl);
-            MTListWidget * lw = new MTListWidget(&d);
+            MTListWidget *lw = new MTListWidget(&d);
             QObject::connect(lw, SIGNAL(itemDoubleClicked(QListWidgetItem *)), &d, SLOT(accept()));
             QObject::connect(sle, SIGNAL(textChanged(QLineEdit *, const QString &)), lw, SLOT(filterItems(QLineEdit *, const QString &)));
         vl->addWidget(lw);
-            QDialogButtonBox * bb = new QDialogButtonBox(&d);
+            QDialogButtonBox *bb = new QDialogButtonBox(&d);
             bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
             QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
@@ -1855,7 +1855,7 @@ void MainWindow::addTableVariable()
         ids << id;
         name = variable.name();
         if (!used_ids.contains(id)) {
-            QListWidgetItem * item = new QListWidgetItem;
+            QListWidgetItem *item = new QListWidgetItem;
             item->setText(name.isEmpty() ? id : tr("%1 (%2)").arg(id).arg(name));
             item->setData(Qt::UserRole, id);
             lw->addItem(item);
@@ -1883,7 +1883,7 @@ void MainWindow::removeTableVariable()
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!trw_table_variables->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
-    QTreeWidgetItem * item = trw_table_variables->currentItem();
+    QTreeWidgetItem *item = trw_table_variables->currentItem();
     switch (QMessageBox::information(this, tr("Remove variable - Leaklog"), tr("Are you sure you want to remove the variable \"%1\" from the selected table?").arg(item->text(1)), tr("Remove"), tr("Cancel"), 0, 1)) {
         case 0: // Remove
             break;
@@ -1966,7 +1966,7 @@ void MainWindow::addWarning()
         QVariantMap attributes = record.list("name, description");
         QString name = attributes.value("name").toString();
         QString description = attributes.value("description").toString();
-        QListWidgetItem * item = new QListWidgetItem;
+        QListWidgetItem *item = new QListWidgetItem;
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
         item->setData(Qt::UserRole, record.id());
         lw_warnings->addItem(item);
@@ -1980,7 +1980,7 @@ void MainWindow::editWarning()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_warning")) { return; }
-    QListWidgetItem * item = lw_warnings->currentItem();
+    QListWidgetItem *item = lw_warnings->currentItem();
     WarningRecord record(item->data(Qt::UserRole).toString());
     UndoCommand command(m_undo_stack, tr("Edit warning %1").arg(record.stringValue("name")));
     EditWarningDialogue md(&record, m_undo_stack, this);
@@ -2000,7 +2000,7 @@ void MainWindow::removeWarning()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_warnings->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_warning")) { return; }
-    QListWidgetItem * item = lw_warnings->currentItem();
+    QListWidgetItem *item = lw_warnings->currentItem();
     if (RemoveDialogue::confirm(this, tr("Remove warning - Leaklog"),
                                 tr("Are you sure you want to remove the selected warning?\nTo remove the warning \"%1\" type REMOVE and confirm:")
                                 .arg(item->text())) != QDialog::Accepted)
@@ -2110,7 +2110,7 @@ void MainWindow::exportInspectionData()
     exportData("inspection");
 }
 
-void MainWindow::exportData(const QString & type)
+void MainWindow::exportData(const QString &type)
 {
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
@@ -2221,7 +2221,7 @@ void MainWindow::importData()
     data.transaction();
     MTSqlQuery query(data);
     initDatabase(data, false, false);
-    ImportDialogue * id = new ImportDialogue(this);
+    ImportDialogue *id = new ImportDialogue(this);
     QVariantMap attributes;
     QVariant attribute;
     bool modified, attribute_modified;
@@ -2259,7 +2259,7 @@ void MainWindow::importData()
             }
 
             if (modified) {
-                QTreeWidgetItem * item = new QTreeWidgetItem(id->modifiedCustomers(), columns.keys());
+                QTreeWidgetItem *item = new QTreeWidgetItem(id->modifiedCustomers(), columns.keys());
                 for (int i = 0; i < columns.count(); ++i) {
                     if (columns.value(i).toInt()) {
                         item->setBackground(i, QBrush(Qt::darkMagenta));
@@ -2272,7 +2272,7 @@ void MainWindow::importData()
                 item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
-            QTreeWidgetItem * item = new QTreeWidgetItem(id->newCustomers());
+            QTreeWidgetItem *item = new QTreeWidgetItem(id->newCustomers());
             item->setText(0, company_id_justified);
             for (int i = 1; i < Customer::attributes().count(); ++i) {
                 item->setText(i, MTVariant(query.value(Customer::attributes().key(i)),
@@ -2303,7 +2303,7 @@ void MainWindow::importData()
             }
 
             if (modified) {
-                QTreeWidgetItem * item = new QTreeWidgetItem(id->modifiedPersons(), columns.keys());
+                QTreeWidgetItem *item = new QTreeWidgetItem(id->modifiedPersons(), columns.keys());
                 for (int i = 0; i < columns.count(); ++i) {
                     if (columns.value(i).toInt()) {
                         item->setBackground(i, QBrush(Qt::darkMagenta));
@@ -2316,7 +2316,7 @@ void MainWindow::importData()
                 item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
-            QTreeWidgetItem * item = new QTreeWidgetItem(id->newPersons());
+            QTreeWidgetItem *item = new QTreeWidgetItem(id->newPersons());
             item->setText(0, query.stringValue("company"));
             for (int i = 2; i < Person::attributes().count(); ++i) {
                 item->setText(i - 1, query.stringValue(Person::attributes().key(i)));
@@ -2342,7 +2342,7 @@ void MainWindow::importData()
                        " LEFT JOIN compressors ON compressors.customer_id = circuits.parent AND compressors.circuit_id = circuits.id"
                        " ORDER BY customers.company, circuits.id, compressors.id").arg(compressors_columns.join(", ")));
     QString last_id;
-    QTreeWidgetItem * last_item = NULL;
+    QTreeWidgetItem *last_item = NULL;
     while (query.next()) {
         QString current_id = QString("%1:%2").arg(query.stringValue("parent")).arg(query.stringValue("id"));
         if (last_id != current_id) {
@@ -2414,7 +2414,7 @@ void MainWindow::importData()
                 }
 
                 if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
-                    QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
+                    QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
                     int c = 0;
                     i.toFront();
                     while (i.hasNext()) { i.next();
@@ -2430,7 +2430,7 @@ void MainWindow::importData()
                         id->modifiedCircuits()->addTopLevelItem(last_item);
                 }
             } else {
-                QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
+                QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
                 item->setData(0, Qt::UserRole, query.value("compressor_id"));
                 QMapIterator<int, QString> i(compressor_attributes);
                 while (i.hasNext()) { i.next();
@@ -2454,7 +2454,7 @@ void MainWindow::importData()
     Variables variables(data);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem * item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
         if (!item) {
             if (variables.parentID().isEmpty())
                 item = new QTreeWidgetItem(id->variables());
@@ -2464,7 +2464,7 @@ void MainWindow::importData()
         }
 
         if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem * parent_item = variable_items.value(variables.parentID(), NULL);
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(id->variables());
                 variable_items.insert(variables.parentID(), parent_item);
@@ -2536,7 +2536,7 @@ void MainWindow::importData()
                 item->setForeground(7, QBrush(Qt::white));
             }
         }
-        QComboBox * cb_action = new QComboBox;
+        QComboBox *cb_action = new QComboBox;
         if (!found) {
             cb_action->addItem(tr("Import"));
             item->setIcon(0, QIcon(QString::fromUtf8(":/images/images/item_new16.png")));
@@ -2560,7 +2560,7 @@ void MainWindow::importData()
 
     // Inspections
     bool record_locked;
-    QTreeWidget * trw[] = { id->newInspections(), id->modifiedInspections() };
+    QTreeWidget *trw[] = { id->newInspections(), id->modifiedInspections() };
     for (int w = 0; w < 2; ++w) {
         trw[w]->setColumnCount(variable_names.count() + 3);
         trw[w]->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Customer") << tr("Circuit") << tr("Date") << variable_names.values()));
@@ -2570,12 +2570,12 @@ void MainWindow::importData()
     QStringList inspections_columns = databaseTables().value("inspections").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
     for (QStringList::iterator i = inspections_columns.begin(); i != inspections_columns.end(); ++i)
         *i = QString("inspections.%1").arg(*i);
-    foreach (const QString & variable_name, variable_names.keys())
+    foreach (const QString &variable_name, variable_names.keys())
         inspections_columns << QString("inspections.%1").arg(variable_name);
     QStringList inspections_compressors_columns = databaseTables().value("inspections_compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
     for (QStringList::iterator i = inspections_compressors_columns.begin(); i != inspections_compressors_columns.end(); ++i)
         *i = QString("inspections_compressors.%1 AS compressor_%1").arg(*i);
-    foreach (const QString & variable_name, compressor_variable_names)
+    foreach (const QString &variable_name, compressor_variable_names)
         inspections_compressors_columns << QString("inspections_compressors.%1 AS compressor_%1").arg(variable_name);
     query.exec(QString("SELECT customers.company, %1, %2, compressors.name AS compressor_name"
                        " FROM inspections LEFT JOIN customers ON inspections.customer = customers.id"
@@ -2680,7 +2680,7 @@ void MainWindow::importData()
                 }
 
                 if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
-                    QTreeWidgetItem * item = new QTreeWidgetItem(last_item, columns.keys());
+                    QTreeWidgetItem *item = new QTreeWidgetItem(last_item, columns.keys());
                     for (int i = 0; i < columns.count(); ++i) {
                         if (columns.value(i).toInt()) {
                             item->setBackground(i, QBrush(Qt::darkMagenta));
@@ -2692,7 +2692,7 @@ void MainWindow::importData()
                         id->modifiedInspections()->addTopLevelItem(last_item);
                 }
             } else {
-                QTreeWidgetItem * item = new QTreeWidgetItem(last_item);
+                QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
                 item->setData(0, Qt::UserRole, query.value("compressor_compressor_id"));
                 item->setText(1, query.stringValue("compressor_name"));
                 for (int i = 0; i < variable_names.count(); ++i) {
@@ -2715,7 +2715,7 @@ void MainWindow::importData()
     query.exec("SELECT * FROM repairs ORDER BY date");
     while (query.next()) {
         record_locked = Global::isRecordLocked(query.stringValue("date"));
-        QTreeWidgetItem * item = NULL;
+        QTreeWidgetItem *item = NULL;
         Repair repair(query.stringValue("date"));
         if (repair.exists()) {
             attributes = repair.list();
@@ -2766,7 +2766,7 @@ void MainWindow::importData()
     query.exec("SELECT * FROM refrigerant_management ORDER BY date");
     while (query.next()) {
         record_locked = Global::isRecordLocked(query.stringValue("date"));
-        QTreeWidgetItem * item = NULL;
+        QTreeWidgetItem *item = NULL;
         RecordOfRefrigerantManagement record(query.stringValue("date"));
         if (record.exists()) {
             attributes = record.list();
@@ -2832,7 +2832,7 @@ void MainWindow::importData()
             }
 
             if (modified) {
-                QTreeWidgetItem * item = new QTreeWidgetItem(id->modifiedInspectors(), columns.keys());
+                QTreeWidgetItem *item = new QTreeWidgetItem(id->modifiedInspectors(), columns.keys());
                 for (int i = 0; i < columns.count(); ++i) {
                     if (columns.value(i).toInt()) {
                         item->setBackground(i, QBrush(Qt::darkMagenta));
@@ -2845,7 +2845,7 @@ void MainWindow::importData()
                 item->setData(0, Qt::UserRole, query.value("id"));
             }
         } else {
-            QTreeWidgetItem * item = new QTreeWidgetItem(id->newInspectors());
+            QTreeWidgetItem *item = new QTreeWidgetItem(id->newInspectors());
             item->setText(0, query.stringValue("id").rightJustified(4, '0'));
             for (int i = 1; i < Inspector::attributes().count(); ++i) {
                 item->setText(i, query.stringValue(Inspector::attributes().key(i)));
@@ -2912,7 +2912,7 @@ void MainWindow::importData()
         QSet<QString> compressors_fields = QSet<QString>::fromList(databaseTables().value("compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
         for (int w = 0; w < 2; ++w) {
             for (int cc = 0; cc < trw[w]->topLevelItemCount(); ++cc) {
-                QTreeWidgetItem * item = trw[w]->topLevelItem(cc);
+                QTreeWidgetItem *item = trw[w]->topLevelItem(cc);
                 if (item->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
                 QString cc_parent = item->data(0, Qt::UserRole).toString();
@@ -2949,8 +2949,8 @@ void MainWindow::importData()
 
         // Import variables
         QStringList inspections_skip_columns; bool skip_parent = false;
-        QString current_text; QTreeWidgetItem * item = NULL; QTreeWidgetItem * subitem = NULL;
-        QTreeWidgetItem * new_item = NULL;
+        QString current_text; QTreeWidgetItem *item = NULL; QTreeWidgetItem *subitem = NULL;
+        QTreeWidgetItem *new_item = NULL;
         for (int v = 0; v < id->variables()->topLevelItemCount(); ++v) {
             item = id->variables()->topLevelItem(v);
             skip_parent = false; new_item = NULL;
@@ -2988,7 +2988,7 @@ void MainWindow::importData()
                     VariableRecord record(subitem->text(1));
                     Variable subvariable(subitem->text(1));
                     if (new_item != NULL && !subvariable.next()) {
-                        QTreeWidgetItem * new_subitem = new QTreeWidgetItem(new_item);
+                        QTreeWidgetItem *new_subitem = new QTreeWidgetItem(new_item);
                         new_subitem->setText(0, subitem->text(0));
                         new_subitem->setText(1, subitem->text(1));
                         new_subitem->setText(2, subitem->text(2));
@@ -3015,7 +3015,7 @@ void MainWindow::importData()
         inspections_compressors_fields.unite(QSet<QString>::fromList(compressor_variable_names));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0, j = 0; i < trw[w]->topLevelItemCount(); ++i) {
-                QTreeWidgetItem * item = trw[w]->topLevelItem(i);
+                QTreeWidgetItem *item = trw[w]->topLevelItem(i);
                 if (item->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
                 QString i_customer = item->data(0, Qt::UserRole).toString();
@@ -3150,7 +3150,7 @@ void MainWindow::importCSV()
     QStringList refrigerants(listRefrigerantsToString().split(';'));
 
     QList<ImportDialogueTable *> tables;
-    ImportDialogueTable * table = new ImportDialogueTable(tr("Customers"), "customers");
+    ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");
     table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Company"), "company", ImportDialogueTableColumn::Text);
     table->addColumn(tr("E-mail"), "mail", ImportDialogueTableColumn::Text);
@@ -3165,7 +3165,7 @@ void MainWindow::importCSV()
     table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
-    ImportDialogueTable * circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
+    ImportDialogueTable *circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
     circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
     circuits_table->addForeignKeyColumn(tr("Customer ID"), "parent", "id", "customers");
     circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
@@ -3184,7 +3184,7 @@ void MainWindow::importCSV()
     circuits_table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
     circuits_table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
     circuits_table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
-    ImportDialogueTableColumn * col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
@@ -3526,7 +3526,7 @@ void MainWindow::addStyle()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QVariantMap attributes = record.list("id, name");
-        QListWidgetItem * item = new QListWidgetItem;
+        QListWidgetItem *item = new QListWidgetItem;
         item->setText(attributes.value("name").toString());
         item->setData(Qt::UserRole, attributes.value("id"));
         lw_styles->addItem(item);
@@ -3540,7 +3540,7 @@ void MainWindow::editStyle()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("edit_style")) { return; }
-    QListWidgetItem * item = lw_styles->currentItem();
+    QListWidgetItem *item = lw_styles->currentItem();
     Style record(item->data(Qt::UserRole).toString());
     UndoCommand command(m_undo_stack, tr("Edit style %1").arg(record.stringValue("name")));
     EditDialogue md(&record, m_undo_stack, this);
@@ -3558,7 +3558,7 @@ void MainWindow::removeStyle()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!lw_styles->currentIndex().isValid()) { return; }
     if (!isOperationPermitted("remove_style")) { return; }
-    QListWidgetItem * item = lw_styles->currentItem();
+    QListWidgetItem *item = lw_styles->currentItem();
     if (RemoveDialogue::confirm(this, tr("Remove style - Leaklog"),
                                 tr("Are you sure you want to remove the selected style?\nTo remove the style \"%1\" type REMOVE and confirm:")
                                 .arg(item->text())) != QDialog::Accepted)
@@ -3576,7 +3576,7 @@ void MainWindow::removeStyle()
     refreshView();
 }
 
-QString MainWindow::appendDefaultOrderToColumn(const QString & column)
+QString MainWindow::appendDefaultOrderToColumn(const QString &column)
 {
     if (column.isEmpty())
         return column;

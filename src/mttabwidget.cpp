@@ -21,12 +21,12 @@
 
 #include <QTabBar>
 
-void MTTabWidget::setTabBar(QTabBar * tb)
+void MTTabWidget::setTabBar(QTabBar *tb)
 {
     QTabWidget::setTabBar(tb);
 }
 
-QTabBar * MTTabWidget::tabBar() const
+QTabBar *MTTabWidget::tabBar() const
 {
     return QTabWidget::tabBar();
 }

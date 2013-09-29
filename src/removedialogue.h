@@ -29,12 +29,12 @@ class RemoveDialogue : public QInputDialog
     Q_OBJECT
 
 public:
-    RemoveDialogue(QWidget * parent = 0):
+    RemoveDialogue(QWidget *parent = 0):
     QInputDialog(parent), ok(NULL) {
         QObject::connect(this, SIGNAL(textValueChanged(QString)), this, SLOT(setAcceptEnabled(QString)));
     }
 
-    static DialogCode confirm(QWidget * parent, const QString & title, const QString & label) {
+    static DialogCode confirm(QWidget *parent, const QString &title, const QString &label) {
         RemoveDialogue d(parent);
         d.setWindowTitle(title);
         d.setLabelText(label);
@@ -57,13 +57,13 @@ protected slots:
         }
     }
 
-    void setAcceptEnabled(const QString & text) {
+    void setAcceptEnabled(const QString &text) {
         if (ok)
             ok->setEnabled(text == tr("REMOVE"));
     }
 
 protected:
-    QPushButton * ok;
+    QPushButton *ok;
 };
 
 #endif // REMOVEDIALOGUE_H

@@ -21,7 +21,7 @@
 #include "global.h"
 #include "mtaddress.h"
 
-MTVariant::MTVariant(const QVariant & v, const QString & t):
+MTVariant::MTVariant(const QVariant &v, const QString &t):
     v_value(v)
 {
     if (t.endsWith("address"))

@@ -27,15 +27,15 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 
-void EditDialogue::init(DBRecord * record)
+void EditDialogue::init(DBRecord *record)
 {
     md_record = record;
-    QVBoxLayout * md_vlayout_main = new QVBoxLayout(this);
+    QVBoxLayout *md_vlayout_main = new QVBoxLayout(this);
     md_vlayout_main->setSpacing(9);
     md_vlayout_main->setContentsMargins(9, 9, 9, 9);
     md_grid_main = new QGridLayout;
     addMainGridLayout(md_vlayout_main);
-    QDialogButtonBox * md_bb = new QDialogButtonBox(this);
+    QDialogButtonBox *md_bb = new QDialogButtonBox(this);
     md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     md_bb->button(QDialogButtonBox::Save)->setText(tr("Save"));
     md_bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -45,18 +45,18 @@ void EditDialogue::init(DBRecord * record)
     this->resize(20, 20);
 }
 
-void EditDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
+void EditDialogue::addMainGridLayout(QVBoxLayout *md_vlayout_main)
 {
     md_vlayout_main->addLayout(md_grid_main);
 }
 
-EditDialogue::EditDialogue(UndoStack * undo_stack, QWidget * parent):
+EditDialogue::EditDialogue(UndoStack *undo_stack, QWidget *parent):
     QDialog(parent),
     EditDialogueWidgets(),
     md_undo_stack(undo_stack)
 {}
 
-EditDialogue::EditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent):
+EditDialogue::EditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent):
     QDialog(parent),
     EditDialogueWidgets(),
     md_undo_stack(undo_stack)
@@ -68,7 +68,7 @@ EditDialogue::EditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * 
     EditDialogueColumnLayout(&md_inputwidgets, md_grid_main, md_rows_in_column).layout();
 }
 
-void EditDialogue::setWindowTitle(const QString & title)
+void EditDialogue::setWindowTitle(const QString &title)
 {
     if (!md_record->id().isEmpty()) {
         this->QDialog::setWindowTitle(tr("%1: %2").arg(title).arg(md_record->id()));
@@ -125,7 +125,7 @@ const QVariant EditDialogue::idFieldValue()
     return QVariant();
 }
 
-MDAbstractInputWidget * EditDialogue::inputWidget(const QString id)
+MDAbstractInputWidget *EditDialogue::inputWidget(const QString id)
 {
     for (int i = 0; i < md_inputwidgets.count(); ++i) {
         if (md_inputwidgets.at(i)->id() == id) {

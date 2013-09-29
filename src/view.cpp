@@ -34,7 +34,7 @@ View::View(ViewTabSettings *settings):
 {
 }
 
-QString View::viewTemplate(const QString & view_template)
+QString View::viewTemplate(const QString &view_template)
 {
     if (!view_templates.contains(view_template)) {
 #ifdef Q_OS_MAC

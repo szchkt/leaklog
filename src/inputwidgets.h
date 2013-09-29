@@ -45,10 +45,10 @@ class WheelEventEater : public QObject
     Q_OBJECT
 
 public:
-    WheelEventEater(QObject * parent): QObject(parent) {}
+    WheelEventEater(QObject *parent): QObject(parent) {}
 
 protected:
-    bool eventFilter(QObject * obj, QEvent * event) {
+    bool eventFilter(QObject *obj, QEvent *event) {
         if (event->type() == QEvent::Wheel) {
             event->ignore();
             return true;
@@ -62,7 +62,7 @@ class MTObject
 public:
     virtual ~MTObject() {}
 
-    bool addConnection(const QObject * sender, const char * signal, const char * method)
+    bool addConnection(const QObject *sender, const char *signal, const char *method)
     { return dynamic_cast<QObject *>(this)->connect(sender, signal, method); }
 };
 
@@ -71,8 +71,8 @@ class MTLabeledWidget : public MTObject
 public:
     MTLabeledWidget(const QString &, QWidget *);
 
-    void setAlternativeText(const QString & alt) { altlabeltext = alt; }
-    QWidget * widget() const { return w; }
+    void setAlternativeText(const QString &alt) { altlabeltext = alt; }
+    QWidget *widget() const { return w; }
 
     virtual void setLabelText(const QString &) = 0;
 
@@ -86,7 +86,7 @@ public:
 protected:
     QString labeltext;
     QString altlabeltext;
-    QWidget * w;
+    QWidget *w;
 
     bool changed;
 };
@@ -96,9 +96,9 @@ class MTLabel : public QLabel, public MTLabeledWidget
     Q_OBJECT
 
 public:
-    MTLabel(const QString & text, QWidget * parent);
+    MTLabel(const QString &text, QWidget *parent);
 
-    void setLabelText(const QString & t) { MTLabel::setText(t); }
+    void setLabelText(const QString &t) { MTLabel::setText(t); }
 
 public slots:
     void toggleAlternativeText(bool alt) { MTLabeledWidget::toggleAlternativeText(alt); }
@@ -109,9 +109,9 @@ class MTButtonLabel : public QPushButton, public MTLabeledWidget
     Q_OBJECT
 
 public:
-    MTButtonLabel(const QString & text, QWidget * parent);
+    MTButtonLabel(const QString &text, QWidget *parent);
 
-    void setLabelText(const QString & t) { QPushButton::setText(t); }
+    void setLabelText(const QString &t) { QPushButton::setText(t); }
 
     QSize sizeHint() const;
 
@@ -131,15 +131,15 @@ public:
     virtual void setVariantValue(const QVariant &) = 0;
 
     inline QString id() const { return iw_id; }
-    inline void setId(const QString & id) { iw_id = id; }
-    inline MTLabeledWidget * label() const { return iw_label; }
-    inline QWidget * widget() const { return iw_widget; }
+    inline void setId(const QString &id) { iw_id = id; }
+    inline MTLabeledWidget *label() const { return iw_label; }
+    inline QWidget *widget() const { return iw_widget; }
 
     inline QString groupId() const { return iw_group_id; }
-    inline void setGroupId(const QString & id) { iw_group_id = id; }
+    inline void setGroupId(const QString &id) { iw_group_id = id; }
 
     inline QString colour() const { return iw_colour; }
-    inline void setColour(const QString & colour) { iw_colour = colour; }
+    inline void setColour(const QString &colour) { iw_colour = colour; }
 
     bool showInForm() const { return show; }
     void setShowInForm(bool show) { this->show = show; }
@@ -153,17 +153,17 @@ public:
     }
 
 protected:
-    MainWindow * parentWindow() const;
+    MainWindow *parentWindow() const;
 
     static QPalette paletteForColour(const QString &);
 
-    MTLabeledWidget * iw_label;
+    MTLabeledWidget *iw_label;
 
 private:
     bool show;
     bool skip_save;
     QString iw_id;
-    QWidget * iw_widget;
+    QWidget *iw_widget;
     QString iw_group_id;
     QString iw_colour;
 };
@@ -174,7 +174,7 @@ public:
     MDNullableInputWidget(const QString &, const QString &, QWidget *, QWidget *);
 
 protected:
-    static QWidget * createLabel(QWidget * parent, const QString &);
+    static QWidget *createLabel(QWidget *parent, const QString &);
 };
 
 class MDInputWidget : public MDAbstractInputWidget
@@ -376,7 +376,7 @@ public:
     void setVariantValue(const QVariant &) {}
 
 protected:
-    QGridLayout * grid;
+    QGridLayout *grid;
 };
 
 class MDRadioButtonGroup : public QGroupBox, public MDInputWidget

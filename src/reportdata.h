@@ -60,7 +60,7 @@ protected:
     void addToStore(QMap<int, QMap<QString, double> > &, QList<int> &, int, const QString &, double);
 
 public:
-    ReportData(int year = 0, bool by_field = false, const QSet<QString> & refrigerants_by_field = QSet<QString>());
+    ReportData(int year = 0, bool by_field = false, const QSet<QString> &refrigerants_by_field = QSet<QString>());
     virtual ~ReportData();
 
     QMap<int, QMap<QString, double> > store; QList<int> store_years;

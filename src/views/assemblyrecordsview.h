@@ -27,7 +27,7 @@ class AssemblyRecordsView : public CircuitsView
     Q_OBJECT
 
 public:
-    AssemblyRecordsView(ViewTabSettings * settings);
+    AssemblyRecordsView(ViewTabSettings *settings);
 
     QString renderHTML();
 

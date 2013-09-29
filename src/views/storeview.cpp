@@ -130,7 +130,7 @@ QString StoreView::renderHTML()
     bool it = false, bf = false;
     QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
-    QVector<double> * sum_list = NULL;
+    QVector<double> *sum_list = NULL;
     QMapIterator<QString, QVector<QString> > i(data.entries_map);
     i.toBack();
     while (i.hasPrevious()) { i.previous();

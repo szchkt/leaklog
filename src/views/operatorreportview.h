@@ -27,7 +27,7 @@ class OperatorReportView : public View
     Q_OBJECT
 
 public:
-    OperatorReportView(ViewTabSettings * settings);
+    OperatorReportView(ViewTabSettings *settings);
 
     QString renderHTML();
 

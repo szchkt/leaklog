@@ -38,7 +38,7 @@ public:
     QStringList nextRow();
 
 private:
-    QTextStream * in;
+    QTextStream *in;
     int skip_lines;
     QChar enclosure_char;
     QChar separator;

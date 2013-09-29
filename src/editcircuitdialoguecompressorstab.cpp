@@ -24,18 +24,18 @@
 
 #include <QDateTime>
 
-EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QString & customer_id, const QString & circuit_id, QWidget * parent)
+EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QString &customer_id, const QString &circuit_id, QWidget *parent)
     : EditDialogueTab(parent),
       customer_id(customer_id)
 {
     setName(tr("Compressors"));
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(9, 9, 9, 9);
     layout->setSpacing(9);
 
     QList<EditDialogueTableCell *> cells;
-    EditDialogueTableCell * cell = new EditDialogueTableCell(tr("Name"), Global::String);
+    EditDialogueTableCell *cell = new EditDialogueTableCell(tr("Name"), Global::String);
     cell->setId("name");
     cells.append(cell);
     cell = new EditDialogueTableCell(tr("Manufacturer"), Global::String);
@@ -53,7 +53,7 @@ EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QStri
     load(circuit_id);
 }
 
-void EditCircuitDialogueCompressorsTab::save(const QVariant & circuit_id)
+void EditCircuitDialogueCompressorsTab::save(const QVariant &circuit_id)
 {
     qint64 next_id = -1;
 
@@ -89,9 +89,9 @@ void EditCircuitDialogueCompressorsTab::save(const QVariant & circuit_id)
         Compressor(QString::number(former_ids.at(i))).remove();
 }
 
-void EditCircuitDialogueCompressorsTab::load(const QString & circuit_id)
+void EditCircuitDialogueCompressorsTab::load(const QString &circuit_id)
 {
-    EditDialogueTableCell * cell;
+    EditDialogueTableCell *cell;
     QMap<QString, EditDialogueTableCell *> compressors_data;
     if (!circuit_id.isEmpty()) {
         Compressor compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",

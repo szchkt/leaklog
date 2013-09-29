@@ -45,10 +45,10 @@ signals:
     void removeFilter(AttributeFilter *);
 
 private:
-    AttributeFilters * parent;
-    QComboBox * attribute;
-    QComboBox * function;
-    QLineEdit * value;
+    AttributeFilters *parent;
+    QComboBox *attribute;
+    QComboBox *function;
+    QLineEdit *value;
 
     friend class AttributeFilters;
 };
@@ -67,14 +67,14 @@ public:
     void add(const QString &, const QString &, const QString &);
 
 public slots:
-    AttributeFilter * add();
+    AttributeFilter *add();
     void remove(AttributeFilter *);
 
 private:
     QList<AttributeFilter *> af_filters;
     MTDictionary af_attributes;
     QStringList af_functions;
-    QVBoxLayout * af_vlayout_main;
+    QVBoxLayout *af_vlayout_main;
 };
 
 class Conditions;
@@ -93,10 +93,10 @@ signals:
     void removeCondition(Condition *);
 
 private:
-    Conditions * parent;
-    QPlainTextEdit * expression_ins;
-    QComboBox * function;
-    QPlainTextEdit * expression_nom;
+    Conditions *parent;
+    QPlainTextEdit *expression_ins;
+    QComboBox *function;
+    QPlainTextEdit *expression_nom;
 
     friend class Conditions;
 };
@@ -115,14 +115,14 @@ public:
     void add(const QString &, const QString &, const QString &);
 
 public slots:
-    Condition * add();
+    Condition *add();
     void remove(Condition *);
 
 private:
     QList<Condition *> c_conditions;
     QStringList c_used_ids;
     QStringList c_functions;
-    QVBoxLayout * c_vlayout_main;
+    QVBoxLayout *c_vlayout_main;
     SearchLineEditPalettes searchLineEditPalettes;
 };
 
@@ -139,8 +139,8 @@ protected slots:
     void save();
 
 private:
-    AttributeFilters * md_filters;
-    Conditions * md_conditions;
+    AttributeFilters *md_filters;
+    Conditions *md_conditions;
 
     friend class WarningRecord;
 };

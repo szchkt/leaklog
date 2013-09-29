@@ -152,7 +152,7 @@ QString OperatorReportView::renderHTML()
 
         nominal_inpection_parents.insert("circuit", circuit_id);
         nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
-        foreach (const QVariantMap & nominal_inspection, nominal_inspections) {
+        foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
             if (nominal_inspection_date < date_from)
                 refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble()
@@ -184,7 +184,7 @@ QString OperatorReportView::renderHTML()
         inspector = Inspector(settings->selectedInspector()).list("person, mail, phone");
 
     HTMLTable compiled_by;
-    HTMLTableRow * row = compiled_by.addRow();
+    HTMLTableRow *row = compiled_by.addRow();
     *(row->addCell()) << tr("Compiled by:") << " <input type=\"text\" style=\"border: 0;\" value=\""
                       << escapeString(inspector.value("person").toString()) << "\">";
     *(row->addCell()) << tr("Phone:") << " <input type=\"text\" style=\"border: 0;\" value=\""

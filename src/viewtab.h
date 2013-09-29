@@ -39,20 +39,20 @@ class ViewTab : public MTWidget, public ViewTabSettings
     Q_OBJECT
 
 public:
-    explicit ViewTab(QWidget * parent = 0);
+    explicit ViewTab(QWidget *parent = 0);
     ~ViewTab();
-    QObject * object() { return this; }
+    QObject *object() { return this; }
     void connectSlots(QObject *);
 
     void enableAllTools();
     void enableTools();
 
-    MainWindowSettings & mainWindowSettings();
+    MainWindowSettings &mainWindowSettings();
 
-    ToolBarStack * toolBarStack() const;
-    QWebView * webView() const;
+    ToolBarStack *toolBarStack() const;
+    QWebView *webView() const;
 
-    View * view(View::ViewID view) { return views[view]; }
+    View *view(View::ViewID view) { return views[view]; }
     View::ViewID currentView() const;
     QString currentViewTitle() const;
     QString currentTable() const;
@@ -62,11 +62,11 @@ public:
     bool isCompareValuesChecked() const;
     bool isPrinterFriendlyVersionChecked() const;
 
-    QString appendDefaultOrderToColumn(const QString & column) const;
+    QString appendDefaultOrderToColumn(const QString &column) const;
 
 public slots:
-    void setView(View::ViewID view, const QString & table = QString());
-    void setView(int view, const QString & table = QString());
+    void setView(View::ViewID view, const QString &table = QString());
+    void setView(int view, const QString &table = QString());
     void refreshView();
     void refreshViewIfNeeded();
 
@@ -81,25 +81,25 @@ signals:
 private slots:
     void setNeedsRefresh();
 
-    void reloadTables(const QStringList & tables);
-    void addTable(int index, const QString & table);
-    void removeTable(const QString & table);
+    void reloadTables(const QStringList &tables);
+    void addTable(int index, const QString &table);
+    void removeTable(const QString &table);
 
-    void viewChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
+    void viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
     void executeLink(const QUrl &);
-    void executeLink(Link * link);
+    void executeLink(Link *link);
 
 private:
     void createViewItems();
-    void formatGroupItem(QTreeWidgetItem * item);
+    void formatGroupItem(QTreeWidgetItem *item);
 
     void setDefaultWebPage();
 
-    Ui::ViewTab * ui;
-    View * views[View::ViewCount];
-    QTreeWidgetItem * group_tables;
-    QTreeWidgetItem * view_items[View::ViewCount];
+    Ui::ViewTab *ui;
+    View *views[View::ViewCount];
+    QTreeWidgetItem *group_tables;
+    QTreeWidgetItem *view_items[View::ViewCount];
     bool needs_refresh;
 };
 

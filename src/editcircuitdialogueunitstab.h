@@ -36,7 +36,7 @@ public:
     EditCircuitDialogueUnitsTab(const QString &, const QString &, QWidget * = NULL);
 
     void save(const QVariant &);
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
 private slots:
     void manufacturerItemExpanded(QTreeWidgetItem *);
@@ -49,8 +49,8 @@ private:
     void loadRows(const QString &, const QString &);
     void loadManufacturers();
 
-    EditCircuitDialogueTable * table;
-    QTreeWidget * tree;
+    EditCircuitDialogueTable *table;
+    QTreeWidget *tree;
     QString customer_id;
     QList<int> former_ids;
 };
@@ -79,13 +79,13 @@ class EditCircuitDialogueTreeItem : public QObject, public QTreeWidgetItem
     Q_OBJECT
 
 public:
-    EditCircuitDialogueTreeItem(QTreeWidget * parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
-    EditCircuitDialogueTreeItem(QTreeWidgetItem * parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
+    EditCircuitDialogueTreeItem(QTreeWidget *parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
+    EditCircuitDialogueTreeItem(QTreeWidgetItem *parent) : QObject(), QTreeWidgetItem(parent) { is_type = true; }
 
-    void setManufacturer(const QString & manufacturer) { this->unit_manufacturer = manufacturer; }
-    const QString & manufacturer() { return unit_manufacturer; }
-    void setUnitType(const QString & type) { this->unit_type = type; }
-    const QString & unitType() { return unit_type; }
+    void setManufacturer(const QString &manufacturer) { this->unit_manufacturer = manufacturer; }
+    const QString &manufacturer() { return unit_manufacturer; }
+    void setUnitType(const QString &type) { this->unit_type = type; }
+    const QString &unitType() { return unit_type; }
     void setIsType(bool is_type) { this->is_type = is_type; }
     bool isType() { return is_type; }
     void setLocation(int loc) { this->unit_location = loc; }

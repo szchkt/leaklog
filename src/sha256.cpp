@@ -27,7 +27,7 @@
 #include <QByteArray>
 #include <QVector>
 
-QVector<quint32> byteArrayToBinb(const QByteArray & bytes)
+QVector<quint32> byteArrayToBinb(const QByteArray &bytes)
 {
     quint32 mask = (1 << 8) - 1;
     quint32 length = bytes.length() * 8;
@@ -126,7 +126,7 @@ QVector<quint32> sha256core(QVector<quint32> message, quint32 source_binlength)
     return H;
 }
 
-QString sha256(const QString & source)
+QString sha256(const QString &source)
 {
     QByteArray bytes = source.toUtf8();
     return binbToHex(sha256core(byteArrayToBinb(bytes), bytes.length() * 8));

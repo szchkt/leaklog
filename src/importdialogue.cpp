@@ -22,7 +22,7 @@
 
 #include <QHeaderView>
 
-ImportDialogue::ImportDialogue(QWidget * parent):
+ImportDialogue::ImportDialogue(QWidget *parent):
 QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint) {
     setupUi(this);
     trw_customers_new->setColumnCount(Customer::attributes().count());
@@ -113,7 +113,7 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     QObject::connect(trw_circuits_modified, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(circuitChanged(QTreeWidgetItem *, int)));
 }
 
-void ImportDialogue::setCheckState(QTreeWidget * trw, Qt::CheckState state) {
+void ImportDialogue::setCheckState(QTreeWidget *trw, Qt::CheckState state) {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     for (int i = 0; i < trw->topLevelItemCount(); ++i) {
         if (!trw->topLevelItem(i)->isDisabled())
@@ -122,7 +122,7 @@ void ImportDialogue::setCheckState(QTreeWidget * trw, Qt::CheckState state) {
     QApplication::restoreOverrideCursor();
 }
 
-void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
+void ImportDialogue::customerChanged(QTreeWidgetItem *item, int column)
 {
     if (column) return;
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -133,7 +133,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
     trws << trw_circuits_new;
     if (modified)
         trws << trw_circuits_modified;
-    foreach (QTreeWidget * trw, trws) {
+    foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
             if (item->data(0, Qt::UserRole).toInt() == id) {
@@ -146,7 +146,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
     trws << trw_inspections_new;
     if (modified)
         trws << trw_inspections_modified;
-    foreach (QTreeWidget * trw, trws) {
+    foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
             if (item->data(0, Qt::UserRole).toInt() == id) {
@@ -158,7 +158,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem * item, int column)
     QApplication::restoreOverrideCursor();
 }
 
-void ImportDialogue::circuitChanged(QTreeWidgetItem * item, int column)
+void ImportDialogue::circuitChanged(QTreeWidgetItem *item, int column)
 {
     if (column) return;
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -170,7 +170,7 @@ void ImportDialogue::circuitChanged(QTreeWidgetItem * item, int column)
     trws << trw_inspections_new;
     if (modified)
         trws << trw_inspections_modified;
-    foreach (QTreeWidget * trw, trws) {
+    foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
             if (item->data(0, Qt::UserRole).toInt() == customer_id &&

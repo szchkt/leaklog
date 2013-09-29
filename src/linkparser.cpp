@@ -25,7 +25,7 @@ LinkParser::LinkParser()
 {
     root_entity = new LinkEntity(false);
 
-    LinkEntity * customer_entity = root_entity->addRoute("customer", Customer);
+    LinkEntity *customer_entity = root_entity->addRoute("customer", Customer);
     root_entity->addRoute("allrepairs", AllRepairs, false);
     root_entity->addRoute("repair", Repair);
     root_entity->addRoute("allinspectors", AllInspectors, false);
@@ -48,32 +48,32 @@ LinkParser::LinkParser()
     root_entity->addRoute("allassemblyrecords", AllAssemblyRecords, false);
     root_entity->addRoute("toggledetailsvisible", ToggleDetailsVisible);
 
-    LinkEntity * circuit_entity = customer_entity->addRoute("circuit", Circuit);
+    LinkEntity *circuit_entity = customer_entity->addRoute("circuit", Circuit);
     customer_entity->addRoute("allassemblyrecords", AllAssemblyRecords, false);
     customer_entity->addRoute("operatorreport", OperatorReport, false);
     customer_entity->addRoute("allrepairs", AllRepairs, false);
 
-    LinkEntity * inspection_entity = circuit_entity->addRoute("inspection", Inspection);
+    LinkEntity *inspection_entity = circuit_entity->addRoute("inspection", Inspection);
     circuit_entity->setRoute("repair", inspection_entity);
     circuit_entity->addRoute("allassemblyrecords", AllAssemblyRecords, false);
     circuit_entity->addRoute("assemblyrecord", AssemblyRecord);
     circuit_entity->addRoute("table", TableOfInspections, false);
 
-    LinkEntity * compressor_entity = circuit_entity->addRoute("compressor", Compressor);
+    LinkEntity *compressor_entity = circuit_entity->addRoute("compressor", Compressor);
     compressor_entity->addRoute("table", TableOfInspections, false);
 
     inspection_entity->addRoute("assemblyrecord", AssemblyRecord, false);
     inspection_entity->addRoute("images", InspectionImages, false);
 }
 
-Link * LinkParser::parse(const QString & url)
+Link *LinkParser::parse(const QString &url)
 {
     if (url == "qrc:/html/")
         return NULL;
 
     QStringList split_url = url.split("/");
-    UrlEntity * url_entity = new UrlEntity;
-    UrlEntity * entity = url_entity;
+    UrlEntity *url_entity = new UrlEntity;
+    UrlEntity *entity = url_entity;
     for (int i = 0; i < split_url.count(); ++i) {
         QStringList args = split_url.at(i).split(":");
         QString name = args.takeFirst();
@@ -83,11 +83,11 @@ Link * LinkParser::parse(const QString & url)
     return parse(url_entity);
 }
 
-Link * LinkParser::parse(UrlEntity * url_entity)
+Link *LinkParser::parse(UrlEntity *url_entity)
 {
     if (!url_entity) return NULL;
 
-    Link * link = new Link;
+    Link *link = new Link;
     root_entity->parse(url_entity, link);
 
     delete url_entity;
@@ -100,11 +100,11 @@ LinkEntity::LinkEntity(bool has_id):
     m_has_id(has_id)
 {}
 
-LinkEntity * LinkEntity::addRoute(const QString & name, int view, bool has_id)
+LinkEntity *LinkEntity::addRoute(const QString &name, int view, bool has_id)
 {
     if (routes.contains(name)) return routes.value(name);
 
-    LinkEntity * entity = new LinkEntity(has_id);
+    LinkEntity *entity = new LinkEntity(has_id);
     entity->setView(view);
     entity->setName(name);
     setRoute(name, entity);
@@ -112,12 +112,12 @@ LinkEntity * LinkEntity::addRoute(const QString & name, int view, bool has_id)
     return entity;
 }
 
-void LinkEntity::setRoute(const QString & name, LinkEntity * entity)
+void LinkEntity::setRoute(const QString &name, LinkEntity *entity)
 {
     routes.insert(name, entity);
 }
 
-void LinkEntity::parse(UrlEntity * url, Link * link)
+void LinkEntity::parse(UrlEntity *url, Link *link)
 {
     if (view() >= 0) link->addView(view());
 
@@ -127,7 +127,7 @@ void LinkEntity::parse(UrlEntity * url, Link * link)
     }
 
     if (routes.contains(url->name())) {
-        LinkEntity * next = routes.value(url->name());
+        LinkEntity *next = routes.value(url->name());
 
         if (next->hasId() && url->countAttributes() > 1) {
             link->setId(next->name(), url->attributeAt(1));
@@ -152,12 +152,12 @@ Link::Link():
     m_order_direction(-1)
 {}
 
-void Link::setId(const QString & key, const QString & value)
+void Link::setId(const QString &key, const QString &value)
 {
     m_ids.setValue(key, value);
 }
 
-int Link::compareViews(const Link & other) const
+int Link::compareViews(const Link &other) const
 {
     int result = 0;
     int count = qMax(m_views.count(), other.m_views.count());
@@ -286,7 +286,7 @@ View::ViewID Link::viewId() const
     return View::ViewCount;
 }
 
-QString Link::idValue(const QString & key) const
+QString Link::idValue(const QString &key) const
 {
     return m_ids.value(key);
 }
@@ -310,7 +310,7 @@ QString Link::suffixParameters() const
     return ret;
 }
 
-UrlEntity * UrlEntity::addNext(const QStringList & attributes)
+UrlEntity *UrlEntity::addNext(const QStringList &attributes)
 {
     if (m_attributes.count())
         return m_next = new UrlEntity(attributes);
@@ -318,7 +318,7 @@ UrlEntity * UrlEntity::addNext(const QStringList & attributes)
     return this;
 }
 
-UrlEntity * UrlEntity::addNext(const QString &attr1, const QString &attr2)
+UrlEntity *UrlEntity::addNext(const QString &attr1, const QString &attr2)
 {
     if (m_attributes.count())
         return m_next = new UrlEntity(attr1, attr2);

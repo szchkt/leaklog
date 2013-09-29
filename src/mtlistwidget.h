@@ -30,13 +30,13 @@ class MTListWidget : public QListWidget
     Q_OBJECT
 
 public:
-    MTListWidget(QWidget * parent = 0):
+    MTListWidget(QWidget *parent = 0):
     QListWidget(parent) {
         QObject::connect(this, SIGNAL(currentTextChanged(QString)), this, SLOT(emitCurrentIndexAvailabilityChanged()));
     };
 
 public slots:
-    int filterItems(QLineEdit * le, const QString & keyword) {
+    int filterItems(QLineEdit *le, const QString &keyword) {
         if (keyword.isEmpty()) {
             le->setPalette(((QWidget *)(parent()))->palette());
         } else {
@@ -56,7 +56,7 @@ public slots:
         return n;
     };
     void highlightItem(int i) { highlightItem(item(i)); };
-    static void highlightItem(QListWidgetItem * item) {
+    static void highlightItem(QListWidgetItem *item) {
         if (item == NULL) { return; }
         for (int i = 0; i < item->listWidget()->count(); ++i) {
             item->listWidget()->item(i)->setBackground(QBrush(QColor(255, 255, 255)));
@@ -71,12 +71,12 @@ public slots:
         this->clearSelection();
     };
     bool isItemHighlighted(int i) { return isItemHighlighted(item(i)); };
-    static bool isItemHighlighted(QListWidgetItem * item) {
+    static bool isItemHighlighted(QListWidgetItem *item) {
         if (item == NULL) { return false; }
         return (item->background() == QBrush(QColor(197, 255, 120)));
     };
     int highlightedRow() { return row(highlightedItem()); };
-    QListWidgetItem * highlightedItem() {
+    QListWidgetItem *highlightedItem() {
         for (int i = 0; i < count(); ++i) {
             if (isItemHighlighted(i)) { return this->item(i); }
         }

@@ -27,7 +27,7 @@ class InspectionImagesView : public CircuitsView
     Q_OBJECT
 
 public:
-    InspectionImagesView(ViewTabSettings * settings);
+    InspectionImagesView(ViewTabSettings *settings);
 
     QString renderHTML();
 

@@ -27,7 +27,7 @@ class MTColourComboBox : public QComboBox
     Q_OBJECT
 
 public:
-    MTColourComboBox(QWidget * parent = 0):
+    MTColourComboBox(QWidget *parent = 0):
     QComboBox(parent) {
         QStringList colours;
         colours << "aliceblue"

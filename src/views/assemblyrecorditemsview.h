@@ -29,7 +29,7 @@ class AssemblyRecordItemsView : public View
     Q_OBJECT
 
 public:
-    AssemblyRecordItemsView(ViewTabSettings * settings);
+    AssemblyRecordItemsView(ViewTabSettings *settings);
 
     QString renderHTML();
 

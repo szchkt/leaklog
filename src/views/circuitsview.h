@@ -29,17 +29,17 @@ class CircuitsView : public CustomersView
     Q_OBJECT
 
 public:
-    CircuitsView(ViewTabSettings * settings);
+    CircuitsView(ViewTabSettings *settings);
 
     QString renderHTML();
 
     QString title() const;
 
 protected:
-    void writeCircuitsTable(MTTextStream & out, const QString & customer_id, const QString & circuit_id = QString(), int cols_in_row = -1);
-    HTMLDiv * writeCircuitsTable(const QString & customer_id, const QString & circuit_id = QString(), int cols_in_row = -1, HTMLTable * table = NULL);
-    HTMLTable * circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
-    HTMLTable * circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
+    void writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1);
+    HTMLDiv *writeCircuitsTable(const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1, HTMLTable *table = NULL);
+    HTMLTable *circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
+    HTMLTable *circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
 };
 
 #endif // CIRCUITSVIEW_H

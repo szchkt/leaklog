@@ -13,7 +13,7 @@ public:
     const QVariant getVariableValue(const QString &);
 
 private:
-    EditInspectionDialogue * m_inspection_dialogue;
+    EditInspectionDialogue *m_inspection_dialogue;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_ACCESS_H

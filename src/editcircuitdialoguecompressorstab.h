@@ -32,12 +32,12 @@ public:
     EditCircuitDialogueCompressorsTab(const QString &, const QString &, QWidget * = NULL);
 
     void save(const QVariant &);
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
 private:
     void load(const QString &);
 
-    EditDialogueBasicTable * compressors_table;
+    EditDialogueBasicTable *compressors_table;
     QList<int> former_ids;
     QString customer_id;
 };

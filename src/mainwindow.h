@@ -56,9 +56,9 @@ public:
 
     void openFile(const QString &);
 
-    inline MainWindowSettings & settings() { return m_settings; }
-    inline UndoStack * undoStack() const { return m_undo_stack; }
-    inline ViewTab * currentTab() const { return m_tab; }
+    inline MainWindowSettings &settings() { return m_settings; }
+    inline UndoStack *undoStack() const { return m_undo_stack; }
+    inline ViewTab *currentTab() const { return m_tab; }
 
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
@@ -185,7 +185,7 @@ private slots:
     void changeLanguage();
     void languageChanged();
     void checkForUpdates(bool silent = false);
-    void httpRequestFinished(QNetworkReply * reply);
+    void httpRequestFinished(QNetworkReply *reply);
     void httpRequestFailed(bool silent);
     // DATABASE
     void openRecent(QListWidgetItem *);
@@ -203,7 +203,7 @@ private slots:
     void closeTab();
     void closeTab(int);
     void tabChanged(int index);
-    void tabTextChanged(QWidget * tab, const QString & text);
+    void tabTextChanged(QWidget *tab, const QString &text);
 
 private:
     // UI
@@ -214,8 +214,8 @@ private:
 #endif
     bool hasActiveModalWidget();
     void clearWindowTitle();
-    void setWindowTitleWithRepresentedFilename(const QString & path);
-    QMenu * createPopupMenu();
+    void setWindowTitleWithRepresentedFilename(const QString &path);
+    QMenu *createPopupMenu();
     void paintLabel(const QVariantMap &, QPainter &, int, int, int, int);
     QString fileNameForCurrentView();
     void exportPDF(int);
@@ -227,9 +227,9 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(const QString &, bool);
-    void initDatabase(QSqlDatabase & database, bool transaction = true, bool save_on_upgrade = true);
+    void initDatabase(QSqlDatabase &database, bool transaction = true, bool save_on_upgrade = true);
     void initTables(bool = true);
-    void openDatabase(QString path, const QString & connection_string);
+    void openDatabase(QString path, const QString &connection_string);
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool isRecordLocked(const QString &);
@@ -238,22 +238,22 @@ private:
     void moveTableVariable(bool);
     void exportData(const QString &);
 
-    QAction * actionShow_icons_only;
-    QToolButton * tbtn_open;
-    QToolButton * tbtn_undo;
-    QAction * tbtn_undo_action;
-    QToolButton * tbtn_export;
-    QLineEdit * le_search;
-    QComboBox * cb_lang;
+    QAction *actionShow_icons_only;
+    QToolButton *tbtn_open;
+    QToolButton *tbtn_undo;
+    QAction *tbtn_undo_action;
+    QToolButton *tbtn_export;
+    QLineEdit *le_search;
+    QComboBox *cb_lang;
     QMap<QAction *, MainWindowSettings::DateFormat> dict_action_date_format;
-    QActionGroup * actgrp_date_format;
+    QActionGroup *actgrp_date_format;
     QMap<QAction *, MainWindowSettings::TimeFormat> dict_action_time_format;
-    QActionGroup * actgrp_time_format;
+    QActionGroup *actgrp_time_format;
     QMap<QString, QString> leaklog_i18n;
-    QNetworkAccessManager * network_access_manager;
+    QNetworkAccessManager *network_access_manager;
     MainWindowSettings m_settings;
-    UndoStack * m_undo_stack;
-    ViewTab * m_tab;
+    UndoStack *m_undo_stack;
+    ViewTab *m_tab;
     QString m_connection_string;
 };
 

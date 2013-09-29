@@ -26,22 +26,22 @@
 #include "editcircuitdialoguecompressorstab.h"
 #include "editcircuitdialogueunitstab.h"
 
-EditCircuitDialogue::EditCircuitDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent)
+EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent)
     : TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
 
-    EditCircuitDialogueCompressorsTab * compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->parent("parent"), idFieldValue().toString(), this);
     addTab(compressors_tab);
 
-    EditCircuitDialogueUnitsTab * units_tab = new EditCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
     QObject::connect(units_tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
     addTab(units_tab);
 }
 
 void EditCircuitDialogue::updateCircuit(MTDictionary dict)
 {
-    MDAbstractInputWidget * md;
+    MDAbstractInputWidget *md;
     for (int i = 0; i < dict.count(); ++i) {
         md = inputWidget(dict.key(i));
         if (md)

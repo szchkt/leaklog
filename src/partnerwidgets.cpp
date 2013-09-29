@@ -24,7 +24,7 @@
 #include <QString>
 #include <QLineEdit>
 
-PartnerWidgets::PartnerWidgets(const QString & partner_name_str, const QString & partner_id_str, QWidget * md)
+PartnerWidgets::PartnerWidgets(const QString &partner_name_str, const QString &partner_id_str, QWidget *md)
 {
     partner_name_le = new MDLineEdit("partner", tr("Business partner:"), md, partner_name_str);
     partner_id_le = new MDLineEdit("partner_id", tr("Business partner (ID):"), md, partner_id_str, 99999999);

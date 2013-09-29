@@ -55,7 +55,7 @@ MainWindowSettings::MainWindowSettings():
 {
 }
 
-void MainWindowSettings::save(QSettings & settings) const
+void MainWindowSettings::save(QSettings &settings) const
 {
     settings.setValue("main_window/customer_details_visible", m_customer_details_visible);
     settings.setValue("main_window/circuit_details_visible", m_circuit_details_visible);
@@ -69,7 +69,7 @@ void MainWindowSettings::save(QSettings & settings) const
     settings.endGroup();
 }
 
-void MainWindowSettings::restore(QSettings & settings)
+void MainWindowSettings::restore(QSettings &settings)
 {
     m_customer_details_visible = settings.value("main_window/customer_details_visible", false).toBool();
     m_circuit_details_visible = settings.value("main_window/circuit_details_visible", false).toBool();
@@ -78,7 +78,7 @@ void MainWindowSettings::restore(QSettings & settings)
     setTimeFormat((TimeFormat)settings.value("main_window/time_format", hhmm).toInt());
 
     settings.beginGroup("main_window/view_orders");
-    foreach (const QString & key, settings.allKeys())
+    foreach (const QString &key, settings.allKeys())
         m_view_orders.insert(key.toULongLong(), settings.value(key).toString());
     settings.endGroup();
 }
@@ -97,17 +97,17 @@ void MainWindowSettings::setTimeFormat(TimeFormat time_format)
     emit timeFormatChanged(time_format);
 }
 
-QString MainWindowSettings::formatDate(const QString & date) const
+QString MainWindowSettings::formatDate(const QString &date) const
 {
     return QDate::fromString(date, DATE_FORMAT).toString(dateFormatString());
 }
 
-QString MainWindowSettings::formatDateTime(const QString & datetime, const QString & join_format) const
+QString MainWindowSettings::formatDateTime(const QString &datetime, const QString &join_format) const
 {
     return QDateTime::fromString(datetime, DATE_TIME_FORMAT).toString(dateTimeFormatString(join_format));
 }
 
-void MainWindowSettings::setOrderByForView(quint64 view, const QString & order_by)
+void MainWindowSettings::setOrderByForView(quint64 view, const QString &order_by)
 {
     m_view_orders.insert(view, order_by);
 }

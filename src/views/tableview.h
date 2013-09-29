@@ -30,17 +30,17 @@ class TableView : public InspectionDetailsView
     Q_OBJECT
 
 public:
-    TableView(ViewTabSettings * settings);
+    TableView(ViewTabSettings *settings);
 
     QString renderHTML();
 
     QString title() const;
 
 protected:
-    HTMLTable * writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
+    HTMLTable *writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
     QStringList listDelayedWarnings(Warnings &, const QVariantMap &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
-    HTMLTableCell * writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
+    HTMLTableCell *writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);
 };
 

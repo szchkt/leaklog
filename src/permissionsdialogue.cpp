@@ -33,18 +33,18 @@
 
 using namespace Global;
 
-PermissionsDialogue::PermissionsDialogue(QWidget * parent):
+PermissionsDialogue::PermissionsDialogue(QWidget *parent):
 QDialog(parent, Qt::Dialog) {
     setWindowTitle(tr("Configure permissions - Leaklog"));
 
-    QGridLayout * gl = new QGridLayout(this);
+    QGridLayout *gl = new QGridLayout(this);
 
-    QLabel * information = new QLabel(this);
+    QLabel *information = new QLabel(this);
     information->setWordWrap(true);
     information->setText(tr("Permissions only apply when the database is locked."));
     gl->addWidget(information, 0, 0);
 
-    QTreeWidget * tree = new QTreeWidget(this);
+    QTreeWidget *tree = new QTreeWidget(this);
     tree->setColumnCount(4);
     tree->setIndentation(0);
     tree->setHeaderHidden(true);
@@ -53,25 +53,25 @@ QDialog(parent, Qt::Dialog) {
     tree->setMinimumSize(600, 400);
     gl->addWidget(tree, 1, 0);
 
-    const MTDictionary & permissions = Global::permissions();
+    const MTDictionary &permissions = Global::permissions();
 
     QString nobody_text = isDatabaseRemote() ? tr("Administrator") : tr("Nobody");
 
     for (int i = 0; i < permissions.count(); ++i) {
         QString permission = DBInfoValueForKey(permissions.key(i) + "_permitted");
 
-        QTreeWidgetItem * item = new QTreeWidgetItem(tree);
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree);
         item->setText(0, permissions.value(i));
 
-        QButtonGroup * group = new QButtonGroup(this);
+        QButtonGroup *group = new QButtonGroup(this);
         permission_groups.insert(permissions.key(i), group);
 
-        QRadioButton * everyone = new QRadioButton(tr("Everyone"), this);
+        QRadioButton *everyone = new QRadioButton(tr("Everyone"), this);
         group->addButton(everyone, 1);
         tree->setItemWidget(item, 1, everyone);
 
         if (isOwnerPermissionApplicable(permissions.key(i))) {
-            QRadioButton * owner = new QRadioButton(tr("Author"), this);
+            QRadioButton *owner = new QRadioButton(tr("Author"), this);
             group->addButton(owner, 2);
             tree->setItemWidget(item, 2, owner);
 
@@ -79,7 +79,7 @@ QDialog(parent, Qt::Dialog) {
                 owner->setChecked(true);
         }
 
-        QRadioButton * nobody = new QRadioButton(nobody_text, this);
+        QRadioButton *nobody = new QRadioButton(nobody_text, this);
         group->addButton(nobody, 0);
         tree->setItemWidget(item, 3, nobody);
 
@@ -89,7 +89,7 @@ QDialog(parent, Qt::Dialog) {
             everyone->setChecked(true);
     }
 
-    QDialogButtonBox * bb = new QDialogButtonBox(this);
+    QDialogButtonBox *bb = new QDialogButtonBox(this);
     bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Save)->setText(tr("Save"));
     bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));

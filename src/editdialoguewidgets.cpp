@@ -21,9 +21,9 @@
 
 #include "inputwidgets.h"
 
-void EditDialogueWidgets::addGroupedInputWidgets(const QString & group_name, const QList<MDAbstractInputWidget *> & widgets)
+void EditDialogueWidgets::addGroupedInputWidgets(const QString &group_name, const QList<MDAbstractInputWidget *> &widgets)
 {
-    MDGroupedInputWidgets * gw = new MDGroupedInputWidgets(group_name, widget());
+    MDGroupedInputWidgets *gw = new MDGroupedInputWidgets(group_name, widget());
     addInputWidget(gw);
     for (int i = 0; i < widgets.count(); ++i) {
         widgets.at(i)->setShowInForm(false);

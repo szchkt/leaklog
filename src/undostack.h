@@ -30,7 +30,7 @@ class UndoStack : public QObject
     Q_OBJECT
 
 public:
-    UndoStack(QAction * undo_action, QWidget * parent);
+    UndoStack(QAction *undo_action, QWidget *parent);
 
     int savepoint();
     bool rollbackToSavepoint(int savepoint);
@@ -41,12 +41,12 @@ signals:
     void undoTriggered();
 
 private slots:
-    void hovered(QAction * action = NULL);
-    void undo(QAction * action);
+    void hovered(QAction *action = NULL);
+    void undo(QAction *action);
 
 private:
-    QAction * m_undo_action;
-    QMenu * m_undo_menu;
+    QAction *m_undo_action;
+    QMenu *m_undo_menu;
 };
 
 class UndoCommand : QObject
@@ -54,7 +54,7 @@ class UndoCommand : QObject
     Q_OBJECT
 
 public:
-    UndoCommand(UndoStack * undo_stack, const QString & description);
+    UndoCommand(UndoStack *undo_stack, const QString &description);
 
     inline QString description() const { return m_description; }
 

@@ -37,16 +37,16 @@ DBRecord::DBRecord():
     MTRecord()
 {}
 
-DBRecord::DBRecord(const QString & type, const QString & id_field, const QString & id, const MTDictionary & parents):
+DBRecord::DBRecord(const QString &type, const QString &id_field, const QString &id, const MTDictionary &parents):
     QObject(),
     MTRecord(type, id_field, id, parents)
 {}
 
-Customer::Customer(const QString & id):
+Customer::Customer(const QString &id):
     DBRecord("customers", "id", id, MTDictionary())
 {}
 
-void Customer::initEditDialogue(EditDialogueWidgets * md)
+void Customer::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Customer"));
     QVariantMap attributes;
@@ -114,7 +114,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Customer::attributes()
+const MTDictionary &Customer::attributes()
 {
     static CustomerAttributes dict;
     return dict.dict;
@@ -129,11 +129,11 @@ Circuit::Circuit():
     DBRecord("circuits", "id", "", MTDictionary())
 {}
 
-Circuit::Circuit(const QString & parent, const QString & id):
+Circuit::Circuit(const QString &parent, const QString &id):
     DBRecord("circuits", "id", id, MTDictionary("parent", parent))
 {}
 
-void Circuit::initEditDialogue(EditDialogueWidgets * md)
+void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -158,9 +158,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), attributes.value("sn").toString()));
     md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, attributes.value("year").toInt()));
     md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), attributes.value("commissioning").toString()));
-    MDCheckBox * disused = new MDCheckBox("disused", tr("Disused"), md->widget(), attributes.value("disused").toInt());
+    MDCheckBox *disused = new MDCheckBox("disused", tr("Disused"), md->widget(), attributes.value("disused").toInt());
     md->addInputWidget(disused);
-    MDDateEdit * decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), attributes.value("decommissioning").toString());
+    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), attributes.value("decommissioning").toString());
     decommissioning->setEnabled(disused->isChecked());
     QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
@@ -172,7 +172,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), attributes.value("leak_detector").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
     md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
-    MDSpinBox * inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
+    MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
     QStringList used_ids; MTSqlQuery query_used_ids;
@@ -188,7 +188,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets * md)
     md->setUsedIds(used_ids);
 }
 
-bool Circuit::checkValues(const QVariantMap & values, QWidget * parent)
+bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
 {
     if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant")) {
         QMessageBox message(parent);
@@ -276,7 +276,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Circuit::attributes()
+const MTDictionary &Circuit::attributes()
 {
     static CircuitAttributes dict;
     return dict.dict;
@@ -292,17 +292,17 @@ Inspection::Inspection():
     m_scope(Variable::Inspection)
 {}
 
-Inspection::Inspection(const QString & customer, const QString & circuit, const QString & date):
+Inspection::Inspection(const QString &customer, const QString &circuit, const QString &date):
     DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
     m_scope(Variable::Inspection)
 {}
 
-Inspection::Inspection(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
+Inspection::Inspection(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
     DBRecord(table, id_column, id, parents),
     m_scope(Variable::Inspection)
 {}
 
-void Inspection::initEditDialogue(EditDialogueWidgets * md)
+void Inspection::initEditDialogue(EditDialogueWidgets *md)
 {
     QString customer = Customer(parent("customer")).stringValue("company");
     if (customer.isEmpty())
@@ -331,19 +331,19 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
         }
     }
     md->setUsedIds(used_ids);
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
+    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
     if (isDatabaseLocked()) {
         date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
     }
     md->addInputWidget(date);
-    MTCheckBoxGroup * chbgrp_i_type = new MTCheckBoxGroup(md->widget());
-    MDCheckBox * chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt(), true);
+    MTCheckBoxGroup *chbgrp_i_type = new MTCheckBoxGroup(md->widget());
+    MDCheckBox *chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt(), true);
     if (nominal_found)
         QObject::connect(chb_nominal, SIGNAL(toggled(MTCheckBox *, bool)), this, SLOT(showSecondNominalInspectionWarning(MTCheckBox *, bool)));
 
     md->addInputWidget(chb_nominal);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
-    MDCheckBox * chb_repair = new MDCheckBox("repair", tr("Repair"), md->widget(), attributes.value("repair").toInt(), true);
+    MDCheckBox *chb_repair = new MDCheckBox("repair", tr("Repair"), md->widget(), attributes.value("repair").toInt(), true);
     md->addInputWidget(chb_repair);
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
@@ -362,7 +362,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets * md)
     query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 
-void Inspection::showSecondNominalInspectionWarning(MTCheckBox * checkbox, bool state)
+void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool state)
 {
     if (state) {
         QMessageBox message(checkbox->parentWidget());
@@ -384,16 +384,16 @@ void Inspection::showSecondNominalInspectionWarning(MTCheckBox * checkbox, bool 
     }
 }
 
-InspectionByInspector::InspectionByInspector(const QString & inspector_id):
+InspectionByInspector::InspectionByInspector(const QString &inspector_id):
     Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
            " LEFT JOIN circuits ON inspections.circuit = circuits.id AND circuits.parent = inspections.customer", "date", "", MTDictionary("inspector", inspector_id))
 {}
 
-Repair::Repair(const QString & date):
+Repair::Repair(const QString &date):
     DBRecord("repairs", "date", date, MTDictionary())
 {}
 
-void Repair::initEditDialogue(EditDialogueWidgets * md)
+void Repair::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -406,18 +406,18 @@ void Repair::initEditDialogue(EditDialogueWidgets * md)
             attributes.insert(parents().key(i), parents().value(i));
         }
     }
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
+    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
     if (isDatabaseLocked())
         date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
     md->addInputWidget(date);
-    MDLineEdit * customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
+    MDLineEdit *customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
     if (!attributes.value("parent").toString().isEmpty())
         customer->setEnabled(false);
     md->addInputWidget(customer);
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    MDComboBox * repairman = new MDComboBox("repairman", tr("Repairman:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
+    MDComboBox *repairman = new MDComboBox("repairman", tr("Repairman:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), attributes.value("arno").toString()));
@@ -455,17 +455,17 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Repair::attributes()
+const MTDictionary &Repair::attributes()
 {
     static RepairAttributes dict;
     return dict.dict;
 }
 
-VariableRecord::VariableRecord(const QString & var_id, const QString & parent_id):
+VariableRecord::VariableRecord(const QString &var_id, const QString &parent_id):
     DBRecord("variables", "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
 {}
 
-void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
+void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Variable"));
 
@@ -501,7 +501,7 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString(), 0, "", enable_all));
-    MDComboBox * cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), variableTypes(), "", enable_all);
+    MDComboBox *cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), variableTypes(), "", enable_all);
     if (attributes.value("type").toString() == "group")
         cb_type->setEnabled(false);
     md->addInputWidget(cb_type);
@@ -519,11 +519,11 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets * md)
     }
 }
 
-Table::Table(const QString & id, const QString & uid, const MTDictionary & parents):
+Table::Table(const QString &id, const QString &uid, const MTDictionary &parents):
     DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
 {}
 
-void Table::initEditDialogue(EditDialogueWidgets * md)
+void Table::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Table"));
     QVariantMap attributes;
@@ -549,11 +549,11 @@ void Table::initEditDialogue(EditDialogueWidgets * md)
     md->setUsedIds(used_ids);
 }
 
-Inspector::Inspector(const QString & id):
+Inspector::Inspector(const QString &id):
     DBRecord("inspectors", "id", id, MTDictionary())
 {}
 
-void Inspector::initEditDialogue(EditDialogueWidgets * md)
+void Inspector::initEditDialogue(EditDialogueWidgets *md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -566,7 +566,7 @@ void Inspector::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md->widget(), attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    MDInputWidget * iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
     iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
@@ -597,17 +597,17 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Inspector::attributes()
+const MTDictionary &Inspector::attributes()
 {
     static InspectorAttributes dict;
     return dict.dict;
 }
 
-ServiceCompany::ServiceCompany(const QString & id):
+ServiceCompany::ServiceCompany(const QString &id):
     DBRecord("service_companies", "id", id, MTDictionary())
 {}
 
-void ServiceCompany::initEditDialogue(EditDialogueWidgets * md)
+void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Service Company"));
     QVariantMap attributes;
@@ -648,17 +648,17 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & ServiceCompany::attributes()
+const MTDictionary &ServiceCompany::attributes()
 {
     static ServiceCompanyAttributes dict;
     return dict.dict;
 }
 
-RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString & date):
+RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString &date):
     DBRecord("refrigerant_management", "date", date, MTDictionary())
 {}
 
-void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets * md)
+void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -667,13 +667,13 @@ void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets * md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    MDDateTimeEdit * date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
+    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
     if (isDatabaseLocked()) {
         date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
     }
     md->addInputWidget(date);
 
-    PartnerWidgets * partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md->widget());
+    PartnerWidgets *partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md->widget());
     md->addInputWidget(partner_widgets->partnersWidget());
     md->addInputWidget(partner_widgets->partnerNameWidget());
     md->addInputWidget(partner_widgets->partnerIdWidget());
@@ -719,17 +719,17 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & RecordOfRefrigerantManagement::attributes()
+const MTDictionary &RecordOfRefrigerantManagement::attributes()
 {
     static RecordOfRefrigerantManagementAttributes dict;
     return dict.dict;
 }
 
-WarningRecord::WarningRecord(const QString & id):
+WarningRecord::WarningRecord(const QString &id):
     DBRecord("warnings", "id", id, MTDictionary())
 {}
 
-void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
+void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Warning"));
     QVariantMap attributes; bool enable_all = true;
@@ -762,11 +762,11 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets * md)
     md->setUsedIds(used_ids);
 }
 
-AssemblyRecordType::AssemblyRecordType(const QString & id):
+AssemblyRecordType::AssemblyRecordType(const QString &id):
     DBRecord("assembly_record_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
+void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Assembly Record Type"));
 
@@ -787,7 +787,7 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets * md)
     md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id")));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
+    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
@@ -821,7 +821,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordType::attributes()
+const MTDictionary &AssemblyRecordType::attributes()
 {
     static AssemblyRecordTypeAttributes dict;
     return dict.dict;
@@ -833,11 +833,11 @@ bool AssemblyRecordType::remove()
     return type_categories.remove() && MTRecord::remove();
 }
 
-AssemblyRecordItemType::AssemblyRecordItemType(const QString & id):
+AssemblyRecordItemType::AssemblyRecordItemType(const QString &id):
     DBRecord("assembly_record_item_types", "id", id, MTDictionary())
 {}
 
-void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets * md)
+void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -889,13 +889,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordItemType::attributes()
+const MTDictionary &AssemblyRecordItemType::attributes()
 {
     static AssemblyRecordItemTypeAttributes dict;
     return dict.dict;
 }
 
-AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString & record_type_id):
+AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &record_type_id):
     MTRecord("assembly_record_type_categories", "", "", record_type_id.isEmpty() ? MTDictionary() : MTDictionary("record_type_id", record_type_id))
 {}
 
@@ -910,13 +910,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordTypeCategory::attributes()
+const MTDictionary &AssemblyRecordTypeCategory::attributes()
 {
     static AssemblyRecordTypeCategoryAttributes dict;
     return dict.dict;
 }
 
-AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString & id):
+AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &id):
     DBRecord("assembly_record_item_categories", "id", id, MTDictionary())
 {
 }
@@ -932,13 +932,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordItemCategory::attributes()
+const MTDictionary &AssemblyRecordItemCategory::attributes()
 {
     static AssemblyRecordItemCategoryAttributes dict;
     return dict.dict;
 }
 
-void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
+void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Assembly Record Item Category"));
 
@@ -949,14 +949,14 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
 
     md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    MDGroupedCheckBoxes * md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
+    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowDiscount, tr("Show discount"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
-    MDRadioButtonGroup * md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md->widget(), QString::number(attributes.value("display_position").toInt()));
+    MDRadioButtonGroup *md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md->widget(), QString::number(attributes.value("display_position").toInt()));
     md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
     md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);
@@ -972,11 +972,11 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets * md)
     md->setUsedIds(used_ids);
 }
 
-AssemblyRecordItem::AssemblyRecordItem(const QString & record_id):
+AssemblyRecordItem::AssemblyRecordItem(const QString &record_id):
     MTRecord("assembly_record_items", "", "", MTDictionary("arno", record_id))
 {}
 
-AssemblyRecordItem::AssemblyRecordItem(const QString & table, const QString & id_column, const QString & id, const MTDictionary & parents):
+AssemblyRecordItem::AssemblyRecordItem(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
     MTRecord(table, id_column, id, parents)
 {}
 
@@ -994,26 +994,26 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & AssemblyRecordItem::attributes()
+const MTDictionary &AssemblyRecordItem::attributes()
 {
     static AssemblyRecordItemAttributes dict;
     return dict.dict;
 }
 
-AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString & inspector_id):
+AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString &inspector_id):
     AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno", "", "",
         MTDictionary(QStringList() << "item_type_id" << "source", QStringList() << inspector_id << QString::number(AssemblyRecordItem::Inspectors)))
 {}
 
-File::File(const QString & file_id):
+File::File(const QString &file_id):
     MTRecord("files", "id", file_id, MTDictionary())
 {}
 
-Person::Person(const QString & person_id):
+Person::Person(const QString &person_id):
     MTRecord("persons", "id", person_id, MTDictionary())
 {}
 
-Person::Person(const QString & person_id, const QString & customer_id):
+Person::Person(const QString &person_id, const QString &customer_id):
     MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
 {}
 
@@ -1031,17 +1031,17 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Person::attributes()
+const MTDictionary &Person::attributes()
 {
     static PersonAttributes dict;
     return dict.dict;
 }
 
-CircuitUnitType::CircuitUnitType(const QString & id):
+CircuitUnitType::CircuitUnitType(const QString &id):
     DBRecord("circuit_unit_types", "id", id, MTDictionary())
 {}
 
-void CircuitUnitType::initEditDialogue(EditDialogueWidgets * md)
+void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
 {
     QString currency = Global::DBInfoValueForKey("currency", "EUR");
 
@@ -1115,7 +1115,7 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & CircuitUnitType::attributes()
+const MTDictionary &CircuitUnitType::attributes()
 {
     static CircuitUnitTypeAttributes dict;
     return dict.dict;
@@ -1132,19 +1132,19 @@ const QString CircuitUnitType::locationToString(int id)
     return QString();
 }
 
-CircuitUnit::CircuitUnit(const QString & id, const MTDictionary & dict):
+CircuitUnit::CircuitUnit(const QString &id, const MTDictionary &dict):
     MTRecord("circuit_units", "id", id, dict)
 {}
 
-InspectionImage::InspectionImage(const QString & customer_id, const QString & circuit_id, const QString & inspection_id):
+InspectionImage::InspectionImage(const QString &customer_id, const QString &circuit_id, const QString &inspection_id):
     MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit" << "date", QStringList() << customer_id << circuit_id << inspection_id))
 {}
 
-Style::Style(const QString & id):
+Style::Style(const QString &id):
     DBRecord("styles", "id", id, MTDictionary())
 {}
 
-void Style::initEditDialogue(EditDialogueWidgets * md)
+void Style::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Style"));
     QVariantMap attributes;
@@ -1177,13 +1177,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Style::attributes()
+const MTDictionary &Style::attributes()
 {
     static StyleAttributes dict;
     return dict.dict;
 }
 
-Compressor::Compressor(const QString & id, const MTDictionary & dict):
+Compressor::Compressor(const QString &id, const MTDictionary &dict):
     MTRecord("compressors", "id", id, dict)
 {
     setSerialId(true);
@@ -1203,13 +1203,13 @@ public:
     MTDictionary dict;
 };
 
-const MTDictionary & Compressor::attributes()
+const MTDictionary &Compressor::attributes()
 {
     static CompressorAttributes dict;
     return dict.dict;
 }
 
-InspectionsCompressor::InspectionsCompressor(const QString & id, const MTDictionary & dict):
+InspectionsCompressor::InspectionsCompressor(const QString &id, const MTDictionary &dict):
     MTRecord("inspections_compressors", "id", id, dict)
 {
     setSerialId(true);

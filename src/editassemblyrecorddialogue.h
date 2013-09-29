@@ -41,13 +41,13 @@ public:
     EditAssemblyRecordDialogueTab(int, QWidget * = NULL);
 
     void save(const QVariant &);
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
 private:
     void init();
 
     int record_id;
-    QTreeWidget * tree;
+    QTreeWidget *tree;
 };
 
 #endif // EDIT_ASSEMBLY_RECORD_DIALOGUE_H

@@ -27,7 +27,7 @@
 #include <QTabWidget>
 #include <QScrollArea>
 
-TabbedEditDialogue::TabbedEditDialogue(DBRecord * record, UndoStack * undo_stack, QWidget * parent, bool layout)
+TabbedEditDialogue::TabbedEditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent, bool layout)
     : EditDialogue(undo_stack, parent)
 {
     main_tabw = new QTabWidget;
@@ -45,16 +45,16 @@ TabbedEditDialogue::~TabbedEditDialogue()
     delete main_tabw;
 }
 
-void TabbedEditDialogue::addMainGridLayout(QVBoxLayout * md_vlayout_main)
+void TabbedEditDialogue::addMainGridLayout(QVBoxLayout *md_vlayout_main)
 {
-    QWidget * main_form_tab = new QWidget(main_tabw);
+    QWidget *main_form_tab = new QWidget(main_tabw);
     main_form_tab->setLayout(md_grid_main);
 
     main_tabw->addTab(main_form_tab, tr("Basic information"));
     md_vlayout_main->addWidget(main_tabw);
 }
 
-void TabbedEditDialogue::addTab(EditDialogueTab * tab)
+void TabbedEditDialogue::addTab(EditDialogueTab *tab)
 {
     tabs << tab;
 
@@ -72,28 +72,28 @@ void TabbedEditDialogue::save()
     accept();
 }
 
-EditDialogueTab::EditDialogueTab(QWidget * parent)
+EditDialogueTab::EditDialogueTab(QWidget *parent)
     : QWidget(parent)
 {
     setAutoFillBackground(false);
 }
 
-void EditDialogueTab::setLayout(QLayout * layout)
+void EditDialogueTab::setLayout(QLayout *layout)
 {
     layout->setContentsMargins(9, 9, 9, 9);
     QWidget::setLayout(layout);
 }
 
-QWidget * EditDialogueTab::widget()
+QWidget *EditDialogueTab::widget()
 {
-    QScrollArea * scroll_area = createScrollArea();
+    QScrollArea *scroll_area = createScrollArea();
     scroll_area->setWidget(this);
     return scroll_area;
 }
 
-QScrollArea * EditDialogueTab::createScrollArea()
+QScrollArea *EditDialogueTab::createScrollArea()
 {
-    QScrollArea * scroll_area = new QScrollArea;
+    QScrollArea *scroll_area = new QScrollArea;
     scroll_area->setWidgetResizable(1);
     scroll_area->setFrameStyle(QFrame::NoFrame);
     scroll_area->setAutoFillBackground(true);

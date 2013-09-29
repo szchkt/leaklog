@@ -29,16 +29,16 @@ class ActivityEventFilter : public QObject
     Q_OBJECT
 
 public:
-    ActivityEventFilter(QObject * parent = NULL);
+    ActivityEventFilter(QObject *parent = NULL);
 
 signals:
     void timeout();
 
 protected:
-    bool eventFilter(QObject * obj, QEvent * event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
-    QTimer * timer;
+    QTimer *timer;
 };
 
 #endif // ACTIVITYEVENTFILTER_H

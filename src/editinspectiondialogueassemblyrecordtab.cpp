@@ -30,7 +30,7 @@
 #include <QMessageBox>
 #include <QApplication>
 
-EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit * arno_w, MDComboBox * ar_type_w, EditInspectionDialogueAccess * inspection_dialogue_access, const QString & customer_id, const QString & circuit_id, QWidget * parent)
+EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *arno_w, MDComboBox *ar_type_w, EditInspectionDialogueAccess *inspection_dialogue_access, const QString &customer_id, const QString &circuit_id, QWidget *parent)
     : EditDialogueTab(parent),
       arno_being_changed(false),
       inspection_dialogue_access(inspection_dialogue_access)
@@ -52,10 +52,10 @@ EditInspectionDialogueAssemblyRecordTab::EditInspectionDialogueAssemblyRecordTab
 
 void EditInspectionDialogueAssemblyRecordTab::init()
 {
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
 
-    QGridLayout * form_grid = new QGridLayout;
+    QGridLayout *form_grid = new QGridLayout;
     form_grid->setContentsMargins(0, 0, 0, 0);
     QList<MDAbstractInputWidget *> inputwidgets;
     arno_w->setShowInForm(true);
@@ -332,7 +332,7 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QVariant &)
     }
 }
 
-int EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary & dict)
+int EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary &dict)
 {
     int id = -1;
     MTSqlQuery query("SELECT MAX(id) FROM assembly_record_item_types");

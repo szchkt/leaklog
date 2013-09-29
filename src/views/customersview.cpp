@@ -41,14 +41,14 @@ QString CustomersView::renderHTML()
     return viewTemplate("customers").arg(html);
 }
 
-void CustomersView::writeCustomersTable(MTTextStream & out, const QString & customer_id)
+void CustomersView::writeCustomersTable(MTTextStream &out, const QString &customer_id)
 {
-    HTMLTable * table = writeCustomersTable(customer_id);
+    HTMLTable *table = writeCustomersTable(customer_id);
     out << table->html();
     delete table;
 }
 
-HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTMLTable * table)
+HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTable *table)
 {
     bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
@@ -76,7 +76,7 @@ HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTML
         table->addClass("highlight");
 
     int thead_colspan = 2;
-    HTMLTableRow * row = NULL;
+    HTMLTableRow *row = NULL;
 
     if (customer_id.isEmpty() || customer_details_visible) {
         row = new HTMLTableRow();
@@ -106,7 +106,7 @@ HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTML
         }
     }
 
-    HTMLTableCell * cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
+    HTMLTableCell *cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
     if (customer_id.isEmpty()) {
         *cell << tr("List of Customers");
@@ -154,11 +154,11 @@ HTMLTable * CustomersView::writeCustomersTable(const QString & customer_id, HTML
     return table;
 }
 
-HTMLTable * CustomersView::customerContactPersons(const QString & customer_id, HTMLTable * table)
+HTMLTable *CustomersView::customerContactPersons(const QString &customer_id, HTMLTable *table)
 {
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("contact_persons");
-    HTMLTableRow * _tr;
+    HTMLTableRow *_tr;
 
     _tr = table->addRow();
     *(_tr->addHeaderCell()) << tr("Contact persons");

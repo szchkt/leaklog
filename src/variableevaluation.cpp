@@ -31,7 +31,7 @@ VariableEvaluation::EvaluationContext::EvaluationContext(int vars_scope):
     init();
 }
 
-VariableEvaluation::EvaluationContext::EvaluationContext(const QString & customer_id, const QString & circuit_id, int vars_scope):
+VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_id, const QString &circuit_id, int vars_scope):
     customer_id(customer_id),
     circuit_id(circuit_id),
     vars_scope(vars_scope)
@@ -55,7 +55,7 @@ VariableEvaluation::EvaluationContext::~EvaluationContext()
 void VariableEvaluation::EvaluationContext::init()
 {
     Variables vars(QSqlDatabase(), vars_scope);
-    VariableEvaluation::Variable * parent_var, * var;
+    VariableEvaluation::Variable *parent_var, *var;
 
     while (vars.next()) {
         var = vars_map.value(vars.id(), NULL);
@@ -89,7 +89,7 @@ void VariableEvaluation::EvaluationContext::init()
     used_ids = listVariableIds();
 }
 
-QString VariableEvaluation::EvaluationContext::variableName(Variable * var, bool is_nominal) const
+QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool is_nominal) const
 {
     if (is_nominal && var->id() == "refr_add_am")
         return QObject::tr("New charge");
@@ -97,19 +97,19 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable * var, bool
     return var->name();
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(const QString & var_name, QVariantMap & inspection, QString & nom_value)
+QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, QVariantMap &inspection, QString &nom_value)
 {
-    VariableEvaluation::Variable * var = vars_map.value(var_name);
+    VariableEvaluation::Variable *var = vars_map.value(var_name);
     if (!var) return QString();
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable * var, QVariantMap & inspection, QString & nom_value)
+QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable *var, QVariantMap &inspection, QString &nom_value)
 {
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::Variable::evaluate(EvaluationContext & context, QVariantMap & inspection, QString & nom_value)
+QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVariantMap &inspection, QString &nom_value)
 {
     QString ins_value = inspection.value(id()).toString();
 

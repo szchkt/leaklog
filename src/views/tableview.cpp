@@ -55,7 +55,7 @@ QString TableView::renderHTML()
     QVariantMap table = Table(table_id).list();
 
     int c = 0;
-    foreach (const QVariantMap & circuit, circuits) {
+    foreach (const QVariantMap &circuit, circuits) {
         c++;
         QString circuit_id = circuit.value("id").toString();
 
@@ -132,10 +132,10 @@ QString TableView::renderHTML()
 
         // *** Table ***
         if (table.value("scope").toInt() & Variable::Compressor) {
-            HTMLTable * compressors_table = new HTMLTable();
-            HTMLTableRow * compressors_table_row = compressors_table->addRow();
+            HTMLTable *compressors_table = new HTMLTable();
+            HTMLTableRow *compressors_table_row = compressors_table->addRow();
 
-            HTMLTableCell * cell;
+            HTMLTableCell *cell;
             if (compressor_id.isEmpty())
                 cell = compressors_table_row->addHeaderCell();
             else
@@ -252,19 +252,19 @@ QString TableView::renderHTML()
     return viewTemplate("table").arg(colours).arg(html);
 }
 
-HTMLTable * TableView::writeInspectionsTable(const QVariantMap & circuit, const QVariantMap & table_map,
-                                             ListOfVariantMaps & inspections, VariableEvaluation::EvaluationContext & var_evaluation)
+HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QVariantMap &table_map,
+                                            ListOfVariantMaps &inspections, VariableEvaluation::EvaluationContext &var_evaluation)
 {
     QStringList table_vars = table_map.value("variables").toString().split(";", QString::SkipEmptyParts);
-    VariableEvaluation::Variable * variable = NULL, * subvariable = NULL;
-    HTMLTable * table = new HTMLTable;
-    HTMLTableRow * row = table->addRow();
+    VariableEvaluation::Variable *variable = NULL, *subvariable = NULL;
+    HTMLTable *table = new HTMLTable;
+    HTMLTableRow *row = table->addRow();
     row->addClass("border_top");
-    HTMLTableCell * cell = NULL;
-    HTMLParentElement * el = NULL;
+    HTMLTableCell *cell = NULL;
+    HTMLParentElement *el = NULL;
 
 //*** Head ***
-    HTMLTableHead * thead = table->thead();
+    HTMLTableHead *thead = table->thead();
     row = thead->addRow();
     row->addClass("border_top");
     *(row->addHeaderCell("rowspan=\"3\"")) << tr("Date");
@@ -321,7 +321,7 @@ HTMLTable * TableView::writeInspectionsTable(const QVariantMap & circuit, const 
 
 //*** Body ***
     bool is_nominal, is_repair, is_outside_interval; QString inspection_date;
-    HTMLTableBody * tbody = table->tbody();
+    HTMLTableBody *tbody = table->tbody();
     for (int i = 0; i < inspections.count(); ++i) {
         is_nominal = inspections.at(i).value("nominal").toInt();
         is_repair = inspections.at(i).value("repair").toInt();
@@ -393,7 +393,7 @@ HTMLTable * TableView::writeInspectionsTable(const QVariantMap & circuit, const 
     }
 
 //*** Foot ***
-    HTMLTableFoot * tfoot = table->tfoot();
+    HTMLTableFoot *tfoot = table->tfoot();
     MTDictionary foot_functions;
     foot_functions.insert("sum", tr("Sum"));
     foot_functions.insert("avg", tr("Average"));
@@ -472,9 +472,9 @@ HTMLTable * TableView::writeInspectionsTable(const QVariantMap & circuit, const 
     return table;
 }
 
-QStringList TableView::listDelayedWarnings(Warnings & warnings, const QVariantMap & circuit_attributes,
-                                           QVariantMap & nominal_ins, const QString & last_entry_date,
-                                           const QString & last_inspection_date, int * delay_out)
+QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap &circuit_attributes,
+                                           QVariantMap &nominal_ins, const QString &last_entry_date,
+                                           const QString &last_inspection_date, int *delay_out)
 {
     QString customer_id = circuit_attributes.value("parent").toString();
     QString circuit_id = circuit_attributes.value("id").toString();
@@ -486,7 +486,7 @@ QStringList TableView::listDelayedWarnings(Warnings & warnings, const QVariantMa
     } else {
         last_inspection = Inspection(customer_id, circuit_id, last_inspection_date).list();
     }
-    QVariantMap * entry;
+    QVariantMap *entry;
     bool show_warning;
     int id, delay, interval;
     while (warnings.next()) {
@@ -513,27 +513,27 @@ QStringList TableView::listDelayedWarnings(Warnings & warnings, const QVariantMa
     return warnings_list;
 }
 
-void TableView::writeTableVarCell(MTTextStream & out, const QString & var_type, const QString & ins_value, const QString & nom_value,
-                                  const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
+void TableView::writeTableVarCell(MTTextStream &out, const QString &var_type, const QString &ins_value, const QString &nom_value,
+                                  const QString &bg_class, bool compare_nom, int rowspan, double tolerance)
 {
     out << writeTableVarCell(var_type, ins_value, nom_value, bg_class, compare_nom, rowspan, tolerance)->html();
 }
 
-HTMLTableCell * TableView::writeTableVarCell(const QString & var_type, const QString & ins_value, const QString & nom_value,
-                                             const QString & bg_class, bool compare_nom, int rowspan, double tolerance)
+HTMLTableCell *TableView::writeTableVarCell(const QString &var_type, const QString &ins_value, const QString &nom_value,
+                                            const QString &bg_class, bool compare_nom, int rowspan, double tolerance)
 {
     QString args = QString("class=\"%1\" rowspan=\"%2\"").arg(bg_class).arg(rowspan);
     if (var_type == "text" && !ins_value.isEmpty()) {
         args.append(QString("onmouseover=\"Tip('%1')\" onmouseout=\"UnTip()\"")
                     .arg(escapeString(escapeString(ins_value), true, true)));
     }
-    HTMLTableCell * cell = new HTMLTableCell(args);
+    HTMLTableCell *cell = new HTMLTableCell(args);
     *cell << tableVarValue(var_type, ins_value, nom_value, bg_class, compare_nom, tolerance);
     return cell;
 }
 
-QString TableView::tableVarValue(const QString & var_type, const QString & ins_value, const QString & nom_value,
-                                 const QString & bg_class, bool compare_nom, double tolerance, bool expand_text)
+QString TableView::tableVarValue(const QString &var_type, const QString &ins_value, const QString &nom_value,
+                                 const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
         if (expand_text) return escapeString(ins_value);

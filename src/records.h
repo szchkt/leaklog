@@ -43,7 +43,7 @@ public:
     DBRecord();
     DBRecord(const QString &, const QString &, const QString &, const MTDictionary &);
 
-    QString parent(const QString & field) const { return MTRecord::parent(field); }
+    QString parent(const QString &field) const { return MTRecord::parent(field); }
 };
 
 class Customer : public DBRecord
@@ -56,7 +56,7 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     void readOperatorValues();
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
     static int numBasicAttributes();
 };
 
@@ -73,7 +73,7 @@ public:
 
     static void cascadeIDChange(int customer_id, int old_id, int new_id, bool compressors_and_units = false);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
     static int numBasicAttributes();
 };
 
@@ -114,7 +114,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class VariableRecord : public DBRecord
@@ -146,7 +146,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class ServiceCompany : public DBRecord
@@ -158,7 +158,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class RecordOfRefrigerantManagement : public DBRecord
@@ -170,7 +170,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class WarningRecord : public DBRecord
@@ -201,7 +201,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
     bool remove();
 };
 
@@ -214,7 +214,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class AssemblyRecordTypeCategory : public MTRecord
@@ -222,7 +222,7 @@ class AssemblyRecordTypeCategory : public MTRecord
 public:
     AssemblyRecordTypeCategory(const QString & = QString());
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class AssemblyRecordItemCategory : public DBRecord
@@ -246,7 +246,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class AssemblyRecordItem : public MTRecord
@@ -261,7 +261,7 @@ public:
     AssemblyRecordItem(const QString &);
     AssemblyRecordItem(const QString &, const QString &, const QString &, const MTDictionary &);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class AssemblyRecordItemByInspector : public AssemblyRecordItem
@@ -282,7 +282,7 @@ public:
     Person(const QString & = QString());
     Person(const QString &, const QString &);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class CircuitUnitType : public DBRecord
@@ -300,7 +300,7 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     static const QString locationToString(int);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class CircuitUnit : public MTRecord
@@ -324,7 +324,7 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class Compressor : public MTRecord
@@ -332,7 +332,7 @@ class Compressor : public MTRecord
 public:
     Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
 
-    static const MTDictionary & attributes();
+    static const MTDictionary &attributes();
 };
 
 class InspectionsCompressor : public MTRecord

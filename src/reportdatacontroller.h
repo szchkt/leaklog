@@ -49,8 +49,8 @@ protected:
     void reportLeakages();
 
 private:
-    QWebView * wv_main;
-    ToolBarStack * toolbarstack;
+    QWebView *wv_main;
+    ToolBarStack *toolbarstack;
 };
 
 #endif // REPORT_DATA_CONTROLLER_H

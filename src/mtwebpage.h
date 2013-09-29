@@ -27,7 +27,7 @@ class MTWebPage : public QWebPage
     Q_OBJECT
 
 public:
-    MTWebPage(QObject * parent = 0): QWebPage(parent) {}
+    MTWebPage(QObject *parent = 0): QWebPage(parent) {}
 
 protected:
     bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);

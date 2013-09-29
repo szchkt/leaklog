@@ -24,11 +24,11 @@
 #include <QSqlRecord>
 #include <QSqlError>
 
-MTSqlQuery::MTSqlQuery(QSqlResult * result):
+MTSqlQuery::MTSqlQuery(QSqlResult *result):
     QSqlQuery(result)
 {}
 
-MTSqlQuery::MTSqlQuery(const QString & query, QSqlDatabase db):
+MTSqlQuery::MTSqlQuery(const QString &query, QSqlDatabase db):
     QSqlQuery(query, db)
 {
     if (!query.isEmpty())
@@ -39,11 +39,11 @@ MTSqlQuery::MTSqlQuery(QSqlDatabase db):
     QSqlQuery(db)
 {}
 
-MTSqlQuery::MTSqlQuery(const QSqlQuery & other):
+MTSqlQuery::MTSqlQuery(const QSqlQuery &other):
     QSqlQuery(other)
 {}
 
-bool MTSqlQuery::exec(const QString & query)
+bool MTSqlQuery::exec(const QString &query)
 {
     bool result = QSqlQuery::exec(query);
     printLastError();
@@ -72,32 +72,32 @@ QVariant MTSqlQuery::value(int index) const
     return isNull(index) ? QVariant(QVariant::String) : QSqlQuery::value(index);
 }
 
-QVariant MTSqlQuery::value(const QString & field) const
+QVariant MTSqlQuery::value(const QString &field) const
 {
     return MTSqlQuery::value(record().indexOf(field));
 }
 
-bool MTSqlQuery::boolValue(const QString & field) const
+bool MTSqlQuery::boolValue(const QString &field) const
 {
     return QSqlQuery::value(record().indexOf(field)).toInt();
 }
 
-int MTSqlQuery::intValue(const QString & field) const
+int MTSqlQuery::intValue(const QString &field) const
 {
     return QSqlQuery::value(record().indexOf(field)).toInt();
 }
 
-qlonglong MTSqlQuery::longLongValue(const QString & field) const
+qlonglong MTSqlQuery::longLongValue(const QString &field) const
 {
     return QSqlQuery::value(record().indexOf(field)).toLongLong();
 }
 
-double MTSqlQuery::doubleValue(const QString & field) const
+double MTSqlQuery::doubleValue(const QString &field) const
 {
     return QSqlQuery::value(record().indexOf(field)).toDouble();
 }
 
-QString MTSqlQuery::stringValue(const QString & field) const
+QString MTSqlQuery::stringValue(const QString &field) const
 {
     return MTSqlQuery::value(record().indexOf(field)).toString();
 }

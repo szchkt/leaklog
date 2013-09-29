@@ -27,7 +27,7 @@ class LeakagesByApplicationView : public View
     Q_OBJECT
 
 public:
-    LeakagesByApplicationView(ViewTabSettings * settings);
+    LeakagesByApplicationView(ViewTabSettings *settings);
 
     QString renderHTML();
 

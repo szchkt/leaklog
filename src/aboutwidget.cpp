@@ -30,7 +30,7 @@ AboutWidget::AboutWidget()
 
     HTMLDocument html_doc("About Leaklog");
 
-    HTMLParentElement * style = html_doc.head()->addStyleElement();
+    HTMLParentElement *style = html_doc.head()->addStyleElement();
 #ifdef Q_OS_MAC
     QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
     QString font_size = "9pt";
@@ -41,7 +41,7 @@ AboutWidget::AboutWidget()
     *style << QString("body { font-family: %1; } img { margin-right: 10px; }").arg(font);
     *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
 
-    HTMLParentElement * body = html_doc.body();
+    HTMLParentElement *body = html_doc.body();
 
     *(body->heading()) << "Leaklog";
     *(body->subHeading()) << tr("Version")
@@ -52,7 +52,7 @@ AboutWidget::AboutWidget()
 
     *(body->paragraph()) << tr("This program is distributed under the terms of the GPL v2.");
 
-    HTMLParagraph * p = body->paragraph();
+    HTMLParagraph *p = body->paragraph();
     *p << "Copyright (C) 2008-2013 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span>";
     p->newLine();
     *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
@@ -69,7 +69,7 @@ AboutWidget::AboutWidget()
 
     p = body->paragraph();
     *p << "<img style=\"float: left;\" src=\"data:image/jpeg;base64," << buffer.data().toBase64() << "\">";
-    HTMLDiv * div = new HTMLDiv("style=\"padding: 10px;\"");
+    HTMLDiv *div = new HTMLDiv("style=\"padding: 10px;\"");
     *div << "Frigo Slovakia s.r.o., <i>http://www.frigo.sk/</i>";
     *p << div;
 

@@ -30,7 +30,7 @@ class PermissionsDialogue : public QDialog
     Q_OBJECT
 
 public:
-    PermissionsDialogue(QWidget * parent = NULL);
+    PermissionsDialogue(QWidget *parent = NULL);
 
 protected slots:
     void save();

@@ -27,7 +27,7 @@ class CircuitUnitTypesView : public View
     Q_OBJECT
 
 public:
-    CircuitUnitTypesView(ViewTabSettings * settings);
+    CircuitUnitTypesView(ViewTabSettings *settings);
 
     QString renderHTML();
 

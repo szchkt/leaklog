@@ -43,13 +43,13 @@ public:
     void save(const QVariant &);
 
 private:
-    InspectionCompressorTab * addTab(int, const QString &);
+    InspectionCompressorTab *addTab(int, const QString &);
     void loadTabs(const QString &);
 
     QString customer_id;
     QString circuit_id;
     QString original_inspection_date;
-    QTabWidget * tab_w;
+    QTabWidget *tab_w;
     QList<InspectionCompressorTab *> tabs;
     QList<int> former_ids;
 };
@@ -65,7 +65,7 @@ public:
     void setWindowTitle(const QString &) {}
     bool save(const QString &, const QString &, const QString &, const QString &);
 
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
     int id() { return m_id; }
 

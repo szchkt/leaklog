@@ -27,22 +27,22 @@ class ImportDialogue : public QDialog, private Ui::ImportDialogue
     Q_OBJECT
 
 public:
-    ImportDialogue(QWidget * parent = NULL);
-    inline QTreeWidget * newCustomers() { return trw_customers_new; }
-    inline QTreeWidget * modifiedCustomers() { return trw_customers_modified; }
-    inline QTreeWidget * newPersons() { return trw_persons_new; }
-    inline QTreeWidget * modifiedPersons() { return trw_persons_modified; }
-    inline QTreeWidget * newCircuits() { return trw_circuits_new; }
-    inline QTreeWidget * modifiedCircuits() { return trw_circuits_modified; }
-    inline QTreeWidget * newInspections() { return trw_inspections_new; }
-    inline QTreeWidget * modifiedInspections() { return trw_inspections_modified; }
-    inline QTreeWidget * newRepairs() { return trw_repairs_new; }
-    inline QTreeWidget * modifiedRepairs() { return trw_repairs_modified; }
-    inline QTreeWidget * newRefrigerantManagement() { return trw_refrigerant_management_new; }
-    inline QTreeWidget * modifiedRefrigerantManagement() { return trw_refrigerant_management_modified; }
-    inline QTreeWidget * newInspectors() { return trw_inspectors_new; }
-    inline QTreeWidget * modifiedInspectors() { return trw_inspectors_modified; }
-    inline QTreeWidget * variables() { return trw_variables; }
+    ImportDialogue(QWidget *parent = NULL);
+    inline QTreeWidget *newCustomers() { return trw_customers_new; }
+    inline QTreeWidget *modifiedCustomers() { return trw_customers_modified; }
+    inline QTreeWidget *newPersons() { return trw_persons_new; }
+    inline QTreeWidget *modifiedPersons() { return trw_persons_modified; }
+    inline QTreeWidget *newCircuits() { return trw_circuits_new; }
+    inline QTreeWidget *modifiedCircuits() { return trw_circuits_modified; }
+    inline QTreeWidget *newInspections() { return trw_inspections_new; }
+    inline QTreeWidget *modifiedInspections() { return trw_inspections_modified; }
+    inline QTreeWidget *newRepairs() { return trw_repairs_new; }
+    inline QTreeWidget *modifiedRepairs() { return trw_repairs_modified; }
+    inline QTreeWidget *newRefrigerantManagement() { return trw_refrigerant_management_new; }
+    inline QTreeWidget *modifiedRefrigerantManagement() { return trw_refrigerant_management_modified; }
+    inline QTreeWidget *newInspectors() { return trw_inspectors_new; }
+    inline QTreeWidget *modifiedInspectors() { return trw_inspectors_modified; }
+    inline QTreeWidget *variables() { return trw_variables; }
 
 private slots:
     void selectAllNewCustomers() { setCheckState(trw_customers_new, Qt::Checked); }
@@ -78,7 +78,7 @@ private slots:
     void circuitChanged(QTreeWidgetItem *, int);
 
 private:
-    void setCheckState(QTreeWidget * trw, Qt::CheckState state);
+    void setCheckState(QTreeWidget *trw, Qt::CheckState state);
 };
 
 #endif // IMPORT_DIALOGUE_H

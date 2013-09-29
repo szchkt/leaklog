@@ -22,7 +22,7 @@
 
 #include <QMenu>
 
-UndoStack::UndoStack(QAction * undo_action, QWidget * parent):
+UndoStack::UndoStack(QAction *undo_action, QWidget *parent):
     QObject(parent), m_undo_action(undo_action)
 {
     m_undo_menu = new QMenu(parent);
@@ -62,7 +62,7 @@ bool UndoStack::rollbackToSavepoint(int savepoint)
 
         if (query.exec(QString("ROLLBACK TO SAVEPOINT savepoint_%1").arg(savepoint))) {
             while (savepoint < m_undo_menu->actions().count()) {
-                QAction * action = m_undo_menu->actions().first();
+                QAction *action = m_undo_menu->actions().first();
                 m_undo_menu->removeAction(action);
                 delete action;
             }
@@ -80,16 +80,16 @@ bool UndoStack::rollbackToSavepoint(int savepoint)
 
 void UndoStack::clear()
 {
-    foreach (QAction * a, m_undo_menu->actions())
+    foreach (QAction *a, m_undo_menu->actions())
         delete a;
     m_undo_action->setEnabled(false);
 }
 
-void UndoStack::hovered(QAction * action)
+void UndoStack::hovered(QAction *action)
 {
     bool checked = action != NULL;
 
-    foreach (QAction * a, m_undo_menu->actions()) {
+    foreach (QAction *a, m_undo_menu->actions()) {
         a->setCheckable(checked);
         a->setChecked(checked);
 
@@ -98,7 +98,7 @@ void UndoStack::hovered(QAction * action)
     }
 }
 
-void UndoStack::undo(QAction * action)
+void UndoStack::undo(QAction *action)
 {
     QList<QAction *> actions(m_undo_menu->actions());
     int savepoint = actions.count() - actions.indexOf(action) - 1;
@@ -107,7 +107,7 @@ void UndoStack::undo(QAction * action)
         rollbackToSavepoint(savepoint);
 }
 
-UndoCommand::UndoCommand(UndoStack * undo_stack, const QString & description):
+UndoCommand::UndoCommand(UndoStack *undo_stack, const QString &description):
     QObject(undo_stack),
     m_description(description)
 {

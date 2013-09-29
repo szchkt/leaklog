@@ -43,8 +43,8 @@ private slots:
     void operatorChoiceChanged(int);
 
 private:
-    QButtonGroup * operator_choice;
-    MDAbstractInputWidget * operator_id;
+    QButtonGroup *operator_choice;
+    MDAbstractInputWidget *operator_id;
     QList<MDAbstractInputWidget *> input_widgets;
 };
 
@@ -59,7 +59,7 @@ protected slots:
     void save();
 
 private:
-    EditDialogueBasicTable * persons_table;
+    EditDialogueBasicTable *persons_table;
 
     QString original_customer_id;
     QList<int> former_ids;

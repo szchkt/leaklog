@@ -35,7 +35,7 @@ public:
     QByteArray data();
     bool saveData(const QString &);
 
-    void setData(const QByteArray & file_data);
+    void setData(const QByteArray &file_data);
     void setFileName(const QString &);
     void setImage(const QString &);
     void setImage(QImage &);
@@ -61,8 +61,8 @@ private slots:
     void browse();
 
 private:
-    QLabel * name_lbl;
-    DBFile * db_file;
+    QLabel *name_lbl;
+    DBFile *db_file;
     bool changed;
 };
 

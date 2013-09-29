@@ -58,7 +58,7 @@ namespace Global {
     bool isRecordLocked(const QString &);
     bool isOwnerPermissionApplicable(const QString &);
     int isOperationPermitted(const QString &, const QString & = QString());
-    QString circuitRefrigerantAmountQuery(const QString & return_as = "refrigerant_amount");
+    QString circuitRefrigerantAmountQuery(const QString &return_as = "refrigerant_amount");
     extern QMap<QString, MTDictionary> parsed_expressions;
     MTDictionary parseExpression(const QString &, QStringList &);
     double evaluateExpression(const QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);
@@ -66,16 +66,16 @@ namespace Global {
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
     // Dictionaries
-    const MTDictionary & databaseTables();
-    const MTDictionary & variableTypes();
-    const MTDictionary & variableNames();
+    const MTDictionary &databaseTables();
+    const MTDictionary &variableTypes();
+    const MTDictionary &variableNames();
     const QString variableType(const QString &, bool * = 0);
-    const MTDictionary & fieldsOfApplication();
-    int fieldOfApplicationToId(const QString & field);
+    const MTDictionary &fieldsOfApplication();
+    int fieldOfApplicationToId(const QString &field);
     QString idToFieldOfApplication(int id);
-    const MTDictionary & oils();
-    const MTDictionary & attributeValues();
-    const MTDictionary & permissions();
+    const MTDictionary &oils();
+    const MTDictionary &attributeValues();
+    const MTDictionary &permissions();
     // List
     QString listRefrigerantsToString();
     MTDictionary listInspectors();

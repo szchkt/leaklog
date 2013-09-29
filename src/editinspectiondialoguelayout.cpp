@@ -26,7 +26,7 @@
 #include <QHeaderView>
 #include <QPainter>
 
-void UniformRowColourTreeWidget::drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void UniformRowColourTreeWidget::drawRow(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QColor colour = itemFromIndex(index)->data(0, BackgroundColourRole).value<QColor>();
     if (colour.isValid()) {
@@ -37,7 +37,7 @@ void UniformRowColourTreeWidget::drawRow(QPainter * painter, const QStyleOptionV
     QTreeWidget::drawRow(painter, option, index);
 }
 
-EditInspectionDialogueLayout::EditInspectionDialogueLayout(QList<MDAbstractInputWidget *> * inputwidgets, QMap<QString, QString> * groups, QGridLayout * grid_main)
+EditInspectionDialogueLayout::EditInspectionDialogueLayout(QList<MDAbstractInputWidget *> *inputwidgets, QMap<QString, QString> *groups, QGridLayout *grid_main)
     : EditDialogueLayout(inputwidgets, grid_main),
       groups(groups)
 {
@@ -51,7 +51,7 @@ void EditInspectionDialogueLayout::layout()
     QMap<QString, QTreeWidgetItem *> group_items;
 
     for (int c = 0; c < num_cols; ++c) {
-        QTreeWidget * tree = new UniformRowColourTreeWidget;
+        QTreeWidget *tree = new UniformRowColourTreeWidget;
         tree->setHeaderHidden(true);
         tree->setHeaderLabels(QStringList() << "1" << "2" << "3");
         tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -65,12 +65,12 @@ void EditInspectionDialogueLayout::layout()
     QVector<QList<QWidget *> > widgets(num_cols);
 
     for (int i = 0; i < md_inputwidgets->count(); ++i) {
-        MDAbstractInputWidget * widget = md_inputwidgets->at(i);
+        MDAbstractInputWidget *widget = md_inputwidgets->at(i);
 
         if (!widget->showInForm())
             continue;
 
-        QTreeWidgetItem * item = new QTreeWidgetItem;
+        QTreeWidgetItem *item = new QTreeWidgetItem;
         if (!widget->colour().isEmpty())
             item->setData(0, UniformRowColourTreeWidget::BackgroundColourRole, QColor(widget->colour()));
 
@@ -78,7 +78,7 @@ void EditInspectionDialogueLayout::layout()
         int tree = !group_id.isEmpty();
 
         if (tree) {
-            QTreeWidgetItem * group = group_items.value(group_id);
+            QTreeWidgetItem *group = group_items.value(group_id);
             if (!group) {
                 group = new QTreeWidgetItem(trees.at(1), QStringList() << groups->value(group_id));
                 group->setExpanded(true);
@@ -100,7 +100,7 @@ void EditInspectionDialogueLayout::layout()
 
     QList<QWidget *> all_widgets;
 
-    foreach (const QList<QWidget *> & list, widgets)
+    foreach (const QList<QWidget *> &list, widgets)
         all_widgets << list;
 
     for (int i = 1; i < all_widgets.count(); ++i)

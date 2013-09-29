@@ -48,10 +48,10 @@ QString InspectionsView::renderHTML()
     writeCircuitsTable(out, customer_id, circuit_id);
 
     if (settings->mainWindowSettings().circuitDetailsVisible()) {
-        HTMLTable * compressors_table = circuitCompressorsTable(customer_id, circuit_id);
+        HTMLTable *compressors_table = circuitCompressorsTable(customer_id, circuit_id);
         if (compressors_table) out << "<br>" << circuitCompressorsTable(customer_id, circuit_id)->html();
 
-        HTMLTable * units_table = circuitUnitsTable(customer_id, circuit_id);
+        HTMLTable *units_table = circuitUnitsTable(customer_id, circuit_id);
         if (units_table) out << "<br>" << units_table->html();
     }
 

@@ -64,11 +64,11 @@ public:
 
     LinkParser();
 
-    Link * parse(const QString &);
-    Link * parse(UrlEntity *);
+    Link *parse(const QString &);
+    Link *parse(UrlEntity *);
 
 private:
-    LinkEntity * root_entity;
+    LinkEntity *root_entity;
 };
 
 class LinkEntity
@@ -76,13 +76,13 @@ class LinkEntity
 public:
     LinkEntity(bool = true);
 
-    LinkEntity * addRoute(const QString &, int = -1, bool = true);
+    LinkEntity *addRoute(const QString &, int = -1, bool = true);
     void setRoute(const QString &, LinkEntity *);
 
     void setView(int view) { m_view = view; }
     int view() const { return m_view; }
 
-    void setName(const QString & name) { m_name = name; }
+    void setName(const QString &name) { m_name = name; }
     QString name() const { return m_name; }
 
     void setHasId(bool has_id) { m_has_id = has_id; }
@@ -114,7 +114,7 @@ public:
 
     void setId(const QString &, const QString &);
 
-    int compareViews(const Link & other) const;
+    int compareViews(const Link &other) const;
     int viewAt(int i) const { return m_views.count() > i ? m_views.at(i) : -1; }
     void addView(int view) { m_views << view; }
     int countViews() const { return m_views.count(); }
@@ -132,7 +132,7 @@ public:
 
     QString suffixParameters() const;
 
-    void setOrderBy(const QString & order_by) { m_order_by = order_by; }
+    void setOrderBy(const QString &order_by) { m_order_by = order_by; }
     QString orderBy() const { return m_order_by; }
 
     void setOrderDirection(int order) { m_order_direction = order; }
@@ -150,18 +150,18 @@ class UrlEntity
 {
 public:
     UrlEntity() : m_next(NULL) {}
-    UrlEntity(const QStringList & attributes) : m_next(NULL)
+    UrlEntity(const QStringList &attributes) : m_next(NULL)
         { m_attributes << attributes; }
-    UrlEntity(const QString & attr1, const QString & attr2 = QString()) : m_next(NULL)
+    UrlEntity(const QString &attr1, const QString &attr2 = QString()) : m_next(NULL)
         { m_attributes.append(attr1); if (!attr2.isNull()) m_attributes.append(attr2); }
 
     ~UrlEntity() { if (m_next) delete m_next; }
 
-    void addAttribute(const QString & attr) { m_attributes.append(attr); }
+    void addAttribute(const QString &attr) { m_attributes.append(attr); }
 
-    UrlEntity * addNext(const QStringList & attributes);
-    UrlEntity * addNext(const QString & attr1, const QString & attr2 = QString());
-    UrlEntity * next() const { return m_next; }
+    UrlEntity *addNext(const QStringList &attributes);
+    UrlEntity *addNext(const QString &attr1, const QString &attr2 = QString());
+    UrlEntity *next() const { return m_next; }
 
     int countAttributes() const { return m_attributes.count(); }
     QString name() const { return m_attributes.first(); }
@@ -169,7 +169,7 @@ public:
 
 private:
     QStringList m_attributes;
-    UrlEntity * m_next;
+    UrlEntity *m_next;
 };
 
 #endif // LINK_PARSER_H

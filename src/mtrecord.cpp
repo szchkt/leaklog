@@ -26,7 +26,7 @@
 
 using namespace Global;
 
-MTRecord::MTRecord(const QString & table, const QString & id_field, const QString & id, const MTDictionary & parents):
+MTRecord::MTRecord(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents):
     r_table(table),
     r_id_field(id_field),
     r_id(id),
@@ -35,7 +35,7 @@ MTRecord::MTRecord(const QString & table, const QString & id_field, const QStrin
     r_serial_id(false)
 {}
 
-MTRecord::MTRecord(const MTRecord & other)
+MTRecord::MTRecord(const MTRecord &other)
 {
     r_table = other.r_table;
     r_id_field = other.r_id_field;
@@ -49,7 +49,7 @@ MTRecord::MTRecord(const MTRecord & other)
     r_serial_id = other.r_serial_id;
 }
 
-MTRecord & MTRecord::operator=(const MTRecord & other)
+MTRecord &MTRecord::operator=(const MTRecord &other)
 {
     r_table = other.r_table;
     r_id_field = other.r_id_field;
@@ -64,7 +64,7 @@ MTRecord & MTRecord::operator=(const MTRecord & other)
     return *this;
 }
 
-void MTRecord::addFilter(const QString & column, const QString & filter)
+void MTRecord::addFilter(const QString &column, const QString &filter)
 {
     r_filter.insert(column, filter);
 }
@@ -77,12 +77,12 @@ bool MTRecord::exists()
     return find_record.next();
 }
 
-MTSqlQuery MTRecord::select(const QString & fields, Qt::SortOrder order)
+MTSqlQuery MTRecord::select(const QString &fields, Qt::SortOrder order)
 {
     return select(fields, QString("%1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
 }
 
-MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
+MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
 {
     bool has_id = !r_id.isEmpty();
     int i;
@@ -120,17 +120,17 @@ MTSqlQuery MTRecord::select(const QString & fields, const QString & order_by)
     return query;
 }
 
-QVariantMap MTRecord::list(const QString & fields, bool refresh)
+QVariantMap MTRecord::list(const QString &fields, bool refresh)
 {
     return list(fields, QString("%1 ASC").arg(r_id_field), refresh);
 }
 
-QVariantMap MTRecord::list(const QString & fields, const char * order_by, bool refresh)
+QVariantMap MTRecord::list(const QString &fields, const char *order_by, bool refresh)
 {
     return list(fields, QString(order_by), refresh);
 }
 
-QVariantMap MTRecord::list(const QString & fields, const QString & order_by, bool refresh)
+QVariantMap MTRecord::list(const QString &fields, const QString &order_by, bool refresh)
 {
     if (!refresh && !r_values.isEmpty())
         return r_values;
@@ -145,12 +145,12 @@ QVariantMap MTRecord::list(const QString & fields, const QString & order_by, boo
     return list;
 }
 
-void MTRecord::readValues(const QString & fields)
+void MTRecord::readValues(const QString &fields)
 {
     r_values = list(fields, true);
 }
 
-ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & order_by)
+ListOfVariantMaps MTRecord::listAll(const QString &fields, const QString &order_by)
 {
     ListOfVariantMaps list;
     MTSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
@@ -167,7 +167,7 @@ ListOfVariantMaps MTRecord::listAll(const QString & fields, const QString & orde
     return list;
 }
 
-QVariantMap MTRecord::sumAll(const QString & fields)
+QVariantMap MTRecord::sumAll(const QString &fields)
 {
     QVariantMap list;
     MTSqlQuery query = select(fields);
@@ -181,7 +181,7 @@ QVariantMap MTRecord::sumAll(const QString & fields)
     return list;
 }
 
-MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & fields)
+MultiMapOfVariantMaps MTRecord::mapAll(const QString &map_to, const QString &fields)
 {
     MultiMapOfVariantMaps map;
     QStringList list_map_to = map_to.split("::");
@@ -206,14 +206,14 @@ MultiMapOfVariantMaps MTRecord::mapAll(const QString & map_to, const QString & f
     return map;
 }
 
-bool MTRecord::update(const QString & field, const QVariant & value, bool add_columns, bool force_update)
+bool MTRecord::update(const QString &field, const QVariant &value, bool add_columns, bool force_update)
 {
     QVariantMap set;
     set.insert(field, value);
     return update(set, add_columns, force_update);
 }
 
-bool MTRecord::update(const QVariantMap & values, bool add_columns, bool force_update)
+bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_update)
 {
     bool has_id = !r_id.isEmpty();
     QString update;

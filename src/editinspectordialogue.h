@@ -41,7 +41,7 @@ public:
     EditInspectorDialogueTab(QList<MDAbstractInputWidget *>, QWidget * = NULL);
 
     void save(const QVariant &);
-    QWidget * widget() { return this; }
+    QWidget *widget() { return this; }
 
 private:
     void init();

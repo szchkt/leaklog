@@ -28,27 +28,27 @@
 #include <QTabWidget>
 #include <QVariantMap>
 
-EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString & customer_id, const QString & circuit_id, const QString & inspection_date, QWidget * parent)
+EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_id, const QString &circuit_id, const QString &inspection_date, QWidget *parent)
     : QWidget(parent),
       customer_id(customer_id),
       circuit_id(circuit_id),
       original_inspection_date(inspection_date)
 {
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     tab_w = new QTabWidget(this);
     layout->addWidget(tab_w);
 
     loadTabs(inspection_date);
 }
 
-void EditInspectionDialogueCompressors::loadTabs(const QString & inspection_date)
+void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_date)
 {
     Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
                                                        QStringList() << customer_id << circuit_id));
     ListOfVariantMaps compressors = compressors_rec.listAll();
 
     for (int i = 0; i < compressors.count(); ++i) {
-        InspectionCompressorTab * tab = addTab(compressors.at(i).value("id").toInt(), compressors.at(i).value("name").toString());
+        InspectionCompressorTab *tab = addTab(compressors.at(i).value("id").toInt(), compressors.at(i).value("name").toString());
 
         if (!inspection_date.isEmpty()) {
             InspectionsCompressor inspection_compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
@@ -67,9 +67,9 @@ void EditInspectionDialogueCompressors::loadTabs(const QString & inspection_date
     }
 }
 
-InspectionCompressorTab * EditInspectionDialogueCompressors::addTab(int tab_id, const QString & tab_name)
+InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(int tab_id, const QString &tab_name)
 {
-    InspectionCompressorTab * tab = new InspectionCompressorTab(tab_id, this);
+    InspectionCompressorTab *tab = new InspectionCompressorTab(tab_id, this);
     tabs.append(tab);
 
     tab_w->addTab(tab, tab_name);
@@ -77,7 +77,7 @@ InspectionCompressorTab * EditInspectionDialogueCompressors::addTab(int tab_id, 
     return tab;
 }
 
-void EditInspectionDialogueCompressors::save(const QVariant & inspection_date)
+void EditInspectionDialogueCompressors::save(const QVariant &inspection_date)
 {
     for (int i = 0; i < tabs.count(); ++i) {
         tabs.at(i)->save(customer_id, circuit_id, original_inspection_date, inspection_date.toString());
@@ -88,7 +88,7 @@ void EditInspectionDialogueCompressors::save(const QVariant & inspection_date)
         InspectionsCompressor(QString::number(former_ids.at(i))).remove();
 }
 
-InspectionCompressorTab::InspectionCompressorTab(int id, QWidget * parent)
+InspectionCompressorTab::InspectionCompressorTab(int id, QWidget *parent)
     : QWidget(parent),
       EditDialogueWidgets(),
       m_id(id),
@@ -96,18 +96,18 @@ InspectionCompressorTab::InspectionCompressorTab(int id, QWidget * parent)
 {
 }
 
-void InspectionCompressorTab::init(const QVariantMap & var_values)
+void InspectionCompressorTab::init(const QVariantMap &var_values)
 {
     Variables vars(QSqlDatabase(), Variable::Compressor);
     vars.initEditDialogueWidgets(this, var_values);
 
-    QGridLayout * layout = new QGridLayout(this);
+    QGridLayout *layout = new QGridLayout(this);
 
     EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, layout).layout();
 }
 
-bool InspectionCompressorTab::save(const QString & customer_id, const QString & circuit_id,
-                                   const QString & original_inspection_date, const QString & inspection_date)
+bool InspectionCompressorTab::save(const QString &customer_id, const QString &circuit_id,
+                                   const QString &original_inspection_date, const QString &inspection_date)
 {
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                          QStringList() << customer_id << circuit_id << original_inspection_date << QString::number(m_id));

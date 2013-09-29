@@ -32,7 +32,7 @@
 #include <QDate>
 #include <QMenu>
 
-ImportCsvDialogue::ImportCsvDialogue(const QString & path, QList<ImportDialogueTable *> & tables, QWidget * parent):
+ImportCsvDialogue::ImportCsvDialogue(const QString &path, QList<ImportDialogueTable *> &tables, QWidget *parent):
 QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMaximizeButtonHint),
 file_path(path)
 {
@@ -69,7 +69,7 @@ ImportCsvDialogue::~ImportCsvDialogue()
 void ImportCsvDialogue::load()
 {
     QString encoding = cb_encoding->itemData(cb_encoding->currentIndex(), Qt::UserRole).toString();
-    QTextCodec * codec = NULL;
+    QTextCodec *codec = NULL;
     if (encoding != "System") {
         codec = QTextCodec::codecForName(encoding.toUtf8());
     } else {
@@ -150,8 +150,8 @@ void ImportCsvDialogue::updateHeader()
     }
 }
 
-QTreeWidgetItem * columnItem(const QString & name, const QString & data, int & index) {
-    QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << name << QString::number(index));
+QTreeWidgetItem *columnItem(const QString &name, const QString &data, int &index) {
+    QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << name << QString::number(index));
     item->setData(0, Qt::UserRole, data);
     index++;
     return item;
@@ -160,7 +160,7 @@ QTreeWidgetItem * columnItem(const QString & name, const QString & data, int & i
 void ImportCsvDialogue::loadTableColumns(int index)
 {
     trw_columns->clear();
-    ImportDialogueTable * table = tables.at(index);
+    ImportDialogueTable *table = tables.at(index);
     current_table = table;
     if (!table) return;
 
@@ -175,7 +175,7 @@ void ImportCsvDialogue::loadTableColumns(int index)
         }
     }
 
-    QMenu * menu = btn_add_linked_table->menu();
+    QMenu *menu = btn_add_linked_table->menu();
     if (menu) {
         menu->clear();
     } else {
@@ -186,7 +186,7 @@ void ImportCsvDialogue::loadTableColumns(int index)
     }
 
     for (int i = 0; i < table->childTemplatesCount(); ++i) {
-        QAction * action = new QAction(table->childTemplateAt(i)->name(), menu);
+        QAction *action = new QAction(table->childTemplateAt(i)->name(), menu);
         action->setData(i);
         menu->addAction(action);
     }
@@ -194,7 +194,7 @@ void ImportCsvDialogue::loadTableColumns(int index)
     updateHeader();
 }
 
-void ImportCsvDialogue::changeColumnIndex(QTreeWidgetItem * item)
+void ImportCsvDialogue::changeColumnIndex(QTreeWidgetItem *item)
 {
     item->setText(1, QString::number(
             QInputDialog::getInt(this, tr("Change column index"),
@@ -216,7 +216,7 @@ QMap<QString, int> ImportCsvDialogue::columnIndexMap()
 int ImportCsvDialogue::save()
 {
     int num_failed = 0;
-    ImportDialogueTableRow * row;
+    ImportDialogueTableRow *row;
     foreach (QStringList values, fileContent()) {
         row = new ImportDialogueTableRow;
         int i;
@@ -241,9 +241,9 @@ int ImportCsvDialogue::save()
     return num_failed;
 }
 
-void ImportCsvDialogue::addLinkedTable(QAction * action)
+void ImportCsvDialogue::addLinkedTable(QAction *action)
 {
-    ImportDialogueTable * table = current_table->addChildTable(action->data().toInt());
+    ImportDialogueTable *table = current_table->addChildTable(action->data().toInt());
     if (!table) return;
 
     for (int i = 0; i < table->count(); ++i) {
@@ -268,30 +268,30 @@ ImportDialogueTable::~ImportDialogueTable()
     }
 }
 
-ImportDialogueTableColumn * ImportDialogueTable::addColumn(const QString & name, const QString & id, int type)
+ImportDialogueTableColumn *ImportDialogueTable::addColumn(const QString &name, const QString &id, int type)
 {
-    ImportDialogueTableColumn * col = new ImportDialogueTableColumn(name, id, type);
+    ImportDialogueTableColumn *col = new ImportDialogueTableColumn(name, id, type);
     columns.append(col);
 
     return col;
 }
 
-ImportDialogueTableColumn * ImportDialogueTable::addForeignKeyColumn(const QString & name, const QString & id, const QString & foreign_key_column, const QString & foreign_key_table)
+ImportDialogueTableColumn *ImportDialogueTable::addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_column, const QString &foreign_key_table)
 {
-    ImportDialogueTableColumn * col = addColumn(name, id, ImportDialogueTableColumn::ForeignKey);
+    ImportDialogueTableColumn *col = addColumn(name, id, ImportDialogueTableColumn::ForeignKey);
     col->setForeignKeyColumn(foreign_key_column);
     col->setForeignKeyTable(foreign_key_table);
     return col;
 }
 
-void ImportDialogueTable::addColumn(ImportDialogueTableColumn * column)
+void ImportDialogueTable::addColumn(ImportDialogueTableColumn *column)
 {
     columns.append(column);
 }
 
-ImportDialogueTableTemplate * ImportDialogueTable::addChildTableTemplate(const QString & name, const QString & id, const MTDictionary & parent_cols, bool generate_id)
+ImportDialogueTableTemplate *ImportDialogueTable::addChildTableTemplate(const QString &name, const QString &id, const MTDictionary &parent_cols, bool generate_id)
 {
-    ImportDialogueTableTemplate * table = new ImportDialogueTableTemplate(name, id, generate_id);
+    ImportDialogueTableTemplate *table = new ImportDialogueTableTemplate(name, id, generate_id);
     table->setParentColumns(parent_cols);
 
     child_templates.append(table);
@@ -299,23 +299,23 @@ ImportDialogueTableTemplate * ImportDialogueTable::addChildTableTemplate(const Q
     return table;
 }
 
-ImportDialogueTable * ImportDialogueTable::addChildTable(int i)
+ImportDialogueTable *ImportDialogueTable::addChildTable(int i)
 {
-    ImportDialogueTableTemplate * table_template = childTemplateAt(i);
+    ImportDialogueTableTemplate *table_template = childTemplateAt(i);
     if (!table_template) return NULL;
 
-    ImportDialogueTable * table = table_template->table();
+    ImportDialogueTable *table = table_template->table();
     child_tables.append(table);
 
     return table;
 }
 
-void ImportDialogueTable::addParentColumn(const QString & child, const QString & parent)
+void ImportDialogueTable::addParentColumn(const QString &child, const QString &parent)
 {
     parent_columns.setValue(child, parent);
 }
 
-bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_set)
+bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_set)
 {
     QVariantMap set;
     QString string_value;
@@ -326,7 +326,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     QString id_column;
 
     MTAddress address;
-    MTRecord * frecord;
+    MTRecord *frecord;
 
     bool all_empty = true;
 
@@ -446,19 +446,19 @@ bool ImportDialogueTable::save(ImportDialogueTableRow * row, QVariantMap parent_
     return ok;
 }
 
-QVariant ImportDialogueTableRow::value(ImportDialogueTableColumn * col)
+QVariant ImportDialogueTableRow::value(ImportDialogueTableColumn *col)
 {
     return cells.value(col);
 }
 
-void ImportDialogueTableRow::addValue(ImportDialogueTableColumn * key, const QVariant & value)
+void ImportDialogueTableRow::addValue(ImportDialogueTableColumn *key, const QVariant &value)
 {
     cells.insert(key, value);
 }
 
-ImportDialogueTable * ImportDialogueTableTemplate::table()
+ImportDialogueTable *ImportDialogueTableTemplate::table()
 {
-    ImportDialogueTable * table = new ImportDialogueTableTemplate(name(), id(), generate_id);
+    ImportDialogueTable *table = new ImportDialogueTableTemplate(name(), id(), generate_id);
     for (int i = 0; i < columns.count(); ++i) {
         table->addColumn(new ImportDialogueTableColumn(columns.at(i)));
     }

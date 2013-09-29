@@ -52,13 +52,13 @@ QString InspectionImagesView::renderHTML()
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
 
-    HTMLParentElement * el;
+    HTMLParentElement *el;
     HTMLDiv div;
 
     div << html;
     div.newLine();
 
-    HTMLTable * table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
+    HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
          ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
     if (nominal) *el << tr("Nominal inspection:");

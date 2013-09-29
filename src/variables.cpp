@@ -37,7 +37,7 @@ Variables::Variables(QSqlDatabase db, int scope):
                  " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope > 0 ? scope : 0xFFFF));
 }
 
-Variables * Variables::defaultVariables(int scope)
+Variables *Variables::defaultVariables(int scope)
 {
     return new Variables(scope);
 }
@@ -49,7 +49,7 @@ Variables::Variables(int scope):
     initVariables();
 }
 
-Variables::Variables(QSqlDatabase db, const QString & filter, int scope):
+Variables::Variables(QSqlDatabase db, const QString &filter, int scope):
     MTSqlQueryResultBase<int>(db),
     m_scope(scope),
     m_filter(filter)
@@ -57,7 +57,7 @@ Variables::Variables(QSqlDatabase db, const QString & filter, int scope):
     initVariables();
 }
 
-VariableContract Variables::variable(const QString & id)
+VariableContract Variables::variable(const QString &id)
 {
     int index = var_indices.value(id, -1);
     if (index >= 0)
@@ -162,7 +162,7 @@ void Variables::initVariables()
     initVariable("operator", Variable::Inspection, "", "", false, 0.0, "");
 }
 
-void Variables::initVariable(const QString & id, int scope, const QString & unit, const QString & value, bool compare_nom, double tolerance, const QString & col_bg)
+void Variables::initVariable(const QString &id, int scope, const QString &unit, const QString &value, bool compare_nom, double tolerance, const QString &col_bg)
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
@@ -180,7 +180,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & unit
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initVariable(const QString & id, int scope, const QString & col_bg)
+void Variables::initVariable(const QString &id, int scope, const QString &col_bg)
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
@@ -194,7 +194,7 @@ void Variables::initVariable(const QString & id, int scope, const QString & col_
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initSubvariable(const QString & parent, int scope, const QString & col_bg, const QString & id, const QString & unit, const QString & value, bool compare_nom, double tolerance)
+void Variables::initSubvariable(const QString &parent, int scope, const QString &col_bg, const QString &id, const QString &unit, const QString &value, bool compare_nom, double tolerance)
 {
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
@@ -213,8 +213,8 @@ void Variables::initSubvariable(const QString & parent, int scope, const QString
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariantMap & attributes, MTRecord * mt_record,
-                                        const QDateTime & date, MDCheckBox * chb_repair, MDCheckBox * chb_nominal)
+void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, MTRecord *mt_record,
+                                        const QDateTime &date, MDCheckBox *chb_repair, MDCheckBox *chb_nominal)
 {
     while (next()) {
         QString var_type = type();
@@ -235,7 +235,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
             col_bg = parent.colBg();
         }
 
-        MDAbstractInputWidget * iw = NULL;
+        MDAbstractInputWidget *iw = NULL;
 
         if (var_id == "inspector") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
@@ -307,7 +307,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets * md, const QVariant
     }
 }
 
-Variable::Variable(const QString & id, QSqlDatabase db):
+Variable::Variable(const QString &id, QSqlDatabase db):
     Variables(db, id),
     var_id(id)
 {

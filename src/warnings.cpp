@@ -26,7 +26,7 @@
 
 using namespace Global;
 
-Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap & circuit_attributes, int scope):
+Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap &circuit_attributes, int scope):
     MTSqlQueryResultBase<QString>(db),
     enabled_only(enabled_only),
     m_scope(scope)
@@ -79,7 +79,7 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap & circu
     }
 }
 
-QString Warnings::tr(const char * s) { return QApplication::translate("Warnings", s); }
+QString Warnings::tr(const char *s) { return QApplication::translate("Warnings", s); }
 
 int Warnings::warningConditionValueInsCount(int id) { return conditions_value_ins.value(id).count(); }
 
@@ -110,7 +110,7 @@ void Warnings::saveResult()
     }
 }
 
-void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps * map, int type, int id, bool enabled_only, int scope)
+void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int type, int id, bool enabled_only, int scope)
 {
     QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
     if (scope == 0 || (scope & Variable::Inspection)) {
@@ -340,7 +340,7 @@ int Warnings::circuitInspectionInterval(double refrigerant_amount, bool hermetic
     return result;
 }
 
-void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps * map, const QString & id, const QString & name, const QString & description, int delay, bool enabled_only)
+void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps *map, const QString &id, const QString &name, const QString &description, int delay, bool enabled_only)
 {
     MTSqlQuery query(database);
     query.prepare("SELECT enabled FROM warnings WHERE id = :id");
@@ -360,7 +360,7 @@ void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps * map, const
     *map << set;
 }
 
-void Warnings::initFilter(ListOfVariantMaps * map, const QString & parent, const QString & circuit_attribute, const QString & function, const QString & value)
+void Warnings::initFilter(ListOfVariantMaps *map, const QString &parent, const QString &circuit_attribute, const QString &function, const QString &value)
 {
     QVariantMap set;
     set.insert("parent", parent);
@@ -370,7 +370,7 @@ void Warnings::initFilter(ListOfVariantMaps * map, const QString & parent, const
     *map << set;
 }
 
-void Warnings::initCondition(ListOfVariantMaps * map, const QString & parent, const QString & value_ins, const QString & function, const QString & value_nom)
+void Warnings::initCondition(ListOfVariantMaps *map, const QString &parent, const QString &value_ins, const QString &function, const QString &value_nom)
 {
     QVariantMap set;
     set.insert("parent", parent);

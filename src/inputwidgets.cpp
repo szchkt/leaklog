@@ -31,7 +31,7 @@ using namespace Global;
 
 #define BUTTON_STYLE "margin: 4; text-align: right;"
 
-MTLabeledWidget::MTLabeledWidget(const QString & text, QWidget * w)
+MTLabeledWidget::MTLabeledWidget(const QString &text, QWidget *w)
 {
     changed = false;
     labeltext = text;
@@ -39,12 +39,12 @@ MTLabeledWidget::MTLabeledWidget(const QString & text, QWidget * w)
     this->w = w;
 }
 
-MTLabel::MTLabel(const QString & text, QWidget * parent):
+MTLabel::MTLabel(const QString &text, QWidget *parent):
 QLabel(text, parent),
 MTLabeledWidget(text, this)
 {}
 
-MTButtonLabel::MTButtonLabel(const QString & text, QWidget * parent):
+MTButtonLabel::MTButtonLabel(const QString &text, QWidget *parent):
 QPushButton(text, parent),
 MTLabeledWidget(text, this)
 {
@@ -74,7 +74,7 @@ void MTLabeledWidget::toggleAlternativeText(bool alt)
         setLabelText(labeltext);
 }
 
-MDAbstractInputWidget::MDAbstractInputWidget(const QString & id, QWidget * widget)
+MDAbstractInputWidget::MDAbstractInputWidget(const QString &id, QWidget *widget)
 {
     iw_id = id;
     iw_widget = widget;
@@ -82,10 +82,10 @@ MDAbstractInputWidget::MDAbstractInputWidget(const QString & id, QWidget * widge
     skip_save = false;
 }
 
-MainWindow * MDAbstractInputWidget::parentWindow() const
+MainWindow *MDAbstractInputWidget::parentWindow() const
 {
-    QWidget * parent_widget = iw_widget->parentWidget();
-    MainWindow * main_window;
+    QWidget *parent_widget = iw_widget->parentWidget();
+    MainWindow *main_window;
     while (parent_widget) {
         main_window = qobject_cast<MainWindow *>(parent_widget);
         if (main_window)
@@ -95,7 +95,7 @@ MainWindow * MDAbstractInputWidget::parentWindow() const
     return NULL;
 }
 
-QPalette MDAbstractInputWidget::paletteForColour(const QString & colour)
+QPalette MDAbstractInputWidget::paletteForColour(const QString &colour)
 {
     QPalette palette;
     palette.setColor(QPalette::Active, QPalette::Base, QColor(colour));
@@ -105,24 +105,24 @@ QPalette MDAbstractInputWidget::paletteForColour(const QString & colour)
     return palette;
 }
 
-MDNullableInputWidget::MDNullableInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget):
+MDNullableInputWidget::MDNullableInputWidget(const QString &id, const QString &labeltext, QWidget *parent, QWidget *widget):
 MDAbstractInputWidget(id, widget)
 {
-    MTButtonLabel * btn = new MTButtonLabel(labeltext, parent);
+    MTButtonLabel *btn = new MTButtonLabel(labeltext, parent);
     btn->setFlat(true);
     //btn->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     iw_label = btn;
 }
 
-MDInputWidget::MDInputWidget(const QString & id, const QString & labeltext, QWidget * parent, QWidget * widget):
+MDInputWidget::MDInputWidget(const QString &id, const QString &labeltext, QWidget *parent, QWidget *widget):
 MDAbstractInputWidget(id, widget)
 {
-    MTLabel * lbl = new MTLabel(labeltext, parent);
+    MTLabel *lbl = new MTLabel(labeltext, parent);
     lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     iw_label = lbl;
 }
 
-MDLineEdit::MDLineEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, int maxintvalue, const QString & colour, bool enabled):
+MDLineEdit::MDLineEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, int maxintvalue, const QString &colour, bool enabled):
 QLineEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -138,17 +138,17 @@ QVariant MDLineEdit::variantValue() const
     return text().isEmpty() ? nullvalue : text();
 }
 
-void MDLineEdit::setVariantValue(const QVariant & value)
+void MDLineEdit::setVariantValue(const QVariant &value)
 {
     setText(value.toString());
 }
 
-void MDLineEdit::setNullValue(const QVariant & value)
+void MDLineEdit::setNullValue(const QVariant &value)
 {
     nullvalue = value;
 }
 
-MDCheckBox::MDCheckBox(const QString & id, const QString & labeltext, QWidget * parent, bool checked, bool enabled):
+MDCheckBox::MDCheckBox(const QString &id, const QString &labeltext, QWidget *parent, bool checked, bool enabled):
 MTCheckBox(labeltext, parent),
 MDInputWidget(id, "", parent, this)
 {
@@ -161,12 +161,12 @@ QVariant MDCheckBox::variantValue() const
     return isChecked() ? 1 : 0;
 }
 
-void MDCheckBox::setVariantValue(const QVariant & value)
+void MDCheckBox::setVariantValue(const QVariant &value)
 {
     setChecked(value.toBool());
 }
 
-MDSpinBox::MDSpinBox(const QString & id, const QString & labeltext, QWidget * parent, int minimum, int maximum, int value, const QString & suffix, const QString &
+MDSpinBox::MDSpinBox(const QString &id, const QString &labeltext, QWidget *parent, int minimum, int maximum, int value, const QString &suffix, const QString &
 #ifndef Q_OS_MAC
     colour
 #endif
@@ -190,12 +190,12 @@ QVariant MDSpinBox::variantValue() const
     return value();
 }
 
-void MDSpinBox::setVariantValue(const QVariant & value)
+void MDSpinBox::setVariantValue(const QVariant &value)
 {
     setValue(value.toInt());
 }
 
-MDDoubleSpinBox::MDDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, double value, const QString & suffix, const QString &
+MDDoubleSpinBox::MDDoubleSpinBox(const QString &id, const QString &labeltext, QWidget *parent, double minimum, double maximum, double value, const QString &suffix, const QString &
 #ifndef Q_OS_MAC
     colour
 #endif
@@ -219,12 +219,12 @@ QVariant MDDoubleSpinBox::variantValue() const
     return value();
 }
 
-void MDDoubleSpinBox::setVariantValue(const QVariant & value)
+void MDDoubleSpinBox::setVariantValue(const QVariant &value)
 {
     setValue(value.toDouble());
 }
 
-MDNullableDoubleSpinBox::MDNullableDoubleSpinBox(const QString & id, const QString & labeltext, QWidget * parent, double minimum, double maximum, const QVariant & value, const QString & suffix, const QString &
+MDNullableDoubleSpinBox::MDNullableDoubleSpinBox(const QString &id, const QString &labeltext, QWidget *parent, double minimum, double maximum, const QVariant &value, const QString &suffix, const QString &
 #ifndef Q_OS_MAC
     colour
 #endif
@@ -254,7 +254,7 @@ QVariant MDNullableDoubleSpinBox::variantValue() const
     return label()->wasChanged() ? value() : QVariant();
 }
 
-void MDNullableDoubleSpinBox::setVariantValue(const QVariant & value)
+void MDNullableDoubleSpinBox::setVariantValue(const QVariant &value)
 {
     setValue(value.toDouble());
 }
@@ -271,7 +271,7 @@ void MDNullableDoubleSpinBox::labelClicked()
     }
 }
 
-MDComboBox::MDComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const MTDictionary & items, const QString &
+MDComboBox::MDComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, const MTDictionary &items, const QString &
 #ifndef Q_OS_MAC
     colour
 #endif
@@ -302,7 +302,7 @@ QVariant MDComboBox::variantValue() const
     return value.isEmpty() ? nullvalue : value;
 }
 
-void MDComboBox::setVariantValue(const QVariant & value)
+void MDComboBox::setVariantValue(const QVariant &value)
 {
     for (int i = 0; i < count(); ++i) {
         if (itemData(i) == value) {
@@ -312,12 +312,12 @@ void MDComboBox::setVariantValue(const QVariant & value)
     }
 }
 
-void MDComboBox::setNullValue(const QVariant & value)
+void MDComboBox::setNullValue(const QVariant &value)
 {
     nullvalue = value;
 }
 
-MDColourComboBox::MDColourComboBox(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+MDColourComboBox::MDColourComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
 MTColourComboBox(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -332,7 +332,7 @@ QVariant MDColourComboBox::variantValue() const
     return currentText();
 }
 
-void MDColourComboBox::setVariantValue(const QVariant & value)
+void MDColourComboBox::setVariantValue(const QVariant &value)
 {
     for (int i = 0; i < count(); ++i) {
         if (itemText(i) == value.toString()) {
@@ -342,12 +342,12 @@ void MDColourComboBox::setVariantValue(const QVariant & value)
     }
 }
 
-MDDateTimeEdit::MDDateTimeEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+MDDateTimeEdit::MDDateTimeEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
 QDateTimeEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-    MainWindow * main_window = parentWindow();
+    MainWindow *main_window = parentWindow();
     if (main_window)
         setDisplayFormat(main_window->settings().dateTimeFormatString());
     else
@@ -363,17 +363,17 @@ QVariant MDDateTimeEdit::variantValue() const
     return dateTime().toString(DATE_TIME_FORMAT);
 }
 
-void MDDateTimeEdit::setVariantValue(const QVariant & value)
+void MDDateTimeEdit::setVariantValue(const QVariant &value)
 {
     setDateTime(QDateTime::fromString(value.toString(), DATE_TIME_FORMAT));
 }
 
-MDDateEdit::MDDateEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+MDDateEdit::MDDateEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
 QDateEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     installEventFilter(new WheelEventEater(this));
-    MainWindow * main_window = parentWindow();
+    MainWindow *main_window = parentWindow();
     if (main_window)
         setDisplayFormat(main_window->settings().dateFormatString());
     else
@@ -389,12 +389,12 @@ QVariant MDDateEdit::variantValue() const
     return date().toString(DATE_FORMAT);
 }
 
-void MDDateEdit::setVariantValue(const QVariant & value)
+void MDDateEdit::setVariantValue(const QVariant &value)
 {
     setDate(QDate::fromString(value.toString(), DATE_FORMAT));
 }
 
-MDAddressEdit::MDAddressEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+MDAddressEdit::MDAddressEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
 MTAddressEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -407,12 +407,12 @@ QVariant MDAddressEdit::variantValue() const
     return address().toString();
 }
 
-void MDAddressEdit::setVariantValue(const QVariant & value)
+void MDAddressEdit::setVariantValue(const QVariant &value)
 {
     setAddress(MTAddress(value.toString()));
 }
 
-MDHighlightedPlainTextEdit::MDHighlightedPlainTextEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const QStringList & ids, bool enabled):
+MDHighlightedPlainTextEdit::MDHighlightedPlainTextEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, const QStringList &ids, bool enabled):
 QPlainTextEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -427,12 +427,12 @@ QVariant MDHighlightedPlainTextEdit::variantValue() const
     return toPlainText();
 }
 
-void MDHighlightedPlainTextEdit::setVariantValue(const QVariant & value)
+void MDHighlightedPlainTextEdit::setVariantValue(const QVariant &value)
 {
     setPlainText(value.toString());
 }
 
-MDPlainTextEdit::MDPlainTextEdit(const QString & id, const QString & labeltext, QWidget * parent, const QString & value, const QString & colour, bool enabled):
+MDPlainTextEdit::MDPlainTextEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, const QString &colour, bool enabled):
 QPlainTextEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -447,17 +447,17 @@ QVariant MDPlainTextEdit::variantValue() const
     return toPlainText();
 }
 
-void MDPlainTextEdit::setVariantValue(const QVariant & value)
+void MDPlainTextEdit::setVariantValue(const QVariant &value)
 {
     setPlainText(value.toString());
 }
 
-MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString & id, const QString & labeltext, QWidget * parent, int grouped_value):
+MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString &id, const QString &labeltext, QWidget *parent, int grouped_value):
 QGroupBox(" ", parent),
 MDInputWidget(id, labeltext, parent, this)
 {
     this->grouped_value = grouped_value;
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(12);
 }
 
@@ -468,9 +468,9 @@ MDGroupedCheckBoxes::~MDGroupedCheckBoxes()
     }
 }
 
-void MDGroupedCheckBoxes::addCheckBox(int chb_id, const QString & chb_name)
+void MDGroupedCheckBoxes::addCheckBox(int chb_id, const QString &chb_name)
 {
-    MDCheckBox * chb = new MDCheckBox(QString::number(chb_id), chb_name, this, grouped_value & chb_id);
+    MDCheckBox *chb = new MDCheckBox(QString::number(chb_id), chb_name, this, grouped_value & chb_id);
     checkboxes.append(chb);
 
     layout()->addWidget(chb);
@@ -489,7 +489,7 @@ QVariant MDGroupedCheckBoxes::variantValue() const
     return QVariant(value);
 }
 
-MDFileChooser::MDFileChooser(const QString & id, const QString & labeltext, QWidget * parent, int file_id):
+MDFileChooser::MDFileChooser(const QString &id, const QString &labeltext, QWidget *parent, int file_id):
 DBFileChooser(parent, file_id),
 MDInputWidget(id, labeltext, parent, this)
 {
@@ -500,7 +500,7 @@ QVariant MDFileChooser::variantValue() const
     return DBFileChooser::variantValue();
 }
 
-MDGroupedInputWidgets::MDGroupedInputWidgets(const QString & name, QWidget * parent):
+MDGroupedInputWidgets::MDGroupedInputWidgets(const QString &name, QWidget *parent):
 QFrame(parent),
 MDInputWidget(QString(), name, parent, this)
 {
@@ -511,13 +511,13 @@ MDInputWidget(QString(), name, parent, this)
     grid->setContentsMargins(6, 6, 6, 6);
 }
 
-void MDGroupedInputWidgets::addWidget(MDAbstractInputWidget * iw)
+void MDGroupedInputWidgets::addWidget(MDAbstractInputWidget *iw)
 {
     grid->addWidget(iw->label()->widget(), grid->rowCount(), 0);
     grid->addWidget(iw->widget(), grid->rowCount() - 1, 1);
 }
 
-MDRadioButtonGroup::MDRadioButtonGroup(const QString & id, const QString & labeltext, QWidget * parent, const QString & value):
+MDRadioButtonGroup::MDRadioButtonGroup(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
         QGroupBox(" ", parent),
         MDInputWidget(id, labeltext, parent, this)
 {
@@ -525,9 +525,9 @@ MDRadioButtonGroup::MDRadioButtonGroup(const QString & id, const QString & label
     (new QVBoxLayout(this))->setSpacing(12);
 }
 
-void MDRadioButtonGroup::addRadioButton(const QString & name, const QString & value)
+void MDRadioButtonGroup::addRadioButton(const QString &name, const QString &value)
 {
-    QRadioButton * radio = new QRadioButton(name, this);
+    QRadioButton *radio = new QRadioButton(name, this);
     radio->setChecked(value == selected);
     radiobuttons.insert(radio, value);
     this->layout()->addWidget(radio);
@@ -543,7 +543,7 @@ QVariant MDRadioButtonGroup::variantValue() const
     return QVariant();
 }
 
-MDHiddenIdField::MDHiddenIdField(const QString & id, QWidget * parent, const QVariant & value):
+MDHiddenIdField::MDHiddenIdField(const QString &id, QWidget *parent, const QVariant &value):
 MDInputWidget(id, "", parent, NULL)
 {
     setShowInForm(false);
@@ -556,7 +556,7 @@ QVariant MDHiddenIdField::variantValue() const
     return value;
 }
 
-void MDHiddenIdField::setVariantValue(const QVariant & value)
+void MDHiddenIdField::setVariantValue(const QVariant &value)
 {
     this->value = value;
 }

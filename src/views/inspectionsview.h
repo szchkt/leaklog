@@ -27,7 +27,7 @@ class InspectionsView : public CircuitsView
     Q_OBJECT
 
 public:
-    InspectionsView(ViewTabSettings * settings);
+    InspectionsView(ViewTabSettings *settings);
 
     QString renderHTML();
 

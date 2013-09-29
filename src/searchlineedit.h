@@ -12,7 +12,7 @@ class SearchLineEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    SearchLineEdit(QWidget * parent = 0, bool show_icon = false):
+    SearchLineEdit(QWidget *parent = 0, bool show_icon = false):
     QLineEdit(parent) {
         QString stylesheet;
 
@@ -75,10 +75,10 @@ protected:
     }
 
 private slots:
-    void setClearButtonVisible(const QString & text) {
+    void setClearButtonVisible(const QString &text) {
         btn_clear->setVisible(!text.isEmpty());
     }
-    void emitTextChanged(const QString & text) {
+    void emitTextChanged(const QString &text) {
         emit textChanged(this, text);
     }
 
@@ -86,8 +86,8 @@ signals:
     void textChanged(QLineEdit *, const QString &);
 
 private:
-    QToolButton * btn_clear;
-    QLabel * lbl_icon;
+    QToolButton *btn_clear;
+    QLabel *lbl_icon;
 };
 
 #endif // SEARCHLINEEDIT_H
