@@ -20,10 +20,10 @@ the percentage of leakage.
 Installation
 ------------
 
-Binaries are available for **Mac OS X** and **Windows** at
-[SourceForge][SF].
+Binaries are available for **Mac OS X** and **Windows** on
+[GitHub][GH].
 
-[SF]: http://sourceforge.net/projects/leaklog/
+[GH]: http://github.com/szchkt/leaklog/releases
 
 To build Leaklog from source, you will need Qt 4.6 or a newer,
 compatible version.
