@@ -223,6 +223,7 @@ class MDTInputWidget
 {
 public:
     MDTInputWidget(QWidget *w) { this->w = w; }
+    virtual ~MDTInputWidget() {}
 
     virtual QVariant variantValue() const = 0;
     virtual void setVariantValue(const QVariant &) = 0;
@@ -236,6 +237,7 @@ class MDTLineEdit : public QLineEdit, public MDTInputWidget
 {
 public:
     MDTLineEdit(const QString &text, QWidget *parent) : QLineEdit(text, parent), MDTInputWidget(this) {}
+    virtual ~MDTLineEdit() {}
 
     QVariant variantValue() const { return text(); }
     void setVariantValue(const QVariant &val) { setText(val.toString()); }
@@ -245,6 +247,7 @@ class MDTSpinBox : public QSpinBox, public MDTInputWidget
 {
 public:
     MDTSpinBox(QWidget *parent) : QSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999); }
+    virtual ~MDTSpinBox() {}
 
     QVariant variantValue() const { return value(); }
     void setVariantValue(const QVariant &val) { setValue(val.toInt()); }
@@ -256,6 +259,7 @@ class MDTDoubleSpinBox : public QDoubleSpinBox, public MDTInputWidget
 
 public:
     MDTDoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent), MDTInputWidget(this) { setMaximum(99999999.0); }
+    virtual ~MDTDoubleSpinBox() {}
 
     QVariant variantValue() const { return value(); }
     void setVariantValue(const QVariant &val) { setValue(val.toDouble()); }
@@ -270,6 +274,7 @@ class MDTPlainTextEdit : public QPlainTextEdit, public MDTInputWidget
 
 public:
     MDTPlainTextEdit(const QString &text, QWidget *parent) : QPlainTextEdit(text, parent), MDTInputWidget(this) {}
+    virtual ~MDTPlainTextEdit() {}
 
     QVariant variantValue() const { return toPlainText(); }
     void setVariantValue(const QVariant &val) { setPlainText(val.toString()); }
@@ -281,6 +286,7 @@ class MDTCheckBox : public QCheckBox, public MDTInputWidget
 
 public:
     MDTCheckBox(bool checked, QWidget *parent) : QCheckBox(parent), MDTInputWidget(this) { setChecked(checked); }
+    virtual ~MDTCheckBox() {}
 
     QVariant variantValue() const { return isChecked() ? 1 : 0; }
     void setVariantValue(const QVariant &val) { setChecked(val.toBool()); }
@@ -292,6 +298,7 @@ class MDTLabel : public QLineEdit, public MDTInputWidget
 
 public:
     MDTLabel(const QString &text, QWidget *parent) : QLineEdit(text, parent), MDTInputWidget(this) { setReadOnly(true); }
+    virtual ~MDTLabel() {}
 
     QVariant variantValue() const { return text(); }
     void setVariantValue(const QVariant &val) { setText(val.toString()); }
@@ -303,6 +310,7 @@ class MDTFileChooser : public DBFileChooser, public MDTInputWidget
 
 public:
     MDTFileChooser(int value, QWidget *parent) : DBFileChooser(parent, value), MDTInputWidget(this) {}
+    virtual ~MDTFileChooser() {}
 
     QVariant variantValue() const { return DBFileChooser::variantValue(); }
     void setVariantValue(const QVariant &) {}
@@ -314,6 +322,7 @@ class MDTToolButton : public QToolButton, public MDTInputWidget
 
 public:
     MDTToolButton(QWidget *parent = NULL) : QToolButton(parent), MDTInputWidget(this) {}
+    virtual ~MDTToolButton() {}
 
     QVariant variantValue() const { return (int)isChecked(); }
     void setVariantValue(const QVariant &val) { setChecked(val.toInt()); }

@@ -428,37 +428,7 @@ void EditDialogueTableRow::remove()
      i.toBack();
      while (i.hasPrevious()) {
          i.previous();
-         MDTInputWidget *iw = widgets.take(i.key());
-
-         switch (values.value(i.key())->dataType()) {
-         case Global::Boolean:
-             delete (MDTCheckBox *) iw;
-             break;
-
-         case Global::String:
-             delete (MDTLineEdit *) iw;
-             break;
-
-         case Global::Text:
-             delete (MDTPlainTextEdit *) iw;
-             break;
-
-         case Global::Integer:
-             delete (MDTSpinBox *) iw;
-             break;
-
-         case Global::Numeric:
-             delete (MDTDoubleSpinBox *) iw;
-             break;
-
-         case Global::File:
-             delete (MDTFileChooser *) iw;
-             break;
-
-         default:
-             delete (MDTLabel *) iw;
-             break;
-         }
+         delete widgets.take(i.key());
      }
      if (remove_btn) {
          delete remove_btn;
