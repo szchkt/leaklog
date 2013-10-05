@@ -79,9 +79,9 @@ EditDialogueTable::~EditDialogueTable()
     delete tree;
 }
 
-void EditDialogueTable::addRow(const QMap<QString, EditDialogueTableCell *> &values, bool display)
+void EditDialogueTable::addRow(const QMap<QString, EditDialogueTableCell *> &values, bool display, EditDialogueTable::RowType row_type)
 {
-    EditDialogueTableRow *row = new EditDialogueTableRow(values, display, tree);
+    EditDialogueTableRow *row = new EditDialogueTableRow(values, display, row_type, tree);
     QObject::connect(row, SIGNAL(removed(EditDialogueTableRow*)), this, SLOT(rowRemoved(EditDialogueTableRow*)));
     rows.append(row);
 
@@ -321,12 +321,13 @@ void EditDialogueTableWithAdjustableTotal::addRow(EditDialogueTableRow *row)
     reloadTotal();
 }
 
-EditDialogueTableRow::EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> &values, bool in_table, QTreeWidget *tree):
+EditDialogueTableRow::EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> &values, bool in_table, EditDialogueTable::RowType row_type, QTreeWidget *tree):
     m_tree(tree),
     m_tree_item(NULL)
 {
     this->values = values;
     this->in_table = in_table;
+    this->row_type = row_type;
     remove_btn = NULL;
 }
 
@@ -468,13 +469,34 @@ void EditDialogueTableRow::remove()
      emit removed(this);
 }
 
+void EditDialogueTableRow::toggleHidden()
+{
+    if (remove_btn->isChecked())
+        remove_btn->setIcon(QIcon(":/images/images/visible_off16.png"));
+    else
+        remove_btn->setIcon(QIcon(":/images/images/visible_on16.png"));
+}
+
 QToolButton *EditDialogueTableRow::removeButton()
 {
     if (!remove_btn) {
-        remove_btn = new QToolButton;
-        remove_btn->setIcon(QIcon(QString::fromUtf8(":/images/images/remove16.png")));
-        remove_btn->setMaximumWidth(24);
-        QObject::connect(remove_btn, SIGNAL(clicked()), this, SLOT(remove()));
+        MDTToolButton *button = new MDTToolButton;
+        if (row_type == EditDialogueTable::Hidable) {
+            bool hidden = values.value("hidden")->value().toBool();
+            button->setIcon(QIcon(hidden ? ":/images/images/visible_off16.png" : ":/images/images/visible_on16.png"));
+            button->setToolTip(tr("Hide"));
+            button->setCheckable(true);
+            button->setChecked(hidden);
+            QObject::connect(button, SIGNAL(clicked()), this, SLOT(toggleHidden()));
+            widgets.insert("hidden", button);
+        } else {
+            button->setIcon(QIcon(":/images/images/remove16.png"));
+            button->setToolTip(tr("Remove"));
+            QObject::connect(button, SIGNAL(clicked()), this, SLOT(remove()));
+        }
+        button->setMaximumWidth(24);
+        button->setEnabled(row_type != EditDialogueTable::Default);
+        remove_btn = button;
     }
     return remove_btn;
 }

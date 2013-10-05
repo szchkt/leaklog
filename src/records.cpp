@@ -1026,6 +1026,7 @@ public:
         dict.insert("name", QApplication::translate("Person", "Name"));
         dict.insert("mail", QApplication::translate("Person", "E-mail"));
         dict.insert("phone", QApplication::translate("Person", "Phone"));
+        dict.insert("hidden", QApplication::translate("Person", "Hidden"));
     }
 
     MTDictionary dict;

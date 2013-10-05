@@ -149,7 +149,11 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
         cell->setId("phone");
         person_data.insert("phone", cell);
         person_data.insert("id", new EditDialogueTableCell(persons.at(i).value("id"), "id"));
-        persons_table->addRow(person_data);
+        person_data.insert("hidden", new EditDialogueTableCell(persons.at(i).value("hidden"), "hidden"));
+
+        MTRecord inspections("inspections", "date", QString(), MTDictionary("operator", persons.at(i).value("id").toString()));
+
+        persons_table->addRow(person_data, true, inspections.exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
     }
 
     if (!persons.count()) persons_table->addNewRow();
@@ -186,6 +190,7 @@ void EditCustomerDialogue::save()
         map.insert("name", all_values.at(i).value("name"));
         map.insert("mail", all_values.at(i).value("mail"));
         map.insert("phone", all_values.at(i).value("phone"));
+        map.insert("hidden", all_values.at(i).value("hidden", 0).toInt());
         person.update(map);
     }
     for (int i = 0; i < former_ids.count(); ++i)

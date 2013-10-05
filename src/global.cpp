@@ -493,7 +493,7 @@ public:
     DatabaseTables() {
         dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, operator_id TEXT, operator_company TEXT, operator_address TEXT, operator_mail TEXT, operator_phone TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("persons", "id BIGINT PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, date_updated TEXT, updated_by TEXT");
+        dict.insert("persons", "id BIGINT PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, hidden INTEGER DEFAULT 0 NOT NULL, date_updated TEXT, updated_by TEXT");
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("compressors", "id BIGINT NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT, updated_by TEXT");
@@ -883,7 +883,7 @@ MTDictionary Global::listOperators(const QString &customer)
 {
     MTDictionary operators(true); MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1").arg(customer))) {
+    if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1 AND hidden = 0").arg(customer))) {
         while (query.next()) {
             operators.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
         }

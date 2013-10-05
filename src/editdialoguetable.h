@@ -28,6 +28,7 @@
 #include <QCheckBox>
 #include <QPlainTextEdit>
 #include <QLabel>
+#include <QToolButton>
 
 #include "mtdictionary.h"
 #include "dbfile.h"
@@ -51,10 +52,16 @@ class EditDialogueTable : public QWidget
     Q_OBJECT
 
 public:
+    enum RowType {
+        Default,
+        Removable,
+        Hidable
+    };
+
     EditDialogueTable(const QString &, const QList<EditDialogueTableCell *> &, QWidget *);
     ~EditDialogueTable();
 
-    void addRow(const QMap<QString, EditDialogueTableCell *> &, bool = true);
+    void addRow(const QMap<QString, EditDialogueTableCell *> &values, bool display = true, RowType row_type = Removable);
     virtual void addRow(EditDialogueTableRow *);
     QList<MTDictionary> allValues() const;
 
@@ -135,19 +142,20 @@ private:
 class EditDialogueTableCell
 {
 public:
-    EditDialogueTableCell(const QVariant &_value, int _data_type = -1) {
-        this->_value = _value;
-        this->_data_type = _data_type;
+    EditDialogueTableCell(const QVariant &value, int data_type = -1) {
+        _value = value;
+        _data_type = data_type;
     }
-    EditDialogueTableCell(const QVariant &_value, const QString &_id, int _data_type = -1, const QString &unit = QString()) {
-        this->_value = _value;
-        this->_unit = unit;
-        this->_unit = _unit.prepend(" ");
-        this->_id = _id;
-        this->_data_type = _data_type;
+    EditDialogueTableCell(const QVariant &value, const QString &id, int data_type = -1, const QString &unit = QString()) {
+        _value = value;
+        _unit = unit;
+        if (!_unit.isEmpty())
+            _unit.prepend(" ");
+        _id = id;
+        _data_type = data_type;
     }
 
-    void setId(const QString &id) { this->_id = id; }
+    void setId(const QString &id) { _id = id; }
     const QString &id() const { return _id; }
 
     const QVariant &value() const { return _value; }
@@ -166,7 +174,7 @@ class EditDialogueTableRow : public QObject
     Q_OBJECT
 
 public:
-    EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> &, bool, QTreeWidget *);
+    EditDialogueTableRow(const QMap<QString, EditDialogueTableCell *> &values, bool display, EditDialogueTable::RowType row_type, QTreeWidget *tree);
     ~EditDialogueTableRow();
 
     void addWidget(const QString &, MDTInputWidget *);
@@ -194,6 +202,7 @@ public:
 
 private slots:
     void remove();
+    void toggleHidden();
 
 signals:
     void removed(EditDialogueTableRow *);
@@ -207,6 +216,7 @@ private:
     QTreeWidget *m_tree;
     QTreeWidgetItem *m_tree_item;
     bool in_table;
+    EditDialogueTable::RowType row_type;
 };
 
 class MDTInputWidget
@@ -296,6 +306,17 @@ public:
 
     QVariant variantValue() const { return DBFileChooser::variantValue(); }
     void setVariantValue(const QVariant &) {}
+};
+
+class MDTToolButton : public QToolButton, public MDTInputWidget
+{
+    Q_OBJECT
+
+public:
+    MDTToolButton(QWidget *parent = NULL) : QToolButton(parent), MDTInputWidget(this) {}
+
+    QVariant variantValue() const { return (int)isChecked(); }
+    void setVariantValue(const QVariant &val) { setChecked(val.toInt()); }
 };
 
 #endif // EDITDIALOGUETABLE_H

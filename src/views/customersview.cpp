@@ -166,6 +166,7 @@ HTMLTable *CustomersView::customerContactPersons(const QString &customer_id, HTM
     *(_tr->addHeaderCell()) << tr("Phone");
 
     Person persons_record(QString(), customer_id);
+    persons_record.parents().insert("hidden", "0");
     ListOfVariantMaps persons = persons_record.listAll();
     for (int i = 0; i < persons.count(); ++i) {
         _tr = table->addRow();

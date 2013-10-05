@@ -284,7 +284,7 @@ MDInputWidget(id, labeltext, parent, this)
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
 #endif
     setEnabled(enabled);
-    QStringList list; int n = 0;
+    QStringList list; int n = -1;
     for (int i = 0; i < items.count(); ++i) {
         if (!list.contains(items.value(i))) {
             list << items.value(i);
@@ -292,6 +292,14 @@ MDInputWidget(id, labeltext, parent, this)
         }
         if (items.key(i) == value)
             n = list.indexOf(items.value(i));
+    }
+    if (n < 0) {
+        if (value.isEmpty()) {
+            n = 0;
+        } else {
+            addItem(tr("Unknown value (%1)").arg(value), value);
+            n = count() - 1;
+        }
     }
     setCurrentIndex(n);
 }
@@ -307,8 +315,12 @@ void MDComboBox::setVariantValue(const QVariant &value)
     for (int i = 0; i < count(); ++i) {
         if (itemData(i) == value) {
             setCurrentIndex(i);
-            break;
+            return;
         }
+    }
+    if (!value.toString().isEmpty()) {
+        addItem(tr("Unknown value (%1)").arg(value.toString()), value);
+        setCurrentIndex(count() - 1);
     }
 }
 

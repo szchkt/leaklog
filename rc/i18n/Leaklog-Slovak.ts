@@ -1300,6 +1300,17 @@
     </message>
 </context>
 <context>
+    <name>EditDialogueTableRow</name>
+    <message>
+        <source>Hide</source>
+        <translation>Skryť</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Odstrániť</translation>
+    </message>
+</context>
+<context>
     <name>EditDialogueTableWithAdjustableTotal</name>
     <message>
         <source>Total list price:</source>
@@ -1975,6 +1986,13 @@
     <message>
         <source>All</source>
         <translation>Všetky</translation>
+    </message>
+</context>
+<context>
+    <name>MDComboBox</name>
+    <message>
+        <source>Unknown value (%1)</source>
+        <translation>Neznáma hodnota (%1)</translation>
     </message>
 </context>
 <context>
@@ -4416,6 +4434,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Phone</source>
         <translation>Telefón</translation>
     </message>
+    <message>
+        <source>Hidden</source>
+        <translation>Skrytá</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -5253,7 +5275,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message>
+    <message utf8="true">
         <source>—</source>
         <translation>—</translation>
     </message>

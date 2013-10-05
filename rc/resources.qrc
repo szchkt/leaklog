@@ -95,5 +95,7 @@
         <file>images/tab_close16.png</file>
         <file>images/tab_new16.png</file>
         <file>images/find16.png</file>
+        <file>images/visible_on16.png</file>
+        <file>images/visible_off16.png</file>
     </qresource>
 </RCC>
