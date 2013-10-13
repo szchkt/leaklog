@@ -100,14 +100,14 @@ void Variables::initVariables()
     initSubvariable("t_sec", Variable::Inspection, "mintcream", "t_sec_cond_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
 
     initVariable("p_0", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "aliceblue");
-    initVariable("t_0", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_0)", true, 0.0, "aliceblue");
-    initVariable("delta_t_evap", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t(p_0))", true, 0.0, "aliceblue");
+    initVariable("t_0", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t_vap(p_0)", true, 0.0, "aliceblue");
+    initVariable("delta_t_evap", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "abs(t_sec_evap_in-p_to_t_vap(p_0))", true, 0.0, "aliceblue");
     initVariable("t_evap_out", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
     initVariable("t_comp_in", Variable::Compressor, QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0, "aliceblue");
 
     initVariable("t_sh", Variable::Inspection, "aliceblue");
-    initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t(p_0)", true, 0.0);
-    initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_comp", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t(p_0)", true, 0.0);
+    initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_evap", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_evap_out-p_to_t_vap(p_0)", true, 0.0);
+    initSubvariable("t_sh", Variable::Inspection, "aliceblue", "t_sh_comp", QApplication::translate("Units", "%1C").arg(degreeSign()), "t_comp_in-p_to_t_vap(p_0)", true, 0.0);
 
     initVariable("p_c", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "floralwhite");
     initVariable("t_c", Variable::Inspection, QApplication::translate("Units", "%1C").arg(degreeSign()), "p_to_t(p_c)", true, 0.0, "floralwhite");

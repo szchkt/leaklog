@@ -5,3 +5,4 @@ Makefile*
 object_script.*
 *.qm
 ui/include
+refprop

@@ -195,13 +195,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
             } else if (type == 2) {
-                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-                initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t_vap(p_0)", "<", "p_to_t_vap(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t_vap(p_0)", ">", "t_evap_out-p_to_t_vap(p_0)");
                 initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
                 initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
                 initCondition(map, w, "t_comp_out", ">", "t_comp_out");
                 initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
         w = "1101";
@@ -209,13 +209,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             if (type == 0) {
                 initWarning(database, map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
             } else if (type == 2) {
-                initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
-                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t_vap(p_0)", ">", "p_to_t_vap(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t_vap(p_0)", "<", "t_evap_out-p_to_t_vap(p_0)");
                 initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
                 initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
                 initCondition(map, w, "t_comp_out", ">", "t_comp_out");
                 initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
         w = "1102";
@@ -223,13 +223,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             if (type == 0) {
                 initWarning(database, map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
             } else if (type == 2) {
-                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-                initCondition(map, w, "t_evap_out-p_to_t(p_0)", ">", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t_vap(p_0)", "<", "p_to_t_vap(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t_vap(p_0)", ">", "t_evap_out-p_to_t_vap(p_0)");
                 initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
                 initCondition(map, w, "p_to_t(p_c)-t_ev", ">", "p_to_t(p_c)-t_ev");
                 initCondition(map, w, "t_comp_out", ">", "t_comp_out");
                 initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
         w = "1103";
@@ -237,13 +237,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             if (type == 0) {
                 initWarning(database, map, w, tr("Condenser fouling"), "", 0, enabled_only);
             } else if (type == 2) {
-                initCondition(map, w, "p_to_t(p_0)", ">", "p_to_t(p_0)");
-                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t_vap(p_0)", ">", "p_to_t_vap(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t_vap(p_0)", "<", "t_evap_out-p_to_t_vap(p_0)");
                 initCondition(map, w, "p_to_t(p_c)", ">", "p_to_t(p_c)");
                 initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
                 initCondition(map, w, "t_comp_out", ">", "t_comp_out");
                 initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", ">", "abs(t_sec_cond_in-p_to_t(p_c))");
-                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", "<", "abs(t_sec_evap_in-p_to_t(p_0))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
         w = "1104";
@@ -251,13 +251,13 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             if (type == 0) {
                 initWarning(database, map, w, tr("Evaporator fouling"), "", 0, enabled_only);
             } else if (type == 2) {
-                initCondition(map, w, "p_to_t(p_0)", "<", "p_to_t(p_0)");
-                initCondition(map, w, "t_evap_out-p_to_t(p_0)", "<", "t_evap_out-p_to_t(p_0)");
+                initCondition(map, w, "p_to_t_vap(p_0)", "<", "p_to_t_vap(p_0)");
+                initCondition(map, w, "t_evap_out-p_to_t_vap(p_0)", "<", "t_evap_out-p_to_t_vap(p_0)");
                 initCondition(map, w, "p_to_t(p_c)", "<", "p_to_t(p_c)");
                 initCondition(map, w, "p_to_t(p_c)-t_ev", "<", "p_to_t(p_c)-t_ev");
                 initCondition(map, w, "t_comp_out", "<", "t_comp_out");
                 initCondition(map, w, "abs(t_sec_cond_in-p_to_t(p_c))", "<", "abs(t_sec_cond_in-p_to_t(p_c))");
-                initCondition(map, w, "abs(t_sec_evap_in-p_to_t(p_0))", ">", "abs(t_sec_evap_in-p_to_t(p_0))");
+                initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", ">", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
         w = "1200";

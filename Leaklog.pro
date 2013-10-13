@@ -57,7 +57,7 @@ HEADERS       += src/aboutwidget.h \
                  src/partnerwidgets.h \
                  src/permissionsdialogue.h \
                  src/records.h \
-                 src/refrigerants.h \
+                 src/refprop.h \
                  src/removedialogue.h \
                  src/reportdata.h \
                  src/reportdatacontroller.h \
@@ -137,7 +137,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/partnerwidgets.cpp \
                  src/permissionsdialogue.cpp \
                  src/records.cpp \
-                 src/refrigerants.cpp \
+                 src/refprop.cpp \
                  src/reportdata.cpp \
                  src/reportdatacontroller.cpp \
                  src/sha256.cpp \
@@ -169,53 +169,121 @@ SOURCES       += src/aboutwidget.cpp \
                  src/viewtab.cpp \
                  src/viewtabsettings.cpp \
                  src/warnings.cpp
+
 lessThan(QT_MAJOR_VERSION, 5) {
-QT            += network webkit sql
-CONFIG        += depend_includepath
+    QT            += network webkit sql
+    CONFIG        += depend_includepath
+} else {
+    QT            += widgets network webkitwidgets sql
 }
-else {
-QT            += widgets network webkitwidgets sql
-}
-# QTPLUGIN      += qsqlite qsqlpsql
+
 # fparser
-HEADERS       += include/fparser/fpconfig.hh include/fparser/fptypes.hh include/fparser/fparser.hh
-SOURCES       += include/fparser/fpoptimizer.cc include/fparser/fparser.cc
-DEFINES       += FP_NO_SUPPORT_OPTIMIZER
-# *******
+HEADERS           += include/fparser/fpconfig.hh include/fparser/fptypes.hh include/fparser/fparser.hh
+SOURCES           += include/fparser/fpoptimizer.cc include/fparser/fparser.cc
+DEFINES           += FP_NO_SUPPORT_OPTIMIZER
+
 # csvparser
-HEADERS       += include/csvparser/mtcsvparser.h
-SOURCES       += include/csvparser/mtcsvparser.cpp
-# *******
-DESTDIR        = bin
-INCLUDEPATH   += src src/views include
-UI_HEADERS_DIR = ui/include
-UI_SOURCES_DIR = ui
+HEADERS           += include/csvparser/mtcsvparser.h
+SOURCES           += include/csvparser/mtcsvparser.cpp
+
+DESTDIR            = bin
+INCLUDEPATH       += src src/views include
+UI_HEADERS_DIR     = ui/include
+UI_SOURCES_DIR     = ui
+
 win32 {
-RC_FILE        = rc/leaklog.rc
-OBJECTS_DIR    = build/win32
-MOC_DIR        = build/win32
-RCC_DIR        = build/win32
+    RC_FILE        = rc/leaklog.rc
+    OBJECTS_DIR    = build/win32
+    MOC_DIR        = build/win32
+    RCC_DIR        = build/win32
 }
+
 macx {
-LIBS          += -framework Foundation
-OBJECTIVE_SOURCES += src/mainwindowmacx.mm
-ICON           = rc/images/leaklog.icns
-CONFIG        += x86_64
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
-# QMAKE_MAC_SDK  = /Developer/SDKs/MacOSX10.5.sdk
+    LIBS          += -framework Foundation
+    OBJECTIVE_SOURCES += src/mainwindowmacx.mm
+    ICON           = rc/images/leaklog.icns
+    CONFIG        += x86_64
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
+    # QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.5.sdk
 }
+
+macx-xcode {
+    QMAKE_CC       = clang
+    QMAKE_CXX      = clang++
+}
+
 unix {
-OBJECTS_DIR    = build/unix
-MOC_DIR        = build/unix
-RCC_DIR        = build/unix
+    OBJECTS_DIR    = build/unix
+    MOC_DIR        = build/unix
+    RCC_DIR        = build/unix
 }
-unix:!macx {
-exists(/usr/bin/apgcc) {
-QMAKE_CC       = apgcc
+
+defineTest(copyResourceFolder) {
+    folder = $$1
+    source = $$2
+    macx-xcode {
+        destination = $$quote($$DESTDIR/$${TARGET}.app/Contents/Resources/$$3)
+    } else:macx {
+        destination = $$quote($$OUT_PWD/$$DESTDIR/$${TARGET}.app/Contents/Resources/$$3)
+    } else {
+        destination = $$quote($$OUT_PWD/$$DESTDIR/$$3)
+    }
+    win32 {
+        source      ~= s,/,\\,g
+        destination ~= s,/,\\,g
+    }
+
+    macx-xcode {
+        eval($${folder}_in             = $$files($$source/*))
+        export($${folder}_in)
+        eval($${folder}.input          = $${folder}_in)
+        export($${folder}.input)
+        eval($${folder}.output         = $$destination/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT})
+        export($${folder}.output)
+        eval($${folder}.commands       = mkdir -p \'$$destination\'; $$QMAKE_COPY $$source/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT} \'$$destination\')
+        export($${folder}.commands)
+        eval($${folder}.variable_out   = files_out)
+        export($${folder}.variable_out)
+
+        QMAKE_EXTRA_COMPILERS         += $$folder
+        export(QMAKE_EXTRA_COMPILERS)
+    } else {
+        QMAKE_EXTRA_TARGETS           += $$folder
+        export(QMAKE_EXTRA_TARGETS)
+        POST_TARGETDEPS               += $$folder
+        export(POST_TARGETDEPS)
+
+        eval($${folder}.target         = $$folder)
+        export($${folder}.target)
+        eval($${folder}.depends        = $$files($$PWD/$$source/*))
+        export($${folder}.depends)
+        win32 {
+            pwd                        = $$PWD
+            pwd                       ~= s,/,\\,g
+            eval($${folder}.commands   = $$quote(mkdir \'$$destination\' &&))
+            eval($${folder}.commands  += $$quote($$QMAKE_COPY $$pwd\\$$source\\* \'$$destination\'))
+        } else {
+            eval($${folder}.commands   = $$quote(mkdir -p \'$$destination\';))
+            eval($${folder}.commands  += $$quote($$QMAKE_COPY $$eval($${folder}.depends) \'$$destination\'))
+        }
+        export($${folder}.commands)
+    }
 }
-exists(/usr/bin/apg++) {
-QMAKE_CXX      = apg++
+
+# refprop
+exists(refprop/include/refprop_lib.h) {
+    message("Configuring with RefProp...")
+    DEFINES       += REFPROP
+    INCLUDEPATH   += refprop/include
+    macx:LIBS     += $$PWD/refprop/macx/librefprop.a $$PWD/refprop/macx/libgcc.a $$PWD/refprop/macx/libgfortran.a $$PWD/refprop/macx/libquadmath.a
+    win32:LIBS    += $$PWD/refprop/win32/librefprop.a $$PWD/refprop/win32/libgcc.a $$PWD/refprop/win32/libgfortran.a
+
+    copyResourceFolder(fluids, refprop/fluids, fluids)
+    copyResourceFolder(mixtures, refprop/mixtures, mixtures)
+} else {
+    HEADERS       += src/refrigerants.h
+    SOURCES       += src/refrigerants.cpp
 }
-}
-TRANSLATIONS  += rc/i18n/Leaklog-Slovak.ts
+
+TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts
 QMAKE_RESOURCE_FLAGS += -compress 9

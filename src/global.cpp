@@ -18,7 +18,7 @@
 ********************************************************************/
 
 #include "fparser/fparser.hh"
-#include "refrigerants.h"
+#include "refprop.h"
 #include "global.h"
 #include "variables.h"
 #include "reportdata.h"
@@ -348,7 +348,7 @@ MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
     MTDictionary dict_exp(true);
     if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
         QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
-        QStringList functions; functions << "sum" << "p_to_t";
+        QStringList functions; functions << "sum" << "p_to_t" << "p_to_t_vap";
         for (int i = 0; i < circuit_attributes.count(); ++i) {
             if (!used_ids.contains(circuit_attributes.at(i))) { used_ids << circuit_attributes.at(i); }
         }
@@ -408,8 +408,6 @@ MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
     return dict_exp;
 }
 
-Refrigerants refrigerants;
-
 double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_id, const QString &circuit_id, bool *ok, bool *null_var)
 {
     MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
@@ -443,8 +441,14 @@ double Global::evaluateExpression(const QVariantMap &inspection, const MTDiction
             value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
         } else if (expression.value(i) == "p_to_t") {
             if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(refrigerants.pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
-                                                                            round(inspection.value(expression.key(i)).toDouble() * 10.0) / 10.0 + 1.0)));
+            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
+                                                                        inspection.value(expression.key(i)).toDouble(),
+                                                                        RefProp::Liquid)));
+        } else if (expression.value(i) == "p_to_t_vap") {
+            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
+            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
+                                                                        inspection.value(expression.key(i)).toDouble(),
+                                                                        RefProp::Vapour)));
         } else {
             value.append(expression.key(i));
         }
