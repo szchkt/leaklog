@@ -202,6 +202,9 @@ macx {
     LIBS          += -framework Foundation
     OBJECTIVE_SOURCES += src/mainwindowmacx.mm
     ICON           = rc/images/leaklog.icns
+    icons.path     = Contents/Resources
+    icons.files    = rc/images/lklg.icns
+    QMAKE_BUNDLE_DATA += icons
     CONFIG        += x86_64
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
     # QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.5.sdk
