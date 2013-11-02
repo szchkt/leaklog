@@ -224,10 +224,8 @@ unix {
 defineTest(copyResourceFolder) {
     folder = $$1
     source = $$2
-    macx-xcode {
-        destination = $$quote($$DESTDIR/$${TARGET}.app/Contents/Resources/$$3)
-    } else:macx {
-        destination = $$quote($$OUT_PWD/$$DESTDIR/$${TARGET}.app/Contents/Resources/$$3)
+    macx {
+        destination = $$quote(Contents/Resources/$$3)
     } else {
         destination = $$quote($$OUT_PWD/$$DESTDIR/$$3)
     }
@@ -236,20 +234,13 @@ defineTest(copyResourceFolder) {
         destination ~= s,/,\\,g
     }
 
-    macx-xcode {
-        eval($${folder}_in             = $$files($$source/*))
-        export($${folder}_in)
-        eval($${folder}.input          = $${folder}_in)
-        export($${folder}.input)
-        eval($${folder}.output         = $$destination/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT})
-        export($${folder}.output)
-        eval($${folder}.commands       = mkdir -p \'$$destination\'; $$QMAKE_COPY $$source/${QMAKE_FILE_BASE}${QMAKE_FILE_EXT} \'$$destination\')
-        export($${folder}.commands)
-        eval($${folder}.variable_out   = files_out)
-        export($${folder}.variable_out)
-
-        QMAKE_EXTRA_COMPILERS         += $$folder
-        export(QMAKE_EXTRA_COMPILERS)
+    macx {
+        eval($${folder}.path           = $$destination)
+        export($${folder}.path)
+        eval($${folder}.files          = $$files($$source/*))
+        export($${folder}.files)
+        QMAKE_BUNDLE_DATA += $${folder}
+        export(QMAKE_BUNDLE_DATA)
     } else {
         QMAKE_EXTRA_TARGETS           += $$folder
         export(QMAKE_EXTRA_TARGETS)
