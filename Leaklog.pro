@@ -263,7 +263,7 @@ defineTest(copyResourceFolder) {
         win32 {
             pwd                        = $$PWD
             pwd                       ~= s,/,\\,g
-            eval($${folder}.commands   = $$quote(mkdir \'$$destination\' &&))
+            eval($${folder}.commands   = $$quote((if not exist \'$$destination\'. mkdir \'$$destination\') &&))
             eval($${folder}.commands  += $$quote($$QMAKE_COPY $$pwd\\$$source\\* \'$$destination\'))
         } else {
             eval($${folder}.commands   = $$quote(mkdir -p \'$$destination\';))
