@@ -275,8 +275,8 @@ exists(refprop/include/refprop_lib.h) {
     message("Configuring with RefProp...")
     DEFINES       += REFPROP
     INCLUDEPATH   += refprop/include
-    macx:LIBS     += $$PWD/refprop/macx/librefprop.a $$PWD/refprop/macx/libgcc.a $$PWD/refprop/macx/libgfortran.a $$PWD/refprop/macx/libquadmath.a
-    win32:LIBS    += $$PWD/refprop/win32/librefprop.a $$PWD/refprop/win32/libgcc.a $$PWD/refprop/win32/libgfortran.a
+    macx:LIBS     += $$PWD/refprop/macx/librefprop.a $$PWD/refprop/macx/libgcc.a $$PWD/refprop/macx/libgcc_eh.a $$PWD/refprop/macx/libgfortran.a $$PWD/refprop/macx/libgomp.a $$PWD/refprop/macx/libquadmath.a
+    win32:LIBS    += $$PWD/refprop/win32/librefprop.a $$PWD/refprop/win32/libgcc.a $$PWD/refprop/win32/libgfortran.a $$PWD/refprop/win32/libgomp.a $$PWD/refprop/win32/libpthread.dll.a
 
     copyResourceFolder(fluids, refprop/fluids, fluids)
     copyResourceFolder(mixtures, refprop/mixtures, mixtures)
