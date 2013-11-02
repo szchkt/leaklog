@@ -5,4 +5,11 @@ Makefile*
 object_script.*
 *.qm
 ui/include
+*~
+.DS_Store
+moc_*
+qrc_*
+ui_*
+*.xcodeproj
+description
 refprop

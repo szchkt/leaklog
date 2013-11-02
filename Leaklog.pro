@@ -199,6 +199,7 @@ win32 {
 }
 
 macx {
+    QMAKE_INFO_PLIST = Info.plist
     LIBS          += -framework Foundation
     OBJECTIVE_SOURCES += src/mainwindowmacx.mm
     ICON           = rc/images/leaklog.icns
