@@ -360,7 +360,9 @@ void ToolBarStack::enableTools()
                                  _view == View::Repairs ||
                                  _view == View::Inspections ||
                                  _view == View::InspectionDetails ||
-                                 _view == View::InspectionImages) &&
+                                 _view == View::InspectionImages ||
+                                 _view == View::AssemblyRecords ||
+                                 _view == View::AssemblyRecordDetails) &&
                                 _settings->isCustomerSelected());
 
     if (_settings->isRepairSelected())
@@ -394,7 +396,9 @@ void ToolBarStack::enableTools()
     widget_circuit->setVisible((_view == View::Circuits ||
                                 _view == View::Inspections ||
                                 _view == View::InspectionDetails ||
-                                _view == View::InspectionImages) &&
+                                _view == View::InspectionImages ||
+                                _view == View::AssemblyRecords ||
+                                _view == View::AssemblyRecordDetails) &&
                                _settings->isCircuitSelected());
 
     if (_settings->isInspectionSelected())

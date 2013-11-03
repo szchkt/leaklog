@@ -49,10 +49,9 @@ public:
         InspectionDetails,            InspectionRequired = InspectionDetails,
         InspectionImages,
         AssemblyRecordDetails,        InspectionRequiredEnd = AssemblyRecordDetails,
-                                      AssemblyRecordsRelated = AssemblyRecordDetails,
         AssemblyRecords,              CircuitRequiredEnd = AssemblyRecords,
                                       CustomerRequiredEnd = AssemblyRecords,
-        AssemblyRecordTypes,
+        AssemblyRecordTypes,          AssemblyRecordsRelated = AssemblyRecordTypes,
         AssemblyRecordItems,
         CircuitUnitTypes,             AssemblyRecordsRelatedEnd = CircuitUnitTypes,
         ViewCount
