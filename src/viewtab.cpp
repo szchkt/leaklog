@@ -361,10 +361,14 @@ void ViewTab::setView(View::ViewID view, const QString &table)
         view = View::Store;
 
     if (view_items[view]) {
-        if (ui->trw_navigation->currentItem() == view_items[view])
+        if (ui->trw_navigation->currentItem() == view_items[view]) {
             refreshView();
-        else
+        } else {
+            bool disabled = view_items[view]->isDisabled();
+            view_items[view]->setDisabled(false);
             ui->trw_navigation->setCurrentItem(view_items[view]);
+            view_items[view]->setDisabled(disabled);
+        }
     } else if (view == View::TableOfInspections) {
         QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 

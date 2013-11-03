@@ -61,9 +61,9 @@ public:
 
     virtual QString appendDefaultOrderToColumn(const QString &) const = 0;
 
-    void restoreDefaults();
     void saveSettings(QSettings &settings) const;
     void restoreSettings(QSettings &settings);
+    void validateSelection();
 
     inline bool isCustomerSelected() const { return m_customer >= 0; }
     inline QString selectedCustomer() const { return isCustomerSelected() ? QString::number(m_customer) : QString(); }

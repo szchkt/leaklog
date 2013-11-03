@@ -703,12 +703,6 @@ void MainWindow::findPrevious()
     m_tab->webView()->findText(le_search->text(), QWebPage::FindBackward);
 }
 
-void MainWindow::clearSelection()
-{
-    if (m_tab)
-        m_tab->restoreDefaults();
-}
-
 void MainWindow::refreshView()
 {
     m_tab->refreshView();

@@ -639,9 +639,13 @@ void MainWindow::loadDatabase(bool reload)
     updateLockButton();
 
     if (reload) {
-        clearSelection(); // TODO
+        for (int i = 0; i < tabw_main->count(); ++i) {
+            ViewTab *tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
+            tab->validateSelection();
+            tab->refreshView();
+        }
+
         enableTools();
-        refreshView();
     }
 }
 

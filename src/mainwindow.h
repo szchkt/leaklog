@@ -180,7 +180,6 @@ private slots:
     void findAll();
     void findNext();
     void findPrevious();
-    void clearSelection();
     void refreshView();
     void changeLanguage();
     void languageChanged();

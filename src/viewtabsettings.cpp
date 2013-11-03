@@ -35,16 +35,6 @@ ViewTabSettings::ViewTabSettings():
 {
 }
 
-void ViewTabSettings::restoreDefaults()
-{
-    clearSelectedCustomer();
-    clearSelectedInspector();
-    clearSelectedAssemblyRecordType();
-    clearSelectedAssemblyRecordItemType();
-    clearSelectedAssemblyRecordItemCategory();
-    clearSelectedCircuitUnitType();
-}
-
 void ViewTabSettings::saveSettings(QSettings &settings) const
 {
     if (isCustomerSelected())
@@ -76,51 +66,55 @@ void ViewTabSettings::saveSettings(QSettings &settings) const
 void ViewTabSettings::restoreSettings(QSettings &settings)
 {
     m_customer = settings.value("selected_customer", -1).toInt();
-    if (!isCustomerSelected() || !Customer(selectedCustomer()).exists()) {
-        clearSelectedCustomer();
-    } else {
-        m_circuit = settings.value("selected_circuit", -1).toInt();
-        if (!isCircuitSelected() || !Circuit(selectedCustomer(), selectedCircuit()).exists()) {
-            clearSelectedCircuit();
-        } else {
-            m_inspection = settings.value("selected_inspection").toString();
-            if (!isInspectionSelected() || !Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).exists()) {
-                clearSelectedInspection();
-            }
-        }
-    }
+    m_circuit = settings.value("selected_circuit", -1).toInt();
+    m_inspection = settings.value("selected_inspection").toString();
     m_compressor = settings.value("selected_compressor", -1).toInt();
-    if (!isCompressorSelected() || !Compressor(selectedCompressor()).exists()) {
-        clearSelectedCompressor();
-    }
     m_repair = settings.value("selected_repair").toString();
-    if (!isRepairSelected() || !Repair(selectedRepair()).exists()) {
-        clearSelectedRepair();
-    }
     m_inspector = settings.value("selected_inspector", -1).toInt();
-    if (!isInspectorSelected() || !Inspector(selectedInspector()).exists()) {
-        clearSelectedInspector();
-    }
     m_assembly_record_type = settings.value("selected_assembly_record_type", -1).toInt();
-    if (!isAssemblyRecordTypeSelected() || !AssemblyRecordType(selectedAssemblyRecordType()).exists()) {
-        clearSelectedAssemblyRecordType();
-    }
     m_assembly_record_item_type = settings.value("selected_assembly_record_item_type", -1).toInt();
-    if (!isAssemblyRecordItemTypeSelected() || !AssemblyRecordItemType(selectedAssemblyRecordItemType()).exists()) {
-        clearSelectedAssemblyRecordItemType();
-    }
     m_assembly_record_item_category = settings.value("selected_assembly_record_item_category", -1).toInt();
-    if (!isAssemblyRecordItemCategorySelected() || !AssemblyRecordItemCategory(selectedAssemblyRecordItemCategory()).exists()) {
-        clearSelectedAssemblyRecordItemCategory();
-    }
     m_circuit_unit_type = settings.value("selected_circuit_unit_type", -1).toInt();
-    if (!isCircuitUnitTypeSelected() || !CircuitUnitType(selectedCircuitUnitType()).exists()) {
-        clearSelectedCircuitUnitType();
-    }
+
+    validateSelection();
 
     QMetaObject::invokeMethod(object(), "setView", Qt::QueuedConnection,
                               Q_ARG(int, settings.value("current_view").toInt()),
                               Q_ARG(QString, settings.value("current_table").toString()));
+}
+
+void ViewTabSettings::validateSelection()
+{
+    if (isCustomerSelected() && !Customer(selectedCustomer()).exists()) {
+        clearSelectedCustomer();
+    }
+    if (isCircuitSelected() && !Circuit(selectedCustomer(), selectedCircuit()).exists()) {
+        clearSelectedCircuit();
+    }
+    if (isInspectionSelected() && !Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).exists()) {
+        clearSelectedInspection();
+    }
+    if (isCompressorSelected() && !Compressor(selectedCompressor()).exists()) {
+        clearSelectedCompressor();
+    }
+    if (isRepairSelected() && !Repair(selectedRepair()).exists()) {
+        clearSelectedRepair();
+    }
+    if (isInspectorSelected() && !Inspector(selectedInspector()).exists()) {
+        clearSelectedInspector();
+    }
+    if (isAssemblyRecordTypeSelected() && !AssemblyRecordType(selectedAssemblyRecordType()).exists()) {
+        clearSelectedAssemblyRecordType();
+    }
+    if (isAssemblyRecordItemTypeSelected() && !AssemblyRecordItemType(selectedAssemblyRecordItemType()).exists()) {
+        clearSelectedAssemblyRecordItemType();
+    }
+    if (isAssemblyRecordItemCategorySelected() && !AssemblyRecordItemCategory(selectedAssemblyRecordItemCategory()).exists()) {
+        clearSelectedAssemblyRecordItemCategory();
+    }
+    if (isCircuitUnitTypeSelected() && !CircuitUnitType(selectedCircuitUnitType()).exists()) {
+        clearSelectedCircuitUnitType();
+    }
 }
 
 void ViewTabSettings::loadCustomer(int customer, bool refresh)
