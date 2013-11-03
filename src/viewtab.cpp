@@ -323,33 +323,19 @@ void ViewTab::enableAllTools()
 
 void ViewTab::enableTools()
 {
-    View::ViewID view = currentView();
-
     view_items[View::Circuits]->setDisabled(!isCustomerSelected());
     for (int i = 0; i < group_tables->childCount(); ++i)
         group_tables->child(i)->setDisabled(!isCustomerSelected());
     view_items[View::OperatorReport]->setDisabled(!isCustomerSelected());
 
-    if (!isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd)
-        setView(View::Customers);
-
     view_items[View::Inspections]->setDisabled(!isCircuitSelected());
     view_items[View::AssemblyRecords]->setDisabled(!isCircuitSelected());
-
-    if (!isCircuitSelected() && view >= View::CircuitRequired && view <= View::CircuitRequiredEnd)
-        setView(View::Circuits);
 
     view_items[View::InspectionDetails]->setDisabled(!isInspectionSelected());
     view_items[View::InspectionImages]->setDisabled(!isInspectionSelected());
     view_items[View::AssemblyRecordDetails]->setDisabled(!isInspectionSelected());
 
-    if (!isInspectionSelected() && view >= View::InspectionRequired && view <= View::InspectionRequiredEnd)
-        setView(View::Inspections);
-
     view_items[View::InspectorDetails]->setDisabled(!isInspectorSelected());
-
-    if (!isInspectorSelected() && view >= View::InspectorRequired && view <= View::InspectorRequiredEnd)
-        setView(View::Inspectors);
 
     ui->toolbarstack->enableTools();
 }
@@ -498,6 +484,20 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 #endif
 
     View::ViewID view = (View::ViewID)current->data(0, Qt::UserRole).toInt();
+
+    if (!isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
+        setView(View::Customers);
+        return;
+    } else if (!isCircuitSelected() && view >= View::CircuitRequired && view <= View::CircuitRequiredEnd) {
+        setView(View::Circuits);
+        return;
+    } else if (!isInspectionSelected() && view >= View::InspectionRequired && view <= View::InspectionRequiredEnd) {
+        setView(View::Inspections);
+        return;
+    } else if (!isInspectorSelected() && view >= View::InspectorRequired && view <= View::InspectorRequiredEnd) {
+        setView(View::Inspectors);
+        return;
+    }
 
     emit viewChanged(view);
 
