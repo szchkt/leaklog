@@ -73,11 +73,12 @@ public:
     inline bool isCircuitSelected() const { return m_circuit >= 0; }
     inline QString selectedCircuit() const { return isCircuitSelected() ? QString::number(m_circuit) : QString(); }
     void setSelectedCircuit(int circuit) { clearSelectedCircuit(); m_circuit = circuit; }
-    void clearSelectedCircuit() { m_circuit = -1; m_compressor = -1; clearSelectedInspection(); clearSelectedRepair(); }
+    void clearSelectedCircuit() { m_circuit = -1; clearSelectedCompressor(); clearSelectedInspection(); clearSelectedRepair(); }
 
     inline bool isCompressorSelected() const { return m_compressor >= 0; }
     inline QString selectedCompressor() const { return isCompressorSelected() ? QString::number(m_compressor) : QString(); }
     void setSelectedCompressor(int compressor) { m_compressor = compressor; }
+    void clearSelectedCompressor() { m_compressor = -1; }
 
     inline bool isInspectionSelected() const { return !m_inspection.isEmpty(); }
     inline QString selectedInspection() const { return m_inspection; }
