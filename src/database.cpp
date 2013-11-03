@@ -999,7 +999,7 @@ void MainWindow::editCustomer()
             update_repairs.bindValue(":new_id", record.id());
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
-            m_tab->loadCustomer(record.id().toInt(), true);
+            m_tab->loadCustomer(record.id().toInt(), false);
         } else if (old_company_name != company_name) {
             MTSqlQuery update_repairs;
             update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
@@ -1007,11 +1007,10 @@ void MainWindow::editCustomer()
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
             enableTools();
-            refreshView();
         } else {
             enableTools();
-            refreshView();
         }
+        refreshView();
         setDatabaseModified(true);
     }
 }
@@ -1157,11 +1156,11 @@ void MainWindow::editCircuit()
     if (md.exec() == QDialog::Accepted) {
         if (old_id != record.id()) {
             Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
-            m_tab->loadCircuit(record.id().toInt(), true);
+            m_tab->loadCircuit(record.id().toInt(), false);
         } else {
             enableTools();
-            refreshView();
         }
+        refreshView();
         setDatabaseModified(true);
     }
 }
@@ -1421,7 +1420,8 @@ void MainWindow::editInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), true);
+        m_tab->loadInspection(record.id(), false);
+        refreshView();
     }
 }
 
@@ -2061,11 +2061,11 @@ void MainWindow::editInspector()
             update_assembly_record_items.bindValue(":old_id", old_id);
             update_assembly_record_items.bindValue(":new_id", record.id());
             update_assembly_record_items.exec();
-            m_tab->loadInspector(record.id().toInt(), true);
+            m_tab->loadInspector(record.id().toInt(), false);
         } else {
             enableTools();
-            refreshView();
         }
+        refreshView();
         setDatabaseModified(true);
     }
 }
@@ -3303,7 +3303,8 @@ void MainWindow::editAssemblyRecordType()
             update_ar_type.exec();
         }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordType(record.id().toInt(), false);
+        refreshView();
     }
 }
 
@@ -3359,7 +3360,8 @@ void MainWindow::editAssemblyRecordItemType()
             update_ar_items.exec();
         }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemType(record.id().toInt(), false);
+        refreshView();
     }
 }
 
@@ -3424,7 +3426,8 @@ void MainWindow::editAssemblyRecordItemCategory()
             update_ar_items.exec();
         }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), false);
+        refreshView();
     }
 }
 
@@ -3485,7 +3488,8 @@ void MainWindow::editCircuitUnitType()
             update_ar_items.exec();
         }
         setDatabaseModified(true);
-        m_tab->loadCircuitUnitType(record.id().toInt(), true);
+        m_tab->loadCircuitUnitType(record.id().toInt(), false);
+        refreshView();
     }
 }
 
