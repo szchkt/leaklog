@@ -371,8 +371,14 @@ QWebView *ViewTab::webView() const
 
 void ViewTab::setView(View::ViewID view, const QString &table)
 {
+    if (view < 0 || view >= View::ViewCount)
+        view = View::Store;
+
     if (view_items[view]) {
-        ui->trw_navigation->setCurrentItem(view_items[view]);
+        if (ui->trw_navigation->currentItem() == view_items[view])
+            refreshView();
+        else
+            ui->trw_navigation->setCurrentItem(view_items[view]);
     } else if (view == View::TableOfInspections) {
         QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
