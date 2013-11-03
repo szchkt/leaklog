@@ -46,7 +46,7 @@ ToolBarStack::ToolBarStack(QWidget *parent):
                   "QToolButton { min-height: 16px; }");
 #endif
 
-    QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), this, SLOT(toggleTableForAllCircuits()));
+    QObject::connect(chb_table_all_circuits, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(spb_filter_month_from, SIGNAL(valueChanged(int)), this, SLOT(monthFromChanged(int)));
     QObject::connect(spb_filter_month_until, SIGNAL(valueChanged(int)), this, SLOT(monthUntilChanged(int)));
@@ -105,6 +105,9 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(tbtn_remove_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(removeCircuitUnitType()));
     QObject::connect(tbtn_edit_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(editCircuitUnitType()));
     QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_assembly_record_acquisition_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_assembly_record_list_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_assembly_record_total, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
 void ToolBarStack::addFilterItems(const QString &column, const MTDictionary &items)
