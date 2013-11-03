@@ -1757,7 +1757,7 @@
     </message>
     <message>
         <source>Other</source>
-        <translation>Iný</translation>
+        <translation>Iné</translation>
     </message>
     <message>
         <source>Compressors</source>
