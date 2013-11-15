@@ -58,7 +58,8 @@
 using namespace Global;
 
 MainWindow::MainWindow():
-    m_tab(NULL)
+    m_tab(NULL),
+    m_current_scale(1.0)
 {
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -69,6 +70,8 @@ MainWindow::MainWindow():
     if (tr("LTR") == "RTL")
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
+
+    scaleFactorChanged();
 
     network_access_manager = new QNetworkAccessManager(this);
 
@@ -263,6 +266,21 @@ MainWindow::MainWindow():
     if (!isVisible())
         show();
 #endif
+}
+
+void MainWindow::scaleFactorChanged()
+{
+    double scale = scaleFactor(true);
+    double diff = scale / m_current_scale;
+    m_current_scale = scale;
+
+    frame_welcome->setMaximumSize(frame_welcome->maximumSize() * diff);
+    frame_welcome->setMinimumSize(frame_welcome->minimumSize() * diff);
+
+    for (int i = 0; i < tabw_main->count(); ++i) {
+        ViewTab *tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
+        tab->scaleFactorChanged();
+    }
 }
 
 bool MainWindow::hasActiveModalWidget()
@@ -1115,8 +1133,8 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SZCHKT", "Leaklog");
     lw_recent_docs->addItems(settings.value("recent_docs").toStringList());
-    move(settings.value("pos", pos()).toPoint());
-    resize(settings.value("size", size()).toSize());
+    move(settings.value("pos", pos()).toPoint() * scaleFactor());
+    resize(settings.value("size", size()).toSize() * scaleFactor());
     restoreState(settings.value("window_state").toByteArray(), 0);
 #ifdef Q_OS_MAC
     if (settings.value("fullscreen", isFullScreen()).toBool())
@@ -1146,8 +1164,8 @@ void MainWindow::saveSettings()
         recent << lw_recent_docs->item(i)->text();
     settings.setValue("recent_docs", recent);
     if (!isMaximized() && !isFullScreen()) {
-        settings.setValue("pos", pos());
-        settings.setValue("size", size());
+        settings.setValue("pos", pos() / scaleFactor());
+        settings.setValue("size", size() / scaleFactor());
     }
     settings.setValue("maximized", isMaximized());
     settings.setValue("fullscreen", isFullScreen());

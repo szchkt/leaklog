@@ -30,6 +30,7 @@ class QColor;
 class QTextStream;
 
 namespace Global {
+    double scaleFactor(bool refresh = false);
     QString escapeString(const QVariant &, bool = false, bool = false);
     QString escapeString(QString, bool = false, bool = false);
     QString elideRight(const QString &, int);

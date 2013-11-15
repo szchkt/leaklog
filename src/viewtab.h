@@ -44,6 +44,8 @@ public:
     QObject *object() { return this; }
     void connectSlots(QObject *);
 
+    void scaleFactorChanged();
+
     void enableAllTools();
     void enableTools();
 

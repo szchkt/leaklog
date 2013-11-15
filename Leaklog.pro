@@ -196,6 +196,7 @@ win32 {
     OBJECTS_DIR    = build/win32
     MOC_DIR        = build/win32
     RCC_DIR        = build/win32
+    LIBS          += C:\MinGW\lib\libgdi32.a
 }
 
 macx {

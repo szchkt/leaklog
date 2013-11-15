@@ -43,6 +43,7 @@
 #include "mtwebpage.h"
 #include "reportdatacontroller.h"
 #include "records.h"
+#include "global.h"
 
 #include <QWebFrame>
 
@@ -69,28 +70,10 @@ ViewTab::ViewTab(QWidget *parent):
     ui->splitter->setStyleSheet("QSplitter { background-color: #B8B8B8; }");
 
     ui->trw_navigation->setIconSize(QSize(20, 20));
-    ui->trw_navigation->setStyleSheet(
-                "QTreeWidget::item { padding-top: 2px; padding-bottom: 2px; }"
-#ifdef Q_OS_MAC
-                "QTreeWidget { background-color: #E7EBF0; }"
-                "QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #77BBE7, stop: 1 #3E8ACF);"
-                                             "color: white; border-color: #62A6DC; border-style: solid; border-width: 1px 0px 1px 0px; }"
-                "QTreeWidget::item:!selected { background-color: #E7EBF0; }"
-                "QTreeWidget::item:selected:disabled { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8);"
-                                                      "color: white; border-color: #BCC6D6; border-style: solid; border-width: 1px 0px 0px 0px; }"
-                "QTreeWidget::item:has-children { padding-left: 3px; color: #717E8B; }"
-#else
-                "QTreeWidget { background-color: white; }"
-                "QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
-                                             "border-color: #569DE5; border-style: solid; border-width: 1px; }"
-                "QTreeWidget::item:!selected { background-color: white; }"
-                "QTreeWidget::item:selected:disabled { background-color: #F7F7F7;"
-                                                      "color: #787878; border-color: #DEDEDE; border-style: solid; border-width: 1px; }"
-                "QTreeWidget::item:has-children { padding-left: 3px; color: #1E3287; }"
-#endif
-                "QTreeWidget::item:!has-children { padding-left: 7px; }");
 
     createViewItems();
+
+    scaleFactorChanged();
 
     for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i)
         ui->trw_navigation->topLevelItem(i)->setExpanded(true);
@@ -101,6 +84,43 @@ ViewTab::ViewTab(QWidget *parent):
 ViewTab::~ViewTab()
 {
     delete ui;
+}
+
+void ViewTab::scaleFactorChanged()
+{
+    double scale = Global::scaleFactor();
+
+    ui->trw_navigation->setMinimumWidth(180 * scale);
+    ui->splitter->setSizes(QList<int>() << 10 << 1000);
+
+    QString style = QString("QTreeWidget::item { padding-top: %1px; padding-bottom: %1px; }").arg(2 * scale);
+#ifdef Q_OS_MAC
+    style += QString("QTreeWidget { background-color: #E7EBF0; }");
+    style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #77BBE7, stop: 1 #3E8ACF);"
+                                                  "color: white; border-color: #62A6DC; border-style: solid; border-width: 1px 0px 1px 0px; }");
+    style += QString("QTreeWidget::item:!selected { background-color: #E7EBF0; }");
+    style += QString("QTreeWidget::item:selected:disabled { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8);"
+                                                           "color: white; border-color: #BCC6D6; border-style: solid; border-width: 1px 0px 0px 0px; }");
+    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: #717E8B; }");
+#else
+    style += QString("QTreeWidget { background-color: white; }");
+    style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
+                                                  "border-color: #569DE5; border-style: solid; border-width: 1px; }");
+    style += QString("QTreeWidget::item:!selected { background-color: white; }");
+    style += QString("QTreeWidget::item:selected:disabled { background-color: #F7F7F7;"
+                                                           "color: #787878; border-color: #DEDEDE; border-style: solid; border-width: 1px; }");
+    style += QString("QTreeWidget::item:has-children { padding-left: %1px; color: #1E3287; }").arg(3 * scale);
+#endif
+    style += QString("QTreeWidget::item:!has-children { padding-left: %1px; }").arg(7 * scale);
+
+    ui->trw_navigation->setStyleSheet(style);
+
+    for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i)
+        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, 24 * scale));
+
+    ui->wv_main->setZoomFactor(scale);
+
+    ui->toolbarstack->scaleFactorChanged();
 }
 
 void ViewTab::createViewItems()
@@ -266,7 +286,6 @@ void ViewTab::formatGroupItem(QTreeWidgetItem *item)
     font.setPointSize(font.pointSize() + 3);
 #endif
     item->setFont(0, font);
-    item->setSizeHint(0, QSize(0, 24));
     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
 }
 
@@ -753,6 +772,7 @@ void ViewTab::setDefaultWebPage()
     MTWebPage *page = new MTWebPage(ui->wv_main);
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
+    ui->wv_main->setZoomFactor(Global::scaleFactor());
 }
 
 void ViewTab::reportData()

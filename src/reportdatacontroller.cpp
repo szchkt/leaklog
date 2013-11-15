@@ -44,6 +44,7 @@ QObject(parent), toolbarstack(parent) {
     QObject::connect(toolbarstack->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
     QObject::connect(toolbarstack->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
     wv_main->setPage(new QWebPage(wv_main));
+    wv_main->setZoomFactor(Global::scaleFactor());
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
     //: URL to the data report system of the notified body

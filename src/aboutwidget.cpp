@@ -19,6 +19,7 @@
 
 #include "aboutwidget.h"
 #include "defs.h"
+#include "global.h"
 #include "htmlbuilder.h"
 
 #include <QBuffer>
@@ -76,6 +77,7 @@ AboutWidget::AboutWidget()
     *(body->paragraph()) << "Klimaservis Bratislava, s.r.o., <i>http://www.klimaservisba.sk/</i>";
 
     webv_about->setHtml(html_doc.html());
+    webv_about->setZoomFactor(Global::scaleFactor());
 
     // +++ ABOUT QT +++
 
@@ -93,4 +95,7 @@ AboutWidget::AboutWidget()
     *(body->paragraph()) << tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">qt.nokia.com</span> for more information.");
 
     webv_about_qt->setHtml(html_qt_doc.html());
+    webv_about_qt->setZoomFactor(Global::scaleFactor());
+
+    resize(size() * Global::scaleFactor());
 }

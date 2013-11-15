@@ -35,6 +35,34 @@
 
 #include <cmath>
 
+#ifdef Q_OS_WIN32
+
+#include <windows.h>
+
+double Global::scaleFactor(bool refresh)
+{
+    static double scale = 0.0;
+    if (scale == 0.0 || refresh) {
+        HDC hdc = GetDC(NULL);
+        if (hdc) {
+            scale = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0;
+            ReleaseDC(NULL, hdc);
+        } else {
+            scale = 1.0;
+        }
+    }
+    return scale;
+}
+
+#else // !defined(Q_OS_WIN32)
+
+double Global::scaleFactor(bool)
+{
+    return 1.0;
+}
+
+#endif
+
 QString Global::escapeString(const QVariant &variant, bool escape_backslash, bool insert_linebreaks)
 {
     return escapeString(variant.toString(), escape_backslash, insert_linebreaks);

@@ -35,6 +35,8 @@ public:
     void setSettings(ViewTabSettings *settings);
     void connectSlots(QObject *);
 
+    void scaleFactorChanged();
+
     // Widgets
     void enableTools();
 

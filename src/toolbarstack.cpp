@@ -33,18 +33,7 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 {
     setupUi(this);
 
-#ifdef Q_OS_MAC
-    setStyleSheet(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
-                             "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
-                  "QToolButton { border-color: #888888; border-style: solid; border-width: 1px; border-radius: 3px; min-height: 16px;"
-                                "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F9F9F9, stop: 1 #D6D6D6); }"
-                  "QToolButton:pressed { color: white;"
-                                        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6F6F6F, stop: 1 #9C9C9C); }");
-#else
-    setStyleSheet(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
-                             "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
-                  "QToolButton { min-height: 16px; }");
-#endif
+    scaleFactorChanged();
 
     QObject::connect(chb_table_all_circuits, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
@@ -108,6 +97,25 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(chb_assembly_record_acquisition_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_list_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_total, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+}
+
+void ToolBarStack::scaleFactorChanged()
+{
+    QString style;
+#ifdef Q_OS_MAC
+    style += QString(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
+                                "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
+                     "QToolButton { border-color: #888888; border-style: solid; border-width: 1px; border-radius: 3px; min-height: 16px;"
+                                   "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F9F9F9, stop: 1 #D6D6D6); }"
+                     "QToolButton:pressed { color: white;"
+                                           "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6F6F6F, stop: 1 #9C9C9C); }");
+#else
+    double scale = scaleFactor();
+    style += QString(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
+                                "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }");
+    style += QString("QToolButton { min-height: %1px; }").arg(16 * scale);
+#endif
+    setStyleSheet(style);
 }
 
 void ToolBarStack::addFilterItems(const QString &column, const MTDictionary &items)
