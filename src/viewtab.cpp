@@ -115,8 +115,14 @@ void ViewTab::scaleFactorChanged()
 
     ui->trw_navigation->setStyleSheet(style);
 
-    for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i)
-        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, 24 * scale));
+    for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i) {
+#ifdef Q_OS_MAC
+        ui->trw_navigation->topLevelItem(i)->setTextAlignment(0, Qt::AlignLeft | Qt::AlignBottom);
+        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, i ? 28 : 24));
+#else
+        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, 28 * scale));
+#endif
+    }
 
     ui->wv_main->setZoomFactor(scale);
 
