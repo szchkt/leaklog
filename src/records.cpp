@@ -378,7 +378,7 @@ void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool s
             case 0: // Add
                 break;
             case 1: // Cancel
-                checkbox->setChecked(false);
+                QMetaObject::invokeMethod(checkbox, "toggle", Qt::QueuedConnection);
                 break;
         }
     }
