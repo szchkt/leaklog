@@ -111,8 +111,7 @@ void ToolBarStack::scaleFactorChanged()
                                            "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6F6F6F, stop: 1 #9C9C9C); }");
 #else
     double scale = scaleFactor();
-    style += QString(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F5F5F5, stop: 1 #CDCDCD);"
-                                "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }");
+    style += QString(".QWidget { background-color: #F0F0F0; color: white; border-color: #A0A0A0; border-style: solid; border-width: 0px 0px 1px 1px; }");
     style += QString("QToolButton { min-height: %1px; }").arg(16 * scale);
 #endif
     setStyleSheet(style);
