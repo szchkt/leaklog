@@ -23,79 +23,93 @@
 #include "htmlbuilder.h"
 
 #include <QBuffer>
+#include <QDesktopServices>
+#include <QApplication>
 
 AboutWidget::AboutWidget()
 {
     setupUi(this);
-    QObject::connect(btn_close, SIGNAL(clicked()), this, SLOT(close()));
+    QObject::connect(btn_about_qt, SIGNAL(clicked()), qApp, SLOT(aboutQt()));
+#ifdef Q_OS_MAC
+    QObject::connect(btn_about_qt, SIGNAL(clicked()), this, SLOT(close()));
+#endif
+    QObject::connect(btn_acknowledgements, SIGNAL(clicked(bool)), this, SLOT(showAcknowledgements(bool)));
+    QObject::connect(btn_licence, SIGNAL(clicked()), this, SLOT(showLicence()));
+    QObject::connect(webv_about, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 
-    HTMLDocument html_doc("About Leaklog");
+    webv_about->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+
+    lbl_version->setText(lbl_version->text().arg(QString(LEAKLOG_VERSION) + (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "")));
+
+    showAcknowledgements(false);
+
+    resize(size() * Global::scaleFactor());
+}
+
+void AboutWidget::showAcknowledgements(bool show)
+{
+    HTMLDocument html_doc(show ? "Acknowledgements" : "About Leaklog");
 
     HTMLParentElement *style = html_doc.head()->addStyleElement();
 #ifdef Q_OS_MAC
     QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
-    QString font_size = "9pt";
+    QString font_size = "8pt";
 #else
     QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
-    QString font_size = "small";
+    QString font_size = "8pt";
 #endif
-    *style << QString("body { font-family: %1; } img { margin-right: 10px; }").arg(font);
-    *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
+    *style << QString("body { font-family: %1; margin: 0px 12px 12px 12px; } img { margin-right: 10px; }").arg(font);
+    *style << QString("h1 { font-size: 13pt; color: #414141; } h2 { font-size: 11pt; color: #414141; } p, a { font-size: %2; color: #9F9F9F; }").arg(font_size);
 
-    HTMLParentElement *body = html_doc.body();
+    if (!show) {
+        HTMLParentElement *body = html_doc.body();
 
-    *(body->heading()) << "Leaklog";
-    *(body->subHeading()) << tr("Version")
-                             << QString(" %1").arg(LEAKLOG_VERSION)
-                             << (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "");
+        HTMLParagraph *p = body->paragraph();
+        *p << "Copyright &copy; 2008&ndash;2013 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
+        p->newLine();
+        *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
-    *(body->paragraph()) << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
+        *(body->paragraph()) << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
+    } else {
+        HTMLParentElement *body = html_doc.body();
 
-    *(body->paragraph()) << tr("This program is distributed under the terms of the GPL v2.");
+        *(body->subHeading()) << tr("Contributors");
 
-    HTMLParagraph *p = body->paragraph();
-    *p << "Copyright (C) 2008-2013 <span style=\"font-style:italic;\">Matus Tomlein, Michal Tomlein, Peter Tomlein</span>";
-    p->newLine();
-    *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
+        QPixmap frigo_logo(":/images/images/frigo_slovakia_logo.jpg");
+        QBuffer buffer;
+        buffer.open(QIODevice::WriteOnly);
+        frigo_logo.save(&buffer, "JPG", 100);
+        buffer.close();
 
-    *(body->paragraph()) << tr("The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.");
+        HTMLParagraph *p = body->paragraph();
+        *p << "<img style=\"float: left;\" src=\"data:image/jpeg;base64," << buffer.data().toBase64() << "\">";
+        *p << "Frigo Slovakia s.r.o. <i>(<a href=\"http://www.frigo.sk\">www.frigo.sk</a>)</i>";
 
-    *(body->subHeading()) << tr("List of contributors:");
+        *body << new HTMLDiv("style=\"clear: both;\"");
 
-    QPixmap frigo_logo(":/images/images/frigo_slovakia_logo.jpg");
-    QBuffer buffer;
-    buffer.open(QIODevice::WriteOnly);
-    frigo_logo.save(&buffer, "JPG", 100);
-    buffer.close();
+        *(body->paragraph()) << "Klimaservis Bratislava, s.r.o. <i>(<a href=\"http://www.klimaservisba.sk\">www.klimaservisba.sk</a>)</i>";
 
-    p = body->paragraph();
-    *p << "<img style=\"float: left;\" src=\"data:image/jpeg;base64," << buffer.data().toBase64() << "\">";
-    HTMLDiv *div = new HTMLDiv("style=\"padding: 10px;\"");
-    *div << "Frigo Slovakia s.r.o., <i>http://www.frigo.sk/</i>";
-    *p << div;
+        *(body->subHeading()) << tr("Leaklog uses");
 
-    *(body->paragraph()) << "Klimaservis Bratislava, s.r.o., <i>http://www.klimaservisba.sk/</i>";
+        *(body->paragraph()) << tr("%1, licensed under the GNU LGPL").arg("Oxygen Icons <i>(<a href=\"http://www.oxygen-icons.org\">www.oxygen-icons.org</a>)</i>");
+
+        *(body->paragraph()) << tr("%1, licensed under the GNU LGPL").arg("Function Parser v3.1.2 <i>(<a href=\"http://warp.povusers.org/FunctionParser\">warp.povusers.org/FunctionParser</a>)</i>");
+
+#ifdef REFPROP
+        *(body->paragraph()) << "NIST Reference Fluid Thermodynamic and Transport Properties Database (REFPROP) v9.1 <i>(<a href=\"http://www.nist.gov/srd/nist23.cfm\">www.nist.gov/srd/nist23.cfm</a>)</i>";
+#endif
+    }
 
     webv_about->setHtml(html_doc.html());
     webv_about->setZoomFactor(Global::scaleFactor());
+}
 
-    // +++ ABOUT QT +++
+void AboutWidget::showLicence()
+{
+    QDesktopServices::openUrl(QUrl(tr("http://www.gnu.org/licenses/gpl-2.0.html")));
+}
 
-    HTMLDocument html_qt_doc("About Qt");
-    style = html_qt_doc.head()->addStyleElement();
-    *style << QString("body { font-family: %1; } img { margin-right: 10px; }").arg(font);
-    *style << QString("h1 { font-size: 13pt; } h2 { font-size: 11pt; } p { font-size: %2; }").arg(font_size);
-
-    body = html_qt_doc.body();
-    *(body->heading()) << tr("About Qt");
-
-    *(body->paragraph("style=\"font-style:italic;\"")) << tr("This program uses Qt Open Source Edition version %1.").arg(qVersion());
-    *(body->paragraph()) << tr("Qt is a C++ toolkit for cross-platform application development.");
-    *(body->paragraph()) << tr("Qt provides single-source portability across MS Windows, Mac OS X, Linux, and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE.");
-    *(body->paragraph()) << tr("Qt is a Nokia product. See <span style=\"font-style:italic;\">qt.nokia.com</span> for more information.");
-
-    webv_about_qt->setHtml(html_qt_doc.html());
-    webv_about_qt->setZoomFactor(Global::scaleFactor());
-
-    resize(size() * Global::scaleFactor());
+void AboutWidget::executeLink(const QUrl &url)
+{
+    QDesktopServices::openUrl(url);
 }

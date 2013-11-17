@@ -28,6 +28,11 @@ class AboutWidget : public QWidget, private Ui::AboutWidget
 
 public:
     AboutWidget();
+
+private slots:
+    void showAcknowledgements(bool);
+    void showLicence();
+    void executeLink(const QUrl &);
 };
 
 #endif // ABOUT_WIDGET_H

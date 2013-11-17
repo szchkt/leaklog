@@ -4,64 +4,52 @@
 <context>
     <name>AboutWidget</name>
     <message>
-        <source>Version</source>
-        <translation>Verzia</translation>
-    </message>
-    <message>
         <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
         <translation>Leaklog je systém kontroly únikov založený na nariadení EU č. 842/2006. Usporiadava nálezy a parametre priamych a nepriamych kontrol únikov v záznamníku. Výsledkom je história kontrol, vývoj parametrov a ich porovnanie s nominálnymi a výpočet množstva a percenta úniku.</translation>
-    </message>
-    <message>
-        <source>This program is distributed under the terms of the GPL v2.</source>
-        <translation>Tento program je distribuovaný pod licenciou GPL v2.</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
         <translation>Slovenský zväz pre chladiacu a klimatizačnú techniku</translation>
     </message>
     <message>
-        <source>The program is provided AS IS with ABSOLUTELY NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.</source>
-        <translation>Tento program je poskytovaný TAK AKO JE s ABSOLÚTNE ŽIADNOU ZÁRUKOU AKÉHOKOĽVEK DRUHU.</translation>
-    </message>
-    <message>
-        <source>List of contributors:</source>
-        <translation>Prispeli:</translation>
-    </message>
-    <message>
-        <source>Qt provides single-source portability across MS Windows, Mac OS X, Linux, and all major commercial Unix variants. Qt is also available for embedded devices as Qt for Embedded Linux and Qt for Windows CE.</source>
-        <translation>Qt umožňuje použitie jedného zdrojového kódu v systémoch MS Windows, Mac OS X, Linux, a vo všetkých hlavných komerčných unixových variantách. Qt je tiež dostupné pre embedded zariadenia ako Qt for Embedded Linux a Qt for Windows CE.</translation>
-    </message>
-    <message>
-        <source>Qt is a Nokia product. See &lt;span style=&quot;font-style:italic;&quot;&gt;qt.nokia.com&lt;/span&gt; for more information.</source>
-        <translation>Qt je produkt spoločnosti Nokia. Pozrite si &lt;span style=&quot;font-style:italic;&quot;&gt;qt.nokia.com&lt;/span&gt; pre viac informácií.</translation>
-    </message>
-    <message>
         <source>About Qt</source>
         <translation>O Qt</translation>
-    </message>
-    <message>
-        <source>This program uses Qt Open Source Edition version %1.</source>
-        <translation>Tento program používa Qt Open Source Edition vo verzii %1.</translation>
-    </message>
-    <message>
-        <source>Qt is a C++ toolkit for cross-platform application development.</source>
-        <translation>Qt je sada nástrojov na multiplatformový vývoj aplikácií v jazyku C++.</translation>
     </message>
     <message>
         <source>About Leaklog</source>
         <translation>O programe Leaklog</translation>
     </message>
     <message>
-        <source>about:blank</source>
-        <translation>about:blank</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Zatvoriť</translation>
-    </message>
-    <message>
         <source>Leaklog</source>
         <translation>Leaklog</translation>
+    </message>
+    <message>
+        <source>Version %1</source>
+        <translation>Verzia %1</translation>
+    </message>
+    <message>
+        <source>Acknowledgements</source>
+        <translation>Poďakovanie</translation>
+    </message>
+    <message>
+        <source>Licence</source>
+        <translation>Licencia</translation>
+    </message>
+    <message>
+        <source>Contributors</source>
+        <translation>Prispeli</translation>
+    </message>
+    <message>
+        <source>Leaklog uses</source>
+        <translation>Leaklog používa</translation>
+    </message>
+    <message>
+        <source>%1, licensed under the GNU LGPL</source>
+        <translation>%1, pod licenciou GNU LGPL</translation>
+    </message>
+    <message>
+        <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
+        <translation>http://www.gpl.sk/v2/</translation>
     </message>
 </context>
 <context>
