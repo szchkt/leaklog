@@ -68,6 +68,7 @@ static INTEGER setupForRefrigerant(const QString &refrigerant)
         setString(hfmix, "fluids/HMX.BNC", filepathlength);
     }
 
+    ierr = 0;
     setString(herr, "", errormessagelength);
 
     char hrf[] = { 'D', 'E', 'F', '\0' };
