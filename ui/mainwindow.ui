@@ -289,6 +289,8 @@
     </property>
     <addaction name="actionCheck_for_updates"/>
     <addaction name="separator"/>
+    <addaction name="actionChangelog"/>
+    <addaction name="actionDocumentation"/>
     <addaction name="actionAbout_Leaklog"/>
    </widget>
    <widget class="QMenu" name="menuCooling_circuit">
@@ -1409,7 +1411,7 @@
     <string>Check for Updates</string>
    </property>
    <property name="statusTip">
-    <string>Check for Leaklog updates on-line</string>
+    <string>Check for Leaklog updates online</string>
    </property>
   </action>
   <action name="actionNew_variable">
@@ -2137,6 +2139,30 @@
    </property>
    <property name="statusTip">
     <string>Configure automatic saving for this database</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/help_contents.png</normaloff>:/images/images/help_contents.png</iconset>
+   </property>
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+   <property name="statusTip">
+    <string>View the online documentation</string>
+   </property>
+  </action>
+  <action name="actionChangelog">
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/changelog.png</normaloff>:/images/images/changelog.png</iconset>
+   </property>
+   <property name="text">
+    <string>What's New</string>
+   </property>
+   <property name="statusTip">
+    <string>View the changelog online</string>
    </property>
   </action>
  </widget>

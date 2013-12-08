@@ -163,6 +163,8 @@ private slots:
     void showRecentDatabaseContextMenu(const QPoint &);
     void showIconsOnly(bool);
     void about();
+    void openDocumentation();
+    void openReleaseNotes();
     void printPreview();
     void print();
     void exportPDFPortrait();

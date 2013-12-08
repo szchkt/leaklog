@@ -162,6 +162,8 @@ MainWindow::MainWindow():
 
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
+    QObject::connect(actionChangelog, SIGNAL(triggered()), this, SLOT(openReleaseNotes()));
+    QObject::connect(actionDocumentation, SIGNAL(triggered()), this, SLOT(openDocumentation()));
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionLocal_database, SIGNAL(triggered()), this, SLOT(open()));
     QObject::connect(actionRemote_database, SIGNAL(triggered()), this, SLOT(openRemote()));
@@ -1339,4 +1341,14 @@ void MainWindow::about()
     leaklog_about->setParent(this);
     leaklog_about->setWindowFlags(Qt::Dialog /*| Qt::WindowMaximizeButtonHint*/ | Qt::WindowStaysOnTopHint);
     leaklog_about->show();
+}
+
+void MainWindow::openDocumentation()
+{
+    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/wiki"));
+}
+
+void MainWindow::openReleaseNotes()
+{
+    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/releases"));
 }

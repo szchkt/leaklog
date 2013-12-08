@@ -2775,10 +2775,6 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
         <translation>Importovať údaje z iného databázového súboru</translation>
     </message>
     <message>
-        <source>Check for Leaklog updates on-line</source>
-        <translation>Skontrolovať dostupnosť aktualizácií programu Leaklog</translation>
-    </message>
-    <message>
         <source>Search for a word in the current view</source>
         <translation>Vyhľadať slovo v aktuálnom pohľade</translation>
     </message>
@@ -4087,6 +4083,34 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Ask to save changes after 10 minutes of inactivity</source>
         <translation>Opýtať sa po 10 minútach nečinnosti</translation>
+    </message>
+    <message>
+        <source>Check for Leaklog updates online</source>
+        <translation>Skontrolovať dostupnosť aktualizácií programu Leaklog</translation>
+    </message>
+    <message>
+        <source>Documentation</source>
+        <translation>Dokumentácia</translation>
+    </message>
+    <message>
+        <source>View the online documentation</source>
+        <translation>Zobraziť online dokumentáciu</translation>
+    </message>
+    <message>
+        <source>http://github.com/szchkt/leaklog/wiki</source>
+        <translation>http://github.com/szchkt/leaklog/wiki/Dokumentácia</translation>
+    </message>
+    <message>
+        <source>What&apos;s New</source>
+        <translation>Čo je nové</translation>
+    </message>
+    <message>
+        <source>View the changelog online</source>
+        <translation>Zobraziť zoznam zmien online</translation>
+    </message>
+    <message>
+        <source>http://github.com/szchkt/leaklog/releases</source>
+        <translation>http://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
     </message>
 </context>
 <context>

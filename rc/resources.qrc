@@ -98,5 +98,7 @@
         <file>images/visible_on16.png</file>
         <file>images/visible_off16.png</file>
         <file>images/leaklog256.png</file>
+        <file>images/help_contents.png</file>
+        <file>images/changelog.png</file>
     </qresource>
 </RCC>
