@@ -595,6 +595,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
 #endif
     painter.setFont(font);
     int title_h = 3 * h / 14; int m = w / 75; int dm = m * 2;
+
     painter.drawRect(x, y, w, h);
     painter.drawLine(x, y + title_h, x + w, y + title_h);
     painter.drawLine(x + (w / 2), y, x + (w / 2), y + title_h);
@@ -632,9 +633,11 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("E-mail"));
     painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("mail").toString());
     painter.drawText(m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
+
     int r = (w / 3 - dm) / 2;
     int year = QDate::currentDate().year(), month = 0;
     int year_next = 0, month_next = 0;
+
     if (detailed && attributes.contains("date")) {
         year = attributes.value("date").toString().left(4).toInt();
         month = attributes.value("date").toString().mid(5, 2).toInt();
@@ -643,13 +646,16 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
             month_next = attributes.value("next_inspection").toString().mid(5, 2).toInt();
         }
     }
+
     int c_y = y + title_h + (4 * h / 7) - dm;
     int c_x[] = { m + x, m + x + 2 * w / 3 };
+
     for (int i = 0; i < 2; ++i) {
         QRect circle_o(c_x[i], c_y - r, 2 * r, 2 * r);
         painter.drawEllipse(circle_o);
         QRect circle_i(c_x[i] + 2 * dm, c_y - r + 2 * dm, 2 * r - 4 * dm, 2 * r - 4 * dm);
         painter.drawEllipse(circle_i);
+
         if (!detailed) {
             painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year).right(2));
             painter.drawText(c_x[i] + r, c_y - r + 3 * dm, r - 3 * dm, r - 3 * dm, Qt::AlignCenter, QString::number(year + 1).right(2));
@@ -661,24 +667,30 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
             painter.drawText(c_x[i] + 3 * dm, c_y - r + 3 * dm, 2 * r - 6 * dm, 2 * r - 6 * dm, Qt::AlignCenter, QString::number(year_next));
         }
     }
+
     for (int i = 0; i < 2; ++i) {
-        painter.restore(); painter.save(); painter.setPen(pen);
+        painter.restore();
+        painter.save();
+        painter.setPen(pen);
+        painter.setFont(font);
         painter.translate(c_x[i] + r, c_y);
+
         for (int j = 0; j < 12; ++j) {
             painter.drawLine(0, - r, 0, 2 * dm - r);
+            painter.rotate(15.0);
             if ((!i && month == j + 1) || (i && month_next == j + 1)) {
-                painter.rotate(15.0);
                 painter.save();
                 painter.setPen(QPen(Qt::NoPen));
                 painter.setBrush(QBrush(Qt::black));
                 painter.drawEllipse(QPoint(0, dm - r), m, m);
                 painter.restore();
-                painter.rotate(15.0);
             } else {
-                painter.rotate(30.0);
+                painter.drawText(- dm, - r, 2 * dm, 2 * dm, Qt::AlignCenter, QString::number(j + 1));
             }
+            painter.rotate(15.0);
         }
     }
+
     painter.restore();
 }
 
