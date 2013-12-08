@@ -2,8 +2,6 @@
     <qresource prefix="/images">
         <file>images/szchkt.png</file>
         <file>images/pdf_landscape.png</file>
-        <file>images/logbook_basic.png</file>
-        <file>images/logbook_detailed.png</file>
         <file>images/service_company.png</file>
         <file>images/locked.png</file>
         <file>images/locked16.png</file>
@@ -55,7 +53,6 @@
         <file>images/variable_remove.png</file>
         <file>images/software_update.png</file>
         <file>images/help_about.png</file>
-        <file>images/qt4.png</file>
         <file>images/quit.png</file>
         <file>images/clear.png</file>
         <file>images/clear_rtl.png</file>
@@ -70,8 +67,6 @@
         <file>images/frigo_slovakia_logo.jpg</file>
         <file>images/lklg.png</file>
         <file>images/csv16.png</file>
-        <file>images/back.png</file>
-        <file>images/forward.png</file>
         <file>images/edit_undo.png</file>
         <file>images/inspection_view.png</file>
         <file>images/image.png</file>
