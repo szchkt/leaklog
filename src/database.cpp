@@ -662,8 +662,10 @@ void MainWindow::saveAndCompact()
 void MainWindow::saveDatabase(bool compact, bool update_ui)
 {
     setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
-    setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
-    setDBInfoValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
+    if (DBInfoValueForKey("db_version").toDouble() < F_DB_VERSION)
+        setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
+    if (DBInfoValueForKey("min_leaklog_version").toDouble() < F_DB_MIN_LEAKLOG_VERSION)
+        setDBInfoValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
 
     QStringList errors;
     QSqlDatabase db = QSqlDatabase::database();
