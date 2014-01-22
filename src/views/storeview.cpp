@@ -81,6 +81,9 @@ QString StoreView::renderHTML()
     bool by_field = settings->toolBarStack()->isByFieldOfApplicationChecked();
     if (by_field)
         out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
+    bool show_partner = settings->toolBarStack()->isShowBusinessPartnerChecked();
+    if (show_partner)
+        out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("VariableNames", "New charge") << "</th>";
@@ -90,6 +93,10 @@ QString StoreView::renderHTML()
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     out << "</tr><tr style=\"background-color: #FBFBFB;\">";
+    if (show_partner) {
+        out << "<td>" << QApplication::translate("Customer", "Company") << "</td>";
+        out << "<td>" << QApplication::translate("Customer", "ID") << "</td>";
+    }
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
@@ -149,6 +156,8 @@ QString StoreView::renderHTML()
                     out << "<th>" << refrigerant.split(':').first() << "</th>";
                     if (by_field)
                         out << "<th>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</th>";
+                    if (show_partner)
+                        out << "<th>&nbsp;</th><th>&nbsp;</th>";
                     for (int n = 0; n < sum_list->count(); ++n) {
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
@@ -178,7 +187,11 @@ QString StoreView::renderHTML()
             out << ">" << refrigerant.split(':').first() << "</td>";
             if (by_field)
                 out << "<td>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</td>";
-            for (int n = 2; n < i.value().count(); ++n) {
+            if (show_partner) {
+                out << "<td>" << escapeString(i.value().at(2)) << "</td>";
+                out << "<td>" << escapeString(i.value().at(3)) << "</td>";
+            }
+            for (int n = 4; n < i.value().count(); ++n) {
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
                 else if (it) out << " style=\"font-style: italic;\"";

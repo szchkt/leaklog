@@ -53,6 +53,7 @@ public:
     bool isAssemblyRecordTotalChecked() const { return chb_assembly_record_total->isChecked(); }
 
     bool isByFieldOfApplicationChecked() const { return chb_by_field->isChecked(); }
+    bool isShowBusinessPartnerChecked() const { return chb_show_partner->isChecked(); }
 
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);

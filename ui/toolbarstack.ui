@@ -441,16 +441,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -1995,6 +1986,13 @@
        <widget class="QCheckBox" name="chb_by_field">
         <property name="text">
          <string>By Field of Application</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_show_partner">
+        <property name="text">
+         <string>Business Partner</string>
         </property>
        </widget>
       </item>

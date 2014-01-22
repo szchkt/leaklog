@@ -5347,6 +5347,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Inspection: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Kontrola: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
+    <message>
+        <source>Business Partner</source>
+        <translation>Obchodný partner</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>
