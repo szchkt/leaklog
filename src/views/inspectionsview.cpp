@@ -62,7 +62,7 @@ QString InspectionsView::renderHTML()
     QString order_by = settings->mainWindowSettings().orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, rmds, arno, inspector, "
+    ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, risks, rmds, arno, inspector, "
                                                               "operator, refr_add_am, refr_reco, date_updated, updated_by",
                                                               settings->appendDefaultOrderToColumn(order_by));
     if (year) {
@@ -85,6 +85,7 @@ QString InspectionsView::renderHTML()
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:refr_reco\">" << variableNames().value("refr_reco") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:inspector\">" << variableNames().value("inspector") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:operator\">" << variableNames().value("operator") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:risks\">" << variableNames().value("risks") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:arno\">" << variableNames().value("arno") << "</a></th>";
     if (show_date_updated)
@@ -118,6 +119,12 @@ QString InspectionsView::renderHTML()
                                       .value("person", inspections.at(i).value("inspector")).toString()) << "</td>";
         out << "<td>" << escapeString(operators.value(inspections.at(i).value("operator").toString())
                                       .value("name", inspections.at(i).value("operator")).toString()) << "</td>";
+        if (!inspections.at(i).value("risks").toString().isEmpty()) {
+            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("risks").toString()), true, true);
+            out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("risks").toString(), 50)) << "</td>";
+        } else {
+            out << "<td></td>";
+        }
         if (!inspections.at(i).value("rmds").toString().isEmpty()) {
             out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true);
             out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("rmds").toString(), 50)) << "</td>";

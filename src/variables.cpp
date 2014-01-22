@@ -133,6 +133,7 @@ void Variables::initVariables()
     initSubvariable("ppsw", Variable::Inspection, "", "ppsw_diff", QApplication::translate("Units", "Bar"), "", true, 0.0);
 
     initVariable("sftsw", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "");
+    initVariable("risks", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("rmds", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("arno", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("ar_type", Variable::Inspection, "", "", false, 0.0, "");
@@ -246,7 +247,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                 iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
             }
             md->addInputWidget(iw);
-        } else if (var_id == "rmds") {
+        } else if (var_id == "risks" || var_id == "rmds") {
             iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
                                      attributes.value(var_id).toString(), col_bg);
             iw->setShowInForm(false);

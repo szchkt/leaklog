@@ -204,6 +204,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Risks"), "risks");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");

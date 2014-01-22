@@ -353,12 +353,19 @@ void MainWindow::initTables(bool transaction)
         Table(tr("Pressures and temperatures")).remove();
         Table(tr("Compressors")).remove();
     }
+    int tables_version = DBInfoValueForKey("tables_version").toInt();
+    if (tables_version < 1) {
+        setDBInfoValueForKey("tables_version", "1");
+        Table("", "90").remove();
+        Table("", "70").remove();
+        Table("", "40").remove();
+    }
     QVariantMap set;
     Table leakages("", "90");
     if (!leakages.exists()) {
         set.insert("id", tr("Leakages"));
         set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector;operator;rmds;arno");
+        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector;operator;risks;rmds;arno");
         set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am");
         set.insert("scope", QString::number(Variable::Inspection));
         leakages.update(set);

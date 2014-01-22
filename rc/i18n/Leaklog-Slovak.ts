@@ -1728,6 +1728,10 @@
         <source>Assembly record type</source>
         <translation>Typ montážneho listu</translation>
     </message>
+    <message>
+        <source>Risks</source>
+        <translation>Riziká</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -5603,6 +5607,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Compressor run-time</source>
         <translation>Beh kompresora</translation>
+    </message>
+    <message>
+        <source>Risks</source>
+        <translation>Riziká</translation>
     </message>
 </context>
 <context>

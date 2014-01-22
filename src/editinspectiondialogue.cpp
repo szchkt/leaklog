@@ -57,12 +57,18 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo
     QWidget *widget_rmds = new QWidget(this);
     splitter->addWidget(widget_rmds);
 
-    QHBoxLayout *hl_rmds = new QHBoxLayout(widget_rmds);
-    hl_rmds->setContentsMargins(9, 9, 9, 9);
+    QGridLayout *gl_rmds = new QGridLayout(widget_rmds);
+    gl_rmds->setContentsMargins(9, 9, 9, 9);
+
+    MDAbstractInputWidget *risks = inputWidget("risks");
+    gl_rmds->addWidget(risks->label()->widget(), 0, 0);
+    gl_rmds->addWidget(risks->widget(), 0, 1);
+    gl_rmds->setRowStretch(0, 1);
 
     MDAbstractInputWidget *rmds = inputWidget("rmds");
-    hl_rmds->addWidget(rmds->label()->widget());
-    hl_rmds->addWidget(rmds->widget());
+    gl_rmds->addWidget(rmds->label()->widget(), 1, 0);
+    gl_rmds->addWidget(rmds->widget(), 1, 1);
+    gl_rmds->setRowStretch(1, 2);
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
