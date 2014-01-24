@@ -1070,11 +1070,15 @@
     </message>
     <message>
         <source>Browse</source>
-        <translation>Hľadať</translation>
+        <translation>Prehľadávať</translation>
     </message>
     <message>
         <source>Open File</source>
         <translation>Otvoriť súbor</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <translation>Nahradiť</translation>
     </message>
 </context>
 <context>

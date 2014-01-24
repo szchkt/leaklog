@@ -132,10 +132,17 @@ QWidget(parent)
 
     QHBoxLayout *layout = new QHBoxLayout(this);
 
-    name_lbl = new QLabel(tr("Select an image"), this);
+    if (file_id) {
+        name_lbl = new QLabel(this);
+        QPixmap pixmap;
+        pixmap.loadFromData(db_file->data());
+        name_lbl->setPixmap(pixmap.scaled(215, 160, Qt::KeepAspectRatio));
+    } else {
+        name_lbl = new QLabel(tr("Select an image"), this);
+    }
     layout->addWidget(name_lbl);
 
-    QPushButton *browse_btn = new QPushButton(tr("Browse"), this);
+    QPushButton *browse_btn = new QPushButton(file_id ? tr("Replace") : tr("Browse"), this);
     QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
     layout->addWidget(browse_btn);
 
@@ -148,7 +155,7 @@ void DBFileChooser::browse()
                                                      QDir::homePath(),
                                                      "Images (*.png *.jpg)");
     if (!file_name.isNull()) {
-        name_lbl->setText(QFileInfo(file_name).fileName());
+        name_lbl->setPixmap(QPixmap(file_name).scaled(215, 160, Qt::KeepAspectRatio));
         db_file->setImage(file_name);
         changed = true;
     }
