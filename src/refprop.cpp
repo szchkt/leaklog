@@ -122,6 +122,8 @@ double RefProp::pressureToTemperature(const QString &refrigerant, double pressur
 
 #include "refrigerants.h"
 
+#include <cmath>
+
 static Refrigerants refrigerants;
 
 double RefProp::pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase)
