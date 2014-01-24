@@ -1239,17 +1239,24 @@ void MainWindow::languageChanged()
 
 void MainWindow::checkForUpdates(bool silent)
 {
-    QNetworkRequest request(QString("http://leaklog.sourceforge.net/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5")
+    QNetworkRequest request(QString("http://leaklog.org/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5&debug=%6&automatic=%7")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
 #ifdef Q_OS_WIN32
-              .arg('W').arg(QSysInfo::WindowsVersion));
+              .arg('W').arg(QSysInfo::WindowsVersion)
 #elif defined Q_OS_MAC
-              .arg('M').arg(QSysInfo::MacintoshVersion));
+              .arg('M').arg(QSysInfo::MacintoshVersion)
 #else
-              .arg('O').arg(-1));
+              .arg('O').arg(-1)
 #endif
+#ifdef QT_DEBUG
+              .arg(1)
+#else
+              .arg(0)
+#endif
+              .arg(silent ? 1 : 0));
+    request.setRawHeader("User-Agent", QString("Leaklog/%1").arg(LEAKLOG_VERSION).toUtf8());
     QNetworkReply *reply = network_access_manager->get(request);
     reply->setProperty("silent", silent);
 }
@@ -1261,7 +1268,7 @@ void MainWindow::httpRequestFinished(QNetworkReply *reply)
     QString str;
 
     if (reply->error() == QNetworkReply::NoError && reply->isReadable())
-        str = QString(reply->readAll());
+        str = QString::fromUtf8(reply->readAll());
     else
         return httpRequestFailed(silent);
 
@@ -1274,27 +1281,9 @@ void MainWindow::httpRequestFinished(QNetworkReply *reply)
     if (in.readLine() != "[Leaklog.current-version.float]")
         return httpRequestFailed(silent);
     double f_current_ver = in.readLine().toDouble();
-    if (in.readLine() != "[Leaklog.download-url.src]")
+    if (in.readLine() != "[Leaklog.download-url]")
         return httpRequestFailed(silent);
-#if !defined Q_OS_MAC && !defined Q_OS_WIN32
     QString url = in.readLine();
-#else
-    in.readLine();
-#endif
-    if (in.readLine() != "[Leaklog.download-url.macx]")
-        return httpRequestFailed(silent);
-#ifdef Q_OS_MAC
-    QString url = in.readLine();
-#else
-    in.readLine();
-#endif
-    if (in.readLine() != "[Leaklog.download-url.win32]")
-        return httpRequestFailed(silent);
-#ifdef Q_OS_WIN32
-    QString url = in.readLine();
-#else
-    in.readLine();
-#endif
     if (in.readLine() != "[Leaklog.release-notes]")
         return httpRequestFailed(silent);
     QString release_notes;
