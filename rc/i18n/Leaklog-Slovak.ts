@@ -1809,6 +1809,10 @@
         <source>List of Inspections</source>
         <translation>Zoznam kontrol</translation>
     </message>
+    <message>
+        <source>Images</source>
+        <translation>Obrázky</translation>
+    </message>
 </context>
 <context>
     <name>Inspector</name>

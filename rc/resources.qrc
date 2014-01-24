@@ -95,5 +95,6 @@
         <file>images/leaklog256.png</file>
         <file>images/help_contents.png</file>
         <file>images/changelog.png</file>
+        <file>images/attachment16.png</file>
     </qresource>
 </RCC>

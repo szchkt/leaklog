@@ -27,7 +27,21 @@
 #include "toolbarstack.h"
 #include "htmlbuilder.h"
 
+#include <QBuffer>
+
 using namespace Global;
+
+static QString attachmentImage()
+{
+    static QString image;
+    if (image.isEmpty()) {
+        QByteArray bytes;
+        QBuffer buffer(&bytes);
+        QIcon(":/images/images/attachment16.png").pixmap(16, 16).toImage().save(&buffer, "PNG");
+        image = bytes.toBase64();
+    }
+    return image;
+}
 
 InspectionsView::InspectionsView(ViewTabSettings *settings):
     CircuitsView(settings)
@@ -63,7 +77,8 @@ QString InspectionsView::renderHTML()
     if (order_by.isEmpty())
         order_by = "date";
     ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, risks, rmds, arno, inspector, "
-                                                              "operator, refr_add_am, refr_reco, date_updated, updated_by",
+                                                              "operator, refr_add_am, refr_reco, date_updated, updated_by, "
+                                                              "(SELECT COUNT(file_id) FROM inspection_images WHERE customer = inspections.customer AND circuit = inspections.circuit AND date = inspections.date) AS image_count",
                                                               settings->appendDefaultOrderToColumn(order_by));
     if (year) {
         for (int i = 0; i < inspections.count();) {
@@ -112,6 +127,12 @@ QString InspectionsView::renderHTML()
         if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
+        if (inspections.at(i).value("image_count").toInt()) {
+            out << "&nbsp;<a href=\"customer:" << customer_id << "/circuit:" << circuit_id
+                << "/" << (is_repair ? "repair:" : "inspection:") << id << "/images"
+                << "\"><img src=\"data:image/png;base64," << attachmentImage()
+                << "\" alt=\"" << tr("Images") << "\" style=\"vertical-align: bottom;\"></a>";
+        }
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
