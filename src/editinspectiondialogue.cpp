@@ -85,7 +85,7 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo
                                                        new EditInspectionDialogueAccess(this),
                                                        md_record->parent("customer"),
                                                        md_record->parent("circuit")));
-    addTab(new EditInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), idFieldValue().toString()));
+    addTab(new EditInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), record->id()));
 
     splitter->setSizes(QList<int>() << 1000 << 1 << 200);
 
@@ -143,6 +143,11 @@ void EditInspectionDialogueImagesTab::init(const QString &inspection_id)
 
 void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspection_id)
 {
+    if (inspection_id.isEmpty()) {
+        table->addNewRow();
+        return;
+    }
+
     InspectionImage images_record(customer_id, circuit_id, inspection_id);
     ListOfVariantMaps images = images_record.listAll();
 
@@ -167,17 +172,19 @@ void EditInspectionDialogueImagesTab::save(const QVariant &inspection_id)
     QList<MTDictionary> dicts = table->allValues();
     QList<int> undeleted_files;
 
-    InspectionImage images_record(customer_id, circuit_id, original_inspection_id);
+    if (!original_inspection_id.isEmpty()) {
+        InspectionImage images_record(customer_id, circuit_id, original_inspection_id);
 
-    ListOfVariantMaps images = images_record.listAll("file_id");
+        ListOfVariantMaps images = images_record.listAll("file_id");
 
-    for (int i = 0; i < images.count(); ++i) {
-        int file_id = images.at(i).value("file_id").toInt();
-        if (!undeleted_files.contains(file_id))
-            undeleted_files.append(file_id);
+        for (int i = 0; i < images.count(); ++i) {
+            int file_id = images.at(i).value("file_id").toInt();
+            if (!undeleted_files.contains(file_id))
+                undeleted_files.append(file_id);
+        }
+
+        images_record.remove();
     }
-
-    images_record.remove();
 
     QVariantMap map;
     for (int i = 0; i < dicts.count(); ++i) {
