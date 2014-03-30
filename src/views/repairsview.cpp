@@ -25,6 +25,7 @@
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
 #include "toolbarstack.h"
+#include "htmlbuilder.h"
 
 using namespace Global;
 
@@ -43,6 +44,14 @@ QString RepairsView::renderHTML()
     bool show_owner = settings->isShowOwnerChecked();
 
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
+
     MTDictionary parent;
     if (!customer_id.isEmpty()) {
         parent.insert("parent", customer_id);

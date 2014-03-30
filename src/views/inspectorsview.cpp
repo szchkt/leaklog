@@ -38,6 +38,12 @@ QString InspectorsView::renderHTML()
 {
     QString highlighted_id = settings->selectedInspector();
     HTMLDiv div;
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        div << writeServiceCompany();
+        div.newLine();
+    }
+
     div << writeInspectorsTable(highlighted_id);
     return viewTemplate("inspectors").arg(div.html());
 }

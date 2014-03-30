@@ -26,6 +26,7 @@
 #include "mainwindowsettings.h"
 #include "toolbarstack.h"
 #include "warnings.h"
+#include "htmlbuilder.h"
 
 #include <QDate>
 
@@ -39,6 +40,13 @@ AgendaView::AgendaView(ViewTabSettings *settings):
 QString AgendaView::renderHTML()
 {
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
 
     QMultiMap<QString, QStringList> next_inspections_map;
     QString last_inspection_date;

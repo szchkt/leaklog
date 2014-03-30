@@ -186,6 +186,8 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
+    QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
+    QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -846,6 +848,14 @@ void MainWindow::updateLockButton()
         actionLock->setIcon(QIcon(":/images/images/unlocked.png"));
         actionLock->setText(tr("Lock..."));
     }
+}
+
+void MainWindow::serviceCompanyInformationVisibilityChanged(bool visible)
+{
+    actionShow_Service_Company_Information->setChecked(visible);
+    m_settings.setServiceCompanyInformationVisible(visible);
+    if (QSqlDatabase::database().isOpen())
+        refreshView();
 }
 
 void MainWindow::dateFormatChanged(MainWindowSettings::DateFormat date_format)

@@ -20,14 +20,12 @@
 #include "assemblyrecorddetailsview.h"
 
 #include "global.h"
-#include "mttextstream.h"
 #include "records.h"
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
 #include "toolbarstack.h"
 #include "variableevaluation.h"
 #include "htmlbuilder.h"
-#include "dbfile.h"
 
 using namespace Global;
 
@@ -308,42 +306,6 @@ QString AssemblyRecordDetailsView::renderHTML()
     QString ret = viewTemplate("assembly_record").arg(main->html()).arg(custom_style);
     delete main;
     return ret;
-}
-
-HTMLTable *AssemblyRecordDetailsView::writeServiceCompany(HTMLTable *table)
-{
-    ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
-    QVariantMap serv_company = serv_company_record.list();
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
-    table->addClass("service_company");
-    HTMLTableRow *_tr = table->addRow();
-    HTMLTableCell *_td;
-    if (serv_company.value("image").toInt()) {
-        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data().toBase64();
-        if (!byte_array.isNull()) {
-            _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
-            *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
-        }
-    }
-    _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/edit")) << tr("Service company");
-    _tr = table->addRow();
-    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
-        if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
-        _td = _tr->addHeaderCell();
-        QString attr = ServiceCompany::attributes().value(n);
-        attr.chop(1);
-        *_td << attr;
-    }
-    QString attr_value;
-    _tr = table->addRow();
-    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
-        attr_value = ServiceCompany::attributes().key(n);
-        if (serv_company.value(attr_value).toString().isEmpty()) continue;
-        _td = _tr->addCell();
-        *_td << MTVariant(serv_company.value(attr_value), attr_value).toHtml();
-    }
-    return table;
 }
 
 QString AssemblyRecordDetailsView::title() const

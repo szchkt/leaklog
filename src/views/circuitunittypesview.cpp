@@ -25,6 +25,7 @@
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
 #include "toolbarstack.h"
+#include "htmlbuilder.h"
 
 using namespace Global;
 
@@ -38,6 +39,14 @@ QString CircuitUnitTypesView::renderHTML()
     QString highlighted_id = settings->selectedCircuitUnitType();
 
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
+
     CircuitUnitType all_items("");
     if (!settings->toolBarStack()->isFilterEmpty()) {
         all_items.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());

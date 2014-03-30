@@ -39,6 +39,12 @@ QString InspectorDetailsView::renderHTML()
     QString inspector_id = settings->selectedInspector();
 
     HTMLDiv div;
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        div << writeServiceCompany();
+        div.newLine();
+    }
+
     div << writeInspectorsTable(QString(), inspector_id);
     div.newLine();
 

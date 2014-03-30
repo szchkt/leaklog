@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QMap>
 
+class HTMLTable;
 class ViewTabSettings;
 
 class QString;
@@ -65,6 +66,8 @@ public:
 
 protected:
     static QString viewTemplate(const QString &view_template);
+
+    HTMLTable *writeServiceCompany(HTMLTable *table = NULL);
 
     ViewTabSettings *settings;
 

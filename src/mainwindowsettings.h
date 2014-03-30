@@ -64,6 +64,9 @@ public:
     void setCircuitDetailsVisible(bool circuit_details_visible) { m_circuit_details_visible = circuit_details_visible; }
     void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
+    inline bool serviceCompanyInformationVisible() const { return m_service_company_information_visible; }
+    void setServiceCompanyInformationVisible(bool service_company_information_visible);
+
     inline DateFormat dateFormat() const { return m_date_format; }
     inline QString dateFormatString() const { return m_date_format_string; }
     void setDateFormat(DateFormat date_format);
@@ -81,12 +84,14 @@ public:
     QString orderByForView(quint64 view) const;
 
 signals:
+    void serviceCompanyInformationVisibilityChanged(bool);
     void dateFormatChanged(MainWindowSettings::DateFormat);
     void timeFormatChanged(MainWindowSettings::TimeFormat);
 
 private:
     bool m_customer_details_visible;
     bool m_circuit_details_visible;
+    bool m_service_company_information_visible;
 
     DateFormat m_date_format;
     QString m_date_format_string;

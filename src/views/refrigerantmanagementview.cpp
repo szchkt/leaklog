@@ -25,6 +25,7 @@
 #include "viewtabsettings.h"
 #include "mainwindowsettings.h"
 #include "toolbarstack.h"
+#include "htmlbuilder.h"
 
 using namespace Global;
 
@@ -40,6 +41,14 @@ QString RefrigerantManagementView::renderHTML()
     bool show_owner = settings->isShowOwnerChecked();
 
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";

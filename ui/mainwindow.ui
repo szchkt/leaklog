@@ -387,6 +387,7 @@
     <addaction name="menuColumns"/>
     <addaction name="menuDateTime_Format"/>
     <addaction name="actionPrinter_friendly_version"/>
+    <addaction name="actionShow_Service_Company_Information"/>
     <addaction name="actionCompare_values"/>
     <addaction name="actionMost_recent_first"/>
    </widget>
@@ -2163,6 +2164,14 @@
    </property>
    <property name="statusTip">
     <string>View the changelog online</string>
+   </property>
+  </action>
+  <action name="actionShow_Service_Company_Information">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Service Company Information</string>
    </property>
   </action>
  </widget>

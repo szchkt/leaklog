@@ -184,10 +184,6 @@
         <source>Total</source>
         <translation>Celkom</translation>
     </message>
-    <message>
-        <source>Service company</source>
-        <translation>Servisná organizácia</translation>
-    </message>
 </context>
 <context>
     <name>AssemblyRecordItem</name>
@@ -4123,6 +4119,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>http://github.com/szchkt/leaklog/releases</source>
         <translation>http://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
+    </message>
+    <message>
+        <source>Show Service Company Information</source>
+        <translation>Zobraziť informácie o servisnej organizácii</translation>
     </message>
 </context>
 <context>

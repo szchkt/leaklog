@@ -20,6 +20,10 @@
 #include "view.h"
 #include "viewtabsettings.h"
 #include "global.h"
+#include "htmlbuilder.h"
+#include "records.h"
+#include "dbfile.h"
+#include "mtvariant.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -53,4 +57,44 @@ QString View::viewTemplate(const QString &view_template)
         file.close();
     }
     return view_templates.value(view_template);
+}
+
+HTMLTable *View::writeServiceCompany(HTMLTable *table)
+{
+    ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
+    QVariantMap serv_company = serv_company_record.list();
+    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    table->addClass("service_company");
+    HTMLTableRow *_tr = table->addRow();
+    HTMLTableCell *_td;
+    if (serv_company.value("image").toInt()) {
+        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data().toBase64();
+        if (!byte_array.isNull()) {
+            _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
+            *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\" style=\"max-width: 300px;\">";
+        }
+    }
+    _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
+    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/edit")) << Global::escapeString(serv_company.value("name"));
+    _tr = table->addRow();
+    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
+        if (ServiceCompany::attributes().key(n) == "name")
+            continue;
+        if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
+        _td = _tr->addHeaderCell();
+        QString attr = ServiceCompany::attributes().value(n);
+        attr.chop(1);
+        *_td << attr;
+    }
+    QString attr_value;
+    _tr = table->addRow();
+    for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
+        if (ServiceCompany::attributes().key(n) == "name")
+            continue;
+        attr_value = ServiceCompany::attributes().key(n);
+        if (serv_company.value(attr_value).toString().isEmpty()) continue;
+        _td = _tr->addCell();
+        *_td << MTVariant(serv_company.value(attr_value), attr_value).toHtml();
+    }
+    return table;
 }

@@ -60,6 +60,14 @@ QString OperatorReportView::renderHTML()
     }
 
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
+
     Customer customer(customer_id);
     customer.readOperatorValues();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";

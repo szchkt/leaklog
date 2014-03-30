@@ -37,6 +37,12 @@ CustomersView::CustomersView(ViewTabSettings *settings):
 QString CustomersView::renderHTML()
 {
     QString html; MTTextStream out(&html);
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
     writeCustomersTable(out);
     return viewTemplate("customers").arg(html);
 }

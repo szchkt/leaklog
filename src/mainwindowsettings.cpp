@@ -50,6 +50,7 @@ MainWindowSettings::MainWindowSettings():
     QObject(),
     m_customer_details_visible(false),
     m_circuit_details_visible(false),
+    m_service_company_information_visible(false),
     m_date_format(ddMMyyyy),
     m_time_format(hhmm)
 {
@@ -59,6 +60,8 @@ void MainWindowSettings::save(QSettings &settings) const
 {
     settings.setValue("main_window/customer_details_visible", m_customer_details_visible);
     settings.setValue("main_window/circuit_details_visible", m_circuit_details_visible);
+
+    settings.setValue("main_window/service_company_information_visible", m_service_company_information_visible);
 
     settings.setValue("main_window/date_format", m_date_format);
     settings.setValue("main_window/time_format", m_time_format);
@@ -74,6 +77,8 @@ void MainWindowSettings::restore(QSettings &settings)
     m_customer_details_visible = settings.value("main_window/customer_details_visible", false).toBool();
     m_circuit_details_visible = settings.value("main_window/circuit_details_visible", false).toBool();
 
+    setServiceCompanyInformationVisible(settings.value("main_window/service_company_information_visible", false).toBool());
+
     setDateFormat((DateFormat)settings.value("main_window/date_format", ddMMyyyy).toInt());
     setTimeFormat((TimeFormat)settings.value("main_window/time_format", hhmm).toInt());
 
@@ -81,6 +86,15 @@ void MainWindowSettings::restore(QSettings &settings)
     foreach (const QString &key, settings.allKeys())
         m_view_orders.insert(key.toULongLong(), settings.value(key).toString());
     settings.endGroup();
+}
+
+void MainWindowSettings::setServiceCompanyInformationVisible(bool service_company_information_visible)
+{
+    if (m_service_company_information_visible == service_company_information_visible)
+        return;
+
+    m_service_company_information_visible = service_company_information_visible;
+    emit serviceCompanyInformationVisibilityChanged(service_company_information_visible);
 }
 
 void MainWindowSettings::setDateFormat(DateFormat date_format)

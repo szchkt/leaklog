@@ -23,6 +23,9 @@
 #include "mttextstream.h"
 #include "records.h"
 #include "leakagesbyapplication.h"
+#include "viewtabsettings.h"
+#include "mainwindowsettings.h"
+#include "htmlbuilder.h"
 
 #include <QVector>
 #include <QApplication>
@@ -37,6 +40,13 @@ LeakagesByApplicationView::LeakagesByApplicationView(ViewTabSettings *settings):
 QString LeakagesByApplicationView::renderHTML()
 {
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
 
     class LeakagesByApplication leakages(true);
 

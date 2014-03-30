@@ -45,7 +45,14 @@ QString AssemblyRecordItemsView::renderHTML()
     AssemblyRecordItemCategory all_item_categories("");
     ListOfVariantMaps item_categories = all_item_categories.listAll("*", order_by);
 
-    HTMLTable table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLDiv div;
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        div << writeServiceCompany();
+        div.newLine();
+    }
+
+    HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;
     HTMLTableRow *row = new HTMLTableRow();
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
@@ -55,10 +62,10 @@ QString AssemblyRecordItemsView::renderHTML()
         thead_colspan++;
     }
     *(row->addHeaderCell("colspan=\"5\"")) << tr("Show");
-    *(table.addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
+    *(table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
         << tr("List of Assembly Record Item Categories and Types");
-    table << row;
-    row = table.addRow();
+    *table << row;
+    row = table->addRow();
     *(row->addHeaderCell()) << tr("Value");
     *(row->addHeaderCell()) << tr("Acquisition price");
     *(row->addHeaderCell()) << tr("List price");
@@ -69,9 +76,9 @@ QString AssemblyRecordItemsView::renderHTML()
 
     for (int i = 0; i < item_categories.count(); ++i) {
         QString category_id = item_categories.at(i).value("id").toString();
-        row = table.addRow(QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"%2 style=\"cursor: pointer;\"")
-                           .arg("assemblyrecorditemcategory:" + category_id)
-                           .arg(highlighted_category_id == category_id ? " class=\"selected\"" : ""));
+        row = table->addRow(QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"%2 style=\"cursor: pointer;\"")
+                            .arg("assemblyrecorditemcategory:" + category_id)
+                            .arg(highlighted_category_id == category_id ? " class=\"selected\"" : ""));
 
         *(row->addCell()->link(""))
                 << category_id;
@@ -88,8 +95,8 @@ QString AssemblyRecordItemsView::renderHTML()
         addDisplayOptionsCellToCategoriesTable(row, item_categories.at(i).value("display_options").toInt(), AssemblyRecordItemCategory::ShowTotal);
 
         category_cells.insert(item_categories.at(i).value("id").toInt(),
-                              table.addRow("class=\"no_highlight\"")->addCell(QString("colspan=\"%1\" style=\"padding: 15px;\"")
-                                                                              .arg(row->childCount())));
+                              table->addRow("class=\"no_highlight\"")->addCell(QString("colspan=\"%1\" style=\"padding: 15px;\"")
+                                                                               .arg(row->childCount())));
     }
 
     AssemblyRecordItemType all_item_types("");
@@ -142,7 +149,7 @@ QString AssemblyRecordItemsView::renderHTML()
         *(category_cells.value(category_id)) << html;
     }
 
-    return viewTemplate("assembly_record_items").arg(table.html());
+    return viewTemplate("assembly_record_items").arg(div.html());
 }
 
 void AssemblyRecordItemsView::addDisplayOptionsCellToCategoriesTable(HTMLTableRow *row, int display_options, int value)

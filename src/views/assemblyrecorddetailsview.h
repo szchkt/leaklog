@@ -32,9 +32,6 @@ public:
     QString renderHTML();
 
     QString title() const;
-
-protected:
-    HTMLTable *writeServiceCompany(HTMLTable * = NULL);
 };
 
 #endif // ASSEMBLYRECORDDETAILSVIEW_H

@@ -44,6 +44,14 @@ QString InspectionDetailsView::renderHTML()
     QString inspection_date = settings->selectedInspection();
 
     QString html; MTTextStream out(&html);
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        HTMLTable *service_company = writeServiceCompany();
+        out << service_company->html();
+        delete service_company;
+        out << "<br>";
+    }
+
     writeCustomersTable(out, customer_id);
     out << "<br>";
     writeCircuitsTable(out, customer_id, circuit_id, 7);
