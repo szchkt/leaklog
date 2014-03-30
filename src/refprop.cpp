@@ -120,15 +120,137 @@ double RefProp::pressureToTemperature(const QString &refrigerant, double pressur
 
 #else // !defined(REFPROP)
 
-#include "refrigerants.h"
+#include <QApplication>
+#include <QDir>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QVariant>
 
 #include <cmath>
 
-static Refrigerants refrigerants;
-
-double RefProp::pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase)
+class RefPropDatabase
 {
-    return refrigerants.pressureToTemperature(refrigerant, round(pressure * 10.0) / 10.0 + 1.0);
+public:
+    double pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase phase);
+
+protected:
+    QSqlDatabase _database;
+    bool _open;
+    QMap<QString, QPair<double, double> > _limits;
+};
+
+double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase phase)
+{
+    if (!_open) {
+        QDir resources(QApplication::applicationDirPath());
+#ifdef Q_OS_MAC
+        resources.cdUp();
+        resources.cd("Resources");
+#endif
+
+        _database = QSqlDatabase::addDatabase("QSQLITE", "RefPropDatabase");
+        _database.setDatabaseName(resources.absoluteFilePath("RefPropDatabase.sqlite"));
+        _open = _database.open();
+
+        if (!_open)
+            return -273.15;
+
+        QSqlQuery limits("SELECT refrigerant, MIN(pressure), MAX(pressure) FROM satp GROUP BY refrigerant", _database);
+        while (limits.next()) {
+            _limits.insert(limits.value(0).toString(), QPair<double, double>(limits.value(1).toDouble(), limits.value(2).toDouble()));
+        }
+    }
+
+    if (_limits.isEmpty() || !_limits.contains(refrigerant))
+        return -273.15;
+
+    QPair<double, double> limit = _limits.value(refrigerant);
+    if (pressure < limit.first)
+        pressure = limit.first;
+    else if (pressure > limit.second)
+        pressure = limit.second;
+
+    int column_index = phase - 1;
+
+    QSqlQuery query(_database);
+    query.prepare("SELECT temp_liq, temp_vap FROM satp WHERE refrigerant = :r AND pressure >= :p_min AND pressure <= :p_max");
+    query.bindValue(":r", refrigerant);
+
+    double pressure_rounded = round(pressure * 10.0) / 10.0;
+    double pressure_min = pressure_rounded;
+    double pressure_max = pressure_rounded;
+    if (pressure_rounded != pressure) {
+        if (pressure_rounded < pressure) {
+            pressure_max += 0.1;
+        } else {
+            pressure_min -= 0.1;
+        }
+    }
+
+    query.bindValue(":p_min", pressure_min - 0.001);
+    query.bindValue(":p_max", pressure_max + 0.001);
+
+    query.exec();
+
+    double temp_min = 273.15;
+    double temp_max = -273.15;
+
+    int count = 0;
+    while (query.next()) {
+        count++;
+
+        double temp = query.value(column_index).toDouble();
+
+        if (temp_min > temp)
+            temp_min = temp;
+        if (temp_max < temp)
+            temp_max = temp;
+    }
+
+    if (!count) {
+        QSqlQuery query(_database);
+        query.prepare("SELECT temp_liq, temp_vap, pressure FROM satp WHERE refrigerant = :r ORDER BY ABS(pressure - :p) LIMIT 2");
+        query.bindValue(":r", refrigerant);
+        query.bindValue(":p", pressure);
+
+        query.exec();
+
+        pressure_min = 1000.0;
+        pressure_max = -1.0;
+
+        while (query.next()) {
+            count++;
+
+            double p = query.value(2).toDouble();
+
+            if (pressure_min > p)
+                pressure_min = p;
+            if (pressure_max < p)
+                pressure_max = p;
+
+            double temp = query.value(column_index).toDouble();
+
+            if (temp_min > temp)
+                temp_min = temp;
+            if (temp_max < temp)
+                temp_max = temp;
+        }
+
+        if (!count)
+            return -273.15;
+    }
+
+    if (pressure_min == pressure_max)
+        return temp_min;
+
+    return (pressure - pressure_min) / (pressure_max - pressure_min) * (temp_max - temp_min) + temp_min;
+}
+
+static RefPropDatabase _refPropDatabase;
+
+double RefProp::pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase phase)
+{
+    return _refPropDatabase.pressureToTemperature(refrigerant, pressure, phase);
 }
 
 #endif

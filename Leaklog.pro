@@ -256,8 +256,8 @@ defineTest(copyResourceFolder) {
         win32 {
             pwd                        = $$PWD
             pwd                       ~= s,/,\\,g
-            eval($${folder}.commands   = $$quote((if not exist \'$$destination\'. mkdir \'$$destination\') &&))
-            eval($${folder}.commands  += $$quote($$QMAKE_COPY $$pwd\\$$source\\* \'$$destination\'))
+            eval($${folder}.commands   = $$quote((if not exist \"$$destination\". mkdir \"$$destination\") &&))
+            eval($${folder}.commands  += $$quote($$QMAKE_COPY $$pwd\\$$source\\* \"$$destination\"))
         } else {
             eval($${folder}.commands   = $$quote(mkdir -p \'$$destination\';))
             eval($${folder}.commands  += $$quote($$QMAKE_COPY $$eval($${folder}.depends) \'$$destination\'))
@@ -267,7 +267,7 @@ defineTest(copyResourceFolder) {
 }
 
 # refprop
-exists(refprop/include/refprop_lib.h) {
+refprop:exists(refprop/include/refprop_lib.h) {
     message("Configuring with RefProp...")
     DEFINES       += REFPROP
     INCLUDEPATH   += refprop/include
@@ -276,9 +276,27 @@ exists(refprop/include/refprop_lib.h) {
 
     copyResourceFolder(fluids, refprop/fluids, fluids)
     copyResourceFolder(mixtures, refprop/mixtures, mixtures)
+} else:macx {
+    refpropdb.path     = Contents/Resources
+    refpropdb.files    = rc/RefPropDatabase.sqlite
+    QMAKE_BUNDLE_DATA += refpropdb
 } else {
-    HEADERS       += src/refrigerants.h
-    SOURCES       += src/refrigerants.cpp
+    destdir = $$quote($$OUT_PWD/$$DESTDIR)
+    win32 {
+        destdir ~= s,/,\\,g
+    }
+
+    QMAKE_EXTRA_TARGETS    += refpropdb
+    POST_TARGETDEPS        += refpropdb
+    refpropdb.target        = refpropdb
+    refpropdb.depends       = $$PWD/rc/RefPropDatabase.sqlite
+    win32 {
+        depends             = $$refpropdb.depends
+        depends            ~= s,/,\\,g
+        refpropdb.commands  = $$quote($$QMAKE_COPY $$depends \"$$destdir\")
+    } else {
+        refpropdb.commands  = $$quote($$QMAKE_COPY $$refpropdb.depends \'$$destdir\')
+    }
 }
 
 TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts
