@@ -96,7 +96,7 @@ QString AssemblyRecordsView::renderHTML()
                     " LEFT JOIN customers ON customers.id = inspections.customer"
                     " LEFT JOIN persons ON inspections.operator = CAST(persons.id AS text)",
                     "inspections.date", "", parents);
-    record.setCustomWhere("arno <> ''");
+    record.setCustomWhere("arno IS NOT NULL AND arno <> '' AND ar_type IS NOT NULL AND ar_type > 0");
     if (!settings->toolBarStack()->isFilterEmpty()) {
         record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
