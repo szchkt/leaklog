@@ -282,11 +282,16 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw = new MDLineEdit(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {
-                if (mt_record && mt_record->id().isEmpty())
-                    iw->setVariantValue(QString("%1-%2-%3")
+                if (mt_record && mt_record->id().isEmpty()) {
+                    Inspection other_inspections(mt_record->parent("customer"), mt_record->parent("circuit"), "");
+                    other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
+                    int count = other_inspections.list("COUNT(date) AS count").value("count").toInt();
+                    iw->setVariantValue(QString("%1-%2-%3%4")
                                         .arg(mt_record->parent("customer"))
                                         .arg(mt_record->parent("circuit"))
-                                        .arg(date.toString("yyMMdd")));
+                                        .arg(date.toString("yyMMdd"))
+                                        .arg(count ? QString("-%1").arg(count + 1) : ""));
+                }
                 iw->setShowInForm(false);
             }
             md->addInputWidget(iw);
