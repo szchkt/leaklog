@@ -54,6 +54,7 @@ public:
     QVariantMap list(const QString &fields, const QString &order_by, bool refresh = false);
     void readValues(const QString &fields = "*");
     inline QVariantMap &values() { return r_values; }
+    void setValue(const QString &field, const QVariant &value) { r_values.insert(field, value); }
     inline QVariant value(const QString &field, const QVariant &default_value = QVariant()) {
         return r_values.contains(field) ? r_values.value(field) : list(field).value(field, default_value);
     }

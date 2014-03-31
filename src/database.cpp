@@ -3346,7 +3346,9 @@ void MainWindow::removeAssemblyRecordType()
 void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!m_tab->isAssemblyRecordItemCategorySelected() || m_tab->selectedAssemblyRecordItemCategory().toInt() >= 1000) { return; }
     AssemblyRecordItemType record("");
+    record.setValue("category_id", m_tab->selectedAssemblyRecordItemCategory().toInt());
     UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
     EditDialogueWithAutoId md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {

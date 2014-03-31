@@ -498,6 +498,7 @@ void ToolBarStack::enableTools()
     tbtn_remove_inspection->setEnabled(_settings->isInspectionSelected());
     tbtn_edit_assembly_record_type->setEnabled(_settings->isAssemblyRecordTypeSelected());
     tbtn_remove_assembly_record_type->setEnabled(_settings->isAssemblyRecordTypeSelected());
+    tbtn_add_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemCategorySelected() && _settings->selectedAssemblyRecordItemCategory().toInt() < 1000);
     tbtn_edit_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemTypeSelected());
     tbtn_remove_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemTypeSelected());
     tbtn_edit_assembly_record_item_category->setEnabled(_settings->isAssemblyRecordItemCategorySelected());

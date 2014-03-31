@@ -97,10 +97,12 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
     QString name_format = type.value("name_format").toString();
 
     if (!name_format.isEmpty()) {
-        QDate current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), DATE_TIME_FORMAT).date();
-        name_format.replace("year", QString("%1").arg(current_date.year(), 4, 10, QChar('0')));
-        name_format.replace("month", QString("%1").arg(current_date.month(), 2, 10, QChar('0')));
-        name_format.replace("day", QString("%1").arg(current_date.day(), 2, 10, QChar('0')));
+        QDateTime current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), DATE_TIME_FORMAT);
+        name_format.replace("year", QString("%1").arg(current_date.date().year(), 4, 10, QChar('0')));
+        name_format.replace("month", QString("%1").arg(current_date.date().month(), 2, 10, QChar('0')));
+        name_format.replace("day", QString("%1").arg(current_date.date().day(), 2, 10, QChar('0')));
+        name_format.replace("hour", QString("%1").arg(current_date.time().hour(), 2, 10, QChar('0')));
+        name_format.replace("minute", QString("%1").arg(current_date.time().minute(), 2, 10, QChar('0')));
 
         name_format.replace("customer_id", customer_id);
         name_format.replace("circuit_id", circuit_id);

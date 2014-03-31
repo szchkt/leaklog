@@ -927,8 +927,9 @@ MTDictionary Global::listOperators(const QString &customer)
 
 MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
 {
-    MTDictionary categories("-1", QObject::tr("No category")); MTSqlQuery query;
+    MTDictionary categories;
     categories.allowDuplicateKeys();
+    MTSqlQuery query;
     query.setForwardOnly(true);
     if (query.exec(QString("SELECT id, name FROM assembly_record_item_categories%1")
         .arg(hide_default ? " WHERE id < 1000" : ""))) {
