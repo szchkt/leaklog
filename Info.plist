@@ -36,11 +36,11 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.0-PREVIEW4</string>
+	<string>1.0.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0-PREVIEW4</string>
+	<string>1.0.0</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2013 SZ CHKT</string>
+	<string>Copyright © 2014 SZ CHKT</string>
 	<key>CFBundleName</key>
 	<string>Leaklog</string>
 	<key>LSMinimumSystemVersion</key>
