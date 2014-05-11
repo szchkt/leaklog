@@ -95,6 +95,7 @@ public slots:
     void editCircuit();
     void duplicateCircuit();
     void duplicateAndDecommissionCircuit();
+    void moveCircuit();
     void removeCircuit();
 
     void addInspection();
@@ -191,6 +192,7 @@ private slots:
     void checkForUpdates(bool silent = false);
     void httpRequestFinished(QNetworkReply *reply);
     void httpRequestFailed(bool silent);
+    void customerChangedInMoveCircuitDialogue(int customer_index);
     // DATABASE
     void openRecent(QListWidgetItem *);
     void newDatabase();

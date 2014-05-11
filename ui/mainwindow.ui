@@ -301,6 +301,7 @@
     <addaction name="actionEdit_circuit"/>
     <addaction name="actionDuplicate_circuit"/>
     <addaction name="actionDuplicate_and_decommission_circuit"/>
+    <addaction name="actionMove_Circuit_to_Another_Customer"/>
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_detailed_label"/>
@@ -2172,6 +2173,21 @@
    </property>
    <property name="text">
     <string>Show Service Company Information</string>
+   </property>
+  </action>
+  <action name="actionMove_Circuit_to_Another_Customer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
+   </property>
+   <property name="text">
+    <string>Move Circuit to Another Customer...</string>
+   </property>
+   <property name="statusTip">
+    <string>Move the selected circuit to another customer</string>
    </property>
   </action>
  </widget>

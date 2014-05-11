@@ -208,35 +208,60 @@ bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
     return true;
 }
 
-void Circuit::cascadeIDChange(int customer_id, int old_id, int new_id, bool compressors_and_units)
+void Circuit::cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id, bool compressors_and_units)
 {
     MTSqlQuery update_inspections;
-    update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+    if (new_customer_id < 0) {
+        update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+    } else {
+        update_inspections.prepare("UPDATE inspections SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+        update_inspections.bindValue(":new_customer_id", new_customer_id);
+    }
     update_inspections.bindValue(":customer_id", customer_id);
     update_inspections.bindValue(":old_id", old_id);
     update_inspections.bindValue(":new_id", new_id);
     update_inspections.exec();
     MTSqlQuery update_inspections_compressors;
-    update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+    if (new_customer_id < 0) {
+        update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+    } else {
+        update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+        update_inspections_compressors.bindValue(":new_customer_id", new_customer_id);
+    }
     update_inspections_compressors.bindValue(":customer_id", customer_id);
     update_inspections_compressors.bindValue(":old_id", old_id);
     update_inspections_compressors.bindValue(":new_id", new_id);
     update_inspections_compressors.exec();
     MTSqlQuery update_inspection_images;
-    update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+    if (new_customer_id < 0) {
+        update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+    } else {
+        update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
+        update_inspection_images.bindValue(":new_customer_id", new_customer_id);
+    }
     update_inspection_images.bindValue(":customer_id", customer_id);
     update_inspection_images.bindValue(":old_id", old_id);
     update_inspection_images.bindValue(":new_id", new_id);
     update_inspection_images.exec();
-    if (compressors_and_units) {
+    if (compressors_and_units || new_customer_id >= 0) {
         MTSqlQuery update_compressors;
-        update_compressors.prepare("UPDATE compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+        if (new_customer_id < 0) {
+            update_compressors.prepare("UPDATE compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+        } else {
+            update_compressors.prepare("UPDATE compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
+            update_compressors.bindValue(":new_customer_id", new_customer_id);
+        }
         update_compressors.bindValue(":customer_id", customer_id);
         update_compressors.bindValue(":old_id", old_id);
         update_compressors.bindValue(":new_id", new_id);
         update_compressors.exec();
         MTSqlQuery update_circuit_units;
-        update_circuit_units.prepare("UPDATE circuit_units SET circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
+        if (new_customer_id < 0) {
+            update_circuit_units.prepare("UPDATE circuit_units SET circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
+        } else {
+            update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_customer_id, circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
+            update_circuit_units.bindValue(":new_customer_id", new_customer_id);
+        }
         update_circuit_units.bindValue(":customer_id", customer_id);
         update_circuit_units.bindValue(":old_id", old_id);
         update_circuit_units.bindValue(":new_id", new_id);

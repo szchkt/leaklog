@@ -1289,6 +1289,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     bold.setBold(true);
     lbl->setFont(bold);
     lbl->setWordWrap(true);
+    lbl->setAlignment(Qt::AlignCenter);
     lbl->setVisible(false);
     gl->addWidget(lbl, 6, 0, 1, 2);
 
@@ -1339,7 +1340,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     if (set_original_id->isChecked()) {
         duplicate_id = attributes.value("id").toInt();
         circuit.update("id", id);
-        Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), duplicate_id, id, true);
+        Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), duplicate_id, id, -1, true);
     } else {
         duplicate_id = id;
         attributes.insert("id", id);
@@ -1364,6 +1365,136 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     setDatabaseModified(true);
     m_tab->loadCircuit(duplicate_id, true);
+}
+
+void MainWindow::moveCircuit()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!isOperationPermitted("add_circuit")) { return; }
+
+    Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
+    QVariantMap attributes = circuit.list();
+
+    if (!isOperationPermitted("remove_circuit", attributes.value("updated_by").toString())) { return; }
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Move circuit to another customer - Leaklog"));
+    QGridLayout *gl = new QGridLayout(&d);
+
+    QLabel *lbl = new QLabel(tr("Move circuit:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 0, 0);
+
+    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+
+    lbl = new QLabel(tr("To customer:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 1, 0);
+
+    QComboBox *cb_customer = new QComboBox(&d);
+
+    int selected_customer = m_tab->selectedCustomer().toInt();
+    ListOfVariantMaps customers = Customer("").listAll("id, company", "company");
+    foreach (const QVariantMap &customer, customers) {
+        QVariant id = customer.value("id");
+        if (id.toInt() != selected_customer)
+            cb_customer->addItem(customer.value("company").toString(), id);
+    }
+
+    QObject::connect(cb_customer, SIGNAL(currentIndexChanged(int)), this, SLOT(customerChangedInMoveCircuitDialogue(int)));
+    gl->addWidget(cb_customer, 1, 1);
+
+    QLabel *lbl_select_customer = new QLabel(QApplication::translate("EditDialogue", "Select a customer first."), &d);
+    QFont bold;
+    bold.setBold(true);
+    lbl_select_customer->setFont(bold);
+    lbl_select_customer->setWordWrap(true);
+    lbl_select_customer->setAlignment(Qt::AlignCenter);
+    lbl_select_customer->setVisible(false);
+    gl->addWidget(lbl_select_customer, 2, 0, 1, 2);
+
+    lbl = new QLabel(tr("Change circuit ID to:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 3, 0);
+
+    QSpinBox *spb_circuit_id = new QSpinBox(&d);
+    spb_circuit_id->setObjectName("spb_circuit_id");
+    spb_circuit_id->setRange(1, 99999);
+    gl->addWidget(spb_circuit_id, 3, 1);
+
+    QLabel *lbl_id_taken = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
+    lbl_id_taken->setFont(bold);
+    lbl_id_taken->setWordWrap(true);
+    lbl_id_taken->setAlignment(Qt::AlignCenter);
+    lbl_id_taken->setVisible(false);
+    gl->addWidget(lbl_id_taken, 4, 0, 1, 2);
+
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Move"));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    bb->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    gl->addWidget(bb, 5, 0, 1, 2);
+
+    cb_customer->setCurrentIndex(-1);
+
+    int customer_id = 0;
+    int circuit_id = 0;
+    do {
+        lbl_id_taken->setVisible(customer_id > 0 && circuit_id != 0);
+        lbl_select_customer->setVisible(customer_id < 0);
+
+        if (d.exec() != QDialog::Accepted)
+            return;
+
+        customer_id = cb_customer->currentIndex() < 0 ? -1 : cb_customer->itemData(cb_customer->currentIndex()).toInt();
+        circuit_id = spb_circuit_id->value();
+    } while (customer_id < 0 || Circuit(QString::number(customer_id), QString::number(circuit_id)).exists());
+
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    QString new_company_name = Customer(QString::number(customer_id)).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Move circuit %1 (%2) to customer %3")
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(new_company_name.isEmpty() ? QString::number(customer_id).rightJustified(8, '0') : new_company_name));
+    m_undo_stack->savepoint();
+
+    QVariantMap set;
+    set.insert("parent", customer_id);
+    set.insert("id", circuit_id);
+    circuit.update(set);
+    Circuit::cascadeIDChange(selected_customer, m_tab->selectedCircuit().toInt(), circuit_id, customer_id);
+
+    setDatabaseModified(true);
+    m_tab->setSelectedCustomer(customer_id);
+    m_tab->loadCircuit(circuit_id, true);
+}
+
+void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
+{
+    QComboBox *cb_customer = qobject_cast<QComboBox *>(sender());
+    if (!cb_customer)
+        return;
+
+    QDialog *d = qobject_cast<QDialog *>(cb_customer->parent());
+    if (!d)
+        return;
+
+    QSpinBox *spb_circuit_id = d->findChild<QSpinBox *>("spb_circuit_id");
+    if (!spb_circuit_id)
+        return;
+
+    int customer_id = customer_index < 0 ? 0 : cb_customer->itemData(customer_index).toInt();
+
+    if (customer_id && Circuit(QString::number(customer_id), m_tab->selectedCircuit()).exists()) {
+        spb_circuit_id->setValue(Circuit(QString::number(customer_id), QString()).max("id") + 1);
+    } else {
+        spb_circuit_id->setValue(m_tab->selectedCircuit().toInt());
+    }
 }
 
 void MainWindow::removeCircuit()

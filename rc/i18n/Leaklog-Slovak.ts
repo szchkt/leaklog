@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk_SK">
+<TS version="2.1" language="sk_SK">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -1274,6 +1274,10 @@
     <message>
         <source>This ID is not available. Please choose a different ID.</source>
         <translation>Toto IČ nie je voľné. Prosím zvoľte iné IČ.</translation>
+    </message>
+    <message>
+        <source>Select a customer first.</source>
+        <translation>Najprv vyberte zákazníka.</translation>
     </message>
 </context>
 <context>
@@ -4124,6 +4128,38 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Show Service Company Information</source>
         <translation>Zobraziť informácie o servisnej organizácii</translation>
     </message>
+    <message>
+        <source>Move Circuit to Another Customer...</source>
+        <translation>Presunúť okruh k inému zákazníkovi...</translation>
+    </message>
+    <message>
+        <source>Move the selected circuit to another customer</source>
+        <translation>Presunúť vybraný okruh k inému zákazníkovi</translation>
+    </message>
+    <message>
+        <source>Move circuit to another customer - Leaklog</source>
+        <translation>Presunúť okruh k inému zákazníkovi - Leaklog</translation>
+    </message>
+    <message>
+        <source>Move circuit:</source>
+        <translation>Presunúť okruh:</translation>
+    </message>
+    <message>
+        <source>To customer:</source>
+        <translation>K zákazníkovi:</translation>
+    </message>
+    <message>
+        <source>Change circuit ID to:</source>
+        <translation>Zmeniť IČ okruhu na:</translation>
+    </message>
+    <message>
+        <source>Move</source>
+        <translation>Presunúť</translation>
+    </message>
+    <message>
+        <source>Move circuit %1 (%2) to customer %3</source>
+        <translation>Presunúť okruh %1 (%2) k zákazníkovi %3</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4465,10 +4501,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>No category</source>
-        <translation>Žiadna kategória</translation>
-    </message>
     <message>
         <source>No type</source>
         <translation>Žiadny typ</translation>
@@ -5299,7 +5331,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
