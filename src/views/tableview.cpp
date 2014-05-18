@@ -305,11 +305,13 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
     }
     row = thead->addRow();
     row->addClass("border_bottom");
+    int column_count = 1 + table_vars.count();
     for (int i = 0; i < table_vars.count(); ++i) {
         variable = var_evaluation.variable(table_vars.at(i));
         if (!variable) continue;
         if (variable->countSubvariables() > 0) {
             QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
+            column_count += subvariables.count();
             QString unit;
             for (int n = 0; n < subvariables.count(); ++n) {
                 unit = subvariables.at(n)->unit();
@@ -327,13 +329,28 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
     }
 
 //*** Body ***
-    bool is_nominal, is_repair, is_outside_interval; QString inspection_date;
     HTMLTableBody *tbody = table->tbody();
     for (int i = 0; i < inspections.count(); ++i) {
-        is_nominal = inspections.at(i).value("nominal").toInt();
-        is_repair = inspections.at(i).value("repair").toInt();
-        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
-        inspection_date = inspections.at(i).value("date").toString();
+        bool is_nominal = inspections.at(i).value("nominal").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+        QString inspection_date = inspections.at(i).value("date").toString();
+        QString customer_id = circuit.value("parent").toString();
+        QString circuit_id = circuit.value("id").toString();
+        Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
+
+        if (inspection_type != Inspection::DefaultType) {
+            QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
+
+            if (!description.isEmpty()) {
+                row = tbody->addRow();
+                *row->addCell() << toolTipLink("customer/circuit/inspection",
+                                               settings->mainWindowSettings().formatDateTime(inspection_date),
+                                               customer_id, circuit_id, inspection_date, ToolTipLinkItemRemove);
+                *row->addCell(QString("colspan=\"%1\"").arg(column_count)) << escapeString(description);
+                continue;
+            }
+        }
 
         if (is_nominal)
             var_evaluation.setNominalInspection(inspections.at(i));
@@ -345,8 +362,9 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
         el = cell = row->addCell();
         if (is_nominal) { el = cell->bold(); }
         else if (is_repair) { el = cell->italics(); }
-        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", settings->mainWindowSettings().formatDateTime(inspection_date),
-                           circuit.value("parent").toString(), circuit.value("id").toString(), inspection_date);
+        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
+                           settings->mainWindowSettings().formatDateTime(inspection_date),
+                           customer_id, circuit_id, inspection_date);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {

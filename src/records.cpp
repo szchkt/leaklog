@@ -312,6 +312,36 @@ int Circuit::numBasicAttributes()
     return 11;
 }
 
+QString Inspection::descriptionForInspectionType(Inspection::Type type, const QString &type_data)
+{
+    switch (type) {
+        case Inspection::CircuitMovedType: {
+            QStringList data = type_data.split(UNIT_SEPARATOR);
+
+            int from_id = data.value(0).toInt();
+            QString from = from_id ? Customer(QString::number(from_id)).stringValue("company") : QString();
+            if (from.isEmpty())
+                from = data.value(2);
+
+            from.append(QString(" (%1)").arg(QString::number(from_id).rightJustified(8, '0')));
+
+            int to_id = data.value(1).toInt();
+            QString to = to_id ? Customer(QString::number(to_id)).stringValue("company") : QString();
+            if (to.isEmpty())
+                to = data.value(3);
+
+            to.append(QString(" (%1)").arg(QString::number(to_id).rightJustified(8, '0')));
+
+            return tr("Circuit moved from customer %1 to %2.").arg(from).arg(to);
+        }
+
+        default:
+            break;
+    }
+
+    return QString();
+}
+
 Inspection::Inspection():
     DBRecord("inspections", "date", "", MTDictionary()),
     m_scope(Variable::Inspection)

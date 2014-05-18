@@ -719,6 +719,11 @@ void ViewTab::executeLink(Link *link)
 
     switch (link->viewAt(2)) {
     case LinkParser::Inspection:
+        if (link->action() == Link::Remove) {
+            parentWindow()->removeInspection(link->idValue("inspection"));
+            break;
+        }
+
         if (link->idValue("inspection") != selectedInspection())
             loadInspection(link->idValue("inspection"), link->countViews() <= 3 && link->action() == Link::View);
         else if (link->countViews() <= 3 && link->action() == Link::View)

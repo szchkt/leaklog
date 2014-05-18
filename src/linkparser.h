@@ -107,7 +107,8 @@ public:
 
     enum Action {
         View,
-        Edit
+        Edit,
+        Remove
     };
 
     Link();

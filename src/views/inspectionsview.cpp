@@ -86,6 +86,7 @@ QString InspectionsView::renderHTML()
         order_by = "date";
     ListOfVariantMaps inspections = inspection_record.listAll("date, nominal, repair, outside_interval, risks, rmds, arno, inspector, "
                                                               "operator, refr_add_am, refr_reco, date_updated, updated_by, "
+                                                              "inspection_type, inspection_type_data, "
                                                               "(SELECT COUNT(file_id) FROM inspection_images WHERE customer = inspections.customer AND circuit = inspections.circuit AND date = inspections.date) AS image_count",
                                                               settings->appendDefaultOrderToColumn(order_by));
     if (year) {
@@ -95,6 +96,7 @@ QString InspectionsView::renderHTML()
             } else { ++i; }
         }
     }
+
     Inspector inspectors_record("");
     MultiMapOfVariantMaps inspectors(inspectors_record.mapAll("id", "person"));
     Person operators_record(QString(), customer_id);
@@ -116,13 +118,28 @@ QString InspectionsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
-    bool is_nominal, is_repair, is_outside_interval;
-    QString id; QString highlighted_id = settings->selectedInspection();
+
+    QString highlighted_id = settings->selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {
-        id = inspections.at(i).value("date").toString();
-        is_nominal = inspections.at(i).value("nominal").toInt();
-        is_repair = inspections.at(i).value("repair").toInt();
-        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+        QString id = inspections.at(i).value("date").toString();
+        bool is_nominal = inspections.at(i).value("nominal").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+        Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
+
+        if (inspection_type != Inspection::DefaultType) {
+            QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
+
+            if (!description.isEmpty()) {
+                out << QString("<tr><td>%1</td><td colspan=\"10\">%2</td></tr>")
+                    .arg(toolTipLink("customer/circuit/inspection",
+                                     settings->mainWindowSettings().formatDateTime(id),
+                                     customer_id, circuit_id, id, ToolTipLinkItemRemove))
+                    .arg(escapeString(description));
+                continue;
+            }
+        }
+
         out << QString("<tr id=\"%3\" onclick=\"window.location = 'customer:%1/circuit:%2/%3'\" style=\"cursor: pointer;\"")
                .arg(customer_id).arg(circuit_id).arg((is_repair ? "repair:" : "inspection:") + id);
         if (id == highlighted_id)

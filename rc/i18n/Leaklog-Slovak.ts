@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="sk_SK">
+<TS version="2.0" language="sk_SK">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -1735,6 +1735,10 @@
     <message>
         <source>Risks</source>
         <translation>Riziká</translation>
+    </message>
+    <message>
+        <source>Circuit moved from customer %1 to %2.</source>
+        <translation>Okruh presunutý od zákazníka %1 k %2.</translation>
     </message>
 </context>
 <context>
@@ -4160,6 +4164,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Move circuit %1 (%2) to customer %3</source>
         <translation>Presunúť okruh %1 (%2) k zákazníkovi %3</translation>
     </message>
+    <message>
+        <source>Date:</source>
+        <translation>Dátum:</translation>
+    </message>
+    <message>
+        <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
+        <translation>NEUPRAVUJTE TÚTO KONTROLU: Ak vidíte túto správu, používate staršiu verziu programu Leaklog ako tá, ktorou bola táto kontrola vytvorená. Zmeny vykonané v tejto kontrole nebudú viditeľné v novších verziách programu Leaklog.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5331,7 +5343,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message>
+    <message utf8="true">
         <source>—</source>
         <translation>—</translation>
     </message>

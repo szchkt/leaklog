@@ -82,6 +82,13 @@ class Inspection : public DBRecord
     Q_OBJECT
 
 public:
+    enum Type {
+        DefaultType = 0,
+        CircuitMovedType = 1
+    };
+
+    static QString descriptionForInspectionType(Type type, const QString &type_data);
+
     Inspection();
     Inspection(const QString &, const QString &, const QString &);
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);

@@ -502,16 +502,27 @@ QString Global::compareValues(double value1, double value2, double tolerance, co
     }
 }
 
-QString Global::toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2, const QString &l3, bool edit_allowed)
+QString Global::toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2, const QString &l3, int items)
 {
-    QString link = "<a ";
-    if (edit_allowed)
-        link += "onmouseover=\"Tip('<a href=&quot;%1&quot;>"
-            + QApplication::translate("MainWindow", "View")
-            + "</a> | <a href=&quot;%1/edit&quot;>"
-            + QApplication::translate("MainWindow", "Edit")
-            + "</a>', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\" ";
-    link += "href=\"%1\">" + text + "</a>";
+    QString link = "<a onmouseover=\"Tip('";
+    QStringList itemlist;
+    if (items & ToolTipLinkItemView) {
+        itemlist << "<a href=&quot;%1&quot;>" + QApplication::translate("MainWindow", "View") + "</a>";
+    }
+    if (items & ToolTipLinkItemEdit) {
+        itemlist << "<a href=&quot;%1/edit&quot;>" + QApplication::translate("MainWindow", "Edit") + "</a>";
+    }
+    if (items & ToolTipLinkItemRemove) {
+        itemlist << "<a href=&quot;%1/remove&quot;>" + QApplication::translate("MainWindow", "Remove") + "</a>";
+    }
+    link += itemlist.join(" | ");
+    link += "', STICKY, true, CLICKCLOSE, true)\" onmouseout=\"UnTip()\"";
+    if (items & ToolTipLinkItemView) {
+        link += " href=\"%1\">";
+    } else {
+        link += " href=\"#\" onclick=\"return false;\">";
+    }
+    link += text + "</a>";
     QString href; QStringList typelist = type.split("/");
     if (typelist.count() > 0) href.append(typelist.at(0) + ":" + l1);
     if (typelist.count() > 1) href.append("/" + typelist.at(1) + ":" + l2);
@@ -528,7 +539,7 @@ public:
         dict.insert("persons", "id BIGINT PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, hidden INTEGER DEFAULT 0 NOT NULL, date_updated TEXT, updated_by TEXT");
         dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("compressors", "id BIGINT NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, date_updated TEXT, updated_by TEXT");
+        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, inspection_type INTEGER DEFAULT 0 NOT NULL, inspection_type_data TEXT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id BIGINT, date_updated TEXT, updated_by TEXT");
         dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
         dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
@@ -1001,7 +1012,8 @@ QStringList Global::listVariableIds(bool all)
 {
     QStringList ids;
     ids << "customer" << "circuit" << "nominal" << "repair" << "outside_interval";
-    if (all) ids << "date";
+    if (all)
+        ids << "date" << "inspection_type" << "inspection_type_data" << "date_updated" << "updated_by";
     Variables variables;
     while (variables.next()) {
         if (all || variables.type() != "group")

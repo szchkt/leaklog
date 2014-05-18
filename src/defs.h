@@ -39,6 +39,8 @@
 #define TIME_FORMAT "hh:mm"
 #define DATE_TIME_FORMAT DATE_FORMAT "-" TIME_FORMAT
 
+#define UNIT_SEPARATOR QChar(31)
+
 class QString;
 class QVariant;
 template<class Key, class T>

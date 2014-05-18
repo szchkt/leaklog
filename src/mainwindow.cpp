@@ -53,6 +53,7 @@
 #include <QSqlError>
 #include <QDate>
 #include <QDateEdit>
+#include <QCalendarWidget>
 #include <QDesktopServices>
 
 using namespace Global;
@@ -972,6 +973,13 @@ void MainWindow::toggleLocked()
         QDateEdit *date = new QDateEdit(&d);
         date->setDisplayFormat(m_settings.dateFormatString());
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, DATE_FORMAT));
+        date->setCalendarPopup(true);
+        date->calendarWidget()->setLocale(QLocale());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+        date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+#else
+        date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
+#endif
         gl->addWidget(date, r, 1);
 
         r++;

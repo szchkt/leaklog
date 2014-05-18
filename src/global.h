@@ -65,7 +65,12 @@ namespace Global {
     double evaluateExpression(const QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);
     double evaluateExpression(const QVariantMap &, const MTDictionary &, const QVariantMap &, bool * = 0, bool * = 0);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
-    QString toolTipLink(const QString &, const QString &, const QString &, const QString & = QString(), const QString & = QString(), bool = true);
+    enum ToolTipLinkItem {
+        ToolTipLinkItemView = 1 << 0,
+        ToolTipLinkItemEdit = 1 << 1,
+        ToolTipLinkItemRemove = 1 << 2
+    };
+    QString toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2 = QString(), const QString &l3 = QString(), int items = ToolTipLinkItemView | ToolTipLinkItemEdit);
     // Dictionaries
     const MTDictionary &databaseTables();
     const MTDictionary &variableTypes();

@@ -49,6 +49,7 @@
 #include <QRadioButton>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <QCalendarWidget>
 #include <QDateTime>
 #include <QSettings>
 #include <QTimer>
@@ -1108,6 +1109,13 @@ void MainWindow::decommissionAllCircuits()
     QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
+    date->setCalendarPopup(true);
+    date->calendarWidget()->setLocale(QLocale());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+#else
+    date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
+#endif
     gl->addWidget(date, 1, 1);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
@@ -1250,6 +1258,13 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
     date->setDate(QDate::currentDate());
+    date->setCalendarPopup(true);
+    date->calendarWidget()->setLocale(QLocale());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+#else
+    date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
+#endif
     gl->addWidget(date, 1, 1);
 
     QRadioButton *set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
@@ -1431,6 +1446,22 @@ void MainWindow::moveCircuit()
     lbl_id_taken->setVisible(false);
     gl->addWidget(lbl_id_taken, 4, 0, 1, 2);
 
+    lbl = new QLabel(tr("Date:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 5, 0);
+
+    QDateTimeEdit *date = new QDateTimeEdit(&d);
+    date->setDisplayFormat(m_settings.dateTimeFormatString());
+    date->setDateTime(QDateTime::currentDateTime());
+    date->setCalendarPopup(true);
+    date->calendarWidget()->setLocale(QLocale());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+#else
+    date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
+#endif
+    gl->addWidget(date, 5, 1);
+
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Move"));
@@ -1438,7 +1469,7 @@ void MainWindow::moveCircuit()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 5, 0, 1, 2);
+    gl->addWidget(bb, 6, 0, 1, 2);
 
     cb_customer->setCurrentIndex(-1);
 
@@ -1468,6 +1499,27 @@ void MainWindow::moveCircuit()
     set.insert("id", circuit_id);
     circuit.update(set);
     Circuit::cascadeIDChange(selected_customer, m_tab->selectedCircuit().toInt(), circuit_id, customer_id);
+
+    QVariantMap inspection;
+    inspection.insert("customer", customer_id);
+    inspection.insert("circuit", circuit_id);
+    inspection.insert("date", date->dateTime().toString(DATE_TIME_FORMAT));
+    inspection.insert("nominal", 0);
+    inspection.insert("repair", 0);
+    inspection.insert("outside_interval", 1);
+    inspection.insert("inspection_type", Inspection::CircuitMovedType);
+    QStringList data;
+    data << m_tab->selectedCustomer();
+    data << QString::number(customer_id);
+    data << company_name.remove(UNIT_SEPARATOR);
+    data << new_company_name.remove(UNIT_SEPARATOR);
+    inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
+    inspection.insert("rmds", QApplication::translate("Inspection", "Circuit moved from customer %1 to %2.")
+                      .arg(QString("%1 (%2)").arg(company_name).arg(selected_customer, 8, 10, QChar('0')))
+                      .arg(QString("%1 (%2)").arg(new_company_name).arg(customer_id, 8, 10, QChar('0')))
+                      .append("\n\n")
+                      .append(tr("DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.")));
+    Inspection().update(inspection);
 
     setDatabaseModified(true);
     m_tab->setSelectedCustomer(customer_id);
@@ -1591,23 +1643,28 @@ void MainWindow::duplicateInspection()
     }
 }
 
-void MainWindow::removeInspection()
+void MainWindow::removeInspection(const QString &date)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
-    if (!m_tab->isInspectionSelected()) { return; }
-    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
+    QString inspection_date = date;
+    if (inspection_date.isEmpty()) {
+        if (!m_tab->isInspectionSelected()) { return; }
+
+        inspection_date = m_tab->selectedInspection();
+    }
+    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date);
     if (!isOperationPermitted("remove_inspection", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(m_tab->selectedInspection())) { return; }
+    if (isRecordLocked(inspection_date)) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove inspection - Leaklog"),
                                 tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:")
-                                .arg(m_settings.formatDateTime(m_tab->selectedInspection()))) != QDialog::Accepted)
+                                .arg(m_settings.formatDateTime(inspection_date))) != QDialog::Accepted)
         return;
 
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
+                        .arg(m_settings.formatDateTime(inspection_date))
                         .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     m_undo_stack->savepoint();
@@ -1616,10 +1673,11 @@ void MainWindow::removeInspection()
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date",
                          QStringList() << m_tab->selectedCustomer()
                                        << m_tab->selectedCircuit()
-                                       << m_tab->selectedInspection());
+                                       << inspection_date);
     InspectionsCompressor("", parents).remove();
-    InspectionImage(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection()).remove();
-    m_tab->clearSelectedInspection();
+    InspectionImage(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date).remove();
+    if (m_tab->selectedInspection() == inspection_date)
+        m_tab->clearSelectedInspection();
     enableTools();
     setDatabaseModified(true);
     m_tab->setView(View::Inspections);
