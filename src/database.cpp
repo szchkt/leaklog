@@ -1462,6 +1462,13 @@ void MainWindow::moveCircuit()
 #endif
     gl->addWidget(date, 5, 1);
 
+    QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
+    lbl_date_taken->setFont(bold);
+    lbl_date_taken->setWordWrap(true);
+    lbl_date_taken->setAlignment(Qt::AlignCenter);
+    lbl_date_taken->setVisible(false);
+    gl->addWidget(lbl_date_taken, 6, 0, 1, 2);
+
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Move"));
@@ -1469,22 +1476,30 @@ void MainWindow::moveCircuit()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 6, 0, 1, 2);
+    gl->addWidget(bb, 7, 0, 1, 2);
 
     cb_customer->setCurrentIndex(-1);
 
     int customer_id = 0;
     int circuit_id = 0;
+    QString inspection_date;
+    bool inspection_date_taken = false;
     do {
-        lbl_id_taken->setVisible(customer_id > 0 && circuit_id != 0);
+        lbl_id_taken->setVisible(customer_id > 0 && circuit_id != 0 && !inspection_date_taken);
         lbl_select_customer->setVisible(customer_id < 0);
+        lbl_date_taken->setVisible(inspection_date_taken);
 
         if (d.exec() != QDialog::Accepted)
             return;
 
         customer_id = cb_customer->currentIndex() < 0 ? -1 : cb_customer->itemData(cb_customer->currentIndex()).toInt();
         circuit_id = spb_circuit_id->value();
-    } while (customer_id < 0 || Circuit(QString::number(customer_id), QString::number(circuit_id)).exists());
+        inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
+        inspection_date_taken = false;
+    } while (customer_id < 0 || Circuit(QString::number(customer_id), QString::number(circuit_id)).exists() ||
+             (inspection_date_taken = Inspection(m_tab->selectedCustomer(),
+                                                 m_tab->selectedCircuit(),
+                                                 inspection_date).exists()));
 
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     QString new_company_name = Customer(QString::number(customer_id)).stringValue("company");
@@ -1503,7 +1518,7 @@ void MainWindow::moveCircuit()
     QVariantMap inspection;
     inspection.insert("customer", customer_id);
     inspection.insert("circuit", circuit_id);
-    inspection.insert("date", date->dateTime().toString(DATE_TIME_FORMAT));
+    inspection.insert("date", inspection_date);
     inspection.insert("nominal", 0);
     inspection.insert("repair", 0);
     inspection.insert("outside_interval", 1);
