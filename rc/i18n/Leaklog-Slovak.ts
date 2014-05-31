@@ -1740,6 +1740,10 @@
         <source>Circuit moved from customer %1 to %2.</source>
         <translation>Okruh presunutý od zákazníka %1 k %2.</translation>
     </message>
+    <message>
+        <source>Inspection carried out by another service company.</source>
+        <translation>Kontrola vykonaná inou servisnou organizáciou.</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -4171,6 +4175,34 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
         <translation>NEUPRAVUJTE TÚTO KONTROLU: Ak vidíte túto správu, používate staršiu verziu programu Leaklog ako tá, ktorou bola táto kontrola vytvorená. Zmeny vykonané v tejto kontrole nebudú viditeľné v novších verziách programu Leaklog.</translation>
+    </message>
+    <message>
+        <source>Skip Inspection...</source>
+        <translation>Vynechať kontrolu...</translation>
+    </message>
+    <message>
+        <source>Skip inspection - Leaklog</source>
+        <translation>Vynechať kontrolu - Leaklog</translation>
+    </message>
+    <message>
+        <source>Skip inspection of circuit:</source>
+        <translation>Vynechať kontrolu okruhu:</translation>
+    </message>
+    <message>
+        <source>Date of skipped inspection:</source>
+        <translation>Dátum vynechanej kontroly:</translation>
+    </message>
+    <message>
+        <source>Reason:</source>
+        <translation>Dôvod:</translation>
+    </message>
+    <message>
+        <source>Skip</source>
+        <translation>Vynechať</translation>
+    </message>
+    <message>
+        <source>Skip inspection of circuit %1 (%2)</source>
+        <translation>Vynechať kontrolu okruhu %1 (%2)</translation>
     </message>
 </context>
 <context>

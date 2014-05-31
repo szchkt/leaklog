@@ -102,6 +102,7 @@ public slots:
     void editInspection();
     void duplicateInspection();
     void removeInspection(const QString &date = QString());
+    void skipInspection();
 
     void addRepair();
     void editRepair();

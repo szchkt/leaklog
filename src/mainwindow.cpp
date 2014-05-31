@@ -218,6 +218,7 @@ MainWindow::MainWindow():
     QObject::connect(actionEdit_inspection, SIGNAL(triggered()), this, SLOT(editInspection()));
     QObject::connect(actionDuplicate_inspection, SIGNAL(triggered()), this, SLOT(duplicateInspection()));
     QObject::connect(actionRemove_inspection, SIGNAL(triggered()), this, SLOT(removeInspection()));
+    QObject::connect(actionSkip_Inspection, SIGNAL(triggered()), this, SLOT(skipInspection()));
     QObject::connect(actionAdd_repair, SIGNAL(triggered()), this, SLOT(addRepair()));
     QObject::connect(actionEdit_repair, SIGNAL(triggered()), this, SLOT(editRepair()));
     QObject::connect(actionDuplicate_repair, SIGNAL(triggered()), this, SLOT(duplicateRepair()));
@@ -827,6 +828,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionEdit_inspection->setEnabled(enable);
         actionDuplicate_inspection->setEnabled(enable);
         actionRemove_inspection->setEnabled(enable);
+        actionSkip_Inspection->setEnabled(enable);
         actionPrint_label->setEnabled(enable);
     // menuRepair
         actionEdit_repair->setEnabled(enable);
@@ -916,6 +918,7 @@ void MainWindow::enableTools()
     actionEdit_inspection->setEnabled(inspection_selected);
     actionDuplicate_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
+    actionSkip_Inspection->setEnabled(circuit_selected);
 
     actionEdit_repair->setEnabled(repair_selected);
     actionDuplicate_repair->setEnabled(repair_selected);

@@ -314,10 +314,10 @@ int Circuit::numBasicAttributes()
 
 QString Inspection::descriptionForInspectionType(Inspection::Type type, const QString &type_data)
 {
+    QStringList data = type_data.split(UNIT_SEPARATOR);
+
     switch (type) {
         case Inspection::CircuitMovedType: {
-            QStringList data = type_data.split(UNIT_SEPARATOR);
-
             int from_id = data.value(0).toInt();
             QString from = from_id ? Customer(QString::number(from_id)).stringValue("company") : QString();
             if (from.isEmpty())
@@ -334,6 +334,9 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
 
             return tr("Circuit moved from customer %1 to %2.").arg(from).arg(to);
         }
+
+        case Inspection::InspectionSkippedType:
+            return data.value(0);
 
         default:
             break;

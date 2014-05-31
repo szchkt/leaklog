@@ -1698,6 +1698,126 @@ void MainWindow::removeInspection(const QString &date)
     m_tab->setView(View::Inspections);
 }
 
+void MainWindow::skipInspection()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+    if (!m_tab->isCircuitSelected()) { return; }
+    if (!isOperationPermitted("add_inspection")) { return; }
+
+    QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
+
+    Circuit circuit_record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
+    circuit_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
+                           " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
+                           " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
+    MTSqlQuery circuit_query = circuit_record.select("circuits.hermetic, circuits.leak_detector, circuits.inspection_interval, "
+                                                     "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
+                                                     + circuitRefrigerantAmountQuery());
+    circuit_query.setForwardOnly(true);
+    circuit_query.exec();
+    if (circuit_query.next()) {
+        int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.doubleValue("refrigerant_amount"),
+                                                                      circuit_query.intValue("hermetic"),
+                                                                      circuit_query.intValue("leak_detector"),
+                                                                      circuit_query.intValue("inspection_interval"));
+        if (inspection_interval) {
+            QString last_regular_inspection_date = circuit_query.stringValue("last_regular_inspection");
+            if (!last_regular_inspection_date.isEmpty()) {
+                next_regular_inspection_date = QDateTime::fromString(last_regular_inspection_date.split("-").first(),
+                                                                     DATE_FORMAT).addDays(inspection_interval);
+            }
+        }
+    }
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Skip inspection - Leaklog"));
+    QGridLayout *gl = new QGridLayout(&d);
+
+    QLabel *lbl = new QLabel(tr("Skip inspection of circuit:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 0, 0);
+
+    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+
+    lbl = new QLabel(tr("Date of skipped inspection:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 1, 0);
+
+    QDateTimeEdit *date = new QDateTimeEdit(&d);
+    date->setDisplayFormat(m_settings.dateTimeFormatString());
+    date->setDateTime(next_regular_inspection_date);
+    date->setCalendarPopup(true);
+    date->calendarWidget()->setLocale(QLocale());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+#else
+    date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
+#endif
+    gl->addWidget(date, 1, 1);
+
+    QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
+    QFont bold;
+    bold.setBold(true);
+    lbl_date_taken->setFont(bold);
+    lbl_date_taken->setWordWrap(true);
+    lbl_date_taken->setAlignment(Qt::AlignCenter);
+    lbl_date_taken->setVisible(false);
+    gl->addWidget(lbl_date_taken, 2, 0, 1, 2);
+
+    lbl = new QLabel(tr("Reason:"), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 3, 0);
+
+    QLineEdit *reason = new QLineEdit(&d);
+    reason->setText(QApplication::translate("Inspection", "Inspection carried out by another service company."));
+    reason->setMinimumWidth(360);
+    gl->addWidget(reason, 3, 1);
+
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Skip"));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    bb->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    gl->addWidget(bb, 4, 0, 1, 2);
+
+    QString inspection_date;
+    do {
+        lbl_date_taken->setVisible(!inspection_date.isEmpty());
+
+        if (d.exec() != QDialog::Accepted)
+            return;
+
+        inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
+    } while (Inspection(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date).exists());
+
+    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    UndoCommand command(m_undo_stack, tr("Skip inspection of circuit %1 (%2)")
+                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
+                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+    m_undo_stack->savepoint();
+
+    QVariantMap inspection;
+    inspection.insert("customer", m_tab->selectedCustomer().toInt());
+    inspection.insert("circuit", m_tab->selectedCircuit().toInt());
+    inspection.insert("date", inspection_date);
+    inspection.insert("nominal", 0);
+    inspection.insert("repair", 0);
+    inspection.insert("outside_interval", 0);
+    inspection.insert("inspection_type", Inspection::InspectionSkippedType);
+    QStringList data;
+    data << reason->text().remove(UNIT_SEPARATOR);
+    inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
+    inspection.insert("rmds", reason->text().append("\n\n")
+                      .append(tr("DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.")));
+    Inspection().update(inspection);
+
+    setDatabaseModified(true);
+    m_tab->setView(View::Inspections);
+}
+
 void MainWindow::addRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }

@@ -84,7 +84,8 @@ class Inspection : public DBRecord
 public:
     enum Type {
         DefaultType = 0,
-        CircuitMovedType = 1
+        CircuitMovedType = 1,
+        InspectionSkippedType = 2
     };
 
     static QString descriptionForInspectionType(Type type, const QString &type_data);

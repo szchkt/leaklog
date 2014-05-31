@@ -316,6 +316,7 @@
     <addaction name="actionEdit_inspection"/>
     <addaction name="actionDuplicate_inspection"/>
     <addaction name="actionRemove_inspection"/>
+    <addaction name="actionSkip_Inspection"/>
     <addaction name="separator"/>
     <addaction name="actionExport_inspection_data"/>
    </widget>
@@ -2188,6 +2189,21 @@
    </property>
    <property name="statusTip">
     <string>Move the selected circuit to another customer</string>
+   </property>
+  </action>
+  <action name="actionSkip_Inspection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/inspection_add.png</normaloff>:/images/images/inspection_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Skip Inspection...</string>
+   </property>
+   <property name="statusTip">
+    <string/>
    </property>
   </action>
  </widget>
