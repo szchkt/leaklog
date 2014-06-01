@@ -370,7 +370,7 @@ void MainWindow::showIconsOnly(bool show)
 void MainWindow::printPreview()
 {
     QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), m_tab->webView(), SLOT(print(QPrinter *)));
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(print(QPrinter *)));
     d.exec();
 }
 
@@ -380,7 +380,18 @@ void MainWindow::print()
     QPrintDialog d(&printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    m_tab->webView()->print(&printer);
+    print(&printer);
+}
+
+void MainWindow::print(QPrinter *printer)
+{
+#ifdef Q_OS_MAC
+    m_tab->webView()->setZoomFactor(0.75);
+#else
+    m_tab->webView()->setZoomFactor(1.0);
+#endif
+    m_tab->webView()->print(printer);
+    m_tab->webView()->setZoomFactor(Global::scaleFactor());
 }
 
 QString MainWindow::fileNameForCurrentView()
