@@ -193,15 +193,15 @@ QString OperatorReportView::renderHTML()
 
     HTMLTable compiled_by;
     HTMLTableRow *row = compiled_by.addRow();
-    *(row->addCell()) << tr("Compiled by:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+    *(row->addCell()) << tr("Compiled by:") << " <input type=\"text\" style=\"border: 0;\" size=\"30\" value=\""
                       << escapeString(inspector.value("person").toString()) << "\">";
-    *(row->addCell()) << tr("Phone:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+    *(row->addCell()) << tr("Phone:") << " <input type=\"text\" style=\"border: 0;\" size=\"20\" value=\""
                       << escapeString(inspector.value("phone").toString()) << "\">";
-    *(row->addCell()) << tr("E-mail:") << " <input type=\"text\" style=\"border: 0;\" value=\""
+    *(row->addCell()) << tr("E-mail:") << " <input type=\"text\" style=\"border: 0;\" size=\"40\" value=\""
                       << escapeString(inspector.value("mail").toString()) << "\">";
     row = compiled_by.addRow();
     *(row->addCell("colspan=\"2\"")) << tr("Place:")
-                                     << " <input type=\"text\" style=\"border: 0;\">";
+                                     << " <input type=\"text\" style=\"border: 0;\" size=\"60\">";
     *(row->addCell()) << tr("Date:")
                       << " <input type=\"text\" style=\"border: 0;\">";
     out << compiled_by.html();
