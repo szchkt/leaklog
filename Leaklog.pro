@@ -9,6 +9,7 @@ FORMS         += ui/aboutwidget.ui \
 HEADERS       += src/aboutwidget.h \
                  src/activityeventfilter.h \
                  src/dbfile.h \
+                 src/dbrecord.h \
                  src/defs.h \
                  src/editassemblyrecorddialogue.h \
                  src/editcircuitdialogue.h \
@@ -40,6 +41,32 @@ HEADERS       += src/aboutwidget.h \
                  src/main.h \
                  src/mainwindow.h \
                  src/mainwindowsettings.h \
+                 src/models/servicecompany.h \
+                 src/models/customer.h \
+                 src/models/person.h \
+                 src/models/circuit.h \
+                 src/models/compressor.h \
+                 src/models/inspection.h \
+                 src/models/inspectioncompressor.h \
+                 src/models/inspectionimage.h \
+                 src/models/repair.h \
+                 src/models/inspector.h \
+                 src/models/variable.h \
+                 src/models/table.h \
+                 src/models/warning.h \
+                 src/models/warningfilter.h \
+                 src/models/warningcondition.h \
+                 src/models/refrigerantrecord.h \
+                 src/models/assemblyrecordtype.h \
+                 src/models/assemblyrecorditemtype.h \
+                 src/models/assemblyrecordtypecategory.h \
+                 src/models/assemblyrecorditemcategory.h \
+                 src/models/assemblyrecorditem.h \
+                 src/models/file.h \
+                 src/models/circuitunittype.h \
+                 src/models/circuitunit.h \
+                 src/models/dbinfo.h \
+                 src/models/style.h \
                  src/mtaddress.h \
                  src/mtcheckboxgroup.h \
                  src/mtcolourcombobox.h \
@@ -97,6 +124,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/activityeventfilter.cpp \
                  src/database.cpp \
                  src/dbfile.cpp \
+                 src/dbrecord.cpp \
                  src/editassemblyrecorddialogue.cpp \
                  src/editcircuitdialogue.cpp \
                  src/editcircuitdialoguecompressorstab.cpp \
@@ -126,6 +154,32 @@ SOURCES       += src/aboutwidget.cpp \
                  src/main.cpp \
                  src/mainwindow.cpp \
                  src/mainwindowsettings.cpp \
+                 src/models/servicecompany.cpp \
+                 src/models/customer.cpp \
+                 src/models/person.cpp \
+                 src/models/circuit.cpp \
+                 src/models/compressor.cpp \
+                 src/models/inspection.cpp \
+                 src/models/inspectioncompressor.cpp \
+                 src/models/inspectionimage.cpp \
+                 src/models/repair.cpp \
+                 src/models/inspector.cpp \
+                 src/models/variable.cpp \
+                 src/models/table.cpp \
+                 src/models/warning.cpp \
+                 src/models/warningfilter.cpp \
+                 src/models/warningcondition.cpp \
+                 src/models/refrigerantrecord.cpp \
+                 src/models/assemblyrecordtype.cpp \
+                 src/models/assemblyrecorditemtype.cpp \
+                 src/models/assemblyrecordtypecategory.cpp \
+                 src/models/assemblyrecorditemcategory.cpp \
+                 src/models/assemblyrecorditem.cpp \
+                 src/models/file.cpp \
+                 src/models/circuitunittype.cpp \
+                 src/models/circuitunit.cpp \
+                 src/models/dbinfo.cpp \
+                 src/models/style.cpp \
                  src/mtaddress.cpp \
                  src/mtrecord.cpp \
                  src/mtsqlquery.cpp \
@@ -136,7 +190,6 @@ SOURCES       += src/aboutwidget.cpp \
                  src/mtwidget.cpp \
                  src/partnerwidgets.cpp \
                  src/permissionsdialogue.cpp \
-                 src/records.cpp \
                  src/refprop.cpp \
                  src/reportdata.cpp \
                  src/reportdatacontroller.cpp \

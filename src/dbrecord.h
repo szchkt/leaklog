@@ -17,34 +17,31 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#ifndef RECORDS_H
-#define RECORDS_H
+#ifndef DBRECORD_H
+#define DBRECORD_H
 
-#include "servicecompany.h"
-#include "customer.h"
-#include "person.h"
-#include "circuit.h"
-#include "compressor.h"
-#include "inspection.h"
-#include "inspectioncompressor.h"
-#include "inspectionimage.h"
-#include "repair.h"
-#include "inspector.h"
-#include "variable.h"
-#include "table.h"
-#include "warning.h"
-#include "warningfilter.h"
-#include "warningcondition.h"
-#include "refrigerantrecord.h"
-#include "assemblyrecordtype.h"
-#include "assemblyrecorditemtype.h"
-#include "assemblyrecordtypecategory.h"
-#include "assemblyrecorditemcategory.h"
-#include "assemblyrecorditem.h"
-#include "file.h"
-#include "circuitunittype.h"
-#include "circuitunit.h"
-#include "dbinfo.h"
-#include "style.h"
+#include "mtrecord.h"
 
-#endif // RECORDS_H
+class EditDialogueWidgets;
+
+class Modifiable
+{
+public:
+    virtual ~Modifiable() {}
+
+    virtual void initEditDialogue(EditDialogueWidgets *) = 0;
+    virtual bool checkValues(const QVariantMap &, QWidget * = 0) { return true; }
+};
+
+class DBRecord : public QObject, public MTRecord, public Modifiable
+{
+    Q_OBJECT
+
+public:
+    DBRecord();
+    DBRecord(const QString &, const QString &, const QString &, const MTDictionary &);
+
+    QString parent(const QString &field) const { return MTRecord::parent(field); }
+};
+
+#endif // DBRECORD_H

@@ -15,36 +15,33 @@
  You should have received a copy of the GNU General Public Licence
  along with Leaklog; if not, write to the Free Software Foundation,
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-********************************************************************/
+ ********************************************************************/
 
-#ifndef RECORDS_H
-#define RECORDS_H
+#ifndef ASSEMBLYRECORDTYPE_H
+#define ASSEMBLYRECORDTYPE_H
 
-#include "servicecompany.h"
-#include "customer.h"
-#include "person.h"
-#include "circuit.h"
-#include "compressor.h"
-#include "inspection.h"
-#include "inspectioncompressor.h"
-#include "inspectionimage.h"
-#include "repair.h"
-#include "inspector.h"
-#include "variable.h"
-#include "table.h"
-#include "warning.h"
-#include "warningfilter.h"
-#include "warningcondition.h"
-#include "refrigerantrecord.h"
-#include "assemblyrecordtype.h"
-#include "assemblyrecorditemtype.h"
-#include "assemblyrecordtypecategory.h"
-#include "assemblyrecorditemcategory.h"
-#include "assemblyrecorditem.h"
-#include "file.h"
-#include "circuitunittype.h"
-#include "circuitunit.h"
-#include "dbinfo.h"
-#include "style.h"
+#include "dbrecord.h"
 
-#endif // RECORDS_H
+class AssemblyRecordType : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    enum DisplayOptions {
+        ShowServiceCompany = 1,
+        ShowCustomer = 2,
+        ShowCustomerContactPersons = 4,
+        ShowCircuit = 8,
+        ShowCompressors = 16,
+        ShowCircuitUnits = 32
+    };
+
+    AssemblyRecordType(const QString &);
+
+    void initEditDialogue(EditDialogueWidgets *);
+
+    static const MTDictionary &attributes();
+    bool remove();
+};
+
+#endif // ASSEMBLYRECORDTYPE_H

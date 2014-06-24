@@ -15,36 +15,28 @@
  You should have received a copy of the GNU General Public Licence
  along with Leaklog; if not, write to the Free Software Foundation,
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-********************************************************************/
+ ********************************************************************/
 
-#ifndef RECORDS_H
-#define RECORDS_H
+#ifndef CIRCUIT_H
+#define CIRCUIT_H
 
-#include "servicecompany.h"
-#include "customer.h"
-#include "person.h"
-#include "circuit.h"
-#include "compressor.h"
-#include "inspection.h"
-#include "inspectioncompressor.h"
-#include "inspectionimage.h"
-#include "repair.h"
-#include "inspector.h"
-#include "variable.h"
-#include "table.h"
-#include "warning.h"
-#include "warningfilter.h"
-#include "warningcondition.h"
-#include "refrigerantrecord.h"
-#include "assemblyrecordtype.h"
-#include "assemblyrecorditemtype.h"
-#include "assemblyrecordtypecategory.h"
-#include "assemblyrecorditemcategory.h"
-#include "assemblyrecorditem.h"
-#include "file.h"
-#include "circuitunittype.h"
-#include "circuitunit.h"
-#include "dbinfo.h"
-#include "style.h"
+#include "dbrecord.h"
 
-#endif // RECORDS_H
+class Circuit : public DBRecord
+{
+    Q_OBJECT
+
+public:
+    Circuit();
+    Circuit(const QString &, const QString &);
+
+    void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(const QVariantMap &, QWidget * = 0);
+
+    static void cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id = -1, bool compressors_and_units = false);
+
+    static const MTDictionary &attributes();
+    static int numBasicAttributes();
+};
+
+#endif // CIRCUIT_H

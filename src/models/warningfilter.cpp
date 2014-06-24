@@ -15,36 +15,10 @@
  You should have received a copy of the GNU General Public Licence
  along with Leaklog; if not, write to the Free Software Foundation,
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-********************************************************************/
+ ********************************************************************/
 
-#ifndef RECORDS_H
-#define RECORDS_H
-
-#include "servicecompany.h"
-#include "customer.h"
-#include "person.h"
-#include "circuit.h"
-#include "compressor.h"
-#include "inspection.h"
-#include "inspectioncompressor.h"
-#include "inspectionimage.h"
-#include "repair.h"
-#include "inspector.h"
-#include "variable.h"
-#include "table.h"
-#include "warning.h"
 #include "warningfilter.h"
-#include "warningcondition.h"
-#include "refrigerantrecord.h"
-#include "assemblyrecordtype.h"
-#include "assemblyrecorditemtype.h"
-#include "assemblyrecordtypecategory.h"
-#include "assemblyrecorditemcategory.h"
-#include "assemblyrecorditem.h"
-#include "file.h"
-#include "circuitunittype.h"
-#include "circuitunit.h"
-#include "dbinfo.h"
-#include "style.h"
 
-#endif // RECORDS_H
+WarningFilter::WarningFilter(const QString &parent):
+    DBRecord("warnings_filters", "", "", MTDictionary("parent", parent))
+{}
