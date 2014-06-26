@@ -20,6 +20,7 @@
 #include "permissionsdialogue.h"
 #include "global.h"
 #include "mtdictionary.h"
+#include "dbinfo.h"
 
 #include <QGridLayout>
 #include <QButtonGroup>
@@ -58,7 +59,7 @@ QDialog(parent, Qt::Dialog) {
     QString nobody_text = isDatabaseRemote() ? tr("Administrator") : tr("Nobody");
 
     for (int i = 0; i < permissions.count(); ++i) {
-        QString permission = DBInfoValueForKey(permissions.key(i) + "_permitted");
+        QString permission = DBInfo::valueForKey(permissions.key(i) + "_permitted");
 
         QTreeWidgetItem *item = new QTreeWidgetItem(tree);
         item->setText(0, permissions.value(i));
@@ -107,7 +108,7 @@ void PermissionsDialogue::save()
             value = "false";
         else if (i.value()->checkedId() == 2)
             value = "owner";
-        setDBInfoValueForKey(i.key() + "_permitted", value);
+        DBInfo::setValueForKey(i.key() + "_permitted", value);
     }
     accept();
 }

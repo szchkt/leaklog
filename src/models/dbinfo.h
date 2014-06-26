@@ -28,6 +28,15 @@ class DBInfo : public DBRecord
 
 public:
     DBInfo(const QString &key);
+
+    static QString valueForKey(const QString &, const QString & = QString());
+    static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
+
+    static bool isCurrentUserAdmin();
+    static int isDatabaseLocked();
+    static bool isRecordLocked(const QString &);
+    static QString lockDate();
+    static int isOperationPermitted(const QString &, const QString & = QString());
 };
 
 #endif // DBINFO_H

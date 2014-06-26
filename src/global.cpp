@@ -280,60 +280,14 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
     }
 }
 
-QString Global::DBInfoValueForKey(const QString &key, const QString &default_value)
-{
-    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
-    if (!query.next())
-        return default_value;
-    return query.value(0).toString();
-}
-
-QSqlError Global::setDBInfoValueForKey(const QString &key, const QString &value, const QSqlDatabase &database)
-{
-    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key), database);
-    if (query.next())
-        return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key), database).lastError();
-    return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value), database).lastError();
-}
-
 QString Global::currentUser(const QSqlDatabase &database)
 {
     return database.userName();
 }
 
-bool Global::isCurrentUserAdmin()
-{
-    QString current_user = currentUser();
-    return DBInfoValueForKey("admin", current_user) == current_user;
-}
-
 bool Global::isDatabaseRemote(const QSqlDatabase &database)
 {
     return !database.driverName().contains("SQLITE");
-}
-
-int Global::isDatabaseLocked()
-{
-    QString locked = DBInfoValueForKey("locked");
-    if (locked == "true")
-        return 1;
-    if (locked == "auto")
-        return 2;
-    return 0;
-}
-
-QString Global::lockDate()
-{
-    return DBInfoValueForKey("locked") == "auto" ?
-            QDate::currentDate().addDays(-DBInfoValueForKey("autolock_days").toInt()).toString(DATE_FORMAT) :
-            DBInfoValueForKey("lock_date");
-}
-
-bool Global::isRecordLocked(const QString &date)
-{
-    if (isDatabaseLocked())
-        return date < lockDate();
-    return false;
 }
 
 bool Global::isOwnerPermissionApplicable(const QString &permission)
@@ -346,20 +300,6 @@ bool Global::isOwnerPermissionApplicable(const QString &permission)
              permission.endsWith("_circuit") ||
              permission.endsWith("_inspection") ||
              permission.endsWith("_repair")));
-}
-
-int Global::isOperationPermitted(const QString &operation, const QString &record_owner)
-{
-    if (!isDatabaseLocked())
-        return 4;
-    if (isDatabaseRemote() && isCurrentUserAdmin())
-        return 3;
-    QString permission = DBInfoValueForKey(operation + "_permitted", "true");
-    if (permission == "true")
-        return 1;
-    if (permission == "owner")
-        return record_owner == currentUser() ? 2 : -2;
-    return -1;
 }
 
 QString Global::circuitRefrigerantAmountQuery(const QString &return_as)

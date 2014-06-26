@@ -42,8 +42,8 @@ void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
     MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
-    if (isDatabaseLocked()) {
-        date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
+    if (DBInfo::isDatabaseLocked()) {
+        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
     md->addInputWidget(date);
 

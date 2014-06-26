@@ -54,8 +54,8 @@ QString InspectorDetailsView::renderHTML()
     HTMLParentElement *elem;
 
     bool is_nominal, is_repair, is_outside_interval;
-    bool show_acquisition_price = Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
-    bool show_list_price = Global::isOperationPermitted("access_assembly_record_list_price") > 0;
+    bool show_acquisition_price = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
+    bool show_list_price = DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0;
 
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 

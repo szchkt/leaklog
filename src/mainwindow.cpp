@@ -564,7 +564,7 @@ void MainWindow::printLabel(bool detailed)
         attributes.unite(inspector.list("person"));
     }
 
-    QString default_service_company = DBInfoValueForKey("default_service_company");
+    QString default_service_company = DBInfo::valueForKey("default_service_company");
     ServiceCompany service_company(default_service_company);
     if (service_company.exists()) {
         attributes.insert("id", default_service_company.rightJustified(8, '0'));
@@ -857,7 +857,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
 
 void MainWindow::updateLockButton()
 {
-    if (isDatabaseLocked()) {
+    if (DBInfo::isDatabaseLocked()) {
         actionLock->setIcon(QIcon(":/images/images/locked.png"));
         actionLock->setText(tr("Unlock..."));
     } else {
@@ -961,12 +961,12 @@ void MainWindow::enableTools()
 
 void MainWindow::toggleLocked()
 {
-    if (!isCurrentUserAdmin()) {
+    if (!DBInfo::isCurrentUserAdmin()) {
         showOperationNotPermittedMessage();
         return;
     }
 
-    if (!isDatabaseLocked()) {
+    if (!DBInfo::isDatabaseLocked()) {
         int r = 0;
 
         QDialog d(this);
@@ -979,7 +979,7 @@ void MainWindow::toggleLocked()
 
         r++;
 
-        QString last_date = DBInfoValueForKey("lock_date");
+        QString last_date = DBInfo::valueForKey("lock_date");
 
         QRadioButton *static_lock = new QRadioButton(&d);
         gl->addWidget(static_lock, r, 0);
@@ -1017,7 +1017,7 @@ void MainWindow::toggleLocked()
             gl->addWidget(lbl, r, 0);
 
             admin = new QLineEdit(&d);
-            admin->setText(DBInfoValueForKey("admin", currentUser()));
+            admin->setText(DBInfo::valueForKey("admin", currentUser()));
             gl->addWidget(admin, r, 1);
 
             r++;
@@ -1045,12 +1045,12 @@ void MainWindow::toggleLocked()
         UndoCommand command(m_undo_stack, tr("Lock database"));
         m_undo_stack->savepoint();
 
-        setDBInfoValueForKey("lock_date", date->date().toString(DATE_FORMAT));
-        setDBInfoValueForKey("autolock_days", QString::number(days->value()));
-        setDBInfoValueForKey("lock_password", sha256(password->text()));
-        setDBInfoValueForKey("locked", static_lock->isChecked() ? "true" : "auto");
+        DBInfo::setValueForKey("lock_date", date->date().toString(DATE_FORMAT));
+        DBInfo::setValueForKey("autolock_days", QString::number(days->value()));
+        DBInfo::setValueForKey("lock_password", sha256(password->text()));
+        DBInfo::setValueForKey("locked", static_lock->isChecked() ? "true" : "auto");
         if (admin)
-            setDBInfoValueForKey("admin", admin->text());
+            DBInfo::setValueForKey("admin", admin->text());
         updateLockButton();
         enableTools();
         setDatabaseModified(true);
@@ -1062,7 +1062,7 @@ void MainWindow::toggleLocked()
                                                  "", &ok);
         if (!ok) return;
 
-        if (sha256(password) != DBInfoValueForKey("lock_password")) {
+        if (sha256(password) != DBInfo::valueForKey("lock_password")) {
             QMessageBox::warning(this, tr("Unlock database - Leaklog"), tr("Wrong password."));
             return;
         }
@@ -1070,7 +1070,7 @@ void MainWindow::toggleLocked()
         UndoCommand command(m_undo_stack, tr("Unlock database"));
         m_undo_stack->savepoint();
 
-        setDBInfoValueForKey("locked", "false");
+        DBInfo::setValueForKey("locked", "false");
         updateLockButton();
         enableTools();
         setDatabaseModified(true);
@@ -1093,7 +1093,7 @@ void MainWindow::showOperationNotPermittedMessage()
 
 void MainWindow::configurePermissions()
 {
-    if (!isCurrentUserAdmin() || (!isDatabaseRemote() && isDatabaseLocked())) {
+    if (!DBInfo::isCurrentUserAdmin() || (!isDatabaseRemote() && DBInfo::isDatabaseLocked())) {
         showOperationNotPermittedMessage();
         return;
     }
@@ -1107,7 +1107,7 @@ void MainWindow::configureAutosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfoValueForKey("autosave");
+    QString autosave_mode = DBInfo::valueForKey("autosave");
 
     QDialog d(this);
     d.setWindowTitle(tr("Configure Auto Save - Leaklog"));
@@ -1163,8 +1163,8 @@ void MainWindow::configureAutosave()
         else
             autosave_mode.clear();
 
-        if (DBInfoValueForKey("autosave") != autosave_mode) {
-            setDBInfoValueForKey("autosave", autosave_mode);
+        if (DBInfo::valueForKey("autosave") != autosave_mode) {
+            DBInfo::setValueForKey("autosave", autosave_mode);
             setDatabaseModified(true);
         }
     }

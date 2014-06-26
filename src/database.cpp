@@ -139,7 +139,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
     }
     delete variables;
 
-    double v = DBInfoValueForKey("db_version").toDouble();
+    double v = DBInfo::valueForKey("db_version").toDouble();
     if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
         query.exec("UPDATE inspections SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
@@ -342,7 +342,7 @@ void MainWindow::initTables(bool transaction)
     QSqlDatabase db = QSqlDatabase::database();
     if (transaction) { db.transaction(); }
 { // (SCOPE)
-    double v = DBInfoValueForKey("db_version").toDouble();
+    double v = DBInfo::valueForKey("db_version").toDouble();
     if (v > 0 && v < 0.909) {
         Table("", "Leakages").remove();
         Table("", "Pressures and temperatures").remove();
@@ -354,9 +354,9 @@ void MainWindow::initTables(bool transaction)
         Table(tr("Pressures and temperatures")).remove();
         Table(tr("Compressors")).remove();
     }
-    int tables_version = DBInfoValueForKey("tables_version").toInt();
+    int tables_version = DBInfo::valueForKey("tables_version").toInt();
     if (tables_version < 1) {
-        setDBInfoValueForKey("tables_version", "1");
+        DBInfo::setValueForKey("tables_version", "1");
         Table("", "90").remove();
         Table("", "70").remove();
         Table("", "40").remove();
@@ -416,8 +416,8 @@ void MainWindow::newDatabase()
     initDatabase(db);
     initTables();
     db.transaction();
-    setDBInfoValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
-    setDBInfoValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
+    DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
+    DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     openDatabase(QString(), path);
 }
 
@@ -557,7 +557,7 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
         initDatabase(db, false);
     }
 
-    if (DBInfoValueForKey("min_leaklog_version", DBInfoValueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
+    if (DBInfo::valueForKey("min_leaklog_version", DBInfo::valueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
         closeDatabase(false);
         return;
@@ -669,11 +669,11 @@ void MainWindow::saveAndCompact()
 
 void MainWindow::saveDatabase(bool compact, bool update_ui)
 {
-    setDBInfoValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
-    if (DBInfoValueForKey("db_version").toDouble() < F_DB_VERSION)
-        setDBInfoValueForKey("db_version", QString::number(F_DB_VERSION));
-    if (DBInfoValueForKey("min_leaklog_version").toDouble() < F_DB_MIN_LEAKLOG_VERSION)
-        setDBInfoValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
+    DBInfo::setValueForKey("saved_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
+    if (DBInfo::valueForKey("db_version").toDouble() < F_DB_VERSION)
+        DBInfo::setValueForKey("db_version", QString::number(F_DB_VERSION));
+    if (DBInfo::valueForKey("min_leaklog_version").toDouble() < F_DB_MIN_LEAKLOG_VERSION)
+        DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
 
     QStringList errors;
     QSqlDatabase db = QSqlDatabase::database();
@@ -707,7 +707,7 @@ void MainWindow::autosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfoValueForKey("autosave");
+    QString autosave_mode = DBInfo::valueForKey("autosave");
     if (autosave_mode.isEmpty() || autosave_mode == "immediate")
         return;
 
@@ -798,7 +798,7 @@ void MainWindow::setDatabaseModified(bool modified)
     if (modified)
         emit databaseModified();
 
-    if (QSqlDatabase::database().isOpen() && DBInfoValueForKey("autosave") == "immediate") {
+    if (QSqlDatabase::database().isOpen() && DBInfo::valueForKey("autosave") == "immediate") {
         actionSave->setVisible(false);
         actionSave_and_compact->setVisible(false);
         actionUndo->setVisible(false);
@@ -869,7 +869,7 @@ void MainWindow::tabTextChanged(QWidget *tab, const QString &text)
 
 bool MainWindow::isOperationPermitted(const QString &operation, const QString &record_owner)
 {
-    int permitted = Global::isOperationPermitted(operation, record_owner);
+    int permitted = DBInfo::isOperationPermitted(operation, record_owner);
     if (permitted <= 0) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
@@ -890,7 +890,7 @@ bool MainWindow::isOperationPermitted(const QString &operation, const QString &r
 
 bool MainWindow::isRecordLocked(const QString &date)
 {
-    if (Global::isRecordLocked(date)) {
+    if (DBInfo::isRecordLocked(date)) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
@@ -909,11 +909,11 @@ void MainWindow::editServiceCompany()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
-    ServiceCompany record(DBInfoValueForKey("default_service_company"));
+    ServiceCompany record(DBInfo::valueForKey("default_service_company"));
     UndoCommand command(m_undo_stack, tr("Edit service company information"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        setDBInfoValueForKey("default_service_company", record.id());
+        DBInfo::setValueForKey("default_service_company", record.id());
         setDatabaseModified(true);
         refreshView();
     }
@@ -2532,7 +2532,7 @@ void MainWindow::exportData(const QString &type)
                       .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
         }
 
-        setDBInfoValueForKey("default_service_company", DBInfoValueForKey("default_service_company"), data);
+        DBInfo::setValueForKey("default_service_company", DBInfo::valueForKey("default_service_company"), data);
 
         data.commit();
         data.close();
@@ -2936,7 +2936,7 @@ void MainWindow::importData()
             last_id = current_id;
 
             QString circuit_id_justified = query.stringValue("circuit").rightJustified(5, '0');
-            record_locked = Global::isRecordLocked(query.stringValue("date"));
+            record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
             Inspection inspection(query.stringValue("customer"), query.stringValue("circuit"), query.stringValue("date"));
             if (inspection.exists()) {
                 attributes = inspection.list();
@@ -3051,7 +3051,7 @@ void MainWindow::importData()
     // Repairs
     query.exec("SELECT * FROM repairs ORDER BY date");
     while (query.next()) {
-        record_locked = Global::isRecordLocked(query.stringValue("date"));
+        record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem *item = NULL;
         Repair repair(query.stringValue("date"));
         if (repair.exists()) {
@@ -3102,7 +3102,7 @@ void MainWindow::importData()
     // Refrigerant management
     query.exec("SELECT * FROM refrigerant_management ORDER BY date");
     while (query.next()) {
-        record_locked = Global::isRecordLocked(query.stringValue("date"));
+        record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem *item = NULL;
         RecordOfRefrigerantManagement record(query.stringValue("date"));
         if (record.exists()) {

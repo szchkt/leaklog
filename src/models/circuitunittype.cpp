@@ -33,7 +33,7 @@ CircuitUnitType::CircuitUnitType(const QString &id):
 
 void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
 {
-    QString currency = DBInfoValueForKey("currency", "EUR");
+    QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Circuit Unit Type"));
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));

@@ -63,7 +63,7 @@ void Customer::readOperatorValues()
     readValues();
     switch (value("operator_id").toInt()) {
         case -1: {
-            QVariantMap service_company = ServiceCompany(DBInfoValueForKey("default_service_company")).list();
+            QVariantMap service_company = ServiceCompany(DBInfo::valueForKey("default_service_company")).list();
             values().insert("operator_id", service_company.value("id"));
             values().insert("operator_company", service_company.value("name"));
             values().insert("operator_address", service_company.value("address"));

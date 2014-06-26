@@ -33,7 +33,7 @@ Inspector::Inspector(const QString &id):
 
 void Inspector::initEditDialogue(EditDialogueWidgets *md)
 {
-    QString currency = Global::DBInfoValueForKey("currency", "EUR");
+    QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Inspector"));
     QVariantMap attributes;

@@ -44,12 +44,12 @@ QString AssemblyRecordDetailsView::renderHTML()
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
-    bool locked = Global::isRecordLocked(inspection_date);
+    bool locked = DBInfo::isRecordLocked(inspection_date);
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
     VariableEvaluation::Variable *variable;
     QString nom_value;
-    QString currency = DBInfoValueForKey("currency", "EUR");
+    QString currency = DBInfo::valueForKey("currency", "EUR");
 
     AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
     QVariantMap ar_type = ar_type_record.list();

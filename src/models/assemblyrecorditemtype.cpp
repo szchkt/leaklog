@@ -33,7 +33,7 @@ AssemblyRecordItemType::AssemblyRecordItemType(const QString &id):
 
 void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
 {
-    QString currency = DBInfoValueForKey("currency", "EUR");
+    QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Assembly Record Item Type"));
 

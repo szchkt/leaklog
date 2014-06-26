@@ -37,7 +37,7 @@ StoreView::StoreView(ViewTabSettings *settings):
 QString StoreView::renderHTML()
 {
     QString html; MTTextStream out(&html);
-    ServiceCompany serv_company_record(DBInfoValueForKey("default_service_company"));
+    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company"));
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";

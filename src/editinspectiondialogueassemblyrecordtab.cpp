@@ -69,11 +69,11 @@ void EditInspectionDialogueAssemblyRecordTab::init()
     groups_layout = new EditDialogueGroupsLayout(this);
     groups_layout->addHeaderItem(-1, "name", tr("Name"), Global::String);
     groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"), Global::String);
-    if (Global::isOperationPermitted("access_assembly_record_acquisition_price") > 0)
+    if (DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0)
         groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
-    if (Global::isOperationPermitted("access_assembly_record_list_price") > 0)
+    if (DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0)
         groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
-    if (Global::isOperationPermitted("access_assembly_record_list_price") > 0)
+    if (DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0)
         groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
     layout->addWidget(groups_layout);
 
@@ -121,7 +121,7 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
 
 void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
 {
-    QString currency = Global::DBInfoValueForKey("currency", "EUR");
+    QString currency = DBInfo::valueForKey("currency", "EUR");
 
     groups_layout->clear();
     QMap<QString, EditDialogueTableCell *> cells_map;

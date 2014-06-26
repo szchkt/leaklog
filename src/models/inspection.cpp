@@ -109,8 +109,8 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     }
     md->setUsedIds(used_ids);
     MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
-    if (isDatabaseLocked()) {
-        date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
+    if (DBInfo::isDatabaseLocked()) {
+        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
     md->addInputWidget(date);
     MTCheckBoxGroup *chbgrp_i_type = new MTCheckBoxGroup(md->widget());

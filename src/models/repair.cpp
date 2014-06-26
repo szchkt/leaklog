@@ -45,8 +45,8 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
-    if (isDatabaseLocked())
-        date->setMinimumDate(QDate::fromString(lockDate(), DATE_FORMAT));
+    if (DBInfo::isDatabaseLocked())
+        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     md->addInputWidget(date);
     MDLineEdit *customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
     if (!attributes.value("parent").toString().isEmpty())

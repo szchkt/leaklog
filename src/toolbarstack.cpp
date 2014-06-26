@@ -508,11 +508,11 @@ void ToolBarStack::enableTools()
     chb_table_all_circuits->setEnabled(_settings->isCircuitSelected());
     chb_table_all_circuits->setChecked(!_settings->isCircuitSelected());
 
-    bool enabled = isOperationPermitted("access_assembly_record_acquisition_price") > 0;
+    bool enabled = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     chb_assembly_record_acquisition_price->setEnabled(enabled);
     chb_assembly_record_acquisition_price->setChecked(enabled);
 
-    enabled = isOperationPermitted("access_assembly_record_list_price") > 0;
+    enabled = DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0;
     chb_assembly_record_list_price->setEnabled(enabled);
     chb_assembly_record_list_price->setChecked(enabled);
 
