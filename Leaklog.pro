@@ -270,6 +270,8 @@ macx-xcode {
     QMAKE_CXX      = clang++
 }
 
+QMAKE_CXXFLAGS    += -std=c++0x
+
 unix {
     OBJECTS_DIR    = build/unix
     MOC_DIR        = build/unix
