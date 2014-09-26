@@ -28,7 +28,7 @@
 using namespace Global;
 
 AssemblyRecordItemType::AssemblyRecordItemType(const QString &id):
-    DBRecord("assembly_record_item_types", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
@@ -64,6 +64,39 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString AssemblyRecordItemType::tableName()
+{
+    return "assembly_record_item_types";
+}
+
+class AssemblyRecordItemTypeColumns
+{
+public:
+    AssemblyRecordItemTypeColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("acquisition_price", "NUMERIC");
+        columns << Column("list_price", "NUMERIC");
+        columns << Column("ean", "INTEGER");
+        columns << Column("unit", "TEXT");
+        columns << Column("category_id", "INTEGER");
+        columns << Column("inspection_variable_id", "TEXT");
+        columns << Column("value_data_type", "INTEGER");
+        columns << Column("discount", "NUMERIC");
+        columns << Column("auto_show", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &AssemblyRecordItemType::columns()
+{
+    static AssemblyRecordItemTypeColumns columns;
+    return columns.columns;
 }
 
 class AssemblyRecordItemTypeAttributes

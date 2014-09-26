@@ -30,7 +30,7 @@
 using namespace Global;
 
 Customer::Customer(const QString &id):
-    DBRecord("customers", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void Customer::initEditDialogue(EditDialogueWidgets *md)
@@ -80,6 +80,38 @@ void Customer::readOperatorValues()
             values().insert("operator_phone", value("phone"));
             break;
     }
+}
+
+QString Customer::tableName()
+{
+    return "customers";
+}
+
+class CustomerColumns
+{
+public:
+    CustomerColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("company", "TEXT");
+        columns << Column("address", "TEXT");
+        columns << Column("mail", "TEXT");
+        columns << Column("phone", "TEXT");
+        columns << Column("operator_id", "TEXT");
+        columns << Column("operator_company", "TEXT");
+        columns << Column("operator_address", "TEXT");
+        columns << Column("operator_mail", "TEXT");
+        columns << Column("operator_phone", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Customer::columns()
+{
+    static CustomerColumns columns;
+    return columns.columns;
 }
 
 class CustomerAttributes

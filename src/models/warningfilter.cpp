@@ -20,5 +20,29 @@
 #include "warningfilter.h"
 
 WarningFilter::WarningFilter(const QString &parent):
-    DBRecord("warnings_filters", "", "", MTDictionary("parent", parent))
+    DBRecord(tableName(), "", "", MTDictionary("parent", parent))
 {}
+
+QString WarningFilter::tableName()
+{
+    return "warnings_filters";
+}
+
+class WarningFilterColumns
+{
+public:
+    WarningFilterColumns() {
+        columns << Column("parent", "INTEGER");
+        columns << Column("circuit_attribute", "TEXT");
+        columns << Column("function", "TEXT");
+        columns << Column("value", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &WarningFilter::columns()
+{
+    static WarningFilterColumns columns;
+    return columns.columns;
+}

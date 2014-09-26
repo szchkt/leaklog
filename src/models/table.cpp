@@ -26,7 +26,7 @@
 #include <QApplication>
 
 Table::Table(const QString &id, const QString &uid, const MTDictionary &parents):
-    DBRecord("tables", uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
+    DBRecord(tableName(), uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
 {}
 
 void Table::initEditDialogue(EditDialogueWidgets *md)
@@ -53,4 +53,33 @@ void Table::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString Table::tableName()
+{
+    return "tables";
+}
+
+class TableColumns
+{
+public:
+    TableColumns() {
+        columns << Column("uid", "TEXT");
+        columns << Column("id", "TEXT");
+        columns << Column("highlight_nominal", "INTEGER");
+        columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
+        columns << Column("variables", "TEXT");
+        columns << Column("sum", "TEXT");
+        columns << Column("avg", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Table::columns()
+{
+    static TableColumns columns;
+    return columns.columns;
 }

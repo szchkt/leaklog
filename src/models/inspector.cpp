@@ -28,7 +28,7 @@
 using namespace Global;
 
 Inspector::Inspector(const QString &id):
-    DBRecord("inspectors", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void Inspector::initEditDialogue(EditDialogueWidgets *md)
@@ -60,6 +60,34 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString Inspector::tableName()
+{
+    return "inspectors";
+}
+
+class InspectorColumns
+{
+public:
+    InspectorColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("person", "TEXT");
+        columns << Column("mail", "TEXT");
+        columns << Column("phone", "TEXT");
+        columns << Column("list_price", "NUMERIC");
+        columns << Column("acquisition_price", "NUMERIC");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Inspector::columns()
+{
+    static InspectorColumns columns;
+    return columns.columns;
 }
 
 class InspectorAttributes

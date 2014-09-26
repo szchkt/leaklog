@@ -35,6 +35,8 @@ public:
 
     static void cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id = -1, bool compressors_and_units = false);
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
     static int numBasicAttributes();
 };

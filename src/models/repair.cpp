@@ -28,7 +28,7 @@
 using namespace Global;
 
 Repair::Repair(const QString &date):
-    DBRecord("repairs", "date", date, MTDictionary())
+    DBRecord(tableName(), "date", date, MTDictionary())
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
@@ -72,6 +72,39 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString Repair::tableName()
+{
+    return "repairs";
+}
+
+class RepairColumns
+{
+public:
+    RepairColumns() {
+        columns << Column("date", "TEXT");
+        columns << Column("parent", "INTEGER");
+        columns << Column("customer", "TEXT");
+        columns << Column("device", "TEXT");
+        columns << Column("field", "TEXT");
+        columns << Column("refrigerant", "TEXT");
+        columns << Column("refrigerant_amount", "NUMERIC");
+        columns << Column("refr_add_am", "NUMERIC");
+        columns << Column("refr_reco", "NUMERIC");
+        columns << Column("repairman", "TEXT");
+        columns << Column("arno", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Repair::columns()
+{
+    static RepairColumns columns;
+    return columns.columns;
 }
 
 class RepairAttributes

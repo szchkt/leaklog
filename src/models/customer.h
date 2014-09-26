@@ -32,6 +32,8 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     void readOperatorValues();
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
     static int numBasicAttributes();
 };

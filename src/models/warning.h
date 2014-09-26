@@ -30,6 +30,9 @@ public:
     WarningRecord(const QString &);
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // WARNING_H

@@ -28,6 +28,9 @@ class WarningFilter : public DBRecord
 
 public:
     WarningFilter(const QString &parent);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // WARNINGFILTER_H

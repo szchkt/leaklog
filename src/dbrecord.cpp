@@ -19,6 +19,69 @@
 
 #include "dbrecord.h"
 
+Column::Column(const QString &name, const QString &type):
+    _name(name),
+    _type(type)
+{
+}
+
+QString Column::name() const
+{
+    return _name;
+}
+
+QString Column::type() const
+{
+    return _type;
+}
+
+QString Column::toString() const
+{
+    return QString("%1 %2").arg(_name).arg(_type);
+}
+
+QString ColumnList::toString() const
+{
+    QString columns;
+    bool first = true;
+    foreach (const Column &column, *this) {
+        if (first) {
+            first = false;
+        } else {
+            columns.append(", ");
+        }
+        columns.append(column.toString());
+    }
+    return columns;
+}
+
+QStringList ColumnList::toStringList(std::function<QString(const Column &)> f) const
+{
+    QStringList result;
+    foreach (const Column &column, *this) {
+        result << f(column);
+    }
+    return result;
+}
+
+QStringList ColumnList::columnNameList() const
+{
+    QStringList names;
+    foreach (const Column &column, *this) {
+        names << column.name();
+    }
+    return names;
+}
+
+QSet<QString> ColumnList::columnNameSet() const
+{
+    QSet<QString> names;
+    foreach (const Column &column, *this) {
+        names << column.name();
+    }
+    return names;
+}
+
 DBRecord::DBRecord():
     QObject(),
     MTRecord()

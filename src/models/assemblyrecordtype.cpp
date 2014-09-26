@@ -28,7 +28,7 @@
 using namespace Global;
 
 AssemblyRecordType::AssemblyRecordType(const QString &id):
-    DBRecord("assembly_record_types", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
@@ -72,6 +72,34 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString AssemblyRecordType::tableName()
+{
+    return "assembly_record_types";
+}
+
+class AssemblyRecordTypeColumns
+{
+public:
+    AssemblyRecordTypeColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("description", "TEXT");
+        columns << Column("display_options", "INTEGER");
+        columns << Column("style", "INTEGER");
+        columns << Column("name_format", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &AssemblyRecordType::columns()
+{
+    static AssemblyRecordTypeColumns columns;
+    return columns.columns;
 }
 
 class AssemblyRecordTypeAttributes

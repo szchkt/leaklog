@@ -20,7 +20,34 @@
 #include "inspectionimage.h"
 
 InspectionImage::InspectionImage(const QString &customer_id, const QString &circuit_id, const QString &inspection_id):
-    MTRecord("inspection_images", "", "",
+    MTRecord(tableName(), "", "",
              MTDictionary(QStringList() << "customer" << "circuit" << "date",
                           QStringList() << customer_id << circuit_id << inspection_id))
 {}
+
+QString InspectionImage::tableName()
+{
+    return "inspection_images";
+}
+
+class InspectionImageColumns
+{
+public:
+    InspectionImageColumns() {
+        columns << Column("customer", "INTEGER");
+        columns << Column("circuit", "INTEGER");
+        columns << Column("date", "TEXT");
+        columns << Column("description", "TEXT");
+        columns << Column("file_id", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &InspectionImage::columns()
+{
+    static InspectionImageColumns columns;
+    return columns.columns;
+}

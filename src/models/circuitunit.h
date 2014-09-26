@@ -26,6 +26,9 @@ class CircuitUnit : public MTRecord
 {
 public:
     CircuitUnit(const QString & = QString(), const MTDictionary & = MTDictionary());
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // CIRCUITUNIT_H

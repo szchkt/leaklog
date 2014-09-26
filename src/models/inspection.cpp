@@ -64,13 +64,43 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
     return QString();
 }
 
+QString Inspection::tableName()
+{
+    return "inspections";
+}
+
+class InspectionColumns
+{
+public:
+    InspectionColumns() {
+        columns << Column("customer", "INTEGER");
+        columns << Column("circuit", "INTEGER");
+        columns << Column("date", "TEXT");
+        columns << Column("nominal", "INTEGER");
+        columns << Column("repair", "INTEGER");
+        columns << Column("outside_interval", "INTEGER");
+        columns << Column("inspection_type", "INTEGER DEFAULT 0 NOT NULL");
+        columns << Column("inspection_type_data", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Inspection::columns()
+{
+    static InspectionColumns columns;
+    return columns.columns;
+}
+
 Inspection::Inspection():
-    DBRecord("inspections", "date", "", MTDictionary()),
+    DBRecord(tableName(), "date", "", MTDictionary()),
     m_scope(Variable::Inspection)
 {}
 
 Inspection::Inspection(const QString &customer, const QString &circuit, const QString &date):
-    DBRecord("inspections", "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
+    DBRecord(tableName(), "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
     m_scope(Variable::Inspection)
 {}
 

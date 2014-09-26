@@ -25,7 +25,7 @@
 #include <QApplication>
 
 ServiceCompany::ServiceCompany(const QString &id):
-    DBRecord("service_companies", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
@@ -52,6 +52,35 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString ServiceCompany::tableName()
+{
+    return "service_companies";
+}
+
+class ServiceCompanyColumns
+{
+public:
+    ServiceCompanyColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("address", "TEXT");
+        columns << Column("mail", "TEXT");
+        columns << Column("phone", "TEXT");
+        columns << Column("website", "TEXT");
+        columns << Column("image", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &ServiceCompany::columns()
+{
+    static ServiceCompanyColumns columns;
+    return columns.columns;
 }
 
 class ServiceCompanyAttributes

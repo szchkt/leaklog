@@ -22,12 +22,40 @@
 #include <QApplication>
 
 Person::Person(const QString &person_id):
-    MTRecord("persons", "id", person_id, MTDictionary())
+    MTRecord(tableName(), "id", person_id, MTDictionary())
 {}
 
 Person::Person(const QString &person_id, const QString &customer_id):
-    MTRecord("persons", "id", person_id, MTDictionary("company_id", customer_id))
+    MTRecord(tableName(), "id", person_id, MTDictionary("company_id", customer_id))
 {}
+
+QString Person::tableName()
+{
+    return "persons";
+}
+
+class PersonColumns
+{
+public:
+    PersonColumns() {
+        columns << Column("id", "BIGINT PRIMARY KEY");
+        columns << Column("company_id", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("mail", "TEXT");
+        columns << Column("phone", "TEXT");
+        columns << Column("hidden", "INTEGER DEFAULT 0 NOT NULL");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Person::columns()
+{
+    static PersonColumns columns;
+    return columns.columns;
+}
 
 class PersonAttributes
 {

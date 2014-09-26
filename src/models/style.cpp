@@ -25,7 +25,7 @@
 #include <QApplication>
 
 Style::Style(const QString &id):
-    DBRecord("styles", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void Style::initEditDialogue(EditDialogueWidgets *md)
@@ -48,6 +48,32 @@ void Style::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString Style::tableName()
+{
+    return "styles";
+}
+
+class StyleColumns
+{
+public:
+    StyleColumns() {
+        columns << Column("id", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("content", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("div_tables", "INTEGER");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Style::columns()
+{
+    static StyleColumns columns;
+    return columns.columns;
 }
 
 class StyleAttributes

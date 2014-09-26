@@ -30,6 +30,9 @@ public:
     VariableRecord(const QString &, const QString & = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // VARIABLE_H

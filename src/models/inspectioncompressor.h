@@ -26,6 +26,9 @@ class InspectionsCompressor : public MTRecord
 {
 public:
     InspectionsCompressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // INSPECTIONCOMPRESSOR_H

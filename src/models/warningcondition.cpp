@@ -20,5 +20,29 @@
 #include "warningcondition.h"
 
 WarningCondition::WarningCondition(const QString &parent):
-    DBRecord("warnings_conditions", "", "", MTDictionary("parent", parent))
+    DBRecord(tableName(), "", "", MTDictionary("parent", parent))
 {}
+
+QString WarningCondition::tableName()
+{
+    return "warnings_conditions";
+}
+
+class WarningConditionColumns
+{
+public:
+    WarningConditionColumns() {
+        columns << Column("parent", "INTEGER");
+        columns << Column("value_ins", "TEXT");
+        columns << Column("function", "TEXT");
+        columns << Column("value_nom", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &WarningCondition::columns()
+{
+    static WarningConditionColumns columns;
+    return columns.columns;
+}

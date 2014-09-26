@@ -34,6 +34,8 @@ public:
     AssemblyRecordItem(const QString &);
     AssemblyRecordItem(const QString &, const QString &, const QString &, const MTDictionary &);
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
 };
 

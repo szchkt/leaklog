@@ -30,6 +30,9 @@ public:
     Table(const QString &, const QString & = QString(), const MTDictionary & = MTDictionary());
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // TABLE_H

@@ -28,7 +28,7 @@
 using namespace Global;
 
 DBInfo::DBInfo(const QString &key):
-    DBRecord("db_info", "id", key, MTDictionary())
+    DBRecord(tableName(), "id", key, MTDictionary())
 {}
 
 QString DBInfo::valueForKey(const QString &key, const QString &default_value)
@@ -89,4 +89,26 @@ int DBInfo::isOperationPermitted(const QString &operation, const QString &record
     if (permission == "owner")
         return record_owner == currentUser() ? 2 : -2;
     return -1;
+}
+
+QString DBInfo::tableName()
+{
+    return "db_info";
+}
+
+class DBInfoColumns
+{
+public:
+    DBInfoColumns() {
+        columns << Column("id", "TEXT");
+        columns << Column("value", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &DBInfo::columns()
+{
+    static DBInfoColumns columns;
+    return columns.columns;
 }

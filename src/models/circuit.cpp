@@ -30,11 +30,11 @@
 using namespace Global;
 
 Circuit::Circuit():
-    DBRecord("circuits", "id", "", MTDictionary())
+    DBRecord(tableName(), "id", "", MTDictionary())
 {}
 
 Circuit::Circuit(const QString &parent, const QString &id):
-    DBRecord("circuits", "id", id, MTDictionary("parent", parent))
+    DBRecord(tableName(), "id", id, MTDictionary("parent", parent))
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
@@ -171,6 +171,51 @@ void Circuit::cascadeIDChange(int customer_id, int old_id, int new_id, int new_c
         update_circuit_units.bindValue(":new_id", new_id);
         update_circuit_units.exec();
     }
+}
+
+QString Circuit::tableName()
+{
+    return "circuits";
+}
+
+class CircuitColumns
+{
+public:
+    CircuitColumns() {
+        columns << Column("parent", "INTEGER");
+        columns << Column("id", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("disused", "INTEGER");
+        columns << Column("operation", "TEXT");
+        columns << Column("building", "TEXT");
+        columns << Column("device", "TEXT");
+        columns << Column("hermetic", "INTEGER");
+        columns << Column("manufacturer", "TEXT");
+        columns << Column("type", "TEXT");
+        columns << Column("sn", "TEXT");
+        columns << Column("year", "INTEGER");
+        columns << Column("commissioning", "TEXT");
+        columns << Column("decommissioning", "TEXT");
+        columns << Column("field", "TEXT");
+        columns << Column("refrigerant", "TEXT");
+        columns << Column("refrigerant_amount", "NUMERIC");
+        columns << Column("oil", "TEXT");
+        columns << Column("oil_amount", "NUMERIC");
+        columns << Column("leak_detector", "INTEGER");
+        columns << Column("runtime", "NUMERIC");
+        columns << Column("utilisation", "NUMERIC");
+        columns << Column("inspection_interval", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Circuit::columns()
+{
+    static CircuitColumns columns;
+    return columns.columns;
 }
 
 class CircuitAttributes

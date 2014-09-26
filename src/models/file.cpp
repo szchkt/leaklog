@@ -20,5 +20,30 @@
 #include "file.h"
 
 File::File(const QString &file_id):
-    MTRecord("files", "id", file_id, MTDictionary())
+    MTRecord(tableName(), "id", file_id, MTDictionary())
 {}
+
+QString File::tableName()
+{
+    return "files";
+}
+
+class FileColumns
+{
+public:
+    FileColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("data", "BYTEA");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &File::columns()
+{
+    static FileColumns columns;
+    return columns.columns;
+}

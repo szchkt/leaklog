@@ -28,6 +28,8 @@ public:
     Person(const QString & = QString());
     Person(const QString &, const QString &);
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
 };
 

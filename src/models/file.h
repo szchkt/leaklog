@@ -26,6 +26,9 @@ class File : public MTRecord
 {
 public:
     File(const QString &);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // FILE_H

@@ -29,7 +29,7 @@
 using namespace Global;
 
 RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString &date):
-    DBRecord("refrigerant_management", "date", date, MTDictionary())
+    DBRecord(tableName(), "date", date, MTDictionary())
 {}
 
 void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
@@ -70,6 +70,40 @@ void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString RecordOfRefrigerantManagement::tableName()
+{
+    return "refrigerant_management";
+}
+
+class RefrigerantManagementColumns
+{
+public:
+    RefrigerantManagementColumns() {
+        columns << Column("date", "TEXT");
+        columns << Column("partner", "TEXT");
+        columns << Column("partner_id", "INTEGER");
+        columns << Column("refrigerant", "TEXT");
+        columns << Column("purchased", "NUMERIC");
+        columns << Column("purchased_reco", "NUMERIC");
+        columns << Column("sold", "NUMERIC");
+        columns << Column("sold_reco", "NUMERIC");
+        columns << Column("refr_rege", "NUMERIC");
+        columns << Column("refr_disp", "NUMERIC");
+        columns << Column("leaked", "NUMERIC");
+        columns << Column("leaked_reco", "NUMERIC");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &RecordOfRefrigerantManagement::columns()
+{
+    static RefrigerantManagementColumns columns;
+    return columns.columns;
 }
 
 class RecordOfRefrigerantManagementAttributes

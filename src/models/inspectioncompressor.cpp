@@ -20,7 +20,34 @@
 #include "inspectioncompressor.h"
 
 InspectionsCompressor::InspectionsCompressor(const QString &id, const MTDictionary &dict):
-    MTRecord("inspections_compressors", "id", id, dict)
+    MTRecord(tableName(), "id", id, dict)
 {
     setSerialId(true);
+}
+
+QString InspectionsCompressor::tableName()
+{
+    return "inspections_compressors";
+}
+
+class InspectionsCompressorColumns
+{
+public:
+    InspectionsCompressorColumns() {
+        columns << Column("id", "SERIAL NOT NULL");
+        columns << Column("customer_id", "INTEGER");
+        columns << Column("circuit_id", "INTEGER");
+        columns << Column("date", "TEXT");
+        columns << Column("compressor_id", "BIGINT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &InspectionsCompressor::columns()
+{
+    static InspectionsCompressorColumns columns;
+    return columns.columns;
 }

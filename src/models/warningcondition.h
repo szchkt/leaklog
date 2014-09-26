@@ -28,6 +28,9 @@ class WarningCondition : public DBRecord
 
 public:
     WarningCondition(const QString &parent);
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // WARNINGCONDITION_H

@@ -27,6 +27,8 @@ class Compressor : public MTRecord
 public:
     Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
 };
 

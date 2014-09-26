@@ -37,6 +37,9 @@ public:
     static bool isRecordLocked(const QString &);
     static QString lockDate();
     static int isOperationPermitted(const QString &, const QString & = QString());
+
+    static QString tableName();
+    static const ColumnList &columns();
 };
 
 #endif // DBINFO_H

@@ -24,6 +24,30 @@
 
 class EditDialogueWidgets;
 
+class Column
+{
+public:
+    Column(const QString &name, const QString &type);
+
+    QString name() const;
+    QString type() const;
+
+    QString toString() const;
+
+private:
+    QString _name;
+    QString _type;
+};
+
+class ColumnList : public QList<Column>
+{
+public:
+    QString toString() const;
+    QStringList toStringList(std::function<QString(const Column &)> f) const;
+    QStringList columnNameList() const;
+    QSet<QString> columnNameSet() const;
+};
+
 class Modifiable
 {
 public:

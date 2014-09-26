@@ -2671,9 +2671,9 @@ void MainWindow::importData()
     compressor_attributes.insert(6, "manufacturer");
     compressor_attributes.insert(7, "type");
     compressor_attributes.insert(8, "sn");
-    QStringList compressors_columns = databaseTables().value("compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
-    for (QStringList::iterator i = compressors_columns.begin(); i != compressors_columns.end(); ++i)
-        *i = QString("compressors.%1 AS compressor_%1").arg(*i);
+    QStringList compressors_columns = Compressor::columns().toStringList([](const Column &column) {
+        return QString("compressors.%1 AS compressor_%1").arg(column.name());
+    });
     query.exec(QString("SELECT customers.company, circuits.*, %1 FROM circuits"
                        " LEFT JOIN customers ON circuits.parent = customers.id"
                        " LEFT JOIN compressors ON compressors.customer_id = circuits.parent AND compressors.circuit_id = circuits.id"
@@ -2904,16 +2904,19 @@ void MainWindow::importData()
     }
     shown_sections.clear();
     shown_sections << 0 << 1 << 2;
-    QStringList inspections_columns = databaseTables().value("inspections").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
-    for (QStringList::iterator i = inspections_columns.begin(); i != inspections_columns.end(); ++i)
-        *i = QString("inspections.%1").arg(*i);
+
+    QStringList inspections_columns = Inspection::columns().toStringList([](const Column &column) {
+        return QString("inspections.%1").arg(column.name());
+    });
     foreach (const QString &variable_name, variable_names.keys())
         inspections_columns << QString("inspections.%1").arg(variable_name);
-    QStringList inspections_compressors_columns = databaseTables().value("inspections_compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
-    for (QStringList::iterator i = inspections_compressors_columns.begin(); i != inspections_compressors_columns.end(); ++i)
-        *i = QString("inspections_compressors.%1 AS compressor_%1").arg(*i);
+
+    QStringList inspections_compressors_columns = InspectionsCompressor::columns().toStringList([](const Column &column) {
+        return QString("inspections_compressors.%1 AS compressor_%1").arg(column.name());
+    });
     foreach (const QString &variable_name, compressor_variable_names)
         inspections_compressors_columns << QString("inspections_compressors.%1 AS compressor_%1").arg(variable_name);
+
     query.exec(QString("SELECT customers.company, %1, %2, compressors.name AS compressor_name"
                        " FROM inspections LEFT JOIN customers ON inspections.customer = customers.id"
                        " LEFT JOIN inspections_compressors ON inspections_compressors.customer_id = inspections.customer"
@@ -3201,7 +3204,7 @@ void MainWindow::importData()
         // Import customers
         trw[0] = id->newCustomers();
         trw[1] = id->modifiedCustomers();
-        fields = QSet<QString>::fromList(databaseTables().value("customers").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = Customer::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int c = 0; c < trw[w]->topLevelItemCount(); ++c) {
                 if (trw[w]->topLevelItem(c)->checkState(0) == Qt::Unchecked) { continue; }
@@ -3223,7 +3226,7 @@ void MainWindow::importData()
         // Import contact persons
         trw[0] = id->newPersons();
         trw[1] = id->modifiedPersons();
-        fields = QSet<QString>::fromList(databaseTables().value("persons").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = Person::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int p = 0; p < trw[w]->topLevelItemCount(); ++p) {
                 if (trw[w]->topLevelItem(p)->checkState(0) == Qt::Unchecked) { continue; }
@@ -3245,8 +3248,8 @@ void MainWindow::importData()
         // Import circuits
         trw[0] = id->newCircuits();
         trw[1] = id->modifiedCircuits();
-        fields = QSet<QString>::fromList(databaseTables().value("circuits").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
-        QSet<QString> compressors_fields = QSet<QString>::fromList(databaseTables().value("compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = Circuit::columns().columnNameSet();
+        QSet<QString> compressors_fields = Compressor::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int cc = 0; cc < trw[w]->topLevelItemCount(); ++cc) {
                 QTreeWidgetItem *item = trw[w]->topLevelItem(cc);
@@ -3348,7 +3351,7 @@ void MainWindow::importData()
         // Import inspections
         trw[0] = id->newInspections();
         trw[1] = id->modifiedInspections();
-        QSet<QString> inspections_compressors_fields = QSet<QString>::fromList(databaseTables().value("inspections_compressors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        QSet<QString> inspections_compressors_fields = InspectionsCompressor::columns().columnNameSet();
         inspections_compressors_fields.unite(QSet<QString>::fromList(compressor_variable_names));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0, j = 0; i < trw[w]->topLevelItemCount(); ++i) {
@@ -3404,7 +3407,7 @@ void MainWindow::importData()
         // Import repairs
         trw[0] = id->newRepairs();
         trw[1] = id->modifiedRepairs();
-        fields = QSet<QString>::fromList(databaseTables().value("repairs").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = Repair::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -3426,7 +3429,7 @@ void MainWindow::importData()
         // Import refrigerant management
         trw[0] = id->newRefrigerantManagement();
         trw[1] = id->modifiedRefrigerantManagement();
-        fields = QSet<QString>::fromList(databaseTables().value("refrigerant_management").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = RecordOfRefrigerantManagement::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -3448,7 +3451,7 @@ void MainWindow::importData()
         // Import inspectors
         trw[0] = id->newInspectors();
         trw[1] = id->modifiedInspectors();
-        fields = QSet<QString>::fromList(databaseTables().value("inspectors").split(QRegExp("[A-Z, ]+", Qt::CaseSensitive), QString::SkipEmptyParts));
+        fields = Inspector::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }

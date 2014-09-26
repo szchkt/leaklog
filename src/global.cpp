@@ -22,6 +22,7 @@
 #include "global.h"
 #include "variables.h"
 #include "reportdata.h"
+#include "records.h"
 
 #include <QApplication>
 #include <QSet>
@@ -474,32 +475,32 @@ class DatabaseTables
 {
 public:
     DatabaseTables() {
-        dict.insert("service_companies", "id INTEGER PRIMARY KEY, name TEXT, address TEXT, mail TEXT, phone TEXT, website TEXT, image INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("customers", "id INTEGER PRIMARY KEY, company TEXT, address TEXT, mail TEXT, phone TEXT, operator_id TEXT, operator_company TEXT, operator_address TEXT, operator_mail TEXT, operator_phone TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("persons", "id BIGINT PRIMARY KEY, company_id INTEGER, name TEXT, mail TEXT, phone TEXT, hidden INTEGER DEFAULT 0 NOT NULL, date_updated TEXT, updated_by TEXT");
-        dict.insert("circuits", "parent INTEGER, id INTEGER, name TEXT, disused INTEGER, operation TEXT, building TEXT, device TEXT, hermetic INTEGER, manufacturer TEXT, type TEXT, sn TEXT, year INTEGER, commissioning TEXT, decommissioning TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, oil TEXT, oil_amount NUMERIC, leak_detector INTEGER, runtime NUMERIC, utilisation NUMERIC, inspection_interval INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("compressors", "id BIGINT NOT NULL, customer_id INTEGER, circuit_id INTEGER, name TEXT, manufacturer TEXT, type TEXT, sn TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspections", "customer INTEGER, circuit INTEGER, date TEXT, nominal INTEGER, repair INTEGER, outside_interval INTEGER, inspection_type INTEGER DEFAULT 0 NOT NULL, inspection_type_data TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspections_compressors", "id SERIAL NOT NULL, customer_id INTEGER, circuit_id INTEGER, date TEXT, compressor_id BIGINT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspection_images", "customer INTEGER, circuit INTEGER, date TEXT, description TEXT, file_id INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("repairs", "date TEXT, parent INTEGER, customer TEXT, device TEXT, field TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, refr_add_am NUMERIC, refr_reco NUMERIC, repairman TEXT, arno TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("inspectors", "id INTEGER PRIMARY KEY, person TEXT, mail TEXT, phone TEXT, list_price NUMERIC, acquisition_price NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("variables", "parent_id TEXT, id TEXT, name TEXT, type TEXT, unit TEXT, scope INTEGER DEFAULT 1 NOT NULL, value TEXT, compare_nom INTEGER, tolerance NUMERIC, col_bg TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("tables", "uid TEXT, id TEXT, highlight_nominal INTEGER, scope INTEGER DEFAULT 1 NOT NULL, variables TEXT, sum TEXT, avg TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("warnings", "id INTEGER PRIMARY KEY, scope INTEGER DEFAULT 1 NOT NULL, enabled INTEGER, name TEXT, description TEXT, delay INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("warnings_filters", "parent INTEGER, circuit_attribute TEXT, function TEXT, value TEXT");
-        dict.insert("warnings_conditions", "parent INTEGER, value_ins TEXT, function TEXT, value_nom TEXT");
-        dict.insert("refrigerant_management", "date TEXT, partner TEXT, partner_id INTEGER, refrigerant TEXT, purchased NUMERIC, purchased_reco NUMERIC, sold NUMERIC, sold_reco NUMERIC, refr_rege NUMERIC, refr_disp NUMERIC, leaked NUMERIC, leaked_reco NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_types", "id INTEGER PRIMARY KEY, name TEXT, description TEXT, display_options INTEGER, style INTEGER, name_format TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_item_types", "id INTEGER PRIMARY KEY, name TEXT, acquisition_price NUMERIC, list_price NUMERIC, ean INTEGER, unit TEXT, category_id INTEGER, inspection_variable_id TEXT, value_data_type INTEGER, discount NUMERIC, auto_show INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_type_categories", "record_type_id INTEGER, record_category_id INTEGER, position INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_item_categories", "id INTEGER PRIMARY KEY, name TEXT, display_options INTEGER, display_position INTEGER, date_updated TEXT, updated_by TEXT");
-        dict.insert("assembly_record_items", "arno TEXT, item_type_id INTEGER, value TEXT, acquisition_price REAL, list_price REAL, source INTEGER, name TEXT, category_id INTEGER, unit TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("files", "id INTEGER PRIMARY KEY, name TEXT, data BYTEA, date_updated TEXT, updated_by TEXT");
-        dict.insert("circuit_unit_types", "id INTEGER PRIMARY KEY, manufacturer TEXT, type TEXT, refrigerant TEXT, refrigerant_amount NUMERIC, acquisition_price NUMERIC, list_price NUMERIC, location INTEGER, unit TEXT, oil TEXT, oil_amount NUMERIC, output NUMERIC, output_unit TEXT, output_t0_tc NUMERIC, notes TEXT, discount NUMERIC, date_updated TEXT, updated_by TEXT");
-        dict.insert("circuit_units", "id INTEGER PRIMARY KEY, company_id INTEGER, circuit_id INTEGER, unit_type_id INTEGER, sn TEXT, date_updated TEXT, updated_by TEXT");
-        dict.insert("db_info", "id TEXT, value TEXT");
-        dict.insert("styles", "id INTEGER, name TEXT, content TEXT, date_updated TEXT, div_tables INTEGER, updated_by TEXT");
+        dict.insert(ServiceCompany::tableName(), ServiceCompany::columns().toString());
+        dict.insert(Customer::tableName(), Customer::columns().toString());
+        dict.insert(Person::tableName(), Person::columns().toString());
+        dict.insert(Circuit::tableName(), Circuit::columns().toString());
+        dict.insert(Compressor::tableName(), Compressor::columns().toString());
+        dict.insert(Inspection::tableName(), Inspection::columns().toString());
+        dict.insert(InspectionsCompressor::tableName(), InspectionsCompressor::columns().toString());
+        dict.insert(InspectionImage::tableName(), InspectionImage::columns().toString());
+        dict.insert(Repair::tableName(), Repair::columns().toString());
+        dict.insert(Inspector::tableName(), Inspector::columns().toString());
+        dict.insert(VariableRecord::tableName(), VariableRecord::columns().toString());
+        dict.insert(Table::tableName(), Table::columns().toString());
+        dict.insert(WarningRecord::tableName(), WarningRecord::columns().toString());
+        dict.insert(WarningFilter::tableName(), WarningFilter::columns().toString());
+        dict.insert(WarningCondition::tableName(), WarningCondition::columns().toString());
+        dict.insert(RecordOfRefrigerantManagement::tableName(), RecordOfRefrigerantManagement::columns().toString());
+        dict.insert(AssemblyRecordType::tableName(), AssemblyRecordType::columns().toString());
+        dict.insert(AssemblyRecordItemType::tableName(), AssemblyRecordItemType::columns().toString());
+        dict.insert(AssemblyRecordTypeCategory::tableName(), AssemblyRecordTypeCategory::columns().toString());
+        dict.insert(AssemblyRecordItemCategory::tableName(), AssemblyRecordItemCategory::columns().toString());
+        dict.insert(AssemblyRecordItem::tableName(), AssemblyRecordItem::columns().toString());
+        dict.insert(File::tableName(), File::columns().toString());
+        dict.insert(CircuitUnitType::tableName(), CircuitUnitType::columns().toString());
+        dict.insert(CircuitUnit::tableName(), CircuitUnit::columns().toString());
+        dict.insert(DBInfo::tableName(), DBInfo::columns().toString());
+        dict.insert(Style::tableName(), Style::columns().toString());
     }
 
     MTDictionary dict;

@@ -29,7 +29,7 @@
 using namespace Global;
 
 VariableRecord::VariableRecord(const QString &var_id, const QString &parent_id):
-    DBRecord("variables", "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
+    DBRecord(tableName(), "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
 {}
 
 void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
@@ -84,4 +84,36 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
     if (attributes.value("parent_id").toString().isEmpty()) {
         md->addInputWidget(new MDColourComboBox("col_bg", tr("Colour:"), md->widget(), attributes.value("col_bg").toString()));
     }
+}
+
+QString VariableRecord::tableName()
+{
+    return "variables";
+}
+
+class VariableColumns
+{
+public:
+    VariableColumns() {
+        columns << Column("parent_id", "TEXT");
+        columns << Column("id", "TEXT");
+        columns << Column("name", "TEXT");
+        columns << Column("type", "TEXT");
+        columns << Column("unit", "TEXT");
+        columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
+        columns << Column("value", "TEXT");
+        columns << Column("compare_nom", "INTEGER");
+        columns << Column("tolerance", "NUMERIC");
+        columns << Column("col_bg", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &VariableRecord::columns()
+{
+    static VariableColumns columns;
+    return columns.columns;
 }

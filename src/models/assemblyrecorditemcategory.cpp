@@ -25,8 +25,34 @@
 #include <QApplication>
 
 AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &id):
-    DBRecord("assembly_record_item_categories", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {
+}
+
+QString AssemblyRecordItemCategory::tableName()
+{
+    return "assembly_record_item_categories";
+}
+
+class AssemblyRecordItemCategoryColumns
+{
+public:
+    AssemblyRecordItemCategoryColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("display_options", "INTEGER");
+        columns << Column("display_position", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &AssemblyRecordItemCategory::columns()
+{
+    static AssemblyRecordItemCategoryColumns columns;
+    return columns.columns;
 }
 
 class AssemblyRecordItemCategoryAttributes

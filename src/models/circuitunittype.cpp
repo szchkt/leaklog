@@ -28,7 +28,7 @@
 using namespace Global;
 
 CircuitUnitType::CircuitUnitType(const QString &id):
-    DBRecord("circuit_unit_types", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
@@ -78,6 +78,44 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString CircuitUnitType::tableName()
+{
+    return "circuit_unit_types";
+}
+
+class CircuitUnitTypeColumns
+{
+public:
+    CircuitUnitTypeColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("manufacturer", "TEXT");
+        columns << Column("type", "TEXT");
+        columns << Column("refrigerant", "TEXT");
+        columns << Column("refrigerant_amount", "NUMERIC");
+        columns << Column("acquisition_price", "NUMERIC");
+        columns << Column("list_price", "NUMERIC");
+        columns << Column("location", "INTEGER");
+        columns << Column("unit", "TEXT");
+        columns << Column("oil", "TEXT");
+        columns << Column("oil_amount", "NUMERIC");
+        columns << Column("output", "NUMERIC");
+        columns << Column("output_unit", "TEXT");
+        columns << Column("output_t0_tc", "NUMERIC");
+        columns << Column("notes", "TEXT");
+        columns << Column("discount", "NUMERIC");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &CircuitUnitType::columns()
+{
+    static CircuitUnitTypeColumns columns;
+    return columns.columns;
 }
 
 class CircuitUnitTypeAttributes

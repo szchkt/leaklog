@@ -37,6 +37,9 @@ public:
 
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
+    static QString tableName();
+    static const ColumnList &columns();
+
     Inspection();
     Inspection(const QString &, const QString &, const QString &);
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);

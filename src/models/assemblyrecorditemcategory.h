@@ -43,6 +43,8 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    static QString tableName();
+    static const ColumnList &columns();
     static const MTDictionary &attributes();
 };
 

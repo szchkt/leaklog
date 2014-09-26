@@ -25,8 +25,33 @@
 #include <QApplication>
 
 AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &record_type_id):
-    MTRecord("assembly_record_type_categories", "", "", record_type_id.isEmpty() ? MTDictionary() : MTDictionary("record_type_id", record_type_id))
+    MTRecord(tableName(), "", "", record_type_id.isEmpty() ? MTDictionary() : MTDictionary("record_type_id", record_type_id))
 {}
+
+QString AssemblyRecordTypeCategory::tableName()
+{
+    return "assembly_record_type_categories";
+}
+
+class AssemblyRecordTypeCategoryColumns
+{
+public:
+    AssemblyRecordTypeCategoryColumns() {
+        columns << Column("record_type_id", "INTEGER");
+        columns << Column("record_category_id", "INTEGER");
+        columns << Column("position", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &AssemblyRecordTypeCategory::columns()
+{
+    static AssemblyRecordTypeCategoryColumns columns;
+    return columns.columns;
+}
 
 class AssemblyRecordTypeCategoryAttributes
 {

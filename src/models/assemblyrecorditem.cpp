@@ -25,12 +25,44 @@
 #include <QApplication>
 
 AssemblyRecordItem::AssemblyRecordItem(const QString &record_id):
-    MTRecord("assembly_record_items", "", "", MTDictionary("arno", record_id))
+    MTRecord(tableName(), "", "", MTDictionary("arno", record_id))
 {}
 
 AssemblyRecordItem::AssemblyRecordItem(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
     MTRecord(table, id_column, id, parents)
 {}
+
+QString AssemblyRecordItem::tableName()
+{
+    return "assembly_record_items";
+}
+
+class AssemblyRecordItemColumns
+{
+public:
+    AssemblyRecordItemColumns() {
+        columns << Column("arno", "TEXT");
+        columns << Column("item_type_id", "INTEGER");
+        columns << Column("value", "TEXT");
+        columns << Column("acquisition_price", "REAL");
+        columns << Column("list_price", "REAL");
+        columns << Column("source", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("category_id", "INTEGER");
+        columns << Column("unit", "TEXT");
+        columns << Column("discount", "NUMERIC");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &AssemblyRecordItem::columns()
+{
+    static AssemblyRecordItemColumns columns;
+    return columns.columns;
+}
 
 class AssemblyRecordItemAttributes
 {

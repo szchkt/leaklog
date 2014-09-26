@@ -30,7 +30,7 @@
 using namespace Global;
 
 WarningRecord::WarningRecord(const QString &id):
-    DBRecord("warnings", "id", id, MTDictionary())
+    DBRecord(tableName(), "id", id, MTDictionary())
 {}
 
 void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
@@ -64,4 +64,32 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
     used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
+}
+
+QString WarningRecord::tableName()
+{
+    return "warnings";
+}
+
+class WarningColumns
+{
+public:
+    WarningColumns() {
+        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
+        columns << Column("enabled", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("description", "TEXT");
+        columns << Column("delay", "INTEGER");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &WarningRecord::columns()
+{
+    static WarningColumns columns;
+    return columns.columns;
 }

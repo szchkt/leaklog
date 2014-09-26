@@ -22,9 +22,38 @@
 #include <QApplication>
 
 Compressor::Compressor(const QString &id, const MTDictionary &dict):
-    MTRecord("compressors", "id", id, dict)
+    MTRecord(tableName(), "id", id, dict)
 {
     setSerialId(true);
+}
+
+QString Compressor::tableName()
+{
+    return "compressors";
+}
+
+class CompressorColumns
+{
+public:
+    CompressorColumns() {
+        columns << Column("id", "BIGINT NOT NULL");
+        columns << Column("customer_id", "INTEGER");
+        columns << Column("circuit_id", "INTEGER");
+        columns << Column("name", "TEXT");
+        columns << Column("manufacturer", "TEXT");
+        columns << Column("type", "TEXT");
+        columns << Column("sn", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
+    }
+
+    ColumnList columns;
+};
+
+const ColumnList &Compressor::columns()
+{
+    static CompressorColumns columns;
+    return columns.columns;
 }
 
 class CompressorAttributes
