@@ -54,6 +54,7 @@ public:
 
     bool isByFieldOfApplicationChecked() const { return chb_by_field->isChecked(); }
     bool isShowBusinessPartnerChecked() const { return chb_show_partner->isChecked(); }
+    bool isShowCircuitNameChecked() const { return chb_show_circuit_name->isChecked(); }
 
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk_SK">
+<TS version="2.1" language="sk_SK">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -4587,6 +4587,49 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
 </context>
 <context>
+    <name>RefrigerantManagementView</name>
+    <message>
+        <source>Refrigerant Management</source>
+        <translation>Nakladanie s chladivami</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>Dátum</translation>
+    </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Chladivo</translation>
+    </message>
+    <message>
+        <source>Purchased</source>
+        <translation>Kúpené</translation>
+    </message>
+    <message>
+        <source>Sold</source>
+        <translation>Predané</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerované</translation>
+    </message>
+    <message>
+        <source>Disposed of</source>
+        <translation>Zničené</translation>
+    </message>
+    <message>
+        <source>Leaked in store</source>
+        <translation>Únik na sklade</translation>
+    </message>
+    <message>
+        <source>Date Updated</source>
+        <translation>Dátum zmeny</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>Autor</translation>
+    </message>
+</context>
+<context>
     <name>RefrigerantRecord</name>
     <message>
         <source>Date:</source>
@@ -4679,49 +4722,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Record of Refrigerant Management</source>
         <translation>Záznam o nakladaní s chladivom</translation>
-    </message>
-</context>
-<context>
-    <name>RefrigerantManagementView</name>
-    <message>
-        <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation>Dátum</translation>
-    </message>
-    <message>
-        <source>Refrigerant</source>
-        <translation>Chladivo</translation>
-    </message>
-    <message>
-        <source>Purchased</source>
-        <translation>Kúpené</translation>
-    </message>
-    <message>
-        <source>Sold</source>
-        <translation>Predané</translation>
-    </message>
-    <message>
-        <source>Reclaimed</source>
-        <translation>Regenerované</translation>
-    </message>
-    <message>
-        <source>Disposed of</source>
-        <translation>Zničené</translation>
-    </message>
-    <message>
-        <source>Leaked in store</source>
-        <translation>Únik na sklade</translation>
-    </message>
-    <message>
-        <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
-    </message>
-    <message>
-        <source>Author</source>
-        <translation>Autor</translation>
     </message>
 </context>
 <context>
@@ -5375,7 +5375,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5438,6 +5438,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Business Partner</source>
         <translation>Obchodný partner</translation>
+    </message>
+    <message>
+        <source>Circuit Name</source>
+        <translation>Názov okruhu</translation>
     </message>
 </context>
 <context>

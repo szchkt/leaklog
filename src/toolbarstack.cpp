@@ -95,6 +95,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(tbtn_edit_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(editCircuitUnitType()));
     QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_show_partner, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_show_circuit_name, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_acquisition_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_list_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_total, SIGNAL(clicked()), receiver, SLOT(refreshView()));
@@ -280,6 +281,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
 
     chb_by_field->setVisible(filter_by_field_visible);
     chb_show_partner->setVisible(view == View::Store);
+    chb_show_circuit_name->setVisible(view == View::OperatorReport);
 
     chb_table_all_circuits->setVisible(filter_all_circuits_visible);
 
