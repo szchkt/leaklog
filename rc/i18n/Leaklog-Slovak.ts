@@ -5439,6 +5439,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Business Partner</source>
         <translation>Obchodný partner</translation>
     </message>
+    <message>
+        <source>Circuit Name</source>
+        <translation>Názov okruhu</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

@@ -2023,6 +2023,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QCheckBox" name="chb_show_circuit_name">
+        <property name="text">
+         <string>Circuit Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="lbl_assembly_records_show">
         <property name="text">
          <string>Show:</string>

@@ -43,6 +43,7 @@ QString OperatorReportView::renderHTML()
     int year = settings->toolBarStack()->filterSinceValue();
     int month_from = settings->toolBarStack()->filterMonthFromValue();
     int month_until = settings->toolBarStack()->filterMonthUntilValue();
+    bool show_circuit_name = settings->toolBarStack()->isShowCircuitNameChecked();
 
     if (year == 0)
         year = QDate::currentDate().year() - 1;
@@ -92,9 +93,12 @@ QString OperatorReportView::renderHTML()
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"8\" style=\"font-size: medium; background-color: aliceblue;\">";
+    out << "<tr><th colspan=\"" << (show_circuit_name ? 9 : 8) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "ID") << "</th>";
+    if (show_circuit_name) {
+        out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Name") << "</th>";
+    }
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
@@ -133,7 +137,7 @@ QString OperatorReportView::renderHTML()
         circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
 
-    MTSqlQuery circuits = circuits_record.select("id, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
+    MTSqlQuery circuits = circuits_record.select("id, name, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -176,6 +180,9 @@ QString OperatorReportView::renderHTML()
         out << "<tr onclick=\"window.location = 'customer:" << customer_id
             << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
+        if (show_circuit_name) {
+            out << "<td>" << MTVariant(circuits.stringValue("name")) << "</td>";
+        }
         out << "<td>" << circuits.stringValue("refrigerant") << "</td>";
         out << "<td>" << fieldsOfApplication().value(circuits.stringValue("field")) << "</td>";
         out << "<td>" << refrigerant_amount_begin << "</td>";
