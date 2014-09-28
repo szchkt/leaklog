@@ -45,7 +45,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
 {
     QVector<double> *sum_list; int year = 0; QString date, refrigerant;
     QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
-    RecordOfRefrigerantManagement refr_man_record("");
+    RefrigerantRecord refr_man_record("");
     ListOfVariantMaps refr_man(refr_man_record.listAll());
     for (int i = 0; i < refr_man.count(); ++i) {
         refrigerant = refr_man.at(i).value("refrigerant").toString();
@@ -67,7 +67,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
         if (year < since) { continue; }
 
         QVector<QString> entries_list(ENTRIES::COUNT);
-        entries_list[ENTRIES::LINK] = QString("recordofrefrigerantmanagement:%1/edit").arg(date);
+        entries_list[ENTRIES::LINK] = QString("refrigerantrecord:%1/edit").arg(date);
         entries_list[ENTRIES::COMPANY] = refr_man.at(i).value("partner").toString();
         int company_id = refr_man.at(i).value("partner_id").toInt();
         entries_list[ENTRIES::COMPANY_ID] = company_id ? QString::number(company_id).rightJustified(8, '0') : QString();

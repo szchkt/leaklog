@@ -53,7 +53,7 @@ QString RefrigerantManagementView::renderHTML()
     out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
-    out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
+    out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
@@ -74,7 +74,7 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "</tr>";
-    RecordOfRefrigerantManagement records("");
+    RefrigerantRecord records("");
     if (!settings->toolBarStack()->isFilterEmpty()) {
         records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -88,10 +88,10 @@ QString RefrigerantManagementView::renderHTML()
     while (query.next()) {
         date = query.stringValue("date");
         if (since && date.left(4).toInt() < since) continue;
-        out << "<tr onclick=\"window.location = 'recordofrefrigerantmanagement:" << date << "/edit'\" style=\"cursor: pointer;\">";
+        out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
         out << "<td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
-        for (int n = 1; n < RecordOfRefrigerantManagement::attributes().count(); ++n) {
-            out << "<td>" << MTVariant(query.value(RecordOfRefrigerantManagement::attributes().key(n))) << "</td>";
+        for (int n = 1; n < RefrigerantRecord::attributes().count(); ++n) {
+            out << "<td>" << MTVariant(query.value(RefrigerantRecord::attributes().key(n))) << "</td>";
         }
         if (show_date_updated)
             out << "<td>" << settings->mainWindowSettings().formatDateTime(query.value("date_updated")) << "</th>";

@@ -58,11 +58,11 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     trw_repairs_modified->setColumnCount(Repair::attributes().count());
     trw_repairs_modified->setHeaderItem(new QTreeWidgetItem(Repair::attributes().values()));
     trw_repairs_modified->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    trw_refrigerant_management_new->setColumnCount(RecordOfRefrigerantManagement::attributes().count());
-    trw_refrigerant_management_new->setHeaderItem(new QTreeWidgetItem(RecordOfRefrigerantManagement::attributes().values()));
+    trw_refrigerant_management_new->setColumnCount(RefrigerantRecord::attributes().count());
+    trw_refrigerant_management_new->setHeaderItem(new QTreeWidgetItem(RefrigerantRecord::attributes().values()));
     trw_refrigerant_management_new->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    trw_refrigerant_management_modified->setColumnCount(RecordOfRefrigerantManagement::attributes().count());
-    trw_refrigerant_management_modified->setHeaderItem(new QTreeWidgetItem(RecordOfRefrigerantManagement::attributes().values()));
+    trw_refrigerant_management_modified->setColumnCount(RefrigerantRecord::attributes().count());
+    trw_refrigerant_management_modified->setHeaderItem(new QTreeWidgetItem(RefrigerantRecord::attributes().values()));
     trw_refrigerant_management_modified->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trw_inspectors_new->setColumnCount(Inspector::attributes().count());
     trw_inspectors_new->setHeaderItem(new QTreeWidgetItem(Inspector::attributes().values()));

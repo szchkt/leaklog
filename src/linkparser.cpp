@@ -34,7 +34,7 @@ LinkParser::LinkParser()
     root_entity->addRoute("allcustomers", AllCustomers, false);
     root_entity->addRoute("toggledetailedview", ToggleDetailedView);
     root_entity->addRoute("refrigerantmanagement", RefrigerantManagement, false);
-    root_entity->addRoute("recordofrefrigerantmanagement", RecordOfRefrigerantManagement);
+    root_entity->addRoute("refrigerantrecord", RefrigerantRecord);
     root_entity->addRoute("leakagesbyapplication", LeakagesByApplication, false);
     root_entity->addRoute("agenda", Agenda, false);
     root_entity->addRoute("allassemblyrecordtypes", AllAssemblyRecordTypes, false);
@@ -234,7 +234,7 @@ View::ViewID Link::viewId() const
         return View::Store;
 
     case LinkParser::RefrigerantManagement:
-    case LinkParser::RecordOfRefrigerantManagement:
+    case LinkParser::RefrigerantRecord:
         return View::RefrigerantManagement;
 
     case LinkParser::LeakagesByApplication:

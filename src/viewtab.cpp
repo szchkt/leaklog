@@ -627,9 +627,9 @@ void ViewTab::executeLink(Link *link)
         setView(View::RefrigerantManagement);
         break;
 
-    case LinkParser::RecordOfRefrigerantManagement:
+    case LinkParser::RefrigerantRecord:
         if (link->action() == Link::Edit)
-            parentWindow()->editRecordOfRefrigerantManagement(link->idValue("recordofrefrigerantmanagement"));
+            parentWindow()->editRefrigerantRecord(link->idValue("refrigerantrecord"));
         break;
 
     case LinkParser::LeakagesByApplication:

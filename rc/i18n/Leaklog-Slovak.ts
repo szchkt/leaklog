@@ -4587,7 +4587,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
 </context>
 <context>
-    <name>RecordOfRefrigerantManagement</name>
+    <name>RefrigerantRecord</name>
     <message>
         <source>Date:</source>
         <translation>Dátum:</translation>

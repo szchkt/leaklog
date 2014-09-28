@@ -919,18 +919,18 @@ void MainWindow::editServiceCompany()
     }
 }
 
-void MainWindow::addRecordOfRefrigerantManagement()
+void MainWindow::addRefrigerantRecord()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_refrigerant_management")) { return; }
-    editRecordOfRefrigerantManagement("");
+    editRefrigerantRecord("");
 }
 
-void MainWindow::editRecordOfRefrigerantManagement(const QString &date)
+void MainWindow::editRefrigerantRecord(const QString &date)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!date.isEmpty() && isRecordLocked(date)) { return; }
-    RecordOfRefrigerantManagement record(date);
+    RefrigerantRecord record(date);
     if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
     UndoCommand command(m_undo_stack, date.isEmpty()
                         ? tr("Add record of refrigerant management")
@@ -3107,7 +3107,7 @@ void MainWindow::importData()
     while (query.next()) {
         record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem *item = NULL;
-        RecordOfRefrigerantManagement record(query.stringValue("date"));
+        RefrigerantRecord record(query.stringValue("date"));
         if (record.exists()) {
             attributes = record.list();
             modified = false;
@@ -3115,9 +3115,9 @@ void MainWindow::importData()
             MTDictionary columns(true);
             columns.insert(query.stringValue("date"), "0");
 
-            for (int i = 1; i < RecordOfRefrigerantManagement::attributes().count(); ++i) {
-                attribute = query.value(RecordOfRefrigerantManagement::attributes().key(i));
-                attribute_modified = attribute != attributes.value(RecordOfRefrigerantManagement::attributes().key(i));
+            for (int i = 1; i < RefrigerantRecord::attributes().count(); ++i) {
+                attribute = query.value(RefrigerantRecord::attributes().key(i));
+                attribute_modified = attribute != attributes.value(RefrigerantRecord::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
             }
@@ -3137,8 +3137,8 @@ void MainWindow::importData()
         } else {
             item = new QTreeWidgetItem(id->newRefrigerantManagement());
             item->setText(0, query.stringValue("date"));
-            for (int i = 1; i < RecordOfRefrigerantManagement::attributes().count(); ++i) {
-                item->setText(i, query.stringValue(RecordOfRefrigerantManagement::attributes().key(i)));
+            for (int i = 1; i < RefrigerantRecord::attributes().count(); ++i) {
+                item->setText(i, query.stringValue(RefrigerantRecord::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
         }
@@ -3429,7 +3429,7 @@ void MainWindow::importData()
         // Import refrigerant management
         trw[0] = id->newRefrigerantManagement();
         trw[1] = id->modifiedRefrigerantManagement();
-        fields = RecordOfRefrigerantManagement::columns().columnNameSet();
+        fields = RefrigerantRecord::columns().columnNameSet();
         for (int w = 0; w < 2; ++w) {
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
@@ -3444,7 +3444,7 @@ void MainWindow::importData()
                             set.insert(query.record().fieldName(f), query.value(f));
                     }
                 }
-                RecordOfRefrigerantManagement(r_date).update(set);
+                RefrigerantRecord(r_date).update(set);
             }
         }
 

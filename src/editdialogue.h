@@ -69,7 +69,7 @@ protected:
     friend class Table;
     friend class Inspector;
     friend class ServiceCompany;
-    friend class RecordOfRefrigerantManagement;
+    friend class RefrigerantRecord;
     friend class WarningRecord;
     friend class AssemblyRecordType;
     friend class AssemblyRecordItemType;

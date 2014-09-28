@@ -82,8 +82,8 @@ public slots:
     void reportDataFinished();
 
     void editServiceCompany();
-    void addRecordOfRefrigerantManagement();
-    void editRecordOfRefrigerantManagement(const QString &);
+    void addRefrigerantRecord();
+    void editRefrigerantRecord(const QString &);
 
     void addCustomer();
     void editCustomer();

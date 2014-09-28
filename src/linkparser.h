@@ -35,7 +35,7 @@ public:
         Store = 100,
         ToggleDetailedView = 101,
         RefrigerantManagement = 200,
-        RecordOfRefrigerantManagement = 201,
+        RefrigerantRecord = 201,
         LeakagesByApplication = 300,
         Agenda = 400,
         AllInspectors = 500,

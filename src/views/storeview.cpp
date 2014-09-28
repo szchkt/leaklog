@@ -83,7 +83,7 @@ QString StoreView::renderHTML()
         out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     bool show_partner = settings->toolBarStack()->isShowBusinessPartnerChecked();
     if (show_partner)
-        out << "<th colspan=\"2\">" << QApplication::translate("RecordOfRefrigerantManagement", "Business partner") << "</th>";
+        out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("VariableNames", "New charge") << "</th>";

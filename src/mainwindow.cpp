@@ -202,7 +202,7 @@ MainWindow::MainWindow():
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
     QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
-    QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRecordOfRefrigerantManagement()));
+    QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRefrigerantRecord()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionEdit_customer, SIGNAL(triggered()), this, SLOT(editCustomer()));
     QObject::connect(actionDuplicate_customer, SIGNAL(triggered()), this, SLOT(duplicateCustomer()));

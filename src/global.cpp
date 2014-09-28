@@ -490,7 +490,7 @@ public:
         dict.insert(WarningRecord::tableName(), WarningRecord::columns().toString());
         dict.insert(WarningFilter::tableName(), WarningFilter::columns().toString());
         dict.insert(WarningCondition::tableName(), WarningCondition::columns().toString());
-        dict.insert(RecordOfRefrigerantManagement::tableName(), RecordOfRefrigerantManagement::columns().toString());
+        dict.insert(RefrigerantRecord::tableName(), RefrigerantRecord::columns().toString());
         dict.insert(AssemblyRecordType::tableName(), AssemblyRecordType::columns().toString());
         dict.insert(AssemblyRecordItemType::tableName(), AssemblyRecordItemType::columns().toString());
         dict.insert(AssemblyRecordTypeCategory::tableName(), AssemblyRecordTypeCategory::columns().toString());

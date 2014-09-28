@@ -65,7 +65,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
 {
     QObject::connect(this, SIGNAL(filterChanged()), receiver, SLOT(refreshView()));
     QObject::connect(tbtn_edit_service_company, SIGNAL(clicked()), receiver, SLOT(editServiceCompany()));
-    QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRecordOfRefrigerantManagement()));
+    QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRefrigerantRecord()));
     QObject::connect(tbtn_add_inspector, SIGNAL(clicked()), receiver, SLOT(addInspector()));
     QObject::connect(tbtn_edit_inspector, SIGNAL(clicked()), receiver, SLOT(editInspector()));
     QObject::connect(tbtn_remove_inspector, SIGNAL(clicked()), receiver, SLOT(removeInspector()));
@@ -172,10 +172,10 @@ void ToolBarStack::viewChanged(View::ViewID view)
             break;
         case View::RefrigerantManagement:
             filter_since_visible = true;
-            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner"), "partner");
-            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"), "partner_id");
-            cb_filter_column->addItem(QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"), "refrigerant");
+            cb_filter_column->addItem(QApplication::translate("RefrigerantRecord", "Date"), "date");
+            cb_filter_column->addItem(QApplication::translate("RefrigerantRecord", "Business partner"), "partner");
+            cb_filter_column->addItem(QApplication::translate("RefrigerantRecord", "Business partner (ID)"), "partner_id");
+            cb_filter_column->addItem(QApplication::translate("RefrigerantRecord", "Refrigerant"), "refrigerant");
             break;
         case View::Customers:
             cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "id");

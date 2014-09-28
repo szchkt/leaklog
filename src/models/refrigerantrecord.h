@@ -22,12 +22,12 @@
 
 #include "dbrecord.h"
 
-class RecordOfRefrigerantManagement : public DBRecord
+class RefrigerantRecord : public DBRecord
 {
     Q_OBJECT
 
 public:
-    RecordOfRefrigerantManagement(const QString &);
+    RefrigerantRecord(const QString &);
 
     void initEditDialogue(EditDialogueWidgets *);
 

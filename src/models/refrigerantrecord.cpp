@@ -28,11 +28,11 @@
 
 using namespace Global;
 
-RecordOfRefrigerantManagement::RecordOfRefrigerantManagement(const QString &date):
+RefrigerantRecord::RefrigerantRecord(const QString &date):
     DBRecord(tableName(), "date", date, MTDictionary())
 {}
 
-void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
+void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
@@ -72,7 +72,7 @@ void RecordOfRefrigerantManagement::initEditDialogue(EditDialogueWidgets *md)
     md->setUsedIds(used_ids);
 }
 
-QString RecordOfRefrigerantManagement::tableName()
+QString RefrigerantRecord::tableName()
 {
     return "refrigerant_management";
 }
@@ -100,35 +100,35 @@ public:
     ColumnList columns;
 };
 
-const ColumnList &RecordOfRefrigerantManagement::columns()
+const ColumnList &RefrigerantRecord::columns()
 {
     static RefrigerantManagementColumns columns;
     return columns.columns;
 }
 
-class RecordOfRefrigerantManagementAttributes
+class RefrigerantRecordAttributes
 {
 public:
-    RecordOfRefrigerantManagementAttributes() {
-        dict.insert("date", QApplication::translate("RecordOfRefrigerantManagement", "Date"));
-        dict.insert("partner", QApplication::translate("RecordOfRefrigerantManagement", "Business partner"));
-        dict.insert("partner_id", QApplication::translate("RecordOfRefrigerantManagement", "Business partner (ID)"));
-        dict.insert("refrigerant", QApplication::translate("RecordOfRefrigerantManagement", "Refrigerant"));
-        dict.insert("purchased", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (new)"));
-        dict.insert("purchased_reco", QApplication::translate("RecordOfRefrigerantManagement", "Purchased (recovered)"));
-        dict.insert("sold", QApplication::translate("RecordOfRefrigerantManagement", "Sold (new)"));
-        dict.insert("sold_reco", QApplication::translate("RecordOfRefrigerantManagement", "Sold (recovered)"));
-        dict.insert("refr_rege", QApplication::translate("RecordOfRefrigerantManagement", "Reclaimed"));
-        dict.insert("refr_disp", QApplication::translate("RecordOfRefrigerantManagement", "Disposed of"));
-        dict.insert("leaked", QApplication::translate("RecordOfRefrigerantManagement", "Leaked (new)"));
-        dict.insert("leaked_reco", QApplication::translate("RecordOfRefrigerantManagement", "Leaked (recovered)"));
+    RefrigerantRecordAttributes() {
+        dict.insert("date", QApplication::translate("RefrigerantRecord", "Date"));
+        dict.insert("partner", QApplication::translate("RefrigerantRecord", "Business partner"));
+        dict.insert("partner_id", QApplication::translate("RefrigerantRecord", "Business partner (ID)"));
+        dict.insert("refrigerant", QApplication::translate("RefrigerantRecord", "Refrigerant"));
+        dict.insert("purchased", QApplication::translate("RefrigerantRecord", "Purchased (new)"));
+        dict.insert("purchased_reco", QApplication::translate("RefrigerantRecord", "Purchased (recovered)"));
+        dict.insert("sold", QApplication::translate("RefrigerantRecord", "Sold (new)"));
+        dict.insert("sold_reco", QApplication::translate("RefrigerantRecord", "Sold (recovered)"));
+        dict.insert("refr_rege", QApplication::translate("RefrigerantRecord", "Reclaimed"));
+        dict.insert("refr_disp", QApplication::translate("RefrigerantRecord", "Disposed of"));
+        dict.insert("leaked", QApplication::translate("RefrigerantRecord", "Leaked (new)"));
+        dict.insert("leaked_reco", QApplication::translate("RefrigerantRecord", "Leaked (recovered)"));
     }
 
     MTDictionary dict;
 };
 
-const MTDictionary &RecordOfRefrigerantManagement::attributes()
+const MTDictionary &RefrigerantRecord::attributes()
 {
-    static RecordOfRefrigerantManagementAttributes dict;
+    static RefrigerantRecordAttributes dict;
     return dict.dict;
 }
