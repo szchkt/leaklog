@@ -22,6 +22,10 @@
 
 #include "mtrecord.h"
 
+#include <functional>
+
+#include <QSet>
+
 class EditDialogueWidgets;
 
 class Column
