@@ -240,7 +240,7 @@ HEADERS           += include/csvparser/mtcsvparser.h
 SOURCES           += include/csvparser/mtcsvparser.cpp
 
 DESTDIR            = bin
-INCLUDEPATH       += src src/views include
+INCLUDEPATH       += src src/models src/views include
 UI_HEADERS_DIR     = ui/include
 UI_SOURCES_DIR     = ui
 
