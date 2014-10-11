@@ -12,12 +12,9 @@ class SearchLineEdit : public QLineEdit
     Q_OBJECT
 
 public:
-    SearchLineEdit(QWidget *parent = 0, bool show_icon = false):
+    SearchLineEdit(QWidget *parent = 0, bool show_icon = false, QString stylesheet = QString()):
     QLineEdit(parent) {
-        QString stylesheet;
-
         if (show_icon) {
-            stylesheet.append("QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }");
             setAttribute(Qt::WA_MacShowFocusRect, false);
 
             lbl_icon = new QLabel(this);
