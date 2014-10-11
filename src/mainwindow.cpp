@@ -105,6 +105,31 @@ MainWindow::MainWindow():
     actgrp_time_format->addAction(actionTime_hmm);
     dict_action_time_format.insert(actionTime_hmm, MainWindowSettings::hmm);
 
+#ifdef Q_OS_MAC
+    bool isYosemite = macVersion() >= QSysInfo::MV_10_0 + 10;
+
+    // Tab bar
+
+    if (isYosemite) {
+        tabw_main->setDocumentMode(false);
+        tabw_main->setStyleSheet("QTabWidget::pane { border-top: 1px solid #ACACAC; }"
+                                 "QTabWidget::tab-bar { alignment: left; }"
+                                 "QTabBar::tab { background-color: #C7C6C7; border-right: 1px solid #ACACAC; padding: 3px 10px; }"
+                                 "QTabBar::tab:!active { background-color: #ECECEC; border-right: 1px solid #DBDBDB; }"
+                                 "QTabBar::tab:selected { background-color: #D8D8D8; }"
+                                 "QTabBar::tab:!active:selected { background-color: #F6F6F6; }"
+                                 "QTabBar::tab:!selected:hover { background-color: #BEBEBE; border-right: 1px solid #9B9A9B; }"
+                                 "QTabBar::tab:!selected:pressed { background-color: #9C9E9C; border-right: 1px solid #7C7A7C; }"
+                                 "QTabBar::tab:!active:!selected:hover { background-color: #E3E3E3; border-right: 1px solid #DBDBDB; }");
+    }
+
+    // Status bar
+
+    if (isYosemite) {
+        statusbar->setStyleSheet("QStatusBar { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ECECEC, stop: 1 #D5D5D5); border-top: 1px solid #ACACAC; }");
+    }
+#endif
+
     // Toolbar
     tbtn_open = new QToolButton(this);
     tbtn_open->setDefaultAction(actionOpen);
@@ -133,7 +158,13 @@ MainWindow::MainWindow():
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
 
-    le_search = new SearchLineEdit(this, true);
+    QString search_style = "QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }";
+#ifdef Q_OS_MAC
+    if (isYosemite) {
+        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; }";
+    }
+#endif
+    le_search = new SearchLineEdit(this, true, search_style);
     le_search->setMaximumWidth(200);
     toolBar->insertWidget(actionLock, le_search);
 
@@ -1281,7 +1312,7 @@ void MainWindow::checkForUpdates(bool silent)
 #ifdef Q_OS_WIN32
               .arg('W').arg(QSysInfo::WindowsVersion)
 #elif defined Q_OS_MAC
-              .arg('M').arg(QSysInfo::MacintoshVersion)
+              .arg('M').arg(macVersion())
 #else
               .arg('O').arg(-1)
 #endif

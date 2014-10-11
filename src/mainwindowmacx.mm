@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "mainwindow.h"
+#include "global.h"
 
 #include <QSysInfo>
 
@@ -59,4 +60,17 @@ void MainWindow::showFullScreen()
 #else
     QWidget::showFullScreen();
 #endif
+}
+
+int Global::macVersion()
+{
+    static int version = 0;
+    if (!version) {
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+        NSDictionary *systemVersion = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
+        NSArray *productVersion = [[systemVersion objectForKey:@"ProductVersion"] componentsSeparatedByString:@"."];
+        version = [[productVersion objectAtIndex:1] intValue] + QSysInfo::MV_10_0;
+        [pool release];
+    }
+    return version;
 }
