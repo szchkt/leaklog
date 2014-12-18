@@ -354,5 +354,6 @@ refprop:exists(refprop/include/refprop_lib.h) {
     }
 }
 
-TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts
+TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
+                     rc/i18n/Leaklog-Polish.ts
 QMAKE_RESOURCE_FLAGS += -compress 9

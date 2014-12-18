@@ -66,6 +66,7 @@ MainWindow::MainWindow():
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
+    leaklog_i18n.insert(translator.translate("LanguageNames", "Polish"), "Polish");
 
     // UI
     if (tr("LTR") == "RTL")
