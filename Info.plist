@@ -36,9 +36,9 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.1</string>
+	<string>1.0.2</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.1</string>
+	<string>1.0.2</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2008-2014 SZ CHKT</string>
 	<key>CFBundleName</key>
