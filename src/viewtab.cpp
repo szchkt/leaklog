@@ -105,12 +105,14 @@ void ViewTab::scaleFactorChanged()
                      .arg(isYosemite ? "#CECECE" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #77BBE7, stop: 1 #3E8ACF)")
                      .arg(isYosemite ? "#281C28" : "white")
                      .arg(isYosemite ? "" : "border-color: #62A6DC; border-style: solid; border-width: 1px 0px 1px 0px; ");
-    style += QString("QTreeWidget::item:!selected { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
-    style += QString("QTreeWidget::item:selected:disabled { background-color: %1; color: %2; %3}")
-                     .arg(isYosemite ? "#CECECE" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8)")
+    style += QString("QTreeWidget::item:selected:!active { background-color: %1; color: %2; %3}")
+                     .arg(isYosemite ? "#CDCDCD" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8)")
                      .arg(isYosemite ? "#281C28" : "white")
                      .arg(isYosemite ? "" : "border-color: #BCC6D6; border-style: solid; border-width: 1px 0px 0px 0px; ");
+    style += QString("QTreeWidget::item:!selected { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
+    style += QString("QTreeWidget::item:!selected:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
     style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: %1; }").arg(isYosemite ? "#777777" : "#717E8B");
+    style += QString("QTreeWidget::item:has-children:!active { color: %1; }").arg(isYosemite ? "#777777" : "#868B92");
 #else
     style += QString("QTreeWidget { background-color: white; }");
     style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
