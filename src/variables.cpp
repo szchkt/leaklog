@@ -285,7 +285,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                 if (mt_record && mt_record->id().isEmpty()) {
                     Inspection other_inspections(mt_record->parent("customer"), mt_record->parent("circuit"), "");
                     other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
-                    int count = other_inspections.list("COUNT(date) AS count").value("count").toInt();
+                    int count = other_inspections.list("COUNT(date) AS count", QString()).value("count").toInt();
                     iw->setVariantValue(QString("%1-%2-%3%4")
                                         .arg(mt_record->parent("customer"))
                                         .arg(mt_record->parent("circuit"))

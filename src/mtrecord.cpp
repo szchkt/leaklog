@@ -22,6 +22,7 @@
 
 #include <QSqlRecord>
 #include <QDateTime>
+#include <QDebug>
 #include <QSqlError>
 
 using namespace Global;
@@ -109,7 +110,9 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
     if (!r_id_field.isEmpty() && !order_by.isEmpty() && r_order)
         select.append(QString(" ORDER BY %1").arg(order_by));
     MTSqlQuery query;
-    query.prepare(select);
+    if (!query.prepare(select)) {
+        qDebug() << query.lastError();
+    }
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
@@ -287,7 +290,9 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
         update.append(")");
     }
     MTSqlQuery query;
-    query.prepare(update);
+    if (!query.prepare(update)) {
+        qDebug() << query.lastError();
+    }
     if ((has_id || (!set.contains(r_id_field) && !r_serial_id && !force_update)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
@@ -320,7 +325,9 @@ bool MTRecord::remove()
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     MTSqlQuery query;
-    query.prepare(remove);
+    if (!query.prepare(remove)) {
+        qDebug() << query.lastError();
+    }
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
