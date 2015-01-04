@@ -596,19 +596,20 @@ void ToolBarStack::clearCircuitUnitType()
 void ToolBarStack::setReportDataGroupBoxVisible(bool visible)
 {
     if (visible) {
-        widget_inspector->setVisible(!visible);
-        widget_customer->setVisible(!visible);
-        widget_repair->setVisible(!visible);
-        widget_circuit->setVisible(!visible);
-        widget_inspection->setVisible(!visible);
-        widget_ar_type->setVisible(!visible);
-        widget_ar_item_category->setVisible(!visible);
-        widget_ar_item_type->setVisible(!visible);
-        widget_circuit_unit_type->setVisible(!visible);
+        widget_inspector->setVisible(false);
+        widget_customer->setVisible(false);
+        widget_repair->setVisible(false);
+        widget_circuit->setVisible(false);
+        widget_inspection->setVisible(false);
+        widget_ar_type->setVisible(false);
+        widget_ar_item_category->setVisible(false);
+        widget_ar_item_type->setVisible(false);
+        widget_circuit_unit_type->setVisible(false);
 
-        widget_filter->setVisible(!visible);
+        widget_filter->setVisible(false);
     } else {
-        viewChanged(_view);
+        _settings->enableAllTools();
+        _settings->refreshView();
     }
 
     widget_view->setVisible(!visible);
