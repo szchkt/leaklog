@@ -519,7 +519,8 @@ void ToolBarStack::enableTools()
 
     bool enabled = isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     chb_assembly_record_acquisition_price->setEnabled(enabled);
-    chb_assembly_record_acquisition_price->setChecked(enabled);
+    if (!enabled)
+        chb_assembly_record_acquisition_price->setChecked(false);
 
     enabled = isOperationPermitted("access_assembly_record_list_price") > 0;
     chb_assembly_record_list_price->setEnabled(enabled);
