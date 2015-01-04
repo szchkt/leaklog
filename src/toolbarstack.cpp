@@ -133,7 +133,8 @@ void ToolBarStack::addFilterItems(const QString &column, const MTDictionary &ite
     for (int i = 0; i < items.count(); ++i) {
         if (!used.contains(items.value(i))) {
             used << items.value(i);
-            cb_filter_column->addItem(items.value(i), QString("%1 = '%2' AND ? IS NOT NULL").arg(column).arg(items.key(i)));
+            QString filter = isDatabaseRemote() ? "%1 = '%2' AND ?::text IS NOT NULL" : "%1 = '%2' AND ? IS NOT NULL";
+            cb_filter_column->addItem(items.value(i), filter.arg(column).arg(items.key(i)));
         }
     }
 }

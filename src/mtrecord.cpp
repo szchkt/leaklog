@@ -85,6 +85,7 @@ MTSqlQuery MTRecord::select(const QString &fields, Qt::SortOrder order)
 
 MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
 {
+    bool is_remote = isDatabaseRemote();
     bool has_id = !r_id.isEmpty();
     int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
@@ -101,7 +102,7 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
         if (r_filter.key(i).contains('?'))
             select.append(r_filter.key(i).replace('?', QString(":_filter%1").arg(i)));
         else
-            select.append(QString("%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
+            select.append(QString(is_remote ? "%1::text LIKE :_filter%2" : "%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
     }
     if (!r_custom_where.isEmpty()) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
