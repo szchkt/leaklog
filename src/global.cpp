@@ -571,6 +571,11 @@ const MTDictionary &Global::databaseTables()
     return dict.dict;
 }
 
+QStringList Global::columnsForDatabaseTable(const QString &table)
+{
+    return databaseTables().value(table).split(QRegExp(" [A-Z0-9, ]+", Qt::CaseSensitive), QString::SkipEmptyParts);
+}
+
 class VariableTypes
 {
 public:

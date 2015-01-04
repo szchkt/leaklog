@@ -76,6 +76,7 @@ namespace Global {
     QString toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2 = QString(), const QString &l3 = QString(), int items = ToolTipLinkItemView | ToolTipLinkItemEdit);
     // Dictionaries
     const MTDictionary &databaseTables();
+    QStringList columnsForDatabaseTable(const QString &table);
     const MTDictionary &variableTypes();
     const MTDictionary &variableNames();
     const QString variableType(const QString &, bool * = 0);
