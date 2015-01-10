@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1732</width>
+    <width>1743</width>
     <height>403</height>
    </rect>
   </property>
@@ -2087,6 +2087,13 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_CO2_equivalent">
+        <property name="text">
+         <string>Convert refrigerant to CO₂ equivalent</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="lbl_filter_since">

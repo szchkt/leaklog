@@ -56,6 +56,8 @@ public:
     bool isShowBusinessPartnerChecked() const { return chb_show_partner->isChecked(); }
     bool isShowCircuitNameChecked() const { return chb_show_circuit_name->isChecked(); }
 
+    bool isCO2EquivalentChecked() const { return chb_CO2_equivalent->isChecked(); }
+
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);
     inline QToolButton *autofillButton() const { return tbtn_autofill; }

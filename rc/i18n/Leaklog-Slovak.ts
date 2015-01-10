@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="sk_SK">
+<TS version="2.0" language="sk_SK" sourcelanguage="en_GB">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -5375,7 +5375,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message>
+    <message utf8="true">
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5442,6 +5442,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Circuit Name</source>
         <translation>Názov okruhu</translation>
+    </message>
+    <message utf8="true">
+        <source>Convert refrigerant to CO₂ equivalent</source>
+        <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
     </message>
 </context>
 <context>

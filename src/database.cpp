@@ -1713,11 +1713,13 @@ void MainWindow::skipInspection()
                            " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
     MTSqlQuery circuit_query = circuit_record.select("circuits.hermetic, circuits.leak_detector, circuits.inspection_interval, "
                                                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
-                                                     + circuitRefrigerantAmountQuery());
+                                                     "circuits.refrigerant, " + circuitRefrigerantAmountQuery());
     circuit_query.setForwardOnly(true);
     circuit_query.exec();
     if (circuit_query.next()) {
-        int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.doubleValue("refrigerant_amount"),
+        int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.stringValue("refrigerant"),
+                                                                      circuit_query.doubleValue("refrigerant_amount"),
+                                                                      m_tab->toolBarStack()->isCO2EquivalentChecked(),
                                                                       circuit_query.intValue("hermetic"),
                                                                       circuit_query.intValue("leak_detector"),
                                                                       circuit_query.intValue("inspection_interval"));

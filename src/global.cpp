@@ -848,6 +848,98 @@ const MTDictionary &Global::permissions()
     return dict.dict;
 }
 
+double Global::refrigerantGWP(const QString &refrigerant)
+{
+    static QMap<QString, double> GWP;
+    if (GWP.isEmpty()) {
+        GWP.insert("NH3", 0);
+        GWP.insert("R11", 4600);
+        GWP.insert("R1150", 3);
+        GWP.insert("R12", 10600);
+        GWP.insert("R123", 120);
+        GWP.insert("R1234yf", 4);
+        GWP.insert("R1234ze", 7);
+        GWP.insert("R124", 620);
+        GWP.insert("R125", 3500);
+        GWP.insert("R134", 1100);
+        GWP.insert("R134a", 1430);
+        GWP.insert("R141b", 700);
+        GWP.insert("R143", 353);
+        GWP.insert("R143a", 4300);
+        GWP.insert("R152", 53);
+        GWP.insert("R152a", 120);
+        GWP.insert("R161", 12);
+        GWP.insert("R22", 1700);
+        GWP.insert("R227ea", 3220);
+        GWP.insert("R23", 14800);
+        GWP.insert("R236cb", 1340);
+        GWP.insert("R236ea", 1370);
+        GWP.insert("R236fa", 9810);
+        GWP.insert("R245ca", 693);
+        GWP.insert("R245fa", 1030);
+        GWP.insert("R290", 3);
+        GWP.insert("R32", 675);
+        GWP.insert("R365mfc", 794);
+        GWP.insert("R401A", 1130);
+        GWP.insert("R401B", 1220);
+        GWP.insert("R401C", 900);
+        GWP.insert("R402A", 2690);
+        GWP.insert("R402B", 2310);
+        GWP.insert("R403A", 3000);
+        GWP.insert("R403B", 4310);
+        GWP.insert("R404A", 3922);
+        GWP.insert("R405A", 5160);
+        GWP.insert("R406", 1920);
+        GWP.insert("R407A", 2107);
+        GWP.insert("R407B", 2700);
+        GWP.insert("R407C", 1774);
+        GWP.insert("R407D", 1500);
+        GWP.insert("R407E", 1430);
+        GWP.insert("R407F", 1825);
+        GWP.insert("R408A", 3020);
+        GWP.insert("R409A", 1540);
+        GWP.insert("R409B", 1500);
+        GWP.insert("R41", 92);
+        GWP.insert("R410A", 2088);
+        GWP.insert("R410B", 2120);
+        GWP.insert("R413A", 1920);
+        GWP.insert("R414A", 1140);
+        GWP.insert("R414B", 1320);
+        GWP.insert("R416A", 1010);
+        GWP.insert("R417A", 2346);
+        GWP.insert("R420A", 1430);
+        GWP.insert("R421A", 2520);
+        GWP.insert("R421B", 3090);
+        GWP.insert("R422A", 3143);
+        GWP.insert("R422B", 2420);
+        GWP.insert("R422C", 2980);
+        GWP.insert("R422D", 2729);
+        GWP.insert("R423A", 2280);
+        GWP.insert("R424A", 2440);
+        GWP.insert("R425A", 1430);
+        GWP.insert("R426A", 1508);
+        GWP.insert("R427A", 2138);
+        GWP.insert("R428A", 3607);
+        GWP.insert("R434A", 3245);
+        GWP.insert("R437A", 1805);
+        GWP.insert("R438", 2265);
+        GWP.insert("R442A", 1888);
+        GWP.insert("R449A", 1397);
+        GWP.insert("R500", 7850);
+        GWP.insert("R501", 3920);
+        GWP.insert("R502", 4510);
+        GWP.insert("R503", 13200);
+        GWP.insert("R507", 3985);
+        GWP.insert("R508A", 13214);
+        GWP.insert("R508B", 13396);
+        GWP.insert("R600a", 3);
+        GWP.insert("R717", 0);
+        GWP.insert("R744", 1);
+        GWP.insert("SF6", 22800);
+    }
+    return GWP.value(refrigerant);
+}
+
 QString Global::listRefrigerantsToString()
 {
     return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R452A;R500;R501;R502;R503;R507;R508A;R508B;R600a;SF6";

@@ -36,7 +36,7 @@ public:
 
     static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false, int = 0);
 
-    static int circuitInspectionInterval(double, bool, bool, int = 0);
+    static int circuitInspectionInterval(const QString &refrigerant, double refrigerant_amount, bool CO2_equivalent, bool hermetic, bool leak_detector, int interval = 0);
 
 protected:
     void saveResult();

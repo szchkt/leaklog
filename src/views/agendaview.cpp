@@ -39,6 +39,8 @@ AgendaView::AgendaView(ViewTabSettings *settings):
 
 QString AgendaView::renderHTML()
 {
+    bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
+
     QString html; MTTextStream out(&html);
 
     if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
@@ -65,7 +67,7 @@ QString AgendaView::renderHTML()
                             " LEFT JOIN inspections AS j ON i.customer = j.customer AND i.circuit = j.circuit"
                             " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
                             " ON all_ins.customer = circuits.parent AND all_ins.circuit = circuits.id");
-    MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id, circuits.name, circuits.operation, "
+    MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
                                                  + circuitRefrigerantAmountQuery()
                                                  + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
                                                  " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
@@ -74,7 +76,9 @@ QString AgendaView::renderHTML()
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
-        inspection_interval = Warnings::circuitInspectionInterval(circuits.doubleValue("refrigerant_amount"),
+        inspection_interval = Warnings::circuitInspectionInterval(circuits.stringValue("refrigerant"),
+                                                                  circuits.doubleValue("refrigerant_amount"),
+                                                                  CO2_equivalent,
                                                                   circuits.intValue("hermetic"),
                                                                   circuits.intValue("leak_detector"),
                                                                   circuits.intValue("inspection_interval"));

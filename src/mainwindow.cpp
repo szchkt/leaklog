@@ -533,11 +533,14 @@ void MainWindow::printLabel(bool detailed)
                     gl->addWidget(chb, r + 1, c);
                 }
             }
+            QCheckBox *chb_CO2_equivalent = new QCheckBox(d);
+            chb_CO2_equivalent->setText(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8));
+        gl->addWidget(chb_CO2_equivalent, 5, 0, 1, 2);
             QDialogButtonBox *bb = new QDialogButtonBox(d);
             bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
             QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
             QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
-        gl->addWidget(bb, 5, 0, 1, 2);
+        gl->addWidget(bb, 6, 0, 1, 2);
     if (d->exec() != QDialog::Accepted) { return; }
     bool ok = false;
     QMapIterator<QString, QCheckBox *> iterator(label_positions);
@@ -567,7 +570,9 @@ void MainWindow::printLabel(bool detailed)
 
             attributes.insert("date", inspection.value("date").toString());
 
-            int inspection_interval = Warnings::circuitInspectionInterval(attributes.value("refrigerant_amount").toDouble(),
+            int inspection_interval = Warnings::circuitInspectionInterval(attributes.value("refrigerant").toString(),
+                                                                          attributes.value("refrigerant_amount").toDouble(),
+                                                                          chb_CO2_equivalent->isChecked(),
                                                                           attributes.value("hermetic").toInt(),
                                                                           attributes.value("leak_detector").toInt(),
                                                                           attributes.value("inspection_interval").toInt());

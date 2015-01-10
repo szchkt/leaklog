@@ -99,6 +99,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(chb_assembly_record_acquisition_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_list_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_total, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_CO2_equivalent, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
 void ToolBarStack::scaleFactorChanged()
@@ -288,6 +289,8 @@ void ToolBarStack::viewChanged(View::ViewID view)
     chb_by_field->setVisible(filter_by_field_visible);
     chb_show_partner->setVisible(view == View::Store);
     chb_show_circuit_name->setVisible(view == View::OperatorReport);
+
+    chb_CO2_equivalent->setVisible(view == View::Agenda);
 
     chb_table_all_circuits->setVisible(filter_all_circuits_visible);
 
