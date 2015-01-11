@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2014 Matus & Michal Tomlein
+ Copyright (C) 2008-2015 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -22,6 +22,7 @@
 
 #include <QSqlRecord>
 #include <QDateTime>
+#include <QDebug>
 #include <QSqlError>
 
 using namespace Global;
@@ -84,6 +85,7 @@ MTSqlQuery MTRecord::select(const QString &fields, Qt::SortOrder order)
 
 MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
 {
+    bool is_remote = isDatabaseRemote();
     bool has_id = !r_id.isEmpty();
     int i;
     QString select = "SELECT " + fields + " FROM " + r_table;
@@ -100,7 +102,7 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
         if (r_filter.key(i).contains('?'))
             select.append(r_filter.key(i).replace('?', QString(":_filter%1").arg(i)));
         else
-            select.append(QString("%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
+            select.append(QString(is_remote ? "%1::text LIKE :_filter%2" : "%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
     }
     if (!r_custom_where.isEmpty()) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
@@ -109,7 +111,9 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
     if (!r_id_field.isEmpty() && !order_by.isEmpty() && r_order)
         select.append(QString(" ORDER BY %1").arg(order_by));
     MTSqlQuery query;
-    query.prepare(select);
+    if (!query.prepare(select)) {
+        qDebug() << query.lastError();
+    }
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));
@@ -287,7 +291,9 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
         update.append(")");
     }
     MTSqlQuery query;
-    query.prepare(update);
+    if (!query.prepare(update)) {
+        qDebug() << query.lastError();
+    }
     if ((has_id || (!set.contains(r_id_field) && !r_serial_id && !force_update)) && !r_id_field.isEmpty())
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
@@ -320,7 +326,9 @@ bool MTRecord::remove()
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
     }
     MTSqlQuery query;
-    query.prepare(remove);
+    if (!query.prepare(remove)) {
+        qDebug() << query.lastError();
+    }
     if (has_id) { query.bindValue(":_id", r_id); }
     for (int i = 0; i < r_parents.count(); ++i) {
         query.bindValue(":" + r_parents.key(i), r_parents.value(i));

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2014 Matus & Michal Tomlein
+ Copyright (C) 2008-2015 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -44,8 +44,8 @@ public:
         columns << Column("arno", "TEXT");
         columns << Column("item_type_id", "INTEGER");
         columns << Column("value", "TEXT");
-        columns << Column("acquisition_price", "REAL");
-        columns << Column("list_price", "REAL");
+        columns << Column("acquisition_price", "NUMERIC");
+        columns << Column("list_price", "NUMERIC");
         columns << Column("source", "INTEGER");
         columns << Column("name", "TEXT");
         columns << Column("category_id", "INTEGER");

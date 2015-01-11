@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2014 Matus & Michal Tomlein
+ Copyright (C) 2008-2015 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -134,7 +134,8 @@ void ToolBarStack::addFilterItems(const QString &column, const MTDictionary &ite
     for (int i = 0; i < items.count(); ++i) {
         if (!used.contains(items.value(i))) {
             used << items.value(i);
-            cb_filter_column->addItem(items.value(i), QString("%1 = '%2' AND ? IS NOT NULL").arg(column).arg(items.key(i)));
+            QString filter = isDatabaseRemote() ? "%1 = '%2' AND ?::text IS NOT NULL" : "%1 = '%2' AND ? IS NOT NULL";
+            cb_filter_column->addItem(items.value(i), filter.arg(column).arg(items.key(i)));
         }
     }
 }
@@ -521,7 +522,8 @@ void ToolBarStack::enableTools()
 
     bool enabled = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     chb_assembly_record_acquisition_price->setEnabled(enabled);
-    chb_assembly_record_acquisition_price->setChecked(enabled);
+    if (!enabled)
+        chb_assembly_record_acquisition_price->setChecked(false);
 
     enabled = DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0;
     chb_assembly_record_list_price->setEnabled(enabled);
@@ -597,19 +599,20 @@ void ToolBarStack::clearCircuitUnitType()
 void ToolBarStack::setReportDataGroupBoxVisible(bool visible)
 {
     if (visible) {
-        widget_inspector->setVisible(!visible);
-        widget_customer->setVisible(!visible);
-        widget_repair->setVisible(!visible);
-        widget_circuit->setVisible(!visible);
-        widget_inspection->setVisible(!visible);
-        widget_ar_type->setVisible(!visible);
-        widget_ar_item_category->setVisible(!visible);
-        widget_ar_item_type->setVisible(!visible);
-        widget_circuit_unit_type->setVisible(!visible);
+        widget_inspector->setVisible(false);
+        widget_customer->setVisible(false);
+        widget_repair->setVisible(false);
+        widget_circuit->setVisible(false);
+        widget_inspection->setVisible(false);
+        widget_ar_type->setVisible(false);
+        widget_ar_item_category->setVisible(false);
+        widget_ar_item_type->setVisible(false);
+        widget_circuit_unit_type->setVisible(false);
 
-        widget_filter->setVisible(!visible);
+        widget_filter->setVisible(false);
     } else {
-        viewChanged(_view);
+        _settings->enableAllTools();
+        _settings->refreshView();
     }
 
     widget_view->setVisible(!visible);
