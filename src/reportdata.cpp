@@ -145,7 +145,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
                             .arg(inspections.at(i).value("circuit").toString()))
                             .value("refrigerant").toString();
         } else {
-            entries_list[ENTRIES::LINK] = QString("repair:%1").arg(date);
+            entries_list[ENTRIES::LINK] = QString("repair:%1/edit").arg(date);
             refrigerant = inspections.at(i).value("refrigerant").toString();
         }
 
