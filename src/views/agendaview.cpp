@@ -147,7 +147,7 @@ QString AgendaView::renderHTML()
         if (reinspection)
             out << "*</i>";
         out << "</td><td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
-        out << customer.rightJustified(8, '0') << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
+        out << formatCompanyID(customer) << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
         out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
         out << circuit.rightJustified(5, '0');
         if (!circuit_name.isEmpty()) { out << " (" << escapeString(circuit_name) << ")"; }

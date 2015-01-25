@@ -70,7 +70,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
         entries_list[ENTRIES::LINK] = QString("refrigerantrecord:%1/edit").arg(date);
         entries_list[ENTRIES::COMPANY] = refr_man.at(i).value("partner").toString();
         int company_id = refr_man.at(i).value("partner_id").toInt();
-        entries_list[ENTRIES::COMPANY_ID] = company_id ? QString::number(company_id).rightJustified(8, '0') : QString();
+        entries_list[ENTRIES::COMPANY_ID] = company_id ? Global::formatCompanyID(company_id) : QString();
         entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_list[ENTRIES::PURCHASED] = purchased.toString();
         entries_list[ENTRIES::PURCHASED_RECO] = purchased_reco.toString();
@@ -156,7 +156,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
 
         entries_list[ENTRIES::COMPANY] = inspections.at(i).value("company").toString();
         int company_id = inspections.at(i).value("customer").toInt();
-        entries_list[ENTRIES::COMPANY_ID] = company_id ? QString::number(company_id).rightJustified(8, '0') : QString();
+        entries_list[ENTRIES::COMPANY_ID] = company_id ? Global::formatCompanyID(company_id) : QString();
 
         new_charge = 0.0;
         if (inspections.at(i).contains("nominal") && inspections.at(i).value("nominal").toInt()) {

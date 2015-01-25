@@ -25,6 +25,7 @@
 #include "records.h"
 
 #include <QApplication>
+#include <QSettings>
 #include <QSet>
 #include <QVariant>
 #include <QColor>
@@ -441,6 +442,43 @@ QString Global::compareValues(double value1, double value2, double tolerance, co
     } else {
         return "%1";
     }
+}
+
+Global::CompanyIDFormat Global::companyIDFormat()
+{
+    static CompanyIDFormat format = CompanyIDFormatNone;
+    if (format == CompanyIDFormatNone) {
+        QSettings settings("SZCHKT", "Leaklog");
+        format = settings.value("lang").toString() == "Polish" ? CompanyIDFormatNIP : CompanyIDFormatDefault;
+    }
+    return format;
+}
+
+QString Global::formatCompanyID(int company_id)
+{
+    return formatCompanyID(QString::number(company_id));
+}
+
+QString Global::formatCompanyID(const QString &company_id)
+{
+    if (companyIDFormat() == CompanyIDFormatNIP) {
+        QString id = company_id.rightJustified(9, '0').left(9);
+        int check = (id[0].toLatin1() - '0') * 6
+                  + (id[1].toLatin1() - '0') * 5
+                  + (id[2].toLatin1() - '0') * 7
+                  + (id[3].toLatin1() - '0') * 2
+                  + (id[4].toLatin1() - '0') * 3
+                  + (id[5].toLatin1() - '0') * 4
+                  + (id[6].toLatin1() - '0') * 5
+                  + (id[7].toLatin1() - '0') * 6
+                  + (id[8].toLatin1() - '0') * 7;
+        check = (check < 0 ? -check : check) % 11;
+        if (check == 10)
+            return id;
+        return QString("%1%2").arg(id).arg(check);
+    }
+
+    return company_id.rightJustified(8, '0');
 }
 
 QString Global::toolTipLink(const QString &type, const QString &text, const QString &l1, const QString &l2, const QString &l3, int items)

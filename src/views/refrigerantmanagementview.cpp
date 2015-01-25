@@ -91,7 +91,12 @@ QString RefrigerantManagementView::renderHTML()
         out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
         out << "<td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < RefrigerantRecord::attributes().count(); ++n) {
-            out << "<td>" << MTVariant(query.value(RefrigerantRecord::attributes().key(n))) << "</td>";
+            QString key = RefrigerantRecord::attributes().key(n);
+            if (key == "partner_id") {
+                out << "<td>" << formatCompanyID(query.value(key).toString()) << "</td>";
+            } else {
+                out << "<td>" << MTVariant(query.value(key)) << "</td>";
+            }
         }
         if (show_date_updated)
             out << "<td>" << settings->mainWindowSettings().formatDateTime(query.value("date_updated")) << "</th>";

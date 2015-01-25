@@ -188,6 +188,10 @@ class MDLineEdit : public QLineEdit, public MDInputWidget
     Q_OBJECT
 
 public:
+    enum {
+        CompanyID = -1
+    };
+
     MDLineEdit(const QString &, const QString &, QWidget *, const QString &, int = 0, const QString & = QString(), bool = true);
 
     QVariant variantValue() const;
@@ -195,8 +199,19 @@ public:
 
     void setNullValue(const QVariant &);
 
-private:
+protected:
     QVariant nullvalue;
+};
+
+class MDCompanyIDEdit : public MDLineEdit
+{
+    Q_OBJECT
+
+public:
+    MDCompanyIDEdit(const QString &, const QString &, QWidget *, const QString &);
+
+    QVariant variantValue() const;
+    void setVariantValue(const QVariant &);
 };
 
 class MDCheckBox : public MTCheckBox, public MDInputWidget

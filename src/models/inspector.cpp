@@ -21,11 +21,8 @@
 
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
-#include "global.h"
 
 #include <QApplication>
-
-using namespace Global;
 
 Inspector::Inspector(const QString &id):
     DBRecord(tableName(), "id", id, MTDictionary())

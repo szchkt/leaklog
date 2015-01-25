@@ -104,7 +104,7 @@ QString TableView::renderHTML()
         out << "</th><th>" << QApplication::translate("Customer", "E-mail");
         out << "</th><th>" << QApplication::translate("Customer", "Phone");
         out << "</th></tr><tr>";
-        out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
+        out << "<td>" << toolTipLink("customer", formatCompanyID(customer_id), customer_id) << "</td>";
         out << "<td>" << MTVariant(customer.value("company")) << "</td>";
         out << "<td>" << MTAddress(customer.value("address").toString()).toHtml() << "</td>";
         out << "<td>" << MTVariant(customer.value("mail")) << "</td>";

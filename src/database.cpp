@@ -971,7 +971,7 @@ void MainWindow::editCustomer()
     QString old_id = m_tab->selectedCustomer();
     QString old_company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit customer %1%2")
-                        .arg(old_id.rightJustified(8, '0'))
+                        .arg(formatCompanyID(old_id))
                         .arg(old_company_name.isEmpty() ? QString() : QString(" (%1)").arg(old_company_name)));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1039,7 +1039,7 @@ void MainWindow::duplicateCustomer()
     record.id().clear();
     QString company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
-                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
+                        .arg(formatCompanyID(m_tab->selectedCustomer()))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1062,7 +1062,7 @@ void MainWindow::removeCustomer()
 
     QString company_name = record.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove customer %1%2")
-                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
+                        .arg(formatCompanyID(m_tab->selectedCustomer()))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
@@ -1131,7 +1131,7 @@ void MainWindow::decommissionAllCircuits()
 
     QString company_name = customer.stringValue("company");
     UndoCommand command(m_undo_stack, tr("Decommission all circuits of customer %1%2")
-                        .arg(m_tab->selectedCustomer().rightJustified(8, '0'))
+                        .arg(formatCompanyID(m_tab->selectedCustomer()))
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
@@ -1171,7 +1171,7 @@ void MainWindow::editCircuit()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit circuit %1 (%2)")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
     EditCircuitDialogue md(&record, m_undo_stack, this);
     QString old_id = m_tab->selectedCircuit();
     if (md.exec() == QDialog::Accepted) {
@@ -1198,7 +1198,7 @@ void MainWindow::duplicateCircuit()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         ListOfVariantMaps compressors = Compressor(QString(),
@@ -1331,7 +1331,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate and decommission circuit %1 (%2)")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
     m_undo_stack->savepoint();
 
     ListOfVariantMaps compressors = Compressor(QString(),
@@ -1505,8 +1505,8 @@ void MainWindow::moveCircuit()
     QString new_company_name = Customer(QString::number(customer_id)).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Move circuit %1 (%2) to customer %3")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
-                        .arg(new_company_name.isEmpty() ? QString::number(customer_id).rightJustified(8, '0') : new_company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
+                        .arg(new_company_name.isEmpty() ? formatCompanyID(customer_id) : new_company_name));
     m_undo_stack->savepoint();
 
     QVariantMap set;
@@ -1579,7 +1579,7 @@ void MainWindow::removeCircuit()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove circuit %1 (%2)")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
     m_undo_stack->savepoint();
 
     record.remove();
@@ -1626,7 +1626,7 @@ void MainWindow::editInspection()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Edit inspection %1 (%2, circuit %3)")
                         .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1649,7 +1649,7 @@ void MainWindow::duplicateInspection()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
                         .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     EditInspectionDialogue md(&record, m_undo_stack, this, m_tab->selectedInspection());
     if (md.exec() == QDialog::Accepted) {
@@ -1680,7 +1680,7 @@ void MainWindow::removeInspection(const QString &date)
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
                         .arg(m_settings.formatDateTime(inspection_date))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name)
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
     m_undo_stack->savepoint();
 
@@ -1798,7 +1798,7 @@ void MainWindow::skipInspection()
     QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
     UndoCommand command(m_undo_stack, tr("Skip inspection of circuit %1 (%2)")
                         .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? m_tab->selectedCustomer().rightJustified(8, '0') : company_name));
+                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
     m_undo_stack->savepoint();
 
     QVariantMap inspection;
@@ -2568,7 +2568,7 @@ void MainWindow::importData()
     // Customers
     query.exec("SELECT * FROM customers ORDER BY company");
     while (query.next()) {
-        QString company_id_justified = query.stringValue("id").rightJustified(8, '0');
+        QString company_id_justified = formatCompanyID(query.stringValue("id"));
         Customer customer(query.stringValue("id"));
         if (customer.exists()) {
             attributes = customer.list();
@@ -2589,7 +2589,7 @@ void MainWindow::importData()
                     case 0:
                         columns.insert(QApplication::translate("Customer", "Customer"), attribute_modified ? "1" : "0");
                     default:
-                        columns.insert(attribute.toString().rightJustified(8, '0'), attribute_modified ? "1" : "0");
+                        columns.insert(formatCompanyID(attribute.toString()), attribute_modified ? "1" : "0");
                     }
                 } else {
                     columns.insert(MTVariant(attribute, Customer::attributes().key(i)).toString(),

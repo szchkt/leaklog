@@ -23,11 +23,8 @@
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
 #include "editcustomerdialogue.h"
-#include "global.h"
 
 #include <QApplication>
-
-using namespace Global;
 
 Customer::Customer(const QString &id):
     DBRecord(tableName(), "id", id, MTDictionary())
@@ -40,7 +37,7 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999999));
+    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), id()));
     md->addInputWidget(new MDLineEdit("company", tr("Company:"), md->widget(), attributes.value("company").toString()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));

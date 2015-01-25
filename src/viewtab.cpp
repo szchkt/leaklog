@@ -552,7 +552,7 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     if (isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
         QString customer = Customer(selectedCustomer()).stringValue("company");
         if (customer.isEmpty())
-            customer = selectedCustomer().rightJustified(8, '0');
+            customer = Global::formatCompanyID(selectedCustomer());
         tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer));
     }
     emit tabTextChanged(this, tabText);

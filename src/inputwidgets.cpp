@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "inputwidgets.h"
+#include "companyidvalidator.h"
 #include "highlighter.h"
 #include "global.h"
 #include "mainwindow.h"
@@ -129,7 +130,11 @@ MDInputWidget(id, labeltext, parent, this)
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
     setMinimumSize(150, sizeHint().height());
     setEnabled(enabled);
-    if (maxintvalue) { setValidator(new QIntValidator(0, maxintvalue, parent)); }
+    if (maxintvalue == CompanyID) {
+        setValidator(new CompanyIDValidator(this));
+    } else if (maxintvalue > 0) {
+        setValidator(new QIntValidator(0, maxintvalue, this));
+    }
     setText(value);
 }
 
@@ -146,6 +151,30 @@ void MDLineEdit::setVariantValue(const QVariant &value)
 void MDLineEdit::setNullValue(const QVariant &value)
 {
     nullvalue = value;
+}
+
+MDCompanyIDEdit::MDCompanyIDEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
+MDLineEdit(id, labeltext, parent, value, MDLineEdit::CompanyID)
+{
+    // Maximum length is 9 to allow editing existing NIP values in non-Polish versions of Leaklog
+    setMaxLength(companyIDFormat() == CompanyIDFormatNIP ? 10 : 9);
+    if (value.toLongLong())
+        setText(formatCompanyID(value));
+    else
+        setText(QString());
+}
+
+QVariant MDCompanyIDEdit::variantValue() const
+{
+    return text().isEmpty() ? nullvalue : text().left(9).toInt();
+}
+
+void MDCompanyIDEdit::setVariantValue(const QVariant &value)
+{
+    if (value.toLongLong())
+        setText(formatCompanyID(value.toString()));
+    else
+        setText(QString());
 }
 
 MDCheckBox::MDCheckBox(const QString &id, const QString &labeltext, QWidget *parent, bool checked, bool enabled):

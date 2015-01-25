@@ -61,6 +61,14 @@ namespace Global {
     double evaluateExpression(const QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);
     double evaluateExpression(const QVariantMap &, const MTDictionary &, const QVariantMap &, bool * = 0, bool * = 0);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
+    enum CompanyIDFormat {
+        CompanyIDFormatNone = 0,
+        CompanyIDFormatDefault = 1,
+        CompanyIDFormatNIP = 2
+    };
+    CompanyIDFormat companyIDFormat();
+    QString formatCompanyID(int company_id);
+    QString formatCompanyID(const QString &company_id);
     enum ToolTipLinkItem {
         ToolTipLinkItemView = 1 << 0,
         ToolTipLinkItemEdit = 1 << 1,

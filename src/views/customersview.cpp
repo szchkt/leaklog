@@ -124,7 +124,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
         } else {
             QString name = list.first().value("company").toString().trimmed();
             if (name.isEmpty())
-                name = customer_id.rightJustified(8, '0');
+                name = formatCompanyID(customer_id);
             *cell << escapeString(tr("Customer: %1").arg(name));
         }
         if (!disable_hiding_details)
@@ -144,7 +144,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
                     row_attrs.append(" class=\"selected\"");
             }
             row = table->addRow(row_attrs);
-            *(row->addCell()) << toolTipLink("customer", id.rightJustified(8, '0'), id);
+            *(row->addCell()) << toolTipLink("customer", formatCompanyID(id), id);
             for (int n = 1; n < Customer::numBasicAttributes(); ++n)
                 *(row->addCell()) << MTVariant(list.at(i).value(Customer::attributes().key(n)),
                                                Customer::attributes().key(n)).toHtml();

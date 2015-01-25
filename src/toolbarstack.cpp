@@ -370,7 +370,7 @@ void ToolBarStack::enableTools()
         customer.readValues("company, address");
 
         QStringList description;
-        description << _settings->selectedCustomer().rightJustified(8, '0');
+        description << formatCompanyID(_settings->selectedCustomer());
         if (!customer.stringValue("company").isEmpty())
             description << QString("<b>%1</b>").arg(escapeString(customer.stringValue("company")));
 
