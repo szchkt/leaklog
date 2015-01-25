@@ -212,7 +212,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
         case View::Inspections:
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("Inspection", "Operator"), "operator");
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Contact person"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Risks"), "risks");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
@@ -227,8 +227,8 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Repair", "Assembly record No."), "arno");
             break;
         case View::Inspectors:
-            cb_filter_column->addItem(QApplication::translate("Inspector", "ID"), "id");
-            cb_filter_column->addItem(QApplication::translate("Inspector", "Name"), "person");
+            cb_filter_column->addItem(QApplication::translate("Inspector", "Certificate number"), "id");
+            cb_filter_column->addItem(QApplication::translate("Inspector", "Full name"), "person");
             cb_filter_column->addItem(QApplication::translate("Inspector", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
             break;
@@ -273,7 +273,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
         case View::AssemblyRecords:
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector ID"), "inspector");
+            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector certificate number"), "inspector");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record No."), "arno");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
             break;

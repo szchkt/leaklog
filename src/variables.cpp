@@ -241,7 +241,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         if (var_id == "inspector") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listInspectors(), col_bg);
-            iw->label()->setAlternativeText(QApplication::translate("Variables", "Repairman:"));
+            iw->label()->setAlternativeText(QApplication::translate("Variables", "Inspector:"));
             if (chb_repair) {
                 iw->label()->toggleAlternativeText(chb_repair->isChecked());
                 iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));

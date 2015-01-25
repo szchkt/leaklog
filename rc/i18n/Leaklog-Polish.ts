@@ -107,7 +107,7 @@
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Czynnik</translation>
     </message>
     <message>
         <source>Oil</source>
@@ -122,16 +122,16 @@
         <translation>Data</translation>
     </message>
     <message>
-        <source>Inspector ID</source>
-        <translation>ID kontrolera</translation>
-    </message>
-    <message>
         <source>Assembly record No.</source>
         <translation>Numer Książki Serwisowej</translation>
     </message>
     <message>
         <source>Assembly record type ID</source>
         <translation>ID typu książki serwisowej</translation>
+    </message>
+    <message>
+        <source>Inspector certificate number</source>
+        <translation>Numer certyfikatu kontrolera</translation>
     </message>
 </context>
 <context>
@@ -493,16 +493,16 @@
         <translation>Kontroler</translation>
     </message>
     <message>
-        <source>Operator</source>
-        <translation>Operator</translation>
-    </message>
-    <message>
         <source>Date Updated</source>
         <translation>Data aktualizacji</translation>
     </message>
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Osoba kontaktowa</translation>
     </message>
 </context>
 <context>
@@ -593,11 +593,11 @@
     </message>
     <message>
         <source>Disused</source>
-        <translation>Nieużywany</translation>
+        <translation>Wyłączony</translation>
     </message>
     <message>
         <source>Date of decommissioning:</source>
-        <translation>Data likwidacji:</translation>
+        <translation>Data wyłączenia:</translation>
     </message>
     <message>
         <source>Field of application:</source>
@@ -681,7 +681,7 @@
     </message>
     <message>
         <source>Date of decommissioning</source>
-        <translation>Data likwidacji</translation>
+        <translation>Data wyłączenia</translation>
     </message>
     <message>
         <source>Oil</source>
@@ -724,7 +724,7 @@
     </message>
     <message>
         <source>Refrigerant:</source>
-        <translation>Czynnik chłodniczy:</translation>
+        <translation>Czynnik:</translation>
     </message>
     <message>
         <source>Amount of refrigerant:</source>
@@ -792,7 +792,7 @@
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Czynnik</translation>
     </message>
     <message>
         <source>Amount of refrigerant</source>
@@ -956,7 +956,7 @@
     </message>
     <message>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation>NIP:</translation>
     </message>
     <message>
         <source>Company:</source>
@@ -972,7 +972,7 @@
     </message>
     <message>
         <source>ID</source>
-        <translation>ID</translation>
+        <translation>NIP</translation>
     </message>
     <message>
         <source>Company</source>
@@ -1415,15 +1415,15 @@
     <name>FieldsOfApplication</name>
     <message>
         <source>Commercial refrigeration</source>
-        <translation>Czynnik handlowy</translation>
+        <translation>Urządzenie handlowe</translation>
     </message>
     <message>
         <source>Industrial refrigeration</source>
-        <translation>Czynnik przemysłowy</translation>
+        <translation>Urządzenie przemysłowe</translation>
     </message>
     <message>
         <source>Transport refrigeration</source>
-        <translation>Transport czynnika</translation>
+        <translation>Transport chłodniczy</translation>
     </message>
     <message>
         <source>Air conditioning</source>
@@ -1435,7 +1435,7 @@
     </message>
     <message>
         <source>Domestic refrigeration</source>
-        <translation>Czynnik gospodarski</translation>
+        <translation>Urządzenie domowe</translation>
     </message>
     <message>
         <source>Field of application</source>
@@ -1443,7 +1443,7 @@
     </message>
     <message>
         <source>Refrigeration</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Chłodzenie</translation>
     </message>
 </context>
 <context>
@@ -1717,10 +1717,6 @@
         <translation>Data</translation>
     </message>
     <message>
-        <source>Operator</source>
-        <translation>Operator</translation>
-    </message>
-    <message>
         <source>Remedies</source>
         <translation>Środki naprawcze</translation>
     </message>
@@ -1743,6 +1739,10 @@
     <message>
         <source>Inspection carried out by another service company.</source>
         <translation>Kontrola przeprowadzona przez inną firmę serwisową.</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Osoba kontaktowa</translation>
     </message>
 </context>
 <context>
@@ -1833,14 +1833,6 @@
         <translation>Kontroler</translation>
     </message>
     <message>
-        <source>ID:</source>
-        <translation>ID:</translation>
-    </message>
-    <message>
-        <source>Certified person:</source>
-        <translation>Certyfikowane osoby:</translation>
-    </message>
-    <message>
         <source>Phone:</source>
         <translation>Telefon:</translation>
     </message>
@@ -1853,14 +1845,6 @@
         <translation>Cennik:</translation>
     </message>
     <message>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
-    <message>
-        <source>Certified person</source>
-        <translation>Osoba certyfikowana</translation>
-    </message>
-    <message>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
@@ -1869,16 +1853,28 @@
         <translation>Telefon</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Nazwa</translation>
-    </message>
-    <message>
         <source>Customer ID</source>
         <translation>ID Klienta</translation>
     </message>
     <message>
         <source>E-mail:</source>
         <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Certificate number:</source>
+        <translation>Numer certyfikatu:</translation>
+    </message>
+    <message>
+        <source>Full name:</source>
+        <translation>Imię i nazwisko:</translation>
+    </message>
+    <message>
+        <source>Certificate number</source>
+        <translation>Numer certyfikatu</translation>
+    </message>
+    <message>
+        <source>Full name</source>
+        <translation>Imię i nazwisko</translation>
     </message>
 </context>
 <context>
@@ -3212,7 +3208,7 @@ Aby usunąć wszystkie dane klienta &quot;%1&quot; nacijnij USUŃ i potwierdź:<
     </message>
     <message>
         <source>Decommission</source>
-        <translation>Wyłączenie</translation>
+        <translation>Wyłącz</translation>
     </message>
     <message>
         <source>Decommission all circuits of customer %1%2</source>
@@ -3256,7 +3252,7 @@ Aby usunąć wszystkie dane klienta &quot;%1&quot; nacijnij USUŃ i potwierdź:<
     </message>
     <message>
         <source>Duplicate and Decommission</source>
-        <translation>Powielenie i wyłączenie</translation>
+        <translation>Powiel i wyłącz</translation>
     </message>
     <message>
         <source>Duplicate and decommission circuit %1 (%2)</source>
@@ -3638,7 +3634,7 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Czynnik</translation>
     </message>
     <message>
         <source>Compressor name</source>
@@ -4584,102 +4580,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>New charge</source>
-        <translation>Nowa opłata</translation>
-    </message>
-</context>
-<context>
-    <name>RecordOfRefrigerantManagement</name>
-    <message>
-        <source>Record of Refrigerant Management</source>
-        <translation>Pozycja zarządzania czynnikiem</translation>
-    </message>
-    <message>
-        <source>Date:</source>
-        <translation>Data:</translation>
-    </message>
-    <message>
-        <source>Refrigerant:</source>
-        <translation>Czynnik:</translation>
-    </message>
-    <message>
-        <source>Purchased (new):</source>
-        <translation>Zakup (nowy):</translation>
-    </message>
-    <message>
-        <source>Purchased (recovered):</source>
-        <translation>Zakup (odzyskany):</translation>
-    </message>
-    <message>
-        <source>Sold (new):</source>
-        <translation>Sprzedany (nowy):</translation>
-    </message>
-    <message>
-        <source>Sold (recovered):</source>
-        <translation>Sprzedany (odzyskany):</translation>
-    </message>
-    <message>
-        <source>Reclaimed:</source>
-        <translation>Zregenerowany:</translation>
-    </message>
-    <message>
-        <source>Disposed of:</source>
-        <translation>Zutylizowany:</translation>
-    </message>
-    <message>
-        <source>Leaked (new):</source>
-        <translation>Wyciek (nowy):</translation>
-    </message>
-    <message>
-        <source>Leaked (recovered):</source>
-        <translation>Wyciek (odzyskany):</translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation>Data</translation>
-    </message>
-    <message>
-        <source>Business partner</source>
-        <translation>Partner biznesowy</translation>
-    </message>
-    <message>
-        <source>Business partner (ID)</source>
-        <translation>Partner biznesowy (ID)</translation>
-    </message>
-    <message>
-        <source>Refrigerant</source>
-        <translation>Czynnik</translation>
-    </message>
-    <message>
-        <source>Purchased (new)</source>
-        <translation>Zakup (nowy)</translation>
-    </message>
-    <message>
-        <source>Purchased (recovered)</source>
-        <translation>Zakup (odzyskany)</translation>
-    </message>
-    <message>
-        <source>Sold (new)</source>
-        <translation>Sprzedany (nowy)</translation>
-    </message>
-    <message>
-        <source>Sold (recovered)</source>
-        <translation>Sprzedany (odzyskany)</translation>
-    </message>
-    <message>
-        <source>Reclaimed</source>
-        <translation>Zregenerowany</translation>
-    </message>
-    <message>
-        <source>Disposed of</source>
-        <translation>Zutylizowane</translation>
-    </message>
-    <message>
-        <source>Leaked (new)</source>
-        <translation>Wyciek (nowy)</translation>
-    </message>
-    <message>
-        <source>Leaked (recovered)</source>
-        <translation>Wyciek (odzyskany)</translation>
+        <translation>Nowe napełnienie</translation>
     </message>
 </context>
 <context>
@@ -4854,10 +4755,6 @@ dla ID osoby i firmy</translation>
         <translation>Czynnik:</translation>
     </message>
     <message>
-        <source>Repairman:</source>
-        <translation>Mechanik:</translation>
-    </message>
-    <message>
         <source>Assembly record No.:</source>
         <translation>Książka serwisowa nr.:</translation>
     </message>
@@ -4867,11 +4764,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant addition:</source>
-        <translation>Dodawanie czynnika:</translation>
+        <translation>Dopełnienie czynnika:</translation>
     </message>
     <message>
         <source>Refrigerant recovery:</source>
-        <translation>Odzyk czynnika:</translation>
+        <translation>Odzysk czynnika:</translation>
     </message>
     <message>
         <source>Date</source>
@@ -4891,7 +4788,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Czynnik</translation>
     </message>
     <message>
         <source>Amount of refrigerant</source>
@@ -4899,19 +4796,23 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
-        <translation>Dodawanie czynnika</translation>
+        <translation>Dopełnienie czynnika</translation>
     </message>
     <message>
         <source>Refrigerant recovery</source>
-        <translation>Odzyk czynnika</translation>
-    </message>
-    <message>
-        <source>Repairman</source>
-        <translation>Mechanik</translation>
+        <translation>Odzysk czynnika</translation>
     </message>
     <message>
         <source>Assembly record No.</source>
         <translation>Książka serwisowa nr.</translation>
+    </message>
+    <message>
+        <source>Inspector:</source>
+        <translation>Kontroler:</translation>
+    </message>
+    <message>
+        <source>Inspector</source>
+        <translation>Kontroler</translation>
     </message>
 </context>
 <context>
@@ -4961,7 +4862,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation>NIP:</translation>
     </message>
     <message>
         <source>Address:</source>
@@ -5000,7 +4901,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Czynnik chłodniczy</translation>
+        <translation>Czynnik</translation>
     </message>
     <message>
         <source>New in store</source>
@@ -5766,7 +5667,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
-        <translation>Dodawanie czynnika</translation>
+        <translation>Dopełnienie czynnika</translation>
     </message>
     <message>
         <source>Annual leakage</source>
@@ -5774,15 +5675,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Refrigerant recovery</source>
-        <translation>Odzyk czynnika</translation>
+        <translation>Odzysk czynnika</translation>
     </message>
     <message>
         <source>Inspector</source>
         <translation>Kontroler</translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation>Operator</translation>
     </message>
     <message>
         <source>New</source>
@@ -5794,11 +5691,15 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>New charge</source>
-        <translation>Nowa opłata</translation>
+        <translation>Nowe napełnienie</translation>
     </message>
     <message>
         <source>Risks</source>
         <translation>Ryzyko</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Osoba kontaktowa</translation>
     </message>
 </context>
 <context>
@@ -5882,12 +5783,12 @@ dla ID osoby i firmy</translation>
 <context>
     <name>Variables</name>
     <message>
-        <source>Repairman:</source>
-        <translation>Mechanik:</translation>
+        <source>New charge:</source>
+        <translation>Nowe napełnienie:</translation>
     </message>
     <message>
-        <source>New charge:</source>
-        <translation>Nowa opłata:</translation>
+        <source>Inspector:</source>
+        <translation>Kontroler:</translation>
     </message>
 </context>
 <context>
@@ -5934,7 +5835,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Basic Logbook</source>
-        <translation>Basic Logbook</translation>
+        <translation>Książka podstawowa</translation>
     </message>
     <message>
         <source>Repairs</source>
@@ -5942,7 +5843,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Detailed Logbook</source>
-        <translation>Szczegółowy dziennik</translation>
+        <translation>Książka szczegółowa</translation>
     </message>
     <message>
         <source>Circuits</source>

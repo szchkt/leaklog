@@ -589,7 +589,7 @@ public:
         dict.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
         dict.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
         dict.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
-        dict.insert("operator", QApplication::translate("VariableNames", "Operator"));
+        dict.insert("operator", QApplication::translate("VariableNames", "Contact person"));
     }
 
     MTDictionary dict;
