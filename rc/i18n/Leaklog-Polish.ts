@@ -521,7 +521,7 @@
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Ilość czynnika</translation>
+        <translation>Nominalne napełnienie</translation>
     </message>
     <message>
         <source>Amount of oil</source>
@@ -553,7 +553,7 @@
     </message>
     <message>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation>Numer obiegu:</translation>
     </message>
     <message>
         <source>Circuit name:</source>
@@ -593,7 +593,7 @@
     </message>
     <message>
         <source>Disused</source>
-        <translation>Wyłączony</translation>
+        <translation>Trwale wyłączony z eksploatacji</translation>
     </message>
     <message>
         <source>Date of decommissioning:</source>
@@ -609,7 +609,7 @@
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Ilość czynnika:</translation>
+        <translation>Nominalne napełnienie:</translation>
     </message>
     <message>
         <source>Oil:</source>
@@ -645,7 +645,7 @@
     </message>
     <message>
         <source>ID</source>
-        <translation>ID</translation>
+        <translation>Numer obiegu</translation>
     </message>
     <message>
         <source>Circuit name</source>
@@ -689,7 +689,7 @@
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>ID obiegu</translation>
+        <translation>Numer obiegu</translation>
     </message>
     <message>
         <source>Name</source>
@@ -1838,7 +1838,7 @@
     </message>
     <message>
         <source>Acquisition price:</source>
-        <translation>Cena zakupu:</translation>
+        <translation>Koszt pracy:</translation>
     </message>
     <message>
         <source>List price:</source>
@@ -3122,7 +3122,7 @@
     </message>
     <message>
         <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
-        <translation>Należy dodać pozycję zakupu dla każdego rodzaju czynnika który masz w sklepie. Można to zrobić poprzez kliknięcie w przycisk &quot;Dodaj pozycję w zarządzaniu czynnikiem&quot;.</translation>
+        <translation>Należy dodać pozycję zakupu dla każdego rodzaju czynnika znajdującego się w magazynie. Można to zrobić poprzez kliknięcie w przycisk &quot;Dodaj pozycję w zarządzaniu czynnikiem&quot;.</translation>
     </message>
     <message>
         <source>%1 (%2)</source>
@@ -4760,7 +4760,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Ilość czynnika:</translation>
+        <translation>Nominalne napełnienie:</translation>
     </message>
     <message>
         <source>Refrigerant addition:</source>
@@ -4792,7 +4792,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Ilość czynnika</translation>
+        <translation>Nominalne napełnienie</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
@@ -5567,7 +5567,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Electric current</source>
-        <translation>Elektryczność</translation>
+        <translation>Natężenie prądu</translation>
     </message>
     <message>
         <source>L1</source>
@@ -5583,7 +5583,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Electric voltage</source>
-        <translation>Napięcie elektryczne</translation>
+        <translation>Napięcie prądu</translation>
     </message>
     <message>
         <source>Pneumatic pressure switches</source>
@@ -5603,7 +5603,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Safety switch</source>
-        <translation>Bezpiecznik</translation>
+        <translation>Zawór bezpieczeństwa</translation>
     </message>
     <message>
         <source>Remedies</source>
@@ -5623,11 +5623,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Corr/Def</source>
-        <translation>Corr/Def</translation>
+        <translation>Korozja/Defekt</translation>
     </message>
     <message>
         <source>Noise/Vibr</source>
-        <translation>Noise/Vibr</translation>
+        <translation>Hałas/Wibracje</translation>
     </message>
     <message>
         <source>Bubble/Level</source>
