@@ -66,6 +66,7 @@ MainWindow::MainWindow():
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
+    leaklog_i18n.insert(translator.translate("LanguageNames", "Polish"), "Polish");
 
     // UI
     if (tr("LTR") == "RTL")
@@ -552,7 +553,7 @@ void MainWindow::printLabel(bool detailed)
     QString selected_inspector = m_tab->selectedInspector();
     QVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", m_tab->selectedCustomer().rightJustified(8, '0') + "." + m_tab->selectedCircuit().rightJustified(5, '0'));
+        attributes.insert("circuit_id", formatCompanyID(m_tab->selectedCustomer()) + "." + m_tab->selectedCircuit().rightJustified(5, '0'));
         Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
         attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery()
                                       + ", hermetic, leak_detector, inspection_interval"));
@@ -603,7 +604,7 @@ void MainWindow::printLabel(bool detailed)
     QString default_service_company = DBInfo::valueForKey("default_service_company");
     ServiceCompany service_company(default_service_company);
     if (service_company.exists()) {
-        attributes.insert("id", default_service_company.rightJustified(8, '0'));
+        attributes.insert("id", formatCompanyID(default_service_company));
         attributes.unite(service_company.list("name, address, mail, phone"));
     }
 

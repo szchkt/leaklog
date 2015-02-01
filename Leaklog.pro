@@ -8,6 +8,7 @@ FORMS         += ui/aboutwidget.ui \
                  ui/viewtab.ui
 HEADERS       += src/aboutwidget.h \
                  src/activityeventfilter.h \
+                 src/companyidvalidator.h \
                  src/dbfile.h \
                  src/dbrecord.h \
                  src/defs.h \
@@ -122,6 +123,7 @@ RESOURCES     += rc/html.qrc \
                  rc/resources.qrc
 SOURCES       += src/aboutwidget.cpp \
                  src/activityeventfilter.cpp \
+                 src/companyidvalidator.cpp \
                  src/database.cpp \
                  src/dbfile.cpp \
                  src/dbrecord.cpp \
@@ -354,5 +356,6 @@ refprop:exists(refprop/include/refprop_lib.h) {
     }
 }
 
-TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts
+TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
+                     rc/i18n/Leaklog-Polish.ts
 QMAKE_RESOURCE_FLAGS += -compress 9

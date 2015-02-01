@@ -36,7 +36,7 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999999));
+    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));

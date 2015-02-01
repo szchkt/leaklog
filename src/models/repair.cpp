@@ -55,7 +55,7 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    MDComboBox *repairman = new MDComboBox("repairman", tr("Repairman:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
+    MDComboBox *repairman = new MDComboBox("repairman", tr("Inspector:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), attributes.value("arno").toString()));
@@ -119,7 +119,7 @@ public:
         dict.insert("refrigerant_amount", QApplication::translate("Repair", "Amount of refrigerant"));
         dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
         dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
-        dict.insert("repairman", QApplication::translate("Repair", "Repairman"));
+        dict.insert("repairman", QApplication::translate("Repair", "Inspector"));
         dict.insert("arno", QApplication::translate("Repair", "Assembly record No."));
     }
 

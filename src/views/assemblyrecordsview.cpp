@@ -83,7 +83,7 @@ QString AssemblyRecordsView::renderHTML()
     if (!customer_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:customer")) << tr("Customer");
     if (!circuit_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:circuit")) << tr("Circuit");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspector")) << tr("Inspector");
-    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:operator")) << tr("Operator");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:operator")) << tr("Contact person");
     if (show_date_updated)
         *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.date_updated")) << tr("Date Updated");
     if (show_owner)

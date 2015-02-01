@@ -43,7 +43,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 
     QString customer = Customer(parent("parent")).stringValue("company");
     if (customer.isEmpty())
-        customer = parent("parent").rightJustified(8, '0');
+        customer = formatCompanyID(parent("parent"));
     md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle()).arg(customer));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {

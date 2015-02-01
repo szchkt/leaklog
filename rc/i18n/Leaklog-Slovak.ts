@@ -122,16 +122,16 @@
         <translation>Dátum</translation>
     </message>
     <message>
-        <source>Inspector ID</source>
-        <translation>IČ kontrolóra</translation>
-    </message>
-    <message>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
     <message>
         <source>Assembly record type ID</source>
         <translation>IČ typu montážneho listu</translation>
+    </message>
+    <message>
+        <source>Inspector certificate number</source>
+        <translation>Číslo osvedčenia kontrolóra</translation>
     </message>
 </context>
 <context>
@@ -493,16 +493,16 @@
         <translation>Kontrolór</translation>
     </message>
     <message>
-        <source>Operator</source>
-        <translation>Prevádzkovateľ</translation>
-    </message>
-    <message>
         <source>Date Updated</source>
         <translation>Dátum zmeny</translation>
     </message>
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Prevzal</translation>
     </message>
 </context>
 <context>
@@ -1717,10 +1717,6 @@
         <translation>Dátum</translation>
     </message>
     <message>
-        <source>Operator</source>
-        <translation>Prevádzkovateľ</translation>
-    </message>
-    <message>
         <source>Remedies</source>
         <translation>Opatrenia</translation>
     </message>
@@ -1743,6 +1739,10 @@
     <message>
         <source>Inspection carried out by another service company.</source>
         <translation>Kontrola vykonaná inou servisnou organizáciou.</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Prevzal</translation>
     </message>
 </context>
 <context>
@@ -1833,14 +1833,6 @@
         <translation>Kontrolór</translation>
     </message>
     <message>
-        <source>ID:</source>
-        <translation>IČ:</translation>
-    </message>
-    <message>
-        <source>Certified person:</source>
-        <translation>Osoba s osvedčením:</translation>
-    </message>
-    <message>
         <source>E-mail:</source>
         <translation>E-mail:</translation>
     </message>
@@ -1857,14 +1849,6 @@
         <translation>Cenníková cena:</translation>
     </message>
     <message>
-        <source>Certified person</source>
-        <translation>Osoba s osvedčením</translation>
-    </message>
-    <message>
-        <source>ID</source>
-        <translation>IČ</translation>
-    </message>
-    <message>
         <source>E-mail</source>
         <translation>E-mail</translation>
     </message>
@@ -1873,12 +1857,24 @@
         <translation>Telefón</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Meno</translation>
-    </message>
-    <message>
         <source>Customer ID</source>
         <translation>IČO zákazníka</translation>
+    </message>
+    <message>
+        <source>Certificate number:</source>
+        <translation>Číslo osvedčenia:</translation>
+    </message>
+    <message>
+        <source>Full name:</source>
+        <translation>Celé meno:</translation>
+    </message>
+    <message>
+        <source>Certificate number</source>
+        <translation>Číslo osvedčenia</translation>
+    </message>
+    <message>
+        <source>Full name</source>
+        <translation>Celé meno</translation>
     </message>
 </context>
 <context>
@@ -1967,7 +1963,11 @@
     <name>LanguageNames</name>
     <message>
         <source>Slovak</source>
-        <translation>slovenčina</translation>
+        <translation>Slovenčina</translation>
+    </message>
+    <message>
+        <source>Polish</source>
+        <translation>Poľština</translation>
     </message>
 </context>
 <context>
@@ -4758,10 +4758,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <source>Repairman:</source>
-        <translation>Opravár:</translation>
-    </message>
-    <message>
         <source>Assembly record No.:</source>
         <translation>Číslo ML:</translation>
     </message>
@@ -4798,10 +4794,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zhodnotenie chladiva</translation>
     </message>
     <message>
-        <source>Repairman</source>
-        <translation>Opravár</translation>
-    </message>
-    <message>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
     </message>
@@ -4816,6 +4808,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Refrigerant</source>
         <translation>Chladivo</translation>
+    </message>
+    <message>
+        <source>Inspector:</source>
+        <translation>Kontrolór:</translation>
+    </message>
+    <message>
+        <source>Inspector</source>
+        <translation>Kontrolór</translation>
     </message>
 </context>
 <context>
@@ -5673,10 +5673,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Kontrolór</translation>
     </message>
     <message>
-        <source>Operator</source>
-        <translation>Prevzal</translation>
-    </message>
-    <message>
         <source>New</source>
         <translation>Nové</translation>
     </message>
@@ -5703,6 +5699,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Risks</source>
         <translation>Riziká</translation>
+    </message>
+    <message>
+        <source>Contact person</source>
+        <translation>Prevzal</translation>
     </message>
 </context>
 <context>
@@ -5786,12 +5786,12 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
 <context>
     <name>Variables</name>
     <message>
-        <source>Repairman:</source>
-        <translation>Opravár:</translation>
-    </message>
-    <message>
         <source>New charge:</source>
         <translation>Nová náplň:</translation>
+    </message>
+    <message>
+        <source>Inspector:</source>
+        <translation>Kontrolór:</translation>
     </message>
 </context>
 <context>

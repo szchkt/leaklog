@@ -47,7 +47,7 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget 
 
     QObject::connect(operator_choice, SIGNAL(buttonClicked(int)), this, SLOT(operatorChoiceChanged(int)));
 
-    operator_id = new MDLineEdit("operator_id", QApplication::translate("Customer", "ID:"), this, QString(), 99999999);
+    operator_id = new MDCompanyIDEdit("operator_id", QApplication::translate("Customer", "ID:"), this, QString());
     operator_id->setShowInForm(false);
     operator_id->setVisible(false);
     addWidget(operator_id);

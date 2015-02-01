@@ -80,7 +80,7 @@ QString OperatorReportView::renderHTML()
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
-    out << "<td>" << toolTipLink("customer", customer_id.rightJustified(8, '0'), customer_id) << "</td>";
+    out << "<td>" << toolTipLink("customer", formatCompanyID(customer_id), customer_id) << "</td>";
     out << "<td>" << MTVariant(customer.value("company")) << "</td>";
     out << "<td>" << MTVariant(customer.value("address"), MTVariant::Address) << "</td>";
     out << "</tr><tr><th colspan=\"3\">" << tr("Operator information") << "</th></tr><tr>";
@@ -88,7 +88,7 @@ QString OperatorReportView::renderHTML()
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
-    out << "<td>" << customer.stringValue("operator_id").rightJustified(8, '0') << "</td>";
+    out << "<td>" << formatCompanyID(customer.stringValue("operator_id")) << "</td>";
     out << "<td>" << MTVariant(customer.value("operator_company")) << "</td>";
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";

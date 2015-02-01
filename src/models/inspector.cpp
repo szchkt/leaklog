@@ -21,11 +21,8 @@
 
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
-#include "global.h"
 
 #include <QApplication>
-
-using namespace Global;
 
 Inspector::Inspector(const QString &id):
     DBRecord(tableName(), "id", id, MTDictionary())
@@ -40,8 +37,8 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     if (!id().isEmpty()) {
         attributes = list();
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 9999));
-    md->addInputWidget(new MDLineEdit("person", tr("Certified person:"), md->widget(), attributes.value("person").toString()));
+    md->addInputWidget(new MDLineEdit("id", tr("Certificate number:"), md->widget(), attributes.value("id").toString(), 99999));
+    md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
@@ -94,8 +91,8 @@ class InspectorAttributes
 {
 public:
     InspectorAttributes() {
-        dict.insert("id", QApplication::translate("Inspector", "ID"));
-        dict.insert("person", QApplication::translate("Inspector", "Certified person"));
+        dict.insert("id", QApplication::translate("Inspector", "Certificate number"));
+        dict.insert("person", QApplication::translate("Inspector", "Full name"));
         dict.insert("mail", QApplication::translate("Inspector", "E-mail"));
         dict.insert("phone", QApplication::translate("Inspector", "Phone"));
     }

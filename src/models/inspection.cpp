@@ -42,14 +42,14 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
             if (from.isEmpty())
                 from = data.value(2);
 
-            from.append(QString(" (%1)").arg(QString::number(from_id).rightJustified(8, '0')));
+            from.append(QString(" (%1)").arg(formatCompanyID(from_id)));
 
             int to_id = data.value(1).toInt();
             QString to = to_id ? Customer(QString::number(to_id)).stringValue("company") : QString();
             if (to.isEmpty())
                 to = data.value(3);
 
-            to.append(QString(" (%1)").arg(QString::number(to_id).rightJustified(8, '0')));
+            to.append(QString(" (%1)").arg(formatCompanyID(to_id)));
 
             return tr("Circuit moved from customer %1 to %2.").arg(from).arg(to);
         }
@@ -113,7 +113,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
 {
     QString customer = Customer(parent("customer")).stringValue("company");
     if (customer.isEmpty())
-        customer = parent("customer").rightJustified(8, '0');
+        customer = formatCompanyID(parent("customer"));
     QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
     if (circuit.isEmpty())
         circuit = parent("circuit").rightJustified(5, '0');

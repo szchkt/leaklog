@@ -4,7 +4,11 @@
     <name>LanguageNames</name>
     <message>
         <source>Slovak</source>
-        <translation>slovenčina</translation>
+        <translation>Slovenčina</translation>
+    </message>
+    <message>
+        <source>Polish</source>
+        <translation>Polski</translation>
     </message>
 </context>
 </TS>
