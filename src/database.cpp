@@ -527,6 +527,23 @@ void MainWindow::openRemote()
     openDatabase(QString(), connection_string);
 }
 
+void MainWindow::backupDatabase(const QString &path)
+{
+    QFileInfo db_info(path);
+    QDir db_dir(db_info.dir());
+    QString backup_dir_path = QString("%1/%2").arg(tr("Leaklog Backups")).arg(db_info.completeBaseName());
+    QString backup_file_name = QString("%1-%2.lklg").arg(db_info.completeBaseName()).arg(QDate::currentDate().toString("yyyy-MM-dd"));
+
+    if (db_dir.mkpath(backup_dir_path)) {
+        db_dir.cd(backup_dir_path);
+        if (!db_dir.exists(backup_file_name) && !QFile::copy(path, db_dir.absoluteFilePath(backup_file_name))) {
+            QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Failed to copy database.")));
+        }
+    } else {
+        QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Could not create backup directory.")));
+    }
+}
+
 void MainWindow::openDatabase(QString path, const QString &connection_string)
 {
     m_connection_string = connection_string;
@@ -535,7 +552,7 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
         QSqlDatabase db = QSqlDatabase::database();
         path = db.databaseName();
         if (!db.isOpen()) {
-            QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
+            QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot open database %1:\n%2.").arg(path).arg(db.lastError().text()));
             clearWindowTitle();
             return;
         }
@@ -546,6 +563,9 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
             clearWindowTitle();
             return;
         }
+
+        backupDatabase(path);
+
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName(path);
         if (!db.open()) {
