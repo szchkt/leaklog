@@ -448,7 +448,7 @@
     <name>AssemblyRecordTypeCategory</name>
     <message>
         <source>Assembly record type ID</source>
-        <translation>ID typu siążki serwisowej</translation>
+        <translation>ID typu książki serwisowej</translation>
     </message>
     <message>
         <source>Assembly record category type ID</source>
@@ -521,7 +521,7 @@
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Nominalne napełnienie</translation>
+        <translation>Napełnienie początkowe</translation>
     </message>
     <message>
         <source>Amount of oil</source>
@@ -609,7 +609,7 @@
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Nominalne napełnienie:</translation>
+        <translation>Napełnienie początkowe:</translation>
     </message>
     <message>
         <source>Oil:</source>
@@ -1165,7 +1165,7 @@
     <name>EditCircuitDialogueCompressorsTab</name>
     <message>
         <source>Compressors</source>
-        <translation>Sprężarka</translation>
+        <translation>Sprężarki</translation>
     </message>
     <message>
         <source>Name</source>
@@ -1257,7 +1257,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Usuń</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -1360,7 +1360,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Usuń</translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -1486,7 +1486,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Usuń</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <source>Unicode (UTF-8)</source>
@@ -1710,7 +1710,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Usuń</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1854,7 +1854,7 @@
     </message>
     <message>
         <source>Customer ID</source>
-        <translation>ID Klienta</translation>
+        <translation>NIP klienta</translation>
     </message>
     <message>
         <source>E-mail:</source>
@@ -1889,11 +1889,11 @@
     </message>
     <message>
         <source>Customer ID</source>
-        <translation>ID Klienta</translation>
+        <translation>NIP klienta</translation>
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>ID Obiegu</translation>
+        <translation>ID obiegu</translation>
     </message>
     <message>
         <source>Assembly record</source>
@@ -1948,7 +1948,7 @@
     </message>
     <message>
         <source>List of Inspectors</source>
-        <translation>Lista kontroli</translation>
+        <translation>Lista kontrolerów</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -2734,7 +2734,7 @@
     </message>
     <message>
         <source>PDF (Portrait)...</source>
-        <translation>PDF (Portret)...</translation>
+        <translation>PDF (portret)...</translation>
     </message>
     <message>
         <source>Export the current view as a PDF document</source>
@@ -2998,7 +2998,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Usuń</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <source>Compressor</source>
@@ -3034,11 +3034,11 @@
     </message>
     <message>
         <source>Pressures and temperatures</source>
-        <translation>Cieśnienie i temperatura</translation>
+        <translation>Cieśnienia i temperatury</translation>
     </message>
     <message>
         <source>Compressors</source>
-        <translation>Sprężarka</translation>
+        <translation>Sprężarki</translation>
     </message>
     <message>
         <source>New database - Leaklog</source>
@@ -3558,7 +3558,7 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
     </message>
     <message>
         <source>Customer ID</source>
-        <translation>ID klienta</translation>
+        <translation>NIP klienta</translation>
     </message>
     <message>
         <source>Name</source>
@@ -4221,8 +4221,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>d/M/yy</source>
-        <translatorcomment>d.M.yy</translatorcomment>
-        <translation></translation>
+        <translation>d.M.yy</translation>
     </message>
     <message>
         <source>d MMM yyyy</source>
@@ -4276,7 +4275,7 @@ dla ID osoby i firmy</translation>
     <name>OperatorReportView</name>
     <message>
         <source>Operator Report: %1</source>
-        <translation>Operator raportu: %1</translation>
+        <translation>Raport operatora: %1</translation>
     </message>
     <message>
         <source>Owner information</source>
@@ -4305,7 +4304,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Odzyskane</translation>
+        <translation>Odzyskany</translation>
     </message>
     <message>
         <source>At the end of the period</source>
@@ -4333,7 +4332,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Operator Report</source>
-        <translation>Operator raportu</translation>
+        <translation>Raport operatora</translation>
     </message>
     <message>
         <source>E-mail:</source>
@@ -4760,7 +4759,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Nominalne napełnienie:</translation>
+        <translation>Napełnienie początkowe:</translation>
     </message>
     <message>
         <source>Refrigerant addition:</source>
@@ -4792,7 +4791,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Nominalne napełnienie</translation>
+        <translation>Napełnienie początkowe</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
@@ -4937,7 +4936,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Odzyskane</translation>
+        <translation>Odzyskany</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -5495,15 +5494,15 @@ dla ID osoby i firmy</translation>
     <name>VariableNames</name>
     <message>
         <source>Temperature sec. medium</source>
-        <translation>Temperature sec. medium</translation>
+        <translation>Temp. czynnika pośredniego</translation>
     </message>
     <message>
         <source>evap. in</source>
-        <translation>evap. in</translation>
+        <translation>evap. wejście</translation>
     </message>
     <message>
         <source>cond. in</source>
-        <translation>cond. in</translation>
+        <translation>skraplacz wejście</translation>
     </message>
     <message>
         <source>Pressure evaporating</source>
@@ -5523,19 +5522,19 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Temperature EV</source>
-        <translation>Temperatura EV</translation>
+        <translation>Temp. przed zaworem rozpr.</translation>
     </message>
     <message>
         <source>Temperature evap. out</source>
-        <translation>Temperatura evap. out</translation>
+        <translation>Temp. evap. wyjście</translation>
     </message>
     <message>
         <source>Temperature comp. in</source>
-        <translation>Temperatura comp. in</translation>
+        <translation>Temp. sprężarka wejście</translation>
     </message>
     <message>
         <source>Subcooling</source>
-        <translation>Dochładzanie</translation>
+        <translation>Dochłodzanie</translation>
     </message>
     <message>
         <source>Superheating</source>
@@ -5547,11 +5546,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>comp.</source>
-        <translation>comp.</translation>
+        <translation>sprężarka</translation>
     </message>
     <message>
         <source>Temperature discharge</source>
-        <translation>Temperatura bezwzględna</translation>
+        <translation>Temperatura tłoczenia</translation>
     </message>
     <message>
         <source>%1T (evaporating)</source>
@@ -5559,11 +5558,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>%1T (condensing)</source>
-        <translation>%1T(skraplanie)</translation>
+        <translation>%1T (skraplanie)</translation>
     </message>
     <message>
         <source>Comp. el. power input</source>
-        <translation>Comp. el. power input</translation>
+        <translation>Moc el. sprężarki</translation>
     </message>
     <message>
         <source>Electric current</source>
@@ -5587,7 +5586,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Pneumatic pressure switches</source>
-        <translation>Przełączniki ciśnieniowe pneumatyczne</translation>
+        <translation>Presostaty</translation>
     </message>
     <message>
         <source>HiP</source>
@@ -5599,7 +5598,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Diff</source>
-        <translation>Diff</translation>
+        <translation>Różnicowy</translation>
     </message>
     <message>
         <source>Safety switch</source>
@@ -5623,7 +5622,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Corr/Def</source>
-        <translation>Korozja/Defekt</translation>
+        <translation>Korozja/Deformacja</translation>
     </message>
     <message>
         <source>Noise/Vibr</source>
@@ -5663,7 +5662,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Bubble detection</source>
-        <translation>Bubble detection</translation>
+        <translation>Środek pieniący</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
@@ -5687,7 +5686,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Odzyskane</translation>
+        <translation>Odzyskany</translation>
     </message>
     <message>
         <source>New charge</source>
@@ -5831,7 +5830,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Operator Report</source>
-        <translation>Operator raportu</translation>
+        <translation>Raport operatora</translation>
     </message>
     <message>
         <source>Basic Logbook</source>
