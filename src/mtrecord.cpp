@@ -22,7 +22,6 @@
 
 #include <QSqlRecord>
 #include <QDateTime>
-#include <QDebug>
 #include <QSqlError>
 
 using namespace Global;

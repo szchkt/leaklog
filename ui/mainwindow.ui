@@ -336,6 +336,7 @@
     <addaction name="actionLock"/>
     <addaction name="actionConfigure_permissions"/>
     <addaction name="actionAutosave"/>
+    <addaction name="actionOpen_Backup_Folder"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_service_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
@@ -2204,6 +2205,14 @@
    </property>
    <property name="statusTip">
     <string/>
+   </property>
+  </action>
+  <action name="actionOpen_Backup_Folder">
+   <property name="text">
+    <string>Open Backup Folder</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the folder containing automatic backups of this database</string>
    </property>
   </action>
  </widget>

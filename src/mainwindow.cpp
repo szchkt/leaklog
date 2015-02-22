@@ -233,6 +233,7 @@ MainWindow::MainWindow():
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
+    QObject::connect(actionOpen_Backup_Folder, SIGNAL(triggered()), this, SLOT(openBackupDirectory()));
     QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRefrigerantRecord()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -852,6 +853,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionLock->setEnabled(enable);
     actionConfigure_permissions->setEnabled(enable);
     actionAutosave->setEnabled(enable);
+    actionOpen_Backup_Folder->setEnabled(enable && !isDatabaseRemote());
 
     actionEdit_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
@@ -1204,6 +1206,23 @@ void MainWindow::configureAutosave()
             DBInfo::setValueForKey("autosave", autosave_mode);
             setDatabaseModified(true);
         }
+    }
+}
+
+void MainWindow::openBackupDirectory()
+{
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isOpen())
+        return;
+
+    if (isDatabaseRemote(db))
+        return;
+
+    QPair<bool, QDir> backup_dir = backupDirectoryForDatabasePath(db.databaseName());
+    if (backup_dir.first) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(backup_dir.second.absolutePath()));
+    } else {
+        QMessageBox::critical(this, tr("Open Backup Folder - Leaklog"), tr("Could not create backup folder."));
     }
 }
 

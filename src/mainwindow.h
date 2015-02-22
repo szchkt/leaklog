@@ -184,6 +184,7 @@ private slots:
     void showOperationNotPermittedMessage();
     void configurePermissions();
     void configureAutosave();
+    void openBackupDirectory();
     void find();
     void findAll();
     void findNext();
