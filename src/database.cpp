@@ -527,6 +527,22 @@ void MainWindow::openRemote()
     openDatabase(QString(), connection_string);
 }
 
+static QDate dateForFileName(const QString &file_name)
+{
+    QStringList components = file_name.split('-');
+    if (components.count() < 3)
+        return QDate();
+
+    QString year = components.at(components.count() - 3);
+    year.remove(QRegExp("[^0-9]+"));
+    QString month = components.at(components.count() - 2);
+    month.remove(QRegExp("[^0-9]+"));
+    QString day = components.at(components.count() - 1);
+    day.remove(QRegExp("[^0-9]+"));
+
+    return QDate(year.toInt(), month.toInt(), day.toInt());
+}
+
 void MainWindow::backupDatabase(const QString &path)
 {
     QPair<bool, QDir> backup_dir = backupDirectoryForDatabasePath(path);
@@ -537,6 +553,23 @@ void MainWindow::backupDatabase(const QString &path)
     if (backup_dir.first) {
         if (!backup_dir.second.exists(backup_file_name) && !QFile::copy(path, backup_dir.second.absoluteFilePath(backup_file_name))) {
             QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Failed to copy database.")));
+        }
+
+        QStringList entries = backup_dir.second.entryList(QStringList() << "*.lklg", QDir::Files, QDir::Name);
+        while (entries.count() > 10) {
+            int min_diff = INT_MAX;
+            int delete_index = 1;
+            for (int i = 0; i + 3 < entries.count(); ++i) {
+                int diff = dateForFileName(entries.at(i)).daysTo(dateForFileName(entries.at(i + 1)));
+                if (min_diff > diff) {
+                    min_diff = diff;
+                    delete_index = i + 1;
+                }
+            }
+            QString entry = entries.at(delete_index);
+            qDebug().nospace() << "Deleting backup " << delete_index + 1 << " (" << entry << "), days since previous backup: " << min_diff;
+            backup_dir.second.remove(entry);
+            entries.removeAt(delete_index);
         }
     } else {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Could not create backup folder.")));
