@@ -384,7 +384,7 @@ void MainWindow::showRecentDatabaseContextMenu(const QPoint &pos)
     actions << &remove;
     QAction *clicked = QMenu::exec(actions, lw_recent_docs->mapToGlobal(pos));
     if (clicked == &show) {
-        QDesktopServices::openUrl(QUrl("file://" + QFileInfo(item->text()).absolutePath(), QUrl::TolerantMode));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(item->text()).absolutePath()));
     } else if (clicked == &remove) {
         delete lw_recent_docs->itemAt(pos);
     }
