@@ -29,8 +29,12 @@
 #include <QSet>
 #include <QVariant>
 #include <QColor>
+#include <QCryptographicHash>
+#include <QDesktopServices>
+#include <QDir>
 #include <QDate>
 #include <QNetworkRequest>
+#include <QPair>
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
@@ -280,6 +284,17 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
         query.exec(QString("INSERT INTO \"%1\" SELECT %2 FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
+}
+
+QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
+{
+    QDir dir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    QByteArray hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Md5);
+    QString backup_path = QString("Backups/%1").arg(QString(hash.toHex()));
+    if (dir.mkpath(backup_path) && dir.cd(backup_path)) {
+        return QPair<bool, QDir>(true, dir);
+    }
+    return QPair<bool, QDir>(false, QDir());
 }
 
 QString Global::currentUser(const QSqlDatabase &database)

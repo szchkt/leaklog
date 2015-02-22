@@ -529,18 +529,17 @@ void MainWindow::openRemote()
 
 void MainWindow::backupDatabase(const QString &path)
 {
+    QPair<bool, QDir> backup_dir = backupDirectoryForDatabasePath(path);
+
     QFileInfo db_info(path);
-    QDir db_dir(db_info.dir());
-    QString backup_dir_path = QString("%1/%2").arg(tr("Leaklog Backups")).arg(db_info.completeBaseName());
     QString backup_file_name = QString("%1-%2.lklg").arg(db_info.completeBaseName()).arg(QDate::currentDate().toString("yyyy-MM-dd"));
 
-    if (db_dir.mkpath(backup_dir_path)) {
-        db_dir.cd(backup_dir_path);
-        if (!db_dir.exists(backup_file_name) && !QFile::copy(path, db_dir.absoluteFilePath(backup_file_name))) {
+    if (backup_dir.first) {
+        if (!backup_dir.second.exists(backup_file_name) && !QFile::copy(path, backup_dir.second.absoluteFilePath(backup_file_name))) {
             QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Failed to copy database.")));
         }
     } else {
-        QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Could not create backup directory.")));
+        QMessageBox::warning(this, tr("Open database - Leaklog"), tr("Failed to create backup: %1").arg(tr("Could not create backup folder.")));
     }
 }
 

@@ -24,7 +24,11 @@
 
 #include <QSqlDatabase>
 
+template <class T1, class T2>
+struct QPair;
+
 class MTDictionary;
+class QDir;
 class QStringList;
 class QColor;
 class QTextStream;
@@ -52,6 +56,7 @@ namespace Global {
     void addColumn(const QString &, const QString &, const QSqlDatabase &);
     void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
     void dropColumn(const QString &, const QString &, const QSqlDatabase &);
+    QPair<bool, QDir> backupDirectoryForDatabasePath(const QString &path);
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());
     bool isOwnerPermissionApplicable(const QString &);
