@@ -2090,6 +2090,9 @@
         <property name="text">
          <string>Convert refrigerant to CO₂ equivalent</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>

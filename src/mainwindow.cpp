@@ -537,6 +537,7 @@ void MainWindow::printLabel(bool detailed)
             }
             QCheckBox *chb_CO2_equivalent = new QCheckBox(d);
             chb_CO2_equivalent->setText(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8));
+            chb_CO2_equivalent->setChecked(true);
         gl->addWidget(chb_CO2_equivalent, 5, 0, 1, 2);
             QDialogButtonBox *bb = new QDialogButtonBox(d);
             bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
