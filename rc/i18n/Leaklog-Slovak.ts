@@ -1511,7 +1511,7 @@
     <message>
         <source>Cannot read file %1:
 %2.</source>
-        <translation>Nemôžem čítať súbor %1:
+        <translation>Nie je možné čítať súbor %1:
 %2.</translation>
     </message>
     <message>
@@ -2107,13 +2107,13 @@
     <message>
         <source>Cannot write file %1:
 %2.</source>
-        <translation>Nemôžem zapisovať do súboru %1:
+        <translation>Nie je možné zapisovať do súboru %1:
 %2.</translation>
     </message>
     <message>
         <source>Cannot read file %1:
 %2.</source>
-        <translation>Nemôžem čítať súbor %1:
+        <translation>Nie je možné čítať súbor %1:
 %2.</translation>
     </message>
     <message>
@@ -4203,6 +4203,36 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Skip inspection of circuit %1 (%2)</source>
         <translation>Vynechať kontrolu okruhu %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Open Backup Folder</source>
+        <translation>Otvoriť priečinok so zálohami</translation>
+    </message>
+    <message>
+        <source>Open the folder containing automatic backups of this database</source>
+        <translation>Otvoriť priečinok obsahujúci automatické zálohy tejto databázy</translation>
+    </message>
+    <message>
+        <source>Failed to create backup: %1</source>
+        <translation>Nepodarilo sa vytvoriť zálohu: %1</translation>
+    </message>
+    <message>
+        <source>Failed to copy database.</source>
+        <translation>Kopírovanie databázy zlyhalo.</translation>
+    </message>
+    <message>
+        <source>Could not create backup folder.</source>
+        <translation>Nepodarilo sa vytvoriť priečinok pre zálohy.</translation>
+    </message>
+    <message>
+        <source>Cannot open database %1:
+%2.</source>
+        <translation>Nie je možné otvoriť databázu %1:
+%2.</translation>
+    </message>
+    <message>
+        <source>Open Backup Folder - Leaklog</source>
+        <translation>Otvoriť priečinok so zálohami - Leaklog</translation>
     </message>
 </context>
 <context>
