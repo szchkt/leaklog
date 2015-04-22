@@ -978,6 +978,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R438", 2265);
         GWP.insert("R442A", 1888);
         GWP.insert("R449A", 1397);
+        GWP.insert("R452A", 2141);
         GWP.insert("R500", 7850);
         GWP.insert("R501", 3920);
         GWP.insert("R502", 4510);
