@@ -92,6 +92,7 @@ namespace Global {
     const MTDictionary &attributeValues();
     const MTDictionary &permissions();
     double refrigerantGWP(const QString &refrigerant);
+    double CO2Equivalent(const QString &refrigerant, double refrigerant_amount);
     // List
     QString listRefrigerantsToString();
     MTDictionary listInspectors();
