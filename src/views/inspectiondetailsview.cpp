@@ -54,7 +54,7 @@ QString InspectionDetailsView::renderHTML()
 
     writeCustomersTable(out, customer_id);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id, 7);
+    writeCircuitsTable(out, customer_id, circuit_id, 8);
 
     QVariantMap circuit = Circuit(customer_id, circuit_id).list("*, " + circuitRefrigerantAmountQuery());
 

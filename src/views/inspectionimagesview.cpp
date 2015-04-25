@@ -53,7 +53,7 @@ QString InspectionImagesView::renderHTML()
 
     writeCustomersTable(out, customer_id);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id, 7);
+    writeCircuitsTable(out, customer_id, circuit_id, 8);
 
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();

@@ -96,7 +96,7 @@ QString AssemblyRecordDetailsView::renderHTML()
     }
 
     if (type_display_options & AssemblyRecordType::ShowCircuit) {
-        writeCircuitsTable(customer_id, circuit_id, 7, main->table("", 7));
+        writeCircuitsTable(customer_id, circuit_id, 8, main->table("", 8));
         main->newLine();
     }
     *main << html;

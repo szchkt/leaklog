@@ -553,11 +553,11 @@
     </message>
     <message>
         <source>Date of commissioning:</source>
-        <translation>Dátum uvedenia do prevádzky:</translation>
+        <translation>Uvedenie do prevádzky:</translation>
     </message>
     <message>
         <source>Date of decommissioning:</source>
-        <translation>Dátum vyradenia z prevádzky:</translation>
+        <translation>Vyradenie z prevádzky:</translation>
     </message>
     <message>
         <source>Field of application:</source>
@@ -585,7 +585,7 @@
     </message>
     <message>
         <source>Date of decommissioning</source>
-        <translation>Dátum vyradenia z prevádzky</translation>
+        <translation>Vyradenie z prevádzky</translation>
     </message>
     <message>
         <source>Fixed leakage detector installed</source>
@@ -641,7 +641,7 @@
     </message>
     <message>
         <source>Date of commissioning</source>
-        <translation>Dátum uvedenia do prevádzky</translation>
+        <translation>Uvedenie do prevádzky</translation>
     </message>
     <message>
         <source>Field of application</source>
@@ -2284,7 +2284,7 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Date of commissioning</source>
-        <translation>Dátum uvedenia do prevádzky</translation>
+        <translation>Uvedenie do prevádzky</translation>
     </message>
     <message>
         <source>Field of application</source>
@@ -4234,6 +4234,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Open Backup Folder - Leaklog</source>
         <translation>Otvoriť priečinok so zálohami - Leaklog</translation>
     </message>
+    <message utf8="true">
+        <source>CO₂ equivalent</source>
+        <translation>CO₂ ekvivalent</translation>
+    </message>
+    <message>
+        <source>GWP</source>
+        <translation>GWP</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5522,6 +5530,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>V</source>
         <translation>V</translation>
+    </message>
+    <message>
+        <source>t</source>
+        <translation>t</translation>
     </message>
 </context>
 <context>

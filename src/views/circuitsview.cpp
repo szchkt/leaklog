@@ -99,6 +99,10 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
             thead_colspan++;
         }
         *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
+        if (cols_in_row >= 0) {
+            *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8);
+            *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "GWP");
+        }
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
         *(thead->addHeaderCell()) << tr("Last inspection");
         if (show_date_updated) {
@@ -180,7 +184,16 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
             _td = _tr->addCell();
             *_td << circuits.at(i).value("refrigerant_amount").toString()
                  << "&nbsp;" << QApplication::translate("Units", "kg");
-            *_td << " " << circuits.at(i).value("refrigerant").toString();
+            QString refrigerant = circuits.at(i).value("refrigerant").toString();
+            *_td << " " << refrigerant;
+            if (cols_in_row >= 0) {
+                _td = _tr->addCell();
+                double GWP = refrigerantGWP(refrigerant);
+                double CO2_equivalent = circuits.at(i).value("refrigerant_amount").toDouble() * GWP / 1000.0;
+                *_td << QString::number(CO2_equivalent) << "&nbsp;" << QApplication::translate("Units", "t");
+                _td = _tr->addCell();
+                *_td << QString::number(GWP);
+            }
             _td = _tr->addCell();
             *_td << circuits.at(i).value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
             *_td << " " << circuits.at(i).value("oil").toString().toUpper();

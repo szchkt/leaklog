@@ -67,7 +67,7 @@ QString InspectionsView::renderHTML()
 
     writeCustomersTable(out, customer_id);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id);
+    writeCircuitsTable(out, customer_id, circuit_id, 8);
 
     if (settings->mainWindowSettings().circuitDetailsVisible()) {
         HTMLTable *compressors_table = circuitCompressorsTable(customer_id, circuit_id);

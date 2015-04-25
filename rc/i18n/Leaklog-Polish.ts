@@ -4200,6 +4200,14 @@ dla ID osoby i firmy</translation>
         <source>Skip inspection of circuit %1 (%2)</source>
         <translation>Pomiń kontrolę obiegu %1 (%2)</translation>
     </message>
+    <message utf8="true">
+        <source>CO₂ equivalent</source>
+        <translation>Ekwiwalent CO₂</translation>
+    </message>
+    <message>
+        <source>GWP</source>
+        <translation>GWP</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5488,6 +5496,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>V</source>
         <translation>V</translation>
+    </message>
+    <message>
+        <source>t</source>
+        <translation>t</translation>
     </message>
 </context>
 <context>
