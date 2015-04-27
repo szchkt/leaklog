@@ -523,27 +523,35 @@ void MainWindow::printLabel(bool detailed)
 
     QMap<QString, QCheckBox *> label_positions;
     QDialog *d = new QDialog(this);
-        d->setWindowTitle(detailed ? tr("Print detailed label - Leaklog") : tr("Print label - Leaklog"));
-        QGridLayout *gl = new QGridLayout(d);
-            QLabel *lbl_print_labels = new QLabel(tr("Choose the position of the label on the paper:"), d);
-        gl->addWidget(lbl_print_labels, 0, 0, 1, 2);
-            for (int c = 0; c < 2; ++c) {
-                for (int r = 0; r < 4; ++r) {
-                    QCheckBox *chb = new QCheckBox(d);
-                    chb->setText(tr("Row %1 Column %2").arg(r + 1).arg(c + 1));
-                    label_positions.insert(QString("%1;%2").arg(r).arg(c), chb);
-                    gl->addWidget(chb, r + 1, c);
-                }
-            }
-            QCheckBox *chb_CO2_equivalent = new QCheckBox(d);
-            chb_CO2_equivalent->setText(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8));
-            chb_CO2_equivalent->setChecked(true);
+    d->setWindowTitle(detailed ? tr("Print detailed label - Leaklog") : tr("Print label - Leaklog"));
+
+    QGridLayout *gl = new QGridLayout(d);
+
+    gl->addWidget(new QLabel(tr("Choose the position of the label on the paper:"), d), 0, 0, 1, 2);
+
+    for (int c = 0; c < 2; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            QCheckBox *chb = new QCheckBox(d);
+            chb->setText(tr("Row %1 Column %2").arg(r + 1).arg(c + 1));
+            label_positions.insert(QString("%1;%2").arg(r).arg(c), chb);
+            gl->addWidget(chb, r + 1, c);
+        }
+    }
+
+    QCheckBox *chb_CO2_equivalent = NULL;
+    if (detailed) {
+        chb_CO2_equivalent = new QCheckBox(d);
+        chb_CO2_equivalent->setText(replaceUnsupportedCharacters(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)));
+        chb_CO2_equivalent->setChecked(true);
         gl->addWidget(chb_CO2_equivalent, 5, 0, 1, 2);
-            QDialogButtonBox *bb = new QDialogButtonBox(d);
-            bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-            QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
-            QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
-        gl->addWidget(bb, 6, 0, 1, 2);
+    }
+
+    QDialogButtonBox *bb = new QDialogButtonBox(d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+    gl->addWidget(bb, 6, 0, 1, 2);
+
     if (d->exec() != QDialog::Accepted) { return; }
     bool ok = false;
     QMapIterator<QString, QCheckBox *> iterator(label_positions);
@@ -575,7 +583,7 @@ void MainWindow::printLabel(bool detailed)
 
             int inspection_interval = Warnings::circuitInspectionInterval(attributes.value("refrigerant").toString(),
                                                                           attributes.value("refrigerant_amount").toDouble(),
-                                                                          chb_CO2_equivalent->isChecked(),
+                                                                          chb_CO2_equivalent && chb_CO2_equivalent->isChecked(),
                                                                           attributes.value("hermetic").toInt(),
                                                                           attributes.value("leak_detector").toInt(),
                                                                           attributes.value("inspection_interval").toInt());
@@ -637,57 +645,91 @@ void MainWindow::printLabel(bool detailed)
     painter.end();
 }
 
+static void drawText(QPainter &painter, int x, int y, int w, int h, int flags, const QString &str)
+{
+    QStringList lines = str.split('\n');
+    h /= lines.count();
+    foreach (const QString &line, lines) {
+        painter.drawText(x, y, w, h, flags, line);
+        y += h;
+    }
+}
+
 void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, int x, int y, int w, int h)
 {
     bool detailed = attributes.contains("circuit_id");
     painter.save();
-    QPen pen; pen.setWidthF(7.0); painter.setPen(pen);
-    QFont font; painter.setFont(font);
+    QPen pen;
+    QFont font;
 #ifdef Q_OS_MAC
+    pen.setWidthF(3.0);
     font.setPointSize(font.pointSize() - 7);
 #else
+    pen.setWidthF(7.0);
     font.setPointSize(font.pointSize() - 2);
 #endif
+    painter.setPen(pen);
     painter.setFont(font);
     int title_h = 3 * h / 14; int m = w / 75; int dm = m * 2;
+
+    QString refrigerant = attributes.value("refrigerant").toString();
 
     painter.drawRect(x, y, w, h);
     painter.drawLine(x, y + title_h, x + w, y + title_h);
     painter.drawLine(x + (w / 2), y, x + (w / 2), y + title_h);
     painter.drawText(m + x, m + y, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, tr("Certified company"));
     painter.drawText(m + x, m + y + 2 * (title_h - dm) / 3, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, MTAddress(attributes.value("address").toString()).toPlainText());
-    painter.drawText(m + x, m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Circuit ID") : tr("3(6) - <30 kg"));
+    painter.drawText(m + x, m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? tr("Circuit ID") : tr("3(6) - <30 kg"));
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
-    painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Refrigerant") : tr("30 - <300 kg"));
+    painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? QString("%1 %2 %3, %4 %5")
+                     .arg(attributes.value("refrigerant_amount").toString())
+                     .arg(QApplication::translate("Units", "kg"))
+                     .arg(refrigerant).arg(tr("GWP")).arg(refrigerantGWP(refrigerant))
+                     : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
-    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter, detailed ? tr("Annual leakage") : tr("above 300 kg"));
+    painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? QString("%1 %2 %3").arg(tr("Annual leakage")).arg(attributes.value("refr_add_per").toString()).arg(tr("%")) : tr("above 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
+
     painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
     painter.drawText(m + x + (2 * w / 3), m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of the next inspection"));
+
     painter.drawLine(x + (w / 3), y + title_h + (2 * h / 7), x + (2 * w / 3), y + title_h + (2 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (3 * h / 7), x + (2 * w / 3), y + title_h + (3 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (4 * h / 7), x + (2 * w / 3), y + title_h + (4 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (5 * h / 7), x + (2 * w / 3), y + title_h + (5 * h / 7));
+
     painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("inspector").toString());
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
     painter.drawText(m + x + (w / 2), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("id").toString());
+
     font.setBold(true); painter.setFont(font);
     painter.drawText(m + x, m + y + (title_h - dm) / 3, w / 2 - dm, (title_h - dm) / 3, Qt::AlignLeft | Qt::AlignVCenter, attributes.value("name").toString());
     painter.drawText(m + x + (w / 3), y + title_h + (h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("person").toString());
     font.setBold(false); painter.setFont(font);
-    painter.drawText(m + x + (w / 2), m + y, w / 2 - dm, title_h - dm, Qt::AlignCenter, tr("Refrigerant leakage inspection\nin accordance with Regulation (EC)\nNo. 842/2006"));
-    painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once a year*") :
-                     attributes.value("circuit_id").toString());
-    painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 6 months*") :
-                     (attributes.value("refrigerant_amount").toString() + " " + QApplication::translate("Units", "kg") + " " + attributes.value("refrigerant").toString()));
-    painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, !detailed ? tr("once in 3 months") :
-                     (attributes.value("refr_add_per").toString() + " " + tr("%")));
+
+    drawText(painter, m + x + (w / 2), m + y, w / 2 - dm, title_h - dm, Qt::AlignCenter, tr("Refrigerant leakage inspection\nin accordance with Regulation (EC)\nNo. 842/2006"));
+
+    painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? attributes.value("circuit_id").toString()
+                     : QApplication::translate("MainWindow", "once a year*"));
+    painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? QString("%1 %2")
+                     .arg(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble()))
+                     .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)))
+                     : QApplication::translate("MainWindow", "once in 6 months*"));
+    painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
+                     detailed ? (attributes.value("leak_detector").toInt() ? tr("Detector installed") : tr("No detector installed"))
+                     : QApplication::translate("MainWindow", "once in 3 months"));
+
     painter.drawText(m + x + (w / 3), m + y + title_h + (h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified person"));
     painter.drawText(m + x + (w / 3), m + y + title_h + (2 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Telephone"));
     painter.drawText(m + x + (w / 3), y + title_h + (2 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("phone").toString());
     painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("E-mail"));
     painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("mail").toString());
-    painter.drawText(m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
+    drawText(painter, m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
 
     int r = (w / 3 - dm) / 2;
     int year = QDate::currentDate().year(), month = 0;

@@ -4242,6 +4242,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>GWP</source>
         <translation>GWP</translation>
     </message>
+    <message>
+        <source>Detector installed</source>
+        <translation>Inštalovaný detektor</translation>
+    </message>
+    <message>
+        <source>No detector installed</source>
+        <translation>Bez detektora</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5534,6 +5542,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>t</source>
         <translation>t</translation>
+    </message>
+    <message utf8="true">
+        <source>t of CO₂ equivalent</source>
+        <translation>t CO₂ ekvivalentu</translation>
     </message>
 </context>
 <context>

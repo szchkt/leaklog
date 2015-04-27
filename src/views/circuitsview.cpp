@@ -100,7 +100,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         }
         *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
         if (cols_in_row >= 0) {
-            *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8);
+            *(thead->addHeaderCell()) << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8));
             *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "GWP");
         }
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");

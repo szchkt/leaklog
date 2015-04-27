@@ -5501,6 +5501,10 @@ dla ID osoby i firmy</translation>
         <source>t</source>
         <translation>t</translation>
     </message>
+    <message utf8="true">
+        <source>t of CO₂ equivalent</source>
+        <translation>t ekwiwalentu CO₂</translation>
+    </message>
 </context>
 <context>
     <name>VariableNames</name>

@@ -33,6 +33,10 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 {
     setupUi(this);
 
+#ifdef Q_OS_WIN32
+    chb_CO2_equivalent->setText(replaceUnsupportedCharacters(chb_CO2_equivalent->text()));
+#endif
+
     scaleFactorChanged();
 
     QObject::connect(chb_table_all_circuits, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
