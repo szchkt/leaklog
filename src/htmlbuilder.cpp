@@ -19,6 +19,8 @@
 
 #include "htmlbuilder.h"
 
+#include "mtvariant.h"
+
 #include <QTextStream>
 
 HTMLParent::HTMLParent()
@@ -98,6 +100,12 @@ HTMLStyle *HTMLParent::addStyleElement(const QString &css)
 HTMLParent &HTMLParent::operator<<(const QString &str)
 {
     children.append(new HTMLDataElement(str));
+    return *this;
+}
+
+HTMLParent &HTMLParent::operator<<(const MTVariant &variant)
+{
+    children.append(new HTMLDataElement(variant.toHtml()));
     return *this;
 }
 

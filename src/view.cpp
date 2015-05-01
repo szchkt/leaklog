@@ -94,7 +94,7 @@ HTMLTable *View::writeServiceCompany(HTMLTable *table)
         attr_value = ServiceCompany::attributes().key(n);
         if (serv_company.value(attr_value).toString().isEmpty()) continue;
         _td = _tr->addCell();
-        *_td << MTVariant(serv_company.value(attr_value), attr_value).toHtml();
+        *_td << MTVariant(serv_company.value(attr_value), attr_value);
     }
     return table;
 }

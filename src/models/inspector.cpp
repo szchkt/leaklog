@@ -19,6 +19,7 @@
 
 #include "inspector.h"
 
+#include "global.h"
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
 
@@ -38,6 +39,8 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
     md->addInputWidget(new MDLineEdit("id", tr("Certificate number:"), md->widget(), attributes.value("id").toString(), 99999));
+    md->addInputWidget(new MDLineEdit("certificate_number", tr("Foreign certificate number:"), md->widget(), attributes.value("certificate_number").toString()));
+    md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), attributes.value("certificate_country").toString(), Global::countries()));
     md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), attributes.value("person").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
@@ -69,6 +72,8 @@ class InspectorColumns
 public:
     InspectorColumns() {
         columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("certificate_number", "TEXT");
+        columns << Column("certificate_country", "TEXT");
         columns << Column("person", "TEXT");
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
@@ -92,6 +97,8 @@ class InspectorAttributes
 public:
     InspectorAttributes() {
         dict.insert("id", QApplication::translate("Inspector", "Certificate number"));
+        dict.insert("certificate_number", QApplication::translate("Inspector", "Foreign certificate number"));
+        dict.insert("certificate_country", QApplication::translate("Inspector", "Country of issue"));
         dict.insert("person", QApplication::translate("Inspector", "Full name"));
         dict.insert("mail", QApplication::translate("Inspector", "E-mail"));
         dict.insert("phone", QApplication::translate("Inspector", "Phone"));

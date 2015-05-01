@@ -145,9 +145,10 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
             }
             row = table->addRow(row_attrs);
             *(row->addCell()) << toolTipLink("customer", formatCompanyID(id), id);
-            for (int n = 1; n < Customer::numBasicAttributes(); ++n)
-                *(row->addCell()) << MTVariant(list.at(i).value(Customer::attributes().key(n)),
-                                               Customer::attributes().key(n)).toHtml();
+            for (int n = 1; n < Customer::numBasicAttributes(); ++n) {
+                QString key = Customer::attributes().key(n);
+                *(row->addCell()) << MTVariant(list.at(i).value(key), key);
+            }
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
             if (show_date_updated)

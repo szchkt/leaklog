@@ -25,7 +25,11 @@
 class MTVariant
 {
 public:
-    enum Type { Default = 0, Address = 128 };
+    enum Type {
+        Default = 0,
+        Address = 128,
+        Country = 129
+    };
     MTVariant(const QVariant &v = QVariant(), Type t = Default): v_value(v), v_type(t) {}
     MTVariant(const QVariant &v, const QString &t);
 

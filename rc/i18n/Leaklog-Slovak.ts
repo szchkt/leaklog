@@ -937,6 +937,121 @@
     </message>
 </context>
 <context>
+    <name>Countries</name>
+    <message>
+        <source>Austria</source>
+        <translation>Rakúsko</translation>
+    </message>
+    <message>
+        <source>Belgium</source>
+        <translation>Belgicko</translation>
+    </message>
+    <message>
+        <source>Bulgaria</source>
+        <translation>Bulharsko</translation>
+    </message>
+    <message>
+        <source>Czech Republic</source>
+        <translation>Česko</translation>
+    </message>
+    <message>
+        <source>Croatia</source>
+        <translation>Chorvátsko</translation>
+    </message>
+    <message>
+        <source>Cyprus</source>
+        <translation>Cyprus</translation>
+    </message>
+    <message>
+        <source>Denmark</source>
+        <translation>Dánsko</translation>
+    </message>
+    <message>
+        <source>Estonia</source>
+        <translation>Estónsko</translation>
+    </message>
+    <message>
+        <source>Finland</source>
+        <translation>Fínsko</translation>
+    </message>
+    <message>
+        <source>France</source>
+        <translation>Francúzsko</translation>
+    </message>
+    <message>
+        <source>Germany</source>
+        <translation>Nemecko</translation>
+    </message>
+    <message>
+        <source>Greece</source>
+        <translation>Grécko</translation>
+    </message>
+    <message>
+        <source>Hungary</source>
+        <translation>Maďarsko</translation>
+    </message>
+    <message>
+        <source>Ireland</source>
+        <translation>Írsko</translation>
+    </message>
+    <message>
+        <source>Italy</source>
+        <translation>Taliansko</translation>
+    </message>
+    <message>
+        <source>Latvia</source>
+        <translation>Lotyšsko</translation>
+    </message>
+    <message>
+        <source>Lithuania</source>
+        <translation>Litva</translation>
+    </message>
+    <message>
+        <source>Luxembourg</source>
+        <translation>Luxembursko</translation>
+    </message>
+    <message>
+        <source>Malta</source>
+        <translation>Malta</translation>
+    </message>
+    <message>
+        <source>Netherlands</source>
+        <translation>Holandsko</translation>
+    </message>
+    <message>
+        <source>Poland</source>
+        <translation>Poľsko</translation>
+    </message>
+    <message>
+        <source>Portugal</source>
+        <translation>Portugalsko</translation>
+    </message>
+    <message>
+        <source>Romania</source>
+        <translation>Rumunsko</translation>
+    </message>
+    <message>
+        <source>Slovenia</source>
+        <translation>Slovinsko</translation>
+    </message>
+    <message>
+        <source>Slovakia</source>
+        <translation>Slovensko</translation>
+    </message>
+    <message>
+        <source>Spain</source>
+        <translation>Španielsko</translation>
+    </message>
+    <message>
+        <source>Sweden</source>
+        <translation>Švédsko</translation>
+    </message>
+    <message>
+        <source>United Kingdom</source>
+        <translation>Spojené kráľovstvo</translation>
+    </message>
+</context>
+<context>
     <name>Customer</name>
     <message>
         <source>ID</source>
@@ -1875,6 +1990,22 @@
     <message>
         <source>Full name</source>
         <translation>Celé meno</translation>
+    </message>
+    <message>
+        <source>Foreign certificate number:</source>
+        <translation>Číslo zahraničného osvedčenia:</translation>
+    </message>
+    <message>
+        <source>Country of issue:</source>
+        <translation>Krajina vydania:</translation>
+    </message>
+    <message>
+        <source>Foreign certificate number</source>
+        <translation>Číslo zahraničného osvedčenia</translation>
+    </message>
+    <message>
+        <source>Country of issue</source>
+        <translation>Krajina vydania</translation>
     </message>
 </context>
 <context>

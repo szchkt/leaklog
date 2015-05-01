@@ -37,6 +37,7 @@ class HTMLSubHeading;
 class HTMLSubSubHeading;
 class HTMLParagraph;
 class HTMLStyle;
+class MTVariant;
 class QTextStream;
 
 class HTMLElement
@@ -82,6 +83,7 @@ public:
     void newLine() { children.append(new HTMLDataElement("<br>")); }
 
     HTMLParent &operator<<(const QString &);
+    HTMLParent &operator<<(const MTVariant &);
     HTMLParent &operator<<(HTMLElement *);
 
 protected:

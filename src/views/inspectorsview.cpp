@@ -87,7 +87,8 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, c
         *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector activity") + "')\" onmouseout=\"UnTip()\"")
                 ->link("inspectorreport:" + id)) << id.rightJustified(4, '0');
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
-            *(_tr->addCell()) << escapeString(inspectors.at(i).value(Inspector::attributes().key(n)).toString());
+            QString key = Inspector::attributes().key(n);
+            *(_tr->addCell()) << MTVariant(inspectors.at(i).value(key).toString(), key);
         }
         *(_tr->addCell()) << inspectors.at(i).value("inspections_count").toString();
         *(_tr->addCell()) << inspectors.at(i).value("repairs_count").toString();

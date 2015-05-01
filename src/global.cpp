@@ -909,6 +909,50 @@ const MTDictionary &Global::permissions()
     return dict.dict;
 }
 
+class Countries
+{
+public:
+    Countries() {
+        dict.insert("", "");
+        dict.insert("AT", QApplication::translate("Countries", "Austria"));
+        dict.insert("BE", QApplication::translate("Countries", "Belgium"));
+        dict.insert("BG", QApplication::translate("Countries", "Bulgaria"));
+        dict.insert("CZ", QApplication::translate("Countries", "Czech Republic"));
+        dict.insert("HR", QApplication::translate("Countries", "Croatia"));
+        dict.insert("CY", QApplication::translate("Countries", "Cyprus"));
+        dict.insert("DK", QApplication::translate("Countries", "Denmark"));
+        dict.insert("EE", QApplication::translate("Countries", "Estonia"));
+        dict.insert("FI", QApplication::translate("Countries", "Finland"));
+        dict.insert("FR", QApplication::translate("Countries", "France"));
+        dict.insert("DE", QApplication::translate("Countries", "Germany"));
+        dict.insert("GR", QApplication::translate("Countries", "Greece"));
+        dict.insert("HU", QApplication::translate("Countries", "Hungary"));
+        dict.insert("IE", QApplication::translate("Countries", "Ireland"));
+        dict.insert("IT", QApplication::translate("Countries", "Italy"));
+        dict.insert("LV", QApplication::translate("Countries", "Latvia"));
+        dict.insert("LT", QApplication::translate("Countries", "Lithuania"));
+        dict.insert("LU", QApplication::translate("Countries", "Luxembourg"));
+        dict.insert("MT", QApplication::translate("Countries", "Malta"));
+        dict.insert("NL", QApplication::translate("Countries", "Netherlands"));
+        dict.insert("PL", QApplication::translate("Countries", "Poland"));
+        dict.insert("PT", QApplication::translate("Countries", "Portugal"));
+        dict.insert("RO", QApplication::translate("Countries", "Romania"));
+        dict.insert("SI", QApplication::translate("Countries", "Slovenia"));
+        dict.insert("SK", QApplication::translate("Countries", "Slovakia"));
+        dict.insert("ES", QApplication::translate("Countries", "Spain"));
+        dict.insert("SE", QApplication::translate("Countries", "Sweden"));
+        dict.insert("GB", QApplication::translate("Countries", "United Kingdom"));
+    }
+
+    MTDictionary dict;
+};
+
+const MTDictionary &Global::countries()
+{
+    static Countries dict;
+    return dict.dict;
+}
+
 double Global::refrigerantGWP(const QString &refrigerant)
 {
     static QMap<QString, double> GWP;

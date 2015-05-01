@@ -20,12 +20,15 @@
 #include "mtvariant.h"
 #include "global.h"
 #include "mtaddress.h"
+#include "mtdictionary.h"
 
 MTVariant::MTVariant(const QVariant &v, const QString &t):
     v_value(v)
 {
     if (t.endsWith("address"))
         v_type = Address;
+    else if (t.endsWith("country"))
+        v_type = Country;
     else
         v_type = Default;
 }
@@ -33,6 +36,7 @@ MTVariant::MTVariant(const QVariant &v, const QString &t):
 QString MTVariant::toString() const {
     switch (v_type) {
         case Address: return MTAddress(v_value.toString()).toPlainText(); break;
+        case Country: return Global::countries().value(v_value.toString()); break;
         case Default: break;
     }
     return v_value.toString();
@@ -41,6 +45,7 @@ QString MTVariant::toString() const {
 QString MTVariant::toHtml() const {
     switch (v_type) {
         case Address: return MTAddress(v_value.toString()).toHtml(); break;
+        case Country: return Global::countries().value(v_value.toString()); break;
         case Default: break;
     }
     return Global::escapeString(v_value.toString());
