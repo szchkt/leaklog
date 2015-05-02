@@ -263,13 +263,12 @@ macx {
     icons.files    = rc/images/lklg.icns
     QMAKE_BUNDLE_DATA += icons
     CONFIG        += x86_64
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
-    # QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.5.sdk
-}
-
-macx-xcode {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     QMAKE_CC       = clang
     QMAKE_CXX      = clang++
+    QMAKE_LINK     = clang++
+    QMAKE_CXXFLAGS += -stdlib=libc++
+    QMAKE_LFLAGS   += -stdlib=libc++
 }
 
 QMAKE_CXXFLAGS    += -std=c++0x

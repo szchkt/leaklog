@@ -44,6 +44,6 @@
 	<key>CFBundleName</key>
 	<string>Leaklog</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.5</string>
+	<string>10.7</string>
 </dict>
 </plist>
