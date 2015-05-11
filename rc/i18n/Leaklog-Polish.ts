@@ -1991,6 +1991,22 @@
         <source>Full name</source>
         <translation>Imię i nazwisko</translation>
     </message>
+    <message>
+        <source>Foreign certificate number:</source>
+        <translation>Numer zagranicznego certyfikatu:</translation>
+    </message>
+    <message>
+        <source>Country of issue:</source>
+        <translation>Kraj wydania:</translation>
+    </message>
+    <message>
+        <source>Foreign certificate number</source>
+        <translation>Numer zagranicznego certyfikatu</translation>
+    </message>
+    <message>
+        <source>Country of issue</source>
+        <translation>Kraj wydania</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
@@ -4315,6 +4331,36 @@ dla ID osoby i firmy</translation>
         <source>Skip inspection of circuit %1 (%2)</source>
         <translation>Pomiń kontrolę obiegu %1 (%2)</translation>
     </message>
+    <message>
+        <source>Open Backup Folder</source>
+        <translation>Otwórz folder kopii zapasowych</translation>
+    </message>
+    <message>
+        <source>Open the folder containing automatic backups of this database</source>
+        <translation>Otwórz folder automatycznych kopii zapasowych dla tej bazy danych</translation>
+    </message>
+    <message>
+        <source>Failed to create backup: %1</source>
+        <translation>Nie udało się utworzyć kopii zapasowej: %1</translation>
+    </message>
+    <message>
+        <source>Failed to copy database.</source>
+        <translation>Nie udało się skopiowac bazy danych.</translation>
+    </message>
+    <message>
+        <source>Could not create backup folder.</source>
+        <translation>Nie można utworzyć folderu kopii zapasowych.</translation>
+    </message>
+    <message>
+        <source>Cannot open database %1:
+%2.</source>
+        <translation>Nie można otworzyć bazy danych %1:
+%2.</translation>
+    </message>
+    <message>
+        <source>Open Backup Folder - Leaklog</source>
+        <translation>Otwórz folder kopii zapasowych - Leaklog</translation>
+    </message>
     <message utf8="true">
         <source>CO₂ equivalent</source>
         <translation>Ekwiwalent CO₂</translation>
@@ -4322,6 +4368,14 @@ dla ID osoby i firmy</translation>
     <message>
         <source>GWP</source>
         <translation>GWP</translation>
+    </message>
+    <message>
+        <source>Detector installed</source>
+        <translation>Zainstalowano detektor</translation>
+    </message>
+    <message>
+        <source>No detector installed</source>
+        <translation>Bez detektora</translation>
     </message>
 </context>
 <context>
