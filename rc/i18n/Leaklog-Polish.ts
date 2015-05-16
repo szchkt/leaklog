@@ -51,6 +51,18 @@
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
         <translation>http://www.gnu.org/licenses/gpl-2.0.html</translation>
     </message>
+    <message>
+        <source>Translation</source>
+        <translation>Tłumaczenie</translation>
+    </message>
+    <message>
+        <source>Polish translation: %1</source>
+        <translation>Polskie tłumaczenie: %1</translation>
+    </message>
+    <message>
+        <source>%1, licensed under the GNU GPL</source>
+        <translation>%1 na licencji GNU GPL</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>

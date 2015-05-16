@@ -73,6 +73,10 @@ void AboutWidget::showAcknowledgements(bool show)
     } else {
         HTMLParentElement *body = html_doc.body();
 
+        *(body->subHeading()) << tr("Translation");
+
+        *(body->paragraph()) << tr("Polish translation: %1").arg("PROZON Fundacja Ochrony Klimatu <i>(<a href=\"http://prozon.org.pl\">prozon.org.pl</a>)</i>");
+
         *(body->subHeading()) << tr("Contributors");
 
         QPixmap frigo_logo(":/images/images/frigo_slovakia_logo.jpg");
@@ -93,7 +97,7 @@ void AboutWidget::showAcknowledgements(bool show)
 
         *(body->paragraph()) << tr("%1, licensed under the GNU LGPL").arg("Oxygen Icons <i>(<a href=\"http://www.oxygen-icons.org\">www.oxygen-icons.org</a>)</i>");
 
-        *(body->paragraph()) << tr("%1, licensed under the GNU LGPL").arg("Function Parser v3.1.2 <i>(<a href=\"http://warp.povusers.org/FunctionParser\">warp.povusers.org/FunctionParser</a>)</i>");
+        *(body->paragraph()) << tr("%1, licensed under the GNU GPL").arg("Function Parser v3.1.2 <i>(<a href=\"http://warp.povusers.org/FunctionParser\">warp.povusers.org/FunctionParser</a>)</i>");
 
 #ifdef REFPROP
         *(body->paragraph()) << "NIST Reference Fluid Thermodynamic and Transport Properties Database (REFPROP) v9.1 <i>(<a href=\"http://www.nist.gov/srd/nist23.cfm\">www.nist.gov/srd/nist23.cfm</a>)</i>";

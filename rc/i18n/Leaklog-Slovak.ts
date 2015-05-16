@@ -51,6 +51,18 @@
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
         <translation>http://www.gpl.sk/v2/</translation>
     </message>
+    <message>
+        <source>Translation</source>
+        <translation>Preklad</translation>
+    </message>
+    <message>
+        <source>Polish translation: %1</source>
+        <translation>Poľský preklad: %1</translation>
+    </message>
+    <message>
+        <source>%1, licensed under the GNU GPL</source>
+        <translation>%1, pod licenciou GNU GPL</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
