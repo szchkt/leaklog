@@ -2549,7 +2549,7 @@
     </message>
     <message>
         <source>Compact</source>
-        <translation>Kompaktowy</translation>
+        <translation>Kompaktuj</translation>
     </message>
     <message>
         <source>Save changes and compact the database</source>
@@ -3137,7 +3137,7 @@
     </message>
     <message>
         <source>&amp;Discard</source>
-        <translation>&amp;Anuluj</translation>
+        <translation>&amp;Odrzuć</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -4063,7 +4063,7 @@ Aby usunąć styl &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Certified company</source>
-        <translation>Certyfikowane firmy</translation>
+        <translation>Certyfikowana firma</translation>
     </message>
     <message>
         <source>Circuit ID</source>
@@ -4536,7 +4536,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Business partner (ID):</source>
-        <translation>Partner biznesowy (ID):</translation>
+        <translation>Partner biznesowy (NIP):</translation>
     </message>
 </context>
 <context>
@@ -4870,7 +4870,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Business partner (ID)</source>
-        <translation>Partner biznesowy (ID)</translation>
+        <translation>Partner biznesowy (NIP)</translation>
     </message>
     <message>
         <source>Refrigerant</source>
