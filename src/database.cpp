@@ -2641,7 +2641,7 @@ void MainWindow::importData()
                     case 0:
                         columns.insert(QApplication::translate("Customer", "Customer"), attribute_modified ? "1" : "0");
                     default:
-                        columns.insert(formatCompanyID(attribute.toString()), attribute_modified ? "1" : "0");
+                        columns.insert(formatCompanyID(attribute), attribute_modified ? "1" : "0");
                     }
                 } else {
                     columns.insert(MTVariant(attribute, Customer::attributes().key(i)).toString(),

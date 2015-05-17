@@ -482,6 +482,11 @@ QString Global::formatCompanyID(int company_id)
     return formatCompanyID(QString::number(company_id));
 }
 
+QString Global::formatCompanyID(const QVariant &company_id)
+{
+    return formatCompanyID(company_id.toString());
+}
+
 QString Global::formatCompanyID(const QString &company_id)
 {
     if (companyIDFormat() == CompanyIDFormatNIP) {

@@ -51,7 +51,7 @@ QString StoreView::renderHTML()
         out << "<num_attr>" << num_valid << "</num_attr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << ServiceCompany::attributes().value(n) << "&nbsp;</td>";
         if (key == "id") {
-            out << "<td>" << formatCompanyID(serv_company.value(key).toString()) << "</td></tr>";
+            out << "<td>" << formatCompanyID(serv_company.value(key)) << "</td></tr>";
         } else {
             out << "<td>" << MTVariant(serv_company.value(key), key) << "</td></tr>";
         }

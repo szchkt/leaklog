@@ -74,6 +74,7 @@ namespace Global {
     };
     CompanyIDFormat companyIDFormat();
     QString formatCompanyID(int company_id);
+    QString formatCompanyID(const QVariant &company_id);
     QString formatCompanyID(const QString &company_id);
     enum ToolTipLinkItem {
         ToolTipLinkItemView = 1 << 0,
