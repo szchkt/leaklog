@@ -15,7 +15,10 @@ the percentage of leakage.
 ### Languages
 
 * English
+* Polish (thanks to *[PROZON Fundacja Ochrony Klimatu][PROZON]*)
 * Slovak
+
+[PROZON]: http://prozon.org.pl
 
 Installation
 ------------
@@ -33,7 +36,7 @@ Use the `lrelease` tool to compile translations as follows:
 	lrelease Leaklog.pro
 	lrelease rc/i18n/Leaklog-i18n.ts
 
-If you're running Mac OS X, type:
+If you're running Mac OS X, use:
 
 	qmake -spec macx-llvm -config release
 
