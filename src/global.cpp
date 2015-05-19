@@ -30,7 +30,11 @@
 #include <QVariant>
 #include <QColor>
 #include <QCryptographicHash>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QDesktopServices>
+#else
+#include <QStandardPaths>
+#endif
 #include <QDir>
 #include <QDate>
 #include <QNetworkRequest>
@@ -296,7 +300,11 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
 
 QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QDir dir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+#else
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+#endif
     QByteArray hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Md5);
     QString backup_path = QString("Backups/%1").arg(QString(hash.toHex()));
     if (dir.mkpath(backup_path) && dir.cd(backup_path)) {

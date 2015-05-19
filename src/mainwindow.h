@@ -39,6 +39,7 @@ class HTMLDiv;
 class QPushButton;
 class QCloseEvent;
 class QPainter;
+class QPrinter;
 class QNetworkReply;
 class QNetworkAccessManager;
 class QWebView;

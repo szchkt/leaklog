@@ -541,7 +541,7 @@ void MainWindow::printLabel(bool detailed)
     QCheckBox *chb_CO2_equivalent = NULL;
     if (detailed) {
         chb_CO2_equivalent = new QCheckBox(d);
-        chb_CO2_equivalent->setText(replaceUnsupportedCharacters(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)));
+        chb_CO2_equivalent->setText(replaceUnsupportedCharacters(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent")));
         chb_CO2_equivalent->setChecked(true);
         gl->addWidget(chb_CO2_equivalent, 5, 0, 1, 2);
     }
@@ -718,7 +718,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
                      detailed ? QString("%1 %2")
                      .arg(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble()))
-                     .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)))
+                     .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")))
                      : QApplication::translate("MainWindow", "once in 6 months*"));
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
                      detailed ? (attributes.value("leak_detector").toInt() ? tr("Detector installed") : tr("No detector installed"))
