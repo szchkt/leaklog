@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "mainwindow.h"
+#include "migrations.h"
 #include "global.h"
 #include "variables.h"
 #include "variableevaluation.h"
@@ -290,6 +291,11 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             Compressor().update(map);
         }
     }
+
+    if (v < 1.9) {
+        migrateV1Database(database);
+    }
+
     if (v < F_DB_VERSION) {
         bool remote = isDatabaseRemote(database);
         QString unique_index = remote ? "CREATE UNIQUE INDEX " : "CREATE UNIQUE INDEX IF NOT EXISTS ";

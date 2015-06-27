@@ -34,11 +34,10 @@ class InspectionImageColumns
 {
 public:
     InspectionImageColumns() {
-        columns << Column("customer", "INTEGER");
-        columns << Column("circuit", "INTEGER");
-        columns << Column("date", "TEXT");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("inspection_uuid", "UUID");
+        columns << Column("file_uuid", "UUID");
         columns << Column("description", "TEXT");
-        columns << Column("file_id", "INTEGER");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

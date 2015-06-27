@@ -75,7 +75,7 @@ class WarningColumns
 {
 public:
     WarningColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
         columns << Column("enabled", "INTEGER");
         columns << Column("name", "TEXT");

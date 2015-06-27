@@ -36,9 +36,8 @@ class CompressorColumns
 {
 public:
     CompressorColumns() {
-        columns << Column("id", "BIGINT NOT NULL");
-        columns << Column("customer_id", "INTEGER");
-        columns << Column("circuit_id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("circuit_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("manufacturer", "TEXT");
         columns << Column("type", "TEXT");

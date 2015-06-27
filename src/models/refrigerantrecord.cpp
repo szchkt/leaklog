@@ -81,9 +81,10 @@ class RefrigerantManagementColumns
 {
 public:
     RefrigerantManagementColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("date", "TEXT");
         columns << Column("partner", "TEXT");
-        columns << Column("partner_id", "INTEGER");
+        columns << Column("partner_id", "TEXT");
         columns << Column("refrigerant", "TEXT");
         columns << Column("purchased", "NUMERIC");
         columns << Column("purchased_reco", "NUMERIC");

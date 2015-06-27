@@ -23,13 +23,13 @@
 #include "defs.h"
 
 #include <QSqlDatabase>
+#include <QStringList>
 
 template <class T1, class T2>
 struct QPair;
 
 class MTDictionary;
 class QDir;
-class QStringList;
 class QColor;
 class QTextStream;
 
@@ -49,6 +49,7 @@ namespace Global {
     QString delta();
     QString longMonthName(int);
     QColor textColourForBaseColour(const QColor &);
+    QString createUUID();
     QString sqlStringForDatabaseType(QString, const QSqlDatabase & = QSqlDatabase::database());
     QString variantTypeToSqlType(int);
     QString variableTypeToSqlType(const QString &);
@@ -74,7 +75,7 @@ namespace Global {
     };
     CompanyIDFormat companyIDFormat();
     QString formatCompanyID(int company_id);
-    QString formatCompanyID(const QString &company_id);
+    QString formatCompanyID(const QString &company_id, CompanyIDFormat format = companyIDFormat());
     enum ToolTipLinkItem {
         ToolTipLinkItemView = 1 << 0,
         ToolTipLinkItemEdit = 1 << 1,
@@ -115,6 +116,33 @@ namespace Global {
         Text = 4,
         File = 5
     };
+
+    template <typename SourceType, typename ReturnType>
+    QList<ReturnType> map(const QList<SourceType> &list, std::function<ReturnType(const SourceType &)> function)
+    {
+        QList<ReturnType> result;
+        result.reserve(list.count());
+        foreach (const SourceType &i, list) {
+            result << function(i);
+        }
+        return result;
+    }
+
+    template <typename SourceType>
+    QStringList map(const QList<SourceType> &list, std::function<QString(const SourceType &)> function)
+    {
+        QStringList result;
+        result.reserve(list.count());
+        foreach (const SourceType &i, list) {
+            result << function(i);
+        }
+        return result;
+    }
+
+    inline QStringList map(const QStringList &list, std::function<QString(const QString &)> function)
+    {
+        return map<QString>(list, function);
+    }
 }
 
 #endif // GLOBAL_H

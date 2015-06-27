@@ -32,7 +32,7 @@ class FileColumns
 {
 public:
     FileColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("name", "TEXT");
         columns << Column("data", "BYTEA");
         columns << Column("date_updated", "TEXT");

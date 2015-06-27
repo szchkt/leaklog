@@ -15,36 +15,13 @@
  You should have received a copy of the GNU General Public Licence
  along with Leaklog; if not, write to the Free Software Foundation,
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- ********************************************************************/
+********************************************************************/
 
-#include "circuitunit.h"
+#ifndef MIGRATIONS_H
+#define MIGRATIONS_H
 
-CircuitUnit::CircuitUnit(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
-{}
+#include <QSqlDatabase>
 
-QString CircuitUnit::tableName()
-{
-    return "circuit_units";
-}
+void migrateV1Database(QSqlDatabase &database);
 
-class CircuitUnitColumns
-{
-public:
-    CircuitUnitColumns() {
-        columns << Column("uuid", "UUID PRIMARY KEY");
-        columns << Column("circuit_uuid", "UUID");
-        columns << Column("unit_type_uuid", "UUID");
-        columns << Column("sn", "TEXT");
-        columns << Column("date_updated", "TEXT");
-        columns << Column("updated_by", "TEXT");
-    }
-
-    ColumnList columns;
-};
-
-const ColumnList &CircuitUnit::columns()
-{
-    static CircuitUnitColumns columns;
-    return columns.columns;
-}
+#endif // MIGRATIONS_H

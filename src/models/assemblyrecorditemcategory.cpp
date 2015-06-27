@@ -38,7 +38,7 @@ class AssemblyRecordItemCategoryColumns
 {
 public:
     AssemblyRecordItemCategoryColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("name", "TEXT");
         columns << Column("display_options", "INTEGER");
         columns << Column("display_position", "INTEGER");

@@ -59,11 +59,11 @@ class StyleColumns
 {
 public:
     StyleColumns() {
-        columns << Column("id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("name", "TEXT");
         columns << Column("content", "TEXT");
-        columns << Column("date_updated", "TEXT");
         columns << Column("div_tables", "INTEGER");
+        columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
 

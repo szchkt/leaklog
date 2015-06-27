@@ -182,7 +182,8 @@ class CircuitColumns
 {
 public:
     CircuitColumns() {
-        columns << Column("parent", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
         columns << Column("id", "INTEGER");
         columns << Column("name", "TEXT");
         columns << Column("disused", "INTEGER");

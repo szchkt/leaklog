@@ -63,13 +63,14 @@ class ServiceCompanyColumns
 {
 public:
     ServiceCompanyColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("image_file_uuid", "UUID");
+        columns << Column("id", "TEXT");
         columns << Column("name", "TEXT");
         columns << Column("address", "TEXT");
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
         columns << Column("website", "TEXT");
-        columns << Column("image", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

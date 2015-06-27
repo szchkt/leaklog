@@ -38,6 +38,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
+#include <QUuid>
 
 #include <cmath>
 
@@ -148,11 +149,15 @@ QColor Global::textColourForBaseColour(const QColor &c)
     }
 }
 
+QString Global::createUUID()
+{
+    return QUuid::createUuid().toString().mid(1, 36);
+}
+
 QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase &db)
 {
     if (!isDatabaseRemote(db)) {
-        sql.replace("SERIAL", "INTEGER PRIMARY KEY AUTOINCREMENT");
-        sql.replace("BIGINT", "INTEGER");
+        sql.replace("SERIAL PRIMARY KEY", "INTEGER PRIMARY KEY AUTOINCREMENT");
     }
     return sql;
 }
@@ -223,7 +228,9 @@ void Global::addColumn(const QString &column, const QString &table, const QSqlDa
     if (getTableFieldNames(table, database).contains(column))
         return;
 
-    QStringList col = column.split(' ');
+    QString c = column;
+    c.remove("PRIMARY KEY");
+    QStringList col = c.split(' ', QString::SkipEmptyParts);
     if (!col.count())
         return;
 
@@ -482,9 +489,9 @@ QString Global::formatCompanyID(int company_id)
     return formatCompanyID(QString::number(company_id));
 }
 
-QString Global::formatCompanyID(const QString &company_id)
+QString Global::formatCompanyID(const QString &company_id, CompanyIDFormat format)
 {
-    if (companyIDFormat() == CompanyIDFormatNIP) {
+    if (format == CompanyIDFormatNIP) {
         QString id = company_id.rightJustified(9, '0').left(9);
         int check = (id[0].toLatin1() - '0') * 6
                   + (id[1].toLatin1() - '0') * 5

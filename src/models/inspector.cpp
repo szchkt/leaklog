@@ -71,7 +71,7 @@ class InspectorColumns
 {
 public:
     InspectorColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("certificate_number", "TEXT");
         columns << Column("certificate_country", "TEXT");
         columns << Column("person", "TEXT");

@@ -83,7 +83,7 @@ class AssemblyRecordTypeColumns
 {
 public:
     AssemblyRecordTypeColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("name", "TEXT");
         columns << Column("description", "TEXT");
         columns << Column("display_options", "INTEGER");

@@ -37,8 +37,9 @@ class AssemblyRecordTypeCategoryColumns
 {
 public:
     AssemblyRecordTypeCategoryColumns() {
-        columns << Column("record_type_id", "INTEGER");
-        columns << Column("record_category_id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("item_type_uuid", "UUID");
+        columns << Column("item_category_uuid", "UUID");
         columns << Column("position", "INTEGER");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");

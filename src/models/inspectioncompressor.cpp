@@ -34,11 +34,9 @@ class InspectionsCompressorColumns
 {
 public:
     InspectionsCompressorColumns() {
-        columns << Column("id", "SERIAL NOT NULL");
-        columns << Column("customer_id", "INTEGER");
-        columns << Column("circuit_id", "INTEGER");
-        columns << Column("date", "TEXT");
-        columns << Column("compressor_id", "BIGINT");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("inspection_uuid", "UUID");
+        columns << Column("compressor_uuid", "UUID");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

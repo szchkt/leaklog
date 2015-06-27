@@ -75,13 +75,13 @@ class AssemblyRecordItemTypeColumns
 {
 public:
     AssemblyRecordItemTypeColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("item_category_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("acquisition_price", "NUMERIC");
         columns << Column("list_price", "NUMERIC");
         columns << Column("ean", "INTEGER");
         columns << Column("unit", "TEXT");
-        columns << Column("category_id", "INTEGER");
         columns << Column("inspection_variable_id", "TEXT");
         columns << Column("value_data_type", "INTEGER");
         columns << Column("discount", "NUMERIC");

@@ -83,8 +83,10 @@ class RepairColumns
 {
 public:
     RepairColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
+        columns << Column("inspector_uuid", "UUID");
         columns << Column("date", "TEXT");
-        columns << Column("parent", "INTEGER");
         columns << Column("customer", "TEXT");
         columns << Column("device", "TEXT");
         columns << Column("field", "TEXT");
@@ -92,7 +94,6 @@ public:
         columns << Column("refrigerant_amount", "NUMERIC");
         columns << Column("refr_add_am", "NUMERIC");
         columns << Column("refr_reco", "NUMERIC");
-        columns << Column("repairman", "TEXT");
         columns << Column("arno", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");

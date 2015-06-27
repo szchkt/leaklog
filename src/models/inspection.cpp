@@ -73,8 +73,9 @@ class InspectionColumns
 {
 public:
     InspectionColumns() {
-        columns << Column("customer", "INTEGER");
-        columns << Column("circuit", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
+        columns << Column("circuit_uuid", "UUID");
         columns << Column("date", "TEXT");
         columns << Column("nominal", "INTEGER");
         columns << Column("repair", "INTEGER");

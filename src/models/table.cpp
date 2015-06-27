@@ -64,6 +64,7 @@ class TableColumns
 {
 public:
     TableColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("uid", "TEXT");
         columns << Column("id", "TEXT");
         columns << Column("highlight_nominal", "INTEGER");

@@ -38,8 +38,8 @@ class PersonColumns
 {
 public:
     PersonColumns() {
-        columns << Column("id", "BIGINT PRIMARY KEY");
-        columns << Column("company_id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");

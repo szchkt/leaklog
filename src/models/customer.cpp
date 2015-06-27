@@ -88,7 +88,8 @@ class CustomerColumns
 {
 public:
     CustomerColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("id", "TEXT");
         columns << Column("company", "TEXT");
         columns << Column("address", "TEXT");
         columns << Column("mail", "TEXT");

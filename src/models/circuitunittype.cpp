@@ -89,7 +89,7 @@ class CircuitUnitTypeColumns
 {
 public:
     CircuitUnitTypeColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("manufacturer", "TEXT");
         columns << Column("type", "TEXT");
         columns << Column("refrigerant", "TEXT");
