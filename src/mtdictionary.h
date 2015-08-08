@@ -22,6 +22,8 @@
 
 #include <QStringList>
 
+#include <initializer_list>
+
 class MTDictionary
 {
 public:
@@ -30,7 +32,21 @@ public:
         allow_duplicate_keys = false;
         dict_keys << key; dict_values << value;
     }
-    MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; }
+    MTDictionary(QString key_and_value[2]) {
+        allow_duplicate_keys = false;
+        dict_keys << key_and_value[0];
+        dict_values << key_and_value[1];
+    }
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    MTDictionary(std::initializer_list<QString[2]> keys_and_values) {
+        allow_duplicate_keys = false;
+        for (auto i = keys_and_values.begin(); i != keys_and_values.end(); ++i) {
+            dict_keys << (*i)[0];
+            dict_values << (*i)[1];
+        }
+    }
+#endif
+    explicit MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; }
     MTDictionary(const QStringList &keys, const QStringList &values = QStringList()) {
         dict_keys = keys;
         if (values.isEmpty()) {
@@ -63,15 +79,20 @@ public:
         dict_keys << key; dict_values << value;
     }
     void setValue(const QString &key, const QString &value) {
-        if (contains(key)) { dict_values.replace(indexOfKey(key), value); }
-        else { dict_keys << key; dict_values << value; }
+        int index = indexOfKey(key);
+        if (index >= 0) {
+            dict_values.replace(index, value);
+        } else {
+            dict_keys << key; dict_values << value;
+        }
     }
     inline QString key(int i) const {
         if (i >= 0 && i < dict_keys.count()) return dict_keys.at(i);
         else return QString();
     }
     inline QString firstKey(const QString &value) const {
-        return dict_values.indexOf(value) < 0 ? value : dict_keys.at(dict_values.indexOf(value));
+        int index = dict_values.indexOf(value);
+        return index < 0 ? value : dict_keys.at(index);
     }
     inline const QString &lastKey() const {
         return dict_keys.last();
@@ -90,10 +111,12 @@ public:
         else return default_value;
     }
     inline const QString &value(const QString &key) const {
-        return dict_keys.indexOf(key) < 0 ? key : dict_values.at(dict_keys.indexOf(key));
+        int index = dict_keys.indexOf(key);
+        return index < 0 ? key : dict_values.at(index);
     }
     inline const QString &value(const QString &key, const QString &default_value) const {
-        return dict_keys.indexOf(key) < 0 ? default_value : dict_values.at(dict_keys.indexOf(key));
+        int index = dict_keys.indexOf(key);
+        return index < 0 ? default_value : dict_values.at(index);
     }
     inline const QString &lastValue() const {
         return dict_values.last();
