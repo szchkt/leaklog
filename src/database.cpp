@@ -153,13 +153,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
         query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
     }
     if (v > 0 && v < 0.9061) {
-        Customer customers("");
-        MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
-        MTSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
-        while (repairs.next()) {
-            if (customer_ids.contains(repairs.value(1).toString()))
-                Repair(repairs.value(0).toString()).update("parent", customer_ids.value(repairs.value(1).toString()).value("id"));
-        }
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
     }
@@ -193,41 +186,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             }
 
             query.exec("DROP TABLE subvariables");
-
-            // Contact persons separated from customers table
-            Customer customers_rec("");
-            ListOfVariantMaps customers = customers_rec.listAll();
-
-            Person person;
-            int next_id = person.max("id");
-            QVariantMap person_values;
-            for (int i = 0; i < customers.count(); ++i) {
-                if (customers.at(i).value("contact_person").isNull())
-                    continue;
-
-                person_values.insert("company_id", customers.at(i).value("id"));
-                person_values.insert("name", customers.at(i).value("contact_person"));
-                person.setId(QString::number(++next_id));
-                person.update(person_values);
-            }
-
-            // Create a compressor for each circuit
-            QVariantMap map;
-            map.insert("name", tr("Compressor"));
-            map.insert("manufacturer", QString());
-            map.insert("type", QString());
-            map.insert("sn", QString());
-
-            qint64 compressor_id = Compressor().max("id");
-
-            ListOfVariantMaps circuits = Circuit().listAll("parent, id");
-            for (int i = 0; i < circuits.count(); ++i) {
-                compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
-                map.insert("id", compressor_id);
-                map.insert("customer_id", circuits.at(i).value("parent"));
-                map.insert("circuit_id", circuits.at(i).value("id"));
-                Compressor().update(map);
-            }
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
@@ -265,29 +223,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec("ALTER TABLE persons ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE compressors ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE inspections_compressors ALTER COLUMN compressor_id TYPE BIGINT");
-        }
-    }
-    if (v > 0 && v < 0.909) {
-        // Create a compressor for each circuit that does not yet have one
-        QVariantMap map;
-        map.insert("name", tr("Compressor"));
-        map.insert("manufacturer", QString());
-        map.insert("type", QString());
-        map.insert("sn", QString());
-
-        qint64 compressor_id = Compressor().max("id");
-
-        Circuit circuits_record;
-        circuits_record.addJoin("LEFT JOIN compressors ON circuits.parent = compressors.customer_id AND circuits.id = compressors.circuit_id");
-        circuits_record.setCustomWhere("compressors.id IS NULL");
-        MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id", QString());
-        circuits.exec();
-        while (circuits.next()) {
-            compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
-            map.insert("id", compressor_id);
-            map.insert("customer_id", circuits.value("parent"));
-            map.insert("circuit_id", circuits.value("id"));
-            Compressor().update(map);
         }
     }
     if (v < F_DB_VERSION) {
