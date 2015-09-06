@@ -1119,7 +1119,7 @@
     </message>
     <message>
         <source>Operator ID</source>
-        <translation>ID operatora</translation>
+        <translation>NIP operatora</translation>
     </message>
     <message>
         <source>Operator</source>
@@ -3144,10 +3144,6 @@
         <translation>Anuluj</translation>
     </message>
     <message>
-        <source>Compressor</source>
-        <translation>Sprężarka</translation>
-    </message>
-    <message>
         <source>Inspectors</source>
         <translation>Kontrolerzy</translation>
     </message>
@@ -3379,7 +3375,7 @@ Aby usunąć wszystkie dane klienta &quot;%1&quot; nacijnij USUŃ i potwierdź:<
     </message>
     <message>
         <source>Change ID of the original to:</source>
-        <translation>Zmień ID z oryginału na:</translation>
+        <translation>Zmień ID oryginału na:</translation>
     </message>
     <message>
         <source>Choose a new ID for the duplicate:</source>
@@ -4389,6 +4385,11 @@ dla ID osoby i firmy</translation>
         <source>No detector installed</source>
         <translation>Bez detektora</translation>
     </message>
+    <message>
+        <source>ID</source>
+        <comment>Variable ID</comment>
+        <translation>ID</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4709,7 +4710,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Company ID</source>
-        <translation>ID firmy</translation>
+        <translation>NIP firmy</translation>
     </message>
     <message>
         <source>Name</source>

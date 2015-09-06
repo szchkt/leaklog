@@ -472,7 +472,7 @@
        </column>
        <column>
         <property name="text">
-         <string>ID</string>
+         <string comment="Variable ID">ID</string>
         </property>
        </column>
        <column>

@@ -3808,10 +3808,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Pripomenúť &amp;neskôr</translation>
     </message>
     <message>
-        <source>Compressor</source>
-        <translation>Kompresor</translation>
-    </message>
-    <message>
         <source>en_GB</source>
         <translation>sk_SK</translation>
     </message>
@@ -4392,6 +4388,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>No detector installed</source>
         <translation>Bez detektora</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <comment>Variable ID</comment>
+        <translation>ID</translation>
     </message>
 </context>
 <context>
@@ -5910,7 +5911,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>ID:</source>
-        <translation>IČ:</translation>
+        <translation>ID:</translation>
     </message>
     <message>
         <source>Name:</source>
