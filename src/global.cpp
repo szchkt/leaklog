@@ -1170,7 +1170,7 @@ QStringList Global::listVariableIds(bool all)
     QStringList ids;
     ids << "customer" << "circuit" << "nominal" << "repair" << "outside_interval";
     if (all)
-        ids << "date" << "inspection_type" << "inspection_type_data" << "date_updated" << "updated_by";
+        ids << "date" << "inspection_type" << "inspection_type_data" << "id" << "customer_id" << "circuit_id" << "compressor_id" << "date_updated" << "updated_by";
     Variables variables;
     while (variables.next()) {
         if (all || variables.type() != "group")
