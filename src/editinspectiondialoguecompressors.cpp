@@ -124,5 +124,5 @@ bool InspectionCompressorTab::save(const QString &customer_id, const QString &ci
             continue;
         values.insert((*i)->id(), (*i)->variantValue());
     }
-    return record.update(values, true);
+    return record.update(values, true, record.exists());
 }

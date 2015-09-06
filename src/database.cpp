@@ -3387,7 +3387,8 @@ void MainWindow::importData()
                         set.remove("compressor_id");
                         MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                                                                     QStringList() << i_customer << i_circuit << i_date << c_id);
-                        InspectionsCompressor(QString(), inspections_compressor_parents).update(set, false, true);
+                        InspectionsCompressor inspections_compressor(QString(), inspections_compressor_parents);
+                        inspections_compressor.update(set, false, inspections_compressor.exists());
                     }
                 }
             }
