@@ -3325,6 +3325,7 @@ void MainWindow::importData()
                     }
                     set.clear();
                     set.insert("name", subitem->text(0));
+                    set.insert("parent_id", item->text(1));
                     set.insert("id", subitem->text(1));
                     set.insert("unit", subitem->text(2));
                     set.insert("type", variableTypes().firstKey(subitem->text(3)));
