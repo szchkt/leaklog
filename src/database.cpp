@@ -3184,7 +3184,7 @@ void MainWindow::importData()
         }
     }
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
-        UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).baseName()));
+        UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).completeBaseName()));
         m_undo_stack->savepoint();
 
         QVariantMap set;
@@ -3589,7 +3589,7 @@ void MainWindow::importCSV()
 
     ImportCsvDialogue id(path, tables, this);
     if (id.exec() == QDialog::Accepted) {
-        UndoCommand command(m_undo_stack, tr("Import CSV %1").arg(QFileInfo(path).baseName()));
+        UndoCommand command(m_undo_stack, tr("Import CSV %1").arg(QFileInfo(path).completeBaseName()));
         m_undo_stack->savepoint();
 
         int num_failed = id.save();

@@ -347,9 +347,9 @@ void MainWindow::setWindowTitleWithRepresentedFilename(const QString &path)
 {
 #ifdef Q_OS_MAC
     setWindowFilePath(path.startsWith('/') ? path : QString());
-    setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
+    setWindowTitle(QString("%1[*]").arg(QFileInfo(path).completeBaseName()));
 #else
-    setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
+    setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).completeBaseName()));
 #endif
 }
 
@@ -437,7 +437,7 @@ QString MainWindow::fileNameForCurrentView()
         return title;
 
     return QString("%1 - %2")
-            .arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName())
+            .arg(QFileInfo(QSqlDatabase::database().databaseName()).completeBaseName())
             .arg(title.replace(':', '.'));
 }
 
