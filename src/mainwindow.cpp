@@ -162,7 +162,7 @@ MainWindow::MainWindow():
     QString search_style = "QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }";
 #ifdef Q_OS_MAC
     if (isYosemite) {
-        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; }";
+        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0); }";
     }
 #endif
     le_search = new SearchLineEdit(this, true, search_style);

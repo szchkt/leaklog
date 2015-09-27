@@ -97,6 +97,7 @@ void ViewTab::scaleFactorChanged()
 #ifdef Q_OS_MAC
     bool isYosemite = Global::macVersion() >= QSysInfo::MV_10_0 + 10;
     style += QString("QTreeWidget { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
+    style += QString("QTreeWidget:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
     if (isYosemite) {
         style += QString("QTreeWidget::item:!has-children:!selected:!disabled { color: #3D3D50; }");
         style += QString("QTreeWidget::item:!has-children:!selected:disabled { color: #777777; }");
@@ -299,7 +300,7 @@ void ViewTab::formatGroupItem(QTreeWidgetItem *item)
     font.setBold(true);
     if (Global::macVersion() < QSysInfo::MV_10_0 + 10) {
         font.setCapitalization(QFont::AllUppercase);
-    } else {
+    } else if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
     }
     font.setPointSize(font.pointSize() - 1);
