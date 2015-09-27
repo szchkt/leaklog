@@ -3336,7 +3336,7 @@ void MainWindow::importData()
                 }
             }
         }
-        inspections_skip_columns << "customer" << "circuit";
+        inspections_skip_columns << "customer" << "circuit" << "inspection_type";
 
         // Import inspections
         trw[0] = id->newInspections();
@@ -3357,6 +3357,8 @@ void MainWindow::importData()
                 query.bindValue(":date", i_date);
                 query.exec();
                 if (query.next()) {
+                    set.insert("inspection_type", query.value(query.record().indexOf("inspection_type")).toInt()); // NOT NULL
+
                     for (int f = 0; f < query.record().count(); ++f) {
                         if (!inspections_skip_columns.contains(query.record().fieldName(f))) {
                             set.insert(query.record().fieldName(f), query.value(f));
