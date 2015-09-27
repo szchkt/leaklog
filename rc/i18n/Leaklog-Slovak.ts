@@ -1792,6 +1792,10 @@
         <source>Modified contact persons:</source>
         <translation>Upravené kontaktné osoby:</translation>
     </message>
+    <message>
+        <source>Scope</source>
+        <translation>Rámec</translation>
+    </message>
 </context>
 <context>
     <name>Inspection</name>

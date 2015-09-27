@@ -2773,7 +2773,9 @@ void MainWindow::importData()
     }
 
     // Variables
-    QStringList variable_scopes = QStringList() << tr("Inspection") << tr("Compressor");
+    QStringList variable_scopes;
+    variable_scopes << QApplication::translate("VariableRecord", "Inspection");
+    variable_scopes << QApplication::translate("VariableRecord", "Compressor");
     MTDictionary variable_names;
     variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
     variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));

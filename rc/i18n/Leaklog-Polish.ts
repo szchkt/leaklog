@@ -1792,6 +1792,10 @@
         <source>Action</source>
         <translation>Akcja</translation>
     </message>
+    <message>
+        <source>Scope</source>
+        <translation>Zakres</translation>
+    </message>
 </context>
 <context>
     <name>Inspection</name>
