@@ -2773,6 +2773,7 @@ void MainWindow::importData()
     }
 
     // Variables
+    QStringList variable_scopes = QStringList() << tr("Inspection") << tr("Compressor");
     MTDictionary variable_names;
     variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
     variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));
@@ -2817,10 +2818,14 @@ void MainWindow::importData()
         item->setText(1, variables.id());
         item->setText(2, variables.unit());
         item->setText(3, variableTypes().value(variables.type()));
-        item->setText(4, variables.valueExpression());
-        item->setText(5, variables.compareNom() ? tr("Yes") : tr("No"));
-        item->setText(6, variables.value(Variable::Tolerance).toString());
-        item->setText(7, variables.colBg());
+        item->setData(3, Qt::UserRole, variables.type());
+        item->setText(4, variable_scopes.value(variables.scope() - Variable::Inspection));
+        item->setData(4, Qt::UserRole, variables.scope());
+        item->setText(5, variables.valueExpression());
+        item->setText(6, variables.compareNom() ? tr("Yes") : tr("No"));
+        item->setData(6, Qt::UserRole, variables.compareNom());
+        item->setText(7, variables.value(Variable::Tolerance).toString());
+        item->setText(8, variables.colBg());
 
         Variable variable(variables.id());
         bool found = false, overwrite = false;
@@ -2841,25 +2846,30 @@ void MainWindow::importData()
                 item->setBackground(3, QBrush(Qt::darkMagenta));
                 item->setForeground(3, QBrush(Qt::white));
             }
-            if (variable.valueExpression() != variables.valueExpression()) {
+            if (variable.scope() != variables.scope()) {
                 overwrite = true;
                 item->setBackground(4, QBrush(Qt::darkMagenta));
                 item->setForeground(4, QBrush(Qt::white));
             }
-            if ((variable.compareNom() > 0) != (variables.compareNom() > 0)) {
+            if (variable.valueExpression() != variables.valueExpression()) {
                 overwrite = true;
                 item->setBackground(5, QBrush(Qt::darkMagenta));
                 item->setForeground(5, QBrush(Qt::white));
             }
-            if (variable.tolerance() != variables.tolerance()) {
+            if ((variable.compareNom() > 0) != (variables.compareNom() > 0)) {
                 overwrite = true;
                 item->setBackground(6, QBrush(Qt::darkMagenta));
                 item->setForeground(6, QBrush(Qt::white));
             }
-            if (variable.colBg() != variables.colBg()) {
+            if (variable.tolerance() != variables.tolerance()) {
                 overwrite = true;
                 item->setBackground(7, QBrush(Qt::darkMagenta));
                 item->setForeground(7, QBrush(Qt::white));
+            }
+            if (variable.colBg() != variables.colBg()) {
+                overwrite = true;
+                item->setBackground(8, QBrush(Qt::darkMagenta));
+                item->setForeground(8, QBrush(Qt::white));
             }
         }
         QComboBox *cb_action = new QComboBox;
@@ -2881,7 +2891,7 @@ void MainWindow::importData()
         } else {
             cb_action->setCurrentIndex(0);
         }
-        id->variables()->setItemWidget(item, 8, cb_action);
+        id->variables()->setItemWidget(item, 9, cb_action);
     }
 
     // Inspections
@@ -3283,7 +3293,7 @@ void MainWindow::importData()
         for (int v = 0; v < id->variables()->topLevelItemCount(); ++v) {
             item = id->variables()->topLevelItem(v);
             skip_parent = false; new_item = NULL;
-            current_text = ((QComboBox *)id->variables()->itemWidget(item, 8))->currentText();
+            current_text = ((QComboBox *)id->variables()->itemWidget(item, 9))->currentText();
             if (current_text == tr("Do not import")) {
                 inspections_skip_columns << item->text(1);
                 skip_parent = true;
@@ -3295,22 +3305,23 @@ void MainWindow::importData()
                     new_item->setText(0, item->text(0));
                     new_item->setText(1, item->text(1));
                     new_item->setText(2, item->text(2));
-                    new_item->setText(3, item->text(6));
+                    new_item->setText(3, item->text(7));
                 }
                 set.clear();
                 set.insert("name", item->text(0));
                 set.insert("id", item->text(1));
                 set.insert("unit", item->text(2));
-                set.insert("type", variableTypes().firstKey(item->text(3)));
-                set.insert("value", item->text(4));
-                set.insert("compare_nom", item->text(5) == tr("Yes") ? 1 : 0);
-                set.insert("tolerance", item->text(6));
-                set.insert("col_bg", item->text(7));
+                set.insert("type", item->data(3, Qt::UserRole));
+                set.insert("scope", item->data(4, Qt::UserRole));
+                set.insert("value", item->text(5));
+                set.insert("compare_nom", item->data(6, Qt::UserRole));
+                set.insert("tolerance", item->text(7));
+                set.insert("col_bg", item->text(8));
                 record.update(set);
             }
             for (int sv = 0; sv < item->childCount(); ++sv) {
                 subitem = item->child(sv);
-                current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 8))->currentText();
+                current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 9))->currentText();
                 if (skip_parent || current_text == tr("Do not import")) {
                     inspections_skip_columns << subitem->text(1);
                 } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
@@ -3321,17 +3332,18 @@ void MainWindow::importData()
                         new_subitem->setText(0, subitem->text(0));
                         new_subitem->setText(1, subitem->text(1));
                         new_subitem->setText(2, subitem->text(2));
-                        new_subitem->setText(3, subitem->text(6));
+                        new_subitem->setText(3, subitem->text(7));
                     }
                     set.clear();
                     set.insert("name", subitem->text(0));
                     set.insert("parent_id", item->text(1));
                     set.insert("id", subitem->text(1));
                     set.insert("unit", subitem->text(2));
-                    set.insert("type", variableTypes().firstKey(subitem->text(3)));
-                    set.insert("value", subitem->text(4));
-                    set.insert("compare_nom", subitem->text(5) == tr("Yes") ? 1 : 0);
-                    set.insert("tolerance", subitem->text(6));
+                    set.insert("type", subitem->data(3, Qt::UserRole));
+                    set.insert("scope", subitem->data(4, Qt::UserRole));
+                    set.insert("value", subitem->text(5));
+                    set.insert("compare_nom", subitem->data(6, Qt::UserRole));
+                    set.insert("tolerance", subitem->text(7));
                     record.update(set);
                 }
             }
