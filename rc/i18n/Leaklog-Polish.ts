@@ -2992,7 +2992,7 @@
         <translation>Pokaż style</translation>
     </message>
     <message>
-        <source>Compare Values With the Nominal Inspection</source>
+        <source>Compare Values With Nominal Inspection</source>
         <translation>Porównaj wartości z kontrolą nominalną</translation>
     </message>
     <message>

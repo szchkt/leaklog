@@ -1922,7 +1922,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Compare Values With the Nominal Inspection</string>
+    <string>Compare Values With Nominal Inspection</string>
    </property>
   </action>
   <action name="actionDecommission_all_circuits">

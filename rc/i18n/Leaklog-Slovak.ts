@@ -3776,7 +3776,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zobraziť vzhľady</translation>
     </message>
     <message>
-        <source>Compare Values With the Nominal Inspection</source>
+        <source>Compare Values With Nominal Inspection</source>
         <translation>Porovnať hodnoty s nominálnymi</translation>
     </message>
     <message>
