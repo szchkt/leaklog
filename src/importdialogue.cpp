@@ -74,11 +74,12 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     trw_variables->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     trw_variables->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     trw_variables->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
-    //trw_variables->header()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
-    trw_variables->header()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
+    trw_variables->header()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+    //trw_variables->header()->setSectionResizeMode(5, QHeaderView::ResizeToContents);
     trw_variables->header()->setSectionResizeMode(6, QHeaderView::ResizeToContents);
     trw_variables->header()->setSectionResizeMode(7, QHeaderView::ResizeToContents);
     trw_variables->header()->setSectionResizeMode(8, QHeaderView::ResizeToContents);
+    trw_variables->header()->setSectionResizeMode(9, QHeaderView::ResizeToContents);
     QObject::connect(tbtn_customers_new_selectall, SIGNAL(clicked()), this, SLOT(selectAllNewCustomers()));
     QObject::connect(tbtn_customers_new_selectnone, SIGNAL(clicked()), this, SLOT(deselectAllNewCustomers()));
     QObject::connect(tbtn_customers_modified_selectall, SIGNAL(clicked()), this, SLOT(selectAllModifiedCustomers()));

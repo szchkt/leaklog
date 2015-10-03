@@ -162,7 +162,7 @@ MainWindow::MainWindow():
     QString search_style = "QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }";
 #ifdef Q_OS_MAC
     if (isYosemite) {
-        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; }";
+        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0); }";
     }
 #endif
     le_search = new SearchLineEdit(this, true, search_style);
@@ -347,9 +347,9 @@ void MainWindow::setWindowTitleWithRepresentedFilename(const QString &path)
 {
 #ifdef Q_OS_MAC
     setWindowFilePath(path.startsWith('/') ? path : QString());
-    setWindowTitle(QString("%1[*]").arg(QFileInfo(path).baseName()));
+    setWindowTitle(QString("%1[*]").arg(QFileInfo(path).completeBaseName()));
 #else
-    setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).baseName()));
+    setWindowTitle(QString("%1[*] - Leaklog").arg(QFileInfo(path).completeBaseName()));
 #endif
 }
 
@@ -437,7 +437,7 @@ QString MainWindow::fileNameForCurrentView()
         return title;
 
     return QString("%1 - %2")
-            .arg(QFileInfo(QSqlDatabase::database().databaseName()).baseName())
+            .arg(QFileInfo(QSqlDatabase::database().databaseName()).completeBaseName())
             .arg(title.replace(':', '.'));
 }
 
@@ -541,7 +541,7 @@ void MainWindow::printLabel(bool detailed)
     QCheckBox *chb_CO2_equivalent = NULL;
     if (detailed) {
         chb_CO2_equivalent = new QCheckBox(d);
-        chb_CO2_equivalent->setText(replaceUnsupportedCharacters(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)));
+        chb_CO2_equivalent->setText(replaceUnsupportedCharacters(QApplication::translate("ToolBarStack", "Convert refrigerant to CO\342\202\202 equivalent")));
         chb_CO2_equivalent->setChecked(true);
         gl->addWidget(chb_CO2_equivalent, 5, 0, 1, 2);
     }
@@ -718,7 +718,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
                      detailed ? QString("%1 %2")
                      .arg(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble()))
-                     .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)))
+                     .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")))
                      : QApplication::translate("MainWindow", "once in 6 months*"));
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
                      detailed ? (attributes.value("leak_detector").toInt() ? tr("Detector installed") : tr("No detector installed"))

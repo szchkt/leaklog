@@ -31,9 +31,9 @@ DBInfo::DBInfo(const QString &key):
     DBRecord(tableName(), "id", key, MTDictionary())
 {}
 
-QString DBInfo::valueForKey(const QString &key, const QString &default_value)
+QString DBInfo::valueForKey(const QString &key, const QString &default_value, const QSqlDatabase &database)
 {
-    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key));
+    MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key), database);
     if (!query.next())
         return default_value;
     return query.value(0).toString();

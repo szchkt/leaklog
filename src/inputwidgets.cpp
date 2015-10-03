@@ -172,7 +172,7 @@ QVariant MDCompanyIDEdit::variantValue() const
 void MDCompanyIDEdit::setVariantValue(const QVariant &value)
 {
     if (value.toLongLong())
-        setText(formatCompanyID(value.toString()));
+        setText(formatCompanyID(value));
     else
         setText(QString());
 }

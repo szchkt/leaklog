@@ -29,7 +29,7 @@ class DBInfo : public DBRecord
 public:
     DBInfo(const QString &key);
 
-    static QString valueForKey(const QString &, const QString & = QString());
+    static QString valueForKey(const QString &, const QString & = QString(), const QSqlDatabase & = QSqlDatabase::database());
     static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
 
     static bool isCurrentUserAdmin();

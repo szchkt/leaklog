@@ -121,7 +121,7 @@ QString AgendaView::renderHTML()
     out << "<tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
     out << "<th>" << tr("Circuit") << "</th><th>" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "<th>" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
-    out << "<th>" << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent", 0, QApplication::UnicodeUTF8)) << "</th>";
+    out << "<th>" << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent")) << "</th>";
     out << "<th>" << tr("Last inspection") << "</th></tr>";
 
     QMapIterator<QString, QStringList> i(next_inspections_map);

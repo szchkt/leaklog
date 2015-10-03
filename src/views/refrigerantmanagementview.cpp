@@ -93,7 +93,7 @@ QString RefrigerantManagementView::renderHTML()
         for (int n = 1; n < RefrigerantRecord::attributes().count(); ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
             if (key == "partner_id") {
-                out << "<td>" << formatCompanyID(query.value(key).toString()) << "</td>";
+                out << "<td>" << formatCompanyID(query.value(key)) << "</td>";
             } else {
                 out << "<td>" << MTVariant(query.value(key)) << "</td>";
             }

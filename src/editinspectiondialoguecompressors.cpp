@@ -111,10 +111,7 @@ bool InspectionCompressorTab::save(const QString &customer_id, const QString &ci
 {
     MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                          QStringList() << customer_id << circuit_id << original_inspection_date << QString::number(m_id));
-    InspectionsCompressor record(m_record_id >= 0 ?
-                                     QString::number(m_record_id)
-                                   : QString(),
-                                 parents);
+    InspectionsCompressor record(m_record_id > 0 ? QString::number(m_record_id) : QString(), parents);
 
     QVariantMap values;
     if (inspection_date != original_inspection_date)
@@ -124,5 +121,5 @@ bool InspectionCompressorTab::save(const QString &customer_id, const QString &ci
             continue;
         values.insert((*i)->id(), (*i)->variantValue());
     }
-    return record.update(values, true);
+    return record.update(values, true, record.exists());
 }

@@ -20,6 +20,7 @@
 #include "partnerwidgets.h"
 #include "inputwidgets.h"
 #include "mtsqlquery.h"
+#include "global.h"
 
 #include <QString>
 #include <QLineEdit>
@@ -35,7 +36,7 @@ PartnerWidgets::PartnerWidgets(const QString &partner_name_str, const QString &p
     MTSqlQuery query("SELECT partner, partner_id FROM refrigerant_management WHERE partner IS NOT NULL GROUP BY partner, partner_id");
     while (query.next()) {
         partners_dict.insert(QString("%1_%2").arg(query.value(1).toString()).arg(query.value(0).toString()),
-                             QString("%1 (%2)").arg(query.value(0).toString()).arg(query.value(1).toString()));
+                             QString("%1 (%2)").arg(query.value(0).toString()).arg(Global::formatCompanyID(query.value(1))));
     }
 
     partners_cb = new MDComboBox("partners", QObject::tr("Partners:"), md, "", partners_dict);
@@ -47,6 +48,6 @@ PartnerWidgets::PartnerWidgets(const QString &partner_name_str, const QString &p
 void PartnerWidgets::partnerChanged(int)
 {
     QStringList split = partners_cb->variantValue().toString().split("_");
-    partner_id_le->setText(split.takeFirst());
+    partner_id_le->setText(Global::formatCompanyID(split.takeFirst()));
     partner_name_le->setText(split.join("_"));
 }

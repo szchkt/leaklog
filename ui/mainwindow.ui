@@ -472,7 +472,7 @@
        </column>
        <column>
         <property name="text">
-         <string>ID</string>
+         <string comment="Variable ID">ID</string>
         </property>
        </column>
        <column>
@@ -1922,7 +1922,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Compare Values With the Nominal Inspection</string>
+    <string>Compare Values With Nominal Inspection</string>
    </property>
   </action>
   <action name="actionDecommission_all_circuits">

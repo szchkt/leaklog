@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_MAC
     QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue");
+    QFont::insertSubstitution(".SF NS Text", "Lucida Grande");
 #endif
 
     MTApplication app(argc, argv);

@@ -231,7 +231,7 @@ lessThan(QT_MAJOR_VERSION, 5) {
     QT            += network webkit sql
     CONFIG        += depend_includepath
 } else {
-    QT            += widgets network webkitwidgets sql
+    QT            += widgets network webkitwidgets sql printsupport
 }
 
 # fparser

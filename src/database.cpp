@@ -140,7 +140,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
     }
     delete variables;
 
-    double v = DBInfo::valueForKey("db_version").toDouble();
+    double v = DBInfo::valueForKey("db_version", QString(), database).toDouble();
     if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
         query.exec("UPDATE inspections SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
@@ -154,13 +154,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
         query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
     }
     if (v > 0 && v < 0.9061) {
-        Customer customers("");
-        MultiMapOfVariantMaps customer_ids = customers.mapAll("company", "id");
-        MTSqlQuery repairs("SELECT date, customer FROM repairs WHERE parent IS NULL");
-        while (repairs.next()) {
-            if (customer_ids.contains(repairs.value(1).toString()))
-                Repair(repairs.value(0).toString()).update("parent", customer_ids.value(repairs.value(1).toString()).value("id"));
-        }
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
     }
@@ -194,41 +187,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             }
 
             query.exec("DROP TABLE subvariables");
-
-            // Contact persons separated from customers table
-            Customer customers_rec("");
-            ListOfVariantMaps customers = customers_rec.listAll();
-
-            Person person;
-            int next_id = person.max("id");
-            QVariantMap person_values;
-            for (int i = 0; i < customers.count(); ++i) {
-                if (customers.at(i).value("contact_person").isNull())
-                    continue;
-
-                person_values.insert("company_id", customers.at(i).value("id"));
-                person_values.insert("name", customers.at(i).value("contact_person"));
-                person.setId(QString::number(++next_id));
-                person.update(person_values);
-            }
-
-            // Create a compressor for each circuit
-            QVariantMap map;
-            map.insert("name", tr("Compressor"));
-            map.insert("manufacturer", QString());
-            map.insert("type", QString());
-            map.insert("sn", QString());
-
-            qint64 compressor_id = Compressor().max("id");
-
-            ListOfVariantMaps circuits = Circuit().listAll("parent, id");
-            for (int i = 0; i < circuits.count(); ++i) {
-                compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
-                map.insert("id", compressor_id);
-                map.insert("customer_id", circuits.at(i).value("parent"));
-                map.insert("circuit_id", circuits.at(i).value("id"));
-                Compressor().update(map);
-            }
         }
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
         query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
@@ -266,29 +224,6 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec("ALTER TABLE persons ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE compressors ALTER COLUMN id TYPE BIGINT");
             query.exec("ALTER TABLE inspections_compressors ALTER COLUMN compressor_id TYPE BIGINT");
-        }
-    }
-    if (v > 0 && v < 0.909) {
-        // Create a compressor for each circuit that does not yet have one
-        QVariantMap map;
-        map.insert("name", tr("Compressor"));
-        map.insert("manufacturer", QString());
-        map.insert("type", QString());
-        map.insert("sn", QString());
-
-        qint64 compressor_id = Compressor().max("id");
-
-        Circuit circuits_record;
-        circuits_record.addJoin("LEFT JOIN compressors ON circuits.parent = compressors.customer_id AND circuits.id = compressors.circuit_id");
-        circuits_record.setCustomWhere("compressors.id IS NULL");
-        MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id", QString());
-        circuits.exec();
-        while (circuits.next()) {
-            compressor_id = qMax(compressor_id + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
-            map.insert("id", compressor_id);
-            map.insert("customer_id", circuits.value("parent"));
-            map.insert("circuit_id", circuits.value("id"));
-            Compressor().update(map);
         }
     }
 
@@ -2647,7 +2582,7 @@ void MainWindow::importData()
                     case 0:
                         columns.insert(QApplication::translate("Customer", "Customer"), attribute_modified ? "1" : "0");
                     default:
-                        columns.insert(formatCompanyID(attribute.toString()), attribute_modified ? "1" : "0");
+                        columns.insert(formatCompanyID(attribute), attribute_modified ? "1" : "0");
                     }
                 } else {
                     columns.insert(MTVariant(attribute, Customer::attributes().key(i)).toString(),
@@ -2844,6 +2779,9 @@ void MainWindow::importData()
     }
 
     // Variables
+    QStringList variable_scopes;
+    variable_scopes << QApplication::translate("VariableRecord", "Inspection");
+    variable_scopes << QApplication::translate("VariableRecord", "Compressor");
     MTDictionary variable_names;
     variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
     variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));
@@ -2888,10 +2826,14 @@ void MainWindow::importData()
         item->setText(1, variables.id());
         item->setText(2, variables.unit());
         item->setText(3, variableTypes().value(variables.type()));
-        item->setText(4, variables.valueExpression());
-        item->setText(5, variables.compareNom() ? tr("Yes") : tr("No"));
-        item->setText(6, variables.value(Variable::Tolerance).toString());
-        item->setText(7, variables.colBg());
+        item->setData(3, Qt::UserRole, variables.type());
+        item->setText(4, variable_scopes.value(variables.scope() - Variable::Inspection));
+        item->setData(4, Qt::UserRole, variables.scope());
+        item->setText(5, variables.valueExpression());
+        item->setText(6, variables.compareNom() ? tr("Yes") : tr("No"));
+        item->setData(6, Qt::UserRole, variables.compareNom());
+        item->setText(7, variables.value(Variable::Tolerance).toString());
+        item->setText(8, variables.colBg());
 
         Variable variable(variables.id());
         bool found = false, overwrite = false;
@@ -2912,25 +2854,30 @@ void MainWindow::importData()
                 item->setBackground(3, QBrush(Qt::darkMagenta));
                 item->setForeground(3, QBrush(Qt::white));
             }
-            if (variable.valueExpression() != variables.valueExpression()) {
+            if (variable.scope() != variables.scope()) {
                 overwrite = true;
                 item->setBackground(4, QBrush(Qt::darkMagenta));
                 item->setForeground(4, QBrush(Qt::white));
             }
-            if ((variable.compareNom() > 0) != (variables.compareNom() > 0)) {
+            if (variable.valueExpression() != variables.valueExpression()) {
                 overwrite = true;
                 item->setBackground(5, QBrush(Qt::darkMagenta));
                 item->setForeground(5, QBrush(Qt::white));
             }
-            if (variable.tolerance() != variables.tolerance()) {
+            if ((variable.compareNom() > 0) != (variables.compareNom() > 0)) {
                 overwrite = true;
                 item->setBackground(6, QBrush(Qt::darkMagenta));
                 item->setForeground(6, QBrush(Qt::white));
             }
-            if (variable.colBg() != variables.colBg()) {
+            if (variable.tolerance() != variables.tolerance()) {
                 overwrite = true;
                 item->setBackground(7, QBrush(Qt::darkMagenta));
                 item->setForeground(7, QBrush(Qt::white));
+            }
+            if (variable.colBg() != variables.colBg()) {
+                overwrite = true;
+                item->setBackground(8, QBrush(Qt::darkMagenta));
+                item->setForeground(8, QBrush(Qt::white));
             }
         }
         QComboBox *cb_action = new QComboBox;
@@ -2952,7 +2899,7 @@ void MainWindow::importData()
         } else {
             cb_action->setCurrentIndex(0);
         }
-        id->variables()->setItemWidget(item, 8, cb_action);
+        id->variables()->setItemWidget(item, 9, cb_action);
     }
 
     // Inspections
@@ -3255,7 +3202,7 @@ void MainWindow::importData()
         }
     }
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
-        UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).baseName()));
+        UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).completeBaseName()));
         m_undo_stack->savepoint();
 
         QVariantMap set;
@@ -3354,7 +3301,7 @@ void MainWindow::importData()
         for (int v = 0; v < id->variables()->topLevelItemCount(); ++v) {
             item = id->variables()->topLevelItem(v);
             skip_parent = false; new_item = NULL;
-            current_text = ((QComboBox *)id->variables()->itemWidget(item, 8))->currentText();
+            current_text = ((QComboBox *)id->variables()->itemWidget(item, 9))->currentText();
             if (current_text == tr("Do not import")) {
                 inspections_skip_columns << item->text(1);
                 skip_parent = true;
@@ -3366,22 +3313,23 @@ void MainWindow::importData()
                     new_item->setText(0, item->text(0));
                     new_item->setText(1, item->text(1));
                     new_item->setText(2, item->text(2));
-                    new_item->setText(3, item->text(6));
+                    new_item->setText(3, item->text(7));
                 }
                 set.clear();
                 set.insert("name", item->text(0));
                 set.insert("id", item->text(1));
                 set.insert("unit", item->text(2));
-                set.insert("type", variableTypes().firstKey(item->text(3)));
-                set.insert("value", item->text(4));
-                set.insert("compare_nom", item->text(5) == tr("Yes") ? 1 : 0);
-                set.insert("tolerance", item->text(6));
-                set.insert("col_bg", item->text(7));
+                set.insert("type", item->data(3, Qt::UserRole));
+                set.insert("scope", item->data(4, Qt::UserRole));
+                set.insert("value", item->text(5));
+                set.insert("compare_nom", item->data(6, Qt::UserRole));
+                set.insert("tolerance", item->text(7));
+                set.insert("col_bg", item->text(8));
                 record.update(set);
             }
             for (int sv = 0; sv < item->childCount(); ++sv) {
                 subitem = item->child(sv);
-                current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 8))->currentText();
+                current_text = ((QComboBox *)id->variables()->itemWidget(subitem, 9))->currentText();
                 if (skip_parent || current_text == tr("Do not import")) {
                     inspections_skip_columns << subitem->text(1);
                 } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
@@ -3392,21 +3340,23 @@ void MainWindow::importData()
                         new_subitem->setText(0, subitem->text(0));
                         new_subitem->setText(1, subitem->text(1));
                         new_subitem->setText(2, subitem->text(2));
-                        new_subitem->setText(3, subitem->text(6));
+                        new_subitem->setText(3, subitem->text(7));
                     }
                     set.clear();
                     set.insert("name", subitem->text(0));
+                    set.insert("parent_id", item->text(1));
                     set.insert("id", subitem->text(1));
                     set.insert("unit", subitem->text(2));
-                    set.insert("type", variableTypes().firstKey(subitem->text(3)));
-                    set.insert("value", subitem->text(4));
-                    set.insert("compare_nom", subitem->text(5) == tr("Yes") ? 1 : 0);
-                    set.insert("tolerance", subitem->text(6));
+                    set.insert("type", subitem->data(3, Qt::UserRole));
+                    set.insert("scope", subitem->data(4, Qt::UserRole));
+                    set.insert("value", subitem->text(5));
+                    set.insert("compare_nom", subitem->data(6, Qt::UserRole));
+                    set.insert("tolerance", subitem->text(7));
                     record.update(set);
                 }
             }
         }
-        inspections_skip_columns << "customer" << "circuit";
+        inspections_skip_columns << "customer" << "circuit" << "inspection_type";
 
         // Import inspections
         trw[0] = id->newInspections();
@@ -3427,6 +3377,8 @@ void MainWindow::importData()
                 query.bindValue(":date", i_date);
                 query.exec();
                 if (query.next()) {
+                    set.insert("inspection_type", query.value(query.record().indexOf("inspection_type")).toInt()); // NOT NULL
+
                     for (int f = 0; f < query.record().count(); ++f) {
                         if (!inspections_skip_columns.contains(query.record().fieldName(f))) {
                             set.insert(query.record().fieldName(f), query.value(f));
@@ -3458,7 +3410,8 @@ void MainWindow::importData()
                         set.remove("compressor_id");
                         MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                                                                     QStringList() << i_customer << i_circuit << i_date << c_id);
-                        InspectionsCompressor(QString(), inspections_compressor_parents).update(set, false, true);
+                        InspectionsCompressor inspections_compressor(QString(), inspections_compressor_parents);
+                        inspections_compressor.update(set, false, inspections_compressor.exists());
                     }
                 }
             }
@@ -3659,7 +3612,7 @@ void MainWindow::importCSV()
 
     ImportCsvDialogue id(path, tables, this);
     if (id.exec() == QDialog::Accepted) {
-        UndoCommand command(m_undo_stack, tr("Import CSV %1").arg(QFileInfo(path).baseName()));
+        UndoCommand command(m_undo_stack, tr("Import CSV %1").arg(QFileInfo(path).completeBaseName()));
         m_undo_stack->savepoint();
 
         int num_failed = id.save();

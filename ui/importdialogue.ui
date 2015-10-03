@@ -752,6 +752,11 @@
          </column>
          <column>
           <property name="text">
+           <string>Scope</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
            <string>Value</string>
           </property>
          </column>

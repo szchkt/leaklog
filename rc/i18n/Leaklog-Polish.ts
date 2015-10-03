@@ -51,6 +51,18 @@
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
         <translation>http://www.gnu.org/licenses/gpl-2.0.html</translation>
     </message>
+    <message>
+        <source>Translation</source>
+        <translation>Tłumaczenie</translation>
+    </message>
+    <message>
+        <source>Polish translation: %1</source>
+        <translation>Polskie tłumaczenie: %1</translation>
+    </message>
+    <message>
+        <source>%1, licensed under the GNU GPL</source>
+        <translation>%1 na licencji GNU GPL</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -1107,7 +1119,7 @@
     </message>
     <message>
         <source>Operator ID</source>
-        <translation>ID operatora</translation>
+        <translation>NIP operatora</translation>
     </message>
     <message>
         <source>Operator</source>
@@ -1779,6 +1791,10 @@
     <message>
         <source>Action</source>
         <translation>Akcja</translation>
+    </message>
+    <message>
+        <source>Scope</source>
+        <translation>Zakres</translation>
     </message>
 </context>
 <context>
@@ -2537,7 +2553,7 @@
     </message>
     <message>
         <source>Compact</source>
-        <translation>Kompaktowy</translation>
+        <translation>Kompaktuj</translation>
     </message>
     <message>
         <source>Save changes and compact the database</source>
@@ -2980,7 +2996,7 @@
         <translation>Pokaż style</translation>
     </message>
     <message>
-        <source>Compare Values With the Nominal Inspection</source>
+        <source>Compare Values With Nominal Inspection</source>
         <translation>Porównaj wartości z kontrolą nominalną</translation>
     </message>
     <message>
@@ -3125,15 +3141,11 @@
     </message>
     <message>
         <source>&amp;Discard</source>
-        <translation>&amp;Anuluj</translation>
+        <translation>&amp;Odrzuć</translation>
     </message>
     <message>
         <source>Cancel</source>
         <translation>Anuluj</translation>
-    </message>
-    <message>
-        <source>Compressor</source>
-        <translation>Sprężarka</translation>
     </message>
     <message>
         <source>Inspectors</source>
@@ -3367,7 +3379,7 @@ Aby usunąć wszystkie dane klienta &quot;%1&quot; nacijnij USUŃ i potwierdź:<
     </message>
     <message>
         <source>Change ID of the original to:</source>
-        <translation>Zmień ID z oryginału na:</translation>
+        <translation>Zmień ID oryginału na:</translation>
     </message>
     <message>
         <source>Choose a new ID for the duplicate:</source>
@@ -4051,7 +4063,7 @@ Aby usunąć styl &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Certified company</source>
-        <translation>Certyfikowane firmy</translation>
+        <translation>Certyfikowana firma</translation>
     </message>
     <message>
         <source>Circuit ID</source>
@@ -4377,6 +4389,11 @@ dla ID osoby i firmy</translation>
         <source>No detector installed</source>
         <translation>Bez detektora</translation>
     </message>
+    <message>
+        <source>ID</source>
+        <comment>Variable ID</comment>
+        <translation>ID</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4524,7 +4541,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Business partner (ID):</source>
-        <translation>Partner biznesowy (ID):</translation>
+        <translation>Partner biznesowy (NIP):</translation>
     </message>
 </context>
 <context>
@@ -4697,7 +4714,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Company ID</source>
-        <translation>ID firmy</translation>
+        <translation>NIP firmy</translation>
     </message>
     <message>
         <source>Name</source>
@@ -4858,7 +4875,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Business partner (ID)</source>
-        <translation>Partner biznesowy (ID)</translation>
+        <translation>Partner biznesowy (NIP)</translation>
     </message>
     <message>
         <source>Refrigerant</source>

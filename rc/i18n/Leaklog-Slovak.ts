@@ -51,6 +51,18 @@
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
         <translation>http://www.gpl.sk/v2/</translation>
     </message>
+    <message>
+        <source>Translation</source>
+        <translation>Preklad</translation>
+    </message>
+    <message>
+        <source>Polish translation: %1</source>
+        <translation>Poľský preklad: %1</translation>
+    </message>
+    <message>
+        <source>%1, licensed under the GNU GPL</source>
+        <translation>%1, pod licenciou GNU GPL</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -1779,6 +1791,10 @@
     <message>
         <source>Modified contact persons:</source>
         <translation>Upravené kontaktné osoby:</translation>
+    </message>
+    <message>
+        <source>Scope</source>
+        <translation>Rámec</translation>
     </message>
 </context>
 <context>
@@ -3764,7 +3780,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zobraziť vzhľady</translation>
     </message>
     <message>
-        <source>Compare Values With the Nominal Inspection</source>
+        <source>Compare Values With Nominal Inspection</source>
         <translation>Porovnať hodnoty s nominálnymi</translation>
     </message>
     <message>
@@ -3794,10 +3810,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Remind Me &amp;Later</source>
         <translation>Pripomenúť &amp;neskôr</translation>
-    </message>
-    <message>
-        <source>Compressor</source>
-        <translation>Kompresor</translation>
     </message>
     <message>
         <source>en_GB</source>
@@ -4380,6 +4392,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>No detector installed</source>
         <translation>Bez detektora</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <comment>Variable ID</comment>
+        <translation>ID</translation>
     </message>
 </context>
 <context>
@@ -5898,7 +5915,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>ID:</source>
-        <translation>IČ:</translation>
+        <translation>ID:</translation>
     </message>
     <message>
         <source>Name:</source>

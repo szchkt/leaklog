@@ -24,6 +24,7 @@
 #include <QMap>
 
 class MDAbstractInputWidget;
+class QWidget;
 
 class EditDialogueWidgets
 {
