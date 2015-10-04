@@ -55,6 +55,8 @@
 #include <QSettings>
 #include <QTimer>
 
+#include <limits>
+
 using namespace Global;
 
 bool MainWindow::saveChangesBeforeProceeding(const QString &title, bool close_)
@@ -498,10 +500,10 @@ void MainWindow::backupDatabase(const QString &path)
 
         QStringList entries = backup_dir.second.entryList(QStringList() << "*.lklg", QDir::Files, QDir::Name);
         while (entries.count() > 10) {
-            int min_diff = INT_MAX;
+            qint64 min_diff = std::numeric_limits<qint64>::max();
             int delete_index = 1;
             for (int i = 0; i + 3 < entries.count(); ++i) {
-                int diff = dateForFileName(entries.at(i)).daysTo(dateForFileName(entries.at(i + 1)));
+                qint64 diff = dateForFileName(entries.at(i)).daysTo(dateForFileName(entries.at(i + 1)));
                 if (min_diff > diff) {
                     min_diff = diff;
                     delete_index = i + 1;

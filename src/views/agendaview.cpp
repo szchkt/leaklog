@@ -134,7 +134,7 @@ QString AgendaView::renderHTML()
         QString refrigerant_amount = i.value().value(5);
         QString last_inspection_date = i.value().value(6);
         bool reinspection = i.value().value(7).toInt();
-        int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
+        qint64 days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         QString next_inspection;
         switch (days_to) {
             case -1: next_inspection = tr("Yesterday"); break;
