@@ -33,7 +33,7 @@ namespace VariableEvaluation {
     {
     public:
         EvaluationContext(int = 0);
-        EvaluationContext(const QString &, const QString &, int = 0);
+        EvaluationContext(const QString &customer_uuid, const QString &circuit_uuid, int vars_scope = 0);
         ~EvaluationContext();
 
         void setNominalInspection(const QVariantMap &nominal_ins) { this->nominal_ins = nominal_ins; }
@@ -62,6 +62,7 @@ namespace VariableEvaluation {
         int vars_scope;
         MultiMapOfVariantMaps persons;
         MultiMapOfVariantMaps inspectors;
+        MultiMapOfVariantMaps ar_types;
 
         friend class Variable;
     };

@@ -22,13 +22,14 @@
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
 #include "global.h"
+#include "style.h"
 
 #include <QApplication>
 
 using namespace Global;
 
-AssemblyRecordType::AssemblyRecordType(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+AssemblyRecordType::AssemblyRecordType(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
@@ -49,7 +50,6 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id")));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString()));
     MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
@@ -61,17 +61,37 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
     md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), attributes.value("name_format").toString(), keywords));
-    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), attributes.value("style").toString(), listStyles()));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM assembly_record_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), attributes.value("style_uuid").toString(), listStyles()));
+}
+
+QString AssemblyRecordType::name()
+{
+    return stringValue("name");
+}
+
+QString AssemblyRecordType::description()
+{
+    return stringValue("description");
+}
+
+AssemblyRecordType::DisplayOptions AssemblyRecordType::displayOptions()
+{
+    return (DisplayOptions)intValue("display_options");
+}
+
+QString AssemblyRecordType::nameFormat()
+{
+    return stringValue("name_format");
+}
+
+Style AssemblyRecordType::style()
+{
+    return stringValue("style_uuid");
+}
+
+AssemblyRecordTypeCategory AssemblyRecordType::typeCategories()
+{
+    return AssemblyRecordTypeCategory({"ar_type_uuid", id()});
 }
 
 QString AssemblyRecordType::tableName()
@@ -84,10 +104,10 @@ class AssemblyRecordTypeColumns
 public:
     AssemblyRecordTypeColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("style_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("description", "TEXT");
         columns << Column("display_options", "INTEGER");
-        columns << Column("style", "INTEGER");
         columns << Column("name_format", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
@@ -106,7 +126,6 @@ class AssemblyRecordTypeAttributes
 {
 public:
     AssemblyRecordTypeAttributes() {
-        dict.insert("id", QApplication::translate("AssemblyRecordType", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordType", "Name"));
         dict.insert("description", QApplication::translate("AssemblyRecordType", "Description"));
     }
@@ -122,6 +141,5 @@ const MTDictionary &AssemblyRecordType::attributes()
 
 bool AssemblyRecordType::remove()
 {
-    AssemblyRecordTypeCategory type_categories(id());
-    return type_categories.remove() && MTRecord::remove();
+    return typeCategories().remove() && MTRecord::remove();
 }

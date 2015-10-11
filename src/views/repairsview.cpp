@@ -36,8 +36,8 @@ RepairsView::RepairsView(ViewTabSettings *settings):
 
 QString RepairsView::renderHTML()
 {
-    QString customer_id = settings->selectedCustomer();
-    QString highlighted_id = settings->selectedRepair();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString highlighted_uuid = settings->selectedRepairUUID();
     int year = settings->toolBarStack()->filterSinceValue();
 
     bool show_date_updated = settings->isShowDateUpdatedChecked();
@@ -53,9 +53,9 @@ QString RepairsView::renderHTML()
     }
 
     MTDictionary parent;
-    if (!customer_id.isEmpty()) {
-        parent.insert("parent", customer_id);
-        writeCustomersTable(out, customer_id);
+    if (!customer_uuid.isEmpty()) {
+        parent.insert("customer_uuid", customer_uuid);
+        writeCustomersTable(out, customer_uuid);
         out << "<br>";
     }
     MTRecord repairs_record("repairs", "date", "", parent);
@@ -78,17 +78,17 @@ QString RepairsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"allrepairs:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
-    MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
-    QString id, attr_value;
+    MultiMapOfVariantMaps inspectors(Inspector().mapAll("uuid", "person"));
     while (repairs.next()) {
-        id = repairs.stringValue("date");
-        if (id.split(".").first().toInt() < year) continue;
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
-        if (highlighted_id == id)
+        QString uuid = repairs.stringValue("uuid");
+        QString date = repairs.stringValue("date");
+        if (date.split(".").first().toInt() < year) continue;
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + uuid);
+        if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(id) << "</td>";
+        out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
-            attr_value = repairs.stringValue(Repair::attributes().key(n));
+            QString attr_value = repairs.stringValue(Repair::attributes().key(n));
             out << "<td>";
             if (Repair::attributes().key(n) == "field") {
                 if (attributeValues().contains("field::" + attr_value)) {

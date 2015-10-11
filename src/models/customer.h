@@ -22,15 +22,40 @@
 
 #include "dbrecord.h"
 
+class MTAddress;
+class Circuit;
+class Person;
+
 class Customer : public DBRecord
 {
     Q_OBJECT
 
 public:
-    Customer(const QString &);
+    enum OperatorType {
+        OperatorTypeServiceCompany = -1,
+        OperatorTypeCustomer,
+        OperatorTypeOther
+    };
+
+    Customer(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
     void readOperatorValues();
+
+    QString companyID();
+    QString companyName();
+    MTAddress address();
+    QString mail();
+    QString phone();
+    OperatorType operatorType();
+    QString operatorCompanyID();
+    QString operatorCompanyName();
+    MTAddress operatorAddress();
+    QString operatorMail();
+    QString operatorPhone();
+
+    Circuit circuits();
+    Person persons();
 
     static QString tableName();
     static const ColumnList &columns();

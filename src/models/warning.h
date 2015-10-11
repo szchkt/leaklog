@@ -27,7 +27,7 @@ class WarningRecord : public DBRecord
     Q_OBJECT
 
 public:
-    WarningRecord(const QString &);
+    WarningRecord(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 

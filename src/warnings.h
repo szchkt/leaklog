@@ -27,14 +27,14 @@ class Warnings : public MTSqlQueryResultBase<QString>
 public:
     Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QVariantMap & = QVariantMap(), int = 0);
 
-    int warningConditionValueInsCount(int);
-    MTDictionary warningConditionValueIns(int, int);
-    int warningConditionValueNomCount(int);
-    MTDictionary warningConditionValueNom(int, int);
-    int warningConditionFunctionCount(int);
-    QString warningConditionFunction(int, int);
+    int warningConditionValueInsCount(const QString &uuid);
+    MTDictionary warningConditionValueIns(const QString &uuid, int i);
+    int warningConditionValueNomCount(const QString &uuid);
+    MTDictionary warningConditionValueNom(const QString &uuid, int i);
+    int warningConditionFunctionCount(const QString &uuid);
+    QString warningConditionFunction(const QString &uuid, int i);
 
-    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false, int = 0);
+    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, const QString &id = QString(), bool = false, int = 0);
 
     static int circuitInspectionInterval(const QString &refrigerant, double refrigerant_amount, bool CO2_equivalent, bool hermetic, bool leak_detector, int interval = 0);
 
@@ -50,45 +50,45 @@ protected:
     QSqlDatabase database;
     bool enabled_only;
     int m_scope;
-    QMap<int, QList<MTDictionary> > conditions_value_ins;
-    QMap<int, QList<MTDictionary> > conditions_value_nom;
-    QMap<int, QList<QString> > conditions_functions;
+    QMap<QString, QList<MTDictionary> > conditions_value_ins;
+    QMap<QString, QList<MTDictionary> > conditions_value_nom;
+    QMap<QString, QStringList> conditions_functions;
 };
 
 class Warning : public MTSqlQueryResultBase<QString>
 {
 public:
-    Warning(int, QSqlDatabase = QSqlDatabase());
+    Warning(const QString &uuid, QSqlDatabase = QSqlDatabase());
 
 protected:
     void saveResult();
 
     QSqlDatabase database;
-    int id;
+    QString uuid;
 };
 
 class WarningFilters : public MTSqlQueryResultBase<QString>
 {
 public:
-    WarningFilters(int, QSqlDatabase = QSqlDatabase());
+    WarningFilters(const QString &warning_uuid, QSqlDatabase = QSqlDatabase());
 
 protected:
     void saveResult();
 
     QSqlDatabase database;
-    int id;
+    QString warning_uuid;
 };
 
 class WarningConditions : public MTSqlQueryResultBase<QString>
 {
 public:
-    WarningConditions(int, QSqlDatabase = QSqlDatabase());
+    WarningConditions(const QString &warning_uuid, QSqlDatabase = QSqlDatabase());
 
 protected:
     void saveResult();
 
     QSqlDatabase database;
-    int id;
+    QString warning_uuid;
 };
 
 #endif // WARNINGS_H

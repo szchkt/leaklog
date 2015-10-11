@@ -40,11 +40,11 @@ TableView::TableView(ViewTabSettings *settings):
 
 QString TableView::renderHTML()
 {
-    QString customer_id = settings->selectedCustomer();
-    QString cc_id = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuit();
-    QString table_id = settings->currentTable();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuitUUID();
+    QString table_uuid = settings->currentTableUUID();
     int year = settings->toolBarStack()->filterSinceValue();
-    QString compressor_id = settings->selectedCompressor();
+    QString compressor_uuid = settings->selectedCompressorUUID();
 
     QString html; MTTextStream out(&html);
 
@@ -55,29 +55,29 @@ QString TableView::renderHTML()
         out << "<br>";
     }
 
-    QVariantMap customer = Customer(customer_id).list("company, address, mail, phone");
+    QVariantMap customer = Customer(customer_uuid).list("id, company, address, mail, phone");
 
-    ListOfVariantMaps circuits = Circuit(customer_id, cc_id).listAll("*, " + circuitRefrigerantAmountQuery());
+    ListOfVariantMaps circuits = Circuit(circuit_uuid).listAll("*, " + circuitRefrigerantAmountQuery());
 
-    QVariantMap table = Table(table_id).list();
+    QVariantMap table = Table(table_uuid).list();
 
     int c = 0;
     foreach (const QVariantMap &circuit, circuits) {
         c++;
+        circuit_uuid = circuit.value("uuid").toString();
         QString circuit_id = circuit.value("id").toString();
 
-        VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+        VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
 
-        ListOfVariantMaps inspections(Inspection(customer_id, circuit_id, "").listAll("*", "date ASC"));
-        QString last_inspection_date, last_entry_date, date;
+        ListOfVariantMaps inspections(Inspection({"circuit_uuid", circuit_uuid}).listAll("*", "date ASC"));
+        QString last_inspection_uuid, last_entry_uuid;
         for (int i = 0; i < inspections.count(); ++i) {
-            date = inspections.at(i).value("date").toString();
-            if (date > last_entry_date) {
-                last_entry_date = date;
-                if (!inspections.at(i).value("repair").toInt()) {
-                    last_inspection_date = date;
-                }
+            QString uuid = inspections.at(i).value("uuid").toString();
+            last_entry_uuid = uuid;
+            if (!inspections.at(i).value("repair").toInt()) {
+                last_inspection_uuid = uuid;
             }
+            QString date = inspections.at(i).value("date").toString();
             if ((!table.value("highlight_nominal").toInt() || !inspections.at(i).value("nominal").toInt())
                 && date.split(".").first().toInt() < year) {
                 inspections.removeAt(i);
@@ -104,7 +104,7 @@ QString TableView::renderHTML()
         out << "</th><th>" << QApplication::translate("Customer", "E-mail");
         out << "</th><th>" << QApplication::translate("Customer", "Phone");
         out << "</th></tr><tr>";
-        out << "<td>" << toolTipLink("customer", formatCompanyID(customer_id), customer_id) << "</td>";
+        out << "<td>" << toolTipLink("customer", customer.value("id").toString(), customer_uuid) << "</td>";
         out << "<td>" << MTVariant(customer.value("company")) << "</td>";
         out << "<td>" << MTAddress(customer.value("address").toString()).toHtml() << "</td>";
         out << "<td>" << MTVariant(customer.value("mail")) << "</td>";
@@ -120,7 +120,7 @@ QString TableView::renderHTML()
         out << "</th><th>" << QApplication::translate("Circuit", "Refrigerant");
         out << "</th><th>" << QApplication::translate("Circuit", "Oil");
         out << "</th></tr><tr>";
-        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
+        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_uuid, circuit_uuid) << "</td>";
         out << "<td>" << MTVariant(circuit.value("name")) << "</td>";
         out << "<td>" << MTVariant(circuit.value("device")) << "</td>";
         out << "<td>" << MTVariant(circuit.value("manufacturer")) << "</td>";
@@ -143,57 +143,49 @@ QString TableView::renderHTML()
             HTMLTableRow *compressors_table_row = compressors_table->addRow();
 
             HTMLTableCell *cell;
-            if (compressor_id.isEmpty())
+            if (compressor_uuid.isEmpty())
                 cell = compressors_table_row->addHeaderCell();
             else
                 cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-            *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id + "/compressor:-1/table"))
+            *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + "/compressor:-1/table"))
                     << tr("All compressors");
 
-            Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                       QStringList() << customer_id << circuit_id));
-            ListOfVariantMaps compressors = compressors_rec.listAll();
+            ListOfVariantMaps compressors = Compressor({"circuit_uuid", circuit_uuid}).listAll();
             for (int i = 0; i < compressors.count(); ++i) {
-                if (compressor_id == compressors.at(i).value("id").toString())
+                if (compressor_uuid == compressors.at(i).value("uuid").toString())
                     cell = compressors_table_row->addHeaderCell();
                 else
                     cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-                *(cell->link("customer:" + customer_id + "/circuit:" + circuit_id
+                *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid
                              + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
                         << compressors.at(i).value("name").toString();
             }
             out << "<br>" << compressors_table->html();
 
-            QStringList compressor_ids;
-            if (compressor_id.isEmpty()) {
-                Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                           QStringList() << customer_id << circuit_id));
-                ListOfVariantMaps compressors = compressors_rec.listAll();
+            QStringList compressor_uuids;
+            if (compressor_uuid.isEmpty()) {
                 for (int i = 0; i < compressors.count(); ++i) {
-                    compressor_ids.append(compressors.at(i).value("id").toString());
+                    compressor_uuids.append(compressors.at(i).value("uuid").toString());
                 }
             } else {
-                compressor_ids.append(compressor_id);
+                compressor_uuids.append(compressor_uuid);
             }
-            for (int i = 0; i < compressor_ids.count(); ++i) {
-                InspectionsCompressor inspections_compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "compressor_id",
-                                                                                          QStringList() << customer_id << circuit_id << compressor_ids.at(i)));
+            for (int i = 0; i < compressor_uuids.count(); ++i) {
+                InspectionCompressor inspections_compressors_rec({{"circuit_uuid", circuit_uuid}, {"compressor_uuid", compressor_uuids.at(i)}});
                 inspections_compressors_rec.setTable("inspections_compressors JOIN inspections"
-                                                     " ON inspections.customer = inspections_compressors.customer_id"
-                                                     " AND inspections.circuit = inspections_compressors.circuit_id"
-                                                     " AND inspections.date = inspections_compressors.date");
+                                                     " ON inspections.uuid = inspections_compressors.inspection_uuid");
                 if (table.value("highlight_nominal").toInt())
-                    inspections_compressors_rec.setCustomWhere("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
+                    inspections_compressors_rec.setPredicate("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
                 else
-                    inspections_compressors_rec.setCustomWhere("inspections_compressors.date > '" + QString::number(year) + "'");
+                    inspections_compressors_rec.setPredicate("inspections_compressors.date > '" + QString::number(year) + "'");
 
                 ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
 
-                if (compressor_ids.count() > 1) {
+                if (compressor_uuids.count() > 1) {
                     for (int n = 0; n < compressors.count(); ++n) {
-                        if (compressor_ids.at(i) == compressors.at(n).value("id").toString()) {
-                            out << "<h4><a href=\"customer:" << customer_id << "/circuit:" << circuit_id
-                                << "/compressor:" << compressors.at(i).value("id").toString() << "/table\">"
+                        if (compressor_uuids.at(i) == compressors.at(n).value("uuid").toString()) {
+                            out << "<h4><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid
+                                << "/compressor:" << compressors.at(i).value("uuid").toString() << "/table\">"
                                 << compressors.at(n).value("name").toString() << "</a></h4>";
                             break;
                         }
@@ -210,7 +202,7 @@ QString TableView::renderHTML()
         }
 
         //*** Warnings ***
-        if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
+        if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_uuid.isEmpty()) {
             Warnings warnings(QSqlDatabase::database(), true, circuit, table.value("scope").toInt());
             QString warnings_html, inspection_date;
             QStringList last_warnings_list, warnings_list, backup_warnings;
@@ -225,7 +217,7 @@ QString TableView::renderHTML()
                     }
                 }
                 if (warnings_list.count()) {
-                    warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
+                    warnings_html.append("<tr><td><a href=\"customer:" + customer_uuid + "/circuit:" + circuit_uuid);
                     warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
                     warnings_html.append(inspection_date + "\">");
                     warnings_html.append(settings->mainWindowSettings().formatDateTime(inspection_date) + "</a>");
@@ -238,7 +230,7 @@ QString TableView::renderHTML()
                 last_warnings_list << backup_warnings;
             }
             QStringList delayed_warnings = listDelayedWarnings(warnings, circuit, var_evaluation.nominalInspection(),
-                                                               last_entry_date, last_inspection_date);
+                                                               last_entry_uuid, last_inspection_uuid);
             if (delayed_warnings.count()) {
                 warnings_html.append("<tr><td colspan=\"2\"><b>");
                 warnings_html.append(delayed_warnings.join(", "));
@@ -335,8 +327,8 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
         bool is_repair = inspections.at(i).value("repair").toInt();
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         QString inspection_date = inspections.at(i).value("date").toString();
-        QString customer_id = circuit.value("parent").toString();
-        QString circuit_id = circuit.value("id").toString();
+        QString customer_uuid = circuit.value("customer_uuid").toString();
+        QString circuit_uuid = circuit.value("uuid").toString();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
         if (inspection_type != Inspection::DefaultType) {
@@ -346,7 +338,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
                 row = tbody->addRow();
                 *row->addCell() << toolTipLink("customer/circuit/inspection",
                                                settings->mainWindowSettings().formatDateTime(inspection_date),
-                                               customer_id, circuit_id, inspection_date, ToolTipLinkItemRemove);
+                                               customer_uuid, circuit_uuid, inspection_date, ToolTipLinkItemRemove);
                 *row->addCell(QString("colspan=\"%1\"").arg(column_count)) << escapeString(description);
                 continue;
             }
@@ -364,7 +356,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
         else if (is_repair) { el = cell->italics(); }
         *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
                            settings->mainWindowSettings().formatDateTime(inspection_date),
-                           customer_id, circuit_id, inspection_date);
+                           customer_uuid, circuit_uuid, inspection_date);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {
@@ -498,18 +490,16 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
 }
 
 QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap &circuit_attributes,
-                                           QVariantMap &nominal_ins, const QString &last_entry_date,
-                                           const QString &last_inspection_date, int *delay_out)
+                                           QVariantMap &nominal_ins, const QString &last_entry_uuid,
+                                           const QString &last_inspection_uuid, int *delay_out)
 {
-    QString customer_id = circuit_attributes.value("parent").toString();
-    QString circuit_id = circuit_attributes.value("id").toString();
     QStringList warnings_list;
-    QVariantMap last_entry = Inspection(customer_id, circuit_id, last_entry_date).list();
+    QVariantMap last_entry = Inspection(last_entry_uuid).list();
     QVariantMap last_inspection;
-    if (last_inspection_date == last_entry_date) {
+    if (last_inspection_uuid == last_entry_uuid) {
         last_inspection = last_entry;
     } else {
-        last_inspection = Inspection(customer_id, circuit_id, last_inspection_date).list();
+        last_inspection = Inspection(last_inspection_uuid).list();
     }
     QVariantMap *entry;
     bool show_warning;
@@ -577,10 +567,12 @@ QString TableView::title() const
 {
     QString title;
     if (settings->isCircuitSelected()) {
-        title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
+        Circuit circuit(settings->selectedCircuitUUID());
+        circuit.readValues();
+        title = circuit.circuitName();
         if (title.isEmpty())
-            title = settings->selectedCircuit().rightJustified(5, '0');
+            title = circuit.circuitID();
         title.prepend(" - ");
     }
-    return tr("Table of Inspections") + " - " + Customer(settings->selectedCustomer()).stringValue("company") + title;
+    return tr("Table of Inspections") + " - " + Customer(settings->selectedCustomerUUID()).companyName() + title;
 }

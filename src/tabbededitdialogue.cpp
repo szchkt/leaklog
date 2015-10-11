@@ -66,7 +66,7 @@ void TabbedEditDialogue::save()
     if (!EditDialogue::save(false)) return;
 
     for (int i = 0; i < tabs.count(); ++i) {
-        tabs.at(i)->save(idFieldValue());
+        tabs.at(i)->save();
     }
 
     accept();

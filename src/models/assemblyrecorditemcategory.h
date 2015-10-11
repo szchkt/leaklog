@@ -22,6 +22,8 @@
 
 #include "dbrecord.h"
 
+class AssemblyRecordTypeCategory;
+
 class AssemblyRecordItemCategory : public DBRecord
 {
     Q_OBJECT
@@ -39,9 +41,17 @@ public:
         DisplayAtBottom = 1
     };
 
-    AssemblyRecordItemCategory(const QString &);
+    AssemblyRecordItemCategory(const QString &uuid = QString());
+    AssemblyRecordItemCategory(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    bool isPredefined();
+    QString name();
+    DisplayOptions displayOptions();
+    DisplayPosition displayPosition();
+
+    AssemblyRecordTypeCategory typeCategories();
 
     static QString tableName();
     static const ColumnList &columns();

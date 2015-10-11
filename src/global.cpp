@@ -169,8 +169,16 @@ QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase &db)
 QString Global::variantTypeToSqlType(int type)
 {
     switch (type) {
-        case QVariant::Int: return "INTEGER"; break;
-        case QVariant::Double: return "NUMERIC"; break;
+        case QVariant::Bool:
+            return "SMALLINT";
+        case QVariant::Int:
+        case QVariant::UInt:
+            return "INTEGER";
+        case QVariant::LongLong:
+        case QVariant::ULongLong:
+            return "BIGINT";
+        case QVariant::Double:
+            return "NUMERIC";
         default: break;
     }
     return "TEXT";
@@ -180,6 +188,7 @@ QString Global::variableTypeToSqlType(const QString &type)
 {
     if (type == "float") return "NUMERIC";
     else if (type == "int" || type == "bool") return "INTEGER";
+    else if (type == "uuid") return "UUID";
     return "TEXT";
 }
 
@@ -346,7 +355,7 @@ QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
 {
     return "(COALESCE(circuits.refrigerant_amount, 0)"
             " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
-            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id AND inspections.nominal = 1)) AS " + return_as;
+            " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.nominal = 1)) AS " + return_as;
 }
 
 QMap<QString, MTDictionary> Global::parsed_expressions;
@@ -416,9 +425,9 @@ MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
     return dict_exp;
 }
 
-double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_id, const QString &circuit_id, bool *ok, bool *null_var)
+double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_uuid, const QString &circuit_uuid, bool *ok, bool *null_var)
 {
-    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
+    MTRecord circuit("circuits", "uuid", circuit_uuid, {"customer_uuid", customer_uuid});
     QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
 }
@@ -426,7 +435,7 @@ double Global::evaluateExpression(const QVariantMap &inspection, const MTDiction
 double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QVariantMap &circuit_attributes, bool *ok, bool *null_var)
 {
     static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
-                                   " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"
+                                   " WHERE date LIKE '%2%' AND circuit_uuid = :circuit_uuid"
                                    " AND (nominal <> 1 OR nominal IS NULL)");
     if (null_var) *null_var = false;
     QString inspection_date = inspection.value("date").toString();
@@ -440,8 +449,7 @@ double Global::evaluateExpression(const QVariantMap &inspection, const MTDiction
             double v = 0.0;
             MTSqlQuery sum_ins;
             sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
-            sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
-            sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
+            sum_ins.bindValue(":circuit_uuid", circuit_attributes.value("uuid"));
             if (sum_ins.exec() && sum_ins.next())
                 v = sum_ins.value(0).toDouble();
             value.append(QString::number(v));
@@ -562,7 +570,7 @@ public:
         dict.insert(Circuit::tableName(), Circuit::columns().toString());
         dict.insert(Compressor::tableName(), Compressor::columns().toString());
         dict.insert(Inspection::tableName(), Inspection::columns().toString());
-        dict.insert(InspectionsCompressor::tableName(), InspectionsCompressor::columns().toString());
+        dict.insert(InspectionCompressor::tableName(), InspectionCompressor::columns().toString());
         dict.insert(InspectionImage::tableName(), InspectionImage::columns().toString());
         dict.insert(Repair::tableName(), Repair::columns().toString());
         dict.insert(Inspector::tableName(), Inspector::columns().toString());
@@ -603,6 +611,7 @@ public:
         dict.insert("text", QApplication::translate("VariableTypes", "Text"));
         dict.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
         dict.insert("group", QApplication::translate("VariableTypes", "Group"));
+        dict.insert("uuid", QApplication::translate("VariableTypes", "UUID"));
     }
 
     MTDictionary dict;
@@ -652,7 +661,7 @@ public:
         dict.insert("risks", QApplication::translate("VariableNames", "Risks"));
         dict.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
         dict.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
-        dict.insert("ar_type", QApplication::translate("VariableNames", "Assembly record type"));
+        dict.insert("ar_type_uuid", QApplication::translate("VariableNames", "Assembly record type"));
         dict.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
         dict.insert("corr_def", QApplication::translate("VariableNames", "Corr/Def"));
         dict.insert("noise_vibr", QApplication::translate("VariableNames", "Noise/Vibr"));
@@ -669,8 +678,8 @@ public:
         dict.insert("refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
         dict.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
         dict.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
-        dict.insert("inspector", QApplication::translate("VariableNames", "Inspector"));
-        dict.insert("operator", QApplication::translate("VariableNames", "Contact person"));
+        dict.insert("inspector_uuid", QApplication::translate("VariableNames", "Inspector"));
+        dict.insert("person_uuid", QApplication::translate("VariableNames", "Contact person"));
     }
 
     MTDictionary dict;
@@ -715,7 +724,7 @@ public:
         dict.insert("risks", "text");
         dict.insert("rmds", "text");
         dict.insert("arno", "string");
-        dict.insert("ar_type", "int");
+        dict.insert("ar_type_uuid", "uuid");
         dict.insert("corr_def", "bool");
         dict.insert("noise_vibr", "bool");
         dict.insert("bbl_lvl", "bool");
@@ -730,8 +739,8 @@ public:
         dict.insert("refr_add_am", "float");
         dict.insert("refr_add_per", "float");
         dict.insert("refr_reco", "float");
-        dict.insert("inspector", "string");
-        dict.insert("operator", "string");
+        dict.insert("inspector_uuid", "uuid");
+        dict.insert("person_uuid", "string");
     }
 
     QHash<QString, QString> dict;
@@ -1080,21 +1089,21 @@ MTDictionary Global::listInspectors()
 {
     MTDictionary inspectors(true); MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec("SELECT id, person FROM inspectors")) {
+    if (query.exec("SELECT uuid, person FROM inspectors")) {
         while (query.next()) {
-            inspectors.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
+            inspectors.insert(query.value(0).toString(), query.value(1).toString());
         }
     }
     return inspectors;
 }
 
-MTDictionary Global::listOperators(const QString &customer)
+MTDictionary Global::listOperators(const QString &customer_uuid)
 {
     MTDictionary operators(true); MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec(QString("SELECT id, name FROM persons WHERE company_id = %1 AND hidden = 0").arg(customer))) {
+    if (query.exec(QString("SELECT uuid, name FROM persons WHERE customer_uuid = '%1' AND hidden = 0").arg(customer_uuid))) {
         while (query.next()) {
-            operators.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
+            operators.insert(query.value(0).toString(), query.value(1).toString());
         }
     }
     return operators;
@@ -1106,10 +1115,10 @@ MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
     categories.allowDuplicateKeys();
     MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec(QString("SELECT id, name FROM assembly_record_item_categories%1")
-        .arg(hide_default ? " WHERE id < 1000" : ""))) {
+    if (query.exec(QString("SELECT uuid, name FROM assembly_record_item_categories%1")
+        .arg(hide_default ? " WHERE predefined = 0" : ""))) {
         while (query.next()) {
-            categories.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
+            categories.insert(query.value(0).toString(), query.value(1).toString());
         }
     }
     return categories;
@@ -1120,10 +1129,10 @@ MTDictionary Global::listAssemblyRecordTypes()
     MTDictionary dict("-1", QObject::tr("No type")); MTSqlQuery query;
     dict.allowDuplicateKeys();
     query.setForwardOnly(true);
-    if (query.exec("SELECT id, name FROM assembly_record_types")) {
+    if (query.exec("SELECT uuid, name FROM assembly_record_types")) {
         while (query.next()) {
-            QString name = QString("%1 - %2").arg(query.value(0).toString()).arg(query.value(1).toString().left(40));
-            dict.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : name);
+            QString name = query.value(1).toString().left(40);
+            dict.insert(query.value(0).toString(), name);
         }
     }
     return dict;
@@ -1161,12 +1170,13 @@ MTDictionary Global::listDataTypes()
 
 MTDictionary Global::listStyles()
 {
-    MTDictionary styles("-1", QObject::tr("Default")); MTSqlQuery query;
+    MTDictionary styles("-1", QObject::tr("Default"));
     styles.allowDuplicateKeys();
+    MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec(QString("SELECT id, name FROM styles"))) {
+    if (query.exec(QString("SELECT uuid, name FROM styles"))) {
         while (query.next()) {
-            styles.insert(query.value(0).toString(), query.value(1).toString().isEmpty() ? query.value(0).toString() : query.value(1).toString());
+            styles.insert(query.value(0).toString(), query.value(1).toString());
         }
     }
     return styles;
@@ -1175,7 +1185,7 @@ MTDictionary Global::listStyles()
 QStringList Global::listVariableIds(bool all)
 {
     QStringList ids;
-    ids << "customer" << "circuit" << "nominal" << "repair" << "outside_interval";
+    ids << "customer_uuid" << "circuit_uuid" << "nominal" << "repair" << "outside_interval";
     if (all)
         ids << "date" << "inspection_type" << "inspection_type_data" << "id" << "customer_id" << "circuit_id" << "compressor_id" << "date_updated" << "updated_by";
     Variables variables;

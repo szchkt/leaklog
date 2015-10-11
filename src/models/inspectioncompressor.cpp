@@ -19,21 +19,23 @@
 
 #include "inspectioncompressor.h"
 
-InspectionsCompressor::InspectionsCompressor(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
-{
-    setSerialId(true);
-}
+InspectionCompressor::InspectionCompressor(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
+{}
 
-QString InspectionsCompressor::tableName()
+InspectionCompressor::InspectionCompressor(const MTDictionary &parents):
+    MTRecord(tableName(), "uuid", QString(), parents)
+{}
+
+QString InspectionCompressor::tableName()
 {
     return "inspections_compressors";
 }
 
-class InspectionsCompressorColumns
+class InspectionCompressorColumns
 {
 public:
-    InspectionsCompressorColumns() {
+    InspectionCompressorColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("inspection_uuid", "UUID");
         columns << Column("compressor_uuid", "UUID");
@@ -44,8 +46,8 @@ public:
     ColumnList columns;
 };
 
-const ColumnList &InspectionsCompressor::columns()
+const ColumnList &InspectionCompressor::columns()
 {
-    static InspectionsCompressorColumns columns;
+    static InspectionCompressorColumns columns;
     return columns.columns;
 }

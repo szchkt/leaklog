@@ -24,9 +24,37 @@
 
 #include <QApplication>
 
-AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
+{}
+
+AssemblyRecordItemCategory::AssemblyRecordItemCategory(const MTDictionary &parents):
+    DBRecord(tableName(), "uuid", QString(), parents)
+{}
+
+bool AssemblyRecordItemCategory::isPredefined()
 {
+    return intValue("predefined");
+}
+
+QString AssemblyRecordItemCategory::name()
+{
+    return stringValue("name");
+}
+
+AssemblyRecordItemCategory::DisplayOptions AssemblyRecordItemCategory::displayOptions()
+{
+    return (DisplayOptions)intValue("display_options");
+}
+
+AssemblyRecordItemCategory::DisplayPosition AssemblyRecordItemCategory::displayPosition()
+{
+    return (DisplayPosition)intValue("display_position");
+}
+
+AssemblyRecordTypeCategory AssemblyRecordItemCategory::typeCategories()
+{
+    return AssemblyRecordTypeCategory({"ar_item_category_uuid", id()});
 }
 
 QString AssemblyRecordItemCategory::tableName()
@@ -39,9 +67,10 @@ class AssemblyRecordItemCategoryColumns
 public:
     AssemblyRecordItemCategoryColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("predefined", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("name", "TEXT");
-        columns << Column("display_options", "INTEGER");
-        columns << Column("display_position", "INTEGER");
+        columns << Column("display_options", "INTEGER NOT NULL DEFAULT 0");
+        columns << Column("display_position", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -59,7 +88,6 @@ class AssemblyRecordItemCategoryAttributes
 {
 public:
     AssemblyRecordItemCategoryAttributes() {
-        dict.insert("id", QApplication::translate("AssemblyRecordItemCategory", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordItemCategory", "Name"));
     }
 
@@ -81,7 +109,6 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
@@ -94,14 +121,4 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets *md)
     md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
     md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM assembly_record_item_categories" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
 }

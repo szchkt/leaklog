@@ -61,14 +61,14 @@ QString View::viewTemplate(const QString &view_template)
 
 HTMLTable *View::writeServiceCompany(HTMLTable *table)
 {
-    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company"));
+    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company_uuid"));
     QVariantMap serv_company = serv_company_record.list();
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("service_company");
     HTMLTableRow *_tr = table->addRow();
     HTMLTableCell *_td;
     if (serv_company.value("image").toInt()) {
-        QByteArray byte_array = DBFile(serv_company.value("image").toInt()).data().toBase64();
+        QByteArray byte_array = DBFile(serv_company.value("image_file_uuid").toString()).data().toBase64();
         if (!byte_array.isNull()) {
             _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
             *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\" style=\"max-width: 300px;\">";

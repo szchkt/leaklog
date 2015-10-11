@@ -32,8 +32,8 @@ class EditInspectionDialogueAssemblyRecordTab : public EditDialogueTab
 public:
     EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *, MDComboBox *, EditInspectionDialogueAccess *, const QString &, const QString &, QWidget * = NULL);
 
-    void save(const QVariant &);
-    int saveNewItemType(const MTDictionary &);
+    void save();
+    QString saveNewItemType(const MTDictionary &);
 
 private slots:
     void loadItemInputWidgets(bool = false);
@@ -51,8 +51,8 @@ private:
     MDLineEdit *arno_w;
     QString original_arno;
     QString current_arno;
-    QString customer_id;
-    QString circuit_id;
+    QString customer_uuid;
+    QString circuit_uuid;
     bool arno_being_changed;
     EditInspectionDialogueAccess *inspection_dialogue_access;
 };

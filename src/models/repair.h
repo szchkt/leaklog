@@ -27,9 +27,22 @@ class Repair : public DBRecord
     Q_OBJECT
 
 public:
-    Repair(const QString &);
+    Repair(const QString &uuid = QString());
+    Repair(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString customerUUID();
+    QString inspectorUUID();
+    QString date();
+    QString customer();
+    QString device();
+    QString field();
+    QString refrigerant();
+    double refrigerantAmount();
+    double refrigerantAddition();
+    double refrigerantRecovery();
+    QString arno();
 
     static QString tableName();
     static const ColumnList &columns();

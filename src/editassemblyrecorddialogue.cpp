@@ -31,45 +31,35 @@ EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord *record, UndoSta
     TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
-    addTab(new EditAssemblyRecordDialogueTab(idFieldValue().toInt()));
+    addTab(new EditAssemblyRecordDialogueTab(md_record->id()));
 }
 
 void EditAssemblyRecordDialogue::save()
 {
-    MDAbstractInputWidget *id_iw = inputWidget("id");
-    QString id = id_iw->variantValue().toString();
-    if (id.isEmpty()) {
-        id_iw->setVariantValue(AssemblyRecordType("").max("id") + (qint64)1);
-    }
     TabbedEditDialogue::save();
 }
 
-EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(int record_id, QWidget *parent):
+EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(const QString &ar_type_uuid, QWidget *parent):
     EditDialogueTab(parent),
-    record_id(record_id)
+    ar_type_uuid(ar_type_uuid)
 {
     setName(tr("Item categories"));
 
     init();
 }
 
-void EditAssemblyRecordDialogueTab::save(const QVariant &record_id_variant)
+void EditAssemblyRecordDialogueTab::save()
 {
-    AssemblyRecordTypeCategory(QString("%1").arg(record_id)).remove();
-
-    record_id = record_id_variant.toInt();
-
-    QVariantMap map;
-    map.insert("record_type_id", record_id);
+    AssemblyRecordType(ar_type_uuid).typeCategories().remove();
 
     QTreeWidgetItem *item;
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         item = tree->topLevelItem(i);
 
         if (item->checkState(0) == Qt::Checked) {
-            map.insert("record_category_id", item->data(0, Qt::UserRole).toInt());
-            map.insert("position", ((QSpinBox *) tree->itemWidget(item, 1))->value());
-            AssemblyRecordTypeCategory().update(map);
+            QString ar_item_category_uuid = item->data(0, Qt::UserRole).toString();
+            AssemblyRecordTypeCategory type_category({{"ar_type_uuid", ar_type_uuid}, {"ar_item_category_uuid", ar_item_category_uuid}});
+            type_category.update("position", ((QSpinBox *) tree->itemWidget(item, 1))->value());
         }
     }
 }
@@ -89,20 +79,20 @@ void EditAssemblyRecordDialogueTab::init()
     layout->addWidget(tree);
 
     MTRecord record(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"
-                    " ON assembly_record_type_categories.record_category_id = assembly_record_item_categories.id"
-                    " AND assembly_record_type_categories.record_type_id = %1").arg(record_id),
-                    "", "", MTDictionary());
+                    " ON assembly_record_type_categories.ar_item_category_uuid = assembly_record_item_categories.uuid"
+                    " AND assembly_record_type_categories.ar_type_uuid = '%1'").arg(ar_type_uuid),
+                    "", "");
 
-    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.id,"
-                                                    " assembly_record_type_categories.record_type_id, assembly_record_type_categories.position"));
+    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.uuid,"
+                                                    " assembly_record_type_categories.ar_type_uuid, assembly_record_type_categories.position"));
 
     QTreeWidgetItem *item;
     for (int i = 0; i < all_categories.count(); ++i) {
         item = new QTreeWidgetItem;
         item->setText(0, all_categories.at(i).value("name").toString());
-        item->setData(0, Qt::UserRole, all_categories.at(i).value("id"));
+        item->setData(0, Qt::UserRole, all_categories.at(i).value("uuid"));
 
-        if (!all_categories.at(i).value("record_type_id").isNull()) item->setCheckState(0, Qt::Checked);
+        if (!all_categories.at(i).value("ar_type_uuid").isNull()) item->setCheckState(0, Qt::Checked);
         else item->setCheckState(0, Qt::Unchecked);
         tree->addTopLevelItem(item);
         QSpinBox *spin_box = new QSpinBox();

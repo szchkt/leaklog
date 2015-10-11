@@ -36,7 +36,7 @@ AssemblyRecordTypesView::AssemblyRecordTypesView(ViewTabSettings *settings):
 
 QString AssemblyRecordTypesView::renderHTML()
 {
-    QString highlighted_id = settings->selectedAssemblyRecordType();
+    QString highlighted_uuid = settings->selectedAssemblyRecordTypeUUID();
 
     QString html; MTTextStream out(&html);
 
@@ -65,15 +65,14 @@ QString AssemblyRecordTypesView::renderHTML()
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
         << tr("List of Assembly Record Types") << "</th></tr>";
     out << thead;
-    QString id;
     for (int i = 0; i < items.count(); ++i) {
-        id = items.at(i).value("id").toString();
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecordtype:" + id);
-        if (highlighted_id == id) {
+        QString uuid = items.at(i).value("uuid").toString();
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecordtype:" + uuid);
+        if (highlighted_uuid == uuid) {
             out << " class=\"selected\"";
         }
-        out << " style=\"cursor: pointer;\"><td><a href=\"\">" << id << "</a></td>";
-        for (int n = 1; n < AssemblyRecordType::attributes().count(); ++n) {
+        out << " style=\"cursor: pointer;\">";
+        for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
             out << "<td>" << escapeString(items.at(i).value(AssemblyRecordType::attributes().key(n)).toString()) << "</td>";
         }
         out << "</tr>";

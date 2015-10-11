@@ -31,8 +31,9 @@ public:
         Inspectors = 2
     };
 
-    AssemblyRecordItem(const QString &);
-    AssemblyRecordItem(const QString &, const QString &, const QString &, const MTDictionary &);
+    AssemblyRecordItem(const QString &uuid = QString());
+    AssemblyRecordItem(const MTDictionary &parents);
+    AssemblyRecordItem(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents = MTDictionary());
 
     static QString tableName();
     static const ColumnList &columns();

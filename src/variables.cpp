@@ -136,7 +136,7 @@ void Variables::initVariables()
     initVariable("risks", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("rmds", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("arno", Variable::Inspection, "", "", false, 0.0, "");
-    initVariable("ar_type", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("ar_type_uuid", Variable::Inspection, "", "", false, 0.0, "");
 
     initVariable("vis_aur_chk", Variable::Inspection, "");
     initSubvariable("vis_aur_chk", Variable::Inspection, "", "corr_def", "", "", false, 0.0);
@@ -159,8 +159,8 @@ void Variables::initVariables()
 
     initVariable("oil_leak_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "");
 
-    initVariable("inspector", Variable::Inspection, "", "", false, 0.0, "");
-    initVariable("operator", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("inspector_uuid", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("person_uuid", Variable::Inspection, "", "", false, 0.0, "");
 }
 
 void Variables::initVariable(const QString &id, int scope, const QString &unit, const QString &value, bool compare_nom, double tolerance, const QString &col_bg)
@@ -214,7 +214,7 @@ void Variables::initSubvariable(const QString &parent, int scope, const QString 
     var_indices.insert(id, result()->count() - 1);
 }
 
-void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, MTRecord *mt_record,
+void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, Inspection *inspection,
                                         const QDateTime &date, MDCheckBox *chb_repair, MDCheckBox *chb_nominal)
 {
     while (next()) {
@@ -238,7 +238,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
 
         MDAbstractInputWidget *iw = NULL;
 
-        if (var_id == "inspector") {
+        if (var_id == "inspector_uuid") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listInspectors(), col_bg);
             iw->label()->setAlternativeText(QApplication::translate("Variables", "Inspector:"));
@@ -252,13 +252,13 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                                      attributes.value(var_id).toString(), col_bg);
             iw->setShowInForm(false);
             md->addInputWidget(iw);
-        } else if (var_id == "operator") {
-            if (mt_record) {
+        } else if (var_id == "person_uuid") {
+            if (inspection) {
                 iw = new MDComboBox(var_id, var_name, md->widget(),
-                                    attributes.value(var_id).toString(), listOperators(mt_record->parent("customer")), col_bg);
+                                    attributes.value(var_id).toString(), listOperators(inspection->customerUUID()), col_bg);
                 md->addInputWidget(iw);
             }
-        } else if (var_id == "ar_type") {
+        } else if (var_id == "ar_type_uuid") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listAssemblyRecordTypes(), col_bg);
             iw->setShowInForm(false);
@@ -282,13 +282,13 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw = new MDLineEdit(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {
-                if (mt_record && mt_record->id().isEmpty()) {
-                    Inspection other_inspections(mt_record->parent("customer"), mt_record->parent("circuit"), "");
+                if (inspection && inspection->id().isEmpty()) {
+                    Inspection other_inspections({"circuit_uuid", inspection->circuitUUID()});
                     other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
                     int count = other_inspections.list("COUNT(date) AS count", QString()).value("count").toInt();
                     iw->setVariantValue(QString("%1-%2-%3%4")
-                                        .arg(mt_record->parent("customer"))
-                                        .arg(mt_record->parent("circuit"))
+                                        .arg(inspection->customer().companyID())
+                                        .arg(inspection->circuit().circuitID())
                                         .arg(date.toString("yyMMdd"))
                                         .arg(count ? QString("-%1").arg(count + 1) : ""));
                 }

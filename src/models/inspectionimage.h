@@ -25,7 +25,8 @@
 class InspectionImage : public MTRecord
 {
 public:
-    InspectionImage(const QString &, const QString &, const QString &);
+    InspectionImage(const QString &uuid = QString());
+    InspectionImage(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

@@ -22,18 +22,51 @@
 
 #include "dbrecord.h"
 
+class Customer;
+class Compressor;
+class CircuitUnit;
+class Inspection;
+
 class Circuit : public DBRecord
 {
     Q_OBJECT
 
 public:
-    Circuit();
-    Circuit(const QString &, const QString &);
+    Circuit(const QString &uuid = QString());
+    Circuit(const MTDictionary &parents);
+    Circuit(const Circuit &other): DBRecord(other) {}
 
     void initEditDialogue(EditDialogueWidgets *);
     bool checkValues(const QVariantMap &, QWidget * = 0);
 
-    static void cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id = -1, bool compressors_and_units = false);
+    QString customerUUID();
+    Customer customer();
+    QString circuitID();
+    QString circuitName();
+    bool disused();
+    QString placeOfOperation();
+    QString building();
+    QString device();
+    bool hermetic();
+    QString manufacturer();
+    QString type();
+    QString serialNumber();
+    int year();
+    QString dateOfCommissioning();
+    QString dateOfDecommissioning();
+    QString field();
+    QString refrigerant();
+    double refrigerantAmount();
+    QString oil();
+    double oilAmount();
+    bool leakDetectorInstalled();
+    double runtime();
+    double utilisation();
+    int inspectionInterval();
+
+    Compressor compressors();
+    CircuitUnit units();
+    Inspection inspections();
 
     static QString tableName();
     static const ColumnList &columns();

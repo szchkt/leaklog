@@ -19,10 +19,12 @@
 
 #include "inspectionimage.h"
 
-InspectionImage::InspectionImage(const QString &customer_id, const QString &circuit_id, const QString &inspection_id):
-    MTRecord(tableName(), "", "",
-             MTDictionary(QStringList() << "customer" << "circuit" << "date",
-                          QStringList() << customer_id << circuit_id << inspection_id))
+InspectionImage::InspectionImage(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
+{}
+
+InspectionImage::InspectionImage(const MTDictionary &parents):
+    MTRecord(tableName(), "uuid", QString(), parents)
 {}
 
 QString InspectionImage::tableName()

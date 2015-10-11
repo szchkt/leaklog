@@ -54,8 +54,8 @@ ViewTab::ViewTab(QWidget *parent):
 {
     ui->setupUi(this);
 
-    QObject::connect(parentWindow(), SIGNAL(tablesChanged(const QStringList &)), this, SLOT(reloadTables(const QStringList &)));
-    QObject::connect(parentWindow(), SIGNAL(tableAdded(int, const QString &)), this, SLOT(addTable(int, const QString &)));
+    QObject::connect(parentWindow(), SIGNAL(tablesChanged(const MTDictionary &)), this, SLOT(reloadTables(const MTDictionary &)));
+    QObject::connect(parentWindow(), SIGNAL(tableAdded(int, const QString &, const QString &)), this, SLOT(addTable(int, const QString &, const QString &)));
     QObject::connect(parentWindow(), SIGNAL(tableRemoved(const QString &)), this, SLOT(removeTable(const QString &)));
     QObject::connect(ui->trw_navigation, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
                      this, SLOT(viewChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -317,20 +317,22 @@ void ViewTab::setNeedsRefresh()
         needs_refresh = true;
 }
 
-void ViewTab::reloadTables(const QStringList &tables)
+void ViewTab::reloadTables(const MTDictionary &tables)
 {
     foreach (QTreeWidgetItem *item, group_tables->takeChildren())
         delete item;
 
-    foreach (const QString &table, tables)
-        addTable(-1, table);
+    for (int i = 0; i < tables.count(); ++i) {
+        addTable(-1, tables.key(i), tables.value(i));
+    }
 }
 
-void ViewTab::addTable(int index, const QString &table)
+void ViewTab::addTable(int index, const QString &uuid, const QString &name)
 {
     QTreeWidgetItem *item_table = new QTreeWidgetItem;
-    item_table->setText(0, table);
+    item_table->setText(0, name);
     item_table->setData(0, Qt::UserRole, View::TableOfInspections);
+    item_table->setData(1, Qt::UserRole, uuid);
     item_table->setIcon(0, QIcon(":/images/images/table_view.png"));
     if (index < 0)
         group_tables->addChild(item_table);
@@ -338,11 +340,11 @@ void ViewTab::addTable(int index, const QString &table)
         group_tables->insertChild(index, item_table);
 }
 
-void ViewTab::removeTable(const QString &table)
+void ViewTab::removeTable(const QString &uuid)
 {
     for (int i = 0; i < group_tables->childCount(); ++i) {
         QTreeWidgetItem *item = group_tables->child(i);
-        if (item->text(0) == table) {
+        if (item->data(1, Qt::UserRole).toString() == uuid) {
             delete item;
             break;
         }
@@ -396,7 +398,7 @@ QWebView *ViewTab::webView() const
     return ui->wv_main;
 }
 
-void ViewTab::setView(View::ViewID view, const QString &table)
+void ViewTab::setView(View::ViewID view, const QString &table_uuid)
 {
     if (view < 0 || view >= View::ViewCount)
         view = View::Store;
@@ -416,14 +418,14 @@ void ViewTab::setView(View::ViewID view, const QString &table)
         if (!group_tables->childCount())
             return;
 
-        if (item && item->parent() == group_tables && (table.isEmpty() || item->text(0) == table)) {
+        if (item && item->parent() == group_tables && (table_uuid.isEmpty() || item->data(1, Qt::UserRole) == table_uuid)) {
             refreshView();
             return;
         }
 
         int i = 0;
         for (int j = 0; j < group_tables->childCount(); ++j) {
-            if (group_tables->child(j)->text(0) == table) {
+            if (group_tables->child(j)->data(1, Qt::UserRole) == table_uuid) {
                 i = j;
                 break;
             }
@@ -471,12 +473,12 @@ QString ViewTab::currentViewTitle() const
     return QString();
 }
 
-QString ViewTab::currentTable() const
+QString ViewTab::currentTableUUID() const
 {
     QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
     if (item && item->parent() == group_tables)
-        return item->text(0);
+        return item->data(1, Qt::UserRole).toString();
 
     return QString();
 }
@@ -551,10 +553,9 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 
     QString tabText = current->text(0);
     if (isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
-        QString customer = Customer(selectedCustomer()).stringValue("company");
-        if (customer.isEmpty())
-            customer = Global::formatCompanyID(selectedCustomer());
-        tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer));
+        Customer customer(selectedCustomerUUID());
+        customer.readValues();
+        tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
     }
     emit tabTextChanged(this, tabText);
 
@@ -578,7 +579,6 @@ void ViewTab::executeLink(Link *link)
         mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
 
     QString id;
-    bool ok = false;
 
     bool select_with_javascript = false;
     bool view_changed = link->viewId() != currentView();
@@ -596,8 +596,8 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::Customer:
         select_with_javascript = !view_changed;
         id = link->idValue("customer");
-        if (id != selectedCustomer()) {
-            loadCustomer(id.toInt(), view_changed && link->countViews() <= 1 && link->action() == Link::View);
+        if (id != selectedCustomerUUID()) {
+            loadCustomer(id, view_changed && link->countViews() <= 1 && link->action() == Link::View);
         } else if (link->countViews() <= 1 && link->action() == Link::View) {
             setView(View::Circuits);
         }
@@ -622,13 +622,13 @@ void ViewTab::executeLink(Link *link)
 
     case LinkParser::Inspector:
         select_with_javascript = !view_changed;
-        loadInspector(link->idValue("inspector").toInt(), view_changed && link->action() == Link::View);
+        loadInspector(link->idValue("inspector"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editInspector();
         break;
 
     case LinkParser::InspectorReport:
-        loadInspectorReport(link->idValue("inspectorreport").toInt(), link->action() == Link::View);
+        loadInspectorReport(link->idValue("inspectorreport"), link->action() == Link::View);
         break;
 
     case LinkParser::AllCustomers:
@@ -661,28 +661,28 @@ void ViewTab::executeLink(Link *link)
 
     case LinkParser::AssemblyRecordType:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordType(link->idValue("assemblyrecordtype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordType();
         break;
 
     case LinkParser::AssemblyRecordItemType:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordItemType();
         break;
 
     case LinkParser::AssemblyRecordCategory:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordItemCategory();
         break;
 
     case LinkParser::CircuitUnitType:
         select_with_javascript = !view_changed;
-        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), view_changed && link->action() == Link::View);
+        loadCircuitUnitType(link->idValue("circuitunittype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editCircuitUnitType();
         break;
@@ -714,8 +714,8 @@ void ViewTab::executeLink(Link *link)
 
     switch (link->viewAt(1)) {
     case LinkParser::Circuit:
-        if (link->idValue("circuit") != selectedCircuit())
-            loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
+        if (link->idValue("circuit") != selectedCircuitUUID())
+            loadCircuit(link->idValue("circuit"), link->countViews() <= 2 && link->action() == Link::View);
         else if (link->countViews() <= 2 && link->action() == Link::View)
             setView(View::Inspections);
 
@@ -743,7 +743,7 @@ void ViewTab::executeLink(Link *link)
             break;
         }
 
-        if (link->idValue("inspection") != selectedInspection())
+        if (link->idValue("inspection") != selectedInspectionUUID())
             loadInspection(link->idValue("inspection"), link->countViews() <= 3 && link->action() == Link::View);
         else if (link->countViews() <= 3 && link->action() == Link::View)
             setView(View::InspectionDetails);
@@ -755,7 +755,7 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::AssemblyRecord:
         id = link->lastIdValue();
         id.remove(0, id.indexOf(":") + 1);
-        if (id != selectedInspection())
+        if (id != selectedInspectionUUID())
             loadAssemblyRecord(id, link->action() == Link::View);
         else if (link->action() == Link::View)
             setView(View::AssemblyRecordDetails);
@@ -766,9 +766,11 @@ void ViewTab::executeLink(Link *link)
         break;
 
     case LinkParser::Compressor:
-        ok = false;
-        setSelectedCompressor(link->idValue("compressor").toInt(&ok));
-        if (!ok) setSelectedCompressor(-1);
+        id = link->idValue("compressor");
+        if (id.isEmpty())
+            clearSelectedCompressor();
+        else
+            setSelectedCompressorUUID(id);
         break;
 
     case LinkParser::AllAssemblyRecords:

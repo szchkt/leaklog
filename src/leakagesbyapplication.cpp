@@ -38,8 +38,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
     values[Key()].resize(TableCount);
 
     MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
-                           " FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id"
-                           " AND inspections.customer = circuits.parent"
+                           " FROM inspections LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
                            " WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
 
     int current_year = QDate::currentDate().year();
@@ -79,13 +78,12 @@ LeakagesByApplication::LeakagesByApplication(bool total):
 
     MTDictionary nominal_inpection_parents("nominal", "1");
 
-    MTSqlQuery circuits(QString("SELECT parent, id, refrigerant, field, %1%2 FROM circuits")
+    MTSqlQuery circuits(QString("SELECT uuid, refrigerant, field, %1%2 FROM circuits")
                         .arg(total ? circuitRefrigerantAmountQuery() : "refrigerant_amount")
                         .arg(total ? "" : ", commissioning, decommissioning, disused"));
 
     while (circuits.next()) {
-        QString customer_id = circuits.stringValue("parent");
-        QString circuit_id = circuits.stringValue("id");
+        QString circuit_uuid = circuits.stringValue("uuid");
         QString refrigerant = circuits.stringValue("refrigerant");
         QString field = circuits.stringValue("field");
         QString field_name = attributeValues().value("field::" + field, QString());
@@ -119,8 +117,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             for (int year = qMax(commissioning_year, min_year); year <= max_year; ++year)
                 refrigerant_amounts[year - min_year] = refrigerant_amount;
 
-            nominal_inpection_parents.insert("customer", customer_id);
-            nominal_inpection_parents.insert("circuit", circuit_id);
+            nominal_inpection_parents.insert("circuit", circuit_uuid);
             ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents)
                     .listAll("date, refr_add_am, refr_reco", "date ASC");
 

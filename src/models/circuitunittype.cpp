@@ -27,8 +27,8 @@
 
 using namespace Global;
 
-CircuitUnitType::CircuitUnitType(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+CircuitUnitType::CircuitUnitType(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
@@ -49,7 +49,6 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id").toString()));
     md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
@@ -67,17 +66,6 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
     md->addGroupedInputWidgets(tr("Output:"), gw_list);
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
-
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM circuit_unit_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
 }
 
 QString CircuitUnitType::tableName()
@@ -122,7 +110,7 @@ class CircuitUnitTypeAttributes
 {
 public:
     CircuitUnitTypeAttributes() {
-        dict.insert("id", QApplication::translate("CircuitUnitType", "ID"));
+        dict.insert("uuid", QApplication::translate("CircuitUnitType", "ID"));
         dict.insert("manufacturer", QApplication::translate("CircuitUnitType", "Manufacturer"));
         dict.insert("type", QApplication::translate("CircuitUnitType", "Type"));
         dict.insert("refrigerant", QApplication::translate("CircuitUnitType", "Refrigerant"));
@@ -136,7 +124,6 @@ public:
         dict.insert("unit", QApplication::translate("CircuitUnitType", "Unit of measure"));
         dict.insert("output", QApplication::translate("CircuitUnitType", "Output"));
         dict.insert("output_t0_tc", QApplication::translate("CircuitUnitType", "Output at t0/tc"));
-        dict.insert("category_id", QApplication::translate("CircuitUnitType", "Category"));
         dict.insert("notes", QApplication::translate("CircuitUnitType", "Notes"));
     }
 

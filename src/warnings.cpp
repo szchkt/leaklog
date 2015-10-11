@@ -35,21 +35,20 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap &circui
     QStringList query_where;
     if (scope > 0) query_where << QString("scope = %1").arg(scope);
     if (enabled_only) query_where << "enabled = 1";
-    if (exec(QString("SELECT id, enabled, name, description, delay FROM warnings%1").arg(query_where.count() ? (" WHERE " + query_where.join(" AND ")) : ""))
+    if (exec(QString("SELECT uuid, enabled, name, description, delay FROM warnings%1").arg(query_where.count() ? (" WHERE " + query_where.join(" AND ")) : ""))
         && !circuit_attributes.isEmpty()) {
-        QString circuit_attribute, function, value;
-        bool ok1 = true, ok2 = true; double f_circuit_attribute = 0.0, f_value = 0.0;
-        bool skip = false; int id; QStringList used_ids = listVariableIds();
+        QStringList used_ids = listVariableIds();
         for (int i = 0; i < result()->count(); ++i) {
-            id = result()->at(i).value("id").toInt();
-            skip = false;
+            QString id = result()->at(i).value("uuid").toString();
+            bool skip = false;
             WarningFilters warning_filters(id);
             while (warning_filters.next()) {
-                circuit_attribute = circuit_attributes.value(warning_filters.value("circuit_attribute").toString()).toString();
-                function = warning_filters.value("function").toString();
-                value = warning_filters.value("value").toString();
-                f_circuit_attribute = circuit_attribute.toDouble(&ok1);
-                f_value = value.toDouble(&ok2);
+                QString circuit_attribute = circuit_attributes.value(warning_filters.value("circuit_attribute").toString()).toString();
+                QString function = warning_filters.value("function").toString();
+                QString value = warning_filters.value("value").toString();
+                bool ok1 = true, ok2 = true;
+                double f_circuit_attribute = circuit_attribute.toDouble(&ok1);
+                double f_value = value.toDouble(&ok2);
                 if (ok1 && ok2) {
                     if (function == "=" && f_circuit_attribute == f_value) {}
                     else if (function == "!=" && f_circuit_attribute != f_value) {}
@@ -81,24 +80,24 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap &circui
 
 QString Warnings::tr(const char *s) { return QApplication::translate("Warnings", s); }
 
-int Warnings::warningConditionValueInsCount(int id) { return conditions_value_ins.value(id).count(); }
+int Warnings::warningConditionValueInsCount(const QString &uuid) { return conditions_value_ins.value(uuid).count(); }
 
-MTDictionary Warnings::warningConditionValueIns(int id, int i) { return conditions_value_ins.value(id).at(i); }
+MTDictionary Warnings::warningConditionValueIns(const QString &uuid, int i) { return conditions_value_ins.value(uuid).at(i); }
 
-int Warnings::warningConditionValueNomCount(int id) { return conditions_value_nom.value(id).count(); }
+int Warnings::warningConditionValueNomCount(const QString &uuid) { return conditions_value_nom.value(uuid).count(); }
 
-MTDictionary Warnings::warningConditionValueNom(int id, int i) { return conditions_value_nom.value(id).at(i); }
+MTDictionary Warnings::warningConditionValueNom(const QString &uuid, int i) { return conditions_value_nom.value(uuid).at(i); }
 
-int Warnings::warningConditionFunctionCount(int id) { return conditions_functions.value(id).count(); }
+int Warnings::warningConditionFunctionCount(const QString &uuid) { return conditions_functions.value(uuid).count(); }
 
-QString Warnings::warningConditionFunction(int id, int i) { return conditions_functions.value(id).at(i); }
+QString Warnings::warningConditionFunction(const QString &uuid, int i) { return conditions_functions.value(uuid).at(i); }
 
 void Warnings::saveResult()
 {
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    initWarnings(database, result(), 0, -1, enabled_only, m_scope);
+    initWarnings(database, result(), 0, QString(), enabled_only, m_scope);
     QVariantMap row;
     while (query()->next()) {
         if (query()->value(0).toInt() >= 1000) { continue; }
@@ -110,12 +109,12 @@ void Warnings::saveResult()
     }
 }
 
-void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int type, int id, bool enabled_only, int scope)
+void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int type, const QString &id, bool enabled_only, int scope)
 {
     QSqlDatabase database = _database.isValid() ? _database : QSqlDatabase::database(); QString w;
     if (scope == 0 || (scope & Variable::Inspection)) {
         w = "1000";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, before 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -128,7 +127,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1001";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("3 - 10 kg, after 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -141,7 +140,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1002";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, before 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -154,7 +153,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1003";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("10 - 100 kg, after 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -167,7 +166,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1004";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, before 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -179,7 +178,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1005";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage above limit"), tr("above 100 kg, after 2011"), 0, enabled_only);
             } else if (type == 1) {
@@ -191,7 +190,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1100";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
             } else if (type == 2) {
@@ -205,7 +204,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1101";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
             } else if (type == 2) {
@@ -219,7 +218,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1102";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
             } else if (type == 2) {
@@ -233,7 +232,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1103";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Condenser fouling"), "", 0, enabled_only);
             } else if (type == 2) {
@@ -247,7 +246,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1104";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Evaporator fouling"), "", 0, enabled_only);
             } else if (type == 2) {
@@ -261,7 +260,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1200";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("3 - 30 kg"), 365, enabled_only);
             } else if (type == 1) {
@@ -271,7 +270,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1202";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("6 - 30 kg, hermetically sealed"), 365, enabled_only);
             } else if (type == 1) {
@@ -281,7 +280,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1204";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg"), 182, enabled_only);
             } else if (type == 1) {
@@ -291,7 +290,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1205";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("30 - 300 kg, leakage detector installed"), 365, enabled_only);
             } else if (type == 1) {
@@ -301,7 +300,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1206";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg"), 91, enabled_only);
             } else if (type == 1) {
@@ -310,7 +309,7 @@ void Warnings::initWarnings(QSqlDatabase _database, ListOfVariantMaps *map, int 
             }
         }
         w = "1207";
-        if (id < 0 || id == w.toInt()) {
+        if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(database, map, w, tr("Needs inspection"), tr("above 300 kg, leakage detector installed"), 182, enabled_only);
             } else if (type == 1) {
@@ -347,11 +346,11 @@ int Warnings::circuitInspectionInterval(const QString &refrigerant, double refri
     return result;
 }
 
-void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps *map, const QString &id, const QString &name, const QString &description, int delay, bool enabled_only)
+void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps *map, const QString &uuid, const QString &name, const QString &description, int delay, bool enabled_only)
 {
     MTSqlQuery query(database);
-    query.prepare("SELECT enabled FROM warnings WHERE id = :id");
-    query.bindValue(":id", id);
+    query.prepare("SELECT enabled FROM warnings WHERE uuid = :uuid");
+    query.bindValue(":uuid", uuid);
     query.exec();
     QVariantMap set;
     if (query.next()) {
@@ -360,40 +359,40 @@ void Warnings::initWarning(QSqlDatabase database, ListOfVariantMaps *map, const 
     } else {
         set.insert("enabled", 1);
     }
-    set.insert("id", id);
+    set.insert("uuid", uuid);
     set.insert("name", name);
     set.insert("description", description);
     set.insert("delay", delay);
     *map << set;
 }
 
-void Warnings::initFilter(ListOfVariantMaps *map, const QString &parent, const QString &circuit_attribute, const QString &function, const QString &value)
+void Warnings::initFilter(ListOfVariantMaps *map, const QString &warning_uuid, const QString &circuit_attribute, const QString &function, const QString &value)
 {
     QVariantMap set;
-    set.insert("parent", parent);
+    set.insert("warning_uuid", warning_uuid);
     set.insert("circuit_attribute", circuit_attribute);
     set.insert("function", function);
     set.insert("value", value);
     *map << set;
 }
 
-void Warnings::initCondition(ListOfVariantMaps *map, const QString &parent, const QString &value_ins, const QString &function, const QString &value_nom)
+void Warnings::initCondition(ListOfVariantMaps *map, const QString &warning_uuid, const QString &value_ins, const QString &function, const QString &value_nom)
 {
     QVariantMap set;
-    set.insert("parent", parent);
+    set.insert("warning_uuid", warning_uuid);
     set.insert("value_ins", value_ins);
     set.insert("function", function);
     set.insert("value_nom", value_nom);
     *map << set;
 }
 
-Warning::Warning(int id, QSqlDatabase db):
-    MTSqlQueryResultBase<QString>(db)
+Warning::Warning(const QString &uuid, QSqlDatabase db):
+    MTSqlQueryResultBase<QString>(db),
+    uuid(uuid)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
-    this->id = id;
-    prepare("SELECT id, enabled, name, description, delay, scope FROM warnings WHERE id = :id");
-    bindValue(":id", id);
+    prepare("SELECT * FROM warnings WHERE uuid = :uuid");
+    bindValue(":uuid", uuid);
     exec();
 }
 
@@ -402,8 +401,8 @@ void Warning::saveResult()
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    Warnings::initWarnings(database, result(), 0, id);
-    if (id >= 1000) { return; }
+    Warnings::initWarnings(database, result(), 0, uuid);
+    if (uuid.toInt() >= 1000) { return; }
     QVariantMap row;
     while (query()->next()) {
         row.clear();
@@ -414,13 +413,13 @@ void Warning::saveResult()
     }
 }
 
-WarningFilters::WarningFilters(int id, QSqlDatabase db):
-    MTSqlQueryResultBase<QString>(db)
+WarningFilters::WarningFilters(const QString &warning_uuid, QSqlDatabase db):
+    MTSqlQueryResultBase<QString>(db),
+    warning_uuid(warning_uuid)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
-    this->id = id;
-    prepare("SELECT parent, circuit_attribute, function, value FROM warnings_filters WHERE parent = :parent");
-    bindValue(":parent", id);
+    prepare("SELECT * FROM warnings_filters WHERE warning_uuid = :warning_uuid");
+    bindValue(":warning_uuid", warning_uuid);
     exec();
 }
 
@@ -429,8 +428,8 @@ void WarningFilters::saveResult()
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    Warnings::initWarnings(database, result(), 1, id);
-    if (id >= 1000) { return; }
+    Warnings::initWarnings(database, result(), 1, warning_uuid);
+    if (warning_uuid.toInt() >= 1000) { return; }
     QVariantMap row;
     while (query()->next()) {
         row.clear();
@@ -441,13 +440,13 @@ void WarningFilters::saveResult()
     }
 }
 
-WarningConditions::WarningConditions(int id, QSqlDatabase db):
-    MTSqlQueryResultBase<QString>(db)
+WarningConditions::WarningConditions(const QString &warning_uuid, QSqlDatabase db):
+    MTSqlQueryResultBase<QString>(db),
+    warning_uuid(warning_uuid)
 {
     database = db.isValid() ? db : QSqlDatabase::database();
-    this->id = id;
-    prepare("SELECT parent, value_ins, function, value_nom FROM warnings_conditions WHERE parent = :parent");
-    bindValue(":parent", id);
+    prepare("SELECT * FROM warnings_conditions WHERE warning_uuid = :warning_uuid");
+    bindValue(":warning_uuid", warning_uuid);
     exec();
 }
 
@@ -456,8 +455,8 @@ void WarningConditions::saveResult()
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    Warnings::initWarnings(database, result(), 2, id);
-    if (id >= 1000) { return; }
+    Warnings::initWarnings(database, result(), 2, warning_uuid);
+    if (warning_uuid.toInt() >= 1000) { return; }
     QVariantMap row;
     while (query()->next()) {
         row.clear();

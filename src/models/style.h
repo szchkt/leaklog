@@ -27,7 +27,7 @@ class Style : public DBRecord
     Q_OBJECT
 
 public:
-    Style(const QString & = QString());
+    Style(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 

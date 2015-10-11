@@ -40,8 +40,8 @@ public:
     ~EditDialogueGroupsLayout();
 
     void addHeaderItem(int, const QString &, const QString &, int);
-    void addItem(const QString &, int, QMap<QString, EditDialogueTableCell *> &, int, bool);
-    EditDialogueAdvancedTable *createGroup(const QString &, int, int);
+    void addItem(const QString &, const QString &, QMap<QString, EditDialogueTableCell *> &, int, bool);
+    EditDialogueAdvancedTable *createGroup(const QString &, const QString &, int);
 
     QList<MTDictionary> allValues();
 

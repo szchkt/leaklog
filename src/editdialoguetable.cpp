@@ -126,7 +126,7 @@ void EditDialogueTable::addRow(EditDialogueTableRow *row)
             break;
 
         case Global::File:
-            iw = new MDTFileChooser(cell->value().toInt(), this);
+            iw = new MDTFileChooser(cell->value().toString(), this);
             break;
 
         default:
@@ -182,10 +182,10 @@ QList<MTDictionary> EditDialogueTable::allValues() const
     return values;
 }
 
-EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, int category_id, const QList<EditDialogueTableCell *> &header, QWidget *parent):
-        EditDialogueTable(name, header, parent)
+EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, const QString &category_uuid, const QList<EditDialogueTableCell *> &header, QWidget *parent):
+    EditDialogueTable(name, header, parent),
+    category_uuid(category_uuid)
 {
-    this->category_id = category_id;
     smallest_index = -1;
 
     layout->addLayout(addRowControlsLayout());
@@ -219,16 +219,16 @@ QLayout *EditDialogueAdvancedTable::addRowControlsLayout()
 
 void EditDialogueAdvancedTable::addHiddenRow(EditDialogueTableRow *row)
 {
-    add_row_cb->addItem(row->value("name"), row->valuesMap().value("item_type_id")->value());
+    add_row_cb->addItem(row->value("name"), row->valuesMap().value("ar_item_type_uuid")->value());
 }
 
 void EditDialogueAdvancedTable::activateRow()
 {
     EditDialogueTableRow *row = NULL;
-    QString type_id = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
+    QString item_type_uuid = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
 
     for (int i = 0; i < rows.count(); ++i) {
-        if (!rows.at(i)->isInTable() && rows.at(i)->value("item_type_id") == type_id) {
+        if (!rows.at(i)->isInTable() && rows.at(i)->value("ar_item_type_uuid") == item_type_uuid) {
             row = rows.at(i);
             break;
         }
@@ -243,11 +243,11 @@ void EditDialogueAdvancedTable::activateRow()
 QList<EditDialogueTableCell *> EditDialogueAdvancedTable::hiddenAttributes()
 {
     QList<EditDialogueTableCell *> attrs;
-    EditDialogueTableCell *cell = new EditDialogueTableCell(category_id);
-    cell->setId("category_id");
+    EditDialogueTableCell *cell = new EditDialogueTableCell(category_uuid);
+    cell->setId("ar_item_category_uuid");
     attrs.append(cell);
     cell = new EditDialogueTableCell(smallest_index--);
-    cell->setId("item_type_id");
+    cell->setId("ar_item_type_uuid");
     attrs.append(cell);
     cell = new EditDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes);
     cell->setId("source");
@@ -257,7 +257,7 @@ QList<EditDialogueTableCell *> EditDialogueAdvancedTable::hiddenAttributes()
 }
 
 EditDialogueBasicTable::EditDialogueBasicTable(const QString &name, const QList<EditDialogueTableCell *> &header, QWidget *parent):
-        EditDialogueTable(name, header, parent)
+    EditDialogueTable(name, header, parent)
 {
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
@@ -267,8 +267,8 @@ EditDialogueBasicTable::EditDialogueBasicTable(const QString &name, const QList<
     title_layout->addWidget(add_btn);
 }
 
-EditDialogueTableWithAdjustableTotal::EditDialogueTableWithAdjustableTotal(const QString &name, int category_id, const QList<EditDialogueTableCell *> &header, QWidget *parent):
-    EditDialogueAdvancedTable(name, category_id, header, parent)
+EditDialogueTableWithAdjustableTotal::EditDialogueTableWithAdjustableTotal(const QString &name, const QString &category_uuid, const QList<EditDialogueTableCell *> &header, QWidget *parent):
+    EditDialogueAdvancedTable(name, category_uuid, header, parent)
 {
     total_w = new QDoubleSpinBox(this);
     total_w->setMaximum(99999999.9);
@@ -402,7 +402,7 @@ void EditDialogueTableRow::addWidget(const QString &name, MDTInputWidget *le)
     widgets.insert(name, le);
 }
 
-const MTDictionary EditDialogueTableRow::dictValues() const
+MTDictionary EditDialogueTableRow::dictValues() const
 {
     MTDictionary dict;
     QMapIterator<QString, EditDialogueTableCell *> i(values);
@@ -417,9 +417,9 @@ const MTDictionary EditDialogueTableRow::dictValues() const
     return dict;
 }
 
-const QString EditDialogueTableRow::itemTypeId() const
+QString EditDialogueTableRow::itemTypeUUID() const
 {
-    return values.value("item_type_id")->value().toString();
+    return values.value("ar_item_type_uuid")->value().toString();
 }
 
 void EditDialogueTableRow::remove()
@@ -471,7 +471,7 @@ QToolButton *EditDialogueTableRow::removeButton()
     return remove_btn;
 }
 
-const QString EditDialogueTableRow::value(const QString &name) const
+QString EditDialogueTableRow::value(const QString &name) const
 {
     if (values.contains(name))
         return values.value(name)->value().toString();

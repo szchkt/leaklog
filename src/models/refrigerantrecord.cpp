@@ -28,8 +28,8 @@
 
 using namespace Global;
 
-RefrigerantRecord::RefrigerantRecord(const QString &date):
-    DBRecord(tableName(), "date", date, MTDictionary())
+RefrigerantRecord::RefrigerantRecord(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
@@ -60,16 +60,66 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+}
+
+QString RefrigerantRecord::date()
+{
+    return stringValue("date");
+}
+
+QString RefrigerantRecord::partner()
+{
+    return stringValue("partner");
+}
+
+QString RefrigerantRecord::partnerID()
+{
+    return stringValue("partner_id");
+}
+
+QString RefrigerantRecord::refrigerant()
+{
+    return stringValue("refrigerant");
+}
+
+double RefrigerantRecord::purchased()
+{
+    return doubleValue("purchased");
+}
+
+double RefrigerantRecord::purchasedRecovered()
+{
+    return doubleValue("purchased_reco");
+}
+
+double RefrigerantRecord::sold()
+{
+    return doubleValue("sold");
+}
+
+double RefrigerantRecord::soldRecovered()
+{
+    return doubleValue("sold_reco");
+}
+
+double RefrigerantRecord::regenerated()
+{
+    return doubleValue("refr_rege");
+}
+
+double RefrigerantRecord::disposedOf()
+{
+    return doubleValue("refr_disp");
+}
+
+double RefrigerantRecord::leaked()
+{
+    return doubleValue("leaked");
+}
+
+double RefrigerantRecord::leakedRecovered()
+{
+    return doubleValue("leaked_reco");
 }
 
 QString RefrigerantRecord::tableName()

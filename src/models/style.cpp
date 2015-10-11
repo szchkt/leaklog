@@ -24,8 +24,8 @@
 
 #include <QApplication>
 
-Style::Style(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+Style::Style(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void Style::initEditDialogue(EditDialogueWidgets *md)

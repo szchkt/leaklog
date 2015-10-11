@@ -26,6 +26,7 @@
 
 #include "editdialoguewidgets.h"
 #include "tabbededitdialogue.h"
+#include "inspectioncompressor.h"
 
 class QTabWidget;
 
@@ -38,17 +39,17 @@ class EditInspectionDialogueCompressors : public QWidget, public EditDialogueAre
 public:
     EditInspectionDialogueCompressors(const QString &, const QString &, const QString &, QWidget *);
 
-    void clearOriginalInspectionDate() { original_inspection_date.clear(); }
+    void clearInspectionUUID() { inspection_uuid.clear(); }
 
-    void save(const QVariant &);
+    void save();
 
 private:
-    InspectionCompressorTab *addTab(int, const QString &);
-    void loadTabs(const QString &);
+    InspectionCompressorTab *addTab(const InspectionCompressor &inspection_compressor, const QString &name);
+    void loadTabs();
 
-    QString customer_id;
-    QString circuit_id;
-    QString original_inspection_date;
+    QString customer_uuid;
+    QString circuit_uuid;
+    QString inspection_uuid;
     QTabWidget *tab_w;
     QList<InspectionCompressorTab *> tabs;
     QList<int> former_ids;
@@ -59,22 +60,16 @@ class InspectionCompressorTab : public QWidget, public EditDialogueWidgets
     Q_OBJECT
 
 public:
-    InspectionCompressorTab(int, QWidget *);
+    InspectionCompressorTab(const InspectionCompressor &inspection_compressor, QWidget *);
     void init(const QVariantMap & = QVariantMap());
 
     void setWindowTitle(const QString &) {}
-    bool save(const QString &, const QString &, const QString &, const QString &);
+    bool save();
 
     QWidget *widget() { return this; }
 
-    int id() { return m_id; }
-
-    void setRecordId(int record_id) { m_record_id = record_id; }
-    int recordId() { return m_record_id; }
-
 private:
-    int m_id;
-    int m_record_id;
+    InspectionCompressor inspection_compressor;
 };
 
 #endif // EDIT_INSPECTION_DIALOGUE_COMPRESSORS_H

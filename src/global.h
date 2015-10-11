@@ -104,12 +104,12 @@ namespace Global {
     MTDictionary listAssemblyRecordTypes();
     MTDictionary listAllVariables();
     MTDictionary listDataTypes();
-    MTDictionary listOperators(const QString &);
+    MTDictionary listOperators(const QString &customer_uuid);
     MTDictionary listStyles();
     QStringList listVariableIds(bool = false);
     QStringList listSupportedFunctions();
     // Data types
-    enum DataTypes {
+    enum DataType {
         String = 0,
         Integer = 1,
         Numeric = 2,

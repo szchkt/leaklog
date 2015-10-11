@@ -24,8 +24,12 @@
 
 #include <QApplication>
 
-AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &record_type_id):
-    MTRecord(tableName(), "", "", record_type_id.isEmpty() ? MTDictionary() : MTDictionary("record_type_id", record_type_id))
+AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
+{}
+
+AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const MTDictionary &parents):
+    MTRecord(tableName(), "uuid", QString(), parents)
 {}
 
 QString AssemblyRecordTypeCategory::tableName()
@@ -38,8 +42,8 @@ class AssemblyRecordTypeCategoryColumns
 public:
     AssemblyRecordTypeCategoryColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
-        columns << Column("item_type_uuid", "UUID");
-        columns << Column("item_category_uuid", "UUID");
+        columns << Column("ar_type_uuid", "UUID");
+        columns << Column("ar_item_category_uuid", "UUID");
         columns << Column("position", "INTEGER");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
@@ -58,8 +62,8 @@ class AssemblyRecordTypeCategoryAttributes
 {
 public:
     AssemblyRecordTypeCategoryAttributes() {
-        dict.insert("record_type_id", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record type ID"));
-        dict.insert("record_category_id", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record category type ID"));
+        dict.insert("ar_type_uuid", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record type ID"));
+        dict.insert("ar_item_category_uuid", QApplication::translate("AssemblyRecordTypeCategory", "Assembly record category type ID"));
     }
 
     MTDictionary dict;

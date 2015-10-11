@@ -21,15 +21,26 @@
 #define ASSEMBLYRECORDITEMTYPE_H
 
 #include "dbrecord.h"
+#include "global.h"
 
 class AssemblyRecordItemType : public DBRecord
 {
     Q_OBJECT
 
 public:
-    AssemblyRecordItemType(const QString &);
+    AssemblyRecordItemType(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString name();
+    double acquisitionPrice();
+    double listPrice();
+    int ean();
+    QString unit();
+    QString inspectionVariableID();
+    Global::DataType valueDataType();
+    double discount();
+    bool autoShow();
 
     static QString tableName();
     static const ColumnList &columns();

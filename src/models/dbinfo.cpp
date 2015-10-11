@@ -28,7 +28,7 @@
 using namespace Global;
 
 DBInfo::DBInfo(const QString &key):
-    DBRecord(tableName(), "id", key, MTDictionary())
+    DBRecord(tableName(), "id", key)
 {}
 
 QString DBInfo::valueForKey(const QString &key, const QString &default_value, const QSqlDatabase &database)

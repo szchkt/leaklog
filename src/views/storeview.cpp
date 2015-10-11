@@ -37,7 +37,7 @@ StoreView::StoreView(ViewTabSettings *settings):
 QString StoreView::renderHTML()
 {
     QString html; MTTextStream out(&html);
-    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company"));
+    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company_uuid"));
     QVariantMap serv_company = serv_company_record.list();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
@@ -50,11 +50,7 @@ QString StoreView::renderHTML()
         if (serv_company.value(key).toString().isEmpty()) continue;
         out << "<num_attr>" << num_valid << "</num_attr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << ServiceCompany::attributes().value(n) << "&nbsp;</td>";
-        if (key == "id") {
-            out << "<td>" << formatCompanyID(serv_company.value(key)) << "</td></tr>";
-        } else {
-            out << "<td>" << MTVariant(serv_company.value(key), key) << "</td></tr>";
-        }
+        out << "<td>" << MTVariant(serv_company.value(key), key) << "</td></tr>";
         num_valid++;
     }
     if (num_valid != 0) {

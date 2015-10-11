@@ -19,8 +19,12 @@
 
 #include "warningfilter.h"
 
-WarningFilter::WarningFilter(const QString &parent):
-    DBRecord(tableName(), "", "", MTDictionary("parent", parent))
+WarningFilter::WarningFilter(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
+{}
+
+WarningFilter::WarningFilter(const MTDictionary &parents):
+    DBRecord(tableName(), "uuid", QString(), parents)
 {}
 
 QString WarningFilter::tableName()

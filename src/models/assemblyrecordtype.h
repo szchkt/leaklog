@@ -22,6 +22,9 @@
 
 #include "dbrecord.h"
 
+class AssemblyRecordTypeCategory;
+class Style;
+
 class AssemblyRecordType : public DBRecord
 {
     Q_OBJECT
@@ -36,9 +39,17 @@ public:
         ShowCircuitUnits = 32
     };
 
-    AssemblyRecordType(const QString &);
+    AssemblyRecordType(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString name();
+    QString description();
+    DisplayOptions displayOptions();
+    QString nameFormat();
+    Style style();
+
+    AssemblyRecordTypeCategory typeCategories();
 
     static QString tableName();
     static const ColumnList &columns();

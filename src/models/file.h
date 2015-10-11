@@ -25,7 +25,7 @@
 class File : public MTRecord
 {
 public:
-    File(const QString &);
+    File(const QString &uuid = QString());
 
     static QString tableName();
     static const ColumnList &columns();

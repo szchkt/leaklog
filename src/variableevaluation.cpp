@@ -31,14 +31,15 @@ VariableEvaluation::EvaluationContext::EvaluationContext(int vars_scope):
     init();
 }
 
-VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_id, const QString &circuit_id, int vars_scope):
-    customer_id(customer_id),
-    circuit_id(circuit_id),
+VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_uuid, const QString &circuit_uuid, int vars_scope):
+    customer_id(customer_uuid),
+    circuit_id(circuit_uuid),
     vars_scope(vars_scope)
 {
-    circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
-    persons = Person("", customer_id).mapAll("id", "name");
-    inspectors = Inspector("").mapAll("id", "person");
+    circuit = MTRecord("circuits", "uuid", circuit_uuid, {"customer_uuid", customer_uuid}).list("*, " + circuitRefrigerantAmountQuery());
+    persons = Customer(customer_uuid).persons().mapAll("uuid", "name");
+    inspectors = Inspector().mapAll("uuid", "person");
+    ar_types = AssemblyRecordType().mapAll("uuid", "name");
 
     init();
 }
@@ -114,11 +115,13 @@ QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVari
     QString ins_value = inspection.value(id()).toString();
 
     if (value().isEmpty()) {
-        if (!ins_value.isEmpty() && ins_value.toInt()) {
-            if (id() == "inspector")
-                ins_value = context.inspectors.value(ins_value).value("person", ins_value).toString();
-            else if (id() == "operator")
-                ins_value = context.persons.value(ins_value).value("name", ins_value).toString();
+        if (!ins_value.isEmpty()) {
+            if (id() == "inspector_uuid")
+                ins_value = context.inspectors.value(ins_value).value("person").toString();
+            else if (id() == "person_uuid")
+                ins_value = context.persons.value(ins_value).value("name").toString();
+            else if (id() == "ar_type_uuid")
+                ins_value = context.ar_types.value(ins_value).value("name").toString();
         }
 
         if (compareNom()) {

@@ -22,10 +22,11 @@
 
 #include "dbrecord.h"
 
-class InspectionsCompressor : public MTRecord
+class InspectionCompressor : public MTRecord
 {
 public:
-    InspectionsCompressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+    InspectionCompressor(const QString &uuid = QString());
+    InspectionCompressor(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

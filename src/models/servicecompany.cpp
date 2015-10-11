@@ -24,8 +24,8 @@
 
 #include <QApplication>
 
-ServiceCompany::ServiceCompany(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+ServiceCompany::ServiceCompany(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
@@ -41,17 +41,7 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), attributes.value("website").toString()));
-    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), attributes.value("image").toInt()));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM service_companies" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), attributes.value("image_file_uuid").toString()));
 }
 
 QString ServiceCompany::tableName()

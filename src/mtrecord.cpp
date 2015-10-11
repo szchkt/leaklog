@@ -31,8 +31,7 @@ MTRecord::MTRecord(const QString &table, const QString &id_field, const QString 
     r_id_field(id_field),
     r_id(id),
     r_parents(parents),
-    r_order(true),
-    r_serial_id(false)
+    r_order(true)
 {}
 
 MTRecord::MTRecord(const MTRecord &other)
@@ -42,11 +41,10 @@ MTRecord::MTRecord(const MTRecord &other)
     r_id = other.r_id;
     r_joins = other.r_joins;
     r_parents = other.r_parents;
-    r_custom_where = other.r_custom_where;
+    r_predicate = other.r_predicate;
     r_filter = other.r_filter;
     r_values = other.r_values;
     r_order = other.r_order;
-    r_serial_id = other.r_serial_id;
 }
 
 MTRecord &MTRecord::operator=(const MTRecord &other)
@@ -56,11 +54,10 @@ MTRecord &MTRecord::operator=(const MTRecord &other)
     r_id = other.r_id;
     r_joins = other.r_joins;
     r_parents = other.r_parents;
-    r_custom_where = other.r_custom_where;
+    r_predicate = other.r_predicate;
     r_filter = other.r_filter;
     r_values = other.r_values;
     r_order = other.r_order;
-    r_serial_id = other.r_serial_id;
     return *this;
 }
 
@@ -79,7 +76,7 @@ bool MTRecord::exists()
 
 MTSqlQuery MTRecord::select(const QString &fields, Qt::SortOrder order)
 {
-    return select(fields, QString("%1 %2").arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+    return select(fields, QString("%1.%2 %3").arg(r_table.split(' ').first()).arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
 }
 
 MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
@@ -90,7 +87,7 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
     QString select = "SELECT " + fields + " FROM " + r_table;
     if (!r_joins.isEmpty())
         select.append(" " + r_joins.join(" "));
-    if (has_id || r_parents.count() || r_filter.count() || !r_custom_where.isEmpty()) { select.append(" WHERE "); }
+    if (has_id || r_parents.count() || r_filter.count() || !r_predicate.isEmpty()) { select.append(" WHERE "); }
     if (has_id) { select.append(r_id_field + " = :_id"); }
     for (i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { select.append(" AND "); }
@@ -103,9 +100,9 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
         else
             select.append(QString(is_remote ? "%1::text LIKE :_filter%2" : "%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
     }
-    if (!r_custom_where.isEmpty()) {
+    if (!r_predicate.isEmpty()) {
         if (has_id || r_parents.count() || i) { select.append(" AND "); }
-        select.append(r_custom_where);
+        select.append(r_predicate);
     }
     if (!r_id_field.isEmpty() && !order_by.isEmpty() && r_order)
         select.append(QString(" ORDER BY %1").arg(order_by));
@@ -125,7 +122,7 @@ MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by)
 
 QVariantMap MTRecord::list(const QString &fields, bool refresh)
 {
-    return list(fields, QString("%1 ASC").arg(r_id_field), refresh);
+    return list(fields, QString("%1.%2 ASC").arg(r_table.split(' ').first()).arg(r_id_field), refresh);
 }
 
 QVariantMap MTRecord::list(const QString &fields, const char *order_by, bool refresh)
@@ -209,19 +206,21 @@ MultiMapOfVariantMaps MTRecord::mapAll(const QString &map_to, const QString &fie
     return map;
 }
 
-bool MTRecord::update(const QString &field, const QVariant &value, bool add_columns, bool force_update)
+bool MTRecord::update(const QString &field, const QVariant &value, bool add_columns, UpdatePolicy update_policy)
 {
     QVariantMap set;
     set.insert(field, value);
-    return update(set, add_columns, force_update);
+    return update(set, add_columns, update_policy);
 }
 
-bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_update)
+bool MTRecord::update(const QVariantMap &values, bool add_columns, UpdatePolicy update_policy)
 {
     bool has_id = !r_id.isEmpty();
     QString update;
     QSqlDatabase db = QSqlDatabase::database();
     QVariantMap set(values);
+    if (!has_id && update_policy == InsertOrUpdate && r_id_field == "uuid" && !set.contains("uuid"))
+        set.insert("uuid", createUUID());
     if (!set.contains("date_updated"))
         set.insert("date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     if (!set.contains("updated_by"))
@@ -236,8 +235,11 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
         }
         i.toFront();
     }
-    if (has_id && !exists()) { has_id = false; }
-    if (has_id || force_update) {
+    if ((has_id || update_policy == UpdateIfExists) && !exists()) {
+        has_id = false;
+        update_policy = InsertOrUpdate;
+    }
+    if (has_id || update_policy != InsertOrUpdate) {
         update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
             update.append(i.key() + " = :" + i.key());
@@ -265,7 +267,7 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
             update.append(r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field) && !r_id_field.isEmpty() && !r_serial_id) {
+        if (!r_id.isEmpty() && !r_id_field.isEmpty() && !set.contains(r_id_field)) {
             if (append_comma) { update.append(", "); }
             update.append(r_id_field);
         }
@@ -283,7 +285,7 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
             update.append(":_" + r_parents.key(p));
             append_comma = true;
         }
-        if (!set.contains(r_id_field) && !r_id_field.isEmpty() && !r_serial_id) {
+        if (!r_id.isEmpty() && !r_id_field.isEmpty() && !set.contains(r_id_field)) {
             if (append_comma) { update.append(", "); }
             update.append(":_id");
         }
@@ -293,10 +295,10 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
     if (!query.prepare(update)) {
         qDebug() << query.lastError();
     }
-    if ((has_id || (!set.contains(r_id_field) && !r_serial_id && !force_update)) && !r_id_field.isEmpty())
+    if (has_id || (update_policy == InsertOrUpdate && !r_id.isEmpty() && !r_id_field.isEmpty() && !set.contains(r_id_field)))
         query.bindValue(":_id", r_id);
     for (int p = 0; p < r_parents.count(); ++p) {
-        if (!has_id && !force_update && set.contains(r_parents.key(p)))
+        if (!has_id && update_policy == InsertOrUpdate && set.contains(r_parents.key(p)))
             continue;
         query.bindValue(":_" + r_parents.key(p), r_parents.value(p));
     }
@@ -316,13 +318,17 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns, bool force_up
 
 bool MTRecord::remove()
 {
-    if (r_id.isEmpty() && r_parents.isEmpty()) { return false; }
+    if (r_id.isEmpty() && r_parents.isEmpty() && r_predicate.isEmpty()) { return false; }
     bool has_id = !r_id.isEmpty();
     QString remove = "DELETE FROM " + r_table + " WHERE ";
     if (has_id) { remove.append(r_id_field + " = :_id"); }
     for (int i = 0; i < r_parents.count(); ++i) {
         if (has_id || i) { remove.append(" AND "); }
         remove.append(r_parents.key(i) + " = :" + r_parents.key(i));
+    }
+    if (!r_predicate.isEmpty()) {
+        if (has_id || r_parents.count()) { remove.append(" AND "); }
+        remove.append(r_predicate);
     }
     MTSqlQuery query;
     if (!query.prepare(remove)) {

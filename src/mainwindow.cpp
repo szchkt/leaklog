@@ -275,9 +275,6 @@ MainWindow::MainWindow():
     QObject::connect(actionAdd_inspector, SIGNAL(triggered()), this, SLOT(addInspector()));
     QObject::connect(actionEdit_inspector, SIGNAL(triggered()), this, SLOT(editInspector()));
     QObject::connect(actionRemove_inspector, SIGNAL(triggered()), this, SLOT(removeInspector()));
-    QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
-    QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
-    QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
     QObject::connect(actionImport_data, SIGNAL(triggered()), this, SLOT(importData()));
     QObject::connect(actionImport_CSV, SIGNAL(triggered()), this, SLOT(importCSV()));
     QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
@@ -560,19 +557,20 @@ void MainWindow::printLabel(bool detailed)
     }
     if (!ok) { return; }
 
-    QString selected_inspector = m_tab->selectedInspector();
+    QString selected_inspector_uuid = m_tab->selectedInspectorUUID();
     QVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", formatCompanyID(m_tab->selectedCustomer()) + "." + m_tab->selectedCircuit().rightJustified(5, '0'));
-        Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-        attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery()
-                                      + ", hermetic, leak_detector, inspection_interval"));
+        Customer customer(m_tab->selectedCustomerUUID());
+        Circuit circuit(m_tab->selectedCircuitUUID());
+        circuit.readValues("id, refrigerant, " + circuitRefrigerantAmountQuery()
+                           + ", hermetic, leak_detector, inspection_interval");
+        attributes.insert("circuit_id", customer.companyID() + "." + circuit.circuitID());
+        attributes.unite(circuit.list());
 
         MTSqlQuery query;
-        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id"
+        query.prepare("SELECT * FROM inspections WHERE circuit_uuid = :circuit_uuid"
                       " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
-        query.bindValue(":customer_id", m_tab->selectedCustomer());
-        query.bindValue(":circuit_id", m_tab->selectedCircuit());
+        query.bindValue(":circuit_uuid", m_tab->selectedCircuitUUID());
         query.exec();
         if (query.next()) {
             QVariantMap inspection;
@@ -592,7 +590,7 @@ void MainWindow::printLabel(bool detailed)
                                   QDate::fromString(inspection.value("date").toString().split("-").first(), DATE_FORMAT)
                                   .addDays(inspection_interval).toString(DATE_FORMAT));
 
-            selected_inspector = inspection.value("inspector").toString();
+            selected_inspector_uuid = inspection.value("inspector").toString();
 
             Variable refr_add_per("refr_add_per");
             refr_add_per.next();
@@ -600,22 +598,20 @@ void MainWindow::printLabel(bool detailed)
             if (!unparsed_expression.isEmpty()) {
                 QStringList var_ids = listVariableIds();
                 attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids),
-                                                                     m_tab->selectedCustomer(), m_tab->selectedCircuit()));
+                                                                     m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID()));
             }
         }
     }
 
-    Inspector inspector(selected_inspector);
+    Inspector inspector(selected_inspector_uuid);
     if (inspector.exists()) {
-        attributes.insert("inspector", selected_inspector.rightJustified(4, '0'));
-        attributes.unite(inspector.list("person"));
+        attributes.unite(inspector.list("certificate_number, person"));
     }
 
-    QString default_service_company = DBInfo::valueForKey("default_service_company");
-    ServiceCompany service_company(default_service_company);
+    ServiceCompany service_company(DBInfo::valueForKey("default_service_company_uuid"));
     if (service_company.exists()) {
-        attributes.insert("id", formatCompanyID(default_service_company));
-        attributes.unite(service_company.list("name, address, mail, phone"));
+        attributes.unite(service_company.list("id, name, address, mail, phone"));
+        attributes.insert("id", attributes.value("id").toString());
     }
 
     QApplication::processEvents();
@@ -701,7 +697,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawLine(x + (w / 3), y + title_h + (4 * h / 7), x + (2 * w / 3), y + title_h + (4 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (5 * h / 7), x + (2 * w / 3), y + title_h + (5 * h / 7));
 
-    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("inspector").toString());
+    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("certificate_number").toString());
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
     painter.drawText(m + x + (w / 2), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("id").toString());
 

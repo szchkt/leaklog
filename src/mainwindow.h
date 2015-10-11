@@ -72,9 +72,9 @@ public:
 
 signals:
     void databaseModified();
-    void tablesChanged(const QStringList &);
-    void tableAdded(int index, const QString &);
-    void tableRemoved(const QString &);
+    void tablesChanged(const MTDictionary &);
+    void tableAdded(int index, const QString &uuid, const QString &name);
+    void tableRemoved(const QString &uuid);
 
 public slots:
     void enableTools();
@@ -84,7 +84,7 @@ public slots:
 
     void editServiceCompany();
     void addRefrigerantRecord();
-    void editRefrigerantRecord(const QString &);
+    void editRefrigerantRecord(const QString &uuid);
 
     void addCustomer();
     void editCustomer();
@@ -102,7 +102,7 @@ public slots:
     void addInspection();
     void editInspection();
     void duplicateInspection();
-    void removeInspection(const QString &date = QString());
+    void removeInspection(const QString &uuid = QString());
     void skipInspection();
 
     void addRepair();
@@ -133,10 +133,6 @@ public slots:
     void addInspector();
     void editInspector();
     void removeInspector();
-
-    void exportCustomerData();
-    void exportCircuitData();
-    void exportInspectionData();
 
     void importData();
     void importCSV();
@@ -247,7 +243,6 @@ private:
     void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());
     void addVariable(bool);
     void moveTableVariable(bool);
-    void exportData(const QString &);
 
     QAction *actionShow_icons_only;
     QToolButton *tbtn_open;

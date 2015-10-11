@@ -27,9 +27,18 @@ class Table : public DBRecord
     Q_OBJECT
 
 public:
-    Table(const QString &, const QString & = QString(), const MTDictionary & = MTDictionary());
+    Table(const QString &uuid = QString());
+    Table(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString name();
+    int position();
+    bool highlightNominal();
+    int scope();
+    QStringList variables();
+    QStringList summedVariables();
+    QStringList averagedVariables();
 
     static QString tableName();
     static const ColumnList &columns();

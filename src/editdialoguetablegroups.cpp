@@ -45,11 +45,11 @@ void EditDialogueGroupsLayout::addHeaderItem(int id, const QString &name, const 
     header_items.append(new EditDialogueGroupHeaderItem(id, name, full_name, data_type));
 }
 
-void EditDialogueGroupsLayout::addItem(const QString &group_name, int category_id, QMap<QString, EditDialogueTableCell *> &values, int category_display, bool display)
+void EditDialogueGroupsLayout::addItem(const QString &group_name, const QString &category_uuid, QMap<QString, EditDialogueTableCell *> &values, int category_display, bool display)
 {
     EditDialogueAdvancedTable *group_box;
     if (!groups->contains(group_name)) {
-        group_box = createGroup(group_name, category_id, category_display);
+        group_box = createGroup(group_name, category_uuid, category_display);
     } else {
         group_box = groups->value(group_name);
     }
@@ -57,7 +57,7 @@ void EditDialogueGroupsLayout::addItem(const QString &group_name, int category_i
     group_box->addRow(values, display);
 }
 
-EditDialogueAdvancedTable *EditDialogueGroupsLayout::createGroup(const QString &group_name, int category_id, int display_options)
+EditDialogueAdvancedTable *EditDialogueGroupsLayout::createGroup(const QString &group_name, const QString &category_uuid, int display_options)
 {
     int show_prices = 0;
 
@@ -74,10 +74,12 @@ EditDialogueAdvancedTable *EditDialogueGroupsLayout::createGroup(const QString &
 
     EditDialogueAdvancedTable *group_box;
 
-    if (category_id == INSPECTORS_CATEGORY_ID && show_prices > 1)
-        group_box = new EditDialogueTableWithAdjustableTotal(group_name, category_id, cells, this);
-    else
-        group_box = new EditDialogueAdvancedTable(group_name, category_id, cells, this);
+    if (category_uuid == INSPECTORS_CATEGORY_UUID && show_prices > 1) {
+        group_box = new EditDialogueTableWithAdjustableTotal(group_name, category_uuid, cells, this);
+    } else {
+        group_box = new EditDialogueAdvancedTable(group_name, category_uuid, cells, this);
+    }
+
     groups->insert(group_name, group_box);
     layout->addWidget(group_box);
     return group_box;

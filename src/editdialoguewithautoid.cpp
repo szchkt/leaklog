@@ -9,9 +9,9 @@ void EditDialogueWithAutoId::save()
     MDAbstractInputWidget *id_iw = inputWidget(record()->idField());
     QString id = id_iw->variantValue().toString();
     if (id.isEmpty()) {
-        MTRecord rec(record()->table(), record()->idField(), "", MTDictionary());
+        MTRecord rec(record()->table(), record()->idField(), "");
         if (m_max_id > 0)
-            rec.setCustomWhere(QString("id < %1").arg(m_max_id));
+            rec.setPredicate(QString("id < %1").arg(m_max_id));
 
         qlonglong next_id = rec.max("id") + (qint64)1;
         if (m_max_id > 0 && next_id > m_max_id)

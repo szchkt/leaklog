@@ -372,7 +372,7 @@ class MDFileChooser : public DBFileChooser, public MDInputWidget
     Q_OBJECT
 
 public:
-    MDFileChooser(const QString &, const QString &, QWidget *, int);
+    MDFileChooser(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue() const;
     void setVariantValue(const QVariant &) {}

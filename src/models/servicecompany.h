@@ -27,7 +27,7 @@ class ServiceCompany : public DBRecord
     Q_OBJECT
 
 public:
-    ServiceCompany(const QString &);
+    ServiceCompany(const QString &uuid);
 
     void initEditDialogue(EditDialogueWidgets *);
 

@@ -23,6 +23,10 @@
 #include "dbrecord.h"
 
 class MTCheckBox;
+class Customer;
+class Circuit;
+class InspectionCompressor;
+class InspectionImage;
 
 class Inspection : public DBRecord
 {
@@ -40,13 +44,27 @@ public:
     static QString tableName();
     static const ColumnList &columns();
 
-    Inspection();
-    Inspection(const QString &, const QString &, const QString &);
-    Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
+    Inspection(const QString &uuid = QString());
+    Inspection(const MTDictionary &parents);
+    Inspection(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
 
     int scope() { return m_scope; }
+
+    QString customerUUID();
+    Customer customer();
+    QString circuitUUID();
+    Circuit circuit();
+    QString date();
+    bool isNominal();
+    bool isRepair();
+    bool isOutsideInterval();
+    Type type();
+    QString typeData();
+
+    InspectionCompressor compressors();
+    InspectionImage images();
 
 public slots:
     void showSecondNominalInspectionWarning(MTCheckBox *, bool);

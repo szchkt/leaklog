@@ -91,3 +91,13 @@ DBRecord::DBRecord(const QString &type, const QString &id_field, const QString &
     QObject(),
     MTRecord(type, id_field, id, parents)
 {}
+
+QString DBRecord::dateUpdated()
+{
+    return stringValue("date_updated");
+}
+
+QString DBRecord::updatedBy()
+{
+    return stringValue("updated_by");
+}

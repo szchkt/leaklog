@@ -27,8 +27,12 @@
 
 using namespace Global;
 
-Repair::Repair(const QString &date):
-    DBRecord(tableName(), "date", date, MTDictionary())
+Repair::Repair(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
+{}
+
+Repair::Repair(const MTDictionary &parents):
+    DBRecord(tableName(), "uuid", QString(), parents)
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
@@ -44,18 +48,18 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
             attributes.insert(parents().key(i), parents().value(i));
         }
     }
-    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
+    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
     if (DBInfo::isDatabaseLocked())
         date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     md->addInputWidget(date);
     MDLineEdit *customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
-    if (!attributes.value("parent").toString().isEmpty())
+    if (!attributes.value("customer_uuid").toString().isEmpty())
         customer->setEnabled(false);
     md->addInputWidget(customer);
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    MDComboBox *repairman = new MDComboBox("repairman", tr("Inspector:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
+    MDComboBox *repairman = new MDComboBox("inspector_uuid", tr("Inspector:"), md->widget(), attributes.value("inspector_uuid").toString(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), attributes.value("arno").toString()));
@@ -72,6 +76,61 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
+}
+
+QString Repair::customerUUID()
+{
+    return stringValue("customer_uuid");
+}
+
+QString Repair::inspectorUUID()
+{
+    return stringValue("inspector_uuid");
+}
+
+QString Repair::date()
+{
+    return stringValue("date");
+}
+
+QString Repair::customer()
+{
+    return stringValue("customer");
+}
+
+QString Repair::device()
+{
+    return stringValue("device");
+}
+
+QString Repair::field()
+{
+    return stringValue("field");
+}
+
+QString Repair::refrigerant()
+{
+    return stringValue("refrigerant");
+}
+
+double Repair::refrigerantAmount()
+{
+    return doubleValue("refrigerant_amount");
+}
+
+double Repair::refrigerantAddition()
+{
+    return doubleValue("refr_add_am");
+}
+
+double Repair::refrigerantRecovery()
+{
+    return doubleValue("refr_reco");
+}
+
+QString Repair::arno()
+{
+    return stringValue("arno");
 }
 
 QString Repair::tableName()

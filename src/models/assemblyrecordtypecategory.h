@@ -25,7 +25,8 @@
 class AssemblyRecordTypeCategory : public MTRecord
 {
 public:
-    AssemblyRecordTypeCategory(const QString & = QString());
+    AssemblyRecordTypeCategory(const QString &uuid = QString());
+    AssemblyRecordTypeCategory(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

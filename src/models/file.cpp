@@ -19,8 +19,8 @@
 
 #include "file.h"
 
-File::File(const QString &file_id):
-    MTRecord(tableName(), "id", file_id, MTDictionary())
+File::File(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
 {}
 
 QString File::tableName()

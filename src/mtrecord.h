@@ -30,7 +30,7 @@ class MTRecord
 {
 public:
     MTRecord() {}
-    MTRecord(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents);
+    MTRecord(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents = MTDictionary());
     MTRecord(const MTRecord &other);
     virtual ~MTRecord() {}
     MTRecord &operator=(const MTRecord &other);
@@ -39,7 +39,6 @@ public:
     void setTable(const QString &table) { r_table = table; }
     void addJoin(const QString &join) { r_joins << join; }
     void setUnordered(bool unordered) { r_order = !unordered; }
-    void setSerialId(bool serial_id) { r_serial_id = serial_id; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline QString &id() { return r_id; }
@@ -76,10 +75,15 @@ public:
     ListOfVariantMaps listAll(const QString &fields = "*", const QString &order_by = QString());
     QVariantMap sumAll(const QString &fields);
     MultiMapOfVariantMaps mapAll(const QString &map_to, const QString &fields = "*");
-    bool update(const QString &field, const QVariant &value, bool add_columns = false, bool force_update = false);
-    bool update(const QVariantMap &values, bool add_columns = false, bool force_update = false);
+    enum UpdatePolicy {
+        InsertOrUpdate,
+        UpdateIfExists,
+        Update
+    };
+    bool update(const QString &field, const QVariant &value, bool add_columns = false, UpdatePolicy update_policy = InsertOrUpdate);
+    bool update(const QVariantMap &values, bool add_columns = false, UpdatePolicy update_policy = InsertOrUpdate);
     virtual bool remove();
-    void setCustomWhere(const QString &where) { r_custom_where = where; }
+    void setPredicate(const QString &predicate) { r_predicate = predicate; }
     qlonglong max(const QString &attr) {
         setUnordered(true);
         return list(QString("MAX(%1) AS max").arg(attr)).value("max").toLongLong();
@@ -91,11 +95,10 @@ private:
     QString r_id;
     QStringList r_joins;
     MTDictionary r_parents;
-    QString r_custom_where;
+    QString r_predicate;
     MTDictionary r_filter;
     QVariantMap r_values;
     bool r_order;
-    bool r_serial_id;
 };
 
 #endif // MTRECORD_H

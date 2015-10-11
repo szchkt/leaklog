@@ -27,9 +27,22 @@ class RefrigerantRecord : public DBRecord
     Q_OBJECT
 
 public:
-    RefrigerantRecord(const QString &);
+    RefrigerantRecord(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString date();
+    QString partner();
+    QString partnerID();
+    QString refrigerant();
+    double purchased();
+    double purchasedRecovered();
+    double sold();
+    double soldRecovered();
+    double regenerated();
+    double disposedOf();
+    double leaked();
+    double leakedRecovered();
 
     static QString tableName();
     static const ColumnList &columns();

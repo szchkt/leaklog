@@ -22,10 +22,16 @@
 
 #include "dbrecord.h"
 
+class Circuit;
+
 class Compressor : public MTRecord
 {
 public:
-    Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+    Compressor(const QString &uuid = QString());
+    Compressor(const MTDictionary &parents);
+
+    QString circuitUUID();
+    Circuit circuit();
 
     static QString tableName();
     static const ColumnList &columns();

@@ -230,11 +230,11 @@ EditDialogue(undo_stack, parent)
     QObject::connect(tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_layout.addWidget(md_conditions, r + 3, 0, 1, 4);
     if (!md_record->id().isEmpty()) {
-        WarningFilters filters(md_record->id().toInt());
+        WarningFilters filters(md_record->id());
         while (filters.next()) {
             md_filters->add(filters.value("circuit_attribute").toString(), filters.value("function").toString(), filters.value("value").toString());
         }
-        WarningConditions conditions(md_record->id().toInt());
+        WarningConditions conditions(md_record->id());
         while (conditions.next()) {
             md_conditions->add(conditions.value("value_ins").toString(), conditions.value("function").toString(), conditions.value("value_nom").toString());
         }

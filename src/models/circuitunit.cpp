@@ -19,8 +19,12 @@
 
 #include "circuitunit.h"
 
-CircuitUnit::CircuitUnit(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
+CircuitUnit::CircuitUnit(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
+{}
+
+CircuitUnit::CircuitUnit(const MTDictionary &parents):
+    MTRecord(tableName(), "uuid", QString(), parents)
 {}
 
 QString CircuitUnit::tableName()

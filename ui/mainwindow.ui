@@ -280,8 +280,6 @@
     <addaction name="actionRemove_customer"/>
     <addaction name="separator"/>
     <addaction name="actionDecommission_all_circuits"/>
-    <addaction name="separator"/>
-    <addaction name="actionExport_customer_data"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -305,8 +303,6 @@
     <addaction name="actionRemove_circuit"/>
     <addaction name="separator"/>
     <addaction name="actionPrint_detailed_label"/>
-    <addaction name="separator"/>
-    <addaction name="actionExport_circuit_data"/>
    </widget>
    <widget class="QMenu" name="menuInspection">
     <property name="title">
@@ -317,8 +313,6 @@
     <addaction name="actionDuplicate_inspection"/>
     <addaction name="actionRemove_inspection"/>
     <addaction name="actionSkip_Inspection"/>
-    <addaction name="separator"/>
-    <addaction name="actionExport_inspection_data"/>
    </widget>
    <widget class="QMenu" name="menuRepair">
     <property name="title">

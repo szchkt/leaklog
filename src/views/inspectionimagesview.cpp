@@ -38,9 +38,9 @@ InspectionImagesView::InspectionImagesView(ViewTabSettings *settings):
 
 QString InspectionImagesView::renderHTML()
 {
-    QString customer_id = settings->selectedCustomer();
-    QString circuit_id = settings->selectedCircuit();
-    QString inspection_date = settings->selectedInspection();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->selectedCircuitUUID();
+    QString inspection_uuid = settings->selectedInspectionUUID();
 
     QString html; MTTextStream out(&html);
 
@@ -51,11 +51,11 @@ QString InspectionImagesView::renderHTML()
         out << "<br>";
     }
 
-    writeCustomersTable(out, customer_id);
+    writeCustomersTable(out, customer_uuid);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id, 8);
+    writeCircuitsTable(out, customer_uuid, circuit_uuid, 8);
 
-    Inspection inspection_record(customer_id, circuit_id, inspection_date);
+    Inspection inspection_record(inspection_uuid);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
@@ -68,17 +68,16 @@ QString InspectionImagesView::renderHTML()
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-         ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
+         ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
     if (nominal) *el << tr("Nominal inspection:");
     else if (repair) *el << tr("Repair:");
     else *el << tr("Inspection:");
-    *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
+    *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_uuid);
 
-    InspectionImage images_record(customer_id, circuit_id, inspection_date);
-    ListOfVariantMaps images = images_record.listAll("*", "file_id");
+    ListOfVariantMaps images = inspection_record.images().listAll("*", "file_uuid");
 
     for (int i = 0; i < images.count(); ++i) {
-        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).data().toBase64();
+        QByteArray byte_array = DBFile(images.at(i).value("file_uuid").toString()).data().toBase64();
         if (!byte_array.isNull()) {
             *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
         }

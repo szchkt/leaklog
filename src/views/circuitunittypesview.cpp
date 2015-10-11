@@ -36,7 +36,7 @@ CircuitUnitTypesView::CircuitUnitTypesView(ViewTabSettings *settings):
 
 QString CircuitUnitTypesView::renderHTML()
 {
-    QString highlighted_id = settings->selectedCircuitUnitType();
+    QString highlighted_uuid = settings->selectedCircuitUnitTypeUUID();
 
     QString html; MTTextStream out(&html);
 
@@ -64,22 +64,19 @@ QString CircuitUnitTypesView::renderHTML()
     thead.append("</tr>");
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Circuit Unit Types") << "</th></tr>";
     out << thead;
-    QString id;
-    MTDictionary categories(listAssemblyRecordItemCategories());
+
     for (int i = 0; i < items.count(); ++i) {
-        id = items.at(i).value("id").toString();
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("circuitunittype:" + id);
-        if (highlighted_id == id)
+        QString uuid = items.at(i).value("uuid").toString();
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("circuitunittype:" + uuid);
+        if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
+        out << " style=\"cursor: pointer;\"><td>" << uuid << "</td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
             if (CircuitUnitType::attributes().key(n) == "location")
                 out << CircuitUnitType::locationToString(items.at(i).value("location").toInt());
             else if (CircuitUnitType::attributes().key(n) == "oil")
                 out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
-            else if (CircuitUnitType::attributes().key(n) == "category_id")
-                out << escapeString(categories.value(items.at(i).value(CircuitUnitType::attributes().key(n)).toString()));
             else if (CircuitUnitType::attributes().key(n) == "output")
                 out << escapeString(QString("%1 %2").arg(items.at(i).value("output").toString()).arg(items.at(i).value("output_unit").toString()));
             else

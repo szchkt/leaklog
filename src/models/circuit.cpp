@@ -29,29 +29,30 @@
 
 using namespace Global;
 
-Circuit::Circuit():
-    DBRecord(tableName(), "id", "", MTDictionary())
+Circuit::Circuit(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
-Circuit::Circuit(const QString &parent, const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary("parent", parent))
+Circuit::Circuit(const MTDictionary &parents):
+    DBRecord(tableName(), "uuid", QString(), parents)
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
-    QString customer = Customer(parent("parent")).stringValue("company");
-    if (customer.isEmpty())
-        customer = formatCompanyID(parent("parent"));
-    md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle()).arg(customer));
+    Customer customer(customerUUID());
+    customer.readValues();
+    md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())
+                       .arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
     QVariantMap attributes;
     if (!id().isEmpty() || !values().isEmpty()) {
         attributes = list();
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999));
+
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999));
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), attributes.value("operation").toString()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), attributes.value("building").toString()));
@@ -79,10 +80,11 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
+
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
-    query_used_ids.bindValue(":parent", parent("parent"));
+    query_used_ids.prepare("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid" + QString(id().isEmpty() ? "" : " AND id <> :id"));
+    query_used_ids.bindValue(":customer_uuid", customerUUID());
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
@@ -112,65 +114,139 @@ bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
     return true;
 }
 
-void Circuit::cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id, bool compressors_and_units)
+QString Circuit::customerUUID()
 {
-    MTSqlQuery update_inspections;
-    if (new_customer_id < 0) {
-        update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-    } else {
-        update_inspections.prepare("UPDATE inspections SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-        update_inspections.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspections.bindValue(":customer_id", customer_id);
-    update_inspections.bindValue(":old_id", old_id);
-    update_inspections.bindValue(":new_id", new_id);
-    update_inspections.exec();
-    MTSqlQuery update_inspections_compressors;
-    if (new_customer_id < 0) {
-        update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-    } else {
-        update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-        update_inspections_compressors.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspections_compressors.bindValue(":customer_id", customer_id);
-    update_inspections_compressors.bindValue(":old_id", old_id);
-    update_inspections_compressors.bindValue(":new_id", new_id);
-    update_inspections_compressors.exec();
-    MTSqlQuery update_inspection_images;
-    if (new_customer_id < 0) {
-        update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-    } else {
-        update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-        update_inspection_images.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspection_images.bindValue(":customer_id", customer_id);
-    update_inspection_images.bindValue(":old_id", old_id);
-    update_inspection_images.bindValue(":new_id", new_id);
-    update_inspection_images.exec();
-    if (compressors_and_units || new_customer_id >= 0) {
-        MTSqlQuery update_compressors;
-        if (new_customer_id < 0) {
-            update_compressors.prepare("UPDATE compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-        } else {
-            update_compressors.prepare("UPDATE compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-            update_compressors.bindValue(":new_customer_id", new_customer_id);
-        }
-        update_compressors.bindValue(":customer_id", customer_id);
-        update_compressors.bindValue(":old_id", old_id);
-        update_compressors.bindValue(":new_id", new_id);
-        update_compressors.exec();
-        MTSqlQuery update_circuit_units;
-        if (new_customer_id < 0) {
-            update_circuit_units.prepare("UPDATE circuit_units SET circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
-        } else {
-            update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_customer_id, circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
-            update_circuit_units.bindValue(":new_customer_id", new_customer_id);
-        }
-        update_circuit_units.bindValue(":customer_id", customer_id);
-        update_circuit_units.bindValue(":old_id", old_id);
-        update_circuit_units.bindValue(":new_id", new_id);
-        update_circuit_units.exec();
-    }
+    return stringValue("customer_uuid");
+}
+
+Customer Circuit::customer()
+{
+    return Customer(customerUUID());
+}
+
+QString Circuit::circuitID()
+{
+    return stringValue("id").rightJustified(5, '0');
+}
+
+QString Circuit::circuitName()
+{
+    return stringValue("name");
+}
+
+bool Circuit::disused()
+{
+    return intValue("disused");
+}
+
+QString Circuit::placeOfOperation()
+{
+    return stringValue("operation");
+}
+
+QString Circuit::building()
+{
+    return stringValue("building");
+}
+
+QString Circuit::device()
+{
+    return stringValue("device");
+}
+
+bool Circuit::hermetic()
+{
+    return intValue("hermetic");
+}
+
+QString Circuit::manufacturer()
+{
+    return stringValue("manufacturer");
+}
+
+QString Circuit::type()
+{
+    return stringValue("type");
+}
+
+QString Circuit::serialNumber()
+{
+    return stringValue("sn");
+}
+
+int Circuit::year()
+{
+    return intValue("year");
+}
+
+QString Circuit::dateOfCommissioning()
+{
+    return stringValue("commissioning");
+}
+
+QString Circuit::dateOfDecommissioning()
+{
+    return stringValue("decommissioning");
+}
+
+QString Circuit::field()
+{
+    return stringValue("field");
+}
+
+QString Circuit::refrigerant()
+{
+    return stringValue("refrigerant");
+}
+
+double Circuit::refrigerantAmount()
+{
+    return doubleValue("refrigerant_amount");
+}
+
+QString Circuit::oil()
+{
+    return stringValue("oil");
+}
+
+double Circuit::oilAmount()
+{
+    return doubleValue("oil_amount");
+}
+
+bool Circuit::leakDetectorInstalled()
+{
+    return intValue("leak_detector");
+}
+
+double Circuit::runtime()
+{
+    return doubleValue("runtime");
+}
+
+double Circuit::utilisation()
+{
+    return doubleValue("utilisation");
+}
+
+int Circuit::inspectionInterval()
+{
+    return intValue("inspection_interval");
+}
+
+Compressor Circuit::compressors()
+{
+    return Compressor({"circuit_uuid", id()});
+}
+
+CircuitUnit Circuit::units()
+{
+    return CircuitUnit({"circuit_uuid", id()});
+}
+
+Inspection Circuit::inspections()
+{
+    return Inspection({"circuit_uuid", id()});
 }
 
 QString Circuit::tableName()

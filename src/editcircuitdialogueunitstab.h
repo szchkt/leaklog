@@ -33,9 +33,9 @@ class EditCircuitDialogueUnitsTab : public EditDialogueTab
     Q_OBJECT
 
 public:
-    EditCircuitDialogueUnitsTab(const QString &, const QString &, QWidget * = NULL);
+    EditCircuitDialogueUnitsTab(const QString &circuit_uuid, QWidget * = NULL);
 
-    void save(const QVariant &);
+    void save();
     QWidget *widget() { return this; }
 
 private slots:
@@ -46,13 +46,13 @@ signals:
     void updateCircuit(MTDictionary);
 
 private:
-    void loadRows(const QString &, const QString &);
+    void loadRows();
     void loadManufacturers();
 
     EditCircuitDialogueTable *table;
     QTreeWidget *tree;
-    QString customer_id;
-    QList<int> former_ids;
+    QString circuit_uuid;
+    QStringList former_ids;
 };
 
 class EditCircuitDialogueTable : public EditDialogueTable

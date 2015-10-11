@@ -27,9 +27,18 @@ class Inspector : public DBRecord
     Q_OBJECT
 
 public:
-    Inspector(const QString &);
+    Inspector(const QString &uuid = QString());
+    Inspector(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
+
+    QString certificateNumber();
+    QString certificateCountry();
+    QString personName();
+    QString mail();
+    QString phone();
+    double listPrice();
+    double acquisitionPrice();
 
     static QString tableName();
     static const ColumnList &columns();

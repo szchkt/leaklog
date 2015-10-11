@@ -37,9 +37,9 @@ public:
     QString title() const;
 
 protected:
-    void writeCustomersTable(MTTextStream &out, const QString &customer_id = QString());
-    HTMLTable *writeCustomersTable(const QString &customer_id, HTMLTable *table = NULL);
-    HTMLTable *customerContactPersons(const QString &, HTMLTable * = NULL);
+    void writeCustomersTable(MTTextStream &out, const QString &customer_uuid = QString());
+    HTMLTable *writeCustomersTable(const QString &customer_uuid, HTMLTable *table = NULL);
+    HTMLTable *customerContactPersons(const QString &customer_uuid, HTMLTable *table = NULL);
 };
 
 #endif // CUSTOMERSVIEW_H

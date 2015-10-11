@@ -36,30 +36,31 @@ AssemblyRecordDetailsView::AssemblyRecordDetailsView(ViewTabSettings *settings):
 
 QString AssemblyRecordDetailsView::renderHTML()
 {
-    QString customer_id = settings->selectedCustomer();
-    QString circuit_id = settings->selectedCircuit();
-    QString inspection_date = settings->selectedInspection();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->selectedCircuitUUID();
+    QString inspection_uuid = settings->selectedInspectionUUID();
 
-    Inspection inspection_record(customer_id, circuit_id, inspection_date);
+    Inspection inspection_record(inspection_uuid);
+    inspection_record.readValues();
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
     bool repair = inspection.value("repair").toInt();
-    bool locked = DBInfo::isRecordLocked(inspection_date);
+    bool locked = DBInfo::isRecordLocked(inspection_record.date());
 
-    VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
     VariableEvaluation::Variable *variable;
     QString nom_value;
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
-    AssemblyRecordType ar_type_record(inspection.value("ar_type").toString());
+    AssemblyRecordType ar_type_record(inspection.value("ar_type_uuid").toString());
     QVariantMap ar_type = ar_type_record.list();
     int type_display_options = ar_type.value("display_options").toInt();
 
     HTMLParent *main = NULL;
 
     QString custom_style;
-    if (ar_type.value("style", -1).toInt() >= 0) {
-        QVariantMap style = Style(ar_type.value("style").toString()).list("content, div_tables");
+    if (!ar_type.value("style_uuid").toString().isEmpty()) {
+        QVariantMap style = Style(ar_type.value("style_uuid").toString()).list("content, div_tables");
         custom_style = style.value("content").toString();
         if (style.value("div_tables").toBool())
             main = new HTMLDivMain();
@@ -86,28 +87,28 @@ QString AssemblyRecordDetailsView::renderHTML()
     QString html;
 
     if (type_display_options & AssemblyRecordType::ShowCustomer) {
-        writeCustomersTable(customer_id, main->table());
+        writeCustomersTable(customer_uuid, main->table());
         main->newLine();
     }
 
     if (type_display_options & AssemblyRecordType::ShowCustomerContactPersons) {
-        customerContactPersons(customer_id, main->table());
+        customerContactPersons(customer_uuid, main->table());
         main->newLine();
     }
 
     if (type_display_options & AssemblyRecordType::ShowCircuit) {
-        writeCircuitsTable(customer_id, circuit_id, 8, main->table("", 8));
+        writeCircuitsTable(customer_uuid, circuit_uuid, 8, main->table("", 8));
         main->newLine();
     }
     *main << html;
 
     if (type_display_options & AssemblyRecordType::ShowCompressors) {
-        circuitCompressorsTable(customer_id, circuit_id, main->table());
+        circuitCompressorsTable(circuit_uuid, main->table());
         main->newLine();
     }
 
     if (type_display_options & AssemblyRecordType::ShowCircuitUnits) {
-        circuitUnitsTable(customer_id, circuit_id, main->table());
+        circuitUnitsTable(circuit_uuid, main->table());
         main->newLine();
     }
 
@@ -116,54 +117,53 @@ QString AssemblyRecordDetailsView::renderHTML()
     top_table->addClass("no_border");
     _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
-        elem = _td->link("customer:" + customer_id + "/circuit:" + circuit_id
-                         + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
+        elem = _td->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid
+                         + (repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
     } else elem = _td;
     if (nominal) *elem << tr("Nominal inspection:"); else if (repair) *elem << tr("Repair:"); else *elem << tr("Inspection:");
-    *elem << "&nbsp;" << inspection_date;
+    *elem << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.value("date"));
 
-    enum QUERY_RESULTS
-    {
-        VALUE = 0,
-        NAME = 1,
-        CATEGORY_ID = 2,
-        CATEGORY_NAME = 3,
-        DISPLAY_OPTIONS = 4,
-        LIST_PRICE = 5,
-        ACQUISITION_PRICE = 6,
-        UNIT = 7,
-        VARIABLE_ID = 8,
-        VALUE_DATA_TYPE = 9,
-        CATEGORY_POSITION = 10,
-        DISCOUNT = 11,
-        ITEM_TYPE_ID = 12
+    enum QUERY_RESULTS {
+        VALUE,
+        NAME,
+        CATEGORY_UUID,
+        CATEGORY_NAME,
+        DISPLAY_OPTIONS,
+        LIST_PRICE,
+        ACQUISITION_PRICE,
+        UNIT,
+        VARIABLE_ID,
+        VALUE_DATA_TYPE,
+        CATEGORY_POSITION,
+        DISCOUNT,
+        ITEM_TYPE_UUID
     };
 
     MTSqlQuery categories_query;
     categories_query.prepare("SELECT assembly_record_items.value, assembly_record_items.name,"
-                             " assembly_record_item_categories.id, assembly_record_item_categories.name,"
+                             " assembly_record_item_categories.uuid, assembly_record_item_categories.name,"
                              " assembly_record_item_categories.display_options, assembly_record_items.list_price,"
                              " assembly_record_items.acquisition_price, assembly_record_items.unit,"
                              " assembly_record_item_types.inspection_variable_id, assembly_record_item_types.value_data_type,"
                              " assembly_record_item_categories.display_position,"
-                             " assembly_record_items.discount, assembly_record_item_types.id"
+                             " assembly_record_items.discount, assembly_record_item_types.uuid"
                              " FROM assembly_record_items"
                              " LEFT JOIN assembly_record_item_types"
-                             " ON assembly_record_items.item_type_id = assembly_record_item_types.id"
+                             " ON assembly_record_items.ar_item_type_uuid = assembly_record_item_types.uuid"
                              " AND assembly_record_items.source = :source"
                              " LEFT JOIN assembly_record_item_categories"
-                             " ON assembly_record_items.category_id = assembly_record_item_categories.id"
+                             " ON assembly_record_items.ar_item_category_uuid = assembly_record_item_categories.uuid"
                              " LEFT JOIN assembly_record_type_categories"
-                             " ON assembly_record_items.category_id = assembly_record_type_categories.record_category_id"
-                             " AND assembly_record_type_categories.record_type_id = :ar_type"
+                             " ON assembly_record_items.ar_item_category_uuid = assembly_record_type_categories.ar_item_category_uuid"
+                             " AND assembly_record_type_categories.ar_type_uuid = :ar_type_uuid"
                              " WHERE arno = :arno ORDER BY assembly_record_type_categories.position,"
-                             " assembly_record_item_types.category_id, assembly_record_item_types.name");
+                             " assembly_record_item_types.ar_item_category_uuid, assembly_record_item_types.name");
     categories_query.bindValue(":source", AssemblyRecordItem::AssemblyRecordItemTypes);
     categories_query.bindValue(":arno", inspection.value("arno").toString());
-    categories_query.bindValue(":ar_type", inspection.value("ar_type").toInt());
+    categories_query.bindValue(":ar_type_uuid", inspection.value("ar_type_uuid").toString());
     categories_query.exec();
 
-    int last_category = -1;
+    QString last_category;
     int num_columns = 6, i, n;
     int colspans[num_columns];
     bool show_list_price = settings->toolBarStack()->isAssemblyRecordListPriceChecked();
@@ -173,7 +173,7 @@ QString AssemblyRecordDetailsView::renderHTML()
     QString colspan = "colspan=\"%1\"";
     QString item_value;
     while (categories_query.next()) {
-        if (last_category != categories_query.value(CATEGORY_ID).toInt()) {
+        if (last_category != categories_query.value(CATEGORY_UUID).toString()) {
             if (categories_query.value(CATEGORY_POSITION).toInt() == AssemblyRecordItemCategory::DisplayAtTop) {
                 table = top_table;
             } else {
@@ -226,13 +226,17 @@ QString AssemblyRecordDetailsView::renderHTML()
                     *_td << tr("Total (%1)").arg(currency);
                 }
             }
-            last_category = categories_query.value(CATEGORY_ID).toInt();
+            last_category = categories_query.value(CATEGORY_UUID).toString();
         }
+
+        QString item_type_uuid = categories_query.value(ITEM_TYPE_UUID).toString();
+
         i = 0; total = 0.0;
         _tr = table->addRow();
         _td = _tr->addCell(colspan.arg(colspans[i]));
-        _td->setId(QString("item_%1_name").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+        _td->setId(QString("item_%1_name").arg(item_type_uuid));
         *_td << categories_query.value(NAME).toString();
+
         if (colspans[++i]) {
             if (categories_query.value(VARIABLE_ID).toString().isEmpty()) {
                 total = categories_query.value(VALUE).toDouble();
@@ -248,34 +252,40 @@ QString AssemblyRecordDetailsView::renderHTML()
             }
             _td = _tr->addCell(colspan.arg(colspans[i]));
             *_td << item_value << " " << categories_query.value(UNIT).toString();
-            _td->setId(QString("item_%1_value").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            _td->setId(QString("item_%1_value").arg(item_type_uuid));
         }
+
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
             *_td << categories_query.value(ACQUISITION_PRICE).toString();
-            _td->setId(QString("item_%1_acquisition_price").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            _td->setId(QString("item_%1_acquisition_price").arg(item_type_uuid));
         }
+
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
-            _td->setId(QString("item_%1_list_price").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            _td->setId(QString("item_%1_list_price").arg(item_type_uuid));
             *_td << categories_query.value(LIST_PRICE).toString();
             total *= categories_query.value(LIST_PRICE).toDouble();
         }
+
         if (colspans[++i]) {
             double total_discount = categories_query.value(DISCOUNT).toDouble();
             total *= 1 - total_discount / 100;
             _td = _tr->addCell(colspan.arg(colspans[i]));
-            _td->setId(QString("item_%1_discount").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            _td->setId(QString("item_%1_discount").arg(item_type_uuid));
             *_td << QString::number(total_discount) << " %";
         }
+
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
-            _td->setId(QString("item_%1_total").arg(categories_query.value(ITEM_TYPE_ID).toInt()));
+            _td->setId(QString("item_%1_total").arg(item_type_uuid));
             *_td << QString::number(total);
         }
+
         absolute_total += total;
         acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
     }
+
     if (show_total) {
         table = top_table;
         _tr = table->addRow();
@@ -310,5 +320,5 @@ QString AssemblyRecordDetailsView::renderHTML()
 
 QString AssemblyRecordDetailsView::title() const
 {
-    return Inspection(settings->selectedCustomer(), settings->selectedCircuit(), settings->selectedInspection()).stringValue("arno");
+    return Inspection(settings->selectedInspectionUUID()).stringValue("arno");
 }

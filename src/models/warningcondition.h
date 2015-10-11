@@ -27,7 +27,8 @@ class WarningCondition : public DBRecord
     Q_OBJECT
 
 public:
-    WarningCondition(const QString &parent);
+    WarningCondition(const QString &uuid = QString());
+    WarningCondition(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

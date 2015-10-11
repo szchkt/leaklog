@@ -52,20 +52,20 @@ QString AgendaView::renderHTML()
 
     QMultiMap<QString, QStringList> next_inspections_map;
 
-    MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
+    MultiMapOfVariantMaps customers(Customer("").mapAll("uuid", "id, company"));
 
-    MTRecord circuits_record("circuits", "id", "", MTDictionary("disused", "0"));
+    MTRecord circuits_record("circuits", "uuid", "", {"disused", "0"});
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    circuits_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
-                            " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
-                            " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
-    circuits_record.addJoin("LEFT JOIN (SELECT i.customer, i.circuit, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
-                            " LEFT JOIN inspections AS j ON i.customer = j.customer AND i.circuit = j.circuit"
+    circuits_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
+                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
+                            " ON ins.circuit_uuid = circuits.uuid");
+    circuits_record.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
+                            " LEFT JOIN inspections AS j ON i.circuit_uuid = j.circuit_uuid"
                             " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
-                            " ON all_ins.customer = circuits.parent AND all_ins.circuit = circuits.id");
-    MTSqlQuery circuits = circuits_record.select("circuits.parent, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
+                            " ON all_ins.circuit_uuid = circuits.uuid");
+    MTSqlQuery circuits = circuits_record.select("circuits.customer_uuid, circuits.uuid, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
                                                  + circuitRefrigerantAmountQuery()
                                                  + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
                                                  " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
@@ -94,7 +94,8 @@ QString AgendaView::renderHTML()
                         circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
                                                 QStringList()
-                                                    << circuits.stringValue("parent")
+                                                    << circuits.stringValue("customer_uuid")
+                                                    << circuits.stringValue("uuid")
                                                     << circuits.stringValue("id")
                                                     << circuits.stringValue("name")
                                                     << circuits.stringValue("operation")
@@ -105,7 +106,8 @@ QString AgendaView::renderHTML()
             }
             next_inspections_map.insert(next_regular_inspection_date,
                                         QStringList()
-                                            << circuits.stringValue("parent")
+                                            << circuits.stringValue("customer_uuid")
+                                            << circuits.stringValue("uuid")
                                             << circuits.stringValue("id")
                                             << circuits.stringValue("name")
                                             << circuits.stringValue("operation")
@@ -126,14 +128,15 @@ QString AgendaView::renderHTML()
 
     QMapIterator<QString, QStringList> i(next_inspections_map);
     while (i.hasNext()) { i.next();
-        QString customer = i.value().value(0);
-        QString circuit = i.value().value(1);
-        QString circuit_name = i.value().value(2);
-        QString operation = i.value().value(3);
-        QString refrigerant = i.value().value(4);
-        QString refrigerant_amount = i.value().value(5);
-        QString last_inspection_date = i.value().value(6);
-        bool reinspection = i.value().value(7).toInt();
+        QString customer_uuid = i.value().value(0);
+        QString circuit_uuid = i.value().value(1);
+        QString circuit_id = i.value().value(2);
+        QString circuit_name = i.value().value(3);
+        QString operation = i.value().value(4);
+        QString refrigerant = i.value().value(5);
+        QString refrigerant_amount = i.value().value(6);
+        QString last_inspection_date = i.value().value(7);
+        bool reinspection = i.value().value(8).toInt();
         qint64 days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         QString next_inspection;
         switch (days_to) {
@@ -151,11 +154,14 @@ QString AgendaView::renderHTML()
         out << next_inspection;
         if (reinspection)
             out << "*</i>";
-        out << "</td><td class=\"" << colour << "\"><a href=\"customer:" << customer << "\">";
-        out << formatCompanyID(customer) << " (" << escapeString(customers.value(customer).value("company").toString()) << ")</a></td>";
-        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer << "/circuit:" << circuit << "\">";
-        out << circuit.rightJustified(5, '0');
-        if (!circuit_name.isEmpty()) { out << " (" << escapeString(circuit_name) << ")"; }
+        out << "</td><td class=\"" << colour << "\"><a href=\"customer:" << customer_uuid << "\">";
+        out << escapeString(customers.value(customer_uuid).value("id").toString());
+        out << " (" << escapeString(customers.value(customer_uuid).value("company").toString()) << ")</a></td>";
+        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
+        out << circuit_id.rightJustified(5, '0');
+        if (!circuit_name.isEmpty()) {
+            out << " (" << escapeString(circuit_name) << ")";
+        }
         out << "</a></td>";
         out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
         out << "<td class=\"" << colour << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
@@ -164,7 +170,7 @@ QString AgendaView::renderHTML()
             << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
         out << "<td class=\"" << colour << "\">";
         if (last_inspection_date.contains("-"))
-            out << "<a href=\"customer:" << customer << "/circuit:" << circuit << "/inspection:"
+            out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/inspection:"
                 << last_inspection_date << "\">" << settings->mainWindowSettings().formatDateTime(last_inspection_date) << "</a>";
         else
             out << settings->mainWindowSettings().formatDate(last_inspection_date);

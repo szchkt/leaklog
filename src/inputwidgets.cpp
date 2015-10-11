@@ -538,8 +538,8 @@ QVariant MDGroupedCheckBoxes::variantValue() const
     return QVariant(value);
 }
 
-MDFileChooser::MDFileChooser(const QString &id, const QString &labeltext, QWidget *parent, int file_id):
-DBFileChooser(parent, file_id),
+MDFileChooser::MDFileChooser(const QString &id, const QString &labeltext, QWidget *parent, const QString &file_uuid):
+DBFileChooser(file_uuid, parent),
 MDInputWidget(id, labeltext, parent, this)
 {
 }

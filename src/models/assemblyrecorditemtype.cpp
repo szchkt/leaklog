@@ -27,8 +27,8 @@
 
 using namespace Global;
 
-AssemblyRecordItemType::AssemblyRecordItemType(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+AssemblyRecordItemType::AssemblyRecordItemType(const QString &uuid):
+    DBRecord(tableName(), "uuid", uuid)
 {}
 
 void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
@@ -42,7 +42,6 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
         attributes = list();
     }
 
-    md->addInputWidget(new MDHiddenIdField("id", md->widget(), attributes.value("id")));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString()));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
@@ -50,20 +49,54 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
     md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md->widget(), 0, 99999999, attributes.value("ean").toInt()));
     md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), attributes.value("auto_show").toBool()));
-    md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md->widget(), attributes.value("category_id").toString(), listAssemblyRecordItemCategories(true)));
+    md->addInputWidget(new MDComboBox("ar_item_category_uuid", tr("Category:"), md->widget(), attributes.value("ar_item_category_uuid").toString(), listAssemblyRecordItemCategories(true)));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), attributes.value("inspection_variable_id").toString(), listAllVariables()));
     md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type").toString(), listDataTypes()));
+}
 
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM assembly_record_item_types" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+QString AssemblyRecordItemType::name()
+{
+    return stringValue("name");
+}
+
+double AssemblyRecordItemType::acquisitionPrice()
+{
+    return doubleValue("acquisition_price");
+}
+
+double AssemblyRecordItemType::listPrice()
+{
+    return doubleValue("list_price");
+}
+
+int AssemblyRecordItemType::ean()
+{
+    return intValue("ean");
+}
+
+QString AssemblyRecordItemType::unit()
+{
+    return stringValue("unit");
+}
+
+QString AssemblyRecordItemType::inspectionVariableID()
+{
+    return stringValue("inspection_variable_id");
+}
+
+Global::DataType AssemblyRecordItemType::valueDataType()
+{
+    return (Global::DataType)intValue("value_data_type");
+}
+
+double AssemblyRecordItemType::discount()
+{
+    return doubleValue("discount");
+}
+
+bool AssemblyRecordItemType::autoShow()
+{
+    return intValue("auto_show");
 }
 
 QString AssemblyRecordItemType::tableName()
@@ -76,7 +109,7 @@ class AssemblyRecordItemTypeColumns
 public:
     AssemblyRecordItemTypeColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
-        columns << Column("item_category_uuid", "UUID");
+        columns << Column("ar_item_category_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("acquisition_price", "NUMERIC");
         columns << Column("list_price", "NUMERIC");
@@ -103,14 +136,13 @@ class AssemblyRecordItemTypeAttributes
 {
 public:
     AssemblyRecordItemTypeAttributes() {
-        dict.insert("id", QApplication::translate("AssemblyRecordItemType", "ID"));
         dict.insert("name", QApplication::translate("AssemblyRecordItemType", "Name"));
         dict.insert("unit", QApplication::translate("AssemblyRecordItemType", "Unit"));
         dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItemType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("AssemblyRecordItemType", "List price"));
         dict.insert("discount", QApplication::translate("AssemblyRecordItemType", "Discount"));
         dict.insert("ean", QApplication::translate("AssemblyRecordItemType", "EAN code"));
-        dict.insert("category_id", QApplication::translate("AssemblyRecordItemType", "Category"));
+        dict.insert("ar_item_category_uuid", QApplication::translate("AssemblyRecordItemType", "Category"));
     }
 
     MTDictionary dict;

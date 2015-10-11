@@ -32,7 +32,7 @@ public:
         Internal = 1
     };
 
-    CircuitUnitType(const QString &);
+    CircuitUnitType(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
     static const QString locationToString(int);

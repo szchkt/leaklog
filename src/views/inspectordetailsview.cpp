@@ -36,7 +36,7 @@ InspectorDetailsView::InspectorDetailsView(ViewTabSettings *settings):
 
 QString InspectorDetailsView::renderHTML()
 {
-    QString inspector_id = settings->selectedInspector();
+    QString inspector_uuid = settings->selectedInspectorUUID();
 
     HTMLDiv div;
 
@@ -45,7 +45,7 @@ QString InspectorDetailsView::renderHTML()
         div.newLine();
     }
 
-    div << writeInspectorsTable(QString(), inspector_id);
+    div << writeInspectorsTable(QString(), inspector_uuid);
     div.newLine();
 
     HTMLTable *table;
@@ -53,17 +53,16 @@ QString InspectorDetailsView::renderHTML()
     HTMLTableCell *_td;
     HTMLParentElement *elem;
 
-    bool is_nominal, is_repair, is_outside_interval;
     bool show_acquisition_price = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     bool show_list_price = DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0;
 
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
-    AssemblyRecordItemByInspector ar_item_record(inspector_id);
+    AssemblyRecordItemByInspector ar_item_record(inspector_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         ar_item_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer, inspections.circuit, inspections.date, assembly_record_items.*"));
+    ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid AS inspection_uuid, inspections.date, customers.id AS customer_id, circuits.id AS circuit_id, assembly_record_items.*"));
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     *(table->addRow()->addHeaderCell("colspan=\"10\" style=\"font-size: medium;\"")) << tr("Assembly Records");
@@ -82,28 +81,29 @@ QString InspectorDetailsView::renderHTML()
     }
 
     for (int i = 0; i < ar_items.count(); ++i) {
-        QString id = ar_items.at(i).value("date").toString();
-        QString customer_id = ar_items.at(i).value("customer").toString();
-        QString circuit_id = ar_items.at(i).value("circuit").toString();
-        is_nominal = ar_items.at(i).value("nominal").toInt();
-        is_repair = ar_items.at(i).value("repair").toInt();
-        is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
+        QString date = settings->mainWindowSettings().formatDateTime(ar_items.at(i).value("date").toString());
+        QString uuid = ar_items.at(i).value("inspection_uuid").toString();
+        QString customer_uuid = ar_items.at(i).value("customer_uuid").toString();
+        QString circuit_uuid = ar_items.at(i).value("circuit_uuid").toString();
+        bool is_nominal = ar_items.at(i).value("nominal").toInt();
+        bool is_repair = ar_items.at(i).value("repair").toInt();
+        bool is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
 
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/%3:%4/assemblyrecord'\" style=\"cursor: pointer;\"")
-                            .arg(customer_id)
-                            .arg(circuit_id)
+                            .arg(customer_uuid)
+                            .arg(circuit_uuid)
                             .arg(is_repair ? "repair" : "inspection")
-                            .arg(id));
+                            .arg(uuid));
         _td = _tr->addCell();
 
         if (is_nominal) elem = _td->bold();
         else if (is_repair) elem = _td->italics();
         else elem = _td;
-        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
+        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
         if (is_outside_interval) { *elem << "*"; }
 
-        *(_tr->addCell()) << ar_items.at(i).value("customer").toString();
-        *(_tr->addCell()) << ar_items.at(i).value("circuit").toString();
+        *(_tr->addCell()) << ar_items.at(i).value("customer_id").toString();
+        *(_tr->addCell()) << ar_items.at(i).value("circuit_id").toString().rightJustified(5, '0');
         *(_tr->addCell()) << ar_items.at(i).value("arno").toString();
         *(_tr->addCell()) << ar_items.at(i).value("value").toString();
         if (show_acquisition_price) {
@@ -142,22 +142,23 @@ QString InspectorDetailsView::renderHTML()
     *(_tr->addHeaderCell()) << tr("Circuit ID");
     *(_tr->addHeaderCell()) << tr("Circuit name");
 
-    InspectionByInspector inspection_record(inspector_id);
+    InspectionByInspector inspection_record(inspector_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         inspection_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    ListOfVariantMaps inspections(inspection_record.listAll("date, customer, customers.company, circuit, circuits.name AS circuit_name, repair, nominal"));
+    ListOfVariantMaps inspections(inspection_record.listAll("inspections.uuid, date, inspections.customer_uuid, customers.id AS customer_id, customers.company, circuit_uuid, circuits.id AS circuit_id, circuits.name AS circuit_name, repair, nominal"));
 
     for (int i = 0; i < inspections.count(); ++i) {
-        QString id = inspections.at(i).value("date").toString();
-        QString customer_id = inspections.at(i).value("customer").toString();
-        QString circuit_id = inspections.at(i).value("circuit").toString();
-        is_nominal = inspections.at(i).value("nominal").toInt();
-        is_repair = inspections.at(i).value("repair").toInt();
-        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+        QString date = settings->mainWindowSettings().formatDateTime(inspections.at(i).value("date").toString());
+        QString uuid = inspections.at(i).value("uuid").toString();
+        QString customer_uuid = inspections.at(i).value("customer_uuid").toString();
+        QString circuit_uuid = inspections.at(i).value("circuit_uuid").toString();
+        bool is_nominal = inspections.at(i).value("nominal").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
 
-        QString inspection_link = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + circuit_id;
-        inspection_link.append((is_repair ? "/repair:" : "/inspection:") + id + "'\" style=\"cursor: pointer;\"");
+        QString inspection_link = "onclick=\"window.location = 'customer:" + customer_uuid + "/circuit:" + circuit_uuid;
+        inspection_link.append((is_repair ? "/repair:" : "/inspection:") + uuid + "'\" style=\"cursor: pointer;\"");
 
         _tr = table->addRow(inspection_link);
         _td = _tr->addCell();
@@ -165,12 +166,12 @@ QString InspectorDetailsView::renderHTML()
         if (is_nominal) elem = _td->bold();
         else if (is_repair) elem = _td->italics();
         else elem = _td;
-        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", id, customer_id, circuit_id, id);
+        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
         if (is_outside_interval) { *elem << "*"; }
 
-        *(_tr->addCell()) << inspections.at(i).value("customer").toString();
+        *(_tr->addCell()) << inspections.at(i).value("customer_id").toString();
         *(_tr->addCell()) << inspections.at(i).value("company").toString();
-        *(_tr->addCell()) << inspections.at(i).value("circuit").toString();
+        *(_tr->addCell()) << inspections.at(i).value("circuit_id").toString().rightJustified(5, '0');
         *(_tr->addCell()) << inspections.at(i).value("circuit_name").toString();
     }
 

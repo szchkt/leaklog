@@ -111,7 +111,7 @@ void ReportDataController::reportData()
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
 
-    ListOfVariantMaps inspectors(Inspector("").listAll("id"));
+    ListOfVariantMaps inspectors(Inspector().listAll("id"));
     for (ListOfVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
         out << "addEmployee({ \"certification_num\": \"" << i->value("id").toString().rightJustified(4, '0') << "\" });" << endl;
     }

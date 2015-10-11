@@ -70,11 +70,7 @@ EditDialogue::EditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *par
 
 void EditDialogue::setWindowTitle(const QString &title)
 {
-    if (!md_record->id().isEmpty()) {
-        this->QDialog::setWindowTitle(tr("%1: %2").arg(title).arg(md_record->id()));
-    } else {
-        this->QDialog::setWindowTitle(title);
-    }
+    this->QDialog::setWindowTitle(title);
 }
 
 void EditDialogue::save()
@@ -84,11 +80,11 @@ void EditDialogue::save()
 
 bool EditDialogue::save(bool call_accept)
 {
-    QVariantMap values; QString id; QVariant value;
+    QVariantMap values;
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
-        id = (*i)->id();
-        value = (*i)->variantValue();
+        QString id = (*i)->id();
+        QVariant value = (*i)->variantValue();
         if (id == md_record->idField()) {
             if (value.toString().isEmpty()) {
                 QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
@@ -113,16 +109,6 @@ bool EditDialogue::save(bool call_accept)
 
     if (call_accept) accept();
     return true;
-}
-
-const QVariant EditDialogue::idFieldValue()
-{
-    for (int i = 0; i < md_inputwidgets.count(); ++i) {
-        if (md_inputwidgets.at(i)->id() == "id") {
-            return md_inputwidgets.at(i)->variantValue();
-        }
-    }
-    return QVariant();
 }
 
 MDAbstractInputWidget *EditDialogue::inputWidget(const QString id)

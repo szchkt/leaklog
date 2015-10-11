@@ -27,7 +27,8 @@ class WarningFilter : public DBRecord
     Q_OBJECT
 
 public:
-    WarningFilter(const QString &parent);
+    WarningFilter(const QString &uuid = QString());
+    WarningFilter(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

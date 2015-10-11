@@ -54,41 +54,41 @@ void CustomersView::writeCustomersTable(MTTextStream &out, const QString &custom
     delete table;
 }
 
-HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTable *table)
+HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTMLTable *table)
 {
     bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
 
-    Customer all_customers(customer_id);
-    if (customer_id.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
+    Customer all_customers(customer_uuid);
+    if (customer_uuid.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
         all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by;
-    if (!customer_id.isEmpty() || settings->mainWindowSettings().orderByForView(LinkParser::AllCustomers).isEmpty())
+    if (!customer_uuid.isEmpty() || settings->mainWindowSettings().orderByForView(LinkParser::AllCustomers).isEmpty())
         order_by = "company ASC, id ASC";
     else
         order_by = settings->appendDefaultOrderToColumn(settings->mainWindowSettings().orderByForView(LinkParser::AllCustomers));
     ListOfVariantMaps list = all_customers.listAll("*,"
-                                                   " (SELECT COUNT(id) FROM circuits WHERE parent = customers.id) AS circuits_count,"
-                                                   " (SELECT COUNT(date) FROM inspections WHERE customer = customers.id) AS inspections_count",
+                                                   " (SELECT COUNT(uuid) FROM circuits WHERE customer_uuid = customers.uuid) AS circuits_count,"
+                                                   " (SELECT COUNT(uuid) FROM inspections WHERE customer_uuid = customers.uuid) AS inspections_count",
                                                    order_by);
 
     if (!table)
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("customers");
-    if (customer_id.isEmpty())
+    if (customer_uuid.isEmpty())
         table->addClass("highlight");
 
     int thead_colspan = 2;
     HTMLTableRow *row = NULL;
 
-    if (customer_id.isEmpty() || customer_details_visible) {
+    if (customer_uuid.isEmpty() || customer_details_visible) {
         row = new HTMLTableRow();
 
         for (int n = 0; n < Customer::numBasicAttributes(); ++n) {
-            if (customer_id.isEmpty())
+            if (customer_uuid.isEmpty())
                 *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
             else
                 *(row->addHeaderCell()) << Customer::attributes().value(n);
@@ -97,14 +97,14 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
         *(row->addHeaderCell()) << tr("Number of circuits");
         *(row->addHeaderCell()) << tr("Total number of inspections");
         if (show_date_updated) {
-            if (customer_id.isEmpty())
+            if (customer_uuid.isEmpty())
                 *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:date_updated\">" << tr("Date Updated") << "</a>";
             else
                 *(row->addHeaderCell()) << tr("Date Updated");
             thead_colspan++;
         }
         if (show_owner) {
-            if (customer_id.isEmpty())
+            if (customer_uuid.isEmpty())
                 *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:updated_by\">" << tr("Author") << "</a>";
             else
                 *(row->addHeaderCell()) << tr("Author");
@@ -114,7 +114,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
 
     HTMLTableCell *cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
-    if (customer_id.isEmpty()) {
+    if (customer_uuid.isEmpty()) {
         *cell << tr("List of Customers");
     } else {
         if (!disable_hiding_details)
@@ -124,27 +124,27 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
         } else {
             QString name = list.first().value("company").toString().trimmed();
             if (name.isEmpty())
-                name = formatCompanyID(customer_id);
+                name = list.first().value("id").toString();
             *cell << escapeString(tr("Customer: %1").arg(name));
         }
         if (!disable_hiding_details)
             *cell << "</a>";
     }
 
-    if (customer_id.isEmpty() || customer_details_visible) {
+    if (customer_uuid.isEmpty() || customer_details_visible) {
         *table << row;
 
-        QString id; QString highlighted_id = settings->selectedCustomer();
+        QString highlighted_uuid = settings->selectedCustomerUUID();
         for (int i = 0; i < list.count(); ++i) {
-            id = list.at(i).value("id").toString();
+            QString uuid = list.at(i).value("uuid").toString();
             QString row_attrs;
-            if (customer_id.isEmpty()) {
-                row_attrs = QString("id=\"%1\" onclick=\"window.location = '%1'\" style=\"cursor: pointer;\"").arg("customer:" + id);
-                if (id == highlighted_id)
+            if (customer_uuid.isEmpty()) {
+                row_attrs = QString("id=\"%1\" onclick=\"window.location = '%1'\" style=\"cursor: pointer;\"").arg("customer:" + uuid);
+                if (uuid == highlighted_uuid)
                     row_attrs.append(" class=\"selected\"");
             }
             row = table->addRow(row_attrs);
-            *(row->addCell()) << toolTipLink("customer", formatCompanyID(id), id);
+            *(row->addCell()) << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
             for (int n = 1; n < Customer::numBasicAttributes(); ++n) {
                 QString key = Customer::attributes().key(n);
                 *(row->addCell()) << MTVariant(list.at(i).value(key), key);
@@ -161,7 +161,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
     return table;
 }
 
-HTMLTable *CustomersView::customerContactPersons(const QString &customer_id, HTMLTable *table)
+HTMLTable *CustomersView::customerContactPersons(const QString &customer_uuid, HTMLTable *table)
 {
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("contact_persons");
@@ -172,8 +172,7 @@ HTMLTable *CustomersView::customerContactPersons(const QString &customer_id, HTM
     *(_tr->addHeaderCell()) << tr("E-mail");
     *(_tr->addHeaderCell()) << tr("Phone");
 
-    Person persons_record(QString(), customer_id);
-    persons_record.parents().insert("hidden", "0");
+    Person persons_record({{"customer_uuid", customer_uuid}, {"hidden", "0"}});
     ListOfVariantMaps persons = persons_record.listAll();
     for (int i = 0; i < persons.count(); ++i) {
         _tr = table->addRow();

@@ -40,7 +40,7 @@ class EditInspectorDialogueTab : public EditDialogueTab
 public:
     EditInspectorDialogueTab(QList<MDAbstractInputWidget *>, QWidget * = NULL);
 
-    void save(const QVariant &);
+    void save();
     QWidget *widget() { return this; }
 
 private:

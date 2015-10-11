@@ -25,8 +25,8 @@
 class Person : public MTRecord
 {
 public:
-    Person(const QString & = QString());
-    Person(const QString &, const QString &);
+    Person(const QString &uuid = QString());
+    Person(const MTDictionary &parents);
 
     static QString tableName();
     static const ColumnList &columns();

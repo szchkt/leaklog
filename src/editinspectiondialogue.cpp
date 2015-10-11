@@ -33,7 +33,7 @@
 #include <QSplitter>
 #include <QSettings>
 
-EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent, const QString &duplicate_from)
+EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent, const QString &duplicate_from)
     : TabbedEditDialogue(record, undo_stack, parent, false),
       compressors(NULL)
 {
@@ -72,20 +72,20 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
-        compressors = new EditInspectionDialogueCompressors(md_record->parent("customer"), md_record->parent("circuit"), id, this);
+        compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, this);
         if (!duplicate_from.isEmpty())
-            compressors->clearOriginalInspectionDate();
+            compressors->clearInspectionUUID();
         compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         splitter->addWidget(compressors);
         tabs.append(compressors);
     }
 
     addTab(new EditInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *) inputWidget("arno"),
-                                                       (MDComboBox *) inputWidget("ar_type"),
+                                                       (MDComboBox *) inputWidget("ar_type_uuid"),
                                                        new EditInspectionDialogueAccess(this),
-                                                       md_record->parent("customer"),
-                                                       md_record->parent("circuit")));
-    addTab(new EditInspectionDialogueImagesTab(md_record->parent("customer"), md_record->parent("circuit"), record->id()));
+                                                       record->customerUUID(),
+                                                       record->circuitUUID()));
+    addTab(new EditInspectionDialogueImagesTab(record->id()));
 
     splitter->setSizes(QList<int>() << 1000 << 1 << 200);
 
@@ -103,28 +103,11 @@ EditInspectionDialogue::~EditInspectionDialogue()
     settings.setValue(splitter_state_key, splitter->saveState());
 }
 
-const QVariant EditInspectionDialogue::idFieldValue()
+EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &inspection_uuid)
 {
-    MDAbstractInputWidget *iw = inputWidget("date");
-    if (iw)
-        return iw->variantValue();
-    else
-        return QVariant();
-}
-
-EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &customer_id, const QString &circuit_id, const QString &inspection_id)
-{
-    this->customer_id = customer_id;
-    this->circuit_id = circuit_id;
+    _inspection_uuid = inspection_uuid;
 
     setName(tr("Images"));
-
-    init(inspection_id);
-}
-
-void EditInspectionDialogueImagesTab::init(const QString &inspection_id)
-{
-    original_inspection_id = inspection_id;
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -133,23 +116,22 @@ void EditInspectionDialogueImagesTab::init(const QString &inspection_id)
     cell->setId("description");
     cells.append(cell);
     cell = new EditDialogueTableCell(tr("Image"), Global::File);
-    cell->setId("file_id");
+    cell->setId("file_uuid");
     cells.append(cell);
     table = new EditDialogueBasicTable(tr("Images"), cells, this);
     layout->addWidget(table);
 
-    loadItemInputWidgets(inspection_id);
+    loadItemInputWidgets();
 }
 
-void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspection_id)
+void EditInspectionDialogueImagesTab::loadItemInputWidgets()
 {
-    if (inspection_id.isEmpty()) {
+    if (_inspection_uuid.isEmpty()) {
         table->addNewRow();
         return;
     }
 
-    InspectionImage images_record(customer_id, circuit_id, inspection_id);
-    ListOfVariantMaps images = images_record.listAll();
+    ListOfVariantMaps images = Inspection(_inspection_uuid).images().listAll();
 
     QMap<QString, EditDialogueTableCell *> image_data;
     EditDialogueTableCell *cell;
@@ -158,29 +140,29 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
         cell = new EditDialogueTableCell(images.at(i).value("description"), Global::Text);
         cell->setId("description");
         image_data.insert("description", cell);
-        cell = new EditDialogueTableCell(images.at(i).value("file_id"), Global::File);
-        cell->setId("file_id");
-        image_data.insert("file_id", cell);
+        cell = new EditDialogueTableCell(images.at(i).value("file_uuid"), Global::File);
+        cell->setId("file_uuid");
+        image_data.insert("file_uuid", cell);
         table->addRow(image_data);
     }
 
     if (!images.count()) table->addNewRow();
 }
 
-void EditInspectionDialogueImagesTab::save(const QVariant &inspection_id)
+void EditInspectionDialogueImagesTab::save()
 {
     QList<MTDictionary> dicts = table->allValues();
-    QList<int> undeleted_files;
+    QList<QString> undeleted_files;
 
-    if (!original_inspection_id.isEmpty()) {
-        InspectionImage images_record(customer_id, circuit_id, original_inspection_id);
+    if (!_inspection_uuid.isEmpty()) {
+        InspectionImage images_record = Inspection(_inspection_uuid).images();
 
-        ListOfVariantMaps images = images_record.listAll("file_id");
+        ListOfVariantMaps images = images_record.listAll("file_uuid");
 
         for (int i = 0; i < images.count(); ++i) {
-            int file_id = images.at(i).value("file_id").toInt();
-            if (!undeleted_files.contains(file_id))
-                undeleted_files.append(file_id);
+            QString file_uuid = images.at(i).value("file_uuid").toString();
+            if (!undeleted_files.contains(file_uuid))
+                undeleted_files.append(file_uuid);
         }
 
         images_record.remove();
@@ -188,14 +170,14 @@ void EditInspectionDialogueImagesTab::save(const QVariant &inspection_id)
 
     QVariantMap map;
     for (int i = 0; i < dicts.count(); ++i) {
-        int file_id = dicts.at(i).value("file_id").toInt();
-        if (file_id <= 0)
+        QString file_uuid = dicts.at(i).value("file_uuid");
+        if (file_uuid.isEmpty())
             continue;
-        undeleted_files.removeAll(file_id);
+        undeleted_files.removeAll(file_uuid);
 
         map.insert("description", dicts.at(i).value("description"));
-        map.insert("file_id", file_id);
-        InspectionImage(customer_id, circuit_id, inspection_id.toString()).update(map);
+        map.insert("file_uuid", file_uuid);
+        Inspection(_inspection_uuid).images().update(map);
     }
 
     for (int i = 0; i < undeleted_files.count(); ++i)

@@ -36,7 +36,7 @@ public:
     QString title() const;
 
 protected:
-    HTMLTable *writeInspectorsTable(const QString &, const QString & = QString());
+    HTMLTable *writeInspectorsTable(const QString &highlighted_uuid, const QString &inspector_uuid = QString());
 };
 
 #endif // INSPECTORSVIEW_H

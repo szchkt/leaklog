@@ -72,12 +72,10 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
     if (attributes.value("type").toString() == "group")
         cb_type->setEnabled(false);
     md->addInputWidget(cb_type);
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
-                                      MTDictionary(QStringList()
-                                                   << QString::number(Variable::Inspection)
-                                                   << QString::number(Variable::Compressor),
-                                                   QStringList() << tr("Inspection") << tr("Compressor")),
-                                      "", id().isEmpty()));
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(), {
+        {QString::number(Variable::Inspection), tr("Inspection")},
+        {QString::number(Variable::Compressor), tr("Compressor")}
+    }, "", id().isEmpty()));
     md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md->widget(), 0.0, 999999.9, attributes.value("tolerance").toDouble()));
@@ -100,7 +98,7 @@ public:
         columns << Column("name", "TEXT");
         columns << Column("type", "TEXT");
         columns << Column("unit", "TEXT");
-        columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
+        columns << Column("scope", "INTEGER NOT NULL DEFAULT 1");
         columns << Column("value", "TEXT");
         columns << Column("compare_nom", "INTEGER");
         columns << Column("tolerance", "NUMERIC");

@@ -31,10 +31,9 @@
 
 #define IMAGE_MAX_SIZE 800
 
-DBFile::DBFile(int file_id):
-File(QString::number(file_id))
+DBFile::DBFile(const QString &file_uuid):
+    File(file_uuid)
 {
-    this->file_id = file_id;
 }
 
 void DBFile::setData(const QByteArray &file_data)
@@ -92,13 +91,8 @@ bool DBFile::saveData(const QString &file_name)
     return true;
 }
 
-int DBFile::save()
+void DBFile::save()
 {
-    if (file_id <= 0) {
-        file_id = File("").max("id") + 1;
-        File::setId(QString::number(file_id));
-    }
-
     QVariantMap update_map;
     if (Global::isDatabaseRemote())
         update_map.insert("data", file_data.toBase64());
@@ -107,13 +101,11 @@ int DBFile::save()
     update_map.insert("name", file_name);
 
     update(update_map);
-
-    return file_id;
 }
 
 QByteArray DBFile::data()
 {
-    if (!file_data.isNull() || file_id < 0)
+    if (!file_data.isNull() || id().isEmpty())
         return file_data;
 
     if (Global::isDatabaseRemote())
@@ -124,15 +116,15 @@ QByteArray DBFile::data()
     return file_data;
 }
 
-DBFileChooser::DBFileChooser(QWidget *parent, int file_id):
+DBFileChooser::DBFileChooser(const QString &file_uuid, QWidget *parent):
 QWidget(parent)
 {
-    db_file = new DBFile(file_id);
+    db_file = new DBFile(file_uuid);
     changed = false;
 
     QHBoxLayout *layout = new QHBoxLayout(this);
 
-    if (file_id) {
+    if (!file_uuid.isEmpty()) {
         name_lbl = new QLabel(this);
         QPixmap pixmap;
         pixmap.loadFromData(db_file->data());
@@ -142,11 +134,16 @@ QWidget(parent)
     }
     layout->addWidget(name_lbl);
 
-    QPushButton *browse_btn = new QPushButton(file_id ? tr("Replace") : tr("Browse"), this);
+    QPushButton *browse_btn = new QPushButton(file_uuid.isEmpty() ? tr("Browse") : tr("Replace"), this);
     QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
     layout->addWidget(browse_btn);
 
     setLayout(layout);
+}
+
+DBFileChooser::~DBFileChooser()
+{
+    delete db_file;
 }
 
 void DBFileChooser::browse()
@@ -164,7 +161,7 @@ void DBFileChooser::browse()
 QVariant DBFileChooser::variantValue() const
 {
     if (changed)
-        return db_file->save();
-    else
-        return db_file->id().toInt();
+        db_file->save();
+
+    return db_file->id();
 }

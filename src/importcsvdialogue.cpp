@@ -344,7 +344,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
 
         case ImportDialogueTableColumn::ForeignKey:
             if (!ok) break;
-            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), columns.at(i)->foreignKeyColumn(), row->value(columns.at(i)).toString(), MTDictionary());
+            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), columns.at(i)->foreignKeyColumn(), row->value(columns.at(i)).toString());
             if (!frecord->exists()) {
                 ok = false;
                 break;
@@ -429,14 +429,14 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
     }
 
     if (generate_id) {
-        MTRecord record(id(), "id", "", MTDictionary());
+        MTRecord record(id(), "id", "");
 
-        int next_id = record.max("id") + 1;
+        int next_id = (int)record.max("id") + 1;
         set.insert("id", QString::number(next_id));
         id_column = "id";
     }
 
-    MTRecord record(id(), id_column, set.value(id_column).toString(), MTDictionary());
+    MTRecord record(id(), id_column, set.value(id_column).toString());
     ok = ok && record.update(set);
 
     for (int i = 0; i < child_tables.count(); ++i) {

@@ -31,19 +31,18 @@ EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
 
-    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->id(), this);
     addTab(compressors_tab);
 
-    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->id(), this);
     QObject::connect(units_tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
     addTab(units_tab);
 }
 
 void EditCircuitDialogue::updateCircuit(MTDictionary dict)
 {
-    MDAbstractInputWidget *md;
     for (int i = 0; i < dict.count(); ++i) {
-        md = inputWidget(dict.key(i));
+        MDAbstractInputWidget *md = inputWidget(dict.key(i));
         if (md)
             md->setVariantValue(dict.value(i));
     }

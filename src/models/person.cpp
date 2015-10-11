@@ -21,12 +21,12 @@
 
 #include <QApplication>
 
-Person::Person(const QString &person_id):
-    MTRecord(tableName(), "id", person_id, MTDictionary())
+Person::Person(const QString &uuid):
+    MTRecord(tableName(), "uuid", uuid)
 {}
 
-Person::Person(const QString &person_id, const QString &customer_id):
-    MTRecord(tableName(), "id", person_id, MTDictionary("company_id", customer_id))
+Person::Person(const MTDictionary &parents):
+    MTRecord(tableName(), "uuid", QString(), parents)
 {}
 
 QString Person::tableName()
@@ -43,7 +43,7 @@ public:
         columns << Column("name", "TEXT");
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
-        columns << Column("hidden", "INTEGER DEFAULT 0 NOT NULL");
+        columns << Column("hidden", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -61,8 +61,6 @@ class PersonAttributes
 {
 public:
     PersonAttributes() {
-        dict.insert("id", QApplication::translate("Person", "ID"));
-        dict.insert("company_id", QApplication::translate("Person", "Company ID"));
         dict.insert("name", QApplication::translate("Person", "Name"));
         dict.insert("mail", QApplication::translate("Person", "E-mail"));
         dict.insert("phone", QApplication::translate("Person", "Phone"));
