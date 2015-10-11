@@ -173,9 +173,14 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
 {
     QMap<QPair<int, int>, QString> circuit_uuids;
 
-    QString update_circuit = "UPDATE circuits SET uuid = :uuid, customer_uuid = :customer_uuid WHERE parent = :parent AND id = :id";
+    MTSqlQuery query(database);
+    query.exec(renameV1TableQuery("circuits"));
+    query.exec(createTableQuery(Circuit::tableName(), Circuit::columns(), database));
 
-    MTSqlQuery circuits("SELECT parent, id FROM circuits", database);
+    QStringList columns = QStringList() << "uuid" << "customer_uuid" << "id" << "name" << "disused" << "operation" << "building" << "device" << "hermetic" << "manufacturer" << "type" << "sn" << "year" << "commissioning" << "decommissioning" << "field" << "refrigerant" << "refrigerant_amount" << "oil" << "oil_amount" << "leak_detector" << "runtime" << "utilisation" << "inspection_interval" << "date_updated" << "updated_by";
+    QString insert_query = insertQuery(Circuit::tableName(), columns);
+
+    MTSqlQuery circuits("SELECT * FROM v1_circuits", database);
     while (circuits.next()) {
         int parent = circuits.intValue("parent");
         int id = circuits.intValue("id");
@@ -183,11 +188,19 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
         circuit_uuids.insert(QPair<int, int>(parent, id), uuid);
 
         MTSqlQuery circuit(database);
-        circuit.prepare(update_circuit);
-        circuit.bindValue(":uuid", uuid);
-        circuit.bindValue(":customer_uuid", customer_uuids.value(parent));
-        circuit.bindValue(":parent", parent);
-        circuit.bindValue(":id", id);
+        circuit.prepare(insert_query);
+
+        int pos = 0;
+        foreach (const QString &column, columns) {
+            if (column == "uuid") {
+                circuit.bindValue(pos, uuid);
+            } else if (column == "customer_uuid") {
+                circuit.bindValue(pos, customer_uuids.value(parent));
+            } else {
+                circuit.bindValue(pos, circuits.value(column));
+            }
+            pos++;
+        }
         circuit.exec();
     }
 
@@ -383,21 +396,32 @@ static void migrateV1Repairs(const QMap<int, QString> &customer_uuids,
                              const QMap<int, QString> &inspector_uuids,
                              QSqlDatabase &database)
 {
-    QString update_repair = "UPDATE repairs SET uuid = :uuid, customer_uuid = :customer_uuid, inspector_uuid = :inspector_uuid WHERE date = :date";
+    MTSqlQuery query(database);
+    query.exec(renameV1TableQuery("repairs"));
+    query.exec(createTableQuery(Repair::tableName(), Repair::columns(), database));
 
-    MTSqlQuery repairs("SELECT date, parent, repairman FROM repairs", database);
+    QStringList columns = QStringList() << "uuid" << "customer_uuid" << "inspector_uuid" << "date" << "customer" << "device" << "field" << "refrigerant" << "refrigerant_amount" << "refr_add_am" << "refr_reco" << "arno" << "date_updated" << "updated_by";
+    QString insert_query = insertQuery(Repair::tableName(), columns);
+
+    MTSqlQuery repairs("SELECT * FROM v1_repairs", database);
     while (repairs.next()) {
-        QString date = repairs.stringValue("date");
-        int parent = repairs.intValue("parent");
-        int repairman = repairs.intValue("repairman");
-        QString uuid = createUUID();
-
         MTSqlQuery repair(database);
-        repair.prepare(update_repair);
-        repair.bindValue(":uuid", uuid);
-        repair.bindValue(":customer_uuid", customer_uuids.value(parent));
-        repair.bindValue(":inspector_uuid", inspector_uuids.value(repairman));
-        repair.bindValue(":date", date);
+        repair.prepare(insert_query);
+
+        int pos = 0;
+        foreach (const QString &column, columns) {
+            if (column == "uuid") {
+                QString uuid = createUUID();
+                repair.bindValue(pos, uuid);
+            } else if (column == "customer_uuid") {
+                repair.bindValue(pos, customer_uuids.value(repairs.intValue("parent")));
+            } else if (column == "inspector_uuid") {
+                repair.bindValue(pos, inspector_uuids.value(repairs.intValue("repairman")));
+            } else {
+                repair.bindValue(pos, repairs.value(column));
+            }
+            pos++;
+        }
         repair.exec();
     }
 }
@@ -497,18 +521,29 @@ static QMap<int, QString> migrateV1Warnings(QSqlDatabase &database)
 {
     QMap<int, QString> warning_uuids;
 
-    QString update_warning = "UPDATE warnings SET uuid = :uuid WHERE id = :id";
+    MTSqlQuery query(database);
+    query.exec(renameV1TableQuery("warnings"));
+    query.exec(createTableQuery(WarningRecord::tableName(), WarningRecord::columns(), database));
 
-    MTSqlQuery warnings("SELECT id FROM warnings", database);
+    QStringList columns = QStringList() << "uuid" << "scope" << "enabled" << "name" << "description" << "delay" << "date_updated" << "updated_by";
+    QString insert_query = insertQuery(WarningRecord::tableName(), columns);
+
+    MTSqlQuery warnings("SELECT * FROM v1_warnings", database);
     while (warnings.next()) {
-        int id = warnings.intValue("id");
-        QString uuid = createUUID();
-        warning_uuids.insert(id, uuid);
-
         MTSqlQuery warning(database);
-        warning.prepare(update_warning);
-        warning.bindValue(":uuid", uuid);
-        warning.bindValue(":id", id);
+        warning.prepare(insert_query);
+
+        int pos = 0;
+        foreach (const QString &column, columns) {
+            if (column == "uuid") {
+                QString uuid = createUUID();
+                warning_uuids.insert(warnings.intValue("id"), uuid);
+                warning.bindValue(pos, uuid);
+            } else {
+                warning.bindValue(pos, warnings.value(column));
+            }
+            pos++;
+        }
         warning.exec();
     }
 
@@ -880,18 +915,29 @@ static QMap<int, QString> migrateV1Styles(QSqlDatabase &database)
 {
     QMap<int, QString> style_uuids;
 
-    QString update_styles = "UPDATE styles SET uuid = :uuid WHERE id = :id";
+    MTSqlQuery query(database);
+    query.exec(renameV1TableQuery("styles"));
+    query.exec(createTableQuery(Style::tableName(), Style::columns(), database));
 
-    MTSqlQuery styles("SELECT id FROM styles", database);
+    QStringList columns = QStringList() << "uuid" << "name" << "content" << "div_tables" << "date_updated" << "updated_by";
+    QString insert_query = insertQuery(Style::tableName(), columns);
+
+    MTSqlQuery styles("SELECT * FROM v1_styles", database);
     while (styles.next()) {
-        int id = styles.intValue("id");
-        QString uuid = createUUID();
-        style_uuids.insert(id, uuid);
-
         MTSqlQuery style(database);
-        style.prepare(update_styles);
-        style.bindValue(":uuid", uuid);
-        style.bindValue(":id", id);
+        style.prepare(insert_query);
+
+        int pos = 0;
+        foreach (const QString &column, columns) {
+            if (column == "uuid") {
+                QString uuid = createUUID();
+                style_uuids.insert(styles.intValue("id"), uuid);
+                style.bindValue(pos, uuid);
+            } else {
+                style.bindValue(pos, styles.value(column));
+            }
+            pos++;
+        }
         style.exec();
     }
 

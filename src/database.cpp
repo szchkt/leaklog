@@ -221,23 +221,22 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
         QString unique_index = remote ? "CREATE UNIQUE INDEX " : "CREATE UNIQUE INDEX IF NOT EXISTS ";
         QString index = remote ? "CREATE INDEX " : "CREATE INDEX IF NOT EXISTS ";
 
-        if (!remote || v == 0) {
+        if (v == 0) {
             query.exec(unique_index + "index_db_info_id ON db_info (id ASC)");
             query.exec(unique_index + "index_repairs_id ON repairs (date ASC)");
             query.exec(unique_index + "index_variables_id ON variables (id ASC)");
             query.exec(unique_index + "index_refrigerant_management_id ON refrigerant_management (date ASC)");
         }
 
-        if (!remote || v < 0.9082) {
+        if (v < 0.9082) {
             query.exec(index + "index_assembly_record_items_parent ON assembly_record_items (arno ASC)");
         }
 
         if (v > 0 && v < 1.9) {
-            query.exec(unique_index + "index_circuits_uuid ON circuits (uuid ASC)");
             query.exec(unique_index + "index_files_uuid ON files (uuid ASC)");
         }
 
-        if (!remote || v < 1.9) {
+        if (v < 1.9) {
             query.exec(index + "index_assembly_record_items_ar_item_type_uuid ON assembly_record_items (ar_item_type_uuid ASC)");
             query.exec(index + "index_assembly_record_items_ar_item_category_uuid ON assembly_record_items (ar_item_category_uuid ASC)");
             query.exec(index + "index_assembly_record_item_types_ar_item_category_uuid ON assembly_record_item_types (ar_item_category_uuid ASC)");
@@ -623,7 +622,7 @@ void MainWindow::loadDatabase(bool reload)
     while (warnings.next()) {
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(warnings.value("description").toString().isEmpty() ? warnings.value("name").toString() : tr("%1 (%2)").arg(warnings.value("name").toString()).arg(warnings.value("description").toString()));
-        item->setData(Qt::UserRole, warnings.value("id").toString());
+        item->setData(Qt::UserRole, warnings.value("uuid").toString());
         lw_warnings->addItem(item);
     }
 
@@ -970,8 +969,8 @@ void MainWindow::editCustomer()
         QString company_name = record.companyName();
         if (old_company_name != company_name) {
             MTSqlQuery update_repairs;
-            update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
-            update_repairs.bindValue(":id", record.id());
+            update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE customer_uuid = :customer_uuid");
+            update_repairs.bindValue(":customer_uuid", record.id());
             update_repairs.bindValue(":customer", company_name);
             update_repairs.exec();
             enableTools();
@@ -1649,9 +1648,9 @@ void MainWindow::skipInspection()
     QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
 
     Circuit circuit_record(m_tab->selectedCircuitUUID());
-    circuit_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
-                           " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
-                           " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
+    circuit_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
+                           " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
+                           " ON ins.circuit_uuid = circuits.uuid");
     MTSqlQuery circuit_query = circuit_record.select("circuits.hermetic, circuits.leak_detector, circuits.inspection_interval, "
                                                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
                                                      "circuits.refrigerant, " + circuitRefrigerantAmountQuery());

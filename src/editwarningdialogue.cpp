@@ -255,12 +255,12 @@ void EditWarningDialogue::save()
     if (!md_record->id().isEmpty()) {
         values.insert("id", md_record->id().toInt());
         MTSqlQuery delete_filters;
-        delete_filters.prepare("DELETE FROM warnings_filters WHERE parent = :parent");
-        delete_filters.bindValue(":parent", md_record->id());
+        delete_filters.prepare("DELETE FROM warnings_filters WHERE warning_uuid = :warning_uuid");
+        delete_filters.bindValue(":warning_uuid", md_record->id());
         delete_filters.exec();
         MTSqlQuery delete_conditions;
-        delete_conditions.prepare("DELETE FROM warnings_conditions WHERE parent = :parent");
-        delete_conditions.bindValue(":parent", md_record->id());
+        delete_conditions.prepare("DELETE FROM warnings_conditions WHERE warning_uuid = :warning_uuid");
+        delete_conditions.bindValue(":warning_uuid", md_record->id());
         delete_conditions.exec();
     } else {
         QList<int> ids;
@@ -283,8 +283,8 @@ void EditWarningDialogue::save()
     if (md_record->id().toInt() < 1000) {
         for (int i = 0; i < md_filters->count(); ++i) {
             MTSqlQuery insert_filter;
-            insert_filter.prepare("INSERT INTO warnings_filters (parent, circuit_attribute, function, value) VALUES (:parent, :circuit_attribute, :function, :value)");
-            insert_filter.bindValue(":parent", md_record->id());
+            insert_filter.prepare("INSERT INTO warnings_filters (warning_uuid, circuit_attribute, function, value) VALUES (:warning_uuid, :circuit_attribute, :function, :value)");
+            insert_filter.bindValue(":warning_uuid", md_record->id());
             insert_filter.bindValue(":circuit_attribute", md_filters->attribute(i));
             insert_filter.bindValue(":function", md_filters->function(i));
             insert_filter.bindValue(":value", md_filters->value(i));
@@ -292,8 +292,8 @@ void EditWarningDialogue::save()
         }
         for (int i = 0; i < md_conditions->count(); ++i) {
             MTSqlQuery insert_condition;
-            insert_condition.prepare("INSERT INTO warnings_conditions (parent, value_ins, function, value_nom) VALUES (:parent, :value_ins, :function, :value_nom)");
-            insert_condition.bindValue(":parent", md_record->id());
+            insert_condition.prepare("INSERT INTO warnings_conditions (warning_uuid, value_ins, function, value_nom) VALUES (:warning_uuid, :value_ins, :function, :value_nom)");
+            insert_condition.bindValue(":warning_uuid", md_record->id());
             insert_condition.bindValue(":value_ins", md_conditions->expressionIns(i));
             insert_condition.bindValue(":function", md_conditions->function(i));
             insert_condition.bindValue(":value_nom", md_conditions->expressionNom(i));
