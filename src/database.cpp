@@ -1593,6 +1593,9 @@ void MainWindow::addInspection()
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), "");
+    if (m_tab->isInspectorSelected()) {
+        record.setValue("inspector", m_tab->selectedInspector());
+    }
     UndoCommand command(m_undo_stack, tr("Add inspection"));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1815,6 +1818,9 @@ void MainWindow::addRepair()
     if (m_tab->isCustomerSelected()) {
         record.parents().insert("parent", m_tab->selectedCustomer());
         record.parents().insert("customer", Customer(m_tab->selectedCustomer()).stringValue("company"));
+    }
+    if (m_tab->isInspectorSelected()) {
+        record.setValue("repairman", m_tab->selectedInspector());
     }
     UndoCommand command(m_undo_stack, tr("Add repair"));
     EditDialogue md(&record, m_undo_stack, this);
