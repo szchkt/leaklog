@@ -357,5 +357,6 @@ refprop:exists(refprop/include/refprop_lib.h) {
 
 CODECFORTR         = UTF-8
 TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
-                     rc/i18n/Leaklog-Polish.ts
+                     rc/i18n/Leaklog-Polish.ts \
+                     rc/i18n/Leaklog-Hungarian.ts
 QMAKE_RESOURCE_FLAGS += -compress 9

@@ -10,5 +10,9 @@
         <source>Polish</source>
         <translation>Polski</translation>
     </message>
+    <message>
+        <source>Hungarian</source>
+        <translation>Magyar</translation>
+    </message>
 </context>
 </TS>

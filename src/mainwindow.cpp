@@ -67,6 +67,7 @@ MainWindow::MainWindow():
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Polish"), "Polish");
+    leaklog_i18n.insert(translator.translate("LanguageNames", "Hungarian"), "Hungarian");
 
     // UI
     if (tr("LTR") == "RTL")
