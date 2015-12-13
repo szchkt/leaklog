@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.0" language="sk_SK" sourcelanguage="en_GB">
+<defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -528,10 +529,6 @@
         <translation>Názov okruhu:</translation>
     </message>
     <message>
-        <source>Disused</source>
-        <translation>Vyradený</translation>
-    </message>
-    <message>
         <source>Place of operation:</source>
         <translation>Miesto prevádzky:</translation>
     </message>
@@ -710,6 +707,34 @@
     <message>
         <source>Circuit ID</source>
         <translation>IČ okruhu</translation>
+    </message>
+    <message>
+        <source>Commissioned</source>
+        <translation>V prevádzke</translation>
+    </message>
+    <message>
+        <source>Excluded from Agenda</source>
+        <translation>Vyradený z agendy</translation>
+    </message>
+    <message>
+        <source>Decommissioned</source>
+        <translation>Vyradený z prevádzky</translation>
+    </message>
+    <message>
+        <source>State:</source>
+        <translation>Stav:</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning:</source>
+        <translation>Dôvod vyradenia:</translation>
+    </message>
+    <message>
+        <source>State</source>
+        <translation>Stav</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning</source>
+        <translation>Dôvod vyradenia</translation>
     </message>
 </context>
 <context>
@@ -2412,10 +2437,6 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     <message>
         <source>Rate of utilisation</source>
         <translation>Stupeň zaťaženia</translation>
-    </message>
-    <message>
-        <source>Disused</source>
-        <translation>Vyradený</translation>
     </message>
     <message>
         <source>Hermetically sealed</source>
@@ -4377,7 +4398,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Open Backup Folder - Leaklog</source>
         <translation>Otvoriť priečinok so zálohami - Leaklog</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>CO₂ equivalent</source>
         <translation>CO₂ ekvivalent</translation>
     </message>
@@ -4397,6 +4418,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>ID</source>
         <comment>Variable ID</comment>
         <translation>ID</translation>
+    </message>
+    <message>
+        <source>State</source>
+        <translation>Stav</translation>
     </message>
 </context>
 <context>
@@ -5569,7 +5594,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5637,7 +5662,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Circuit Name</source>
         <translation>Názov okruhu</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
     </message>
@@ -5691,7 +5716,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>t</source>
         <translation>t</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>t of CO₂ equivalent</source>
         <translation>t CO₂ ekvivalentu</translation>
     </message>

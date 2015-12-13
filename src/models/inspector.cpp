@@ -45,10 +45,10 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
-    iw->setShowInForm(false);
+    iw->setRowSpan(0);
     md->addInputWidget(iw);
     iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
-    iw->setShowInForm(false);
+    iw->setRowSpan(0);
     md->addInputWidget(iw);
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);

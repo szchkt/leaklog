@@ -27,6 +27,12 @@ class Circuit : public DBRecord
     Q_OBJECT
 
 public:
+    enum State {
+        ExcludedFromAgenda = -1,
+        Commissioned = 0,
+        Decommissioned = 1
+    };
+
     Circuit();
     Circuit(const QString &, const QString &);
 

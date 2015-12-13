@@ -250,7 +250,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         } else if (var_id == "risks" || var_id == "rmds") {
             iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
                                      attributes.value(var_id).toString(), col_bg);
-            iw->setShowInForm(false);
+            iw->setRowSpan(0);
             md->addInputWidget(iw);
         } else if (var_id == "operator") {
             if (mt_record) {
@@ -261,7 +261,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         } else if (var_id == "ar_type") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listAssemblyRecordTypes(), col_bg);
-            iw->setShowInForm(false);
+            iw->setRowSpan(0);
             md->addInputWidget(iw);
         } else if (var_type == "int") {
             iw = new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
@@ -292,7 +292,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                                         .arg(date.toString("yyMMdd"))
                                         .arg(count ? QString("-%1").arg(count + 1) : ""));
                 }
-                iw->setShowInForm(false);
+                iw->setRowSpan(0);
             }
             md->addInputWidget(iw);
         } else if (var_type == "text") {

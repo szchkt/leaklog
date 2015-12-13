@@ -26,7 +26,7 @@ void EditDialogueWidgets::addGroupedInputWidgets(const QString &group_name, cons
     MDGroupedInputWidgets *gw = new MDGroupedInputWidgets(group_name, widget());
     addInputWidget(gw);
     for (int i = 0; i < widgets.count(); ++i) {
-        widgets.at(i)->setShowInForm(false);
+        widgets.at(i)->setRowSpan(0);
         addInputWidget(widgets.at(i));
         gw->addWidget(widgets.at(i));
     }

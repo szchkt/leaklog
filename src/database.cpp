@@ -1123,11 +1123,11 @@ void MainWindow::decommissionAllCircuits()
     m_undo_stack->savepoint();
 
     QVariantMap set;
-    set.insert("disused", 1);
+    set.insert("disused", Circuit::Decommissioned);
     set.insert("decommissioning", date->date().toString(DATE_FORMAT));
 
     Circuit circuits(customer.id(), QString());
-    circuits.parents().insert("disused", "0");
+    circuits.parents().insert("disused", QString::number(Circuit::Commissioned));
     circuits.update(set, false, true);
 
     setDatabaseModified(true);
@@ -1332,7 +1332,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
                                                                              << m_tab->selectedCircuit())).listAll();
 
     QVariantMap set;
-    set.insert("disused", 1);
+    set.insert("disused", Circuit::Decommissioned);
     set.insert("decommissioning", date->date().toString(DATE_FORMAT));
     set.insert("refrigerant", old_refrigerant->currentText());
     circuit.update(set);
@@ -3532,12 +3532,15 @@ void MainWindow::importCSV()
     circuits_table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
+    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("State"), "disused", ImportDialogueTableColumn::Select);
+    col->addSelectValue(QString::number(Circuit::Commissioned), QApplication::translate("Circuit", "Commissioned"));
+    col->addSelectValue(QString::number(Circuit::ExcludedFromAgenda), QApplication::translate("Circuit", "Excluded from Agenda"));
+    col->addSelectValue(QString::number(Circuit::Decommissioned), QApplication::translate("Circuit", "Decommissioned"));
     circuits_table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
     circuits_table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
     circuits_table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
     circuits_table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
-    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);

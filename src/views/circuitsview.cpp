@@ -155,7 +155,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         QString attr_value; QStringList dict_value;
         for (int i = 0; i < circuits.count(); ++i) {
-            if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt()) { show_disused = true; continue; }
+            if (circuit_id.isEmpty() && circuits.at(i).value("disused").toInt() >= Circuit::Decommissioned) { show_disused = true; continue; }
             id = circuits.at(i).value("id").toString();
             QString tr_attr;
             if (circuit_id.isEmpty()) {
@@ -241,7 +241,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         *(_tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan))) << tr("Disused Circuits");
 
         for (int i = 0; i < circuits.count(); ++i) {
-            if (!circuits.at(i).value("disused").toInt()) continue;
+            if (circuits.at(i).value("disused").toInt() <= Circuit::Commissioned) continue;
 
             id = circuits.at(i).value("id").toString();
             QString tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_id).arg("circuit:" + id);

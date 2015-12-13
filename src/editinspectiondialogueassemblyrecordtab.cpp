@@ -58,9 +58,9 @@ void EditInspectionDialogueAssemblyRecordTab::init()
     QGridLayout *form_grid = new QGridLayout;
     form_grid->setContentsMargins(0, 0, 0, 0);
     QList<MDAbstractInputWidget *> inputwidgets;
-    arno_w->setShowInForm(true);
+    arno_w->setRowSpan(1);
     inputwidgets.append(arno_w);
-    ar_type_w->setShowInForm(true);
+    ar_type_w->setRowSpan(1);
     inputwidgets.append(ar_type_w);
     EditDialogueColumnLayout(&inputwidgets, form_grid, 1).layout();
 

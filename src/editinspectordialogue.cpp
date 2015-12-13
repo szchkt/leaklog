@@ -49,7 +49,7 @@ EditInspectorDialogueTab::EditInspectorDialogueTab(QList<MDAbstractInputWidget *
 void EditInspectorDialogueTab::init()
 {
     for (int i = 0; i < inputwidgets.count(); ++i) {
-        inputwidgets.at(i)->setShowInForm(true);
+        inputwidgets.at(i)->setRowSpan(1);
     }
 
     QGridLayout *grid = new QGridLayout;

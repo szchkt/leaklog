@@ -67,7 +67,7 @@ void EditInspectionDialogueLayout::layout()
     for (int i = 0; i < md_inputwidgets->count(); ++i) {
         MDAbstractInputWidget *widget = md_inputwidgets->at(i);
 
-        if (!widget->showInForm())
+        if (!widget->rowSpan())
             continue;
 
         QTreeWidgetItem *item = new QTreeWidgetItem;
