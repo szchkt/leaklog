@@ -191,7 +191,7 @@ QString InspectionsView::renderHTML()
 QString InspectionsView::title() const
 {
     QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
-    return tr("List of Inspections")
+    return tr("Inspections")
             + " - " + Customer(settings->selectedCustomer()).stringValue("company")
             + " - " + QString(title.isEmpty() ? settings->selectedCircuit().rightJustified(5, '0') : title);
 }

@@ -62,7 +62,7 @@ QString CircuitUnitTypesView::renderHTML()
         thead_colspan++;
     }
     thead.append("</tr>");
-    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("List of Circuit Unit Types") << "</th></tr>";
+    out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("Circuit Unit Types") << "</th></tr>";
     out << thead;
     QString id;
     MTDictionary categories(listAssemblyRecordItemCategories());
@@ -94,5 +94,5 @@ QString CircuitUnitTypesView::renderHTML()
 
 QString CircuitUnitTypesView::title() const
 {
-    return tr("List of Circuit Unit Types");
+    return tr("Circuit Unit Types");
 }

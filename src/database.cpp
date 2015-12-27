@@ -3532,7 +3532,7 @@ void MainWindow::importCSV()
     circuits_table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
-    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("State"), "disused", ImportDialogueTableColumn::Select);
+    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Status"), "disused", ImportDialogueTableColumn::Select);
     col->addSelectValue(QString::number(Circuit::Commissioned), QApplication::translate("Circuit", "Commissioned"));
     col->addSelectValue(QString::number(Circuit::ExcludedFromAgenda), QApplication::translate("Circuit", "Excluded from Agenda"));
     col->addSelectValue(QString::number(Circuit::Decommissioned), QApplication::translate("Circuit", "Decommissioned"));

@@ -73,7 +73,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
-    MDComboBox *disused = new MDComboBox("disused", tr("State:"), md->widget(), attributes.value("disused").toString(),
+    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), attributes.value("disused").toString(),
                                          MTDictionary(QStringList()
                                                       << QString::number(Circuit::Commissioned)
                                                       << QString::number(Circuit::ExcludedFromAgenda)
@@ -250,7 +250,7 @@ public:
         // numBasicAttributes: 11
         dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
         dict.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
-        dict.insert("disused", QApplication::translate("Circuit", "State"));
+        dict.insert("disused", QApplication::translate("Circuit", "Status"));
         dict.insert("decommissioning", QApplication::translate("Circuit", "Date of decommissioning"));
         dict.insert("decommissioning_reason", QApplication::translate("Circuit", "Reason for decommissioning"));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));

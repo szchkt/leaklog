@@ -115,7 +115,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
     HTMLTableCell *cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
     if (customer_id.isEmpty()) {
-        *cell << tr("List of Customers");
+        *cell << tr("Customers");
     } else {
         if (!disable_hiding_details)
             *cell << "<a href=\"toggledetailsvisible:customer\">";
@@ -187,5 +187,5 @@ HTMLTable *CustomersView::customerContactPersons(const QString &customer_id, HTM
 
 QString CustomersView::title() const
 {
-    return tr("List of Customers");
+    return tr("Customers");
 }

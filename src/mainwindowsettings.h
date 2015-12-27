@@ -64,6 +64,18 @@ public:
     void setCircuitDetailsVisible(bool circuit_details_visible) { m_circuit_details_visible = circuit_details_visible; }
     void toggleCircuitDetailsVisible() { m_circuit_details_visible = !m_circuit_details_visible; }
 
+    inline bool circuitsVisible() const { return m_circuits_visible; }
+    void setCircuitsVisible(bool circuits_visible) { m_circuits_visible = circuits_visible; }
+    void toggleCircuitsVisible() { m_circuits_visible = !m_circuits_visible; }
+
+    inline bool excludedCircuitsVisible() const { return m_excluded_circuits_visible; }
+    void setExcludedCircuitsVisible(bool excluded_circuits_visible) { m_excluded_circuits_visible = excluded_circuits_visible; }
+    void toggleExcludedCircuitsVisible() { m_excluded_circuits_visible = !m_excluded_circuits_visible; }
+
+    inline bool decommissionedCircuitsVisible() const { return m_decommissioned_circuits_visible; }
+    void setDecommissionedCircuitsVisible(bool decommissioned_circuits_visible) { m_decommissioned_circuits_visible = decommissioned_circuits_visible; }
+    void toggleDecommissionedCircuitsVisible() { m_decommissioned_circuits_visible = !m_decommissioned_circuits_visible; }
+
     inline bool serviceCompanyInformationVisible() const { return m_service_company_information_visible; }
     void setServiceCompanyInformationVisible(bool service_company_information_visible);
 
@@ -91,6 +103,9 @@ signals:
 private:
     bool m_customer_details_visible;
     bool m_circuit_details_visible;
+    bool m_circuits_visible;
+    bool m_excluded_circuits_visible;
+    bool m_decommissioned_circuits_visible;
     bool m_service_company_information_visible;
 
     DateFormat m_date_format;

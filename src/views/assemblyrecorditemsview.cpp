@@ -63,7 +63,7 @@ QString AssemblyRecordItemsView::renderHTML()
     }
     *(row->addHeaderCell("colspan=\"5\"")) << tr("Show");
     *(table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
-        << tr("List of Assembly Record Item Categories and Types");
+        << tr("Assembly Record Item Categories and Types");
     *table << row;
     row = table->addRow();
     *(row->addHeaderCell()) << tr("Value");
@@ -159,5 +159,5 @@ void AssemblyRecordItemsView::addDisplayOptionsCellToCategoriesTable(HTMLTableRo
 
 QString AssemblyRecordItemsView::title() const
 {
-    return tr("List of Assembly Record Item Categories and Types");
+    return tr("Assembly Record Item Categories and Types");
 }

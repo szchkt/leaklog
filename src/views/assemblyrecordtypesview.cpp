@@ -63,7 +63,7 @@ QString AssemblyRecordTypesView::renderHTML()
     }
     thead.append("</tr>");
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
-        << tr("List of Assembly Record Types") << "</th></tr>";
+        << tr("Assembly Record Types") << "</th></tr>";
     out << thead;
     QString id;
     for (int i = 0; i < items.count(); ++i) {
@@ -84,5 +84,5 @@ QString AssemblyRecordTypesView::renderHTML()
 
 QString AssemblyRecordTypesView::title() const
 {
-    return tr("List of Assembly Record Types");
+    return tr("Assembly Record Types");
 }

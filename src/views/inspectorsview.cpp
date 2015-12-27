@@ -72,7 +72,7 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, c
     *(_tr->addHeaderCell()) << tr("Number of repairs");
 
     *(table->addRow()->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan)))
-            << (inspector_id.isEmpty() ? tr("List of Inspectors") : tr("Inspector"));
+            << (inspector_id.isEmpty() ? tr("Inspectors") : tr("Inspector"));
     *table << _tr;
     for (int i = 0; i < inspectors.count(); ++i) {
         QString id = inspectors.at(i).value("id").toString();
@@ -99,5 +99,5 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, c
 
 QString InspectorsView::title() const
 {
-    return tr("List of Inspectors");
+    return tr("Inspectors");
 }
