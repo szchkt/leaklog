@@ -1091,6 +1091,7 @@ void MainWindow::addCircuit()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record;
+    record.setCustomerUUID(m_tab->selectedCustomerUUID());
     UndoCommand command(m_undo_stack, tr("Add circuit"));
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
