@@ -56,12 +56,12 @@ public:
     void reset();
     void setValue(const QString &field, const QVariant &value);
     inline QVariantMap savedValues() {
-        if (r_saved_values.isEmpty())
+        if (r_saved_values.isEmpty() && !r_id.isEmpty())
             refresh(false);
         return r_saved_values;
     }
     inline QVariant savedValue(const QString &field, const QVariant &default_value = QVariant()) {
-        if (r_saved_values.isEmpty())
+        if (r_saved_values.isEmpty() && !r_id.isEmpty())
             refresh(false);
         return r_saved_values.value(field, default_value);
     }
