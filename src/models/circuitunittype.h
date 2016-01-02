@@ -27,7 +27,7 @@ class CircuitUnitType : public DBRecord
     Q_OBJECT
 
 public:
-    enum Locations {
+    enum Location {
         External = 0,
         Internal = 1
     };
@@ -36,6 +36,22 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
     static const QString locationToString(int);
+
+    inline QString manufacturer() { return stringValue("manufacturer"); }
+    inline QString type() { return stringValue("type"); }
+    inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline double refrigerantAmount() { return doubleValue("refrigerant_amount"); }
+    inline double acquisitionPrice() { return doubleValue("acquisition_price"); }
+    inline double listPrice() { return doubleValue("list_price"); }
+    inline Location location() { return (Location)intValue("location"); }
+    inline QString unit() { return stringValue("unit"); }
+    inline QString oil() { return stringValue("oil"); }
+    inline double oilAmount() { return doubleValue("oil_amount"); }
+    inline double output() { return doubleValue("output"); }
+    inline QString outputUnit() { return stringValue("output_unit"); }
+    inline double outputT0Tc() { return doubleValue("output_t0_tc"); }
+    inline QString notes() { return stringValue("notes"); }
+    inline double discount() { return doubleValue("discount"); }
 
     static QString tableName();
     static const ColumnList &columns();

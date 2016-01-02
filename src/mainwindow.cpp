@@ -562,10 +562,9 @@ void MainWindow::printLabel(bool detailed)
     if (detailed) {
         Customer customer(m_tab->selectedCustomerUUID());
         Circuit circuit(m_tab->selectedCircuitUUID());
-        circuit.readValues("id, refrigerant, " + circuitRefrigerantAmountQuery()
-                           + ", hermetic, leak_detector, inspection_interval");
-        attributes.insert("circuit_id", customer.companyID() + "." + circuit.circuitID());
-        attributes.unite(circuit.list());
+        attributes.unite(circuit.list("id, refrigerant, " + circuitRefrigerantAmountQuery()
+                                      + ", hermetic, leak_detector, inspection_interval"));
+        attributes.insert("circuit_id", customer.companyID() + "." + attributes.value("id").toString().rightJustified(5, '0'));
 
         MTSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE circuit_uuid = :circuit_uuid"

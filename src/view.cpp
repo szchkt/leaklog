@@ -61,21 +61,20 @@ QString View::viewTemplate(const QString &view_template)
 
 HTMLTable *View::writeServiceCompany(HTMLTable *table)
 {
-    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company_uuid"));
-    QVariantMap serv_company = serv_company_record.list();
+    ServiceCompany serv_company(DBInfo::valueForKey("default_service_company_uuid"));
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("service_company");
     HTMLTableRow *_tr = table->addRow();
     HTMLTableCell *_td;
-    if (serv_company.value("image").toInt()) {
-        QByteArray byte_array = DBFile(serv_company.value("image_file_uuid").toString()).data().toBase64();
+    if (!serv_company.imageFileUUID().isEmpty()) {
+        QByteArray byte_array = DBFile(serv_company.imageFileUUID()).data().toBase64();
         if (!byte_array.isNull()) {
             _td = _tr->addCell("rowspan=\"3\" width=\"5%\"");
             *_td << "<img src=\"data:image/jpeg;base64," << byte_array << "\" style=\"max-width: 300px;\">";
         }
     }
     _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *(_td->link("servicecompany:" + serv_company.value("id").toString() + "/edit")) << Global::escapeString(serv_company.value("name"));
+    *(_td->link("servicecompany:" + serv_company.companyID() + "/edit")) << Global::escapeString(serv_company.name());
     _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (ServiceCompany::attributes().key(n) == "name")

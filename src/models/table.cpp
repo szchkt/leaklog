@@ -36,64 +36,24 @@ Table::Table(const MTDictionary &parents):
 void Table::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Table"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
 
-    QString name = attributes.value("name").toString();
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name));
-    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), attributes.value("highlight_nominal").toInt()));
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(), {
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), highlightNominal()));
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), stringValue("scope"), {
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
     }));
 
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT name FROM tables" + QString(name.isEmpty() ? "" : " WHERE name <> :name"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":name", name); }
+    query_used_ids.prepare("SELECT name FROM tables" + QString(name().isEmpty() ? "" : " WHERE name <> :name"));
+    if (!id().isEmpty()) { query_used_ids.bindValue(":name", name()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
         }
     }
     md->setUsedIds(used_ids);
-}
-
-QString Table::name()
-{
-    return stringValue("name");
-}
-
-int Table::position()
-{
-    return intValue("position");
-}
-
-bool Table::highlightNominal()
-{
-    return intValue("highlight_nominal");
-}
-
-int Table::scope()
-{
-    return intValue("scope");
-}
-
-QStringList Table::variables()
-{
-    return stringValue("variables").split(';', QString::SkipEmptyParts);
-}
-
-QStringList Table::summedVariables()
-{
-    return stringValue("sum").split(';', QString::SkipEmptyParts);
-}
-
-QStringList Table::averagedVariables()
-{
-    return stringValue("avg").split(';', QString::SkipEmptyParts);
 }
 
 QString Table::tableName()

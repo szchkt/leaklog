@@ -104,20 +104,15 @@ void AssemblyRecordItemCategory::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Assembly Record Item Category"));
 
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
-
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), displayOptions());
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowValue, tr("Show value"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowAcquisitionPrice, tr("Show acquisition price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowListPrice, tr("Show list price"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowDiscount, tr("Show discount"));
     md_display_options->addCheckBox(AssemblyRecordItemCategory::ShowTotal, tr("Calculate total"));
     md->addInputWidget(md_display_options);
-    MDRadioButtonGroup *md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md->widget(), QString::number(attributes.value("display_position").toInt()));
+    MDRadioButtonGroup *md_position = new MDRadioButtonGroup("display_position", tr("Display:"), md->widget(), QString::number(displayPosition()));
     md_position->addRadioButton(tr("In table"), QString::number(AssemblyRecordItemCategory::DisplayAtTop));
     md_position->addRadioButton(tr("Separately"), QString::number(AssemblyRecordItemCategory::DisplayAtBottom));
     md->addInputWidget(md_position);

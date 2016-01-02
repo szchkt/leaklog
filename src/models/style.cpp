@@ -31,13 +31,9 @@ Style::Style(const QString &uuid):
 void Style::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Style"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), attributes.value("content").toString()));
-    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), attributes.value("div_tables").toBool()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), content()));
+    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), usesDivElements()));
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));

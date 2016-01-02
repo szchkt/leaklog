@@ -58,11 +58,10 @@ QString InspectionDetailsView::renderHTML()
 
     QVariantMap circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
 
-    Inspection inspection_record(inspection_uuid);
-    QVariantMap inspection = inspection_record.list();
-    QString inspection_date = inspection.value("date").toString();
-    bool nominal = inspection.value("nominal").toInt();
-    bool repair = inspection.value("repair").toInt();
+    Inspection inspection(inspection_uuid);
+    QString inspection_date = inspection.date();
+    bool nominal = inspection.isNominal();
+    bool repair = inspection.isRepair();
     Inspection nom_inspection_record({{"circuit_uuid", circuit_uuid}, {"nominal", "1"}});
     nom_inspection_record.addFilter("date <= ?", inspection_date);
     QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
@@ -124,7 +123,7 @@ QString InspectionDetailsView::renderHTML()
         for (int n = 0; n < table_vars.count(); ++n) {
             variable = var_evaluation.variable(table_vars.at(n));
             if (!variable) continue;
-            showVariableInInspectionTable(variable, var_evaluation, inspection, _table);
+            showVariableInInspectionTable(variable, var_evaluation, inspection.savedValues(), _table);
         }
     }
     div << table->customHtml(2);
@@ -158,7 +157,7 @@ QString InspectionDetailsView::renderHTML()
 
 //*** Warnings ***
     Warnings warnings(QSqlDatabase::database(), true, circuit);
-    QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection);
+    QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection.savedValues());
     if (warnings_list.count()) {
         div.newLine();
         _table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
@@ -170,7 +169,7 @@ QString InspectionDetailsView::renderHTML()
 
 void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Variable *variable,
                                                           VariableEvaluation::EvaluationContext &var_evaluation,
-                                                          QVariantMap &inspection, HTMLTable *_table)
+                                                          const QVariantMap &inspection, HTMLTable *_table)
 {
     bool compare_nom = false; QString ins_value; QString nom_value;
     VariableEvaluation::Variable *subvariable = NULL;

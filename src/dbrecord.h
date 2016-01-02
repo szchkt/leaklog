@@ -69,6 +69,7 @@ public:
     DBRecord();
     DBRecord(const QString &type, const QString &id_field, const QString &id, const MTDictionary &parents = MTDictionary());
     DBRecord(const DBRecord &other): MTRecord(other) {}
+    DBRecord &operator=(const DBRecord &other) { MTRecord::operator=(other); return *this; };
 
     QString parent(const QString &field) const { return MTRecord::parent(field); }
 

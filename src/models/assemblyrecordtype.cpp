@@ -45,14 +45,9 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
     keywords << "month";
     keywords << "year";
 
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
-
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString()));
-    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), attributes.value("display_options").toInt());
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), description()));
+    MDGroupedCheckBoxes *md_display_options = new MDGroupedCheckBoxes("display_options", tr("Display options:"), md->widget(), displayOptions());
     md_display_options->addCheckBox(AssemblyRecordType::ShowServiceCompany, tr("Show service company"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomer, tr("Show customer"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCustomerContactPersons, tr("Show customer contact persons"));
@@ -60,8 +55,8 @@ void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
     md_display_options->addCheckBox(AssemblyRecordType::ShowCompressors, tr("Show compressors"));
     md_display_options->addCheckBox(AssemblyRecordType::ShowCircuitUnits, tr("Show circuit units"));
     md->addInputWidget(md_display_options);
-    md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), attributes.value("name_format").toString(), keywords));
-    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), attributes.value("style_uuid").toString(), listStyles()));
+    md->addInputWidget(new MDHighlightedPlainTextEdit("name_format", tr("Name format:"), md->widget(), nameFormat(), keywords));
+    md->addInputWidget(new MDComboBox("style", tr("Visual style:"), md->widget(), stringValue("style_uuid"), listStyles()));
 }
 
 QString AssemblyRecordType::name()

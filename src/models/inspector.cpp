@@ -38,19 +38,15 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Inspector"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("certificate_number", tr("Certificate number:"), md->widget(), attributes.value("certificate_number").toString()));
-    md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), attributes.value("certificate_country").toString(), Global::countries()));
-    md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), attributes.value("person").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    md->addInputWidget(new MDLineEdit("certificate_number", tr("Certificate number:"), md->widget(), certificateNumber()));
+    md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), certificateCountry(), Global::countries()));
+    md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), personName()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
-    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
+    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency);
     iw->setShowInForm(false);
     md->addInputWidget(iw);
 }

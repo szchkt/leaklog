@@ -98,19 +98,19 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool 
     return var->name();
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, QVariantMap &inspection, QString &nom_value)
+QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, const QVariantMap &inspection, QString &nom_value)
 {
     VariableEvaluation::Variable *var = vars_map.value(var_name);
     if (!var) return QString();
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable *var, QVariantMap &inspection, QString &nom_value)
+QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable *var, const QVariantMap &inspection, QString &nom_value)
 {
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVariantMap &inspection, QString &nom_value)
+QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, const QVariantMap &inspection, QString &nom_value)
 {
     QString ins_value = inspection.value(id()).toString();
 

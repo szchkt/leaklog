@@ -25,6 +25,7 @@
 #include "mtsqlquery.h"
 
 #include <QVariant>
+#include <QSqlRecord>
 
 class MTRecord
 {
@@ -45,43 +46,76 @@ public:
     void setId(const QString &id) { r_id = id; }
     inline MTDictionary &parents() { return r_parents; }
     inline QString parent(const QString &field) const { return r_parents.value(field); }
-    bool exists();
-    MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
-    MTSqlQuery select(const QString &fields, const QString &order_by);
-    QVariantMap list(const QString &fields = "*", bool refresh = false);
-    QVariantMap list(const QString &fields, const char *order_by, bool refresh = false);
-    QVariantMap list(const QString &fields, const QString &order_by, bool refresh = false);
-    void readValues(const QString &fields = "*");
-    inline QVariantMap &values() { return r_values; }
-    void setValue(const QString &field, const QVariant &value) { r_values.insert(field, value); }
+    bool exists() const;
+    MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder) const;
+    MTSqlQuery select(const QString &fields, const QString &order_by) const;
+    QVariantMap list(const QString &fields = "*") const;
+    QVariantMap list(const QString &fields, const char *order_by) const;
+    QVariantMap list(const QString &fields, const QString &order_by) const;
+    void refresh(bool reset = true);
+    void reset();
+    void setValue(const QString &field, const QVariant &value);
+    inline QVariantMap savedValues() {
+        if (r_saved_values.isEmpty())
+            refresh(false);
+        return r_saved_values;
+    }
+    inline QVariant savedValue(const QString &field, const QVariant &default_value = QVariant()) {
+        if (r_saved_values.isEmpty())
+            refresh(false);
+        return r_saved_values.value(field, default_value);
+    }
     inline QVariant value(const QString &field, const QVariant &default_value = QVariant()) {
-        return r_values.contains(field) ? r_values.value(field) : list(field).value(field, default_value);
+        if (r_current_values.contains(field))
+            return r_current_values.value(field);
+        return savedValue(field, default_value);
     }
     inline bool boolValue(const QString &field, bool default_value = false) {
-        return r_values.contains(field) ? r_values.value(field).toInt() : list(field).value(field, default_value).toInt();
+        return value(field, default_value).toInt();
     }
     inline int intValue(const QString &field, int default_value = 0) {
-        return r_values.contains(field) ? r_values.value(field).toInt() : list(field).value(field, default_value).toInt();
+        return value(field, default_value).toInt();
     }
     inline qlonglong longLongValue(const QString &field, qlonglong default_value = 0L) {
-        return r_values.contains(field) ? r_values.value(field).toLongLong() : list(field).value(field, default_value).toLongLong();
+        return value(field, default_value).toLongLong();
     }
     inline double doubleValue(const QString &field, double default_value = 0.0) {
-        return r_values.contains(field) ? r_values.value(field).toDouble() : list(field).value(field, default_value).toDouble();
+        return value(field, default_value).toDouble();
     }
     inline QString stringValue(const QString &field, const QString &default_value = QString()) {
-        return r_values.contains(field) ? r_values.value(field).toString() : list(field).value(field, default_value).toString();
+        return value(field, default_value).toString();
     }
-    ListOfVariantMaps listAll(const QString &fields = "*", const QString &order_by = QString());
-    QVariantMap sumAll(const QString &fields);
-    MultiMapOfVariantMaps mapAll(const QString &map_to, const QString &fields = "*");
-    enum UpdatePolicy {
-        InsertOrUpdate,
-        UpdateIfExists,
-        Update
-    };
-    bool update(const QString &field, const QVariant &value, bool add_columns = false, UpdatePolicy update_policy = InsertOrUpdate);
-    bool update(const QVariantMap &values, bool add_columns = false, UpdatePolicy update_policy = InsertOrUpdate);
+    template<class T>
+    QList<T> all(const QString &order_by = QString()) const {
+        QList<T> records;
+        MTSqlQuery query = order_by.isEmpty() ? select() : select("*", order_by);
+        query.setForwardOnly(true);
+        query.exec();
+        while (query.next()) {
+            QVariantMap values;
+            for (int i = 0; i < query.record().count(); ++i) {
+                values.insert(query.record().fieldName(i), query.value(i));
+            }
+            T record;
+            record.r_table = r_table;
+            record.r_id_field = r_id_field;
+            record.r_id = values.value(r_id_field).toString();
+            record.r_saved_values = values;
+            records << record;
+        }
+        return records;
+    }
+    template<class T>
+    QList<T> where(const QString &predicate, const QString &order_by = QString()) {
+        setPredicate(predicate);
+        return all<T>(order_by);
+    }
+    ListOfVariantMaps listAll(const QString &fields = "*", const QString &order_by = QString()) const;
+    QVariantMap sumAll(const QString &fields) const;
+    MultiMapOfVariantMaps mapAll(const QString &map_to, const QString &fields = "*") const;
+    bool update(const QString &field, const QVariant &value, bool add_columns = false);
+    bool update(const QVariantMap &values = QVariantMap(), bool add_columns = false);
+    bool save(bool add_columns = false);
     virtual bool remove();
     void setPredicate(const QString &predicate) { r_predicate = predicate; }
     qlonglong max(const QString &attr) {
@@ -97,7 +131,8 @@ private:
     MTDictionary r_parents;
     QString r_predicate;
     MTDictionary r_filter;
-    QVariantMap r_values;
+    QVariantMap r_saved_values;
+    QVariantMap r_current_values;
     bool r_order;
 };
 

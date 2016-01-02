@@ -42,42 +42,38 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
     Customer customer(customerUUID());
-    customer.readValues();
     md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())
                        .arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    } else {
-        attributes.insert("year", QDate::currentDate().year());
+    if (!year()) {
+        setValue("year", QDate::currentDate().year());
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 99999));
-    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), attributes.value("operation").toString()));
-    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), attributes.value("building").toString()));
-    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
-    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), attributes.value("hermetic").toInt()));
-    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
-    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
-    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), attributes.value("sn").toString()));
-    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, attributes.value("year").toInt()));
-    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), attributes.value("commissioning").toString()));
-    MDCheckBox *disused = new MDCheckBox("disused", tr("Disused"), md->widget(), attributes.value("disused").toInt());
-    md->addInputWidget(disused);
-    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), attributes.value("decommissioning").toString());
-    decommissioning->setEnabled(disused->isChecked());
-    QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), stringValue("id"), 99999));
+    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), circuitName()));
+    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), placeOfOperation()));
+    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), building()));
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
+    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), hermetic()));
+    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), manufacturer()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
+    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), serialNumber()));
+    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, year()));
+    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), dateOfCommissioning()));
+    MDCheckBox *disused_checkbox = new MDCheckBox("disused", tr("Disused"), md->widget(), disused());
+    md->addInputWidget(disused_checkbox);
+    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), dateOfDecommissioning());
+    decommissioning->setEnabled(disused_checkbox->isChecked());
+    QObject::connect(disused_checkbox, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), attributes.value("oil").toString(), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), attributes.value("leak_detector").toInt()));
-    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
-    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
-    MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), oil(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), leakDetectorInstalled()));
+    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, runtime(), QApplication::translate("Units", "hours")));
+    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, utilisation(), QApplication::translate("Units", "%")));
+    MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
 
@@ -114,124 +110,9 @@ bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
     return true;
 }
 
-QString Circuit::customerUUID()
-{
-    return stringValue("customer_uuid");
-}
-
 Customer Circuit::customer()
 {
     return Customer(customerUUID());
-}
-
-QString Circuit::circuitID()
-{
-    return stringValue("id").rightJustified(5, '0');
-}
-
-QString Circuit::circuitName()
-{
-    return stringValue("name");
-}
-
-bool Circuit::disused()
-{
-    return intValue("disused");
-}
-
-QString Circuit::placeOfOperation()
-{
-    return stringValue("operation");
-}
-
-QString Circuit::building()
-{
-    return stringValue("building");
-}
-
-QString Circuit::device()
-{
-    return stringValue("device");
-}
-
-bool Circuit::hermetic()
-{
-    return intValue("hermetic");
-}
-
-QString Circuit::manufacturer()
-{
-    return stringValue("manufacturer");
-}
-
-QString Circuit::type()
-{
-    return stringValue("type");
-}
-
-QString Circuit::serialNumber()
-{
-    return stringValue("sn");
-}
-
-int Circuit::year()
-{
-    return intValue("year");
-}
-
-QString Circuit::dateOfCommissioning()
-{
-    return stringValue("commissioning");
-}
-
-QString Circuit::dateOfDecommissioning()
-{
-    return stringValue("decommissioning");
-}
-
-QString Circuit::field()
-{
-    return stringValue("field");
-}
-
-QString Circuit::refrigerant()
-{
-    return stringValue("refrigerant");
-}
-
-double Circuit::refrigerantAmount()
-{
-    return doubleValue("refrigerant_amount");
-}
-
-QString Circuit::oil()
-{
-    return stringValue("oil");
-}
-
-double Circuit::oilAmount()
-{
-    return doubleValue("oil_amount");
-}
-
-bool Circuit::leakDetectorInstalled()
-{
-    return intValue("leak_detector");
-}
-
-double Circuit::runtime()
-{
-    return doubleValue("runtime");
-}
-
-double Circuit::utilisation()
-{
-    return doubleValue("utilisation");
-}
-
-int Circuit::inspectionInterval()
-{
-    return intValue("inspection_interval");
 }
 
 Compressor Circuit::compressors()

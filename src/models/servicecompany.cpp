@@ -31,17 +31,23 @@ ServiceCompany::ServiceCompany(const QString &uuid):
 void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Service Company"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString()));
-    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), attributes.value("website").toString()));
-    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), attributes.value("image_file_uuid").toString()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), companyID()));
+    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), stringValue("address")));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
+    md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), website()));
+    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), imageFileUUID()));
+}
+
+MTAddress ServiceCompany::address()
+{
+    return stringValue("address");
+}
+
+void ServiceCompany::setAddress(const MTAddress &value)
+{
+    setValue("address", value.toString());
 }
 
 QString ServiceCompany::tableName()

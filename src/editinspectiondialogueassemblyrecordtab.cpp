@@ -92,9 +92,8 @@ const QVariant EditInspectionDialogueAssemblyRecordTab::assemblyRecordId()
 
 void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
 {
-    AssemblyRecordType type_rec(assemblyRecordType().toString());
-    QVariantMap type = type_rec.list();
-    QString name_format = type.value("name_format").toString();
+    AssemblyRecordType type(assemblyRecordType().toString());
+    QString name_format = type.nameFormat();
 
     if (!name_format.isEmpty()) {
         QDateTime current_date = QDateTime::fromString(inspection_dialogue_access->getVariableValue("date").toString(), DATE_TIME_FORMAT);
@@ -108,10 +107,10 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
         name_format.replace("circuit_id", circuit_uuid);
 
         if (name_format.contains("customer_name")) {
-            name_format.replace("customer_name", Customer(customer_uuid).list().value("company").toString());
+            name_format.replace("customer_name", Customer(customer_uuid).companyName());
         }
         if (name_format.contains("circuit_name")) {
-            name_format.replace("circuit_name", Circuit(circuit_uuid).list().value("name").toString());
+            name_format.replace("circuit_name", Circuit(circuit_uuid).circuitName());
         }
         arno_w->setText(name_format);
     }

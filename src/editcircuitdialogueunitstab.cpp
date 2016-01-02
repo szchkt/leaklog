@@ -198,20 +198,19 @@ void EditCircuitDialogueTable::updateCircuit()
     double oil_amount = 0;
 
     for (int i = 0; i < rows.count(); ++i) {
-        CircuitUnitType unit_type_record(rows.at(i)->value("unit_type_uuid"));
-        QVariantMap unit_type = unit_type_record.list();
+        CircuitUnitType unit_type(rows.at(i)->value("unit_type_uuid"));
 
-        if (!unit_type.value("refrigerant").toString().isEmpty())
-            circuit_vars.setValue("refrigerant", unit_type.value("refrigerant").toString());
-        refr_amount += unit_type.value("refrigerant_amount").toDouble();
+        if (!unit_type.refrigerant().isEmpty())
+            circuit_vars.setValue("refrigerant", unit_type.refrigerant());
+        refr_amount += unit_type.refrigerantAmount();
 
-        if (!unit_type.value("oil").toString().isEmpty())
-            circuit_vars.setValue("oil", oils.value(unit_type.value("oil").toString()));
-        oil_amount += unit_type.value("oil_amount").toDouble();
+        if (!unit_type.oil().isEmpty())
+            circuit_vars.setValue("oil", oils.value(unit_type.oil()));
+        oil_amount += unit_type.oilAmount();
 
-        if (unit_type.value("location").toInt() == CircuitUnitType::External) {
-            circuit_vars.setValue("manufacturer", unit_type.value("manufacturer").toString());
-            circuit_vars.setValue("type", unit_type.value("type").toString());
+        if (unit_type.location() == CircuitUnitType::External) {
+            circuit_vars.setValue("manufacturer", unit_type.manufacturer());
+            circuit_vars.setValue("type", unit_type.type());
         }
     }
 

@@ -40,8 +40,8 @@ namespace VariableEvaluation {
         QVariantMap &nominalInspection() { return nominal_ins; }
 
         Variable *variable(const QString &name) const { return vars_map.value(name); }
-        QString evaluate(Variable *, QVariantMap &, QString &);
-        QString evaluate(const QString &, QVariantMap &, QString &);
+        QString evaluate(Variable *, const QVariantMap &, QString &);
+        QString evaluate(const QString &, const QVariantMap &, QString &);
 
         QStringList &usedIDs() { return used_ids; }
 
@@ -93,7 +93,7 @@ namespace VariableEvaluation {
         QList<Variable *> subvariables() const { return subvars; }
         int countSubvariables() const { return subvars.count(); }
 
-        QString evaluate(EvaluationContext &, QVariantMap &, QString &);
+        QString evaluate(EvaluationContext &, const QVariantMap &, QString &);
 
     private:
         QString _name;

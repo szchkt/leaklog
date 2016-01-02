@@ -37,21 +37,16 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
 
     md->setWindowTitle(tr("Assembly Record Item Type"));
 
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
-
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
-    md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md->widget(), 0, 99999999, attributes.value("ean").toInt()));
-    md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), attributes.value("auto_show").toBool()));
-    md->addInputWidget(new MDComboBox("ar_item_category_uuid", tr("Category:"), md->widget(), attributes.value("ar_item_category_uuid").toString(), listAssemblyRecordItemCategories(true)));
-    md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), attributes.value("inspection_variable_id").toString(), listAllVariables()));
-    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type").toString(), listDataTypes()));
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), unit()));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, discount(), "%"));
+    md->addInputWidget(new MDSpinBox("ean", tr("EAN code:"), md->widget(), 0, 99999999, ean()));
+    md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), autoShow()));
+    md->addInputWidget(new MDComboBox("ar_item_category_uuid", tr("Category:"), md->widget(), stringValue("ar_item_category_uuid"), listAssemblyRecordItemCategories(true)));
+    md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), inspectionVariableID(), listAllVariables()));
+    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), stringValue("value_data_type"), listDataTypes()));
 }
 
 QString AssemblyRecordItemType::name()

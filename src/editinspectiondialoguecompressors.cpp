@@ -50,7 +50,6 @@ void EditInspectionDialogueCompressors::loadTabs()
             {"inspection_uuid", inspection_uuid},
             {"compressor_uuid", compressors.at(i).value("uuid").toString()}
         });
-        inspection_compressor.readValues();
 
         addTab(inspection_compressor, compressors.at(i).value("name").toString());
     }
@@ -78,7 +77,7 @@ InspectionCompressorTab::InspectionCompressorTab(const InspectionCompressor &ins
       EditDialogueWidgets(),
       inspection_compressor(inspection_compressor)
 {
-    init(this->inspection_compressor.list());
+    init(this->inspection_compressor.savedValues());
 }
 
 void InspectionCompressorTab::init(const QVariantMap &var_values)

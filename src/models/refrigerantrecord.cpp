@@ -37,89 +37,25 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
     md->setWindowTitle(tr("Record of Refrigerant Management"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
+    MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked()) {
-        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
+        date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
-    md->addInputWidget(date);
+    md->addInputWidget(date_edit);
 
-    PartnerWidgets *partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md->widget());
+    PartnerWidgets *partner_widgets = new PartnerWidgets(partner(), partnerID(), md->widget());
     md->addInputWidget(partner_widgets->partnersWidget());
     md->addInputWidget(partner_widgets->partnerNameWidget());
     md->addInputWidget(partner_widgets->partnerIdWidget());
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, attributes.value("sold").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
-}
-
-QString RefrigerantRecord::date()
-{
-    return stringValue("date");
-}
-
-QString RefrigerantRecord::partner()
-{
-    return stringValue("partner");
-}
-
-QString RefrigerantRecord::partnerID()
-{
-    return stringValue("partner_id");
-}
-
-QString RefrigerantRecord::refrigerant()
-{
-    return stringValue("refrigerant");
-}
-
-double RefrigerantRecord::purchased()
-{
-    return doubleValue("purchased");
-}
-
-double RefrigerantRecord::purchasedRecovered()
-{
-    return doubleValue("purchased_reco");
-}
-
-double RefrigerantRecord::sold()
-{
-    return doubleValue("sold");
-}
-
-double RefrigerantRecord::soldRecovered()
-{
-    return doubleValue("sold_reco");
-}
-
-double RefrigerantRecord::regenerated()
-{
-    return doubleValue("refr_rege");
-}
-
-double RefrigerantRecord::disposedOf()
-{
-    return doubleValue("refr_disp");
-}
-
-double RefrigerantRecord::leaked()
-{
-    return doubleValue("leaked");
-}
-
-double RefrigerantRecord::leakedRecovered()
-{
-    return doubleValue("leaked_reco");
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, purchased(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, purchasedRecovered(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, sold(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, soldRecovered(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, regenerated(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, disposedOf(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
 }
 
 QString RefrigerantRecord::tableName()

@@ -31,6 +31,17 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline int scope() { return intValue("scope"); }
+    inline void setScope(int value) { setValue("scope", value); }
+    inline bool enabled() { return intValue("enabled"); }
+    inline void setEnabled(bool value) { setValue("enabled", (int)value); }
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    inline QString description() { return stringValue("description"); }
+    inline void setDescription(const QString &value) { setValue("description", value); }
+    inline int delay() { return intValue("delay"); }
+    inline void setDelay(int value) { setValue("delay", value); }
+
     static QString tableName();
     static const ColumnList &columns();
 };

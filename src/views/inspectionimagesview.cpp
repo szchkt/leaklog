@@ -55,10 +55,9 @@ QString InspectionImagesView::renderHTML()
     out << "<br>";
     writeCircuitsTable(out, customer_uuid, circuit_uuid, 8);
 
-    Inspection inspection_record(inspection_uuid);
-    QVariantMap inspection = inspection_record.list();
-    bool nominal = inspection.value("nominal").toInt();
-    bool repair = inspection.value("repair").toInt();
+    Inspection inspection(inspection_uuid);
+    bool nominal = inspection.isNominal();
+    bool repair = inspection.isRepair();
 
     HTMLParentElement *el;
     HTMLDiv div;
@@ -74,7 +73,7 @@ QString InspectionImagesView::renderHTML()
     else *el << tr("Inspection:");
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_uuid);
 
-    ListOfVariantMaps images = inspection_record.images().listAll("*", "file_uuid");
+    ListOfVariantMaps images = inspection.images().listAll("*", "file_uuid");
 
     for (int i = 0; i < images.count(); ++i) {
         QByteArray byte_array = DBFile(images.at(i).value("file_uuid").toString()).data().toBase64();

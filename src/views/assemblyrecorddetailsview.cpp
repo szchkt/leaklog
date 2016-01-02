@@ -40,29 +40,26 @@ QString AssemblyRecordDetailsView::renderHTML()
     QString circuit_uuid = settings->selectedCircuitUUID();
     QString inspection_uuid = settings->selectedInspectionUUID();
 
-    Inspection inspection_record(inspection_uuid);
-    inspection_record.readValues();
-    QVariantMap inspection = inspection_record.list();
-    bool nominal = inspection.value("nominal").toInt();
-    bool repair = inspection.value("repair").toInt();
-    bool locked = DBInfo::isRecordLocked(inspection_record.date());
+    Inspection inspection(inspection_uuid);
+    bool nominal = inspection.isNominal();
+    bool repair = inspection.isRepair();
+    bool locked = DBInfo::isRecordLocked(inspection.date());
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
     VariableEvaluation::Variable *variable;
     QString nom_value;
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
-    AssemblyRecordType ar_type_record(inspection.value("ar_type_uuid").toString());
-    QVariantMap ar_type = ar_type_record.list();
-    int type_display_options = ar_type.value("display_options").toInt();
+    AssemblyRecordType ar_type(inspection.stringValue("ar_type_uuid"));
+    AssemblyRecordType::DisplayOptions type_display_options = ar_type.displayOptions();
 
     HTMLParent *main = NULL;
 
     QString custom_style;
-    if (!ar_type.value("style_uuid").toString().isEmpty()) {
-        QVariantMap style = Style(ar_type.value("style_uuid").toString()).list("content, div_tables");
-        custom_style = style.value("content").toString();
-        if (style.value("div_tables").toBool())
+    if (!ar_type.stringValue("style_uuid").isEmpty()) {
+        Style style = ar_type.style();
+        custom_style = style.content();
+        if (style.usesDivElements())
             main = new HTMLDivMain();
     }
     if (!main)
@@ -246,7 +243,7 @@ QString AssemblyRecordDetailsView::renderHTML()
                     item_value = categories_query.value(VALUE).toString();
             } else {
                 variable = var_evaluation.variable(categories_query.value(VARIABLE_ID).toString());
-                item_value = var_evaluation.evaluate(variable, inspection, nom_value);
+                item_value = var_evaluation.evaluate(variable, inspection.savedValues(), nom_value);
                 total = item_value.toDouble();
                 item_value = tableVarValue(variable->type(), item_value, QString(), QString(), false, 0.0, true);
             }

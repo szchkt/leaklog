@@ -55,11 +55,11 @@ QString TableView::renderHTML()
         out << "<br>";
     }
 
-    QVariantMap customer = Customer(customer_uuid).list("id, company, address, mail, phone");
+    Customer customer(customer_uuid);
 
     ListOfVariantMaps circuits = Circuit(circuit_uuid).listAll("*, " + circuitRefrigerantAmountQuery());
 
-    QVariantMap table = Table(table_uuid).list();
+    Table table(table_uuid);
 
     int c = 0;
     foreach (const QVariantMap &circuit, circuits) {
@@ -78,7 +78,7 @@ QString TableView::renderHTML()
                 last_inspection_uuid = uuid;
             }
             QString date = inspections.at(i).value("date").toString();
-            if ((!table.value("highlight_nominal").toInt() || !inspections.at(i).value("nominal").toInt())
+            if ((!table.highlightNominal() || !inspections.at(i).value("nominal").toInt())
                 && date.split(".").first().toInt() < year) {
                 inspections.removeAt(i);
                 i--;
@@ -251,10 +251,10 @@ QString TableView::renderHTML()
     return viewTemplate("table").arg(colours).arg(html);
 }
 
-HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QVariantMap &table_map,
+HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &table_record,
                                             ListOfVariantMaps &inspections, VariableEvaluation::EvaluationContext &var_evaluation)
 {
-    QStringList table_vars = table_map.value("variables").toString().split(";", QString::SkipEmptyParts);
+    QStringList table_vars = table_record.variables();
     VariableEvaluation::Variable *variable = NULL, *subvariable = NULL;
     HTMLTable *table = new HTMLTable;
     HTMLTableRow *row = table->addRow();
@@ -348,7 +348,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
             var_evaluation.setNominalInspection(inspections.at(i));
 
         row = tbody->addRow();
-        if (is_nominal && table_map.value("highlight_nominal").toInt()) {
+        if (is_nominal && table_record.highlightNominal()) {
             row->addClass("nominal");
         }
         el = cell = row->addCell();
@@ -415,10 +415,10 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
     foot_functions.insert("sum", tr("Sum"));
     foot_functions.insert("avg", tr("Average"));
     for (int f = 0; f < foot_functions.count(); ++f) {
-        if (!table_map.value(foot_functions.key(f)).toString().isEmpty()) {
+        if (!table_record.value(foot_functions.key(f)).toString().isEmpty()) {
             row = tfoot->addRow("class=\"border_top border_bottom\"");
             *(row->addHeaderCell()) << foot_functions.value(f);
-            QStringList f_vars = table_map.value(foot_functions.key(f)).toString().split(";", QString::SkipEmptyParts);
+            QStringList f_vars = table_record.value(foot_functions.key(f)).toString().split(";", QString::SkipEmptyParts);
             for (int i = 0; i < table_vars.count(); ++i) {
                 variable = var_evaluation.variable(table_vars.at(i));
                 if (!variable) continue;
@@ -568,7 +568,6 @@ QString TableView::title() const
     QString title;
     if (settings->isCircuitSelected()) {
         Circuit circuit(settings->selectedCircuitUUID());
-        circuit.readValues();
         title = circuit.circuitName();
         if (title.isEmpty())
             title = circuit.circuitID();

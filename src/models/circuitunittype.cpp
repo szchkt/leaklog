@@ -44,28 +44,23 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
     output_units.insert("kW", "kW");
     output_units.insert("m3", "m3");
 
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
-
-    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
-    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), attributes.value("oil").toString(), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency));
-    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, attributes.value("discount").toDouble(), "%"));
-    md->addInputWidget(new MDComboBox("location", tr("Location:"), md->widget(), attributes.value("location").toString(), locations));
-    md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md->widget(), attributes.value("unit").toString()));
+    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), manufacturer()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), oil(), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency));
+    md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, discount(), "%"));
+    md->addInputWidget(new MDComboBox("location", tr("Location:"), md->widget(), stringValue("location"), locations));
+    md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md->widget(), unit()));
     QList<MDAbstractInputWidget *> gw_list;
-    gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md->widget(), 0.0, 999999.9, attributes.value("output").toDouble()));
-    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), attributes.value("output_unit").toString(), output_units));
-    gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, attributes.value("output_t0_tc").toDouble()));
+    gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md->widget(), 0.0, 999999.9, output()));
+    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), outputUnit(), output_units));
+    gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, outputT0Tc()));
     md->addGroupedInputWidgets(tr("Output:"), gw_list);
-    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
+    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
 }
 
 QString CircuitUnitType::tableName()

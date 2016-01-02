@@ -50,11 +50,14 @@ class QVariant;
 template<class Key, class T>
 class QMap;
 template<class Key, class T>
+class QMapIterator;
+template<class Key, class T>
 class QMultiMap;
 template<class T>
 class QList;
 
 typedef QMap<QString, QVariant> QVariantMap;
+typedef QMapIterator<QString, QVariant> QVariantMapIterator;
 typedef QList<QVariantMap> ListOfVariantMaps;
 typedef QMap<QString, QVariantMap> MapOfVariantMaps;
 typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;

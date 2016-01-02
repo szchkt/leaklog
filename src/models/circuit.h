@@ -35,34 +35,60 @@ public:
     Circuit(const QString &uuid = QString());
     Circuit(const MTDictionary &parents);
     Circuit(const Circuit &other): DBRecord(other) {}
+    Circuit &operator=(const Circuit &other) { DBRecord::operator=(other); return *this; };
 
     void initEditDialogue(EditDialogueWidgets *);
     bool checkValues(const QVariantMap &, QWidget * = 0);
 
-    QString customerUUID();
     Customer customer();
-    QString circuitID();
-    QString circuitName();
-    bool disused();
-    QString placeOfOperation();
-    QString building();
-    QString device();
-    bool hermetic();
-    QString manufacturer();
-    QString type();
-    QString serialNumber();
-    int year();
-    QString dateOfCommissioning();
-    QString dateOfDecommissioning();
-    QString field();
-    QString refrigerant();
-    double refrigerantAmount();
-    QString oil();
-    double oilAmount();
-    bool leakDetectorInstalled();
-    double runtime();
-    double utilisation();
-    int inspectionInterval();
+
+    inline QString customerUUID() { return stringValue("customer_uuid"); }
+    inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline QString circuitID() { return stringValue("id").rightJustified(5, '0'); }
+    inline void setCircuitID(const QString &value) { setValue("id", value.toInt()); }
+    inline void setCircuitID(int value) { setValue("id", value); }
+    inline QString circuitName() { return stringValue("name"); }
+    inline void setCircuitName(const QString &value) { setValue("name", value); }
+    inline bool disused() { return intValue("disused"); }
+    inline void setDisused(bool value) { setValue("disused", (int)value); }
+    inline QString placeOfOperation() { return stringValue("operation"); }
+    inline void setPlaceOfOperation(const QString &value) { setValue("operation", value); }
+    inline QString building() { return stringValue("building"); }
+    inline void setBuilding(const QString &value) { setValue("building", value); }
+    inline QString device() { return stringValue("device"); }
+    inline void setDevice(const QString &value) { setValue("device", value); }
+    inline bool hermetic() { return intValue("hermetic"); }
+    inline void setHermetic(bool value) { setValue("hermetic", (int)value); }
+    inline QString manufacturer() { return stringValue("manufacturer"); }
+    inline void setManufacturer(const QString &value) { setValue("manufacturer", value); }
+    inline QString type() { return stringValue("type"); }
+    inline void setType(const QString &value) { setValue("type", value); }
+    inline QString serialNumber() { return stringValue("sn"); }
+    inline void setSerialNumber(const QString &value) { setValue("sn", value); }
+    inline int year() { return intValue("year"); }
+    inline void setYear(int value) { setValue("year", value); }
+    inline QString dateOfCommissioning() { return stringValue("commissioning"); }
+    inline void setDateOfCommissioning(const QString &value) { setValue("commissioning", value); }
+    inline QString dateOfDecommissioning() { return stringValue("decommissioning"); }
+    inline void setDateOfDecommissioning(const QString &value) { setValue("decommissioning", value); }
+    inline QString field() { return stringValue("field"); }
+    inline void setField(const QString &value) { setValue("field", value); }
+    inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline void setRefrigerant(const QString &value) { setValue("refrigerant", value); }
+    inline double refrigerantAmount() { return doubleValue("refrigerant_amount"); }
+    inline void setRefrigerantAmount(double value) { setValue("refrigerant_amount", value); }
+    inline QString oil() { return stringValue("oil"); }
+    inline void setOil(const QString &value) { setValue("oil", value); }
+    inline double oilAmount() { return doubleValue("oil_amount"); }
+    inline void setOilAmount(double value) { setValue("oil_amount", value); }
+    inline bool leakDetectorInstalled() { return intValue("leak_detector"); }
+    inline void setLeakDetectorInstalled(bool value) { setValue("leak_detector", (int)value); }
+    inline double runtime() { return doubleValue("runtime"); }
+    inline void setRuntime(double value) { setValue("runtime", value); }
+    inline double utilisation() { return doubleValue("utilisation"); }
+    inline void setUtilisation(double value) { setValue("utilisation", value); }
+    inline int inspectionInterval() { return intValue("inspection_interval"); }
+    inline void setInspectionInterval(int value) { setValue("inspection_interval", value); }
 
     Compressor compressors();
     CircuitUnit units();

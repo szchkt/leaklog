@@ -352,7 +352,6 @@ void ToolBarStack::enableTools()
 {
     if (_settings->isInspectorSelected()) {
         Inspector inspector(_settings->selectedInspectorUUID());
-        inspector.readValues();
 
         QStringList description;
         description << inspector.certificateNumber();
@@ -365,7 +364,6 @@ void ToolBarStack::enableTools()
 
     if (_settings->isCustomerSelected()) {
         Customer customer(_settings->selectedCustomerUUID());
-        customer.readValues();
 
         QStringList description;
         description << customer.companyID();
@@ -398,23 +396,22 @@ void ToolBarStack::enableTools()
         QStringList attributes;
         attributes << "name" << "operation" << "building" << "device";
 
-        Circuit circuit(_settings->selectedCircuitUUID());
-        circuit.readValues(attributes.join(", ") + ", id, field, refrigerant, " + circuitRefrigerantAmountQuery());
+        QVariantMap circuit = Circuit(_settings->selectedCircuitUUID()).list(attributes.join(", ") + ", id, field, refrigerant, " + circuitRefrigerantAmountQuery());
 
         QStringList description;
-        description << circuit.circuitID();
+        description << circuit.value("id").toString().rightJustified(5, '0');
 
         foreach (const QString &attribute, attributes)
-            if (!circuit.stringValue(attribute).isEmpty())
-                description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.stringValue(attribute)));
+            if (!circuit.value(attribute).toString().isEmpty())
+                description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.value(attribute).toString()));
 
-        if (attributeValues().contains("field::" + circuit.stringValue("field")))
-            description << attributeValues().value("field::" + circuit.stringValue("field"));
+        if (attributeValues().contains("field::" + circuit.value("field").toString()))
+            description << attributeValues().value("field::" + circuit.value("field").toString());
 
         description << QString("%1 %2 %3")
-                       .arg(circuit.stringValue("refrigerant_amount"))
+                       .arg(circuit.value("refrigerant_amount").toString())
                        .arg(QApplication::translate("Units", "kg"))
-                       .arg(circuit.stringValue("refrigerant"));
+                       .arg(circuit.value("refrigerant").toString());
 
         lbl_circuit->setText(tr("Circuit: %1").arg(description.join(", ")));
     }
@@ -439,7 +436,6 @@ void ToolBarStack::enableTools()
 
     if (_settings->isAssemblyRecordTypeSelected()) {
         AssemblyRecordType type(_settings->selectedAssemblyRecordTypeUUID());
-        type.readValues("name");
 
         lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(QString("<b>%1</b>").arg(escapeString(type.name()))));
     }
@@ -449,7 +445,6 @@ void ToolBarStack::enableTools()
     bool selectedItemCategoryIsPredefined = false;
     if (_settings->isAssemblyRecordItemCategorySelected()) {
         AssemblyRecordItemCategory category(_settings->selectedAssemblyRecordItemCategoryUUID());
-        category.readValues("name, predefined");
         selectedItemCategoryIsPredefined = category.isPredefined();
 
         lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(QString("<b>%1</b>").arg(escapeString(category.name()))));
@@ -459,7 +454,6 @@ void ToolBarStack::enableTools()
 
     if (_settings->isAssemblyRecordItemTypeSelected()) {
         AssemblyRecordItemType item_type(_settings->selectedAssemblyRecordItemTypeUUID());
-        item_type.readValues("name");
 
         lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(QString("<b>%1</b>").arg(escapeString(item_type.name()))));
     }
@@ -468,7 +462,6 @@ void ToolBarStack::enableTools()
 
     if (_settings->isCircuitUnitTypeSelected()) {
         CircuitUnitType unit_type(_settings->selectedCircuitUnitTypeUUID());
-        unit_type.readValues("manufacturer, type, refrigerant, refrigerant_amount");
 
         QStringList description;
         if (!unit_type.stringValue("manufacturer").isEmpty())

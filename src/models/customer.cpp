@@ -33,39 +33,33 @@ Customer::Customer(const QString &uuid):
 void Customer::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Customer"));
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString()));
-    md->addInputWidget(new MDLineEdit("company", tr("Company:"), md->widget(), attributes.value("company").toString()));
-    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    (new OperatorInputWidget(attributes, md->widget()))->addToEditDialogue(*md);
+    md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), companyID()));
+    md->addInputWidget(new MDLineEdit("company", tr("Company:"), md->widget(), companyName()));
+    md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), stringValue("address")));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    (new OperatorInputWidget(savedValues(), md->widget()))->addToEditDialogue(*md);
 }
 
 void Customer::readOperatorValues()
 {
-    readValues();
-
     switch (operatorType()) {
         case OperatorTypeServiceCompany: {
-            QVariantMap service_company = ServiceCompany(DBInfo::valueForKey("default_service_company_uuid")).list();
-            values().insert("operator_id", service_company.value("id"));
-            values().insert("operator_company", service_company.value("name"));
-            values().insert("operator_address", service_company.value("address"));
-            values().insert("operator_mail", service_company.value("mail"));
-            values().insert("operator_phone", service_company.value("phone"));
+            ServiceCompany service_company = ServiceCompany(DBInfo::valueForKey("default_service_company_uuid"));
+            setValue("operator_id", service_company.value("id"));
+            setValue("operator_company", service_company.value("name"));
+            setValue("operator_address", service_company.value("address"));
+            setValue("operator_mail", service_company.value("mail"));
+            setValue("operator_phone", service_company.value("phone"));
             break;
         }
 
         case OperatorTypeCustomer:
-            values().insert("operator_id", value("id"));
-            values().insert("operator_company", value("company"));
-            values().insert("operator_address", value("address"));
-            values().insert("operator_mail", value("mail"));
-            values().insert("operator_phone", value("phone"));
+            setValue("operator_id", value("id"));
+            setValue("operator_company", value("company"));
+            setValue("operator_address", value("address"));
+            setValue("operator_mail", value("mail"));
+            setValue("operator_phone", value("phone"));
             break;
 
         case OperatorTypeOther:

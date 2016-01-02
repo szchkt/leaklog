@@ -31,18 +31,18 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    QString date();
-    QString partner();
-    QString partnerID();
-    QString refrigerant();
-    double purchased();
-    double purchasedRecovered();
-    double sold();
-    double soldRecovered();
-    double regenerated();
-    double disposedOf();
-    double leaked();
-    double leakedRecovered();
+    inline QString date() { return stringValue("date"); }
+    inline QString partner() { return stringValue("partner"); }
+    inline QString partnerID() { return stringValue("partner_id"); }
+    inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline double purchased() { return doubleValue("purchased"); }
+    inline double purchasedRecovered() { return doubleValue("purchased_reco"); }
+    inline double sold() { return doubleValue("sold"); }
+    inline double soldRecovered() { return doubleValue("sold_reco"); }
+    inline double regenerated() { return doubleValue("refr_rege"); }
+    inline double disposedOf() { return doubleValue("refr_disp"); }
+    inline double leaked() { return doubleValue("leaked"); }
+    inline double leakedRecovered() { return doubleValue("leaked_reco"); }
 
     static QString tableName();
     static const ColumnList &columns();

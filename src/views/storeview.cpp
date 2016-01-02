@@ -37,11 +37,10 @@ StoreView::StoreView(ViewTabSettings *settings):
 QString StoreView::renderHTML()
 {
     QString html; MTTextStream out(&html);
-    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company_uuid"));
-    QVariantMap serv_company = serv_company_record.list();
+    ServiceCompany serv_company(DBInfo::valueForKey("default_service_company_uuid"));
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
-    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/edit\">";
+    out << "<a href=\"servicecompany:" << serv_company.companyID() << "/edit\">";
     out << tr("Service Company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int num_valid = 0;
