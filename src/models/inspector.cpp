@@ -44,10 +44,10 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
     MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency);
-    iw->setShowInForm(false);
+    iw->setRowSpan(0);
     md->addInputWidget(iw);
     iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency);
-    iw->setShowInForm(false);
+    iw->setRowSpan(0);
     md->addInputWidget(iw);
 }
 

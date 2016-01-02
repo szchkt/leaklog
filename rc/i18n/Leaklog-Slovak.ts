@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.0" language="sk_SK" sourcelanguage="en_GB">
+<defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -361,10 +362,6 @@
         <translation>Zobraziť</translation>
     </message>
     <message>
-        <source>List of Assembly Record Item Categories and Types</source>
-        <translation>Zoznam kategórií a typov položiek montážneho listu</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
@@ -391,6 +388,10 @@
     <message>
         <source>No</source>
         <translation>Nie</translation>
+    </message>
+    <message>
+        <source>Assembly Record Item Categories and Types</source>
+        <translation>Kategórie a typy položiek montážneho listu</translation>
     </message>
 </context>
 <context>
@@ -470,8 +471,8 @@
 <context>
     <name>AssemblyRecordTypesView</name>
     <message>
-        <source>List of Assembly Record Types</source>
-        <translation>Zoznam typov montážneho listu</translation>
+        <source>Assembly Record Types</source>
+        <translation>Typy montážneho listu</translation>
     </message>
 </context>
 <context>
@@ -526,10 +527,6 @@
     <message>
         <source>Circuit name:</source>
         <translation>Názov okruhu:</translation>
-    </message>
-    <message>
-        <source>Disused</source>
-        <translation>Vyradený</translation>
     </message>
     <message>
         <source>Place of operation:</source>
@@ -711,6 +708,34 @@
         <source>Circuit ID</source>
         <translation>IČ okruhu</translation>
     </message>
+    <message>
+        <source>Commissioned</source>
+        <translation>V prevádzke</translation>
+    </message>
+    <message>
+        <source>Excluded from Agenda</source>
+        <translation>Vyradený z agendy</translation>
+    </message>
+    <message>
+        <source>Decommissioned</source>
+        <translation>Vyradený z prevádzky</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning:</source>
+        <translation>Dôvod vyradenia:</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning</source>
+        <translation>Dôvod vyradenia</translation>
+    </message>
+    <message>
+        <source>Status:</source>
+        <translation>Stav:</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Stav</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -862,8 +887,8 @@
 <context>
     <name>CircuitUnitTypesView</name>
     <message>
-        <source>List of Circuit Unit Types</source>
-        <translation>Zoznam typov jednotiek okruhu</translation>
+        <source>Circuit Unit Types</source>
+        <translation>Typy jednotiek okruhov</translation>
     </message>
 </context>
 <context>
@@ -881,10 +906,6 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Circuits</source>
-        <translation>Zoznam okruhov</translation>
-    </message>
-    <message>
         <source>Circuit</source>
         <translation>Okruh</translation>
     </message>
@@ -899,10 +920,6 @@
     <message>
         <source>No</source>
         <translation>Nie</translation>
-    </message>
-    <message>
-        <source>Disused Circuits</source>
-        <translation>Vyradené okruhy</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -923,6 +940,30 @@
     <message>
         <source>Circuit units</source>
         <translation>Jednotky okruhu</translation>
+    </message>
+    <message>
+        <source>Circuits</source>
+        <translation>Okruhy</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda</source>
+        <translation>Okruhy vyradené z agendy</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits</source>
+        <translation>Okruhy vyradené z prevádzky</translation>
+    </message>
+    <message>
+        <source>Circuits (%1)</source>
+        <translation>Okruhy (%1)</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda (%1)</source>
+        <translation>Okruhy vyradené z agendy (%1)</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits (%1)</source>
+        <translation>Okruhy vyradené z prevádzky (%1)</translation>
     </message>
 </context>
 <context>
@@ -1161,10 +1202,6 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Customers</source>
-        <translation>Zoznam zákazníkov</translation>
-    </message>
-    <message>
         <source>Customer</source>
         <translation>Zákazník</translation>
     </message>
@@ -1183,6 +1220,10 @@
     <message>
         <source>Phone</source>
         <translation>Telefón</translation>
+    </message>
+    <message>
+        <source>Customers</source>
+        <translation>Zákazníci</translation>
     </message>
 </context>
 <context>
@@ -1949,12 +1990,12 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Inspections</source>
-        <translation>Zoznam kontrol</translation>
-    </message>
-    <message>
         <source>Images</source>
         <translation>Obrázky</translation>
+    </message>
+    <message>
+        <source>Inspections</source>
+        <translation>Kontroly</translation>
     </message>
 </context>
 <context>
@@ -2094,16 +2135,16 @@
         <translation>Počet opráv</translation>
     </message>
     <message>
-        <source>List of Inspectors</source>
-        <translation>Zoznam kontrolórov</translation>
-    </message>
-    <message>
         <source>Inspector</source>
         <translation>Kontrolór</translation>
     </message>
     <message>
         <source>View inspector activity</source>
         <translation>Zobraziť aktivitu kontrolóra</translation>
+    </message>
+    <message>
+        <source>Inspectors</source>
+        <translation>Kontrolóri</translation>
     </message>
 </context>
 <context>
@@ -2412,10 +2453,6 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     <message>
         <source>Rate of utilisation</source>
         <translation>Stupeň zaťaženia</translation>
-    </message>
-    <message>
-        <source>Disused</source>
-        <translation>Vyradený</translation>
     </message>
     <message>
         <source>Hermetically sealed</source>
@@ -4377,7 +4414,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Open Backup Folder - Leaklog</source>
         <translation>Otvoriť priečinok so zálohami - Leaklog</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>CO₂ equivalent</source>
         <translation>CO₂ ekvivalent</translation>
     </message>
@@ -4397,6 +4434,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>ID</source>
         <comment>Variable ID</comment>
         <translation>ID</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Stav</translation>
     </message>
 </context>
 <context>
@@ -5015,16 +5056,16 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
 <context>
     <name>RepairsView</name>
     <message>
-        <source>List of Repairs</source>
-        <translation>Zoznam opráv</translation>
-    </message>
-    <message>
         <source>Date Updated</source>
         <translation>Dátum zmeny</translation>
     </message>
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+    <message>
+        <source>Repairs</source>
+        <translation>Opravy</translation>
     </message>
 </context>
 <context>
@@ -5569,7 +5610,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Month:</source>
         <translation>Mesiac:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5637,7 +5678,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Circuit Name</source>
         <translation>Názov okruhu</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
     </message>
@@ -5691,7 +5732,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>t</source>
         <translation>t</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>t of CO₂ equivalent</source>
         <translation>t CO₂ ekvivalentu</translation>
     </message>

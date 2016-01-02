@@ -50,6 +50,9 @@ MainWindowSettings::MainWindowSettings():
     QObject(),
     m_customer_details_visible(false),
     m_circuit_details_visible(false),
+    m_circuits_visible(true),
+    m_excluded_circuits_visible(true),
+    m_decommissioned_circuits_visible(true),
     m_service_company_information_visible(false),
     m_date_format(ddMMyyyy),
     m_time_format(hhmm)
@@ -60,6 +63,9 @@ void MainWindowSettings::save(QSettings &settings) const
 {
     settings.setValue("main_window/customer_details_visible", m_customer_details_visible);
     settings.setValue("main_window/circuit_details_visible", m_circuit_details_visible);
+    settings.setValue("main_window/circuits_visible", m_circuits_visible);
+    settings.setValue("main_window/excluded_circuits_visible", m_excluded_circuits_visible);
+    settings.setValue("main_window/decommissioned_circuits_visible", m_decommissioned_circuits_visible);
 
     settings.setValue("main_window/service_company_information_visible", m_service_company_information_visible);
 
@@ -76,6 +82,9 @@ void MainWindowSettings::restore(QSettings &settings)
 {
     m_customer_details_visible = settings.value("main_window/customer_details_visible", false).toBool();
     m_circuit_details_visible = settings.value("main_window/circuit_details_visible", false).toBool();
+    m_circuits_visible = settings.value("main_window/circuits_visible", true).toBool();
+    m_excluded_circuits_visible = settings.value("main_window/excluded_circuits_visible", true).toBool();
+    m_decommissioned_circuits_visible = settings.value("main_window/decommissioned_circuits_visible", true).toBool();
 
     setServiceCompanyInformationVisible(settings.value("main_window/service_company_information_visible", false).toBool());
 

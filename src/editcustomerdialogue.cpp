@@ -54,7 +54,7 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget 
     input_widgets << new MDLineEdit("operator_phone", QApplication::translate("Customer", "Phone:"), this, attributes.value("operator_phone").toString());
 
     foreach (MDAbstractInputWidget *widget, input_widgets) {
-        widget->setShowInForm(false);
+        widget->setRowSpan(0);
         widget->setVisible(false);
         addWidget(widget);
     }

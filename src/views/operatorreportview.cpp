@@ -150,7 +150,7 @@ QString OperatorReportView::renderHTML()
         if (commissioning_date >= date_until)
             continue;
         decommissioning_date = circuits.stringValue("decommissioning").left(7);
-        if (circuits.intValue("disused") == 0)
+        if (circuits.intValue("disused") <= Circuit::Commissioned)
             decommissioning_date = "9999";
         else if (decommissioning_date.isEmpty())
             decommissioning_date = QString::number(QDate::currentDate().year());

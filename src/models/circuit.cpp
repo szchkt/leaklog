@@ -53,29 +53,38 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), placeOfOperation()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), building()));
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
-    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), hermetic()));
     md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), manufacturer()));
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
     md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), serialNumber()));
     md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, year()));
     md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), dateOfCommissioning()));
-    MDCheckBox *disused_checkbox = new MDCheckBox("disused", tr("Disused"), md->widget(), disused());
-    md->addInputWidget(disused_checkbox);
-    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), dateOfDecommissioning());
-    decommissioning->setEnabled(disused_checkbox->isChecked());
-    QObject::connect(disused_checkbox, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
-    md->addInputWidget(decommissioning);
+    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), hermetic()));
+    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), leakDetectorInstalled()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), oil(), oils()));
     md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), leakDetectorInstalled()));
     md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, runtime(), QApplication::translate("Units", "hours")));
     md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, utilisation(), QApplication::translate("Units", "%")));
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
+    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), stringValue("disused"), {
+        {QString::number(Circuit::Commissioned), tr("Commissioned")},
+        {QString::number(Circuit::ExcludedFromAgenda), tr("Excluded from Agenda")},
+        {QString::number(Circuit::Decommissioned), tr("Decommissioned")}
+    });
+    md->addInputWidget(disused);
+    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), dateOfDecommissioning());
+    decommissioning->setEnabled(disused->currentIndex());
+    QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
+    md->addInputWidget(decommissioning);
+    MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason for decommissioning:"), md->widget(), reasonForDecommissioning());
+    reason->setRowSpan(2);
+    reason->setEnabled(disused->currentIndex());
+    QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
+    md->addInputWidget(reason);
 
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -154,6 +163,7 @@ public:
         columns << Column("year", "INTEGER");
         columns << Column("commissioning", "TEXT");
         columns << Column("decommissioning", "TEXT");
+        columns << Column("decommissioning_reason", "TEXT");
         columns << Column("field", "TEXT");
         columns << Column("refrigerant", "TEXT");
         columns << Column("refrigerant_amount", "NUMERIC");
@@ -193,13 +203,14 @@ public:
         dict.insert("field", QApplication::translate("Circuit", "Field of application"));
         // numBasicAttributes: 11
         dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
-        dict.insert("disused", QApplication::translate("Circuit", "Disused"));
+        dict.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
+        dict.insert("disused", QApplication::translate("Circuit", "Status"));
         dict.insert("decommissioning", QApplication::translate("Circuit", "Date of decommissioning"));
+        dict.insert("decommissioning_reason", QApplication::translate("Circuit", "Reason for decommissioning"));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
         dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant") + "||" + QApplication::translate("Units", "kg"));
         dict.insert("oil", QApplication::translate("Circuit", "Oil"));
         dict.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil") + "||" + QApplication::translate("Units", "kg"));
-        dict.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
         dict.insert("runtime", QApplication::translate("Circuit", "Run-time per day") + "||" + QApplication::translate("Units", "hours"));
         dict.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation") + "||%");
         dict.insert("inspection_interval", QApplication::translate("Circuit", "Inspection interval") + "||" + QApplication::translate("Units", "days"));

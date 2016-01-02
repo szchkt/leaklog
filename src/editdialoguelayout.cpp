@@ -48,16 +48,20 @@ EditDialogueColumnLayout::EditDialogueColumnLayout(QList<MDAbstractInputWidget *
 void EditDialogueColumnLayout::layout()
 {
     int count = 0;
-    for (int i = 0; i < md_inputwidgets->count(); ++i) { if (md_inputwidgets->at(i)->showInForm()) count++; }
+    for (int i = 0; i < md_inputwidgets->count(); ++i) {
+        count += md_inputwidgets->at(i)->rowSpan();
+    }
     int num_cols = count / rows_in_column + 1;
     int num_rows = count / num_cols + (count % num_cols > 0 ? 1 : 0);
     int i = 0;
     for (int c = 0; c < num_cols; ++c) {
-        for (int r = 0; r < num_rows; ++r) {
+        for (int r = 0; r < num_rows;) {
             if (i >= md_inputwidgets->count()) { return; }
-            if (!md_inputwidgets->at(i)->showInForm()) { r--; i++; continue; }
+            int row_span = md_inputwidgets->at(i)->rowSpan();
+            if (!row_span) { i++; continue; }
             addWidget(md_inputwidgets->at(i)->label()->widget(), r, 2 * c);
-            addWidget(md_inputwidgets->at(i)->widget(), r, (2 * c) + 1);
+            addWidget(md_inputwidgets->at(i)->widget(), r, (2 * c) + 1, row_span, 1);
+            r += row_span;
             i++;
         }
     }

@@ -589,6 +589,12 @@ void ViewTab::executeLink(Link *link)
             mainWindowSettings().toggleCustomerDetailsVisible();
         else if (id == "circuit")
             mainWindowSettings().toggleCircuitDetailsVisible();
+        else if (id == "circuits")
+            mainWindowSettings().toggleCircuitsVisible();
+        else if (id == "excludedcircuits")
+            mainWindowSettings().toggleExcludedCircuitsVisible();
+        else if (id == "decommissionedcircuits")
+            mainWindowSettings().toggleDecommissionedCircuitsVisible();
         refreshView();
         break;
 

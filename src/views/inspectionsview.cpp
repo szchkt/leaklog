@@ -190,7 +190,7 @@ QString InspectionsView::title() const
 {
     Circuit circuit(settings->selectedCircuitUUID());
     QString title = circuit.circuitName();
-    return tr("List of Inspections")
+    return tr("Inspections")
             + " - " + Customer(settings->selectedCustomerUUID()).companyName()
             + " - " + QString(title.isEmpty() ? circuit.circuitID() : title);
 }

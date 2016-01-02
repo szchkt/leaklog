@@ -105,7 +105,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
                 continue;
 
             int decommissioning_year = circuits.stringValue("decommissioning").left(4).toInt();
-            if (circuits.intValue("disused") == 0)
+            if (circuits.intValue("disused") <= Circuit::Commissioned)
                 decommissioning_year = 9999;
             else if (!decommissioning_year)
                 decommissioning_year = current_year;

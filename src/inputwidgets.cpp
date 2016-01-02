@@ -79,7 +79,7 @@ MDAbstractInputWidget::MDAbstractInputWidget(const QString &id, QWidget *widget)
 {
     iw_id = id;
     iw_widget = widget;
-    show = true;
+    row_span = 1;
     skip_save = false;
 }
 
@@ -331,6 +331,7 @@ MDInputWidget(id, labeltext, parent, this)
         }
     }
     setCurrentIndex(n);
+    QObject::connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(emitToggled(int)));
 }
 
 QVariant MDComboBox::variantValue() const
@@ -356,6 +357,11 @@ void MDComboBox::setVariantValue(const QVariant &value)
 void MDComboBox::setNullValue(const QVariant &value)
 {
     nullvalue = value;
+}
+
+void MDComboBox::emitToggled(int index)
+{
+    emit toggled(index != 0);
 }
 
 MDColourComboBox::MDColourComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
@@ -595,7 +601,7 @@ QVariant MDRadioButtonGroup::variantValue() const
 MDHiddenIdField::MDHiddenIdField(const QString &id, QWidget *parent, const QVariant &value):
 MDInputWidget(id, "", parent, NULL)
 {
-    setShowInForm(false);
+    setRowSpan(0);
     iw_label->setVisible(false);
     setVariantValue(value);
 }

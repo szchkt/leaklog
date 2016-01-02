@@ -1074,10 +1074,10 @@ void MainWindow::decommissionAllCircuits()
 
     QString decommissioning = date->date().toString(DATE_FORMAT);
 
-    auto circuits = customer.circuits().where<Circuit>("disused = 0");
+    auto circuits = customer.circuits().where<Circuit>(QString("disused = %1").arg(Circuit::Commissioned));
     foreach (auto circuit, circuits) {
-        circuit.setValue("disused", 1);
-        circuit.setValue("decommissioning", decommissioning);
+        circuit.setStatus(Circuit::Decommissioned);
+        circuit.setDateOfDecommissioning(decommissioning);
         circuit.save();
     }
 
@@ -1260,7 +1260,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
-    circuit.setDisused(true);
+    circuit.setStatus(Circuit::Decommissioned);
     circuit.setDateOfDecommissioning(date->date().toString(DATE_FORMAT));
     circuit.setRefrigerant(old_refrigerant->currentText());
     circuit.save();
@@ -1521,6 +1521,9 @@ void MainWindow::addInspection()
     Inspection record;
     record.setValue("customer_uuid", m_tab->selectedCustomerUUID());
     record.setValue("circuit_uuid", m_tab->selectedCircuitUUID());
+    if (m_tab->isInspectorSelected()) {
+        record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
+    }
     UndoCommand command(m_undo_stack, tr("Add inspection"));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1744,6 +1747,9 @@ void MainWindow::addRepair()
     if (m_tab->isCustomerSelected()) {
         record.setValue("customer_uuid", m_tab->selectedCustomerUUID());
         record.setValue("customer", Customer(m_tab->selectedCustomerUUID()).stringValue("company"));
+    }
+    if (m_tab->isInspectorSelected()) {
+        record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
     }
     UndoCommand command(m_undo_stack, tr("Add repair"));
     EditDialogue md(&record, m_undo_stack, this);
@@ -3290,12 +3296,15 @@ void MainWindow::importCSV()
     circuits_table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Disused"), "disused", ImportDialogueTableColumn::Boolean);
+    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Status"), "disused", ImportDialogueTableColumn::Select);
+    col->addSelectValue(QString::number(Circuit::Commissioned), QApplication::translate("Circuit", "Commissioned"));
+    col->addSelectValue(QString::number(Circuit::ExcludedFromAgenda), QApplication::translate("Circuit", "Excluded from Agenda"));
+    col->addSelectValue(QString::number(Circuit::Decommissioned), QApplication::translate("Circuit", "Decommissioned"));
     circuits_table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
     circuits_table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
     circuits_table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
     circuits_table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
-    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);

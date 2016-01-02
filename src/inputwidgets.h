@@ -141,8 +141,8 @@ public:
     inline QString colour() const { return iw_colour; }
     inline void setColour(const QString &colour) { iw_colour = colour; }
 
-    bool showInForm() const { return show; }
-    void setShowInForm(bool show) { this->show = show; }
+    int rowSpan() const { return row_span; }
+    void setRowSpan(int row_span) { this->row_span = row_span; }
 
     bool skipSave() const { return skip_save; }
     void setSkipSave(bool skip) { skip_save = skip; }
@@ -160,7 +160,7 @@ protected:
     MTLabeledWidget *iw_label;
 
 private:
-    bool show;
+    int row_span;
     bool skip_save;
     QString iw_id;
     QWidget *iw_widget;
@@ -278,6 +278,12 @@ public:
     void setVariantValue(const QVariant &);
 
     void setNullValue(const QVariant &);
+
+signals:
+    void toggled(bool);
+
+protected slots:
+    void emitToggled(int);
 
 private:
     QVariant nullvalue;

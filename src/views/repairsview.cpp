@@ -69,7 +69,7 @@ QString RepairsView::renderHTML()
     repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">" << tr("List of Repairs") << "</th></tr><tr>";
+    out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">" << tr("Repairs") << "</th></tr><tr>";
     for (int n = 0; n < Repair::attributes().count(); ++n) {
         out << "<th><a href=\"allrepairs:/order_by:" << Repair::attributes().key(n) << "\">" << Repair::attributes().value(n) << "</a></th>";
     }
@@ -111,5 +111,5 @@ QString RepairsView::renderHTML()
 
 QString RepairsView::title() const
 {
-    return tr("List of Repairs");
+    return tr("Repairs");
 }

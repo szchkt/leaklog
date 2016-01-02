@@ -32,6 +32,12 @@ class Circuit : public DBRecord
     Q_OBJECT
 
 public:
+    enum Status {
+        ExcludedFromAgenda = -1,
+        Commissioned = 0,
+        Decommissioned = 1
+    };
+
     Circuit(const QString &uuid = QString());
     Circuit(const MTDictionary &parents);
     Circuit(const Circuit &other): DBRecord(other) {}
@@ -49,8 +55,8 @@ public:
     inline void setCircuitID(int value) { setValue("id", value); }
     inline QString circuitName() { return stringValue("name"); }
     inline void setCircuitName(const QString &value) { setValue("name", value); }
-    inline bool disused() { return intValue("disused"); }
-    inline void setDisused(bool value) { setValue("disused", (int)value); }
+    inline Status status() { return (Status)intValue("disused"); }
+    inline void setStatus(Status value) { setValue("disused", value); }
     inline QString placeOfOperation() { return stringValue("operation"); }
     inline void setPlaceOfOperation(const QString &value) { setValue("operation", value); }
     inline QString building() { return stringValue("building"); }
@@ -71,6 +77,8 @@ public:
     inline void setDateOfCommissioning(const QString &value) { setValue("commissioning", value); }
     inline QString dateOfDecommissioning() { return stringValue("decommissioning"); }
     inline void setDateOfDecommissioning(const QString &value) { setValue("decommissioning", value); }
+    inline QString reasonForDecommissioning() { return stringValue("decommissioning_reason"); }
+    inline void setReasonForDecommissioning(const QString &value) { setValue("decommissioning_reason", value); }
     inline QString field() { return stringValue("field"); }
     inline void setField(const QString &value) { setValue("field", value); }
     inline QString refrigerant() { return stringValue("refrigerant"); }
