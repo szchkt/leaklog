@@ -40,13 +40,12 @@ class EditAssemblyRecordDialogueTab : public EditDialogueTab
 public:
     EditAssemblyRecordDialogueTab(const QString &ar_type_uuid, QWidget * = NULL);
 
-    void save();
+    void save(const QString &ar_type_uuid);
     QWidget *widget() { return this; }
 
 private:
-    void init();
+    void init(const QString &ar_type_uuid);
 
-    QString ar_type_uuid;
     QTreeWidget *tree;
 };
 

@@ -31,17 +31,16 @@
 EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_uuid, const QString &circuit_uuid, const QString &inspection_uuid, QWidget *parent)
     : QWidget(parent),
       customer_uuid(customer_uuid),
-      circuit_uuid(circuit_uuid),
-      inspection_uuid(inspection_uuid)
+      circuit_uuid(circuit_uuid)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     tab_w = new QTabWidget(this);
     layout->addWidget(tab_w);
 
-    loadTabs();
+    loadTabs(inspection_uuid);
 }
 
-void EditInspectionDialogueCompressors::loadTabs()
+void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid)
 {
     ListOfVariantMaps compressors = Circuit(circuit_uuid).compressors().listAll();
 
@@ -65,7 +64,7 @@ InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(const Inspect
     return tab;
 }
 
-void EditInspectionDialogueCompressors::save()
+void EditInspectionDialogueCompressors::save(const QString &)
 {
     for (int i = 0; i < tabs.count(); ++i) {
         tabs.at(i)->save();

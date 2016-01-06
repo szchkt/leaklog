@@ -297,7 +297,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
     }
 }
 
-void EditInspectionDialogueAssemblyRecordTab::save()
+void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
 {
     if (!original_arno.isEmpty())
         AssemblyRecordItem({"arno", original_arno}).remove();

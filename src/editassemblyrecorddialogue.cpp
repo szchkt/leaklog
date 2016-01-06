@@ -40,15 +40,14 @@ void EditAssemblyRecordDialogue::save()
 }
 
 EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(const QString &ar_type_uuid, QWidget *parent):
-    EditDialogueTab(parent),
-    ar_type_uuid(ar_type_uuid)
+    EditDialogueTab(parent)
 {
     setName(tr("Item categories"));
 
-    init();
+    init(ar_type_uuid);
 }
 
-void EditAssemblyRecordDialogueTab::save()
+void EditAssemblyRecordDialogueTab::save(const QString &ar_type_uuid)
 {
     AssemblyRecordType(ar_type_uuid).typeCategories().remove();
 
@@ -64,7 +63,7 @@ void EditAssemblyRecordDialogueTab::save()
     }
 }
 
-void EditAssemblyRecordDialogueTab::init()
+void EditAssemblyRecordDialogueTab::init(const QString &ar_type_uuid)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
@@ -77,6 +76,9 @@ void EditAssemblyRecordDialogueTab::init()
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     layout->addWidget(tree);
+
+    if (ar_type_uuid.isEmpty())
+        return;
 
     MTRecord record(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"
                     " ON assembly_record_type_categories.ar_item_category_uuid = assembly_record_item_categories.uuid"

@@ -39,17 +39,14 @@ class EditInspectionDialogueCompressors : public QWidget, public EditDialogueAre
 public:
     EditInspectionDialogueCompressors(const QString &, const QString &, const QString &, QWidget *);
 
-    void clearInspectionUUID() { inspection_uuid.clear(); }
-
-    void save();
+    void save(const QString &);
 
 private:
     InspectionCompressorTab *addTab(const InspectionCompressor &inspection_compressor, const QString &name);
-    void loadTabs();
+    void loadTabs(const QString &inspection_uuid);
 
     QString customer_uuid;
     QString circuit_uuid;
-    QString inspection_uuid;
     QTabWidget *tab_w;
     QList<InspectionCompressorTab *> tabs;
     QList<int> former_ids;

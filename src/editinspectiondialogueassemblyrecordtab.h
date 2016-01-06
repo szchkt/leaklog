@@ -32,7 +32,7 @@ class EditInspectionDialogueAssemblyRecordTab : public EditDialogueTab
 public:
     EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *, MDComboBox *, EditInspectionDialogueAccess *, const QString &, const QString &, QWidget * = NULL);
 
-    void save();
+    void save(const QString &);
     QString saveNewItemType(const MTDictionary &);
 
 private slots:

@@ -26,8 +26,7 @@
 #include <QHeaderView>
 
 EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &circuit_uuid, QWidget *parent)
-    : EditDialogueTab(parent),
-      circuit_uuid(circuit_uuid)
+    : EditDialogueTab(parent)
 {
     setName(tr("Units"));
 
@@ -64,10 +63,10 @@ EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &circuit_
     grid->addWidget(table, 0, 1);
 
     loadManufacturers();
-    loadRows();
+    loadRows(circuit_uuid);
 }
 
-void EditCircuitDialogueUnitsTab::loadRows()
+void EditCircuitDialogueUnitsTab::loadRows(const QString &circuit_uuid)
 {
     QMap<QString, EditDialogueTableCell *> cells;
 
@@ -101,7 +100,7 @@ void EditCircuitDialogueUnitsTab::loadRows()
     }
 }
 
-void EditCircuitDialogueUnitsTab::save()
+void EditCircuitDialogueUnitsTab::save(const QString &circuit_uuid)
 {
     QList<MTDictionary> all_values = table->allValues();
 

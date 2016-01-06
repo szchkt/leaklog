@@ -51,12 +51,10 @@ class EditInspectionDialogueImagesTab : public EditDialogueTab
 public:
     EditInspectionDialogueImagesTab(const QString &inspection_uuid);
 
-    void save();
+    void save(const QString &inspection_uuid);
 
 private:
-    void loadItemInputWidgets();
-
-    QString _inspection_uuid;
+    void loadItemInputWidgets(const QString &inspection_uuid);
 
     EditDialogueBasicTable *table;
 };

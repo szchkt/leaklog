@@ -35,7 +35,7 @@ class EditCircuitDialogueUnitsTab : public EditDialogueTab
 public:
     EditCircuitDialogueUnitsTab(const QString &circuit_uuid, QWidget * = NULL);
 
-    void save();
+    void save(const QString &circuit_uuid);
     QWidget *widget() { return this; }
 
 private slots:
@@ -46,12 +46,11 @@ signals:
     void updateCircuit(MTDictionary);
 
 private:
-    void loadRows();
+    void loadRows(const QString &circuit_uuid);
     void loadManufacturers();
 
     EditCircuitDialogueTable *table;
     QTreeWidget *tree;
-    QString circuit_uuid;
     QStringList former_ids;
 };
 

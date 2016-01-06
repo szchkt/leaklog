@@ -25,8 +25,7 @@
 #include <QDateTime>
 
 EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QString &circuit_uuid, QWidget *parent)
-    : EditDialogueTab(parent),
-      circuit_uuid(circuit_uuid)
+    : EditDialogueTab(parent)
 {
     setName(tr("Compressors"));
 
@@ -50,10 +49,10 @@ EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QStri
     compressors_table = new EditDialogueBasicTable(tr("Compressors"), cells, this);
     layout->addWidget(compressors_table);
 
-    load();
+    load(circuit_uuid);
 }
 
-void EditCircuitDialogueCompressorsTab::save()
+void EditCircuitDialogueCompressorsTab::save(const QString &circuit_uuid)
 {
     QList<MTDictionary> all_values = compressors_table->allValues();
 
@@ -81,7 +80,7 @@ void EditCircuitDialogueCompressorsTab::save()
         Compressor(former_ids.at(i)).remove();
 }
 
-void EditCircuitDialogueCompressorsTab::load()
+void EditCircuitDialogueCompressorsTab::load(const QString &circuit_uuid)
 {
     EditDialogueTableCell *cell;
     QMap<QString, EditDialogueTableCell *> compressors_data;

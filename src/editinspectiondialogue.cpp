@@ -73,8 +73,6 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
         compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, this);
-        if (!duplicate_from.isEmpty())
-            compressors->clearInspectionUUID();
         compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         splitter->addWidget(compressors);
         tabs.append(compressors);
@@ -105,8 +103,6 @@ EditInspectionDialogue::~EditInspectionDialogue()
 
 EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &inspection_uuid)
 {
-    _inspection_uuid = inspection_uuid;
-
     setName(tr("Images"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -121,17 +117,17 @@ EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &
     table = new EditDialogueBasicTable(tr("Images"), cells, this);
     layout->addWidget(table);
 
-    loadItemInputWidgets();
+    loadItemInputWidgets(inspection_uuid);
 }
 
-void EditInspectionDialogueImagesTab::loadItemInputWidgets()
+void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspection_uuid)
 {
-    if (_inspection_uuid.isEmpty()) {
+    if (inspection_uuid.isEmpty()) {
         table->addNewRow();
         return;
     }
 
-    ListOfVariantMaps images = Inspection(_inspection_uuid).images().listAll();
+    ListOfVariantMaps images = Inspection(inspection_uuid).images().listAll();
 
     QMap<QString, EditDialogueTableCell *> image_data;
     EditDialogueTableCell *cell;
@@ -149,13 +145,13 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets()
     if (!images.count()) table->addNewRow();
 }
 
-void EditInspectionDialogueImagesTab::save()
+void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
 {
     QList<MTDictionary> dicts = table->allValues();
     QList<QString> undeleted_files;
 
-    if (!_inspection_uuid.isEmpty()) {
-        InspectionImage images_record = Inspection(_inspection_uuid).images();
+    if (!inspection_uuid.isEmpty()) {
+        InspectionImage images_record = Inspection(inspection_uuid).images();
 
         ListOfVariantMaps images = images_record.listAll("file_uuid");
 
@@ -177,7 +173,7 @@ void EditInspectionDialogueImagesTab::save()
 
         map.insert("description", dicts.at(i).value("description"));
         map.insert("file_uuid", file_uuid);
-        Inspection(_inspection_uuid).images().update(map);
+        Inspection(inspection_uuid).images().update(map);
     }
 
     for (int i = 0; i < undeleted_files.count(); ++i)

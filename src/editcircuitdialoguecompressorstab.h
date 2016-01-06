@@ -31,15 +31,14 @@ class EditCircuitDialogueCompressorsTab : public EditDialogueTab
 public:
     EditCircuitDialogueCompressorsTab(const QString &circuit_uuid, QWidget *parent = NULL);
 
-    void save();
+    void save(const QString &circuit_uuid);
     QWidget *widget() { return this; }
 
 private:
-    void load();
+    void load(const QString &circuit_uuid);
 
     EditDialogueBasicTable *compressors_table;
     QStringList former_ids;
-    QString circuit_uuid;
 };
 
 #endif // EDIT_CIRCUIT_DIALOGUE_COMPRESSORS_TAB_H
