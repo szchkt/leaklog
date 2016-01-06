@@ -56,7 +56,7 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid,
     }
     ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
        " (SELECT COUNT(date) FROM inspections WHERE inspector_uuid = inspectors.uuid) AS inspections_count,"
-       " (SELECT COUNT(date) FROM repairs WHERE repairman = CAST(inspectors.uuid AS text)) AS repairs_count"));
+       " (SELECT COUNT(date) FROM repairs WHERE inspector_uuid = inspectors.uuid) AS repairs_count"));
 
     HTMLTable *table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("highlight");

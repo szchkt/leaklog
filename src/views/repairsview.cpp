@@ -94,7 +94,7 @@ QString RepairsView::renderHTML()
                 if (attributeValues().contains("field::" + attr_value)) {
                     attr_value = attributeValues().value("field::" + attr_value);
                 }
-            } else if (Repair::attributes().key(n) == "repairman") {
+            } else if (Repair::attributes().key(n) == "inspector_uuid") {
                 attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
             }
             out << escapeString(attr_value) << "</td>";

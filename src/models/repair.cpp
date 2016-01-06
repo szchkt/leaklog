@@ -171,7 +171,7 @@ public:
         dict.insert("refrigerant_amount", QApplication::translate("Repair", "Amount of refrigerant"));
         dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
         dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
-        dict.insert("repairman", QApplication::translate("Repair", "Inspector"));
+        dict.insert("inspector_uuid", QApplication::translate("Repair", "Inspector"));
         dict.insert("arno", QApplication::translate("Repair", "Assembly record No."));
     }
 
