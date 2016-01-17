@@ -36,14 +36,7 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerantsToString().split(';'));
 
     md->setWindowTitle(tr("Repair"));
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    } else {
-        for (int i = 0; i < parents().count(); ++i) {
-            attributes.insert(parents().key(i), parents().value(i));
-        }
-    }
+    QVariantMap attributes = values();
     MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
     if (DBInfo::isDatabaseLocked())
         date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));

@@ -1816,8 +1816,8 @@ void MainWindow::addRepair()
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record("");
     if (m_tab->isCustomerSelected()) {
-        record.parents().insert("parent", m_tab->selectedCustomer());
-        record.parents().insert("customer", Customer(m_tab->selectedCustomer()).stringValue("company"));
+        record.setValue("parent", m_tab->selectedCustomer());
+        record.setValue("customer", Customer(m_tab->selectedCustomer()).stringValue("company"));
     }
     if (m_tab->isInspectorSelected()) {
         record.setValue("repairman", m_tab->selectedInspector());

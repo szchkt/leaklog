@@ -45,7 +45,7 @@ public:
     inline QString &id() { return r_id; }
     void setId(const QString &id) { r_id = id; }
     inline MTDictionary &parents() { return r_parents; }
-    inline QString parent(const QString &field) const { return r_parents.value(field); }
+    inline QString parent(const QString &field) const { return r_parents.value(field, QString()); }
     bool exists();
     MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder);
     MTSqlQuery select(const QString &fields, const QString &order_by);
