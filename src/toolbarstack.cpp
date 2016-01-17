@@ -296,7 +296,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
     chb_show_partner->setVisible(view == View::Store);
     chb_show_circuit_name->setVisible(view == View::OperatorReport);
 
-    chb_CO2_equivalent->setVisible(view == View::Agenda);
+    chb_CO2_equivalent->setVisible(view == View::Agenda || view == View::OperatorReport);
 
     chb_table_all_circuits->setVisible(filter_all_circuits_visible);
 

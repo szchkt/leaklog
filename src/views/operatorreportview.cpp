@@ -44,6 +44,7 @@ QString OperatorReportView::renderHTML()
     int month_from = settings->toolBarStack()->filterMonthFromValue();
     int month_until = settings->toolBarStack()->filterMonthUntilValue();
     bool show_circuit_name = settings->toolBarStack()->isShowCircuitNameChecked();
+    bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
 
     if (year == 0)
         year = QDate::currentDate().year() - 1;
@@ -93,15 +94,18 @@ QString OperatorReportView::renderHTML()
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"" << (show_circuit_name ? 9 : 8) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
+    out << "<tr><th colspan=\"" << (8 + show_circuit_name + CO2_equivalent) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "ID") << "</th>";
     if (show_circuit_name) {
         out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Name") << "</th>";
     }
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
+    if (CO2_equivalent)
+        out << "<th rowspan=\"2\">" << QApplication::translate("MainWindow", "GWP") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
-    out << "<th colspan=\"4\">" << QApplication::translate("Circuit", "Amount of refrigerant") << "</th>";
+    QString unit = CO2_equivalent ? replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")) : QApplication::translate("Units", "kg");
+    out << "<th colspan=\"4\">" << QString("%1 (%2)").arg(QApplication::translate("Circuit", "Amount of refrigerant")).arg(unit) << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "</tr><tr>";
     out << "<th>" << ((month_from > 1 || month_until < 12) ?
@@ -183,12 +187,17 @@ QString OperatorReportView::renderHTML()
         if (show_circuit_name) {
             out << "<td>" << MTVariant(circuits.stringValue("name")) << "</td>";
         }
-        out << "<td>" << circuits.stringValue("refrigerant") << "</td>";
+        QString refrigerant = circuits.stringValue("refrigerant");
+        out << "<td>" << refrigerant << "</td>";
+        double GWP = refrigerantGWP(refrigerant);
+        double multiplier = CO2_equivalent ? (GWP / 1000.0) : 1.0;
+        if (CO2_equivalent)
+            out << "<td>" << GWP << "</td>";
         out << "<td>" << fieldsOfApplication().value(circuits.stringValue("field")) << "</td>";
-        out << "<td>" << refrigerant_amount_begin << "</td>";
-        out << "<td>" << sums.value("refr_add_am").toDouble() << "</td>";
-        out << "<td>" << sums.value("refr_reco").toDouble() << "</td>";
-        out << "<td>" << refrigerant_amount_end << "</td>";
+        out << "<td>" << refrigerant_amount_begin * multiplier << "</td>";
+        out << "<td>" << sums.value("refr_add_am").toDouble() * multiplier << "</td>";
+        out << "<td>" << sums.value("refr_reco").toDouble() * multiplier << "</td>";
+        out << "<td>" << refrigerant_amount_end * multiplier << "</td>";
         out << "<td>" << MTVariant(circuits.value("operation")) << "</td>";
         out << "</tr>";
     }
