@@ -4435,6 +4435,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Status</source>
         <translation>Stav</translation>
     </message>
+    <message>
+        <source>Leaked in Store</source>
+        <translation>Únik na sklade</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

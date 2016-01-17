@@ -491,6 +491,11 @@ bool ViewTab::isShowOwnerChecked() const
     return parentWindow()->isShowOwnerChecked();
 }
 
+bool ViewTab::isShowLeakedChecked() const
+{
+    return parentWindow()->isShowLeakedChecked();
+}
+
 bool ViewTab::isCompareValuesChecked() const
 {
     return parentWindow()->isCompareValuesChecked();

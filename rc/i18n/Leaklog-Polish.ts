@@ -4390,6 +4390,10 @@ dla ID osoby i firmy</translation>
         <comment>Variable ID</comment>
         <translation>ID</translation>
     </message>
+    <message>
+        <source>Leaked in Store</source>
+        <translation>Wyciek w magazynie</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

@@ -74,7 +74,10 @@ QString StoreView::renderHTML()
     out << "<th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
     out << "<th>" << tr("Recovered in store") << "</th>";
-    out << "<th>" << tr("Leaked in store") << "</th></tr>";
+    bool show_leaked = settings->isShowLeakedChecked();
+    if (show_leaked)
+        out << "<th>" << tr("Leaked in store") << "</th>";
+    out << "</tr>";
     out << "<store />";
     out << "</table></td></tr>";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
@@ -95,7 +98,8 @@ QString StoreView::renderHTML()
     out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    if (show_leaked)
+        out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     out << "</tr><tr style=\"background-color: #FBFBFB;\">";
     if (show_partner) {
         out << "<td>" << QApplication::translate("Customer", "Company") << "</td>";
@@ -105,8 +109,10 @@ QString StoreView::renderHTML()
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
-    out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    if (show_leaked) {
+        out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+        out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    }
     out << "</tr>";
     ReportData data(settings->toolBarStack()->filterSinceValue(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
@@ -131,7 +137,9 @@ QString StoreView::renderHTML()
                 store_out << "<td>" << refrigerant << "</td>";
                 store_out << "<td>" << store_map.value(refrigerant) << "</td>";
                 store_out << "<td>" << store_recovered_map.value(refrigerant) << "</td>";
-                store_out << "<td>" << store_leaked_map.value(refrigerant) << "</td></tr>";
+                if (show_leaked)
+                    store_out << "<td>" << store_leaked_map.value(refrigerant) << "</td>";
+                store_out << "</tr>";
                 n++;
             }
         }
@@ -163,6 +171,8 @@ QString StoreView::renderHTML()
                     if (show_partner)
                         out << "<th>&nbsp;</th><th>&nbsp;</th>";
                     for (int n = 0; n < sum_list->count(); ++n) {
+                        if (!show_leaked && (n == SUMS::LEAKED || n == SUMS::LEAKED_RECO))
+                            continue;
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
                         out << "</th>";
@@ -196,6 +206,8 @@ QString StoreView::renderHTML()
                 out << "<td>" << escapeString(i.value().at(3)) << "</td>";
             }
             for (int n = 4; n < i.value().count(); ++n) {
+                if (!show_leaked && (n == ENTRIES::LEAKED || n == ENTRIES::LEAKED_RECO))
+                    continue;
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
                 else if (it) out << " style=\"font-style: italic;\"";

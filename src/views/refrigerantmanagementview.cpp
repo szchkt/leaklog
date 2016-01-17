@@ -39,6 +39,7 @@ QString RefrigerantManagementView::renderHTML()
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool show_leaked = settings->isShowLeakedChecked();
 
     QString html; MTTextStream out(&html);
 
@@ -59,7 +60,8 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    if (show_leaked)
+        out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     if (show_date_updated)
         out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
     if (show_owner)
@@ -71,8 +73,10 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
-    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
-    out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    if (show_leaked) {
+        out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+        out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    }
     out << "</tr>";
     RefrigerantRecord records("");
     if (!settings->toolBarStack()->isFilterEmpty()) {
@@ -94,8 +98,12 @@ QString RefrigerantManagementView::renderHTML()
             QString key = RefrigerantRecord::attributes().key(n);
             if (key == "partner_id") {
                 out << "<td>" << formatCompanyID(query.value(key)) << "</td>";
-            } else if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_") || key.startsWith("leaked")) {
+            } else if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
                 out << "<td>" << query.doubleValue(key) << "</td>";
+            } else if (key.startsWith("leaked")) {
+                if (show_leaked) {
+                    out << "<td>" << query.doubleValue(key) << "</td>";
+                }
             } else {
                 out << "<td>" << MTVariant(query.value(key)) << "</td>";
             }

@@ -56,6 +56,7 @@ public:
 
     virtual bool isShowDateUpdatedChecked() const = 0;
     virtual bool isShowOwnerChecked() const = 0;
+    virtual bool isShowLeakedChecked() const = 0;
     virtual bool isCompareValuesChecked() const = 0;
     virtual bool isPrinterFriendlyVersionChecked() const = 0;
 

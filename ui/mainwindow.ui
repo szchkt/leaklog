@@ -364,6 +364,8 @@
      </property>
      <addaction name="actionShow_date_updated"/>
      <addaction name="actionShow_owner"/>
+     <addaction name="separator"/>
+     <addaction name="actionShow_Leaked"/>
     </widget>
     <widget class="QMenu" name="menuDateTime_Format">
      <property name="title">
@@ -2213,6 +2215,14 @@
    </property>
    <property name="statusTip">
     <string>Open the folder containing automatic backups of this database</string>
+   </property>
+  </action>
+  <action name="actionShow_Leaked">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Leaked in Store</string>
    </property>
   </action>
  </widget>
