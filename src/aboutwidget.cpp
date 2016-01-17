@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -65,7 +65,7 @@ void AboutWidget::showAcknowledgements(bool show)
         HTMLParentElement *body = html_doc.body();
 
         HTMLParagraph *p = body->paragraph();
-        *p << "Copyright &copy; 2008&ndash;2015 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
+        *p << "Copyright &copy; 2008&ndash;2016 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
         p->newLine();
         *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
