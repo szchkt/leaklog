@@ -136,7 +136,6 @@ public:
         dict.insert("unit", QApplication::translate("CircuitUnitType", "Unit of measure"));
         dict.insert("output", QApplication::translate("CircuitUnitType", "Output"));
         dict.insert("output_t0_tc", QApplication::translate("CircuitUnitType", "Output at t0/tc"));
-        dict.insert("category_id", QApplication::translate("CircuitUnitType", "Category"));
         dict.insert("notes", QApplication::translate("CircuitUnitType", "Notes"));
     }
 

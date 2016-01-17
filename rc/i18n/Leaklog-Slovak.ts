@@ -864,10 +864,6 @@
         <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
-        <source>Category</source>
-        <translation>Kategória</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>

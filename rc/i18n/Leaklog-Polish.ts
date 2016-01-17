@@ -847,10 +847,6 @@
         <translation>Przepustowość na t0/tk</translation>
     </message>
     <message>
-        <source>Category</source>
-        <translation>Kategoria</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
