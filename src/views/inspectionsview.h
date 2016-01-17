@@ -32,6 +32,9 @@ public:
     QString renderHTML();
 
     QString title() const;
+
+protected:
+    void writeCircuitDecommissioningReason(MTTextStream &out, const QString &customer_id, const QString &circuit_id);
 };
 
 #endif // INSPECTIONSVIEW_H

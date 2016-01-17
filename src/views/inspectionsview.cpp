@@ -55,6 +55,7 @@ QString InspectionsView::renderHTML()
     QString circuit_id = settings->selectedCircuit();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool most_recent_first = settings->isShowMostRecentFirstChecked();
 
     QString html; MTTextStream out(&html);
 
@@ -118,6 +119,9 @@ QString InspectionsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"customer:" << customer_id << "/circuit:" << circuit_id << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
+
+    if (most_recent_first)
+        writeCircuitDecommissioningReason(out, customer_id, circuit_id);
 
     QString highlighted_id = settings->selectedInspection();
     for (int i = 0; i < inspections.count(); ++i) {
@@ -184,8 +188,24 @@ QString InspectionsView::renderHTML()
             out << "<td>" << escapeString(inspections.at(i).value("updated_by")) << "</td>";
         out << "</tr>";
     }
+
+    if (!most_recent_first)
+        writeCircuitDecommissioningReason(out, customer_id, circuit_id);
+
     out << "</table>";
+
     return viewTemplate("circuit").arg(html);
+}
+
+void InspectionsView::writeCircuitDecommissioningReason(MTTextStream &out, const QString &customer_id, const QString &circuit_id)
+{
+    Circuit circuit(customer_id, circuit_id);
+    circuit.readValues();
+    if (circuit.intValue("disused") != Circuit::Commissioned && !circuit.stringValue("decommissioning_reason").isEmpty()) {
+        out << QString("<tr><td>%1</td><td colspan=\"10\">%2</td></tr>")
+            .arg(settings->mainWindowSettings().formatDate(circuit.stringValue("decommissioning")))
+            .arg(escapeString(circuit.stringValue("decommissioning_reason")));
+    }
 }
 
 QString InspectionsView::title() const

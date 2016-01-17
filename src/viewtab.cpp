@@ -496,6 +496,11 @@ bool ViewTab::isShowLeakedChecked() const
     return parentWindow()->isShowLeakedChecked();
 }
 
+bool ViewTab::isShowMostRecentFirstChecked() const
+{
+    return parentWindow()->isShowMostRecentFirstChecked();
+}
+
 bool ViewTab::isCompareValuesChecked() const
 {
     return parentWindow()->isCompareValuesChecked();
