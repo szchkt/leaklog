@@ -20,6 +20,7 @@
 #ifndef MTTEXTSTREAM_H
 #define MTTEXTSTREAM_H
 
+#include "defs.h"
 #include "mtvariant.h"
 
 #include <QTextStream>
@@ -29,22 +30,27 @@
 class MTTextStream : public QTextStream
 {
 public:
-    MTTextStream(QString *string, QIODevice::OpenMode openMode = QIODevice::ReadWrite): QTextStream(string, openMode) {}
+    MTTextStream(QString *string, QIODevice::OpenMode openMode = QIODevice::ReadWrite): QTextStream(string, openMode) {
+        setLocale(QLocale());
+        setRealNumberNotation(SmartNotation);
+        setRealNumberPrecision(FLOAT_PRECISION);
+    }
 
     inline MTTextStream &operator<<(double f) {
-        long double ld = (long double)f;
-        if (round(ld) == ld) this->QTextStream::operator<<(f);
-        else this->QTextStream::operator<<((double)(round(ld * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP));
+        QTextStream::operator<<(FLOAT_ROUND(f));
         return *this;
     }
     inline MTTextStream &operator<<(const char *string) {
-        this->QTextStream::operator<<(string); return *this;
+        QTextStream::operator<<(string);
+        return *this;
     }
     inline MTTextStream &operator<<(const QString &string) {
-        this->QTextStream::operator<<(string); return *this;
+        QTextStream::operator<<(string);
+        return *this;
     }
     inline MTTextStream &operator<<(const MTVariant &variant) {
-        this->QTextStream::operator<<(variant.toHtml()); return *this;
+        QTextStream::operator<<(variant.toHtml());
+        return *this;
     }
 };
 

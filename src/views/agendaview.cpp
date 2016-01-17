@@ -50,7 +50,7 @@ QString AgendaView::renderHTML()
         out << "<br>";
     }
 
-    QMultiMap<QString, QStringList> next_inspections_map;
+    QMultiMap<QString, QList<QVariant> > next_inspections_map;
 
     MultiMapOfVariantMaps customers(Customer("").mapAll("id", "company"));
 
@@ -93,26 +93,26 @@ QString AgendaView::renderHTML()
                 if (next_inspection_date < next_regular_inspection_date &&
                         circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
-                                                QStringList()
+                                                QList<QVariant>()
                                                     << circuits.stringValue("parent")
                                                     << circuits.stringValue("id")
                                                     << circuits.stringValue("name")
                                                     << circuits.stringValue("operation")
                                                     << refrigerant
-                                                    << QString::number(refrigerant_amount)
+                                                    << refrigerant_amount
                                                     << last_inspection_date
-                                                    << "1");
+                                                    << true);
             }
             next_inspections_map.insert(next_regular_inspection_date,
-                                        QStringList()
+                                        QList<QVariant>()
                                             << circuits.stringValue("parent")
                                             << circuits.stringValue("id")
                                             << circuits.stringValue("name")
                                             << circuits.stringValue("operation")
                                             << refrigerant
-                                            << QString::number(refrigerant_amount)
+                                            << refrigerant_amount
                                             << last_regular_inspection_date
-                                            << "0");
+                                            << false);
         }
     }
 
@@ -124,16 +124,16 @@ QString AgendaView::renderHTML()
     out << "<th>" << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent")) << "</th>";
     out << "<th>" << tr("Last inspection") << "</th></tr>";
 
-    QMapIterator<QString, QStringList> i(next_inspections_map);
+    QMapIterator<QString, QList<QVariant> > i(next_inspections_map);
     while (i.hasNext()) { i.next();
-        QString customer = i.value().value(0);
-        QString circuit = i.value().value(1);
-        QString circuit_name = i.value().value(2);
-        QString operation = i.value().value(3);
-        QString refrigerant = i.value().value(4);
-        QString refrigerant_amount = i.value().value(5);
-        QString last_inspection_date = i.value().value(6);
-        bool reinspection = i.value().value(7).toInt();
+        QString customer = i.value().value(0).toString();
+        QString circuit = i.value().value(1).toString();
+        QString circuit_name = i.value().value(2).toString();
+        QString operation = i.value().value(3).toString();
+        QString refrigerant = i.value().value(4).toString();
+        double refrigerant_amount = i.value().value(5).toDouble();
+        QString last_inspection_date = i.value().value(6).toString();
+        bool reinspection = i.value().value(7).toBool();
         int days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         QString next_inspection;
         switch (days_to) {
@@ -160,7 +160,7 @@ QString AgendaView::renderHTML()
         out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
         out << "<td class=\"" << colour << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
             << " " << escapeString(refrigerant) << "</td>";
-        out << "<td class=\"" << colour << "\">" << CO2Equivalent(refrigerant, refrigerant_amount.toDouble())
+        out << "<td class=\"" << colour << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)
             << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
         out << "<td class=\"" << colour << "\">";
         if (last_inspection_date.contains("-"))

@@ -56,6 +56,8 @@
 #include <QCalendarWidget>
 #include <QDesktopServices>
 
+#include <cmath>
+
 using namespace Global;
 
 MainWindow::MainWindow():
@@ -683,14 +685,14 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
                      detailed ? tr("Circuit ID") : tr("3(6) - <30 kg"));
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
     painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2 %3, %4 %5")
-                     .arg(attributes.value("refrigerant_amount").toString())
+                     detailed ? QString("%L1 %2 %3, %4 %L5")
+                     .arg(FLOAT_ARG(attributes.value("refrigerant_amount").toDouble()))
                      .arg(QApplication::translate("Units", "kg"))
-                     .arg(refrigerant).arg(tr("GWP")).arg(refrigerantGWP(refrigerant))
+                     .arg(refrigerant).arg(tr("GWP")).arg(FLOAT_ARG(refrigerantGWP(refrigerant)))
                      : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
     painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2 %3").arg(tr("Annual leakage")).arg(attributes.value("refr_add_per").toString()).arg(tr("%")) : tr("above 300 kg"));
+                     detailed ? QString("%1 %L2 %3").arg(tr("Annual leakage")).arg(FLOAT_ARG(attributes.value("refr_add_per").toDouble())).arg(tr("%")) : tr("above 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
 
     painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
@@ -716,8 +718,8 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
                      detailed ? attributes.value("circuit_id").toString()
                      : QApplication::translate("MainWindow", "once a year*"));
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2")
-                     .arg(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble()))
+                     detailed ? QString("%L1 %2")
+                     .arg(FLOAT_ARG(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble())))
                      .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")))
                      : QApplication::translate("MainWindow", "once in 6 months*"));
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,

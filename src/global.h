@@ -31,7 +31,6 @@ class MTDictionary;
 class QDir;
 class QStringList;
 class QColor;
-class QTextStream;
 
 namespace Global {
 #ifdef Q_OS_MAC

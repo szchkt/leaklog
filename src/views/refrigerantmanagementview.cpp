@@ -94,6 +94,8 @@ QString RefrigerantManagementView::renderHTML()
             QString key = RefrigerantRecord::attributes().key(n);
             if (key == "partner_id") {
                 out << "<td>" << formatCompanyID(query.value(key)) << "</td>";
+            } else if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_") || key.startsWith("leaked")) {
+                out << "<td>" << query.doubleValue(key) << "</td>";
             } else {
                 out << "<td>" << MTVariant(query.value(key)) << "</td>";
             }

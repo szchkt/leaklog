@@ -280,19 +280,19 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
         if (dict_value.count() > 1) { *_td << "&nbsp;" << dict_value.last(); }
     }
     HTMLTableCell *_td = _tr->addCell();
-    *_td << circuit.value("refrigerant_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
+    *_td << circuit.value("refrigerant_amount").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg");
     QString refrigerant = circuit.value("refrigerant").toString();
     *_td << " " << refrigerant;
     if (cols_in_row >= 0) {
         _td = _tr->addCell();
         double GWP = refrigerantGWP(refrigerant);
         double CO2_equivalent = circuit.value("refrigerant_amount").toDouble() * GWP / 1000.0;
-        *_td << QString::number(CO2_equivalent) << "&nbsp;" << QApplication::translate("Units", "t");
+        *_td << CO2_equivalent << "&nbsp;" << QApplication::translate("Units", "t");
         _td = _tr->addCell();
-        *_td << QString::number(GWP);
+        *_td << GWP;
     }
     _td = _tr->addCell();
-    *_td << circuit.value("oil_amount").toString() << "&nbsp;" << QApplication::translate("Units", "kg");
+    *_td << circuit.value("oil_amount").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg");
     *_td << " " << circuit.value("oil").toString().toUpper();
     if (circuit.value("disused").toInt() == Circuit::Commissioned) {
         *(_tr->addCell()->link(QString("customer:%1/circuit:%2/inspection:%3")

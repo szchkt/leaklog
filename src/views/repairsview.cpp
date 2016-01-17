@@ -79,25 +79,30 @@ QString RepairsView::renderHTML()
         out << "<th><a href=\"allrepairs:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
     MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
-    QString id, attr_value;
     while (repairs.next()) {
-        id = repairs.stringValue("date");
+        QString id = repairs.stringValue("date");
         if (id.split(".").first().toInt() < year) continue;
         out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
         if (highlighted_id == id)
             out << " class=\"selected\"";
         out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(id) << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
-            attr_value = repairs.stringValue(Repair::attributes().key(n));
+            QString key = Repair::attributes().key(n);
             out << "<td>";
-            if (Repair::attributes().key(n) == "field") {
-                if (attributeValues().contains("field::" + attr_value)) {
-                    attr_value = attributeValues().value("field::" + attr_value);
+            if (key.startsWith("refr_") || key.endsWith("_amount")) {
+                out << repairs.doubleValue(key);
+            } else {
+                QString attr_value = repairs.stringValue(key);
+                if (key == "field") {
+                    if (attributeValues().contains("field::" + attr_value)) {
+                        attr_value = attributeValues().value("field::" + attr_value);
+                    }
+                } else if (key == "repairman") {
+                    attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
                 }
-            } else if (Repair::attributes().key(n) == "repairman") {
-                attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
+                out << escapeString(attr_value);
             }
-            out << escapeString(attr_value) << "</td>";
+            out << "</td>";
         }
         if (show_date_updated)
             out << "<td>" << settings->mainWindowSettings().formatDateTime(repairs.value("date_updated")) << "</th>";

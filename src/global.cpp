@@ -467,11 +467,11 @@ double Global::evaluateExpression(const QVariantMap &inspection, const MTDiction
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
 {
     if (value1 < value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%1";
+        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%L1";
     } else if (value1 > value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%1";
+        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%L1";
     } else {
-        return "%1";
+        return "%L1";
     }
 }
 

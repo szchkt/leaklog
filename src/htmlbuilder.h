@@ -82,7 +82,10 @@ public:
 
     void newLine() { children.append(new HTMLDataElement("<br>")); }
 
+    HTMLParent &operator<<(double);
+    HTMLParent &operator<<(const char *);
     HTMLParent &operator<<(const QString &);
+    HTMLParent &operator<<(const QByteArray &);
     HTMLParent &operator<<(const MTVariant &);
     HTMLParent &operator<<(HTMLElement *);
 

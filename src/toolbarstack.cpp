@@ -26,6 +26,8 @@
 #include "records.h"
 #include "mtaddress.h"
 
+#include <cmath>
+
 using namespace Global;
 
 ToolBarStack::ToolBarStack(QWidget *parent):
@@ -414,8 +416,8 @@ void ToolBarStack::enableTools()
         if (attributeValues().contains("field::" + circuit.stringValue("field")))
             description << attributeValues().value("field::" + circuit.stringValue("field"));
 
-        description << QString("%1 %2 %3")
-                       .arg(circuit.stringValue("refrigerant_amount"))
+        description << QString("%L1 %2 %3")
+                       .arg(FLOAT_ARG(circuit.doubleValue("refrigerant_amount")))
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(circuit.stringValue("refrigerant"));
 
@@ -491,8 +493,8 @@ void ToolBarStack::enableTools()
         if (!unit_type.stringValue("type").isEmpty())
             description << QString("<b>%1</b>").arg(escapeString(unit_type.stringValue("type")));
 
-        description << QString("%1 %2 %3")
-                       .arg(unit_type.stringValue("refrigerant_amount"))
+        description << QString("%L1 %2 %3")
+                       .arg(FLOAT_ARG(unit_type.doubleValue("refrigerant_amount")))
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(unit_type.stringValue("refrigerant"));
 

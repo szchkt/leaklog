@@ -139,8 +139,14 @@ QString AssemblyRecordItemsView::renderHTML()
             out << " style=\"cursor: pointer;\"><td><a href=\"\">" << type_id << "</a></td>";
 
             for (int n = 1; n < AssemblyRecordItemType::attributes().count(); ++n) {
-                if (AssemblyRecordItemType::attributes().key(n) != "category_id")
-                    out << "<td>" << escapeString(item_types.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString()) << "</td>";
+                QString key = AssemblyRecordItemType::attributes().key(n);
+                if (key != "category_id") {
+                    if (key.endsWith("_price")) {
+                        out << "<td>" << item_types.at(i).value(key).toDouble() << "</td>";
+                    } else {
+                        out << "<td>" << escapeString(item_types.at(i).value(key).toString()) << "</td>";
+                    }
+                }
             }
             out << "</tr>";
         }

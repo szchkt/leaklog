@@ -73,14 +73,17 @@ QString CircuitUnitTypesView::renderHTML()
         out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
-            if (CircuitUnitType::attributes().key(n) == "location")
+            QString key = CircuitUnitType::attributes().key(n);
+            if (key == "location")
                 out << CircuitUnitType::locationToString(items.at(i).value("location").toInt());
-            else if (CircuitUnitType::attributes().key(n) == "oil")
-                out << items.at(i).value(CircuitUnitType::attributes().key(n)).toString().toUpper();
-            else if (CircuitUnitType::attributes().key(n) == "output")
-                out << escapeString(QString("%1 %2").arg(items.at(i).value("output").toString()).arg(items.at(i).value("output_unit").toString()));
+            else if (key == "oil")
+                out << items.at(i).value(key).toString().toUpper();
+            else if (key == "output")
+                out << escapeString(QString("%L1 %2").arg(FLOAT_ARG(items.at(i).value("output").toDouble())).arg(items.at(i).value("output_unit").toString()));
+            else if (key.endsWith("_price") || key.endsWith("_amount") || key == "discount" || key == "output_t0_tc")
+                out << items.at(i).value(key).toDouble();
             else
-                out << escapeString(items.at(i).value(CircuitUnitType::attributes().key(n)).toString());
+                out << escapeString(items.at(i).value(key).toString());
             out << "</td>";
         }
         out << "</tr>";
