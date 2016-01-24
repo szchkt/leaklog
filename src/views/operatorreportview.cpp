@@ -127,8 +127,8 @@ QString OperatorReportView::renderHTML()
     if (month_from <= 1 || month_until >= 12)
         inspections.addFilter("date", QString("%1%").arg(year));
 
-    MTDictionary nominal_inpection_parents("customer", customer_id);
-    nominal_inpection_parents.insert("nominal", "1");
+    MTDictionary nominal_inspection_parents("customer", customer_id);
+    nominal_inspection_parents.insert("nominal", "1");
 
     QVariantMap sums;
     ListOfVariantMaps nominal_inspections;
@@ -166,8 +166,8 @@ QString OperatorReportView::renderHTML()
         if (commissioning_date < date_from)
             refrigerant_amount_begin += refrigerant_amount;
 
-        nominal_inpection_parents.insert("circuit", circuit_id);
-        nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
+        nominal_inspection_parents.insert("circuit", circuit_id);
+        nominal_inspections = MTRecord("inspections", "date", "", nominal_inspection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
             if (nominal_inspection_date < date_from)

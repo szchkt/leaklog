@@ -4439,6 +4439,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>long text</source>
         <translation>dlhý text</translation>
     </message>
+    <message>
+        <source>Exclude from Agenda only</source>
+        <translation>Vyradiť len z agendy</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

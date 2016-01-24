@@ -4435,6 +4435,10 @@ dla ID osoby i firmy</translation>
         <source>long text</source>
         <translation>długi tekst</translation>
     </message>
+    <message>
+        <source>Exclude from Agenda only</source>
+        <translation>Wyłącz tylko z agendy</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

@@ -1089,9 +1089,12 @@ void MainWindow::decommissionAllCircuits()
 
     gl->addWidget(new QLabel(customer.stringValue("company"), &d), 0, 1);
 
+    QCheckBox *exclude_from_agenda = new QCheckBox(tr("Exclude from Agenda only"), &d);
+    gl->addWidget(exclude_from_agenda, 1, 1);
+
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 1, 0);
+    gl->addWidget(lbl, 2, 0);
 
     QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
@@ -1103,7 +1106,14 @@ void MainWindow::decommissionAllCircuits()
 #else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
 #endif
-    gl->addWidget(date, 1, 1);
+    gl->addWidget(date, 2, 1);
+
+    lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning_reason")), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 3, 0);
+
+    QLineEdit *decommissioning_reason = new QLineEdit(&d);
+    gl->addWidget(decommissioning_reason, 3, 1);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1112,7 +1122,7 @@ void MainWindow::decommissionAllCircuits()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 2, 0, 1, 2);
+    gl->addWidget(bb, 4, 0, 1, 2);
 
     if (d.exec() != QDialog::Accepted) return;
 
@@ -1123,8 +1133,9 @@ void MainWindow::decommissionAllCircuits()
     m_undo_stack->savepoint();
 
     QVariantMap set;
-    set.insert("disused", Circuit::Decommissioned);
+    set.insert("disused", exclude_from_agenda->isChecked() ? Circuit::ExcludedFromAgenda : Circuit::Decommissioned);
     set.insert("decommissioning", date->date().toString(DATE_FORMAT));
+    set.insert("decommissioning_reason", decommissioning_reason->text());
 
     Circuit circuits(customer.id(), QString());
     circuits.parents().insert("disused", QString::number(Circuit::Commissioned));
@@ -3002,9 +3013,9 @@ void MainWindow::importData()
             MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
                                                         QStringList() << query.stringValue("customer") << query.stringValue("circuit")
                                                         << query.stringValue("date") << query.stringValue("compressor_compressor_id"));
-            InspectionsCompressor inpections_compressor(QString(), inspections_compressor_parents);
-            if (inpections_compressor.exists()) {
-                attributes = inpections_compressor.list();
+            InspectionsCompressor inspections_compressor(QString(), inspections_compressor_parents);
+            if (inspections_compressor.exists()) {
+                attributes = inspections_compressor.list();
                 modified = false;
 
                 MTDictionary columns(true);
