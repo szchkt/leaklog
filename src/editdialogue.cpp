@@ -84,11 +84,11 @@ void EditDialogue::save()
 
 bool EditDialogue::save(bool call_accept)
 {
-    QVariantMap values; QString id; QVariant value;
+    QVariantMap values = md_record->values();
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
-        id = (*i)->id();
-        value = (*i)->variantValue();
+        QString id = (*i)->id();
+        QVariant value = (*i)->variantValue();
         if (id == md_record->idField()) {
             if (value.toString().isEmpty()) {
                 QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
