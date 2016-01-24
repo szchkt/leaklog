@@ -51,7 +51,8 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     } else {
         attributes.insert("year", QDate::currentDate().year());
     }
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999));
+    MDLineEdit *id_edit = new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999);
+    md->addInputWidget(id_edit);
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), attributes.value("name").toString()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), attributes.value("operation").toString()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), attributes.value("building").toString()));
@@ -92,17 +93,24 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
+    int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM circuits WHERE parent = :parent" + QString(id().isEmpty() ? "" : " AND id <> :id"));
+    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE parent = :parent%1 ORDER BY id ASC").arg(id().isEmpty() ? "" : " AND id <> :id"));
     query_used_ids.bindValue(":parent", parent("parent"));
     if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
+            if (min_available_id == query_used_ids.value(0).toInt()) {
+                min_available_id++;
+            }
         }
     }
     md->setUsedIds(used_ids);
+    if (id().isEmpty()) {
+        id_edit->setVariantValue(min_available_id);
+    }
 }
 
 bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
