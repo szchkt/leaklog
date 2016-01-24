@@ -52,7 +52,7 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), attributes.value("auto_show").toBool()));
     md->addInputWidget(new MDComboBox("category_id", tr("Category:"), md->widget(), attributes.value("category_id").toString(), listAssemblyRecordItemCategories(true)));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), attributes.value("inspection_variable_id").toString(), listAllVariables()));
-    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type").toString(), listDataTypes()));
+    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), attributes.value("value_data_type", Global::Numeric).toString(), listDataTypes()));
 
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
