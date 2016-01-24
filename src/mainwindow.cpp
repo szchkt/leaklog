@@ -1194,24 +1194,24 @@ void MainWindow::configureAutosave()
 
     QString autosave_mode = DBInfo::valueForKey("autosave");
 
-    QDialog d(this);
-    d.setWindowTitle(tr("Configure Auto Save - Leaklog"));
-    d.setWindowModality(Qt::WindowModal);
-    d.setWindowFlags(d.windowFlags() | Qt::Sheet);
+    QDialog *d = new QDialog(this);
+    d->setWindowTitle(tr("Configure Auto Save - Leaklog"));
+    d->setWindowModality(Qt::WindowModal);
+    d->setWindowFlags(d->windowFlags() | Qt::Sheet);
 
-    QVBoxLayout *layout = new QVBoxLayout(&d);
+    QVBoxLayout *layout = new QVBoxLayout(d);
 
-    QRadioButton *rbtn_off = new QRadioButton(tr("Do not save automatically"), &d);
+    QRadioButton *rbtn_off = new QRadioButton(tr("Do not save automatically"), d);
     rbtn_off->setChecked(autosave_mode.isEmpty());
     layout->addWidget(rbtn_off);
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), &d);
+    QRadioButton *rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), d);
     rbtn_immediate->setChecked(autosave_mode == "immediate");
     layout->addWidget(rbtn_immediate);
 
-    QLabel *lbl_immediate = new QLabel(tr("This will disable the Undo function."), &d);
+    QLabel *lbl_immediate = new QLabel(tr("This will disable the Undo function."), d);
     QFont font = lbl_immediate->font();
     font.setItalic(true);
     lbl_immediate->setFont(font);
@@ -1219,26 +1219,26 @@ void MainWindow::configureAutosave()
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), d);
     rbtn_delayed->setChecked(autosave_mode == "delayed");
     layout->addWidget(rbtn_delayed);
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), d);
     rbtn_ask->setChecked(autosave_mode == "ask");
     layout->addWidget(rbtn_ask);
 
     layout->addSpacing(12);
 
-    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    QDialogButtonBox *bb = new QDialogButtonBox(d);
     bb->addButton(tr("&Save"), QDialogButtonBox::AcceptRole);
     bb->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
-    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
-    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
     layout->addWidget(bb);
 
-    if (d.exec() == QDialog::Accepted) {
+    if (d->exec() == QDialog::Accepted) {
         if (rbtn_immediate->isChecked())
             autosave_mode = "immediate";
         else if (rbtn_delayed->isChecked())
@@ -1253,6 +1253,8 @@ void MainWindow::configureAutosave()
             setDatabaseModified(true);
         }
     }
+
+    d->deleteLater();
 }
 
 void MainWindow::openBackupDirectory()
