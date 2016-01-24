@@ -3604,10 +3604,10 @@ void MainWindow::importCSV()
     table->addColumn(tr("Discount"), "discount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("EAN code"), "ean", ImportDialogueTableColumn::Text);
     col = table->addColumn(tr("Data type"), "value_data_type", ImportDialogueTableColumn::Select);
-    col->addSelectValue(tr("string"), QString::number(Global::String));
     col->addSelectValue(tr("integer"), QString::number(Global::Integer));
-    col->addSelectValue(tr("numeric"), QString::number(Global::Numeric));
-    col->addSelectValue(tr("text"), QString::number(Global::Text));
+    col->addSelectValue(tr("decimal"), QString::number(Global::Numeric));
+    col->addSelectValue(tr("short text"), QString::number(Global::String));
+    col->addSelectValue(tr("long text"), QString::number(Global::Text));
     col->addSelectValue(tr("boolean"), QString::number(Global::Boolean));
     table->addColumn(tr("Automatically add to assembly record"), "auto_show", ImportDialogueTableColumn::Boolean);
     table->addForeignKeyColumn(tr("Category ID"), "category_id", "id", "assembly_record_item_categories");

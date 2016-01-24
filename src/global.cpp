@@ -591,9 +591,9 @@ class VariableTypes
 public:
     VariableTypes() {
         dict.insert("int", QApplication::translate("VariableTypes", "Integer"));
-        dict.insert("float", QApplication::translate("VariableTypes", "Real number"));
-        dict.insert("string", QApplication::translate("VariableTypes", "String"));
-        dict.insert("text", QApplication::translate("VariableTypes", "Text"));
+        dict.insert("float", QApplication::translate("VariableTypes", "Decimal Number"));
+        dict.insert("string", QApplication::translate("VariableTypes", "Short Text"));
+        dict.insert("text", QApplication::translate("VariableTypes", "Long Text"));
         dict.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
         dict.insert("group", QApplication::translate("VariableTypes", "Group"));
     }
@@ -1144,10 +1144,10 @@ MTDictionary Global::listAllVariables()
 MTDictionary Global::listDataTypes()
 {
     MTDictionary dict;
-    dict.insert(QString::number(Global::String), QObject::tr("String"));
     dict.insert(QString::number(Global::Integer), QObject::tr("Integer"));
-    dict.insert(QString::number(Global::Numeric), QObject::tr("Real number"));
-    dict.insert(QString::number(Global::Text), QObject::tr("Text"));
+    dict.insert(QString::number(Global::Numeric), QObject::tr("Decimal Number"));
+    dict.insert(QString::number(Global::String), QObject::tr("Short Text"));
+    dict.insert(QString::number(Global::Text), QObject::tr("Long Text"));
     dict.insert(QString::number(Global::Boolean), QObject::tr("Boolean"));
     return dict;
 }

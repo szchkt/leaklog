@@ -3873,20 +3873,8 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
         <translation>Typ bazy</translation>
     </message>
     <message>
-        <source>string</source>
-        <translation>łańcuch</translation>
-    </message>
-    <message>
         <source>integer</source>
         <translation>liczba całkowita</translation>
-    </message>
-    <message>
-        <source>numeric</source>
-        <translation>numeryczny</translation>
-    </message>
-    <message>
-        <source>text</source>
-        <translation>tekst</translation>
     </message>
     <message>
         <source>boolean</source>
@@ -4435,6 +4423,18 @@ dla ID osoby i firmy</translation>
         <source>Leaked in Store</source>
         <translation>Wyciek w magazynie</translation>
     </message>
+    <message>
+        <source>decimal</source>
+        <translation>liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>short text</source>
+        <translation>krótki tekst</translation>
+    </message>
+    <message>
+        <source>long text</source>
+        <translation>długi tekst</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4781,20 +4781,8 @@ dla ID osoby i firmy</translation>
         <translation>Bez typu</translation>
     </message>
     <message>
-        <source>String</source>
-        <translation>Łańcuch</translation>
-    </message>
-    <message>
         <source>Integer</source>
         <translation>Liczba całkowita</translation>
-    </message>
-    <message>
-        <source>Real number</source>
-        <translation>Prawdziwy numer</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Tekst</translation>
     </message>
     <message>
         <source>Boolean</source>
@@ -4815,6 +4803,18 @@ dla ID osoby i firmy</translation>
     <message>
         <source>New charge</source>
         <translation>Nowe napełnienie</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krótki tekst</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Długi tekst</translation>
     </message>
 </context>
 <context>
@@ -6002,24 +6002,24 @@ dla ID osoby i firmy</translation>
         <translation>Liczba całkowita</translation>
     </message>
     <message>
-        <source>Real number</source>
-        <translation>Liczba rzeczywista</translation>
-    </message>
-    <message>
-        <source>String</source>
-        <translation>Łańcuch</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Tekst</translation>
-    </message>
-    <message>
         <source>Boolean</source>
         <translation>Tak/Nie</translation>
     </message>
     <message>
         <source>Group</source>
         <translation>Grupa</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krótki tekst</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Długi tekst</translation>
     </message>
 </context>
 <context>
