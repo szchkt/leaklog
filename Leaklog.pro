@@ -22,7 +22,6 @@ HEADERS       += src/aboutwidget.h \
                  src/editdialoguetable.h \
                  src/editdialoguetablegroups.h \
                  src/editdialoguewidgets.h \
-                 src/editdialoguewithautoid.h \
                  src/editinspectiondialogue.h \
                  src/editinspectiondialogueaccess.h \
                  src/editinspectiondialogueassemblyrecordtab.h \
@@ -74,6 +73,7 @@ HEADERS       += src/aboutwidget.h \
                  src/mtcolourcombobox.h \
                  src/mtdictionary.h \
                  src/mtlistwidget.h \
+                 src/mtquery.h \
                  src/mtrecord.h \
                  src/mtsqlquery.h \
                  src/mtsqlqueryresult.h \
@@ -138,7 +138,6 @@ SOURCES       += src/aboutwidget.cpp \
                  src/editdialoguetable.cpp \
                  src/editdialoguetablegroups.cpp \
                  src/editdialoguewidgets.cpp \
-                 src/editdialoguewithautoid.cpp \
                  src/editinspectiondialogue.cpp \
                  src/editinspectiondialogueaccess.cpp \
                  src/editinspectiondialogueassemblyrecordtab.cpp \
@@ -185,6 +184,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/models/dbinfo.cpp \
                  src/models/style.cpp \
                  src/mtaddress.cpp \
+                 src/mtquery.cpp \
                  src/mtrecord.cpp \
                  src/mtsqlquery.cpp \
                  src/mtsqlqueryresult.cpp \

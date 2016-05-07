@@ -42,8 +42,7 @@ QString AssemblyRecordItemsView::renderHTML()
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecordItems);
     order_by = AssemblyRecordItemCategory::attributes().contains(order_by) ? order_by : "name";
 
-    AssemblyRecordItemCategory all_item_categories;
-    ListOfVariantMaps item_categories = all_item_categories.listAll("*", order_by);
+    ListOfVariantMaps item_categories = AssemblyRecordItemCategory::query().listAll("*", order_by);
 
     HTMLDiv div;
 
@@ -96,7 +95,7 @@ QString AssemblyRecordItemsView::renderHTML()
                                                                                .arg(row->childCount())));
     }
 
-    AssemblyRecordItemType all_item_types("");
+    MTQuery all_item_types = AssemblyRecordItemType::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         all_item_types.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

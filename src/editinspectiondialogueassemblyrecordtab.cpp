@@ -299,39 +299,41 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
 
 void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
 {
-    if (!original_arno.isEmpty())
-        AssemblyRecordItem({"arno", original_arno}).remove();
+    if (!original_arno.isEmpty()) {
+        AssemblyRecordItem::query({"arno", original_arno}).removeAll();
+    }
 
     QString arno = assemblyRecordId().toString();
     if (arno.isEmpty())
         return;
 
-    if (arno != original_arno)
-        AssemblyRecordItem({"arno", arno}).remove();
+    if (arno != original_arno) {
+        AssemblyRecordItem::query({"arno", arno}).removeAll();
+    }
 
-    MTSqlQuery query;
-    query.prepare("UPDATE inspections SET ar_type_uuid = :ar_type_uuid WHERE arno = :arno");
-    query.bindValue(":ar_type_uuid", ar_type_w->variantValue().toString());
-    query.bindValue(":arno", arno);
-    query.exec();
-
-    QVariantMap map;
-    map.insert("arno", arno);
+    QString ar_type_uuid = ar_type_w->variantValue().toString();
+    auto inspections = Inspection::query({"arno", arno}).all();
+    foreach (auto inspection, inspections) {
+        inspection.setValue("ar_type_uuid", ar_type_uuid);
+        inspection.save();
+    }
 
     QList<MTDictionary> record_dicts = groups_layout->allValues();
 
     for (int i = 0; i < record_dicts.count(); ++i) {
-        map.insert("value", record_dicts.at(i).value("value"));
-        map.insert("ar_item_type_uuid", record_dicts.at(i).value("ar_item_type_uuid").isEmpty()
-                   ? saveNewItemType(record_dicts.at(i)) : record_dicts.at(i).value("ar_item_type_uuid"));
-        map.insert("acquisition_price", record_dicts.at(i).value("acquisition_price"));
-        map.insert("list_price", record_dicts.at(i).value("list_price"));
-        map.insert("name", record_dicts.at(i).value("name"));
-        map.insert("source", record_dicts.at(i).value("source"));
-        map.insert("ar_item_category_uuid", record_dicts.at(i).value("ar_item_category_uuid"));
-        map.insert("unit", record_dicts.at(i).value("unit"));
-        map.insert("discount", record_dicts.at(i).value("discount"));
-        AssemblyRecordItem().update(map);
+        AssemblyRecordItem item;
+        item.setArno(arno);
+        item.setValue(record_dicts.at(i).value("value"));
+        item.setItemTypeUUID(record_dicts.at(i).value("ar_item_type_uuid").isEmpty()
+                             ? saveNewItemType(record_dicts.at(i)) : record_dicts.at(i).value("ar_item_type_uuid"));
+        item.setItemCategoryUUID(record_dicts.at(i).value("ar_item_category_uuid"));
+        item.setValue("acquisition_price", record_dicts.at(i).value("acquisition_price"));
+        item.setValue("list_price", record_dicts.at(i).value("list_price"));
+        item.setName(record_dicts.at(i).value("name"));
+        item.setValue("source", record_dicts.at(i).value("source"));
+        item.setUnit(record_dicts.at(i).value("unit"));
+        item.setValue("discount", record_dicts.at(i).value("discount"));
+        item.save();
     }
 }
 

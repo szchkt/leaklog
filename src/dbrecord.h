@@ -20,6 +20,7 @@
 #ifndef DBRECORD_H
 #define DBRECORD_H
 
+#include "mtquery.h"
 #include "mtrecord.h"
 
 #include <functional>
@@ -67,11 +68,9 @@ class DBRecord : public QObject, public MTRecord, public Modifiable
 
 public:
     DBRecord();
-    DBRecord(const QString &type, const QString &id_field, const QString &id, const MTDictionary &parents = MTDictionary());
+    DBRecord(const QString &type, const QString &id_field, const QString &id, const QVariantMap &savedValues = QVariantMap());
     DBRecord(const DBRecord &other): MTRecord(other) {}
     DBRecord &operator=(const DBRecord &other) { MTRecord::operator=(other); return *this; };
-
-    QString parent(const QString &field) const { return MTRecord::parent(field); }
 
     QString dateUpdated();
     QString updatedBy();

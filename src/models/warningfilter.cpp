@@ -19,12 +19,8 @@
 
 #include "warningfilter.h"
 
-WarningFilter::WarningFilter(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
-{}
-
-WarningFilter::WarningFilter(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
+WarningFilter::WarningFilter(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString WarningFilter::tableName()

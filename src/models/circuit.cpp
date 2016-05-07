@@ -29,12 +29,8 @@
 
 using namespace Global;
 
-Circuit::Circuit(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
-{}
-
-Circuit::Circuit(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
+Circuit::Circuit(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
@@ -124,19 +120,19 @@ Customer Circuit::customer()
     return Customer(customerUUID());
 }
 
-Compressor Circuit::compressors()
+MTRecordQuery<Compressor> Circuit::compressors() const
 {
-    return Compressor({"circuit_uuid", id()});
+    return Compressor::query({"circuit_uuid", id()});
 }
 
-CircuitUnit Circuit::units()
+MTRecordQuery<CircuitUnit> Circuit::units() const
 {
-    return CircuitUnit({"circuit_uuid", id()});
+    return CircuitUnit::query({"circuit_uuid", id()});
 }
 
-Inspection Circuit::inspections()
+MTRecordQuery<Inspection> Circuit::inspections() const
 {
-    return Inspection({"circuit_uuid", id()});
+    return Inspection::query({"circuit_uuid", id()});
 }
 
 QString Circuit::tableName()
@@ -228,4 +224,12 @@ const MTDictionary &Circuit::attributes()
 int Circuit::numBasicAttributes()
 {
     return 11;
+}
+
+bool Circuit::remove() const
+{
+    compressors().removeAll();
+    units().removeAll();
+    inspections().removeAll();
+    return MTRecord::remove();
 }

@@ -22,13 +22,25 @@
 
 #include "dbrecord.h"
 
+class Circuit;
+class CircuitUnitType;
+
 class CircuitUnit : public MTRecord
 {
 public:
-    CircuitUnit(const QString &uuid = QString());
-    CircuitUnit(const MTDictionary &parents);
+    CircuitUnit(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+
+    inline QString circuitUUID() { return stringValue("circuit_uuid"); }
+    Circuit circuit();
+    inline void setCircuitUUID(const QString &value) { setValue("circuit_uuid", value); }
+    inline QString unitTypeUUID() { return stringValue("unit_type_uuid"); }
+    CircuitUnitType unitType();
+    inline void setUnitTypeUUID(const QString &value) { setValue("unit_type_uuid", value); }
+    inline QString serialNumber() { return stringValue("sn"); }
+    inline void setSerialNumber(const QString &value) { setValue("sn", value); }
 
     static QString tableName();
+    static inline MTRecordQuery<CircuitUnit> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<CircuitUnit>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

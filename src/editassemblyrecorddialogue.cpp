@@ -49,7 +49,7 @@ EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(const QString &ar_t
 
 void EditAssemblyRecordDialogueTab::save(const QString &ar_type_uuid)
 {
-    AssemblyRecordType(ar_type_uuid).typeCategories().remove();
+    AssemblyRecordType(ar_type_uuid).typeCategories().removeAll();
 
     QTreeWidgetItem *item;
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
@@ -57,8 +57,10 @@ void EditAssemblyRecordDialogueTab::save(const QString &ar_type_uuid)
 
         if (item->checkState(0) == Qt::Checked) {
             QString ar_item_category_uuid = item->data(0, Qt::UserRole).toString();
-            AssemblyRecordTypeCategory type_category({{"ar_type_uuid", ar_type_uuid}, {"ar_item_category_uuid", ar_item_category_uuid}});
-            type_category.update("position", ((QSpinBox *) tree->itemWidget(item, 1))->value());
+            int value = ((QSpinBox *) tree->itemWidget(item, 1))->value();
+            AssemblyRecordTypeCategory::query({{"ar_type_uuid", ar_type_uuid}, {"ar_item_category_uuid", ar_item_category_uuid}}).each([value](AssemblyRecordTypeCategory &record) {
+                record.update("position", value);
+            });
         }
     }
 }
@@ -80,13 +82,12 @@ void EditAssemblyRecordDialogueTab::init(const QString &ar_type_uuid)
     if (ar_type_uuid.isEmpty())
         return;
 
-    MTRecord record(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"
-                    " ON assembly_record_type_categories.ar_item_category_uuid = assembly_record_item_categories.uuid"
-                    " AND assembly_record_type_categories.ar_type_uuid = '%1'").arg(ar_type_uuid),
-                    "", "");
+    MTQuery query(QString("assembly_record_item_categories LEFT JOIN assembly_record_type_categories"
+                  " ON assembly_record_type_categories.ar_item_category_uuid = assembly_record_item_categories.uuid"
+                  " AND assembly_record_type_categories.ar_type_uuid = '%1'").arg(ar_type_uuid));
 
-    ListOfVariantMaps all_categories(record.listAll("assembly_record_item_categories.name, assembly_record_item_categories.uuid,"
-                                                    " assembly_record_type_categories.ar_type_uuid, assembly_record_type_categories.position"));
+    ListOfVariantMaps all_categories(query.listAll("assembly_record_item_categories.name, assembly_record_item_categories.uuid,"
+                                                   " assembly_record_type_categories.ar_type_uuid, assembly_record_type_categories.position"));
 
     QTreeWidgetItem *item;
     for (int i = 0; i < all_categories.count(); ++i) {

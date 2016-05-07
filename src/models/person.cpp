@@ -21,12 +21,8 @@
 
 #include <QApplication>
 
-Person::Person(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
-{}
-
-Person::Person(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
+Person::Person(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString Person::tableName()

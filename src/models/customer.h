@@ -23,6 +23,7 @@
 #include "dbrecord.h"
 
 class MTAddress;
+class Repair;
 class Circuit;
 class Person;
 
@@ -42,25 +43,37 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     void readOperatorValues();
 
-    QString companyID();
-    QString companyName();
+    inline QString companyID() { return stringValue("id"); }
+    inline void setCompanyID(const QString &value) { setValue("id", value); }
+    inline QString companyName() { return stringValue("company"); }
+    inline void setCompanyName(const QString &value) { setValue("company", value); }
     MTAddress address();
-    QString mail();
-    QString phone();
-    OperatorType operatorType();
-    QString operatorCompanyID();
-    QString operatorCompanyName();
+    inline QString mail() { return stringValue("mail"); }
+    inline void setMail(const QString &value) { setValue("mail", value); }
+    inline QString phone() { return stringValue("phone"); }
+    inline void setPhone(const QString &value) { setValue("phone", value); }
+    inline OperatorType operatorType() { return (OperatorType)intValue("operator_type"); }
+    inline void setOperatorType(OperatorType value) { setValue("operator_type", value); }
+    inline QString operatorCompanyID() { return stringValue("operator_id"); }
+    inline void setOperatorCompanyID(const QString &value) { setValue("operator_id", value); }
+    inline QString operatorCompanyName() { return stringValue("operator_company"); }
+    inline void setOperatorCompanyName(const QString &value) { setValue("operator_company", value); }
     MTAddress operatorAddress();
-    QString operatorMail();
-    QString operatorPhone();
+    inline QString operatorMail() { return stringValue("operator_mail"); }
+    inline void setOperatorMail(const QString &value) { setValue("operator_mail", value); }
+    inline QString operatorPhone() { return stringValue("operator_phone"); }
+    inline void setOperatorPhone(const QString &value) { setValue("operator_phone", value); }
 
-    Circuit circuits();
-    Person persons();
+    MTRecordQuery<Repair> repairs() const;
+    MTRecordQuery<Circuit> circuits() const;
+    MTRecordQuery<Person> persons() const;
 
     static QString tableName();
+    static inline MTRecordQuery<Customer> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Customer>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
     static int numBasicAttributes();
+    bool remove() const;
 };
 
 #endif // CUSTOMER_H

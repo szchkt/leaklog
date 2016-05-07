@@ -24,21 +24,21 @@
 
 #include <QApplication>
 
-AssemblyRecordItem::AssemblyRecordItem(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
-{}
-
-AssemblyRecordItem::AssemblyRecordItem(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
-{}
-
-AssemblyRecordItem::AssemblyRecordItem(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents):
-    MTRecord(table, id_field, id, parents)
+AssemblyRecordItem::AssemblyRecordItem(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString AssemblyRecordItem::tableName()
 {
     return "assembly_record_items";
+}
+
+MTQuery AssemblyRecordItem::queryByInspector(const QString &inspector_uuid)
+{
+    return MTQuery("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno"
+                   " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
+                   " LEFT JOIN customers ON inspections.customer_uuid = customers.uuid",
+                   {{"ar_item_type_uuid", inspector_uuid}, {"source", QString::number(AssemblyRecordItem::Inspectors)}});
 }
 
 class AssemblyRecordItemColumns
@@ -88,10 +88,3 @@ const MTDictionary &AssemblyRecordItem::attributes()
     static AssemblyRecordItemAttributes dict;
     return dict.dict;
 }
-
-AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString &inspector_uuid):
-    AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno"
-                       " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
-                       " LEFT JOIN customers ON inspections.customer_uuid = customers.uuid", "", "",
-                       {{"ar_item_type_uuid", inspector_uuid}, {"source", QString::number(AssemblyRecordItem::Inspectors)}})
-{}

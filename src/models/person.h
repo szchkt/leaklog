@@ -25,8 +25,7 @@
 class Person : public MTRecord
 {
 public:
-    Person(const QString &uuid = QString());
-    Person(const MTDictionary &parents);
+    Person(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     inline QString customerUUID() { return stringValue("customer_uuid"); }
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
@@ -40,6 +39,7 @@ public:
     inline void setHidden(bool value) { setValue("hidden", (int)value); }
 
     static QString tableName();
+    static inline MTRecordQuery<Person> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Person>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

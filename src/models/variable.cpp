@@ -28,8 +28,8 @@
 
 using namespace Global;
 
-VariableRecord::VariableRecord(const QString &var_id, const QString &parent_id):
-    DBRecord(tableName(), "id", var_id, parent_id.isEmpty() ? MTDictionary() : MTDictionary("parent_id", parent_id))
+VariableRecord::VariableRecord(const QString &id, const QVariantMap &savedValues):
+    DBRecord(tableName(), "id", id, savedValues)
 {}
 
 void VariableRecord::initEditDialogue(EditDialogueWidgets *md)

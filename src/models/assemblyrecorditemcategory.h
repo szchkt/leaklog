@@ -42,7 +42,6 @@ public:
     };
 
     AssemblyRecordItemCategory(const QString &uuid = QString());
-    AssemblyRecordItemCategory(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
 
@@ -51,9 +50,10 @@ public:
     DisplayOptions displayOptions();
     DisplayPosition displayPosition();
 
-    AssemblyRecordTypeCategory typeCategories();
+    MTRecordQuery<AssemblyRecordTypeCategory> typeCategories();
 
     static QString tableName();
+    static inline MTRecordQuery<AssemblyRecordItemCategory> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordItemCategory>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

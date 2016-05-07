@@ -28,6 +28,7 @@ public:
     File(const QString &uuid = QString());
 
     static QString tableName();
+    static inline MTRecordQuery<File> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<File>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

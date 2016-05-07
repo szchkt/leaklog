@@ -47,7 +47,7 @@ QString AssemblyRecordTypesView::renderHTML()
         out << "<br>";
     }
 
-    AssemblyRecordType all_items("");
+    MTQuery all_items = AssemblyRecordType::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         all_items.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

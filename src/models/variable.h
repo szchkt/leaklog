@@ -27,7 +27,7 @@ class VariableRecord : public DBRecord
     Q_OBJECT
 
 public:
-    VariableRecord(const QString &, const QString & = QString());
+    VariableRecord(const QString &id = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
 
@@ -53,6 +53,7 @@ public:
     inline void setColBg(const QString &value) { setValue("col_bg", value); }
 
     static QString tableName();
+    static inline MTRecordQuery<VariableRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<VariableRecord>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

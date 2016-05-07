@@ -58,7 +58,7 @@ QString InspectorDetailsView::renderHTML()
 
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
-    AssemblyRecordItemByInspector ar_item_record(inspector_uuid);
+    MTQuery ar_item_record = AssemblyRecordItem::queryByInspector(inspector_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         ar_item_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -142,11 +142,11 @@ QString InspectorDetailsView::renderHTML()
     *(_tr->addHeaderCell()) << tr("Circuit ID");
     *(_tr->addHeaderCell()) << tr("Circuit name");
 
-    InspectionByInspector inspection_record(inspector_uuid);
+    MTQuery inspections_query = Inspection::queryByInspector(inspector_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        inspection_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        inspections_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    ListOfVariantMaps inspections(inspection_record.listAll("inspections.uuid, date, inspections.customer_uuid, customers.id AS customer_id, customers.company, circuit_uuid, circuits.id AS circuit_id, circuits.name AS circuit_name, repair, nominal"));
+    ListOfVariantMaps inspections(inspections_query.listAll("inspections.uuid, date, inspections.customer_uuid, customers.id AS customer_id, customers.company, circuit_uuid, circuits.id AS circuit_id, circuits.name AS circuit_name, repair, nominal"));
 
     for (int i = 0; i < inspections.count(); ++i) {
         QString date = settings->mainWindowSettings().formatDateTime(inspections.at(i).value("date").toString());

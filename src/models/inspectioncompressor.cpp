@@ -19,12 +19,8 @@
 
 #include "inspectioncompressor.h"
 
-InspectionCompressor::InspectionCompressor(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
-{}
-
-InspectionCompressor::InspectionCompressor(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
+InspectionCompressor::InspectionCompressor(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString InspectionCompressor::tableName()

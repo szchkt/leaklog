@@ -64,6 +64,16 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
     md->setUsedIds(used_ids);
 }
 
+MTRecordQuery<WarningFilter> WarningRecord::filters() const
+{
+    return WarningFilter::query({"warning_uuid", id()});
+}
+
+MTRecordQuery<WarningCondition> WarningRecord::conditions() const
+{
+    return WarningCondition::query({"warning_uuid", id()});
+}
+
 QString WarningRecord::tableName()
 {
     return "warnings";
@@ -90,4 +100,11 @@ const ColumnList &WarningRecord::columns()
 {
     static WarningColumns columns;
     return columns.columns;
+}
+
+bool WarningRecord::remove() const
+{
+    filters().removeAll();
+    conditions().removeAll();
+    return MTRecord::remove();
 }

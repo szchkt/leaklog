@@ -31,21 +31,14 @@ class MTRecord
 {
 public:
     MTRecord() {}
-    MTRecord(const QString &table, const QString &id_field, const QString &id, const MTDictionary &parents = MTDictionary());
+    MTRecord(const QString &table, const QString &id_field, const QString &id, const QVariantMap &savedValues = QVariantMap());
     MTRecord(const MTRecord &other);
     virtual ~MTRecord() {}
     MTRecord &operator=(const MTRecord &other);
-    void addFilter(const QString &column, const QString &filter);
     inline QString table() const { return r_table; }
-    void setTable(const QString &table) { r_table = table; }
-    void addJoin(const QString &join) { r_joins << join; }
-    void setUnordered(bool unordered) { r_order = !unordered; }
     inline QString idField() const { return r_id_field; }
     inline QString id() const { return r_id; }
     inline QString &id() { return r_id; }
-    void setId(const QString &id) { r_id = id; }
-    inline MTDictionary &parents() { return r_parents; }
-    inline QString parent(const QString &field) const { return r_parents.value(field); }
     bool exists() const;
     MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder) const;
     MTSqlQuery select(const QString &fields, const QString &order_by) const;
@@ -85,55 +78,17 @@ public:
     inline QString stringValue(const QString &field, const QString &default_value = QString()) {
         return value(field, default_value).toString();
     }
-    template<class T>
-    QList<T> all(const QString &order_by = QString()) const {
-        QList<T> records;
-        MTSqlQuery query = order_by.isEmpty() ? select() : select("*", order_by);
-        query.setForwardOnly(true);
-        query.exec();
-        while (query.next()) {
-            QVariantMap values;
-            for (int i = 0; i < query.record().count(); ++i) {
-                values.insert(query.record().fieldName(i), query.value(i));
-            }
-            T record;
-            record.r_table = r_table;
-            record.r_id_field = r_id_field;
-            record.r_id = values.value(r_id_field).toString();
-            record.r_saved_values = values;
-            records << record;
-        }
-        return records;
-    }
-    template<class T>
-    QList<T> where(const QString &predicate, const QString &order_by = QString()) {
-        setPredicate(predicate);
-        return all<T>(order_by);
-    }
-    ListOfVariantMaps listAll(const QString &fields = "*", const QString &order_by = QString()) const;
-    QVariantMap sumAll(const QString &fields) const;
-    MultiMapOfVariantMaps mapAll(const QString &map_to, const QString &fields = "*") const;
     bool update(const QString &field, const QVariant &value, bool add_columns = false);
     bool update(const QVariantMap &values = QVariantMap(), bool add_columns = false);
     bool save(bool add_columns = false);
-    virtual bool remove();
-    void setPredicate(const QString &predicate) { r_predicate = predicate; }
-    qlonglong max(const QString &attr) {
-        setUnordered(true);
-        return list(QString("MAX(%1) AS max").arg(attr)).value("max").toLongLong();
-    }
+    virtual bool remove() const;
 
 private:
     QString r_table;
     QString r_id_field;
     QString r_id;
-    QStringList r_joins;
-    MTDictionary r_parents;
-    QString r_predicate;
-    MTDictionary r_filter;
     QVariantMap r_saved_values;
     QVariantMap r_current_values;
-    bool r_order;
 };
 
 #endif // MTRECORD_H

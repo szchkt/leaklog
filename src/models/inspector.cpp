@@ -29,10 +29,6 @@ Inspector::Inspector(const QString &uuid):
     DBRecord(tableName(), "uuid", uuid)
 {}
 
-Inspector::Inspector(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
-{}
-
 void Inspector::initEditDialogue(EditDialogueWidgets *md)
 {
     QString currency = DBInfo::valueForKey("currency", "EUR");

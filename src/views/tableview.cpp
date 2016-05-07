@@ -57,7 +57,10 @@ QString TableView::renderHTML()
 
     Customer customer(customer_uuid);
 
-    ListOfVariantMaps circuits = Circuit(circuit_uuid).listAll("*, " + circuitRefrigerantAmountQuery());
+    MTQuery circuits_query = customer.circuits();
+    if (!circuit_uuid.isEmpty())
+        circuits_query.parents().insert("uuid", circuit_uuid);
+    ListOfVariantMaps circuits = circuits_query.listAll("*, " + circuitRefrigerantAmountQuery());
 
     Table table(table_uuid);
 
@@ -69,7 +72,7 @@ QString TableView::renderHTML()
 
         VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
 
-        ListOfVariantMaps inspections(Inspection({"circuit_uuid", circuit_uuid}).listAll("*", "date ASC"));
+        ListOfVariantMaps inspections(Inspection::query({"circuit_uuid", circuit_uuid}).listAll("*", "date ASC"));
         QString last_inspection_uuid, last_entry_uuid;
         for (int i = 0; i < inspections.count(); ++i) {
             QString uuid = inspections.at(i).value("uuid").toString();
@@ -150,7 +153,7 @@ QString TableView::renderHTML()
             *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + "/compressor:-1/table"))
                     << tr("All compressors");
 
-            ListOfVariantMaps compressors = Compressor({"circuit_uuid", circuit_uuid}).listAll();
+            ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
             for (int i = 0; i < compressors.count(); ++i) {
                 if (compressor_uuid == compressors.at(i).value("uuid").toString())
                     cell = compressors_table_row->addHeaderCell();
@@ -171,15 +174,15 @@ QString TableView::renderHTML()
                 compressor_uuids.append(compressor_uuid);
             }
             for (int i = 0; i < compressor_uuids.count(); ++i) {
-                InspectionCompressor inspections_compressors_rec({{"circuit_uuid", circuit_uuid}, {"compressor_uuid", compressor_uuids.at(i)}});
-                inspections_compressors_rec.setTable("inspections_compressors JOIN inspections"
+                MTQuery inspections_compressors_query = InspectionCompressor::query({{"circuit_uuid", circuit_uuid}, {"compressor_uuid", compressor_uuids.at(i)}});
+                inspections_compressors_query.setTable("inspections_compressors JOIN inspections"
                                                      " ON inspections.uuid = inspections_compressors.inspection_uuid");
                 if (table.value("highlight_nominal").toInt())
-                    inspections_compressors_rec.setPredicate("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
+                    inspections_compressors_query.setPredicate("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
                 else
-                    inspections_compressors_rec.setPredicate("inspections_compressors.date > '" + QString::number(year) + "'");
+                    inspections_compressors_query.setPredicate("inspections_compressors.date > '" + QString::number(year) + "'");
 
-                ListOfVariantMaps inspections_compressors = inspections_compressors_rec.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
+                ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
 
                 if (compressor_uuids.count() > 1) {
                     for (int n = 0; n < compressors.count(); ++n) {

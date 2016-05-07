@@ -19,13 +19,22 @@
 
 #include "circuitunit.h"
 
-CircuitUnit::CircuitUnit(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
+#include "circuit.h"
+#include "circuitunittype.h"
+
+CircuitUnit::CircuitUnit(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
-CircuitUnit::CircuitUnit(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
-{}
+Circuit CircuitUnit::circuit()
+{
+    return circuitUUID();
+}
+
+CircuitUnitType CircuitUnit::unitType()
+{
+    return unitTypeUUID();
+}
 
 QString CircuitUnit::tableName()
 {

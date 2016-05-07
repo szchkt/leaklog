@@ -90,24 +90,24 @@ QString AssemblyRecordsView::renderHTML()
 
     MTDictionary parents;
     if (!circuit_uuid.isEmpty()) parents.insert("circuit_uuid", circuit_uuid);
-    MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type_uuid = assembly_record_types.uuid"
-                    " LEFT JOIN customers ON customers.uuid = inspections.customer_uuid"
-                    " LEFT JOIN persons ON inspections.person_uuid = persons.uuid",
-                    "inspections.date", "", parents);
-    record.setPredicate("arno IS NOT NULL AND arno <> '' AND ar_type_uuid IS NOT NULL");
+    MTQuery query("inspections LEFT JOIN assembly_record_types ON inspections.ar_type_uuid = assembly_record_types.uuid"
+                  " LEFT JOIN customers ON customers.uuid = inspections.customer_uuid"
+                  " LEFT JOIN persons ON inspections.person_uuid = persons.uuid",
+                  parents);
+    query.setPredicate("arno IS NOT NULL AND arno <> '' AND ar_type_uuid IS NOT NULL");
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecords);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps items = record.listAll("inspections.customer_uuid, inspections.circuit_uuid,"
-                                             " inspections.uuid, inspections.date, inspections.arno,"
-                                             " assembly_record_types.name AS record_name,"
-                                             " inspections.inspector_uuid, customers.company,"
-                                             " persons.name AS operator,"
-                                             " inspections.date_updated, inspections.updated_by",
-                                             settings->appendDefaultOrderToColumn(order_by));
+    ListOfVariantMaps items = query.listAll("inspections.customer_uuid, inspections.circuit_uuid,"
+                                            " inspections.uuid, inspections.date, inspections.arno,"
+                                            " assembly_record_types.name AS record_name,"
+                                            " inspections.inspector_uuid, customers.company,"
+                                            " persons.name AS operator,"
+                                            " inspections.date_updated, inspections.updated_by",
+                                            settings->appendDefaultOrderToColumn(order_by));
 
     foreach (const QVariantMap &item, items) {
         if (year && item.value("date").toString().split(".").first().toInt() < year) continue;

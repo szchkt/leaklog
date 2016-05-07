@@ -22,6 +22,9 @@
 
 #include "dbrecord.h"
 
+class WarningFilter;
+class WarningCondition;
+
 class WarningRecord : public DBRecord
 {
     Q_OBJECT
@@ -42,8 +45,13 @@ public:
     inline int delay() { return intValue("delay"); }
     inline void setDelay(int value) { setValue("delay", value); }
 
+    MTRecordQuery<WarningFilter> filters() const;
+    MTRecordQuery<WarningCondition> conditions() const;
+
     static QString tableName();
+    static inline MTRecordQuery<WarningRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<WarningRecord>(tableName(), parents); }
     static const ColumnList &columns();
+    bool remove() const;
 };
 
 #endif // WARNING_H

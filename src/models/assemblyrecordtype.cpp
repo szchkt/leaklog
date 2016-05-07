@@ -84,9 +84,9 @@ Style AssemblyRecordType::style()
     return stringValue("style_uuid");
 }
 
-AssemblyRecordTypeCategory AssemblyRecordType::typeCategories()
+MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordType::typeCategories() const
 {
-    return AssemblyRecordTypeCategory({"ar_type_uuid", id()});
+    return AssemblyRecordTypeCategory::query({"ar_type_uuid", id()});
 }
 
 QString AssemblyRecordType::tableName()
@@ -134,7 +134,8 @@ const MTDictionary &AssemblyRecordType::attributes()
     return dict.dict;
 }
 
-bool AssemblyRecordType::remove()
+bool AssemblyRecordType::remove() const
 {
-    return typeCategories().remove() && MTRecord::remove();
+    typeCategories().removeAll();
+    return MTRecord::remove();
 }

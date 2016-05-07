@@ -19,12 +19,8 @@
 
 #include "warningcondition.h"
 
-WarningCondition::WarningCondition(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
-{}
-
-WarningCondition::WarningCondition(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
+WarningCondition::WarningCondition(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString WarningCondition::tableName()

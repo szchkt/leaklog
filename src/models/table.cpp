@@ -29,10 +29,6 @@ Table::Table(const QString &uuid):
     DBRecord(tableName(), "uuid", uuid)
 {}
 
-Table::Table(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
-{}
-
 void Table::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Table"));

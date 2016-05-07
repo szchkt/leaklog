@@ -24,12 +24,8 @@
 
 #include <QApplication>
 
-AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
-{}
-
-AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
+AssemblyRecordTypeCategory::AssemblyRecordTypeCategory(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 QString AssemblyRecordTypeCategory::tableName()

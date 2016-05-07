@@ -62,7 +62,7 @@ QString InspectionDetailsView::renderHTML()
     QString inspection_date = inspection.date();
     bool nominal = inspection.isNominal();
     bool repair = inspection.isRepair();
-    Inspection nom_inspection_record({{"circuit_uuid", circuit_uuid}, {"nominal", "1"}});
+    MTQuery nom_inspection_record = Inspection::query({{"circuit_uuid", circuit_uuid}, {"nominal", "1"}});
     nom_inspection_record.addFilter("date <= ?", inspection_date);
     QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
 
@@ -91,8 +91,7 @@ QString InspectionDetailsView::renderHTML()
 
     var_evaluation.setNominalInspection(nominal_ins);
 
-    Table tables_record({"scope", "1"});
-    MTSqlQuery tables = tables_record.select("name, variables", Qt::DescendingOrder);
+    MTSqlQuery tables = Table::query({"scope", "1"}).select("name, variables", "position");
     tables.setForwardOnly(true);
     tables.exec();
 
@@ -128,8 +127,8 @@ QString InspectionDetailsView::renderHTML()
     }
     div << table->customHtml(2);
 
-    InspectionCompressor inspections_compressor_rec({"inspection_uuid", inspection_uuid});
-    ListOfVariantMaps inspections_compressors = inspections_compressor_rec.listAll();
+    MTQuery inspections_compressor_query = InspectionCompressor::query({"inspection_uuid", inspection_uuid});
+    ListOfVariantMaps inspections_compressors = inspections_compressor_query.listAll();
     if (inspections_compressors.count()) {
         VariableEvaluation::EvaluationContext compressor_var_evaluation = VariableEvaluation::EvaluationContext(customer_uuid, circuit_uuid, Variable::Compressor);
         QList<VariableEvaluation::Variable *> compressor_vars = compressor_var_evaluation.listVariables();

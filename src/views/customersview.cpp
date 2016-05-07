@@ -61,8 +61,10 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
 
-    Customer all_customers(customer_uuid);
-    if (customer_uuid.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
+    MTQuery all_customers = Customer::query();
+    if (!customer_uuid.isEmpty()) {
+        all_customers.parents().insert("uuid", customer_uuid);
+    } else if (!settings->toolBarStack()->isFilterEmpty()) {
         all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by;
@@ -172,8 +174,8 @@ HTMLTable *CustomersView::customerContactPersons(const QString &customer_uuid, H
     *(_tr->addHeaderCell()) << tr("E-mail");
     *(_tr->addHeaderCell()) << tr("Phone");
 
-    Person persons_record({{"customer_uuid", customer_uuid}, {"hidden", "0"}});
-    ListOfVariantMaps persons = persons_record.listAll();
+    MTQuery persons_query = Person::query({{"customer_uuid", customer_uuid}, {"hidden", "0"}});
+    ListOfVariantMaps persons = persons_query.listAll();
     for (int i = 0; i < persons.count(); ++i) {
         _tr = table->addRow();
         *(_tr->addCell()) << persons.at(i).value("name").toString();

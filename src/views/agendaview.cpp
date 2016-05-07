@@ -52,25 +52,25 @@ QString AgendaView::renderHTML()
 
     QMultiMap<QString, QStringList> next_inspections_map;
 
-    MultiMapOfVariantMaps customers(Customer("").mapAll("uuid", "id, company"));
+    MultiMapOfVariantMaps customers(Customer::query().mapAll("uuid", "id, company"));
 
-    MTRecord circuits_record("circuits", "uuid", "", {"disused", "0"});
+    MTQuery circuits_query = Circuit::query({"disused", "0"});
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    circuits_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
-                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
-                            " ON ins.circuit_uuid = circuits.uuid");
-    circuits_record.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
-                            " LEFT JOIN inspections AS j ON i.circuit_uuid = j.circuit_uuid"
-                            " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
-                            " ON all_ins.circuit_uuid = circuits.uuid");
-    MTSqlQuery circuits = circuits_record.select("circuits.customer_uuid, circuits.uuid, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
-                                                 + circuitRefrigerantAmountQuery()
-                                                 + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
-                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
-                                                 " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
-                                                 " all_ins.nominal, all_ins.refr_add_am");
+    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
+                           " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
+                           " ON ins.circuit_uuid = circuits.uuid");
+    circuits_query.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
+                           " LEFT JOIN inspections AS j ON i.circuit_uuid = j.circuit_uuid"
+                           " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
+                           " ON all_ins.circuit_uuid = circuits.uuid");
+    MTSqlQuery circuits = circuits_query.select("circuits.customer_uuid, circuits.uuid, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
+                                                + circuitRefrigerantAmountQuery()
+                                                + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
+                                                " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
+                                                " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
+                                                " all_ins.nominal, all_ins.refr_add_am");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {

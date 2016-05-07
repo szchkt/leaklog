@@ -38,8 +38,7 @@ public:
         Decommissioned = 1
     };
 
-    Circuit(const QString &uuid = QString());
-    Circuit(const MTDictionary &parents);
+    Circuit(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
     Circuit(const Circuit &other): DBRecord(other) {}
     Circuit &operator=(const Circuit &other) { DBRecord::operator=(other); return *this; };
 
@@ -98,14 +97,16 @@ public:
     inline int inspectionInterval() { return intValue("inspection_interval"); }
     inline void setInspectionInterval(int value) { setValue("inspection_interval", value); }
 
-    Compressor compressors();
-    CircuitUnit units();
-    Inspection inspections();
+    MTRecordQuery<Compressor> compressors() const;
+    MTRecordQuery<CircuitUnit> units() const;
+    MTRecordQuery<Inspection> inspections() const;
 
     static QString tableName();
+    static inline MTRecordQuery<Circuit> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Circuit>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
     static int numBasicAttributes();
+    bool remove() const;
 };
 
 #endif // CIRCUIT_H

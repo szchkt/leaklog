@@ -25,10 +25,10 @@
 class InspectionCompressor : public MTRecord
 {
 public:
-    InspectionCompressor(const QString &uuid = QString());
-    InspectionCompressor(const MTDictionary &parents);
+    InspectionCompressor(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     static QString tableName();
+    static inline MTRecordQuery<InspectionCompressor> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<InspectionCompressor>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

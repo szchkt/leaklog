@@ -87,9 +87,9 @@ DBRecord::DBRecord():
     MTRecord()
 {}
 
-DBRecord::DBRecord(const QString &type, const QString &id_field, const QString &id, const MTDictionary &parents):
+DBRecord::DBRecord(const QString &type, const QString &id_field, const QString &id, const QVariantMap &savedValues):
     QObject(),
-    MTRecord(type, id_field, id, parents)
+    MTRecord(type, id_field, id, savedValues)
 {}
 
 QString DBRecord::dateUpdated()

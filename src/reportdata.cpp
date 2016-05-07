@@ -44,9 +44,8 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int>
 ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigerants_by_field)
 {
     QVector<double> *sum_list;
-    RefrigerantRecord refr_man_record;
 
-    foreach (const QVariantMap &refr_man, refr_man_record.listAll()) {
+    foreach (const QVariantMap &refr_man, RefrigerantRecord::query().listAll()) {
         QString refrigerant = refr_man.value("refrigerant").toString();
         QVariant purchased = refr_man.value("purchased");
         QVariant purchased_reco = refr_man.value("purchased_reco");
@@ -106,28 +105,27 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
 
-    MTRecord circuits_record("circuits", "id", "");
-    MultiMapOfVariantMaps circuits(circuits_record.mapAll("uuid", "refrigerant"));
+    MultiMapOfVariantMaps circuits(Circuit::query().mapAll("uuid", "refrigerant"));
 
-    MTRecord inspections_record("inspections", "uuid", "");
-    inspections_record.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
+    MTQuery inspections_query = Inspection::query();
+    inspections_query.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
     if (by_field)
-        inspections_record.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
+        inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
     QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, "
                      "inspections.nominal, inspections.refr_add_am, inspections.refr_reco, "
                      "customers.company, customers.id AS company_id";
     if (by_field)
         fields += ", circuits.field";
-    ListOfVariantMaps inspections(inspections_record.listAll(fields));
+    ListOfVariantMaps inspections(inspections_query.listAll(fields));
 
-    Repair repairs_rec;
-    repairs_rec.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
+    MTQuery repairs_query = Repair::query();
+    repairs_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     fields = "COALESCE(customers.company, repairs.customer) AS company, customers.id AS company_id, "
              "repairs.customer_uuid, repairs.uuid, repairs.date, "
              "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
-    inspections << repairs_rec.listAll(fields);
+    inspections << repairs_query.listAll(fields);
 
     foreach (const QVariantMap &inspection, inspections) {
         QVariant refr_add_am = inspection.value("refr_add_am");

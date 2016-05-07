@@ -106,20 +106,18 @@ void EditCircuitDialogueUnitsTab::save(const QString &circuit_uuid)
 
     CircuitUnit unit;
     for (int i = 0; i < all_values.count(); ++i) {
-        QVariantMap map;
-
         if (all_values.at(i).contains("uuid")) {
             QString uuid = all_values.at(i).value("uuid");
             former_ids.removeAll(uuid);
             unit = CircuitUnit(uuid);
         } else {
             unit = CircuitUnit();
-            map.insert("circuit_uuid", circuit_uuid);
+            unit.setCircuitUUID(circuit_uuid);
         }
 
-        map.insert("unit_type_uuid", all_values.at(i).value("unit_type_uuid"));
-        map.insert("sn", all_values.at(i).value("sn"));
-        unit.update(map);
+        unit.setUnitTypeUUID(all_values.at(i).value("unit_type_uuid"));
+        unit.setSerialNumber(all_values.at(i).value("sn"));
+        unit.save();
     }
 
     for (int i = 0; i < former_ids.count(); ++i)

@@ -67,44 +67,9 @@ void Customer::readOperatorValues()
     }
 }
 
-QString Customer::companyID()
-{
-    return stringValue("id");
-}
-
-QString Customer::companyName()
-{
-    return stringValue("company");
-}
-
 MTAddress Customer::address()
 {
     return stringValue("address");
-}
-
-QString Customer::mail()
-{
-    return stringValue("mail");
-}
-
-QString Customer::phone()
-{
-    return stringValue("phone");
-}
-
-Customer::OperatorType Customer::operatorType()
-{
-    return (OperatorType)intValue("operatorType");
-}
-
-QString Customer::operatorCompanyID()
-{
-    return stringValue("operator_id");
-}
-
-QString Customer::operatorCompanyName()
-{
-    return stringValue("operator_company");
 }
 
 MTAddress Customer::operatorAddress()
@@ -112,26 +77,19 @@ MTAddress Customer::operatorAddress()
     return stringValue("operator_address");
 }
 
-QString Customer::operatorMail()
+MTRecordQuery<Repair> Customer::repairs() const
 {
-    return stringValue("operator_mail");
+    return Repair::query({"customer_uuid", id()});
 }
 
-QString Customer::operatorPhone()
+MTRecordQuery<Circuit> Customer::circuits() const
 {
-    return stringValue("operator_phone");
+    return Circuit::query({"customer_uuid", id()});
 }
 
-Circuit Customer::circuits()
+MTRecordQuery<Person> Customer::persons() const
 {
-    Circuit circuits;
-    circuits.parents().insert("customer_uuid", id());
-    return circuits;
-}
-
-Person Customer::persons()
-{
-    return Person({"customer_uuid", id()});
+    return Person::query({"customer_uuid", id()});
 }
 
 QString Customer::tableName()
@@ -197,4 +155,12 @@ const MTDictionary &Customer::attributes()
 int Customer::numBasicAttributes()
 {
     return 5;
+}
+
+bool Customer::remove() const
+{
+    repairs().removeAll();
+    circuits().removeAll();
+    persons().removeAll();
+    return MTRecord::remove();
 }

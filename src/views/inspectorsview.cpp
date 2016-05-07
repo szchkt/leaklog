@@ -50,11 +50,14 @@ QString InspectorsView::renderHTML()
 
 HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid, const QString &inspector_uuid)
 {
-    Inspector inspectors_record(inspector_uuid);
-    if (!settings->toolBarStack()->isFilterEmpty()) {
-        inspectors_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    MTQuery inspectors_query = Inspector::query();
+    if (!inspector_uuid.isEmpty()) {
+        inspectors_query.parents().insert("uuid", inspector_uuid);
     }
-    ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        inspectors_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    }
+    ListOfVariantMaps inspectors(inspectors_query.listAll("*,"
        " (SELECT COUNT(date) FROM inspections WHERE inspector_uuid = inspectors.uuid) AS inspections_count,"
        " (SELECT COUNT(date) FROM repairs WHERE inspector_uuid = inspectors.uuid) AS repairs_count"));
 

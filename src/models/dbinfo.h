@@ -39,6 +39,7 @@ public:
     static int isOperationPermitted(const QString &, const QString & = QString());
 
     static QString tableName();
+    static inline MTRecordQuery<DBInfo> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<DBInfo>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

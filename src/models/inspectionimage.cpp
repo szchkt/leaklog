@@ -19,13 +19,22 @@
 
 #include "inspectionimage.h"
 
-InspectionImage::InspectionImage(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
+#include "inspection.h"
+#include "file.h"
+
+InspectionImage::InspectionImage(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
-InspectionImage::InspectionImage(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
-{}
+Inspection InspectionImage::inspection()
+{
+    return inspectionUUID();
+}
+
+File InspectionImage::file()
+{
+    return fileUUID();
+}
 
 QString InspectionImage::tableName()
 {

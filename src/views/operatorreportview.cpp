@@ -114,8 +114,7 @@ QString OperatorReportView::renderHTML()
                           tr("At the end of the year")) << "</th>";
     out << "</tr>";
 
-    MTRecord inspections("inspections", "uuid", "");
-    inspections.parents().insert("nominal", "0");
+    MTQuery inspections = Inspection::query({"nominal", "0"});
     if (month_from > 1)
         inspections.addFilter("date >= ?", date_from);
     if (month_until < 12)
@@ -131,12 +130,12 @@ QString OperatorReportView::renderHTML()
     QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
 
-    Circuit circuits_record({"customer_uuid", customer_uuid});
+    MTQuery circuits_query = Circuit::query({"customer_uuid", customer_uuid});
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
 
-    MTSqlQuery circuits = circuits_record.select("uuid, id, name, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
+    MTSqlQuery circuits = circuits_query.select("uuid, id, name, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -163,7 +162,7 @@ QString OperatorReportView::renderHTML()
             refrigerant_amount_begin += refrigerant_amount;
 
         nominal_inpection_parents.insert("circuit_uuid", circuit_uuid);
-        nominal_inspections = MTRecord("inspections", "uuid", "", nominal_inpection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
+        nominal_inspections = Inspection::query(nominal_inpection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
             if (nominal_inspection_date < date_from)

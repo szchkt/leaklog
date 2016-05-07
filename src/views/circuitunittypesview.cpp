@@ -47,7 +47,7 @@ QString CircuitUnitTypesView::renderHTML()
         out << "<br>";
     }
 
-    CircuitUnitType all_items("");
+    MTQuery all_items = CircuitUnitType::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         all_items.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

@@ -77,14 +77,14 @@ QString InspectionsView::renderHTML()
         if (units_table) out << "<br>" << units_table->html();
     }
 
-    Inspection inspection_record({"circuit_uuid", circuit_uuid});
+    MTQuery inspections_query = Inspection::query({"circuit_uuid", circuit_uuid});
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        inspection_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        inspections_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps inspections = inspection_record.listAll("uuid, date, nominal, repair, outside_interval, risks, rmds, arno, inspector_uuid, "
+    ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, nominal, repair, outside_interval, risks, rmds, arno, inspector_uuid, "
                                                               "person_uuid, refr_add_am, refr_reco, date_updated, updated_by, "
                                                               "inspection_type, inspection_type_data, "
                                                               "(SELECT COUNT(uuid) FROM inspection_images WHERE inspection_uuid = inspections.uuid) AS image_count",
@@ -97,8 +97,8 @@ QString InspectionsView::renderHTML()
         }
     }
 
-    MultiMapOfVariantMaps inspectors(Inspector().mapAll("uuid", "person"));
-    MultiMapOfVariantMaps persons(Person({"customer_uuid", customer_uuid}).mapAll("uuid", "name"));
+    MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
+    MultiMapOfVariantMaps persons(Person::query({"customer_uuid", customer_uuid}).mapAll("uuid", "name"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"11\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";

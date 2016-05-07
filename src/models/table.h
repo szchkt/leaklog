@@ -28,7 +28,6 @@ class Table : public DBRecord
 
 public:
     Table(const QString &uuid = QString());
-    Table(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
 
@@ -51,6 +50,7 @@ public:
     inline void setAveragedVariables(const QString &value) { setValue("avg", value); }
 
     static QString tableName();
+    static inline MTRecordQuery<Table> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Table>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

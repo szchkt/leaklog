@@ -28,7 +28,6 @@ class Inspector : public DBRecord
 
 public:
     Inspector(const QString &uuid = QString());
-    Inspector(const MTDictionary &parents);
 
     void initEditDialogue(EditDialogueWidgets *);
 
@@ -41,6 +40,7 @@ public:
     double acquisitionPrice();
 
     static QString tableName();
+    static inline MTRecordQuery<Inspector> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Inspector>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

@@ -22,6 +22,7 @@
 #include "csvparser/mtcsvparser.h"
 #include "mtaddress.h"
 #include "mtrecord.h"
+#include "mtquery.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -429,9 +430,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
     }
 
     if (generate_id) {
-        MTRecord record(id(), "id", "");
-
-        int next_id = (int)record.max("id") + 1;
+        int next_id = (int)MTQuery(id()).max("id") + 1;
         set.insert("id", QString::number(next_id));
         id_column = "id";
     }

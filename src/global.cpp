@@ -427,7 +427,7 @@ MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
 
 double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_uuid, const QString &circuit_uuid, bool *ok, bool *null_var)
 {
-    MTRecord circuit("circuits", "uuid", circuit_uuid, {"customer_uuid", customer_uuid});
+    MTQuery circuit = Circuit::query({{"customer_uuid", customer_uuid}, {"uuid", circuit_uuid}});
     QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
 }

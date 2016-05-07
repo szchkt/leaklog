@@ -58,7 +58,7 @@ QString RepairsView::renderHTML()
         writeCustomersTable(out, customer_uuid);
         out << "<br>";
     }
-    MTRecord repairs_record("repairs", "date", "", parent);
+    MTQuery repairs_record = Repair::query(parent);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         repairs_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -78,7 +78,7 @@ QString RepairsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"allrepairs:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
-    MultiMapOfVariantMaps inspectors(Inspector().mapAll("uuid", "person"));
+    MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
     while (repairs.next()) {
         QString uuid = repairs.stringValue("uuid");
         QString date = repairs.stringValue("date");

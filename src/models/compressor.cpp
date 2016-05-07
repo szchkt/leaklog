@@ -22,18 +22,9 @@
 
 #include <QApplication>
 
-Compressor::Compressor(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
+Compressor::Compressor(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), "uuid", uuid, savedValues)
 {}
-
-Compressor::Compressor(const MTDictionary &parents):
-    MTRecord(tableName(), "uuid", QString(), parents)
-{}
-
-QString Compressor::circuitUUID()
-{
-    return stringValue("circuit_uuid");
-}
 
 Circuit Compressor::circuit()
 {

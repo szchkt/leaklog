@@ -36,10 +36,10 @@ VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer
     circuit_id(circuit_uuid),
     vars_scope(vars_scope)
 {
-    circuit = MTRecord("circuits", "uuid", circuit_uuid, {"customer_uuid", customer_uuid}).list("*, " + circuitRefrigerantAmountQuery());
+    circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
     persons = Customer(customer_uuid).persons().mapAll("uuid", "name");
-    inspectors = Inspector().mapAll("uuid", "person");
-    ar_types = AssemblyRecordType().mapAll("uuid", "name");
+    inspectors = Inspector::query().mapAll("uuid", "person");
+    ar_types = AssemblyRecordType::query().mapAll("uuid", "name");
 
     init();
 }

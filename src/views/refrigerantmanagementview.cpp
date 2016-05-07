@@ -74,7 +74,7 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "</tr>";
-    RefrigerantRecord records("");
+    MTQuery records = RefrigerantRecord::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

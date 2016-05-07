@@ -28,10 +28,6 @@ AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &uuid):
     DBRecord(tableName(), "uuid", uuid)
 {}
 
-AssemblyRecordItemCategory::AssemblyRecordItemCategory(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
-{}
-
 bool AssemblyRecordItemCategory::isPredefined()
 {
     return intValue("predefined");
@@ -52,9 +48,9 @@ AssemblyRecordItemCategory::DisplayPosition AssemblyRecordItemCategory::displayP
     return (DisplayPosition)intValue("display_position");
 }
 
-AssemblyRecordTypeCategory AssemblyRecordItemCategory::typeCategories()
+MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordItemCategory::typeCategories()
 {
-    return AssemblyRecordTypeCategory({"ar_item_category_uuid", id()});
+    return AssemblyRecordTypeCategory::query({"ar_item_category_uuid", id()});
 }
 
 QString AssemblyRecordItemCategory::tableName()

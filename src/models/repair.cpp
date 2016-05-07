@@ -27,12 +27,8 @@
 
 using namespace Global;
 
-Repair::Repair(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
-{}
-
-Repair::Repair(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents)
+Repair::Repair(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), "uuid", uuid, savedValues)
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
@@ -68,61 +64,6 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
-}
-
-QString Repair::customerUUID()
-{
-    return stringValue("customer_uuid");
-}
-
-QString Repair::inspectorUUID()
-{
-    return stringValue("inspector_uuid");
-}
-
-QString Repair::date()
-{
-    return stringValue("date");
-}
-
-QString Repair::customer()
-{
-    return stringValue("customer");
-}
-
-QString Repair::device()
-{
-    return stringValue("device");
-}
-
-QString Repair::field()
-{
-    return stringValue("field");
-}
-
-QString Repair::refrigerant()
-{
-    return stringValue("refrigerant");
-}
-
-double Repair::refrigerantAmount()
-{
-    return doubleValue("refrigerant_amount");
-}
-
-double Repair::refrigerantAddition()
-{
-    return doubleValue("refr_add_am");
-}
-
-double Repair::refrigerantRecovery()
-{
-    return doubleValue("refr_reco");
-}
-
-QString Repair::arno()
-{
-    return stringValue("arno");
 }
 
 QString Repair::tableName()

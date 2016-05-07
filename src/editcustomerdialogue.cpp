@@ -144,7 +144,7 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
         person_data.insert("uuid", new EditDialogueTableCell(persons.at(i).value("uuid"), "uuid"));
         person_data.insert("hidden", new EditDialogueTableCell(persons.at(i).value("hidden"), "hidden"));
 
-        persons_table->addRow(person_data, true, Inspection({"person_uuid", uuid}).exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
+        persons_table->addRow(person_data, true, Inspection::query({"person_uuid", uuid}).exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
     }
 
     if (!persons.count()) persons_table->addNewRow();
@@ -159,7 +159,6 @@ void EditCustomerDialogue::save()
     Person person;
     for (int i = 0; i < all_values.count(); ++i) {
         if (all_values.at(i).value("name").isEmpty()) continue;
-        QVariantMap map;
 
         if (all_values.at(i).contains("uuid")) {
             QString uuid = all_values.at(i).value("uuid");
@@ -167,14 +166,14 @@ void EditCustomerDialogue::save()
             person = Person(uuid);
         } else {
             person = Person();
-            map.insert("customer_uuid", md_record->id());
+            person.setCustomerUUID(md_record->id());
         }
 
-        map.insert("name", all_values.at(i).value("name"));
-        map.insert("mail", all_values.at(i).value("mail"));
-        map.insert("phone", all_values.at(i).value("phone"));
-        map.insert("hidden", all_values.at(i).value("hidden", 0).toInt());
-        person.update(map);
+        person.setName(all_values.at(i).value("name"));
+        person.setMail(all_values.at(i).value("mail"));
+        person.setPhone(all_values.at(i).value("phone"));
+        person.setHidden(all_values.at(i).value("hidden", 0).toInt());
+        person.save();
     }
 
     for (int i = 0; i < former_ids.count(); ++i)

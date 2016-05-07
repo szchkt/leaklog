@@ -30,7 +30,6 @@
 #include "editassemblyrecorddialogue.h"
 #include "editcircuitdialogue.h"
 #include "editinspectordialogue.h"
-#include "editdialoguewithautoid.h"
 #include "importdialogue.h"
 #include "importcsvdialogue.h"
 #include "records.h"
@@ -621,7 +620,7 @@ void MainWindow::loadDatabase(bool reload)
         lw_warnings->addItem(item);
     }
 
-    ListOfVariantMaps styles = Style().listAll("uuid, name");
+    ListOfVariantMaps styles = Style::query().listAll("uuid, name");
     for (int i = 0; i < styles.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(styles.at(i).value("name").toString());
@@ -898,6 +897,7 @@ void MainWindow::editServiceCompany()
     UndoCommand command(m_undo_stack, tr("Edit service company information"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
+        DBInfo::setValueForKey("default_service_company_uuid", record.id());
         setDatabaseModified(true);
         refreshView();
     }
@@ -959,11 +959,11 @@ void MainWindow::editCustomer()
     if (md.exec() == QDialog::Accepted) {
         QString company_name = record.companyName();
         if (old_company_name != company_name) {
-            MTSqlQuery update_repairs;
-            update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE customer_uuid = :customer_uuid");
-            update_repairs.bindValue(":customer_uuid", record.id());
-            update_repairs.bindValue(":customer", company_name);
-            update_repairs.exec();
+            auto repairs = record.repairs().all();
+            foreach (auto repair, repairs) {
+                repair.setCustomer(company_name);
+                repair.save();
+            }
             enableTools();
         } else {
             enableTools();
@@ -979,6 +979,7 @@ void MainWindow::duplicateCustomer()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record(m_tab->selectedCustomerUUID());
+    record.refresh();
     record.id().clear();
     QString company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
@@ -1009,12 +1010,7 @@ void MainWindow::removeCustomer()
     m_undo_stack->savepoint();
 
     record.remove();
-    MTRecord circuits("circuits", "uuid", "", {"customer_uuid", m_tab->selectedCustomerUUID()});
-    circuits.remove();
-    MTRecord inspections("inspections", "uuid", "", {"customer_uuid", m_tab->selectedCustomerUUID()});
-    inspections.remove();
-    MTRecord repairs("repairs", "uuid", "", {"customer_uuid", m_tab->selectedCustomerUUID()});
-    repairs.remove();
+
     m_tab->clearSelectedCustomer();
     enableTools();
     setDatabaseModified(true);
@@ -1074,7 +1070,7 @@ void MainWindow::decommissionAllCircuits()
 
     QString decommissioning = date->date().toString(DATE_FORMAT);
 
-    auto circuits = customer.circuits().where<Circuit>(QString("disused = %1").arg(Circuit::Commissioned));
+    auto circuits = customer.circuits().where(QString("disused = %1").arg(Circuit::Commissioned));
     foreach (auto circuit, circuits) {
         circuit.setStatus(Circuit::Decommissioned);
         circuit.setDateOfDecommissioning(decommissioning);
@@ -1127,6 +1123,7 @@ void MainWindow::duplicateCircuit()
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(m_tab->selectedCircuitUUID());
+    record.refresh();
     record.id().clear();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1135,7 +1132,7 @@ void MainWindow::duplicateCircuit()
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        ListOfVariantMaps compressors = Compressor({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+        ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
 
         for (int i = 0; i < compressors.size(); ++i) {
             compressors[i].insert("uuid", createUUID());
@@ -1143,7 +1140,7 @@ void MainWindow::duplicateCircuit()
             Compressor().update(compressors[i]);
         }
 
-        ListOfVariantMaps circuit_units = CircuitUnit({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+        ListOfVariantMaps circuit_units = CircuitUnit::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
 
         for (int i = 0; i < circuit_units.size(); ++i) {
             circuit_units[i].insert("uuid", createUUID());
@@ -1199,7 +1196,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
-    new_id->setValue((int)Circuit({"customer_uuid", m_tab->selectedCustomerUUID()}).max("id") + 1);
+    new_id->setValue((int)Circuit::query({"customer_uuid", m_tab->selectedCustomerUUID()}).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
@@ -1252,7 +1249,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
             return;
 
         id = new_id->value();
-    } while (Circuit({{"customer_uuid", m_tab->selectedCustomerUUID()}, {"id", QString::number(id)}}).exists());
+    } while (Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}, {"id", QString::number(id)}}).exists());
 
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1278,14 +1275,14 @@ void MainWindow::duplicateAndDecommissionCircuit()
     Circuit duplicate;
     duplicate.update(attributes);
 
-    ListOfVariantMaps compressors = Compressor({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+    ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
     for (int i = 0; i < compressors.size(); ++i) {
         compressors[i].insert("uuid", createUUID());
         compressors[i].insert("circuit_uuid", duplicate.id());
         Compressor().update(compressors[i]);
     }
 
-    ListOfVariantMaps circuit_units = CircuitUnit({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+    ListOfVariantMaps circuit_units = CircuitUnit::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
     for (int i = 0; i < circuit_units.size(); ++i) {
         circuit_units[i].insert("uuid", createUUID());
         circuit_units[i].insert("circuit_uuid", duplicate.id());
@@ -1325,7 +1322,7 @@ void MainWindow::moveCircuit()
     QComboBox *cb_customer = new QComboBox(&d);
 
     QString selected_customer_uuid = m_tab->selectedCustomerUUID();
-    ListOfVariantMaps customers = Customer().listAll("id, company", "company");
+    ListOfVariantMaps customers = Customer::query().listAll("id, company", "company");
     foreach (const QVariantMap &customer, customers) {
         QVariant uuid = customer.value("uuid");
         if (uuid.toString() != selected_customer_uuid)
@@ -1410,8 +1407,8 @@ void MainWindow::moveCircuit()
         circuit_id = spb_circuit_id->value();
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
         inspection_date_taken = false;
-    } while (customer_uuid.isNull() || Circuit({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists() ||
-             (inspection_date_taken = Inspection({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists()));
+    } while (customer_uuid.isNull() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists() ||
+             (inspection_date_taken = Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists()));
 
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1470,8 +1467,8 @@ void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
     QString customer_uuid = customer_index < 0 ? QString() : cb_customer->itemData(customer_index).toString();
     QString circuit_id = QString::number(spb_circuit_id->value());
 
-    if (!customer_uuid.isEmpty() && Circuit({{"customer_uuid", customer_uuid}, {"id", circuit_id}}).exists()) {
-        spb_circuit_id->setValue((int)Circuit({"customer_uuid", customer_uuid}).max("id") + 1);
+    if (!customer_uuid.isEmpty() && Circuit::query({{"customer_uuid", customer_uuid}, {"id", circuit_id}}).exists()) {
+        spb_circuit_id->setValue((int)Circuit::query({"customer_uuid", customer_uuid}).max("id") + 1);
     }
 }
 
@@ -1494,17 +1491,6 @@ void MainWindow::removeCircuit()
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
-    InspectionCompressor inspection_compressors;
-    inspection_compressors.setPredicate(QString("inspection_uuid IN (SELECT uuid FROM inspections WHERE circuit_uuid = '%1')").arg(record.id()));
-    inspection_compressors.remove();
-
-    InspectionImage inspection_images;
-    inspection_images.setPredicate(QString("inspection_uuid IN (SELECT uuid FROM inspections WHERE circuit_uuid = '%1')").arg(record.id()));
-    inspection_images.remove();
-
-    record.compressors().remove();
-    record.units().remove();
-    record.inspections().remove();
     record.remove();
 
     m_tab->clearSelectedCircuit();
@@ -1564,6 +1550,7 @@ void MainWindow::duplicateInspection()
     if (!m_tab->isInspectionSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(m_tab->selectedInspectionUUID());
+    record.refresh();
     record.id().clear();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1605,8 +1592,6 @@ void MainWindow::removeInspection(const QString &uuid)
                         .arg(record.circuit().circuitID()));
     m_undo_stack->savepoint();
 
-    record.compressors().remove();
-    record.images().remove();
     record.remove();
     if (m_tab->selectedInspectionUUID() == inspection_uuid)
         m_tab->clearSelectedInspection();
@@ -1624,7 +1609,7 @@ void MainWindow::skipInspection()
 
     QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
 
-    Circuit circuit_record(m_tab->selectedCircuitUUID());
+    MTQuery circuit_record = Circuit::query({"uuid", m_tab->selectedCircuitUUID()});
     circuit_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
@@ -1712,7 +1697,7 @@ void MainWindow::skipInspection()
             return;
 
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
-    } while (Inspection({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists());
+    } while (Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists());
 
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1784,9 +1769,10 @@ void MainWindow::duplicateRepair()
     if (!m_tab->isRepairSelected()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record(m_tab->selectedRepairUUID());
+    record.refresh();
     record.id().clear();
     if (!record.customerUUID().isEmpty()) {
-        record.parents().insert("customer_uuid", record.customerUUID());
+        record.setCustomerUUID(record.customerUUID());
     }
     QString company_name = record.customer();
     UndoCommand command(m_undo_stack, tr("Duplicate repair %1%2")
@@ -1869,7 +1855,8 @@ void MainWindow::addVariable(bool subvar)
             return;
         parent_id = trw_variables->currentItem()->text(1);
     }
-    VariableRecord record("", parent_id);
+    VariableRecord record;
+    record.setParentID(parent_id);
     UndoCommand command(m_undo_stack, tr("Add variable"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -1952,7 +1939,7 @@ void MainWindow::removeVariable()
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
     m_undo_stack->savepoint();
 
-    MTRecord("variables", "id", "", {"parent_id", id}).remove();
+    VariableRecord::query({"parent_id", id}).removeAll();
     MTRecord("variables", "id", id).remove();
     delete item;
     dropColumn(id, "inspections", db);
@@ -2274,10 +2261,6 @@ void MainWindow::removeWarning()
 
     WarningRecord record(item->data(Qt::UserRole).toString());
     record.remove();
-    MTRecord filters("warnings_filters", "", "", {"warning_uuid", item->data(Qt::UserRole).toString()});
-    filters.remove();
-    MTRecord conditions("warnings_conditions", "", "", {"warning_uuid", item->data(Qt::UserRole).toString()});
-    conditions.remove();
     delete item;
     enableTools();
     setDatabaseModified(true);
@@ -3448,7 +3431,7 @@ void MainWindow::addAssemblyRecordItemType()
     AssemblyRecordItemType record;
     record.setValue("ar_item_category_uuid", m_tab->selectedAssemblyRecordItemCategoryUUID());
     UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemType(record.id(), true);
@@ -3461,7 +3444,7 @@ void MainWindow::editAssemblyRecordItemType()
     if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
     AssemblyRecordItemType record(m_tab->selectedAssemblyRecordItemTypeUUID());
     UndoCommand command(m_undo_stack, tr("Edit assembly record item type %1").arg(record.stringValue("name")));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemType(record.id(), false);
@@ -3494,7 +3477,7 @@ void MainWindow::addAssemblyRecordItemCategory()
     if (!QSqlDatabase::database().isOpen()) { return; }
     AssemblyRecordItemCategory record;
     UndoCommand command(m_undo_stack, tr("Add assembly record item category"));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemCategory(record.id(), true);
@@ -3507,7 +3490,7 @@ void MainWindow::editAssemblyRecordItemCategory()
     if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
     AssemblyRecordItemCategory record(m_tab->selectedAssemblyRecordItemCategoryUUID());
     UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.name()));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadAssemblyRecordItemCategory(record.id(), false);
@@ -3542,7 +3525,7 @@ void MainWindow::addCircuitUnitType()
     if (!QSqlDatabase::database().isOpen()) { return; }
     CircuitUnitType unit_type;
     UndoCommand command(m_undo_stack, tr("Add circuit unit type"));
-    EditDialogueWithAutoId md(&unit_type, m_undo_stack, this);
+    EditDialogue md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadCircuitUnitType(unit_type.id(), true);
@@ -3555,7 +3538,7 @@ void MainWindow::editCircuitUnitType()
     if (!m_tab->isCircuitUnitTypeSelected()) { return; }
     CircuitUnitType record(m_tab->selectedCircuitUnitTypeUUID());
     UndoCommand command(m_undo_stack, tr("Edit circuit unit type %1").arg(record.stringValue("type")));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadCircuitUnitType(record.id(), false);

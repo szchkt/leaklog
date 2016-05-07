@@ -70,10 +70,12 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
     bool all_circuits = circuit_uuid.isEmpty();
 
-    Circuit circuits_record(circuit_uuid);
-    circuits_record.parents().insert("customer_uuid", customer_uuid);
+    MTQuery circuits_query = Circuit::query();
+    circuits_query.parents().insert("customer_uuid", customer_uuid);
+    if (!all_circuits)
+        circuits_query.parents().insert("uuid", circuit_uuid);
     if (all_circuits && !settings->toolBarStack()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString circuits_query_select = "circuits.*, (SELECT uuid FROM inspections"
         " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection_uuid, (SELECT date FROM inspections"
@@ -81,8 +83,8 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::Customer);
     if (order_by.isEmpty())
         order_by = "id";
-    ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
-                                                         all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
+    ListOfVariantMaps circuits = circuits_query.listAll(circuits_query_select,
+                                                        all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
 
     int commissioned_count = 0;
     int excluded_count = 0;
@@ -313,7 +315,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
 
 HTMLTable *CircuitsView::circuitCompressorsTable(const QString &circuit_uuid, HTMLTable *table)
 {
-    ListOfVariantMaps compressors = Compressor({"circuit_uuid", circuit_uuid}).listAll();
+    ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
     if (compressors.count()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         HTMLTableRow *_tr;

@@ -42,43 +42,46 @@ public:
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
+    static inline MTRecordQuery<Inspection> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Inspection>(tableName(), parents); }
+    static MTQuery queryByInspector(const QString &inspector_uuid);
     static const ColumnList &columns();
 
-    Inspection(const QString &uuid = QString());
-    Inspection(const MTDictionary &parents);
-    Inspection(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents);
+    Inspection(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+    Inspection(const QString &table, const QString &id_column, const QString &id, const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
 
     int scope() { return m_scope; }
 
-    QString customerUUID();
+    inline QString customerUUID() { return stringValue("customer_uuid"); }
+    inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
     Customer customer();
-    QString circuitUUID();
+    inline QString circuitUUID() { return stringValue("circuit_uuid"); }
+    inline void setCircuitUUID(const QString &value) { setValue("circuit_uuid", value); }
     Circuit circuit();
-    QString date();
-    bool isNominal();
-    bool isRepair();
-    bool isOutsideInterval();
-    Type type();
-    QString typeData();
+    inline QString date() { return stringValue("date"); }
+    inline void setDate(const QString &value) { setValue("date", value); }
+    inline bool isNominal() { return intValue("nominal"); }
+    inline void setNominal(bool value) { setValue("nominal", (int)value); }
+    inline bool isRepair() { return intValue("repair"); }
+    inline void setRepair(bool value) { setValue("repair", (int)value); }
+    inline bool isOutsideInterval() { return intValue("outside_interval"); }
+    inline void setOutsideInterval(bool value) { setValue("outside_interval", (int)value); }
+    inline Type type() { return (Type)intValue("inspection_type"); }
+    inline void setType(Type value) { setValue("inspection_type", (int)value); }
+    inline QString typeData() { return stringValue("inspection_type_data"); }
+    inline void setTypeData(const QString &value) { setValue("inspection_type_data", value); }
 
-    InspectionCompressor compressors();
-    InspectionImage images();
+    MTRecordQuery<InspectionCompressor> compressors() const;
+    MTRecordQuery<InspectionImage> images() const;
+
+    bool remove() const;
 
 public slots:
     void showSecondNominalInspectionWarning(MTCheckBox *, bool);
 
 private:
     int m_scope;
-};
-
-class InspectionByInspector : public Inspection
-{
-    Q_OBJECT
-
-public:
-    InspectionByInspector(const QString &);
 };
 
 #endif // INSPECTION_H

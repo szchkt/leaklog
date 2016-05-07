@@ -74,6 +74,13 @@ QString Inspection::tableName()
     return "inspections";
 }
 
+MTQuery Inspection::queryByInspector(const QString &inspector_uuid)
+{
+    return MTQuery("inspections LEFT JOIN customers ON inspections.customer_uuid = customers.uuid"
+                   " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid",
+                   {"inspector_uuid", inspector_uuid});
+}
+
 class InspectionColumns
 {
 public:
@@ -100,18 +107,13 @@ const ColumnList &Inspection::columns()
     return columns.columns;
 }
 
-Inspection::Inspection(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid),
+Inspection::Inspection(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), "uuid", uuid, savedValues),
     m_scope(Variable::Inspection)
 {}
 
-Inspection::Inspection(const MTDictionary &parents):
-    DBRecord(tableName(), "uuid", QString(), parents),
-    m_scope(Variable::Inspection)
-{}
-
-Inspection::Inspection(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
-    DBRecord(table, id_column, id, parents),
+Inspection::Inspection(const QString &table, const QString &id_column, const QString &id, const QVariantMap &savedValues):
+    DBRecord(table, id_column, id, savedValues),
     m_scope(Variable::Inspection)
 {}
 
@@ -166,19 +168,9 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     query.initEditDialogueWidgets(md, savedValues(), this, date_edit->variantValue().toDateTime(), chb_repair, chb_nominal);
 }
 
-QString Inspection::customerUUID()
-{
-    return stringValue("customer_uuid");
-}
-
 Customer Inspection::customer()
 {
     return customerUUID();
-}
-
-QString Inspection::circuitUUID()
-{
-    return stringValue("circuit_uuid");
 }
 
 Circuit Inspection::circuit()
@@ -186,44 +178,21 @@ Circuit Inspection::circuit()
     return circuitUUID();
 }
 
-QString Inspection::date()
+MTRecordQuery<InspectionCompressor> Inspection::compressors() const
 {
-    return stringValue("date");
+    return InspectionCompressor::query({"inspection_uuid", id()});
 }
 
-bool Inspection::isNominal()
+MTRecordQuery<InspectionImage> Inspection::images() const
 {
-    return intValue("nominal");
+    return InspectionImage::query({"inspection_uuid", id()});
 }
 
-bool Inspection::isRepair()
+bool Inspection::remove() const
 {
-    return intValue("repair");
-}
-
-bool Inspection::isOutsideInterval()
-{
-    return intValue("outside_interval");
-}
-
-Inspection::Type Inspection::type()
-{
-    return (Type)intValue("inspection_type");
-}
-
-QString Inspection::typeData()
-{
-    return stringValue("inspection_type_data");
-}
-
-InspectionCompressor Inspection::compressors()
-{
-    return InspectionCompressor({"inspection_uuid", id()});
-}
-
-InspectionImage Inspection::images()
-{
-    return InspectionImage({"inspection_uuid", id()});
+    compressors().removeAll();
+    images().removeAll();
+    return MTRecord::remove();
 }
 
 void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool state)
@@ -247,9 +216,3 @@ void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool s
         }
     }
 }
-
-InspectionByInspector::InspectionByInspector(const QString &inspector_uuid):
-    Inspection("inspections LEFT JOIN customers ON inspections.customer_uuid = customers.uuid"
-               " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid",
-               "uuid", "", {"inspector_uuid", inspector_uuid})
-{}

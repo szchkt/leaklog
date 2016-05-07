@@ -49,12 +49,13 @@ public:
     QString nameFormat();
     Style style();
 
-    AssemblyRecordTypeCategory typeCategories();
+    MTRecordQuery<AssemblyRecordTypeCategory> typeCategories() const;
 
     static QString tableName();
+    static inline MTRecordQuery<AssemblyRecordType> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordType>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
-    bool remove();
+    bool remove() const;
 };
 
 #endif // ASSEMBLYRECORDTYPE_H

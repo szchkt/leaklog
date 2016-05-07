@@ -58,22 +58,20 @@ void EditCircuitDialogueCompressorsTab::save(const QString &circuit_uuid)
 
     Compressor compressor;
     for (int i = 0; i < all_values.count(); ++i) {
-        QVariantMap map;
-
         if (all_values.at(i).contains("uuid")) {
             QString uuid = all_values.at(i).value("uuid");
             former_ids.removeAll(uuid);
             compressor = Compressor(uuid);
         } else {
             compressor = Compressor();
-            map.insert("circuit_uuid", circuit_uuid);
+            compressor.setCircuitUUID(circuit_uuid);
         }
 
-        map.insert("name", all_values.at(i).value("name"));
-        map.insert("manufacturer", all_values.at(i).value("manufacturer"));
-        map.insert("type", all_values.at(i).value("type"));
-        map.insert("sn", all_values.at(i).value("sn"));
-        compressor.update(map);
+        compressor.setName(all_values.at(i).value("name"));
+        compressor.setManufacturer(all_values.at(i).value("manufacturer"));
+        compressor.setType(all_values.at(i).value("type"));
+        compressor.setSerialNumber(all_values.at(i).value("sn"));
+        compressor.save();
     }
 
     for (int i = 0; i < former_ids.count(); ++i)
@@ -85,7 +83,7 @@ void EditCircuitDialogueCompressorsTab::load(const QString &circuit_uuid)
     EditDialogueTableCell *cell;
     QMap<QString, EditDialogueTableCell *> compressors_data;
     if (!circuit_uuid.isEmpty()) {
-        ListOfVariantMaps compressors = Compressor({"circuit_uuid", circuit_uuid}).listAll();
+        ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
         for (int i = 0; i < compressors.count(); ++i) {
             former_ids << compressors.at(i).value("uuid").toString();
 

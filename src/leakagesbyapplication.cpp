@@ -118,7 +118,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
                 refrigerant_amounts[year - min_year] = refrigerant_amount;
 
             nominal_inpection_parents.insert("circuit", circuit_uuid);
-            ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inpection_parents)
+            ListOfVariantMaps nominal_inspections = Inspection::query(nominal_inpection_parents)
                     .listAll("date, refr_add_am, refr_reco", "date ASC");
 
             foreach (const QVariantMap &nominal_inspection, nominal_inspections) {

@@ -127,16 +127,19 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
         return;
     }
 
-    ListOfVariantMaps images = Inspection(inspection_uuid).images().listAll();
+    auto images = Inspection(inspection_uuid).images().all();
 
     QMap<QString, EditDialogueTableCell *> image_data;
     EditDialogueTableCell *cell;
 
-    for (int i = 0; i < images.count(); ++i) {
-        cell = new EditDialogueTableCell(images.at(i).value("description"), Global::Text);
+    foreach (auto image, images) {
+        cell = new EditDialogueTableCell(image.id(), Global::File);
+        cell->setId("uuid");
+        image_data.insert("uuid", cell);
+        cell = new EditDialogueTableCell(image.description(), Global::Text);
         cell->setId("description");
         image_data.insert("description", cell);
-        cell = new EditDialogueTableCell(images.at(i).value("file_uuid"), Global::File);
+        cell = new EditDialogueTableCell(image.fileUUID(), Global::File);
         cell->setId("file_uuid");
         image_data.insert("file_uuid", cell);
         table->addRow(image_data);
@@ -148,34 +151,29 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
 void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
 {
     QList<MTDictionary> dicts = table->allValues();
-    QList<QString> undeleted_files;
+    auto images = Inspection(inspection_uuid).images().map("uuid");
 
-    if (!inspection_uuid.isEmpty()) {
-        InspectionImage images_record = Inspection(inspection_uuid).images();
-
-        ListOfVariantMaps images = images_record.listAll("file_uuid");
-
-        for (int i = 0; i < images.count(); ++i) {
-            QString file_uuid = images.at(i).value("file_uuid").toString();
-            if (!undeleted_files.contains(file_uuid))
-                undeleted_files.append(file_uuid);
-        }
-
-        images_record.remove();
-    }
-
-    QVariantMap map;
     for (int i = 0; i < dicts.count(); ++i) {
         QString file_uuid = dicts.at(i).value("file_uuid");
         if (file_uuid.isEmpty())
             continue;
-        undeleted_files.removeAll(file_uuid);
 
-        map.insert("description", dicts.at(i).value("description"));
-        map.insert("file_uuid", file_uuid);
-        Inspection(inspection_uuid).images().update(map);
+        InspectionImage image;
+        QString uuid = dicts.at(i).value("uuid");
+
+        if (!uuid.isEmpty() && images.contains(uuid)) {
+            image = images.value(uuid);
+            images.remove(uuid);
+        }
+
+        image.setInspectionUUID(inspection_uuid);
+        image.setFileUUID(file_uuid);
+        image.setDescription(dicts.at(i).value("description"));
+        image.save();
     }
 
-    for (int i = 0; i < undeleted_files.count(); ++i)
-        DBFile(undeleted_files.at(i)).remove();
+    QMapIterator<QVariant, InspectionImage> i(images);
+    while (i.hasNext()) { i.next();
+        i.value().remove();
+    }
 }

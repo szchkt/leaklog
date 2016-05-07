@@ -45,6 +45,7 @@ public:
     inline double leakedRecovered() { return doubleValue("leaked_reco"); }
 
     static QString tableName();
+    static inline MTRecordQuery<RefrigerantRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<RefrigerantRecord>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

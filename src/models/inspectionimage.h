@@ -22,13 +22,26 @@
 
 #include "dbrecord.h"
 
+class Inspection;
+class File;
+
 class InspectionImage : public MTRecord
 {
 public:
-    InspectionImage(const QString &uuid = QString());
-    InspectionImage(const MTDictionary &parents);
+    InspectionImage(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+
+    inline QString inspectionUUID() { return stringValue("inspection_uuid"); }
+    inline void setInspectionUUID(const QString &value) { setValue("inspection_uuid", value); }
+    inline QString fileUUID() { return stringValue("file_uuid"); }
+    inline void setFileUUID(const QString &value) { setValue("file_uuid", value); }
+    inline QString description() { return stringValue("description"); }
+    inline void setDescription(const QString &value) { setValue("description", value); }
+
+    Inspection inspection();
+    File file();
 
     static QString tableName();
+    static inline MTRecordQuery<InspectionImage> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<InspectionImage>(tableName(), parents); }
     static const ColumnList &columns();
 };
 
