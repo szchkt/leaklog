@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -82,7 +82,10 @@ public:
 
     void newLine() { children.append(new HTMLDataElement("<br>")); }
 
+    HTMLParent &operator<<(double);
+    HTMLParent &operator<<(const char *);
     HTMLParent &operator<<(const QString &);
+    HTMLParent &operator<<(const QByteArray &);
     HTMLParent &operator<<(const MTVariant &);
     HTMLParent &operator<<(HTMLElement *);
 

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -1035,9 +1035,12 @@ void MainWindow::decommissionAllCircuits()
 
     gl->addWidget(new QLabel(customer.companyName(), &d), 0, 1);
 
+    QCheckBox *exclude_from_agenda = new QCheckBox(tr("Exclude from Agenda only"), &d);
+    gl->addWidget(exclude_from_agenda, 1, 1);
+
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 1, 0);
+    gl->addWidget(lbl, 2, 0);
 
     QDateEdit *date = new QDateEdit(&d);
     date->setDisplayFormat(m_settings.dateFormatString());
@@ -1049,7 +1052,14 @@ void MainWindow::decommissionAllCircuits()
 #else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
 #endif
-    gl->addWidget(date, 1, 1);
+    gl->addWidget(date, 2, 1);
+
+    lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning_reason")), &d);
+    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    gl->addWidget(lbl, 3, 0);
+
+    QLineEdit *decommissioning_reason = new QLineEdit(&d);
+    gl->addWidget(decommissioning_reason, 3, 1);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1058,7 +1068,7 @@ void MainWindow::decommissionAllCircuits()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 2, 0, 1, 2);
+    gl->addWidget(bb, 4, 0, 1, 2);
 
     if (d.exec() != QDialog::Accepted) return;
 
@@ -1072,8 +1082,9 @@ void MainWindow::decommissionAllCircuits()
 
     auto circuits = customer.circuits().where(QString("disused = %1").arg(Circuit::Commissioned));
     foreach (auto circuit, circuits) {
-        circuit.setStatus(Circuit::Decommissioned);
+        circuit.setStatus(exclude_from_agenda->isChecked() ? Circuit::ExcludedFromAgenda : Circuit::Decommissioned);
         circuit.setDateOfDecommissioning(decommissioning);
+        circuit.setReasonForDecommissioning(decommissioning_reason->text());
         circuit.save();
     }
 
@@ -3350,10 +3361,10 @@ void MainWindow::importCSV()
     table->addColumn(tr("Discount"), "discount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("EAN code"), "ean", ImportDialogueTableColumn::Text);
     col = table->addColumn(tr("Data type"), "value_data_type", ImportDialogueTableColumn::Select);
-    col->addSelectValue(tr("string"), QString::number(Global::String));
     col->addSelectValue(tr("integer"), QString::number(Global::Integer));
-    col->addSelectValue(tr("numeric"), QString::number(Global::Numeric));
-    col->addSelectValue(tr("text"), QString::number(Global::Text));
+    col->addSelectValue(tr("decimal"), QString::number(Global::Numeric));
+    col->addSelectValue(tr("short text"), QString::number(Global::String));
+    col->addSelectValue(tr("long text"), QString::number(Global::Text));
     col->addSelectValue(tr("boolean"), QString::number(Global::Boolean));
     table->addColumn(tr("Automatically add to assembly record"), "auto_show", ImportDialogueTableColumn::Boolean);
     table->addForeignKeyColumn(tr("Category ID"), "ar_item_category_uuid", "uuid", "assembly_record_item_categories");

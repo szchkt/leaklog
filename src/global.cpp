@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -482,11 +482,11 @@ double Global::evaluateExpression(const QVariantMap &inspection, const MTDiction
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
 {
     if (value1 < value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%1";
+        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%L1";
     } else if (value1 > value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%1";
+        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%L1";
     } else {
-        return "%1";
+        return "%L1";
     }
 }
 
@@ -606,9 +606,9 @@ class VariableTypes
 public:
     VariableTypes() {
         dict.insert("int", QApplication::translate("VariableTypes", "Integer"));
-        dict.insert("float", QApplication::translate("VariableTypes", "Real number"));
-        dict.insert("string", QApplication::translate("VariableTypes", "String"));
-        dict.insert("text", QApplication::translate("VariableTypes", "Text"));
+        dict.insert("float", QApplication::translate("VariableTypes", "Decimal Number"));
+        dict.insert("string", QApplication::translate("VariableTypes", "Short Text"));
+        dict.insert("text", QApplication::translate("VariableTypes", "Long Text"));
         dict.insert("bool", QApplication::translate("VariableTypes", "Boolean"));
         dict.insert("group", QApplication::translate("VariableTypes", "Group"));
         dict.insert("uuid", QApplication::translate("VariableTypes", "UUID"));
@@ -1160,10 +1160,10 @@ MTDictionary Global::listAllVariables()
 MTDictionary Global::listDataTypes()
 {
     MTDictionary dict;
-    dict.insert(QString::number(Global::String), QObject::tr("String"));
     dict.insert(QString::number(Global::Integer), QObject::tr("Integer"));
-    dict.insert(QString::number(Global::Numeric), QObject::tr("Real number"));
-    dict.insert(QString::number(Global::Text), QObject::tr("Text"));
+    dict.insert(QString::number(Global::Numeric), QObject::tr("Decimal Number"));
+    dict.insert(QString::number(Global::String), QObject::tr("Short Text"));
+    dict.insert(QString::number(Global::Text), QObject::tr("Long Text"));
     dict.insert(QString::number(Global::Boolean), QObject::tr("Boolean"));
     return dict;
 }

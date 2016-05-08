@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1743</width>
+    <width>1994</width>
     <height>403</height>
    </rect>
   </property>
@@ -548,6 +548,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chb_CO2_equivalent">
+        <property name="text">
+         <string>Convert refrigerant to CO₂ equivalent</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QToolButton" name="tbtn_edit_service_company">
@@ -2084,16 +2094,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chb_CO2_equivalent">
-        <property name="text">
-         <string>Convert refrigerant to CO₂ equivalent</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QLabel" name="lbl_filter_since">

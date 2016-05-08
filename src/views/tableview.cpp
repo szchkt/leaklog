@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -130,10 +130,10 @@ QString TableView::renderHTML()
         out << "<td>" << MTVariant(circuit.value("type")) << "</td>";
         out << "<td>" << circuit.value("year").toString() << "</td>";
         out << "<td>" << settings->mainWindowSettings().formatDate(circuit.value("commissioning")) << "</td>";
-        out << "<td>" << circuit.value("refrigerant_amount").toString()
+        out << "<td>" << circuit.value("refrigerant_amount").toDouble()
             << "&nbsp;" << QApplication::translate("Units", "kg") << " "
             << circuit.value("refrigerant").toString() << "</td>";
-        out << "<td>" << circuit.value("oil_amount").toString()
+        out << "<td>" << circuit.value("oil_amount").toDouble()
             << "&nbsp;" << QApplication::translate("Units", "kg") << " ";
         if (attributeValues().contains("oil::" + circuit.value("oil").toString())) {
             out << attributeValues().value("oil::" + circuit.value("oil").toString());
@@ -455,7 +455,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                             }
                             if (num_ins && (foot_functions.key(f) == "avg" || subvariable->unit() == "%"))
                                 { value /= (double)num_ins; }
-                            *cell << QString::number(value);
+                            *cell << value;
                         }
                     }
                 } else {
@@ -483,7 +483,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                         }
                         if (num_ins && (foot_functions.key(f) == "avg" || variable->unit() == "%"))
                             { value /= (double)num_ins; }
-                        *cell << QString::number(value);
+                        *cell << value;
                     }
                 }
             }
@@ -561,7 +561,10 @@ QString TableView::tableVarValue(const QString &var_type, const QString &ins_val
     } else if (var_type == "bool") {
         return (ins_value.toInt() ? tr("Yes") : tr("No"));
     } else if (compare_nom && settings->isCompareValuesChecked() && !nom_value.isEmpty() && !ins_value.isEmpty()) {
-        return compareValues(nom_value.toDouble(), ins_value.toDouble(), tolerance, bg_class).arg(ins_value);
+        double double_value = ins_value.toDouble();
+        return compareValues(nom_value.toDouble(), double_value, tolerance, bg_class).arg(FLOAT_ARG(double_value));
+    } else if (var_type == "float") {
+        return QLocale().toString(FLOAT_ROUND(ins_value.toDouble()), FLOAT_FORMAT, FLOAT_PRECISION);
     }
     return ins_value;
 }

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -76,7 +76,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         values[Key()][RefrigerantAddition] += refr_add_am;
     }
 
-    MTDictionary nominal_inpection_parents("nominal", "1");
+    MTDictionary nominal_inspection_parents("nominal", "1");
 
     MTSqlQuery circuits(QString("SELECT uuid, refrigerant, field, %1%2 FROM circuits")
                         .arg(total ? circuitRefrigerantAmountQuery() : "refrigerant_amount")
@@ -117,8 +117,8 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             for (int year = qMax(commissioning_year, min_year); year <= max_year; ++year)
                 refrigerant_amounts[year - min_year] = refrigerant_amount;
 
-            nominal_inpection_parents.insert("circuit", circuit_uuid);
-            ListOfVariantMaps nominal_inspections = Inspection::query(nominal_inpection_parents)
+            nominal_inspection_parents.insert("circuit", circuit_uuid);
+            ListOfVariantMaps nominal_inspections = Inspection::query(nominal_inspection_parents)
                     .listAll("date, refr_add_am, refr_reco", "date ASC");
 
             foreach (const QVariantMap &nominal_inspection, nominal_inspections) {

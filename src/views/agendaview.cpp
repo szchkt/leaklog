@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -50,7 +50,7 @@ QString AgendaView::renderHTML()
         out << "<br>";
     }
 
-    QMultiMap<QString, QStringList> next_inspections_map;
+    QMultiMap<QString, QList<QVariant> > next_inspections_map;
 
     MultiMapOfVariantMaps customers(Customer::query().mapAll("uuid", "id, company"));
 
@@ -93,28 +93,28 @@ QString AgendaView::renderHTML()
                 if (next_inspection_date < next_regular_inspection_date &&
                         circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
-                                                QStringList()
+                                                QList<QVariant>()
                                                     << circuits.stringValue("customer_uuid")
                                                     << circuits.stringValue("uuid")
                                                     << circuits.stringValue("id")
                                                     << circuits.stringValue("name")
                                                     << circuits.stringValue("operation")
                                                     << refrigerant
-                                                    << QString::number(refrigerant_amount)
+                                                    << refrigerant_amount
                                                     << last_inspection_date
-                                                    << "1");
+                                                    << true);
             }
             next_inspections_map.insert(next_regular_inspection_date,
-                                        QStringList()
+                                        QList<QVariant>()
                                             << circuits.stringValue("customer_uuid")
                                             << circuits.stringValue("uuid")
                                             << circuits.stringValue("id")
                                             << circuits.stringValue("name")
                                             << circuits.stringValue("operation")
                                             << refrigerant
-                                            << QString::number(refrigerant_amount)
+                                            << refrigerant_amount
                                             << last_regular_inspection_date
-                                            << "0");
+                                            << false);
         }
     }
 
@@ -126,17 +126,17 @@ QString AgendaView::renderHTML()
     out << "<th>" << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent")) << "</th>";
     out << "<th>" << tr("Last inspection") << "</th></tr>";
 
-    QMapIterator<QString, QStringList> i(next_inspections_map);
+    QMapIterator<QString, QList<QVariant> > i(next_inspections_map);
     while (i.hasNext()) { i.next();
-        QString customer_uuid = i.value().value(0);
-        QString circuit_uuid = i.value().value(1);
-        QString circuit_id = i.value().value(2);
-        QString circuit_name = i.value().value(3);
-        QString operation = i.value().value(4);
-        QString refrigerant = i.value().value(5);
-        QString refrigerant_amount = i.value().value(6);
-        QString last_inspection_date = i.value().value(7);
-        bool reinspection = i.value().value(8).toInt();
+        QString customer_uuid = i.value().value(0).toString();
+        QString circuit_uuid = i.value().value(1).toString();
+        QString circuit_id = i.value().value(2).toString();
+        QString circuit_name = i.value().value(3).toString();
+        QString operation = i.value().value(4).toString();
+        QString refrigerant = i.value().value(5).toString();
+        double refrigerant_amount = i.value().value(6).toDouble();
+        QString last_inspection_date = i.value().value(7).toString();
+        bool reinspection = i.value().value(8).toBool();
         qint64 days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         QString next_inspection;
         switch (days_to) {
@@ -166,7 +166,7 @@ QString AgendaView::renderHTML()
         out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
         out << "<td class=\"" << colour << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
             << " " << escapeString(refrigerant) << "</td>";
-        out << "<td class=\"" << colour << "\">" << CO2Equivalent(refrigerant, refrigerant_amount.toDouble())
+        out << "<td class=\"" << colour << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)
             << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
         out << "<td class=\"" << colour << "\">";
         if (last_inspection_date.contains("-"))

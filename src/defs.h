@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -29,6 +29,10 @@
 
 #define REAL_NUMBER_PRECISION 2
 #define REAL_NUMBER_PRECISION_EXP 100.0L
+#define FLOAT_FORMAT 'g'
+#define FLOAT_PRECISION 12
+#define FLOAT_ROUND(f) (double)(roundl((f) * 1000.0L) / 1000.0L)
+#define FLOAT_ARG(f) FLOAT_ROUND(f), 0, FLOAT_FORMAT, FLOAT_PRECISION, QLatin1Char(' ')
 
 #define INSPECTORS_CATEGORY_UUID "ba716306-f29c-44d4-91bd-db5d18b7b99f"
 #define CIRCUIT_UNITS_CATEGORY_UUID "2904276f-a198-4293-9a97-8e01f0074253"

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -88,16 +88,22 @@ QString RepairsView::renderHTML()
             out << " class=\"selected\"";
         out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
-            QString attr_value = repairs.stringValue(Repair::attributes().key(n));
+            QString key = Repair::attributes().key(n);
             out << "<td>";
-            if (Repair::attributes().key(n) == "field") {
-                if (attributeValues().contains("field::" + attr_value)) {
-                    attr_value = attributeValues().value("field::" + attr_value);
+            if (key.startsWith("refr_") || key.endsWith("_amount")) {
+                out << repairs.doubleValue(key);
+            } else {
+                QString attr_value = repairs.stringValue(key);
+                if (key == "field") {
+                    if (attributeValues().contains("field::" + attr_value)) {
+                        attr_value = attributeValues().value("field::" + attr_value);
+                    }
+                } else if (key == "inspector_uuid") {
+                    attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
                 }
-            } else if (Repair::attributes().key(n) == "inspector_uuid") {
-                attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
+                out << escapeString(attr_value);
             }
-            out << escapeString(attr_value) << "</td>";
+            out << "</td>";
         }
         if (show_date_updated)
             out << "<td>" << settings->mainWindowSettings().formatDateTime(repairs.value("date_updated")) << "</th>";

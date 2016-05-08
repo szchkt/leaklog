@@ -864,10 +864,6 @@
         <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
-        <source>Category</source>
-        <translation>Kategória</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
@@ -2557,20 +2553,8 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
         <translation>Údajový typ</translation>
     </message>
     <message>
-        <source>string</source>
-        <translation>reťazec</translation>
-    </message>
-    <message>
         <source>integer</source>
         <translation>celé číslo</translation>
-    </message>
-    <message>
-        <source>numeric</source>
-        <translation>reálne číslo</translation>
-    </message>
-    <message>
-        <source>text</source>
-        <translation>text</translation>
     </message>
     <message>
         <source>boolean</source>
@@ -4439,6 +4423,26 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Status</source>
         <translation>Stav</translation>
     </message>
+    <message>
+        <source>Leaked in Store</source>
+        <translation>Únik na sklade</translation>
+    </message>
+    <message>
+        <source>decimal</source>
+        <translation>desatinné číslo</translation>
+    </message>
+    <message>
+        <source>short text</source>
+        <translation>krátky text</translation>
+    </message>
+    <message>
+        <source>long text</source>
+        <translation>dlhý text</translation>
+    </message>
+    <message>
+        <source>Exclude from Agenda only</source>
+        <translation>Vyradiť len z agendy</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4785,20 +4789,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Žiadny typ</translation>
     </message>
     <message>
-        <source>String</source>
-        <translation>Reťazec</translation>
-    </message>
-    <message>
         <source>Integer</source>
         <translation>Celé číslo</translation>
-    </message>
-    <message>
-        <source>Real number</source>
-        <translation>Reálne číslo</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Text</translation>
     </message>
     <message>
         <source>Boolean</source>
@@ -4819,6 +4811,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>New charge</source>
         <translation>Nová náplň</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Desatinné číslo</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krátky text</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Dlhý text</translation>
     </message>
 </context>
 <context>
@@ -6006,24 +6010,24 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Celé číslo</translation>
     </message>
     <message>
-        <source>Real number</source>
-        <translation>Reálne číslo</translation>
-    </message>
-    <message>
-        <source>String</source>
-        <translation>Reťazec</translation>
-    </message>
-    <message>
         <source>Boolean</source>
         <translation>Áno/Nie</translation>
     </message>
     <message>
-        <source>Text</source>
-        <translation>Text</translation>
-    </message>
-    <message>
         <source>Group</source>
         <translation>Skupina</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Desatinné číslo</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krátky text</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Dlhý text</translation>
     </message>
 </context>
 <context>

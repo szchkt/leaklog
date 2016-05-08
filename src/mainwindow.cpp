@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -55,6 +55,8 @@
 #include <QDateEdit>
 #include <QCalendarWidget>
 #include <QDesktopServices>
+
+#include <cmath>
 
 using namespace Global;
 
@@ -229,6 +231,7 @@ MainWindow::MainWindow():
     QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_owner, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_Leaked, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
@@ -678,14 +681,14 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
                      detailed ? tr("Circuit ID") : tr("3(6) - <30 kg"));
     painter.drawLine(x + (w / 3), y + title_h, x + (w / 3), y + h);
     painter.drawText(m + x + (w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2 %3, %4 %5")
-                     .arg(attributes.value("refrigerant_amount").toString())
+                     detailed ? QString("%L1 %2 %3, %4 %L5")
+                     .arg(FLOAT_ARG(attributes.value("refrigerant_amount").toDouble()))
                      .arg(QApplication::translate("Units", "kg"))
-                     .arg(refrigerant).arg(tr("GWP")).arg(refrigerantGWP(refrigerant))
+                     .arg(refrigerant).arg(tr("GWP")).arg(FLOAT_ARG(refrigerantGWP(refrigerant)))
                      : tr("30 - <300 kg"));
     painter.drawLine(x + (2 * w / 3), y + title_h, x + (2 * w / 3), y + h);
     painter.drawText(m + x + (2 * w / 3), m + y + title_h, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2 %3").arg(tr("Annual leakage")).arg(attributes.value("refr_add_per").toString()).arg(tr("%")) : tr("above 300 kg"));
+                     detailed ? QString("%1 %L2 %3").arg(tr("Annual leakage")).arg(FLOAT_ARG(attributes.value("refr_add_per").toDouble())).arg(tr("%")) : tr("above 300 kg"));
     painter.drawLine(x, y + title_h + (h / 7), x + w, y + title_h + (h / 7));
 
     painter.drawText(m + x, m + y + title_h + (h / 7), w / 3 - dm, 9 * h / 14 - dm, Qt::AlignLeft, tr("Date of inspection"));
@@ -711,8 +714,8 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
                      detailed ? attributes.value("circuit_id").toString()
                      : QApplication::translate("MainWindow", "once a year*"));
     painter.drawText(m + x + (w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
-                     detailed ? QString("%1 %2")
-                     .arg(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble()))
+                     detailed ? QString("%L1 %2")
+                     .arg(FLOAT_ARG(CO2Equivalent(refrigerant, attributes.value("refrigerant_amount").toDouble())))
                      .arg(replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")))
                      : QApplication::translate("MainWindow", "once in 6 months*"));
     painter.drawText(m + x + (2 * w / 3), y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
@@ -1186,24 +1189,24 @@ void MainWindow::configureAutosave()
 
     QString autosave_mode = DBInfo::valueForKey("autosave");
 
-    QDialog d(this);
-    d.setWindowTitle(tr("Configure Auto Save - Leaklog"));
-    d.setWindowModality(Qt::WindowModal);
-    d.setWindowFlags(d.windowFlags() | Qt::Sheet);
+    QDialog *d = new QDialog(this);
+    d->setWindowTitle(tr("Configure Auto Save - Leaklog"));
+    d->setWindowModality(Qt::WindowModal);
+    d->setWindowFlags(d->windowFlags() | Qt::Sheet);
 
-    QVBoxLayout *layout = new QVBoxLayout(&d);
+    QVBoxLayout *layout = new QVBoxLayout(d);
 
-    QRadioButton *rbtn_off = new QRadioButton(tr("Do not save automatically"), &d);
+    QRadioButton *rbtn_off = new QRadioButton(tr("Do not save automatically"), d);
     rbtn_off->setChecked(autosave_mode.isEmpty());
     layout->addWidget(rbtn_off);
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), &d);
+    QRadioButton *rbtn_immediate = new QRadioButton(tr("Save all changes immediately"), d);
     rbtn_immediate->setChecked(autosave_mode == "immediate");
     layout->addWidget(rbtn_immediate);
 
-    QLabel *lbl_immediate = new QLabel(tr("This will disable the Undo function."), &d);
+    QLabel *lbl_immediate = new QLabel(tr("This will disable the Undo function."), d);
     QFont font = lbl_immediate->font();
     font.setItalic(true);
     lbl_immediate->setFont(font);
@@ -1211,26 +1214,26 @@ void MainWindow::configureAutosave()
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_delayed = new QRadioButton(tr("Save all changes after 10 minutes of inactivity"), d);
     rbtn_delayed->setChecked(autosave_mode == "delayed");
     layout->addWidget(rbtn_delayed);
 
     layout->addSpacing(12);
 
-    QRadioButton *rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), &d);
+    QRadioButton *rbtn_ask = new QRadioButton(tr("Ask to save changes after 10 minutes of inactivity"), d);
     rbtn_ask->setChecked(autosave_mode == "ask");
     layout->addWidget(rbtn_ask);
 
     layout->addSpacing(12);
 
-    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    QDialogButtonBox *bb = new QDialogButtonBox(d);
     bb->addButton(tr("&Save"), QDialogButtonBox::AcceptRole);
     bb->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
-    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
-    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    QObject::connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
     layout->addWidget(bb);
 
-    if (d.exec() == QDialog::Accepted) {
+    if (d->exec() == QDialog::Accepted) {
         if (rbtn_immediate->isChecked())
             autosave_mode = "immediate";
         else if (rbtn_delayed->isChecked())
@@ -1245,6 +1248,8 @@ void MainWindow::configureAutosave()
             setDatabaseModified(true);
         }
     }
+
+    d->deleteLater();
 }
 
 void MainWindow::openBackupDirectory()
@@ -1291,6 +1296,7 @@ void MainWindow::loadSettings()
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
     actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
     actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
+    actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
 #ifndef QT_DEBUG
@@ -1317,6 +1323,7 @@ void MainWindow::saveSettings()
     settings.setValue("compare_values", actionCompare_values->isChecked());
     settings.setValue("columns/date_updated", actionShow_date_updated->isChecked());
     settings.setValue("columns/owner", actionShow_owner->isChecked());
+    settings.setValue("columns/leaked", actionShow_Leaked->isChecked());
     settings.setValue("most_recent_first", actionMost_recent_first->isChecked());
     m_settings.save(settings);
 }

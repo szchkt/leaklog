@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -39,6 +39,7 @@ QString RefrigerantManagementView::renderHTML()
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool show_leaked = settings->isShowLeakedChecked();
 
     QString html; MTTextStream out(&html);
 
@@ -59,7 +60,8 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
+    if (show_leaked)
+        out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     if (show_date_updated)
         out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
     if (show_owner)
@@ -71,8 +73,10 @@ QString RefrigerantManagementView::renderHTML()
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
-    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
-    out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    if (show_leaked) {
+        out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+        out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    }
     out << "</tr>";
     MTQuery records = RefrigerantRecord::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
@@ -92,7 +96,15 @@ QString RefrigerantManagementView::renderHTML()
         out << "<td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < RefrigerantRecord::attributes().count(); ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
-            out << "<td>" << MTVariant(query.value(key)) << "</td>";
+            if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
+                out << "<td>" << query.doubleValue(key) << "</td>";
+            } else if (key.startsWith("leaked")) {
+                if (show_leaked) {
+                    out << "<td>" << query.doubleValue(key) << "</td>";
+                }
+            } else {
+                out << "<td>" << MTVariant(query.value(key)) << "</td>";
+            }
         }
         if (show_date_updated)
             out << "<td>" << settings->mainWindowSettings().formatDateTime(query.value("date_updated")) << "</th>";

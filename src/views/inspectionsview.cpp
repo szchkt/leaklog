@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -55,6 +55,7 @@ QString InspectionsView::renderHTML()
     QString circuit_uuid = settings->selectedCircuitUUID();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool most_recent_first = settings->isShowMostRecentFirstChecked();
 
     QString html; MTTextStream out(&html);
 
@@ -116,6 +117,9 @@ QString InspectionsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
+
+    if (most_recent_first)
+        writeCircuitDecommissioningReason(out, circuit_uuid);
 
     QString highlighted_uuid = settings->selectedInspectionUUID();
     for (int i = 0; i < inspections.count(); ++i) {
@@ -182,8 +186,23 @@ QString InspectionsView::renderHTML()
             out << "<td>" << escapeString(inspections.at(i).value("updated_by")) << "</td>";
         out << "</tr>";
     }
+
+    if (!most_recent_first)
+        writeCircuitDecommissioningReason(out, circuit_uuid);
+
     out << "</table>";
+
     return viewTemplate("circuit").arg(html);
+}
+
+void InspectionsView::writeCircuitDecommissioningReason(MTTextStream &out, const QString &circuit_uuid)
+{
+    Circuit circuit(circuit_uuid);
+    if (circuit.status() != Circuit::Commissioned && !circuit.reasonForDecommissioning().isEmpty()) {
+        out << QString("<tr><td>%1</td><td colspan=\"10\">%2</td></tr>")
+            .arg(settings->mainWindowSettings().formatDate(circuit.stringValue("decommissioning")))
+            .arg(escapeString(circuit.stringValue("decommissioning_reason")));
+    }
 }
 
 QString InspectionsView::title() const

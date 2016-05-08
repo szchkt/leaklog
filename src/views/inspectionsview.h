@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -32,6 +32,9 @@ public:
     QString renderHTML();
 
     QString title() const;
+
+protected:
+    void writeCircuitDecommissioningReason(MTTextStream &out, const QString &circuit_uuid);
 };
 
 #endif // INSPECTIONSVIEW_H

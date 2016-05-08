@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -25,6 +25,8 @@
 #include "linkparser.h"
 #include "records.h"
 #include "mtaddress.h"
+
+#include <cmath>
 
 using namespace Global;
 
@@ -289,7 +291,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
     chb_show_partner->setVisible(view == View::Store);
     chb_show_circuit_name->setVisible(view == View::OperatorReport);
 
-    chb_CO2_equivalent->setVisible(view == View::Agenda);
+    chb_CO2_equivalent->setVisible(view == View::Agenda || view == View::OperatorReport);
 
     chb_table_all_circuits->setVisible(filter_all_circuits_visible);
 
@@ -408,8 +410,8 @@ void ToolBarStack::enableTools()
         if (attributeValues().contains("field::" + circuit.value("field").toString()))
             description << attributeValues().value("field::" + circuit.value("field").toString());
 
-        description << QString("%1 %2 %3")
-                       .arg(circuit.value("refrigerant_amount").toString())
+        description << QString("%L1 %2 %3")
+                       .arg(FLOAT_ARG(circuit.value("refrigerant_amount").toDouble()))
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(circuit.value("refrigerant").toString());
 
@@ -469,8 +471,8 @@ void ToolBarStack::enableTools()
         if (!unit_type.stringValue("type").isEmpty())
             description << QString("<b>%1</b>").arg(escapeString(unit_type.stringValue("type")));
 
-        description << QString("%1 %2 %3")
-                       .arg(unit_type.stringValue("refrigerant_amount"))
+        description << QString("%L1 %2 %3")
+                       .arg(FLOAT_ARG(unit_type.doubleValue("refrigerant_amount")))
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(unit_type.stringValue("refrigerant"));
 

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -65,6 +65,8 @@ public:
 
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
+    inline bool isShowLeakedChecked() const { return actionShow_Leaked->isChecked(); }
+    inline bool isShowMostRecentFirstChecked() const { return actionMost_recent_first->isChecked(); }
     inline bool isCompareValuesChecked() const { return actionCompare_values->isChecked(); }
     inline bool isPrinterFriendlyVersionChecked() const { return actionPrinter_friendly_version->isChecked(); }
 

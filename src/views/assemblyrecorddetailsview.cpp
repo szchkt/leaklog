@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -81,6 +81,7 @@ QString AssemblyRecordDetailsView::renderHTML()
     *(table->addRow()->addCell()->paragraph()) << ar_type.value("description").toString();
     main->newLine();
 
+    QLocale locale;
     QString html;
 
     if (type_display_options & AssemblyRecordType::ShowCustomer) {
@@ -237,10 +238,22 @@ QString AssemblyRecordDetailsView::renderHTML()
         if (colspans[++i]) {
             if (categories_query.value(VARIABLE_ID).toString().isEmpty()) {
                 total = categories_query.value(VALUE).toDouble();
-                if (categories_query.value(VALUE_DATA_TYPE).toInt() == Global::Boolean)
-                    item_value = categories_query.value(VALUE).toInt() ? tr("Yes") : tr("No");
-                else
-                    item_value = categories_query.value(VALUE).toString();
+                switch (categories_query.value(VALUE_DATA_TYPE).toInt()) {
+                    case Global::Boolean:
+                        item_value = categories_query.value(VALUE).toInt() ? tr("Yes") : tr("No");
+                        break;
+
+                    default:
+                        if (!total) {
+                            case Global::Integer:
+                                item_value = categories_query.value(VALUE).toString();
+                                break;
+                        }
+
+                    case Global::Numeric:
+                        item_value = locale.toString(total);
+                        break;
+                }
             } else {
                 variable = var_evaluation.variable(categories_query.value(VARIABLE_ID).toString());
                 item_value = var_evaluation.evaluate(variable, inspection.savedValues(), nom_value);
@@ -254,14 +267,14 @@ QString AssemblyRecordDetailsView::renderHTML()
 
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
-            *_td << categories_query.value(ACQUISITION_PRICE).toString();
+            *_td << categories_query.value(ACQUISITION_PRICE).toDouble();
             _td->setId(QString("item_%1_acquisition_price").arg(item_type_uuid));
         }
 
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
             _td->setId(QString("item_%1_list_price").arg(item_type_uuid));
-            *_td << categories_query.value(LIST_PRICE).toString();
+            *_td << categories_query.value(LIST_PRICE).toDouble();
             total *= categories_query.value(LIST_PRICE).toDouble();
         }
 
@@ -270,13 +283,13 @@ QString AssemblyRecordDetailsView::renderHTML()
             total *= 1 - total_discount / 100;
             _td = _tr->addCell(colspan.arg(colspans[i]));
             _td->setId(QString("item_%1_discount").arg(item_type_uuid));
-            *_td << QString::number(total_discount) << " %";
+            *_td << total_discount << " %";
         }
 
         if (colspans[++i]) {
             _td = _tr->addCell(colspan.arg(colspans[i]));
             _td->setId(QString("item_%1_total").arg(item_type_uuid));
-            *_td << QString::number(total);
+            *_td << total;
         }
 
         absolute_total += total;
@@ -303,11 +316,11 @@ QString AssemblyRecordDetailsView::renderHTML()
         if (show_acquisition_price) {
             _td = _tr->addCell();
             _td->setId("total_acquisition_price");
-            *_td << QString::number(acquisition_total);
+            *_td << acquisition_total;
         }
         _td = _tr->addCell(colspan.arg(3));
         _td->setId("total_list_price");
-        *_td << QString::number(absolute_total);
+        *_td << absolute_total;
     }
 
     QString ret = viewTemplate("assembly_record").arg(main->html()).arg(custom_style);

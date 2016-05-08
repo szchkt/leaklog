@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -105,11 +105,11 @@ QString InspectorDetailsView::renderHTML()
         *(_tr->addCell()) << ar_items.at(i).value("customer_id").toString();
         *(_tr->addCell()) << ar_items.at(i).value("circuit_id").toString().rightJustified(5, '0');
         *(_tr->addCell()) << ar_items.at(i).value("arno").toString();
-        *(_tr->addCell()) << ar_items.at(i).value("value").toString();
+        *(_tr->addCell()) << ar_items.at(i).value("value").toDouble();
         if (show_acquisition_price) {
             acquisition_total += ar_items.at(i).value("value").toDouble() * ar_items.at(i).value("acquisition_price").toDouble();
 
-            *(_tr->addCell()) << QString::number(ar_items.at(i).value("acquisition_price").toDouble());
+            *(_tr->addCell()) << ar_items.at(i).value("acquisition_price").toDouble();
         }
         if (show_list_price) {
             total = ar_items.at(i).value("value").toDouble();
@@ -118,18 +118,18 @@ QString InspectorDetailsView::renderHTML()
             total *= 1 - total_discount / 100;
             absolute_total += total;
 
-            *(_tr->addCell()) << QString::number(ar_items.at(i).value("list_price").toDouble());
-            *(_tr->addCell()) << QString::number(total_discount) << " %";
-            *(_tr->addCell()) << QString::number(total);
+            *(_tr->addCell()) << ar_items.at(i).value("list_price").toDouble();
+            *(_tr->addCell()) << total_discount << " %";
+            *(_tr->addCell()) << total;
         }
     }
     if (show_list_price || show_acquisition_price) {
         _tr = table->addRow();
         *(_tr->addHeaderCell("colspan=\"5\"")) << tr("Total");
         _td = _tr->addCell();
-        if (show_acquisition_price) *_td << QString::number(acquisition_total);
+        if (show_acquisition_price) *_td << acquisition_total;
         _td = _tr->addCell("colspan=\"3\"");
-        if (show_list_price) *_td << QString::number(absolute_total);
+        if (show_list_price) *_td << absolute_total;
     }
     div.newLine();
 

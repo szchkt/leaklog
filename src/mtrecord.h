@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -48,6 +48,12 @@ public:
     void refresh(bool reset = true);
     void reset();
     void setValue(const QString &field, const QVariant &value);
+    inline QVariantMap values() {
+        return savedValues().unite(currentValues());
+    }
+    inline QVariantMap currentValues() const {
+        return r_current_values;
+    }
     inline QVariantMap savedValues() {
         if (r_saved_values.isEmpty() && !r_id.isEmpty())
             refresh(false);

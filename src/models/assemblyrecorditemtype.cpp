@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -46,7 +46,7 @@ void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDCheckBox("auto_show", tr("Automatically add to assembly record"), md->widget(), autoShow()));
     md->addInputWidget(new MDComboBox("ar_item_category_uuid", tr("Category:"), md->widget(), stringValue("ar_item_category_uuid"), listAssemblyRecordItemCategories(true)));
     md->addInputWidget(new MDComboBox("inspection_variable_id", tr("Get value from inspection:"), md->widget(), inspectionVariableID(), listAllVariables()));
-    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), stringValue("value_data_type"), listDataTypes()));
+    md->addInputWidget(new MDComboBox("value_data_type", tr("Data type:"), md->widget(), value("value_data_type", Global::Numeric).toString(), listDataTypes()));
 }
 
 QString AssemblyRecordItemType::name()

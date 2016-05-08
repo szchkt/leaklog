@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -80,7 +80,7 @@ void EditDialogue::save()
 
 bool EditDialogue::save(bool call_accept)
 {
-    QVariantMap values;
+    QVariantMap values = md_record->currentValues();
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
         QString id = (*i)->id();

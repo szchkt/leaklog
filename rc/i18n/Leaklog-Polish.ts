@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.0" language="pl_PL" sourcelanguage="en_GB">
+<defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -361,10 +362,6 @@
         <translation>Pokaż</translation>
     </message>
     <message>
-        <source>List of Assembly Record Item Categories and Types</source>
-        <translation>Lista typów i kategorii elementów w książce serwisowej</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Wartość</translation>
     </message>
@@ -392,12 +389,16 @@
         <source>No</source>
         <translation>Nie</translation>
     </message>
+    <message>
+        <source>Assembly Record Item Categories and Types</source>
+        <translation>Kategorie i typy elementów książki serwisowej</translation>
+    </message>
 </context>
 <context>
     <name>AssemblyRecordType</name>
     <message>
         <source>Assembly Record Type</source>
-        <translation>Typy książki serwisowej</translation>
+        <translation>Typ książki serwisowej</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -470,8 +471,8 @@
 <context>
     <name>AssemblyRecordTypesView</name>
     <message>
-        <source>List of Assembly Record Types</source>
-        <translation>Lista typów książki serwisowej</translation>
+        <source>Assembly Record Types</source>
+        <translation>Typy książki serwisowej</translation>
     </message>
 </context>
 <context>
@@ -604,10 +605,6 @@
         <translation>Data uruchomienia:</translation>
     </message>
     <message>
-        <source>Disused</source>
-        <translation>Trwale wyłączony z eksploatacji</translation>
-    </message>
-    <message>
         <source>Date of decommissioning:</source>
         <translation>Data wyłączenia:</translation>
     </message>
@@ -709,7 +706,35 @@
     </message>
     <message>
         <source>Commissioned on</source>
-        <translation>Uruchomione</translation>
+        <translation>Uruchomiony dnia</translation>
+    </message>
+    <message>
+        <source>Commissioned</source>
+        <translation>Uruchomiony</translation>
+    </message>
+    <message>
+        <source>Excluded from Agenda</source>
+        <translation>Wyłączony z agendy</translation>
+    </message>
+    <message>
+        <source>Decommissioned</source>
+        <translation>Wyłączony</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning:</source>
+        <translation>Powód wyłączenia:</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning</source>
+        <translation>Powód wyłączenia</translation>
+    </message>
+    <message>
+        <source>Status:</source>
+        <translation>Status:</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Status</translation>
     </message>
 </context>
 <context>
@@ -847,10 +872,6 @@
         <translation>Przepustowość na t0/tk</translation>
     </message>
     <message>
-        <source>Category</source>
-        <translation>Kategoria</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
@@ -862,8 +883,8 @@
 <context>
     <name>CircuitUnitTypesView</name>
     <message>
-        <source>List of Circuit Unit Types</source>
-        <translation>Lista typów jednostki obiegu</translation>
+        <source>Circuit Unit Types</source>
+        <translation>Typy jednostki obiegu</translation>
     </message>
 </context>
 <context>
@@ -881,10 +902,6 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Circuits</source>
-        <translation>Lista obiegów</translation>
-    </message>
-    <message>
         <source>Circuit</source>
         <translation>Obieg</translation>
     </message>
@@ -899,10 +916,6 @@
     <message>
         <source>No</source>
         <translation>Nie</translation>
-    </message>
-    <message>
-        <source>Disused Circuits</source>
-        <translation>Nieczynne obiegi</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -923,6 +936,30 @@
     <message>
         <source>Circuit units</source>
         <translation>Jednostka obiegu</translation>
+    </message>
+    <message>
+        <source>Circuits</source>
+        <translation>Obiegi</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda</source>
+        <translation>Obiegi wyłączone z agendy</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits</source>
+        <translation>Obiegi wyłączone z eksploatacji</translation>
+    </message>
+    <message>
+        <source>Circuits (%1)</source>
+        <translation>Obiegi (%1)</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda (%1)</source>
+        <translation>Obiegi wyłączone z agendy (%1)</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits (%1)</source>
+        <translation>Obiegi wyłączone z eksploatacji (%1)</translation>
     </message>
 </context>
 <context>
@@ -1161,10 +1198,6 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Customers</source>
-        <translation>Lista klientów</translation>
-    </message>
-    <message>
         <source>Customer</source>
         <translation>Klient</translation>
     </message>
@@ -1183,6 +1216,10 @@
     <message>
         <source>E-mail</source>
         <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Customers</source>
+        <translation>Klienci</translation>
     </message>
 </context>
 <context>
@@ -1949,12 +1986,12 @@
         <translation>Autor</translation>
     </message>
     <message>
-        <source>List of Inspections</source>
-        <translation>Lista kontroli</translation>
-    </message>
-    <message>
         <source>Images</source>
         <translation>Obrazy</translation>
+    </message>
+    <message>
+        <source>Inspections</source>
+        <translation>Kontrole</translation>
     </message>
 </context>
 <context>
@@ -2094,16 +2131,16 @@
         <translation>Liczba napraw</translation>
     </message>
     <message>
-        <source>List of Inspectors</source>
-        <translation>Lista kontrolerów</translation>
-    </message>
-    <message>
         <source>Inspector</source>
         <translation>Kontroler</translation>
     </message>
     <message>
         <source>View inspector activity</source>
         <translation>Zobacz działania kontrolera</translation>
+    </message>
+    <message>
+        <source>Inspectors</source>
+        <translation>Kontrolerzy</translation>
     </message>
 </context>
 <context>
@@ -3001,11 +3038,11 @@
     </message>
     <message>
         <source>Decommission All Circuits...</source>
-        <translation>Wyłącz wszystkie obwody...</translation>
+        <translation>Wyłącz wszystkie obiegi...</translation>
     </message>
     <message>
         <source>Decommission all of the selected customer&apos;s circuits</source>
-        <translation>Wyłącz wszystkie wybrane obwody klienta</translation>
+        <translation>Wyłącz wszystkie wybrane obiegi klienta</translation>
     </message>
     <message>
         <source>Duplicate and Decommission Circuit...</source>
@@ -3748,10 +3785,6 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
         <translation>Wskaźnik zużycia</translation>
     </message>
     <message>
-        <source>Disused</source>
-        <translation>Nie używany</translation>
-    </message>
-    <message>
         <source>Hermetically sealed</source>
         <translation>Hermetycznie zamknięte</translation>
     </message>
@@ -3840,20 +3873,8 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
         <translation>Typ bazy</translation>
     </message>
     <message>
-        <source>string</source>
-        <translation>łańcuch</translation>
-    </message>
-    <message>
         <source>integer</source>
         <translation>liczba całkowita</translation>
-    </message>
-    <message>
-        <source>numeric</source>
-        <translation>numeryczny</translation>
-    </message>
-    <message>
-        <source>text</source>
-        <translation>tekst</translation>
     </message>
     <message>
         <source>boolean</source>
@@ -4373,7 +4394,7 @@ dla ID osoby i firmy</translation>
         <source>Open Backup Folder - Leaklog</source>
         <translation>Otwórz folder kopii zapasowych - Leaklog</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>CO₂ equivalent</source>
         <translation>Ekwiwalent CO₂</translation>
     </message>
@@ -4393,6 +4414,30 @@ dla ID osoby i firmy</translation>
         <source>ID</source>
         <comment>Variable ID</comment>
         <translation>ID</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <source>Leaked in Store</source>
+        <translation>Wyciek w magazynie</translation>
+    </message>
+    <message>
+        <source>decimal</source>
+        <translation>liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>short text</source>
+        <translation>krótki tekst</translation>
+    </message>
+    <message>
+        <source>long text</source>
+        <translation>długi tekst</translation>
+    </message>
+    <message>
+        <source>Exclude from Agenda only</source>
+        <translation>Wyłącz tylko z agendy</translation>
     </message>
 </context>
 <context>
@@ -4740,20 +4785,8 @@ dla ID osoby i firmy</translation>
         <translation>Bez typu</translation>
     </message>
     <message>
-        <source>String</source>
-        <translation>Łańcuch</translation>
-    </message>
-    <message>
         <source>Integer</source>
         <translation>Liczba całkowita</translation>
-    </message>
-    <message>
-        <source>Real number</source>
-        <translation>Prawdziwy numer</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Tekst</translation>
     </message>
     <message>
         <source>Boolean</source>
@@ -4774,6 +4807,18 @@ dla ID osoby i firmy</translation>
     <message>
         <source>New charge</source>
         <translation>Nowe napełnienie</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krótki tekst</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Długi tekst</translation>
     </message>
 </context>
 <context>
@@ -5011,16 +5056,16 @@ dla ID osoby i firmy</translation>
 <context>
     <name>RepairsView</name>
     <message>
-        <source>List of Repairs</source>
-        <translation>Lista napraw</translation>
-    </message>
-    <message>
         <source>Date Updated</source>
         <translation>Data aktualizacji</translation>
     </message>
     <message>
         <source>Author</source>
         <translation>Autor</translation>
+    </message>
+    <message>
+        <source>Repairs</source>
+        <translation>Naprawy</translation>
     </message>
 </context>
 <context>
@@ -5577,7 +5622,7 @@ dla ID osoby i firmy</translation>
         <source>Month:</source>
         <translation>Miesiąc:</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>—</source>
         <translation>—</translation>
     </message>
@@ -5633,7 +5678,7 @@ dla ID osoby i firmy</translation>
         <source>Circuit Name</source>
         <translation>Nazwa obiegu</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Przeliczenie czynnika chłodniczego do ekwiwalentu CO₂</translation>
     </message>
@@ -5687,7 +5732,7 @@ dla ID osoby i firmy</translation>
         <source>t</source>
         <translation>t</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>t of CO₂ equivalent</source>
         <translation>t ekwiwalentu CO₂</translation>
     </message>
@@ -5961,24 +6006,24 @@ dla ID osoby i firmy</translation>
         <translation>Liczba całkowita</translation>
     </message>
     <message>
-        <source>Real number</source>
-        <translation>Liczba rzeczywista</translation>
-    </message>
-    <message>
-        <source>String</source>
-        <translation>Łańcuch</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Tekst</translation>
-    </message>
-    <message>
         <source>Boolean</source>
         <translation>Tak/Nie</translation>
     </message>
     <message>
         <source>Group</source>
         <translation>Grupa</translation>
+    </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Liczba dziesiętna</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Krótki tekst</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Długi tekst</translation>
     </message>
 </context>
 <context>

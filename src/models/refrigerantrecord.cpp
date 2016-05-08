@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -54,8 +54,10 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, soldRecovered(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, regenerated(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, disposedOf(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
+    if (leaked() != 0.0 || leakedRecovered() != 0.0) {
+        md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
+        md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
+    }
 }
 
 QString RefrigerantRecord::tableName()

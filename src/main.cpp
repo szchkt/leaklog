@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -61,7 +61,9 @@ int main(int argc, char *argv[])
         translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
         app.installTranslator(translator);
     }
-    QLocale::setDefault(QApplication::translate("MainWindow", "en_GB"));
+    QLocale locale(QApplication::translate("MainWindow", "en_GB"));
+    locale.setNumberOptions(QLocale::OmitGroupSeparator);
+    QLocale::setDefault(locale);
 
     MainWindow *window = new MainWindow;
     app.setAppMainWindow(window);

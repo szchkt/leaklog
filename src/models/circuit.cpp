@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -44,7 +44,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
         setValue("year", QDate::currentDate().year());
     }
 
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), stringValue("id"), 99999));
+    QString id = stringValue("id");
+    MDLineEdit *id_edit = new MDLineEdit("id", tr("ID:"), md->widget(), id, 99999);
+    md->addInputWidget(id_edit);
     md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), circuitName()));
     md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), placeOfOperation()));
     md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), building()));
@@ -59,7 +61,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), oil(), oils()));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
     md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, runtime(), QApplication::translate("Units", "hours")));
     md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, utilisation(), QApplication::translate("Units", "%")));
@@ -82,17 +84,24 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
 
+    int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid" + QString(id().isEmpty() ? "" : " AND id <> :id"));
+    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 ORDER BY id ASC").arg(QString(id.isEmpty() ? "" : " AND id <> :id")));
     query_used_ids.bindValue(":customer_uuid", customerUUID());
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    if (!id.isEmpty()) { query_used_ids.bindValue(":id", id); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
+            if (min_available_id == query_used_ids.value(0).toInt()) {
+                min_available_id++;
+            }
         }
     }
     md->setUsedIds(used_ids);
+    if (id.isEmpty()) {
+        id_edit->setVariantValue(min_available_id);
+    }
 }
 
 bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)

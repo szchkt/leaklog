@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -135,8 +135,14 @@ QString AssemblyRecordItemsView::renderHTML()
             out << " style=\"cursor: pointer;\">";
 
             for (int n = 0; n < AssemblyRecordItemType::attributes().count(); ++n) {
-                if (AssemblyRecordItemType::attributes().key(n) != "ar_item_category_uuid")
-                    out << "<td>" << escapeString(item_types.at(i).value(AssemblyRecordItemType::attributes().key(n)).toString()) << "</td>";
+                QString key = AssemblyRecordItemType::attributes().key(n);
+                if (key != "ar_item_category_uuid") {
+                    if (key.endsWith("_price")) {
+                        out << "<td>" << item_types.at(i).value(key).toDouble() << "</td>";
+                    } else {
+                        out << "<td>" << escapeString(item_types.at(i).value(key).toString()) << "</td>";
+                    }
+                }
             }
             out << "</tr>";
         }

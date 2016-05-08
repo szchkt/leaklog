@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2015 Matus & Michal Tomlein
+ Copyright (C) 2008-2016 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -19,9 +19,12 @@
 
 #include "htmlbuilder.h"
 
+#include "defs.h"
 #include "mtvariant.h"
 
 #include <QTextStream>
+
+#include <cmath>
 
 HTMLParent::HTMLParent()
 {}
@@ -97,7 +100,25 @@ HTMLStyle *HTMLParent::addStyleElement(const QString &css)
     return style;
 }
 
+HTMLParent &HTMLParent::operator<<(double value)
+{
+    children.append(new HTMLDataElement(QLocale().toString(FLOAT_ROUND(value), FLOAT_FORMAT, FLOAT_PRECISION)));
+    return *this;
+}
+
+HTMLParent &HTMLParent::operator<<(const char *str)
+{
+    children.append(new HTMLDataElement(str));
+    return *this;
+}
+
 HTMLParent &HTMLParent::operator<<(const QString &str)
+{
+    children.append(new HTMLDataElement(str));
+    return *this;
+}
+
+HTMLParent &HTMLParent::operator<<(const QByteArray &str)
 {
     children.append(new HTMLDataElement(str));
     return *this;
