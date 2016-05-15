@@ -5686,6 +5686,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
     </message>
+    <message>
+        <source>Except Decommissioned Before:</source>
+        <translation>Okrem vyradených pred:</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>dd.MM.yyyy</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

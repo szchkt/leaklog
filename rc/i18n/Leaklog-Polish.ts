@@ -5682,6 +5682,14 @@ dla ID osoby i firmy</translation>
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Przeliczenie czynnika chłodniczego do ekwiwalentu CO₂</translation>
     </message>
+    <message>
+        <source>Except Decommissioned Before:</source>
+        <translation>Z wyjątkiem wyłączonych przed dniem:</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>dd.MM.yyyy</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

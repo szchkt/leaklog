@@ -57,7 +57,11 @@ QString TableView::renderHTML()
 
     QVariantMap customer = Customer(customer_id).list("company, address, mail, phone");
 
-    ListOfVariantMaps circuits = Circuit(customer_id, cc_id).listAll("*, " + circuitRefrigerantAmountQuery());
+    Circuit circuits_record(customer_id, cc_id);
+    if (settings->toolBarStack()->isTableForAllCircuitsExceptDecommissionedChecked()) {
+        circuits_record.setCustomWhere(QString("(disused = %1 OR decommissioning >= '%2')").arg(Circuit::Commissioned).arg(settings->toolBarStack()->minimumDecommissioningDateForTableOfAllCircuits().toString(DATE_FORMAT)));
+    }
+    ListOfVariantMaps circuits = circuits_record.listAll("*, " + circuitRefrigerantAmountQuery());
 
     QVariantMap table = Table(table_id).list();
 

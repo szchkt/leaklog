@@ -41,6 +41,8 @@ public:
     void enableTools();
 
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
+    inline bool isTableForAllCircuitsExceptDecommissionedChecked() const { return isTableForAllCircuitsChecked() && chb_table_except_decommissioned_before->isChecked(); }
+    inline QDate minimumDecommissioningDateForTableOfAllCircuits() const { return de_table_except_decommissioned_before->date(); }
     inline int filterSinceValue() const { return spb_filter_since->value() == 1999 ? 0 : spb_filter_since->value(); }
     inline int filterMonthFromValue() const { return spb_filter_month_from->value(); }
     inline int filterMonthUntilValue() const { return spb_filter_month_until->value(); }
