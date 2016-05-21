@@ -89,6 +89,9 @@ public:
     bool save(bool add_columns = false);
     virtual bool remove() const;
 
+protected:
+    virtual bool isJournaled() const;
+
 private:
     QString r_table;
     QString r_id_field;

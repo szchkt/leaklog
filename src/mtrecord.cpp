@@ -120,6 +120,8 @@ void MTRecord::reset()
 
 void MTRecord::setValue(const QString &field, const QVariant &value)
 {
+    if (r_saved_values.isEmpty() && !r_id.isEmpty())
+        refresh(false);
     if (!r_saved_values.contains(field) || r_saved_values.value(field) != value) {
         r_current_values.insert(field, value);
     } else {
@@ -149,10 +151,30 @@ bool MTRecord::save(bool add_columns)
         return true;
 
     bool has_id = !r_id.isEmpty();
-    QString update;
+    QString journal_uuid = r_id;
 
-    if (!has_id && r_id_field == "uuid" && !r_current_values.contains("uuid"))
-        r_current_values.insert("uuid", createUUID());
+    if (!has_id && r_id_field == "uuid" && !r_current_values.contains("uuid")) {
+        journal_uuid = createUUID();
+        r_current_values.insert("uuid", journal_uuid);
+    }
+
+    if (has_id && !exists()) {
+        has_id = false;
+    }
+
+    if (isJournaled()) {
+        if (has_id) {
+            QVariantMapIterator i(r_current_values);
+            while (i.hasNext()) { i.next();
+                if (!journalUpdate(r_table, r_id, i.key()))
+                    return false;
+            }
+        } else {
+            if (!journalInsertion(r_table, journal_uuid))
+                return false;
+        }
+    }
+
     if (!r_current_values.contains("date_updated"))
         r_current_values.insert("date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     if (!r_current_values.contains("updated_by"))
@@ -170,10 +192,7 @@ bool MTRecord::save(bool add_columns)
         i.toFront();
     }
 
-    if (has_id && !exists()) {
-        has_id = false;
-    }
-
+    QString update;
     if (has_id) {
         update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
@@ -249,5 +268,13 @@ bool MTRecord::remove() const
     }
     query.bindValue(":_id", r_id);
     bool result = query.exec();
+    if (result && isJournaled()) {
+        journalDeletion(r_table, r_id);
+    }
     return result;
+}
+
+bool MTRecord::isJournaled() const
+{
+    return true;
 }

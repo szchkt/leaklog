@@ -158,6 +158,20 @@ QString Global::createUUID()
     return QUuid::createUuid().toString().mid(1, 36);
 }
 
+QString Global::sourceUUID()
+{
+    static QString source_uuid;
+    if (source_uuid.isEmpty()) {
+        QSettings settings("SZCHKT", "Leaklog");
+        source_uuid = settings.value("source_uuid").toString();
+        if (source_uuid.isEmpty()) {
+            source_uuid = createUUID();
+            settings.setValue("source_uuid", source_uuid);
+        }
+    }
+    return source_uuid;
+}
+
 QString Global::sqlStringForDatabaseType(QString sql, const QSqlDatabase &db)
 {
     if (!isDatabaseRemote(db)) {
@@ -312,6 +326,75 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
         query.exec(QString("INSERT INTO \"%1\" SELECT %2 FROM _tmp").arg(table).arg(field_names));
         query.exec(QString("DROP TABLE _tmp"));
     }
+}
+
+int Global::lastJournalEntryID(bool refresh, const QSqlDatabase &database)
+{
+    static int last_id = -1;
+    if (last_id < 0 || refresh) {
+        MTSqlQuery query(database);
+        query.prepare("SELECT MAX(entry_id) FROM journal WHERE source_uuid = :source_uuid");
+        query.bindValue(":source_uuid", sourceUUID());
+        if (query.exec() && query.next()) {
+            last_id = query.value(0).toInt();
+        } else {
+            last_id = -1;
+        }
+    }
+    int id = last_id;
+    if (!refresh) {
+        last_id++;
+    }
+    return id;
+}
+
+bool Global::journalInsertion(const QString &table_name, const QString &record_uuid)
+{
+    int entry_id = lastJournalEntryID();
+    if (entry_id < 0)
+        return false;
+
+    MTSqlQuery query;
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (?, ?, ?, ?, ?)");
+    query.bindValue(0, sourceUUID());
+    query.bindValue(1, entry_id + 1);
+    query.bindValue(2, JournalEntry::Insertion);
+    query.bindValue(3, JournalEntry::tableIDForName(table_name));
+    query.bindValue(4, record_uuid);
+    return query.exec();
+}
+
+bool Global::journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name)
+{
+    int entry_id = lastJournalEntryID();
+    if (entry_id < 0)
+        return false;
+
+    MTSqlQuery query;
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (?, ?, ?, ?, ?, ?)");
+    query.bindValue(0, sourceUUID());
+    query.bindValue(1, entry_id + 1);
+    query.bindValue(2, JournalEntry::Update);
+    query.bindValue(3, JournalEntry::tableIDForName(table_name));
+    query.bindValue(4, record_uuid);
+    query.bindValue(5, JournalEntry::columnIDForName(column_name));
+    return query.exec();
+}
+
+bool Global::journalDeletion(const QString &table_name, const QString &record_uuid)
+{
+    int entry_id = lastJournalEntryID();
+    if (entry_id < 0)
+        return false;
+
+    MTSqlQuery query;
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (?, ?, ?, ?, ?)");
+    query.bindValue(0, sourceUUID());
+    query.bindValue(1, entry_id + 1);
+    query.bindValue(2, JournalEntry::Deletion);
+    query.bindValue(3, JournalEntry::tableIDForName(table_name));
+    query.bindValue(4, record_uuid);
+    return query.exec();
 }
 
 QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
@@ -590,6 +673,7 @@ public:
         dict.insert(CircuitUnit::tableName(), CircuitUnit::columns().toString());
         dict.insert(DBInfo::tableName(), DBInfo::columns().toString());
         dict.insert(Style::tableName(), Style::columns().toString());
+        dict.insert(JournalEntry::tableName(), JournalEntry::columns().toString());
     }
 
     MTDictionary dict;

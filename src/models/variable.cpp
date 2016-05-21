@@ -115,3 +115,8 @@ const ColumnList &VariableRecord::columns()
     static VariableColumns columns;
     return columns.columns;
 }
+
+bool VariableRecord::isJournaled() const
+{
+    return false;
+}

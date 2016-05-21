@@ -55,6 +55,9 @@ public:
     static QString tableName();
     static inline MTRecordQuery<VariableRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<VariableRecord>(tableName(), parents); }
     static const ColumnList &columns();
+
+protected:
+    bool isJournaled() const;
 };
 
 #endif // VARIABLE_H

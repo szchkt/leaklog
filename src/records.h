@@ -46,5 +46,6 @@
 #include "circuitunit.h"
 #include "dbinfo.h"
 #include "style.h"
+#include "journalentry.h"
 
 #endif // RECORDS_H

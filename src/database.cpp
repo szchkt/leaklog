@@ -549,6 +549,8 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
         return;
     }
 
+    lastJournalEntryID(true);
+
     QSettings settings("SZCHKT", "Leaklog");
     settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));
 

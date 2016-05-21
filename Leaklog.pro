@@ -68,6 +68,7 @@ HEADERS       += src/aboutwidget.h \
                  src/models/circuitunit.h \
                  src/models/dbinfo.h \
                  src/models/style.h \
+                 src/models/journalentry.h \
                  src/mtaddress.h \
                  src/mtcheckboxgroup.h \
                  src/mtcolourcombobox.h \
@@ -183,6 +184,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/models/circuitunit.cpp \
                  src/models/dbinfo.cpp \
                  src/models/style.cpp \
+                 src/models/journalentry.cpp \
                  src/mtaddress.cpp \
                  src/mtquery.cpp \
                  src/mtrecord.cpp \
