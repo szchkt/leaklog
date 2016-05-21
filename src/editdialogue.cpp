@@ -80,7 +80,6 @@ void EditDialogue::save()
 
 bool EditDialogue::save(bool call_accept)
 {
-    QVariantMap values = md_record->currentValues();
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
         QString id = (*i)->id();
@@ -98,14 +97,15 @@ bool EditDialogue::save(bool call_accept)
                 return false;
             }
         }
-        values.insert(id, value);
+        md_record->setValue(id, value);
     }
-    if (!md_record->checkValues(values, this))
+
+    if (!md_record->checkValues(this))
         return false;
 
     md_undo_stack->savepoint();
 
-    md_record->update(values, true);
+    md_record->save(true);
 
     if (call_accept) accept();
     return true;

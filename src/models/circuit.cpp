@@ -104,9 +104,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     }
 }
 
-bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
+bool Circuit::checkValues(QWidget *parent)
 {
-    if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant")) {
+    if (!id().isEmpty() && value("refrigerant") != savedValue("refrigerant")) {
         QMessageBox message(parent);
         message.setWindowTitle(tr("Change refrigerant - Leaklog"));
         message.setWindowModality(Qt::WindowModal);

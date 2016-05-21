@@ -90,11 +90,10 @@ void InspectionCompressorTab::init(const QVariantMap &var_values)
 
 bool InspectionCompressorTab::save()
 {
-    QVariantMap values;
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave())
             continue;
-        values.insert((*i)->id(), (*i)->variantValue());
+        inspection_compressor.setValue((*i)->id(), (*i)->variantValue());
     }
-    return inspection_compressor.update(values, true);
+    return inspection_compressor.save(true);
 }

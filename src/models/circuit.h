@@ -43,7 +43,7 @@ public:
     Circuit &operator=(const Circuit &other) { DBRecord::operator=(other); return *this; };
 
     void initEditDialogue(EditDialogueWidgets *);
-    bool checkValues(const QVariantMap &, QWidget * = 0);
+    bool checkValues(QWidget * = 0);
 
     Customer customer();
 

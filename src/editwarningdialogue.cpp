@@ -251,53 +251,33 @@ void EditWarningDialogue::save()
 {
     md_undo_stack->savepoint();
 
-    QVariantMap values;
     if (!md_record->id().isEmpty()) {
-        values.insert("id", md_record->id().toInt());
-        MTSqlQuery delete_filters;
-        delete_filters.prepare("DELETE FROM warnings_filters WHERE warning_uuid = :warning_uuid");
-        delete_filters.bindValue(":warning_uuid", md_record->id());
-        delete_filters.exec();
-        MTSqlQuery delete_conditions;
-        delete_conditions.prepare("DELETE FROM warnings_conditions WHERE warning_uuid = :warning_uuid");
-        delete_conditions.bindValue(":warning_uuid", md_record->id());
-        delete_conditions.exec();
-    } else {
-        QList<int> ids;
-        for (int i = 0; i < 1000; ++i) { ids << i; }
-        MTSqlQuery query("SELECT id FROM warnings");
-        while (query.next()) { ids.removeAll(query.value(0).toInt()); }
-        if (!ids.count()) {
-            QMessageBox::critical(this, tr("Save changes"), tr("You cannot create more than 1000 warnings."));
-            return;
-        }
-        values.insert("id", ids.first());
+        WarningFilter::query({"warning_uuid", md_record->id()}).removeAll();
+        WarningCondition::query({"warning_uuid", md_record->id()}).removeAll();
     }
 
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
-        values.insert((*i)->id(), (*i)->variantValue());
+        md_record->setValue((*i)->id(), (*i)->variantValue());
     }
 
-    md_record->update(values);
+    md_record->save();
 
     if (md_record->id().toInt() < 1000) {
         for (int i = 0; i < md_filters->count(); ++i) {
-            MTSqlQuery insert_filter;
-            insert_filter.prepare("INSERT INTO warnings_filters (warning_uuid, circuit_attribute, function, value) VALUES (:warning_uuid, :circuit_attribute, :function, :value)");
-            insert_filter.bindValue(":warning_uuid", md_record->id());
-            insert_filter.bindValue(":circuit_attribute", md_filters->attribute(i));
-            insert_filter.bindValue(":function", md_filters->function(i));
-            insert_filter.bindValue(":value", md_filters->value(i));
-            insert_filter.exec();
+            WarningFilter filter;
+            filter.setValue("warning_uuid", md_record->id());
+            filter.setValue("circuit_attribute", md_filters->attribute(i));
+            filter.setValue("function", md_filters->function(i));
+            filter.setValue("value", md_filters->value(i));
+            filter.save();
         }
         for (int i = 0; i < md_conditions->count(); ++i) {
-            MTSqlQuery insert_condition;
-            insert_condition.prepare("INSERT INTO warnings_conditions (warning_uuid, value_ins, function, value_nom) VALUES (:warning_uuid, :value_ins, :function, :value_nom)");
-            insert_condition.bindValue(":warning_uuid", md_record->id());
-            insert_condition.bindValue(":value_ins", md_conditions->expressionIns(i));
-            insert_condition.bindValue(":function", md_conditions->function(i));
-            insert_condition.bindValue(":value_nom", md_conditions->expressionNom(i));
-            insert_condition.exec();
+            WarningCondition condition;
+            condition.setValue("warning_uuid", md_record->id());
+            condition.setValue("value_ins", md_conditions->expressionIns(i));
+            condition.setValue("function", md_conditions->function(i));
+            condition.setValue("value_nom", md_conditions->expressionNom(i));
+            condition.save();
         }
     }
 

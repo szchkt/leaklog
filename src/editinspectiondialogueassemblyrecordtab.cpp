@@ -340,12 +340,11 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
 QString EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary &dict)
 {
     AssemblyRecordItemType item_type;
-    QVariantMap map;
-    map.insert("name", dict.value("name"));
-    map.insert("acquisition_price", dict.contains("acquisition_price") ? dict.value("acquisition_price") : dict.value("list_price"));
-    map.insert("list_price", dict.value("list_price"));
-    map.insert("ar_item_category_uuid", dict.value("ar_item_category_uuid"));
-    item_type.update(map);
+    item_type.setValue("name", dict.value("name"));
+    item_type.setValue("acquisition_price", dict.contains("acquisition_price") ? dict.value("acquisition_price") : dict.value("list_price"));
+    item_type.setValue("list_price", dict.value("list_price"));
+    item_type.setValue("ar_item_category_uuid", dict.value("ar_item_category_uuid"));
+    item_type.save();
     return item_type.id();
 }
 
