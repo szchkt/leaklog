@@ -983,9 +983,9 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R134a", 1430);
         GWP.insert("R141b", 700);
         GWP.insert("R143", 353);
-        GWP.insert("R143a", 4300);
+        GWP.insert("R143a", 4470);
         GWP.insert("R152", 53);
-        GWP.insert("R152a", 120);
+        GWP.insert("R152a", 124);
         GWP.insert("R161", 12);
         GWP.insert("R22", 1700);
         GWP.insert("R227ea", 3220);
@@ -1011,7 +1011,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R407A", 2107);
         GWP.insert("R407B", 2700);
         GWP.insert("R407C", 1774);
-        GWP.insert("R407D", 1500);
+        GWP.insert("R407D", 1627);
         GWP.insert("R407E", 1430);
         GWP.insert("R407F", 1825);
         GWP.insert("R408A", 3020);
@@ -1025,6 +1025,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R414B", 1320);
         GWP.insert("R416A", 1010);
         GWP.insert("R417A", 2346);
+        GWP.insert("R419A", 2967);
         GWP.insert("R420A", 1430);
         GWP.insert("R421A", 2520);
         GWP.insert("R421B", 3090);
@@ -1051,7 +1052,8 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R507", 3985);
         GWP.insert("R508A", 13214);
         GWP.insert("R508B", 13396);
-        GWP.insert("R600a", 3);
+        GWP.insert("R513A", 631);
+        GWP.insert("R600a", 4);
         GWP.insert("R717", 0);
         GWP.insert("R744", 1);
         GWP.insert("SF6", 22800);
@@ -1066,7 +1068,7 @@ double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amou
 
 QString Global::listRefrigerantsToString()
 {
-    return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R452A;R500;R501;R502;R503;R507;R508A;R508B;R600a;SF6";
+    return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R419A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R452A;R500;R501;R502;R503;R507;R508A;R508B;R513A;R600a;SF6";
 }
 
 MTDictionary Global::listInspectors()
