@@ -2188,12 +2188,20 @@
         <translation>Doplnené</translation>
     </message>
     <message>
-        <source>Amount</source>
-        <translation>Množstvo</translation>
+        <source>Leakage</source>
+        <translation>Únik</translation>
     </message>
     <message>
-        <source>Leakage</source>
-        <translation>Ůnik</translation>
+        <source>Weighted Average</source>
+        <translation>Vážený priemer</translation>
+    </message>
+    <message>
+        <source>Average Leakage</source>
+        <translation>Priemerný únik</translation>
+    </message>
+    <message>
+        <source>In Circuits</source>
+        <translation>V okruhoch</translation>
     </message>
 </context>
 <context>

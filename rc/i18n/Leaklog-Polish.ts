@@ -499,7 +499,7 @@
     </message>
     <message>
         <source>Circuit</source>
-        <translation>Obwód</translation>
+        <translation>Obieg</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -2158,7 +2158,7 @@
     <name>LeakagesByApplication</name>
     <message>
         <source>Amount of refrigerant in circuits</source>
-        <translation>Ilość czynnika w obiegu</translation>
+        <translation>Ilość czynnika w obiegach</translation>
     </message>
     <message>
         <source>Percentage of leakage by application</source>
@@ -2188,12 +2188,20 @@
         <translation>Dodany</translation>
     </message>
     <message>
-        <source>Amount</source>
-        <translation>Ilość</translation>
-    </message>
-    <message>
         <source>Leakage</source>
         <translation>Wyciek</translation>
+    </message>
+    <message>
+        <source>Weighted Average</source>
+        <translation>Średnia ważona</translation>
+    </message>
+    <message>
+        <source>Average Leakage</source>
+        <translation>Średni wyciek</translation>
+    </message>
+    <message>
+        <source>In Circuits</source>
+        <translation>W obiegach</translation>
     </message>
 </context>
 <context>

@@ -60,7 +60,7 @@ public:
         TableCount
     };
 
-    LeakagesByApplication(bool total);
+    LeakagesByApplication(bool weighted_averages = false);
 
     inline int startYear() const { return min_year; }
     inline int endYear() const { return max_year; }
@@ -68,11 +68,11 @@ public:
     inline MTDictionary usedRefrigerants() const { return used_refrigerants; }
     inline bool containsField(const QString &field) const { return fields.contains(field); }
 
-    inline QVector<double> value(const QString &refrigerant = Key::All, const QString &field = Key::All) const {
-        return values.value(Key(refrigerant, field), QVector<double>(TableCount));
-    }
     inline QVector<double> value(int year, const QString &refrigerant = Key::All, const QString &field = Key::All) const {
         return values.value(Key(year, refrigerant, field), QVector<double>(TableCount));
+    }
+    inline double weightedAverageValue(const QString &refrigerant = Key::All, const QString &field = Key::All) const {
+        return weighted_average_values.value(Key(refrigerant, field));
     }
 
 protected:
@@ -82,6 +82,7 @@ protected:
     int max_year;
     QStringList tables;
     QMap<Key, QVector<double> > values;
+    QMap<Key, double> weighted_average_values;
     MTDictionary used_refrigerants;
     QSet<QString> fields;
 };

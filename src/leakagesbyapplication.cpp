@@ -27,7 +27,7 @@ using namespace Global;
 
 const QString LeakagesByApplication::Key::All("All");
 
-LeakagesByApplication::LeakagesByApplication(bool total):
+LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
     QObject(), min_year(9999), max_year(0)
 {
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
@@ -50,7 +50,7 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             continue;
 
         int year = inspections.value(3).toString().left(4).toInt();
-        if (!total && year > current_year)
+        if (!weighted_averages && year > current_year)
             continue;
 
         if (min_year > year)
@@ -58,24 +58,15 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         if (max_year < year)
             max_year = year;
 
-        if (total) {
-            addToValues(Key(refrigerant, field), RefrigerantAddition, refr_add_am);
-            addToValues(Key(refrigerant, Key::All), RefrigerantAddition, refr_add_am);
-            addToValues(Key(Key::All, field), RefrigerantAddition, refr_add_am);
-            addToValues(Key(), RefrigerantAddition, refr_add_am);
-        } else {
-            addToValues(Key(year, refrigerant, field), RefrigerantAddition, refr_add_am);
-            addToValues(Key(year, refrigerant, Key::All), RefrigerantAddition, refr_add_am);
-            addToValues(Key(year, Key::All, field), RefrigerantAddition, refr_add_am);
-            addToValues(Key(year), RefrigerantAddition, refr_add_am);
-        }
+        addToValues(Key(year, refrigerant, field), RefrigerantAddition, refr_add_am);
+        addToValues(Key(year, refrigerant, Key::All), RefrigerantAddition, refr_add_am);
+        addToValues(Key(year, Key::All, field), RefrigerantAddition, refr_add_am);
+        addToValues(Key(year), RefrigerantAddition, refr_add_am);
     }
 
     MTDictionary nominal_inspection_parents("nominal", "1");
 
-    MTSqlQuery circuits(QString("SELECT parent, id, refrigerant, field, %1%2 FROM circuits")
-                        .arg(total ? circuitRefrigerantAmountQuery() : "refrigerant_amount")
-                        .arg(total ? "" : ", commissioning, decommissioning, disused"));
+    MTSqlQuery circuits("SELECT parent, id, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
 
     while (circuits.next()) {
         QString customer_id = circuits.stringValue("parent");
@@ -84,54 +75,49 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         QString field = circuits.stringValue("field");
         double refrigerant_amount = circuits.doubleValue("refrigerant_amount");
 
-        if (total) {
-            addToValues(Key(refrigerant, field), RefrigerantAmount, refrigerant_amount);
-            addToValues(Key(refrigerant, Key::All), RefrigerantAmount, refrigerant_amount);
-            addToValues(Key(Key::All, field), RefrigerantAmount, refrigerant_amount);
-            addToValues(Key(), RefrigerantAmount, refrigerant_amount);
-        } else {
-            int commissioning_year = circuits.stringValue("commissioning").left(4).toInt();
-            if (commissioning_year > max_year)
-                continue;
+        int commissioning_year = circuits.stringValue("commissioning").left(4).toInt();
+        if (commissioning_year > max_year)
+            continue;
 
-            int decommissioning_year = circuits.stringValue("decommissioning").left(4).toInt();
-            if (circuits.intValue("disused") <= Circuit::Commissioned)
-                decommissioning_year = 9999;
-            else if (!decommissioning_year)
-                decommissioning_year = current_year;
+        int decommissioning_year = circuits.stringValue("decommissioning").left(4).toInt();
+        if (circuits.intValue("disused") <= Circuit::Commissioned)
+            decommissioning_year = 9999;
+        else if (!decommissioning_year)
+            decommissioning_year = current_year;
 
-            if (decommissioning_year < min_year)
-                continue;
+        if (decommissioning_year < min_year)
+            continue;
 
-            QVector<double> refrigerant_amounts(qMax(0, max_year - min_year) + 1);
-            for (int year = qMax(commissioning_year, min_year); year <= max_year; ++year)
-                refrigerant_amounts[year - min_year] = refrigerant_amount;
+        QVector<double> refrigerant_amounts(qMax(0, max_year - min_year) + 1);
+        for (int year = qMax(commissioning_year, min_year); year <= max_year; ++year)
+            refrigerant_amounts[year - min_year] = refrigerant_amount;
 
-            nominal_inspection_parents.insert("customer", customer_id);
-            nominal_inspection_parents.insert("circuit", circuit_id);
-            ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inspection_parents)
-                    .listAll("date, refr_add_am, refr_reco", "date ASC");
+        nominal_inspection_parents.insert("customer", customer_id);
+        nominal_inspection_parents.insert("circuit", circuit_id);
+        ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inspection_parents)
+                .listAll("date, refr_add_am, refr_reco", "date ASC");
 
-            foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
-                int nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();
+        foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
+            int nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();
 
-                for (int year = qMax(nominal_inspection_year, min_year); year <= max_year; ++year)
-                    refrigerant_amounts[year - min_year] += nominal_inspection.value("refr_add_am", 0.0).toDouble()
-                            - nominal_inspection.value("refr_reco", 0.0).toDouble();
-            }
+            for (int year = qMax(nominal_inspection_year, min_year); year <= max_year; ++year)
+                refrigerant_amounts[year - min_year] += nominal_inspection.value("refr_add_am", 0.0).toDouble()
+                        - nominal_inspection.value("refr_reco", 0.0).toDouble();
+        }
 
-            for (int year = decommissioning_year + 1; year <= max_year; ++year)
-                refrigerant_amounts[year - min_year] = 0.0;
+        for (int year = decommissioning_year + 1; year <= max_year; ++year)
+            refrigerant_amounts[year - min_year] = 0.0;
 
-            for (int year = min_year; year <= max_year; ++year) {
-                double refrigerant_amount = refrigerant_amounts[year - min_year];
-                addToValues(Key(year, refrigerant, field), RefrigerantAmount, refrigerant_amount);
-                addToValues(Key(year, refrigerant, Key::All), RefrigerantAmount, refrigerant_amount);
-                addToValues(Key(year, Key::All, field), RefrigerantAmount, refrigerant_amount);
-                addToValues(Key(year), RefrigerantAmount, refrigerant_amount);
-            }
+        for (int year = min_year; year <= max_year; ++year) {
+            double refrigerant_amount = refrigerant_amounts[year - min_year];
+            addToValues(Key(year, refrigerant, field), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(year, refrigerant, Key::All), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(year, Key::All, field), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(year), RefrigerantAmount, refrigerant_amount);
         }
     }
+
+    QMap<Key, QVector<double> > weighted_average_components;
 
     QMutableMapIterator<Key, QVector<double> > i(values);
     while (i.hasNext()) { i.next();
@@ -144,8 +130,27 @@ LeakagesByApplication::LeakagesByApplication(bool total):
 
         fields << field;
 
+        if (weighted_averages) {
+            Key key(refrigerant, field);
+
+            if (!weighted_average_components[key].size())
+                weighted_average_components[key].resize(2);
+
+            weighted_average_components[key][0] += i.value()[PercentageOfLeakage] * i.value()[RefrigerantAmount];
+            weighted_average_components[key][1] += i.value()[RefrigerantAmount];
+        }
+
         if (!refrigerant.isEmpty() && refrigerant != field && refrigerant != Key::All)
             used_refrigerants.insert(refrigerant, refrigerant_name);
+    }
+
+    if (weighted_averages) {
+        QMapIterator<Key, QVector<double> > i(weighted_average_components);
+        while (i.hasNext()) { i.next();
+            if (i.value().size() && i.value()[1]) {
+                weighted_average_values.insert(i.key(), i.value()[0] / i.value()[1]);
+            }
+        }
     }
 }
 

@@ -53,10 +53,77 @@ QString LeakagesByApplicationView::renderHTML()
     units << "&nbsp;" + QApplication::translate("Units", "kg");
     units << "&nbsp;" + QApplication::translate("Units", "%");
 
-    class LeakagesByApplication leakages(false);
+    class LeakagesByApplication leakages(true);
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: medium;\">" << tr("Leakages by Application") << "</th></tr></table><br>";
+
+    out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tr("Weighted Average") << "</th>";
+    out << "<th colspan=\"7\">" << tr("Fields") << "</th></tr>";
+    out << "<tr><th>" << tr("All") << "</th>";
+
+    for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+        if (leakages.containsField(attributeValues().key(n).mid(7))) {
+            out << "<th>" << attributeValues().value(n) << "</th>";
+        }
+    }
+
+    out << "</tr><tr><th>" << tr("Refrigerant") << "</th>";
+
+    for (int n = attributeValues().indexOfKey("field"); n < attributeValues().count() && attributeValues().key(n).startsWith("field"); ++n) {
+        if (attributeValues().key(n) == "field" || leakages.containsField(attributeValues().key(n).mid(7))) {
+            out << "<th>" << tr("Average Leakage") << "</th>";
+        }
+    }
+
+    out << "</tr></thead>";
+    out << "<tr><th>" << tr("All") << "</th>";
+    double value = leakages.weightedAverageValue();
+    if (value) {
+        out << "<td>" << value << units.at(2) << "</td>";
+    } else {
+        out << "<td>&nbsp;</td>";
+    }
+
+    for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+        QString field = attributeValues().key(n).mid(7);
+        if (leakages.containsField(field)) {
+            double value = leakages.weightedAverageValue(LeakagesByApplication::Key::All, field);
+            if (value) {
+                out << "<td>" << value << units.at(2) << "</td>";
+            } else {
+                out << "<td>&nbsp;</td>";
+            }
+        }
+    }
+
+    out << "</tr>";
+
+    for (int i = 0; i < leakages.usedRefrigerants().count(); ++i) {
+        out << "<tr><th>" << leakages.usedRefrigerants().value(i) << "</th>";
+        double value = leakages.weightedAverageValue(leakages.usedRefrigerants().key(i));
+        if (value) {
+            out << "<td>" << value << units.at(2) << "</td>";
+        } else {
+            out << "<td>&nbsp;</td>";
+        }
+
+        for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
+            QString field = attributeValues().key(n).mid(7);
+            if (leakages.containsField(field)) {
+                double value = leakages.weightedAverageValue(leakages.usedRefrigerants().key(i), field);
+                if (value) {
+                    out << "<td>" << value << units.at(2) << "</td>";
+                } else {
+                    out << "<td>&nbsp;</td>";
+                }
+            }
+        }
+
+        out << "</tr>";
+    }
+
+    out << "<tr></tr></table><br>";
 
     for (int year = leakages.endYear(); year >= leakages.startYear(); --year) {
         out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << year << "</th>";
@@ -74,7 +141,7 @@ QString LeakagesByApplicationView::renderHTML()
         for (int n = attributeValues().indexOfKey("field"); n < attributeValues().count() && attributeValues().key(n).startsWith("field"); ++n) {
             if (attributeValues().key(n) == "field" || leakages.containsField(attributeValues().key(n).mid(7))) {
                 out << "<th>" << tr("Added") << "</th>";
-                out << "<th>" << tr("Amount") << "</th>";
+                out << "<th>" << tr("In Circuits") << "</th>";
                 out << "<th>" << tr("Leakage") << "</th>";
             }
         }
