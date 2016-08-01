@@ -2179,6 +2179,22 @@
         <source>All</source>
         <translation>Wszystko</translation>
     </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Czynnik</translation>
+    </message>
+    <message>
+        <source>Added</source>
+        <translation>Dodany</translation>
+    </message>
+    <message>
+        <source>Amount</source>
+        <translation>Ilość</translation>
+    </message>
+    <message>
+        <source>Leakage</source>
+        <translation>Wyciek</translation>
+    </message>
 </context>
 <context>
     <name>MDComboBox</name>
@@ -4539,7 +4555,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Added</source>
-        <translation>Dodaj</translation>
+        <translation>Dodany</translation>
     </message>
     <message>
         <source>Recovered</source>

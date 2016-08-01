@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QMap>
 #include <QVector>
+#include <QSet>
 #include <QStringList>
 
 class LeakagesByApplication : QObject
@@ -39,7 +40,7 @@ public:
         explicit Key(const QString &refrigerant = All, const QString &field = All):
             year(0), refrigerant(refrigerant), field(field)
         {}
-        explicit Key(int year, const QString &refrigerant, const QString &field):
+        explicit Key(int year, const QString &refrigerant = All, const QString &field = All):
             year(year), refrigerant(refrigerant), field(field)
         {}
 
@@ -65,11 +66,12 @@ public:
     inline int endYear() const { return max_year; }
     inline QStringList tableNames() const { return tables; }
     inline MTDictionary usedRefrigerants() const { return used_refrigerants; }
+    inline bool containsField(const QString &field) const { return fields.contains(field); }
 
     inline QVector<double> value(const QString &refrigerant = Key::All, const QString &field = Key::All) const {
         return values.value(Key(refrigerant, field), QVector<double>(TableCount));
     }
-    inline QVector<double> value(int year, const QString &refrigerant, const QString &field) const {
+    inline QVector<double> value(int year, const QString &refrigerant = Key::All, const QString &field = Key::All) const {
         return values.value(Key(year, refrigerant, field), QVector<double>(TableCount));
     }
 
@@ -81,6 +83,7 @@ protected:
     QStringList tables;
     QMap<Key, QVector<double> > values;
     MTDictionary used_refrigerants;
+    QSet<QString> fields;
 };
 
 #endif // LEAKAGES_BY_APPLICATION_H

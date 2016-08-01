@@ -34,9 +34,6 @@ LeakagesByApplication::LeakagesByApplication(bool total):
 
     Q_ASSERT(tables.count() == TableCount);
 
-    QList<Key> keys;
-    values[Key()].resize(TableCount);
-
     MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
                            " FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id"
                            " AND inspections.customer = circuits.parent"
@@ -47,7 +44,6 @@ LeakagesByApplication::LeakagesByApplication(bool total):
     while (inspections.next()) {
         QString refrigerant = inspections.value(0).toString();
         QString field = inspections.value(1).toString();
-        QString field_name = attributeValues().value("field::" + field, QString());
 
         double refr_add_am = inspections.value(2).toDouble();
         if (refr_add_am == 0.0)
@@ -62,19 +58,17 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         if (max_year < year)
             max_year = year;
 
-        keys.clear();
         if (total) {
-            keys << Key(refrigerant, field_name);
-            keys << Key(refrigerant, Key::All);
-            keys << Key(Key::All, field_name);
+            addToValues(Key(refrigerant, field), RefrigerantAddition, refr_add_am);
+            addToValues(Key(refrigerant, Key::All), RefrigerantAddition, refr_add_am);
+            addToValues(Key(Key::All, field), RefrigerantAddition, refr_add_am);
+            addToValues(Key(), RefrigerantAddition, refr_add_am);
         } else {
-            keys << Key(year, refrigerant, field);
+            addToValues(Key(year, refrigerant, field), RefrigerantAddition, refr_add_am);
+            addToValues(Key(year, refrigerant, Key::All), RefrigerantAddition, refr_add_am);
+            addToValues(Key(year, Key::All, field), RefrigerantAddition, refr_add_am);
+            addToValues(Key(year), RefrigerantAddition, refr_add_am);
         }
-
-        for (int i = 0; i < keys.count(); ++i)
-            addToValues(keys.at(i), RefrigerantAddition, refr_add_am);
-
-        values[Key()][RefrigerantAddition] += refr_add_am;
     }
 
     MTDictionary nominal_inspection_parents("nominal", "1");
@@ -88,19 +82,13 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         QString circuit_id = circuits.stringValue("id");
         QString refrigerant = circuits.stringValue("refrigerant");
         QString field = circuits.stringValue("field");
-        QString field_name = attributeValues().value("field::" + field, QString());
         double refrigerant_amount = circuits.doubleValue("refrigerant_amount");
 
-        keys.clear();
         if (total) {
-            keys << Key(refrigerant, field_name);
-            keys << Key(refrigerant, Key::All);
-            keys << Key(Key::All, field_name);
-
-            foreach (const Key &key, keys)
-                addToValues(key, RefrigerantAmount, refrigerant_amount);
-
-            values[Key()][RefrigerantAmount] += refrigerant_amount;
+            addToValues(Key(refrigerant, field), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(refrigerant, Key::All), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(Key::All, field), RefrigerantAmount, refrigerant_amount);
+            addToValues(Key(), RefrigerantAmount, refrigerant_amount);
         } else {
             int commissioning_year = circuits.stringValue("commissioning").left(4).toInt();
             if (commissioning_year > max_year)
@@ -135,8 +123,13 @@ LeakagesByApplication::LeakagesByApplication(bool total):
             for (int year = decommissioning_year + 1; year <= max_year; ++year)
                 refrigerant_amounts[year - min_year] = 0.0;
 
-            for (int year = min_year; year <= max_year; ++year)
-                addToValues(Key(year, refrigerant, field), RefrigerantAmount, refrigerant_amounts[year - min_year]);
+            for (int year = min_year; year <= max_year; ++year) {
+                double refrigerant_amount = refrigerant_amounts[year - min_year];
+                addToValues(Key(year, refrigerant, field), RefrigerantAmount, refrigerant_amount);
+                addToValues(Key(year, refrigerant, Key::All), RefrigerantAmount, refrigerant_amount);
+                addToValues(Key(year, Key::All, field), RefrigerantAmount, refrigerant_amount);
+                addToValues(Key(year), RefrigerantAmount, refrigerant_amount);
+            }
         }
     }
 
@@ -149,10 +142,9 @@ LeakagesByApplication::LeakagesByApplication(bool total):
         QString refrigerant_name = attributeValues().value("refrigerant::" + refrigerant, QString());
         QString field = i.key().field;
 
-        if (refrigerant == field)
-            continue;
+        fields << field;
 
-        if (refrigerant != "" && refrigerant != Key::All)
+        if (!refrigerant.isEmpty() && refrigerant != field && refrigerant != Key::All)
             used_refrigerants.insert(refrigerant, refrigerant_name);
     }
 }

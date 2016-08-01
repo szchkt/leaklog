@@ -2179,6 +2179,22 @@
         <source>All</source>
         <translation>Všetky</translation>
     </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Chladivo</translation>
+    </message>
+    <message>
+        <source>Added</source>
+        <translation>Doplnené</translation>
+    </message>
+    <message>
+        <source>Amount</source>
+        <translation>Množstvo</translation>
+    </message>
+    <message>
+        <source>Leakage</source>
+        <translation>Ůnik</translation>
+    </message>
 </context>
 <context>
     <name>MDComboBox</name>

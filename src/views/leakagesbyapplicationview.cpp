@@ -48,36 +48,87 @@ QString LeakagesByApplicationView::renderHTML()
         out << "<br>";
     }
 
-    class LeakagesByApplication leakages(true);
+    QStringList units;
+    units << "&nbsp;" + QApplication::translate("Units", "kg");
+    units << "&nbsp;" + QApplication::translate("Units", "kg");
+    units << "&nbsp;" + QApplication::translate("Units", "%");
+
+    class LeakagesByApplication leakages(false);
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: medium;\">" << tr("Leakages by Application") << "</th></tr></table><br>";
 
-    for (int t = 0; t < leakages.tableNames().count(); ++t) {
-        out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << leakages.tableNames().at(t) << "</th>";
-        out << "<th colspan=\"7\">" << tr("Fields") << "</th></tr>";
-        out << "<tr><th>" << tr("All") << "</th>";
+    for (int year = leakages.endYear(); year >= leakages.startYear(); --year) {
+        out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << year << "</th>";
+        out << "<th colspan=\"21\">" << tr("Fields") << "</th></tr>";
+        out << "<tr><th colspan=\"3\">" << tr("All") << "</th>";
 
         for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
-            out << "<th>" << attributeValues().value(n) << "</th>";
+            if (leakages.containsField(attributeValues().key(n).mid(7))) {
+                out << "<th colspan=\"3\">" << attributeValues().value(n) << "</th>";
+            }
+        }
+
+        out << "</tr><tr><th>" << tr("Refrigerant") << "</th>";
+
+        for (int n = attributeValues().indexOfKey("field"); n < attributeValues().count() && attributeValues().key(n).startsWith("field"); ++n) {
+            if (attributeValues().key(n) == "field" || leakages.containsField(attributeValues().key(n).mid(7))) {
+                out << "<th>" << tr("Added") << "</th>";
+                out << "<th>" << tr("Amount") << "</th>";
+                out << "<th>" << tr("Leakage") << "</th>";
+            }
         }
 
         out << "</tr></thead>";
         out << "<tr><th>" << tr("All") << "</th>";
-        out << "<td>" << leakages.value().at(t) << "</td>";
+        for (int t = 0; t < LeakagesByApplication::TableCount; ++t) {
+            double value = leakages.value(year).at(t);
+            if (value) {
+                out << "<td>" << value << units.value(t) << "</td>";
+            } else {
+                out << "<td>&nbsp;</td>";
+            }
+        }
 
         for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
-            out << "<td>" << leakages.value(LeakagesByApplication::Key::All, attributeValues().value(n)).at(t) << "</td>";
+            for (int t = 0; t < LeakagesByApplication::TableCount; ++t) {
+                QString field = attributeValues().key(n).mid(7);
+                if (leakages.containsField(field)) {
+                    double value = leakages.value(year, LeakagesByApplication::Key::All, field).at(t);
+                    if (value) {
+                        out << "<td>" << value << units.value(t) << "</td>";
+                    } else {
+                        out << "<td>&nbsp;</td>";
+                    }
+                }
+            }
         }
 
         out << "</tr>";
 
         for (int i = 0; i < leakages.usedRefrigerants().count(); ++i) {
             out << "<tr><th>" << leakages.usedRefrigerants().value(i) << "</th>";
-            out << "<td>" << leakages.value(leakages.usedRefrigerants().key(i)).at(t) << "</td>";
+            for (int t = 0; t < LeakagesByApplication::TableCount; ++t) {
+                double value = leakages.value(year, leakages.usedRefrigerants().key(i)).at(t);
+                if (value) {
+                    out << "<td>" << value << units.value(t) << "</td>";
+                } else {
+                    out << "<td>&nbsp;</td>";
+                }
+            }
 
             for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
-                out << "<td>" << leakages.value(leakages.usedRefrigerants().key(i), attributeValues().value(n)).at(t) << "</td>";
+                QString field = attributeValues().key(n).mid(7);
+                if (leakages.containsField(field)) {
+                    for (int t = 0; t < LeakagesByApplication::TableCount; ++t) {
+                        double value = leakages.value(year, leakages.usedRefrigerants().key(i), field).at(t);
+                        if (value) {
+                            out << "<td>" << value << units.value(t) << "</td>";
+                        } else {
+                            out << "<td>&nbsp;</td>";
+                        }
+                    }
+                }
             }
 
             out << "</tr>";
