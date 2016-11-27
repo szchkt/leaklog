@@ -22,7 +22,7 @@
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Słowacki Związek ds. chłodnictwa i klimatyzacji</translation>
+        <translation>Słowacki związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -63,6 +63,14 @@
     <message>
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1 na licencji GNU GPL</translation>
+    </message>
+    <message>
+        <source>Czech translation: %1</source>
+        <translation>Czeskie tłumaczenie: %1</translation>
+    </message>
+    <message>
+        <source>Czech Association for Cooling and Air Conditioning Technology</source>
+        <translation>Czeski związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
 </context>
 <context>
@@ -2152,6 +2160,10 @@
     <message>
         <source>Polish</source>
         <translation>Polski</translation>
+    </message>
+    <message>
+        <source>Czech</source>
+        <translation>Czeski</translation>
     </message>
 </context>
 <context>

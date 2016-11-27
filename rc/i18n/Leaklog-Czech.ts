@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk_SK" sourcelanguage="en_GB">
+<TS version="2.0" language="cs_CZ" sourcelanguage="en_GB">
 <defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
         <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog je systém kontroly únikov založený na nariadení EU č. 842/2006. Usporiadava nálezy a parametre priamych a nepriamych kontrol únikov v záznamníku. Výsledkom je história kontrol, vývoj parametrov a ich porovnanie s nominálnymi a výpočet množstva a percenta úniku.</translation>
+        <translatorcomment>Nařízení 842 jsem nahradil n. 517/2014</translatorcomment>
+        <translation>Leaklog je systém kontroly úniků založený na nařízení EU č. 517/2014. Uchovává nálezy a parametry přímých a nepřímých kontrol úniků v záznamníku. Výsledkem je historie kontrol, vývoj parametrů a jejich porovnání s nominálními a výpočet množství a procenta úniku.</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Slovenský zväz pre chladiacu a klimatizačnú techniku</translation>
+        <translation>Slovenský svaz pro chladicí a klimatizační techniku</translation>
     </message>
     <message>
         <source>About Qt</source>
@@ -18,7 +19,7 @@
     </message>
     <message>
         <source>About Leaklog</source>
-        <translation>O programe Leaklog</translation>
+        <translation>O programu Leaklog</translation>
     </message>
     <message>
         <source>Leaklog</source>
@@ -26,51 +27,51 @@
     </message>
     <message>
         <source>Version %1</source>
-        <translation>Verzia %1</translation>
+        <translation>Verze %1</translation>
     </message>
     <message>
         <source>Acknowledgements</source>
-        <translation>Poďakovanie</translation>
+        <translation>Poděkování</translation>
     </message>
     <message>
         <source>Licence</source>
-        <translation>Licencia</translation>
+        <translation>Licence</translation>
     </message>
     <message>
         <source>Contributors</source>
-        <translation>Prispeli</translation>
+        <translation>Přispěli</translation>
     </message>
     <message>
         <source>Leaklog uses</source>
-        <translation>Leaklog používa</translation>
+        <translation>Leaklog používá</translation>
     </message>
     <message>
         <source>%1, licensed under the GNU LGPL</source>
-        <translation>%1, pod licenciou GNU LGPL</translation>
+        <translation>%1, pod licencí GNU LGPL</translation>
     </message>
     <message>
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
-        <translation>http://www.gpl.sk/v2/</translation>
+        <translation>http://www.gnugpl.cz/v2/</translation>
     </message>
     <message>
         <source>Translation</source>
-        <translation>Preklad</translation>
+        <translation>Překlad</translation>
     </message>
     <message>
         <source>Polish translation: %1</source>
-        <translation>Poľský preklad: %1</translation>
+        <translation>Polský překlad: %1</translation>
     </message>
     <message>
         <source>%1, licensed under the GNU GPL</source>
-        <translation>%1, pod licenciou GNU GPL</translation>
+        <translation>%1, pod licencí GNU GPL</translation>
     </message>
     <message>
         <source>Czech translation: %1</source>
-        <translation>Český preklad: %1</translation>
+        <translation>Český překlad: %1</translation>
     </message>
     <message>
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
-        <translation>Český zväz chladiacej a klimatizačnej techniky</translation>
+        <translation>Svaz chladicí a klimatizační techniky</translation>
     </message>
 </context>
 <context>
@@ -81,7 +82,7 @@
     </message>
     <message>
         <source>Next inspection</source>
-        <translation>Nasledujúca kontrola</translation>
+        <translation>Příští kontrola</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -93,7 +94,7 @@
     </message>
     <message>
         <source>Last inspection</source>
-        <translation>Posledná kontrola</translation>
+        <translation>Poslední kontrola</translation>
     </message>
     <message>
         <source>Yesterday</source>
@@ -105,14 +106,14 @@
     </message>
     <message>
         <source>Tomorrow</source>
-        <translation>Zajtra</translation>
+        <translation>Zítra</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecord</name>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Description</source>
@@ -120,7 +121,7 @@
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -140,7 +141,7 @@
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Assembly record No.</source>
@@ -148,22 +149,23 @@
     </message>
     <message>
         <source>Assembly record type ID</source>
-        <translation>IČ typu montážneho listu</translation>
+        <translation>IČ typu montážního listu</translation>
     </message>
     <message>
         <source>Inspector certificate number</source>
-        <translation>Číslo osvedčenia kontrolóra</translation>
+        <translatorcomment>V ČR se používá certifikát - ne osvědčení</translatorcomment>
+        <translation>Číslo certifikátu pracovníka</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordDetailsView</name>
     <message>
         <source>Assembly record No. %1</source>
-        <translation>Montážny list číslo %1</translation>
+        <translation>Montážní list číslo %1</translation>
     </message>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Nominálna kontrola:</translation>
+        <translation>Nominální kontrola:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -179,7 +181,7 @@
     </message>
     <message>
         <source>Acquisition price (%1)</source>
-        <translation>Obstarávacia cena (%1)</translation>
+        <translation>Pořizovací cena (%1)</translation>
     </message>
     <message>
         <source>List price (%1)</source>
@@ -187,30 +189,30 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Total (%1)</source>
-        <translation>Celkom (%1)</translation>
+        <translation>Celkem (%1)</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Total</source>
-        <translation>Celkom</translation>
+        <translation>Celkem</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordItem</name>
     <message>
         <source>Assembly record number</source>
-        <translation>Číslo montážneho listu</translation>
+        <translation>Číslo montážního listu</translation>
     </message>
     <message>
         <source>Record item type ID</source>
@@ -222,7 +224,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -237,58 +239,58 @@
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Show value</source>
-        <translation>Zobraziť hodnotu</translation>
+        <translation>Zobrazit hodnotu</translation>
     </message>
     <message>
         <source>Show acquisition price</source>
-        <translation>Zobraziť obstarávaciu cenu</translation>
+        <translation>Zobrazit pořizovací cenu</translation>
     </message>
     <message>
         <source>Show list price</source>
-        <translation>Zobraziť cenníkovú cenu</translation>
+        <translation>Zobrazi cenníkovou cenu</translation>
     </message>
     <message>
         <source>Show discount</source>
-        <translation>Zobraziť zľavu</translation>
+        <translation>Zobrazit slevu</translation>
     </message>
     <message>
         <source>Calculate total</source>
-        <translation>Vypočítať celkovú cenu</translation>
+        <translation>Vypočítat celkovou cenu</translation>
     </message>
     <message>
         <source>Display:</source>
-        <translation>Zobraziť:</translation>
+        <translation>Zobrazit:</translation>
     </message>
     <message>
         <source>In table</source>
-        <translation>V tabuľke</translation>
+        <translation>V tabulce</translation>
     </message>
     <message>
         <source>Separately</source>
-        <translation>Oddelene</translation>
+        <translation>Odděleně</translation>
     </message>
     <message>
         <source>Assembly Record Item Category</source>
-        <translation>Kategória položiek montážneho listu</translation>
+        <translation>Kategorie položek montážního listu</translation>
     </message>
     <message>
         <source>Display options:</source>
-        <translation>Možnosti zobrazenia:</translation>
+        <translation>Možnosti zobrazení:</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordItemType</name>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Unit:</source>
@@ -296,7 +298,7 @@
     </message>
     <message>
         <source>Acquisition price:</source>
-        <translation>Obstarávacia cena:</translation>
+        <translation>Pořizovací cena:</translation>
     </message>
     <message>
         <source>List price:</source>
@@ -304,7 +306,7 @@
     </message>
     <message>
         <source>Discount:</source>
-        <translation>Zľava:</translation>
+        <translation>Sleva:</translation>
     </message>
     <message>
         <source>EAN code:</source>
@@ -312,15 +314,15 @@
     </message>
     <message>
         <source>Automatically add to assembly record</source>
-        <translation>Automaticky pridať do montážneho listu</translation>
+        <translation>Automaticky pridat do montážního listu</translation>
     </message>
     <message>
         <source>Category:</source>
-        <translation>Kategória:</translation>
+        <translation>Kategorie:</translation>
     </message>
     <message>
         <source>Get value from inspection:</source>
-        <translation>Získať hodnotu z kontroly:</translation>
+        <translation>Získat hodnotu z kontroly:</translation>
     </message>
     <message>
         <source>Data type:</source>
@@ -332,7 +334,7 @@
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Unit</source>
@@ -340,7 +342,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -348,7 +350,7 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>EAN code</source>
@@ -356,18 +358,18 @@
     </message>
     <message>
         <source>Category</source>
-        <translation>Kategória</translation>
+        <translation>Kategorie</translation>
     </message>
     <message>
         <source>Assembly Record Item Type</source>
-        <translation>Typ položky montážneho listu</translation>
+        <translation>Typ položky montážního listu</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordItemsView</name>
     <message>
         <source>Show</source>
-        <translation>Zobraziť</translation>
+        <translation>Zobrazit</translation>
     </message>
     <message>
         <source>Value</source>
@@ -375,7 +377,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -383,30 +385,30 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Total</source>
-        <translation>Celkom</translation>
+        <translation>Celkem</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Assembly Record Item Categories and Types</source>
-        <translation>Kategórie a typy položiek montážneho listu</translation>
+        <translation>Kategorie a typy položek montážního listu</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordType</name>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Description:</source>
@@ -414,27 +416,27 @@
     </message>
     <message>
         <source>Display options:</source>
-        <translation>Možnosti zobrazenia:</translation>
+        <translation>Možnosti zobrazení:</translation>
     </message>
     <message>
         <source>Show service company</source>
-        <translation>Zobraziť servisnú organizáciu</translation>
+        <translation>Zobrazit servisní organizaci</translation>
     </message>
     <message>
         <source>Show customer</source>
-        <translation>Zobraziť zákazníka</translation>
+        <translation>Zobrazit zákazníka</translation>
     </message>
     <message>
         <source>Show customer contact persons</source>
-        <translation>Zobraziť kontaktné osoby zákazníka</translation>
+        <translation>Zobrazit kontaktní osoby zákazníka</translation>
     </message>
     <message>
         <source>Show circuit</source>
-        <translation>Zobraziť okruh</translation>
+        <translation>Zobrazit okruh</translation>
     </message>
     <message>
         <source>Show circuit units</source>
-        <translation>Zobraziť jednotky okruhu</translation>
+        <translation>Zobrazit jednotky okruhu</translation>
     </message>
     <message>
         <source>Name format:</source>
@@ -442,7 +444,7 @@
     </message>
     <message>
         <source>Visual style:</source>
-        <translation>Vzhľad:</translation>
+        <translation>Vzhled:</translation>
     </message>
     <message>
         <source>ID</source>
@@ -450,7 +452,7 @@
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Description</source>
@@ -458,48 +460,48 @@
     </message>
     <message>
         <source>Assembly Record Type</source>
-        <translation>Typ montážneho listu</translation>
+        <translation>Typ montážního listu</translation>
     </message>
     <message>
         <source>Show compressors</source>
-        <translation>Zobraziť kompresory</translation>
+        <translation>Zobrazit kompresory</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordTypeCategory</name>
     <message>
         <source>Assembly record type ID</source>
-        <translation>IČ typu montážneho listu</translation>
+        <translation>IČ typu montážního listu</translation>
     </message>
     <message>
         <source>Assembly record category type ID</source>
-        <translation>IČ typu kategórie položiek montážneho listu</translation>
+        <translation>IČ typu kategorie položek montážního listu</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordTypesView</name>
     <message>
         <source>Assembly Record Types</source>
-        <translation>Typy montážneho listu</translation>
+        <translation>Typ montážního listu</translation>
     </message>
 </context>
 <context>
     <name>AssemblyRecordsView</name>
     <message>
         <source>Assembly Records</source>
-        <translation>Montážne listy</translation>
+        <translation>Montážní listy</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Assembly record number</source>
-        <translation>Číslo montážneho listu</translation>
+        <translation>Číslo montážního listu</translation>
     </message>
     <message>
         <source>Assembly record name</source>
-        <translation>Názov montážneho listu</translation>
+        <translation>Název montážního listu</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -511,11 +513,12 @@
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translatorcomment>použito cert. osoba místo kontrolór</translatorcomment>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -523,7 +526,7 @@
     </message>
     <message>
         <source>Contact person</source>
-        <translation>Prevzal</translation>
+        <translation>Převzal</translation>
     </message>
 </context>
 <context>
@@ -534,11 +537,11 @@
     </message>
     <message>
         <source>Circuit name:</source>
-        <translation>Názov okruhu:</translation>
+        <translation>Název okruhu:</translation>
     </message>
     <message>
         <source>Place of operation:</source>
-        <translation>Miesto prevádzky:</translation>
+        <translation>Místo provozu:</translation>
     </message>
     <message>
         <source>Building:</source>
@@ -546,15 +549,15 @@
     </message>
     <message>
         <source>Device:</source>
-        <translation>Zariadenie:</translation>
+        <translation>Zařízení:</translation>
     </message>
     <message>
         <source>Hermetically sealed</source>
-        <translation>Hermeticky uzavretý</translation>
+        <translation>Hermeticky uzavřený</translation>
     </message>
     <message>
         <source>Manufacturer:</source>
-        <translation>Výrobca:</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -566,19 +569,19 @@
     </message>
     <message>
         <source>Year of purchase:</source>
-        <translation>Rok zakúpenia:</translation>
+        <translation>Rok zakoupení:</translation>
     </message>
     <message>
         <source>Date of commissioning:</source>
-        <translation>Uvedenie do prevádzky:</translation>
+        <translation>Uvedení do provozu:</translation>
     </message>
     <message>
         <source>Date of decommissioning:</source>
-        <translation>Vyradenie z prevádzky:</translation>
+        <translation>Vyřazení z provozu:</translation>
     </message>
     <message>
         <source>Field of application:</source>
-        <translation>Druh nasadenia:</translation>
+        <translation>Typ použití:</translation>
     </message>
     <message>
         <source>Refrigerant:</source>
@@ -586,7 +589,7 @@
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Množstvo chladiva:</translation>
+        <translation>Množství chladiva:</translation>
     </message>
     <message>
         <source>Oil:</source>
@@ -594,7 +597,7 @@
     </message>
     <message>
         <source>Amount of oil:</source>
-        <translation>Množstvo oleja:</translation>
+        <translation>Množství oleje:</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -602,19 +605,19 @@
     </message>
     <message>
         <source>Date of decommissioning</source>
-        <translation>Vyradenie z prevádzky</translation>
+        <translation>Vyřazení z provozu</translation>
     </message>
     <message>
         <source>Fixed leakage detector installed</source>
-        <translation>Zabudovaný detektor únikov</translation>
+        <translation>Nainstalovaný detekční systém úníků</translation>
     </message>
     <message>
         <source>Run-time per day:</source>
-        <translation>Denná pracovná doba:</translation>
+        <translation>Denní pracovní doba:</translation>
     </message>
     <message>
         <source>Rate of utilisation:</source>
-        <translation>Stupeň zaťaženia:</translation>
+        <translation>Stupeň zatížení:</translation>
     </message>
     <message>
         <source>Inspection interval:</source>
@@ -626,11 +629,11 @@
     </message>
     <message>
         <source>Circuit name</source>
-        <translation>Názov okruhu</translation>
+        <translation>Název okruhu</translation>
     </message>
     <message>
         <source>Place of operation</source>
-        <translation>Miesto prevádzky</translation>
+        <translation>Místo provozu</translation>
     </message>
     <message>
         <source>Building</source>
@@ -638,11 +641,11 @@
     </message>
     <message>
         <source>Device</source>
-        <translation>Zariadenie</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -654,15 +657,15 @@
     </message>
     <message>
         <source>Year of purchase</source>
-        <translation>Rok zakúpenia</translation>
+        <translation>Rok zakoupení</translation>
     </message>
     <message>
         <source>Date of commissioning</source>
-        <translation>Uvedenie do prevádzky</translation>
+        <translation>Uvedení do provozu</translation>
     </message>
     <message>
         <source>Field of application</source>
-        <translation>Druh nasadenia</translation>
+        <translation>Typ použití</translation>
     </message>
     <message>
         <source>Refrigerant</source>
@@ -670,7 +673,7 @@
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Množstvo chladiva</translation>
+        <translation>Množství chladiva</translation>
     </message>
     <message>
         <source>Oil</source>
@@ -678,15 +681,15 @@
     </message>
     <message>
         <source>Amount of oil</source>
-        <translation>Množstvo oleja</translation>
+        <translation>Množství oleje</translation>
     </message>
     <message>
         <source>Run-time per day</source>
-        <translation>Denná pracovná doba</translation>
+        <translation>Denní pracovní doba</translation>
     </message>
     <message>
         <source>Rate of utilisation</source>
-        <translation>Stupeň zaťaženia</translation>
+        <translation>Stupeň zatížení</translation>
     </message>
     <message>
         <source>Inspection interval</source>
@@ -694,7 +697,7 @@
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Customer: %2 %1 Circuit</source>
@@ -702,15 +705,16 @@
     </message>
     <message>
         <source>Change refrigerant - Leaklog</source>
-        <translation>Zmeniť chladivo - Leaklog</translation>
+        <translation>Změnit chladivo - Leaklog</translation>
     </message>
     <message>
         <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Zmena chladiva ovplyvní predchádzajúce kontroly tohto okruhu.</translation>
+        <translatorcomment>Nerozumím smyslu tohoto údaje</translatorcomment>
+        <translation>Změna chladiva ovlivní předchozí kontroly tohto okruhu.</translation>
     </message>
     <message>
         <source>Commissioned on</source>
-        <translation>Uvedenie do prevádzky</translation>
+        <translation>Uvedení do provozu</translation>
     </message>
     <message>
         <source>Circuit ID</source>
@@ -718,23 +722,23 @@
     </message>
     <message>
         <source>Commissioned</source>
-        <translation>V prevádzke</translation>
+        <translation>V provozu</translation>
     </message>
     <message>
         <source>Excluded from Agenda</source>
-        <translation>Vyradený z agendy</translation>
+        <translation>Vyřazený z agendy</translation>
     </message>
     <message>
         <source>Decommissioned</source>
-        <translation>Vyradený z prevádzky</translation>
+        <translation>Vyřazený z provozu</translation>
     </message>
     <message>
         <source>Reason for decommissioning:</source>
-        <translation>Dôvod vyradenia:</translation>
+        <translation>Důvod vyřazení:</translation>
     </message>
     <message>
         <source>Reason for decommissioning</source>
-        <translation>Dôvod vyradenia</translation>
+        <translation>Důvod vyřazení</translation>
     </message>
     <message>
         <source>Status:</source>
@@ -749,15 +753,15 @@
     <name>CircuitUnitType</name>
     <message>
         <source>External</source>
-        <translation>Externá</translation>
+        <translation>Externí</translation>
     </message>
     <message>
         <source>Internal</source>
-        <translation>Interná</translation>
+        <translation>Interní</translation>
     </message>
     <message>
         <source>Manufacturer:</source>
-        <translation>Výrobca:</translation>
+        <translation>Výrobce:</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -769,7 +773,7 @@
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Množstvo chladiva:</translation>
+        <translation>Množství chladiva:</translation>
     </message>
     <message>
         <source>Oil:</source>
@@ -777,11 +781,11 @@
     </message>
     <message>
         <source>Amount of oil:</source>
-        <translation>Množstvo oleja:</translation>
+        <translation>Množství oleje:</translation>
     </message>
     <message>
         <source>Acquisition price:</source>
-        <translation>Obstarávacia cena:</translation>
+        <translation>Pořizovací cena:</translation>
     </message>
     <message>
         <source>List price:</source>
@@ -789,15 +793,16 @@
     </message>
     <message>
         <source>Discount:</source>
-        <translation>Zľava:</translation>
+        <translation>Sleva:</translation>
     </message>
     <message>
         <source>Location:</source>
-        <translation>Poloha:</translation>
+        <translation>Umístění:</translation>
     </message>
     <message>
         <source>Unit of measure:</source>
-        <translation>Merná jednotka:</translation>
+        <translatorcomment>nebo také měřená jednotka?</translatorcomment>
+        <translation>Měrná jednotka:</translation>
     </message>
     <message>
         <source>Value:</source>
@@ -809,10 +814,11 @@
     </message>
     <message>
         <source>At t0/tc:</source>
-        <translation>Pri t0/tk:</translation>
+        <translation>Při t0/tk:</translation>
     </message>
     <message>
         <source>Output</source>
+        <translatorcomment>nebo výstup?</translatorcomment>
         <translation>Výkon</translation>
     </message>
     <message>
@@ -825,7 +831,7 @@
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -837,7 +843,7 @@
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Množstvo chladiva</translation>
+        <translation>Množství chladiva</translation>
     </message>
     <message>
         <source>Oil</source>
@@ -845,11 +851,11 @@
     </message>
     <message>
         <source>Amount of oil</source>
-        <translation>Množstvo oleja</translation>
+        <translation>Množství oleje</translation>
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -857,19 +863,19 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Location</source>
-        <translation>Poloha</translation>
+        <translation>Umístění:</translation>
     </message>
     <message>
         <source>Unit of measure</source>
-        <translation>Merná jednotka</translation>
+        <translation>Měrná jednotka</translation>
     </message>
     <message>
         <source>Output at t0/tc</source>
-        <translation>Výkon pri t0/tk</translation>
+        <translation>Výkon při t0/tk</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -892,18 +898,18 @@
     <name>CircuitUnitTypesView</name>
     <message>
         <source>Circuit Unit Types</source>
-        <translation>Typy jednotiek okruhov</translation>
+        <translation>Typy jednotek okruhů</translation>
     </message>
 </context>
 <context>
     <name>CircuitsView</name>
     <message>
         <source>Last inspection</source>
-        <translation>Posledná kontrola</translation>
+        <translation>Poslední kontrola</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -919,11 +925,11 @@
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -931,7 +937,7 @@
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -951,11 +957,11 @@
     </message>
     <message>
         <source>Circuits Excluded from Agenda</source>
-        <translation>Okruhy vyradené z agendy</translation>
+        <translation>Okruhy vyřazené z agendy</translation>
     </message>
     <message>
         <source>Decommissioned Circuits</source>
-        <translation>Okruhy vyradené z prevádzky</translation>
+        <translation>Okruhy vyřazené z provozu</translation>
     </message>
     <message>
         <source>Circuits (%1)</source>
@@ -963,11 +969,11 @@
     </message>
     <message>
         <source>Circuits Excluded from Agenda (%1)</source>
-        <translation>Okruhy vyradené z agendy (%1)</translation>
+        <translation>Okruhy vyřazené z agendy (%1)</translation>
     </message>
     <message>
         <source>Decommissioned Circuits (%1)</source>
-        <translation>Okruhy vyradené z prevádzky (%1)</translation>
+        <translation>Okruhy vyřazené z provozu (%1)</translation>
     </message>
 </context>
 <context>
@@ -978,11 +984,11 @@
     </message>
     <message>
         <source>Compressor name</source>
-        <translation>Názov kompresora</translation>
+        <translation>Název kompresoru</translation>
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -997,11 +1003,11 @@
     <name>Countries</name>
     <message>
         <source>Austria</source>
-        <translation>Rakúsko</translation>
+        <translation>Rakousko</translation>
     </message>
     <message>
         <source>Belgium</source>
-        <translation>Belgicko</translation>
+        <translation>Belgie</translation>
     </message>
     <message>
         <source>Bulgaria</source>
@@ -1017,7 +1023,7 @@
     </message>
     <message>
         <source>Cyprus</source>
-        <translation>Cyprus</translation>
+        <translation>Kypr</translation>
     </message>
     <message>
         <source>Denmark</source>
@@ -1025,7 +1031,7 @@
     </message>
     <message>
         <source>Estonia</source>
-        <translation>Estónsko</translation>
+        <translation>Estonsko</translation>
     </message>
     <message>
         <source>Finland</source>
@@ -1033,15 +1039,15 @@
     </message>
     <message>
         <source>France</source>
-        <translation>Francúzsko</translation>
+        <translation>Francie</translation>
     </message>
     <message>
         <source>Germany</source>
-        <translation>Nemecko</translation>
+        <translation>Německo</translation>
     </message>
     <message>
         <source>Greece</source>
-        <translation>Grécko</translation>
+        <translation>Řecko</translation>
     </message>
     <message>
         <source>Hungary</source>
@@ -1049,11 +1055,11 @@
     </message>
     <message>
         <source>Ireland</source>
-        <translation>Írsko</translation>
+        <translation>Irsko</translation>
     </message>
     <message>
         <source>Italy</source>
-        <translation>Taliansko</translation>
+        <translation>Itálie</translation>
     </message>
     <message>
         <source>Latvia</source>
@@ -1077,7 +1083,7 @@
     </message>
     <message>
         <source>Poland</source>
-        <translation>Poľsko</translation>
+        <translation>Polsko</translation>
     </message>
     <message>
         <source>Portugal</source>
@@ -1105,7 +1111,7 @@
     </message>
     <message>
         <source>United Kingdom</source>
-        <translation>Spojené kráľovstvo</translation>
+        <translation>Spojené království</translation>
     </message>
 </context>
 <context>
@@ -1136,7 +1142,7 @@
     </message>
     <message>
         <source>Phone:</source>
-        <translation>Telefón:</translation>
+        <translation>Telefon:</translation>
     </message>
     <message>
         <source>Company</source>
@@ -1152,46 +1158,46 @@
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Service company</source>
-        <translation>Servisná organizácia</translation>
+        <translation>Servisní organizace</translation>
     </message>
     <message>
         <source>Operator:</source>
-        <translation>Prevádzkovateľ:</translation>
+        <translation>Provozovatel:</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation>Iný</translation>
+        <translation>Jiný</translation>
     </message>
     <message>
         <source>Operator ID</source>
-        <translation>IČO prevádzkovateľa</translation>
+        <translation>IČO provozovatele</translation>
     </message>
     <message>
         <source>Operator</source>
-        <translation>Prevádzkovateľ</translation>
+        <translation>Provozovatel</translation>
     </message>
     <message>
         <source>Operator address</source>
-        <translation>Adresa prevádzkovateľa</translation>
+        <translation>Adresa provozovatele</translation>
     </message>
     <message>
         <source>Operator e-mail</source>
-        <translation>E-mail prevádzkovateľa</translation>
+        <translation>E-mail provozovatele</translation>
     </message>
     <message>
         <source>Operator phone</source>
-        <translation>Telefón prevádzkovateľa</translation>
+        <translation>Telefon provozovatele</translation>
     </message>
 </context>
 <context>
     <name>CustomersView</name>
     <message>
         <source>Number of circuits</source>
-        <translation>Počet okruhov</translation>
+        <translation>Počet okruhů</translation>
     </message>
     <message>
         <source>Total number of inspections</source>
@@ -1199,7 +1205,7 @@
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -1215,7 +1221,7 @@
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Kontaktné osoby</translation>
+        <translation>Kontaktní osoby</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -1223,7 +1229,7 @@
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Customers</source>
@@ -1234,103 +1240,103 @@
     <name>DBFileChooser</name>
     <message>
         <source>Select an image</source>
-        <translation>Vyberte obrázok</translation>
+        <translation>Vyberte obrázek</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Prehľadávať</translation>
+        <translation>Vyhledat</translation>
     </message>
     <message>
         <source>Open File</source>
-        <translation>Otvoriť súbor</translation>
+        <translation>Otevřít soubor</translation>
     </message>
     <message>
         <source>Replace</source>
-        <translation>Nahradiť</translation>
+        <translation>Nahradit</translation>
     </message>
 </context>
 <context>
     <name>DateTime</name>
     <message>
         <source>January</source>
-        <translation>január</translation>
+        <translation>leden</translation>
     </message>
     <message>
         <source>February</source>
-        <translation>február</translation>
+        <translation>únor</translation>
     </message>
     <message>
         <source>March</source>
-        <translation>marec</translation>
+        <translation>březen</translation>
     </message>
     <message>
         <source>April</source>
-        <translation>apríl</translation>
+        <translation>duben</translation>
     </message>
     <message>
         <source>May</source>
-        <translation>máj</translation>
+        <translation>květen</translation>
     </message>
     <message>
         <source>June</source>
-        <translation>jún</translation>
+        <translation>červen</translation>
     </message>
     <message>
         <source>July</source>
-        <translation>júl</translation>
+        <translation>červenec</translation>
     </message>
     <message>
         <source>August</source>
-        <translation>august</translation>
+        <translation>srpen</translation>
     </message>
     <message>
         <source>September</source>
-        <translation>september</translation>
+        <translation>září</translation>
     </message>
     <message>
         <source>October</source>
-        <translation>október</translation>
+        <translation>říjen</translation>
     </message>
     <message>
         <source>November</source>
-        <translation>november</translation>
+        <translation>listopad</translation>
     </message>
     <message>
         <source>December</source>
-        <translation>december</translation>
+        <translation>prosinec</translation>
     </message>
 </context>
 <context>
     <name>EditAssemblyRecordDialogue</name>
     <message>
         <source>Assembly record type</source>
-        <translation>Typ montážneho listu</translation>
+        <translation>Typ montážního listu</translation>
     </message>
 </context>
 <context>
     <name>EditAssemblyRecordDialogueTab</name>
     <message>
         <source>Item categories</source>
-        <translation>Kategórie položiek</translation>
+        <translation>Kategorie položek</translation>
     </message>
     <message>
         <source>Assembly record categories:</source>
-        <translation>Kategórie montážneho listu:</translation>
+        <translation>Kategorie montážního listu:</translation>
     </message>
     <message>
         <source>Category</source>
-        <translation>Kategória</translation>
+        <translation>Kategorie</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation>Pozícia</translation>
+        <translation>Umístění</translation>
     </message>
 </context>
 <context>
     <name>EditCircuitDialogue</name>
     <message>
         <source>Cooling circuit</source>
-        <translation>Chladiaci okruh</translation>
+        <translation>Chladicí okruh</translation>
     </message>
 </context>
 <context>
@@ -1341,11 +1347,11 @@
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -1364,7 +1370,7 @@
     <name>EditCircuitDialogueTable</name>
     <message>
         <source>Update circuit</source>
-        <translation>Aktualizovať okruh</translation>
+        <translation>Aktualizovat okruh</translation>
     </message>
 </context>
 <context>
@@ -1375,15 +1381,15 @@
     </message>
     <message>
         <source>Available unit types</source>
-        <translation>Dostupné typy jednotiek</translation>
+        <translation>Dostupné typy jednotek</translation>
     </message>
     <message>
         <source>Location</source>
-        <translation>Poloha</translation>
+        <translation>Umístění</translation>
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -1395,14 +1401,15 @@
     </message>
     <message>
         <source>Used circuit units</source>
-        <translation>Použité jednotky okruhov</translation>
+        <translatorcomment>???</translatorcomment>
+        <translation>Použité jednotky okruhů</translation>
     </message>
 </context>
 <context>
     <name>EditCustomerDialogue</name>
     <message>
         <source>Name</source>
-        <translation>Meno</translation>
+        <translation>Jméno</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -1410,22 +1417,22 @@
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Kontaktné osoby</translation>
+        <translation>Kontaktní osoby</translation>
     </message>
 </context>
 <context>
     <name>EditDialogue</name>
     <message>
         <source>Save</source>
-        <translation>Uložiť</translation>
+        <translation>Uložit</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -1433,7 +1440,7 @@
     </message>
     <message>
         <source>Save changes</source>
-        <translation>Uložiť zmeny</translation>
+        <translation>Uložit změny</translation>
     </message>
     <message>
         <source>Invalid ID.</source>
@@ -1441,37 +1448,37 @@
     </message>
     <message>
         <source>This date is not available. Please choose a different date.</source>
-        <translation>Tento dátum nie je voľný. Prosím zvoľte iný dátum.</translation>
+        <translation>Toto datum není volné. Prosím zvolte jiné datum.</translation>
     </message>
     <message>
         <source>This ID is not available. Please choose a different ID.</source>
-        <translation>Toto IČ nie je voľné. Prosím zvoľte iné IČ.</translation>
+        <translation>Toto IČ není volné. Prosím zvolte jiné IČ.</translation>
     </message>
     <message>
         <source>Select a customer first.</source>
-        <translation>Najprv vyberte zákazníka.</translation>
+        <translation>Nejdříve vyberte zákazníka.</translation>
     </message>
 </context>
 <context>
     <name>EditDialogueAdvancedTable</name>
     <message>
         <source>Add</source>
-        <translation>Pridať</translation>
+        <translation>Přidat</translation>
     </message>
     <message>
         <source>Add custom item</source>
-        <translation>Pridať vlastnú položku</translation>
+        <translation>Přidat vlastní položku</translation>
     </message>
 </context>
 <context>
     <name>EditDialogueTableRow</name>
     <message>
         <source>Hide</source>
-        <translation>Skryť</translation>
+        <translation>Skrýt</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Odstrániť</translation>
+        <translation>Odstranit</translation>
     </message>
 </context>
 <context>
@@ -1492,11 +1499,11 @@
     <name>EditInspectionDialogueAssemblyRecordTab</name>
     <message>
         <source>Assembly record</source>
-        <translation>Montážny list</translation>
+        <translation>Montážní list</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Value</source>
@@ -1504,7 +1511,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -1512,27 +1519,27 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Assembly record number already in use</source>
-        <translation>Číslo montážneho listu sa už používa</translation>
+        <translation>Číslo montážního listu se již používá</translation>
     </message>
     <message>
         <source>An inspection with the same assembly record number already exists.</source>
-        <translation>Kontrola so zadaným číslom montážneho listu už existuje.</translation>
+        <translation>Kontrola se zadaným číslem montážního listu již existuje.</translation>
     </message>
     <message>
         <source>Use anyway?</source>
-        <translation>Použiť toto číslo aj napriek tomu?</translation>
+        <translation>I přesto použít toto číslo?</translation>
     </message>
     <message>
         <source>&amp;Use</source>
-        <translation>&amp;Použiť</translation>
+        <translation>&amp;Použít</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
 </context>
 <context>
@@ -1547,102 +1554,103 @@
     </message>
     <message>
         <source>Image</source>
-        <translation>Obrázok</translation>
+        <translation>Obrázek</translation>
     </message>
 </context>
 <context>
     <name>EditInspectorDialogue</name>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translatorcomment>místo kontrolor</translatorcomment>
+        <translation>Certifikovaná osoba</translation>
     </message>
 </context>
 <context>
     <name>EditInspectorDialogueTab</name>
     <message>
         <source>Assembly record</source>
-        <translation>Montážny list</translation>
+        <translation>Montážní list</translation>
     </message>
 </context>
 <context>
     <name>EditWarningDialogue</name>
     <message>
         <source>Circuit filter:</source>
-        <translation>Filter okruhov:</translation>
+        <translation>Filter okruhů:</translation>
     </message>
     <message>
         <source>Conditions:</source>
-        <translation>Podmienky:</translation>
+        <translation>Podmínky:</translation>
     </message>
     <message>
         <source>Save changes</source>
-        <translation>Uložiť zmeny</translation>
+        <translation>Uložit změny</translation>
     </message>
     <message>
         <source>You cannot create more than 1000 warnings.</source>
-        <translation>Nie je možné vytvoriť viac ako 1000 upozornení.</translation>
+        <translation>Není možné vytvořit více než 1000 upozornění.</translation>
     </message>
 </context>
 <context>
     <name>FieldsOfApplication</name>
     <message>
         <source>Refrigeration</source>
-        <translation>Chladenie</translation>
+        <translation>Chlazení</translation>
     </message>
     <message>
         <source>Air conditioning</source>
-        <translation>Klimatizácia</translation>
+        <translation>Klimatizace</translation>
     </message>
     <message>
         <source>Heat pumps</source>
-        <translation>Tepelné čerpadlá</translation>
+        <translation>Tepelná čerpadla</translation>
     </message>
     <message>
         <source>Field of application</source>
-        <translation>Druh nasadenia</translation>
+        <translation>Typ použití</translation>
     </message>
     <message>
         <source>Commercial refrigeration</source>
-        <translation>Komerčné chladenie</translation>
+        <translation>Komerční chlazení</translation>
     </message>
     <message>
         <source>Industrial refrigeration</source>
-        <translation>Priemyselné chladenie</translation>
+        <translation>Průmyslové chlazení</translation>
     </message>
     <message>
         <source>Transport refrigeration</source>
-        <translation>Prepravné chladenie</translation>
+        <translation>Transportní chlazení</translation>
     </message>
     <message>
         <source>Domestic refrigeration</source>
-        <translation>Domáce chladenie</translation>
+        <translation>Domácí chlazení</translation>
     </message>
 </context>
 <context>
     <name>ImportCsvDialogue</name>
     <message>
         <source>Import CSV - Leaklog</source>
-        <translation>Importovať CSV - Leaklog</translation>
+        <translation>Importovat CSV - Leaklog</translation>
     </message>
     <message>
         <source>Encoding:</source>
-        <translation>Kódovanie:</translation>
+        <translation>Kódování:</translation>
     </message>
     <message>
         <source>Field separator:</source>
-        <translation>Oddeľovač polí:</translation>
+        <translation>Oddělovač polí:</translation>
     </message>
     <message>
         <source>Number of lines to skip:</source>
-        <translation>Počet riadkov, ktoré sa majú preskočiť:</translation>
+        <translation>Počet řádků, které se mají přeskočit:</translation>
     </message>
     <message>
         <source>Reload</source>
-        <translation>Načítať</translation>
+        <translation>Načíst</translation>
     </message>
     <message>
         <source>Column</source>
-        <translation>Stĺpec</translation>
+        <translation>Sloupec</translation>
     </message>
     <message>
         <source>Index</source>
@@ -1650,11 +1658,11 @@
     </message>
     <message>
         <source>Table:</source>
-        <translation>Tabuľka:</translation>
+        <translation>Tabulka:</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>Unicode (UTF-8)</source>
@@ -1662,19 +1670,19 @@
     </message>
     <message>
         <source>Central European (Windows 1250)</source>
-        <translation>Stredoeurópske (Windows 1250)</translation>
+        <translation>Středoevropské (Windows 1250)</translation>
     </message>
     <message>
         <source>System default</source>
-        <translation>Východzie systémové</translation>
+        <translation>Výchozí systémové</translation>
     </message>
     <message>
         <source>Comma</source>
-        <translation>Čiarka</translation>
+        <translation>Čárka</translation>
     </message>
     <message>
         <source>Semicolon</source>
-        <translation>Bodkočiarka</translation>
+        <translation>Středník</translation>
     </message>
     <message>
         <source>Tab</source>
@@ -1683,27 +1691,27 @@
     <message>
         <source>Cannot read file %1:
 %2.</source>
-        <translation>Nie je možné čítať súbor %1:
+        <translation>Nelze přečíst soubor %1:
 %2.</translation>
     </message>
     <message>
         <source>Change column index</source>
-        <translation>Zmeniť číslo stĺpca</translation>
+        <translation>Zmenit číslo sloupce</translation>
     </message>
     <message>
         <source>Index of column %1 (zero if not present):</source>
-        <translation>Číslo stĺpca %1 (nula ak sa v súbore nenachádza):</translation>
+        <translation>Číslo sloupce %1 (nula jestliže se v souboru nenachází):</translation>
     </message>
     <message>
         <source>Add Linked Table...</source>
-        <translation>Pridať previazanú tabuľku...</translation>
+        <translation>Přidat provázanou tabulku...</translation>
     </message>
 </context>
 <context>
     <name>ImportDialogue</name>
     <message>
         <source>Import data - Leaklog</source>
-        <translation>Importovať údaje - Leaklog</translation>
+        <translation>Importovat údaje - Leaklog</translation>
     </message>
     <message>
         <source>Modified customers:</source>
@@ -1739,23 +1747,24 @@
     </message>
     <message>
         <source>New records of refrigerant management:</source>
-        <translation>Nové záznamy o nakladaní s chladivom:</translation>
+        <translation>Nové záznamy o nakladaní s chladivem:</translation>
     </message>
     <message>
         <source>Modified records of refrigerant management:</source>
-        <translation>Upravené záznamy o nakladaní s chladivom:</translation>
+        <translation>Upravené záznamy o nakládání s chladivem:</translation>
     </message>
     <message>
         <source>Inspectors</source>
-        <translation>Kontrolóri</translation>
+        <translatorcomment>místo kontroloři</translatorcomment>
+        <translation>Certifikované osoby</translation>
     </message>
     <message>
         <source>New inspectors:</source>
-        <translation>Noví kontrolóri:</translation>
+        <translation>Nové certifikované osoby:</translation>
     </message>
     <message>
         <source>Modified inspectors:</source>
-        <translation>Upravení kontrolóri:</translation>
+        <translation>Upravené certifikované osoby:</translation>
     </message>
     <message>
         <source>ID</source>
@@ -1775,15 +1784,15 @@
     </message>
     <message>
         <source>Compare</source>
-        <translation>Porovnať</translation>
+        <translation>Porovnat</translation>
     </message>
     <message>
         <source>Colour</source>
-        <translation>Farba</translation>
+        <translation>Barva</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Akcia</translation>
+        <translation>Akce</translation>
     </message>
     <message>
         <source>Customers</source>
@@ -1803,39 +1812,39 @@
     </message>
     <message>
         <source>Variables</source>
-        <translation>Premenné</translation>
+        <translation>Proměnné</translation>
     </message>
     <message>
         <source>Tolerance</source>
-        <translation>Tolerancia</translation>
+        <translation>Tolerance</translation>
     </message>
     <message>
         <source>Select All</source>
-        <translation>Vybrať všetko</translation>
+        <translation>Vybrat vše</translation>
     </message>
     <message>
         <source>Select None</source>
-        <translation>Odobrať všetko</translation>
+        <translation>Odebrat vše</translation>
     </message>
     <message>
         <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
+        <translation>Nakládání s chladivy</translation>
     </message>
     <message>
         <source>Variable Name</source>
-        <translation>Názov premennej</translation>
+        <translation>Název proměnné</translation>
     </message>
     <message>
         <source>Contact Persons</source>
-        <translation>Kontaktné osoby</translation>
+        <translation>Kontaktní osoby</translation>
     </message>
     <message>
         <source>New contact persons:</source>
-        <translation>Nové kontaktné osoby:</translation>
+        <translation>Nové kontaktní osoby:</translation>
     </message>
     <message>
         <source>Modified contact persons:</source>
-        <translation>Upravené kontaktné osoby:</translation>
+        <translation>Upravené kontaktní osoby:</translation>
     </message>
     <message>
         <source>Scope</source>
@@ -1846,7 +1855,7 @@
     <name>Inspection</name>
     <message>
         <source>Nominal</source>
-        <translation>Nominálna</translation>
+        <translation>Nominální</translation>
     </message>
     <message>
         <source>Repair</source>
@@ -1854,15 +1863,16 @@
     </message>
     <message>
         <source>Date:</source>
-        <translation>Dátum:</translation>
+        <translation>Datum:</translation>
     </message>
     <message>
         <source>Outside the inspection interval</source>
-        <translation>Mimo intervalu kontrol</translation>
+        <translation>Mimo interval kontrol těsnosti</translation>
     </message>
     <message>
         <source>Nominal inspection</source>
-        <translation>Nominálna kontrola</translation>
+        <translatorcomment>ze slov. Nominální kontrola</translatorcomment>
+        <translation>Kontrola při uvedení do provozu</translation>
     </message>
     <message>
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
@@ -1870,31 +1880,34 @@
     </message>
     <message>
         <source>Nominal inspection already exists - Leaklog</source>
-        <translation>Nominálna kontrola už existuje - Leaklog</translation>
+        <translatorcomment>z Nominální kontrola už existuje</translatorcomment>
+        <translation>Kontrola při uvedení do provozu již byla vykonána - Leaklog</translation>
     </message>
     <message>
         <source>This circuit already has a nominal inspection.</source>
-        <translation>Tento okruh už má nominálnu kontrolu.</translation>
+        <translatorcomment>z Tento okruh už má nominální kontrolu.</translatorcomment>
+        <translation>Na tomto okruhu již byla kontrola při uvedení do provozu provedena.</translation>
     </message>
     <message>
         <source>Are you sure you want to add another?</source>
-        <translation>Naozaj chcete pridať ďalšiu?</translation>
+        <translation>Opravdu chcete přidat další?</translation>
     </message>
     <message>
         <source>&amp;Add Another Nominal Inspection</source>
-        <translation>&amp;Pridať ďalšiu nominálnu kontrolu</translation>
+        <translation>&amp;Pridat další kontrolu při uvedení do provozu</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Remedies</source>
-        <translation>Opatrenia</translation>
+        <translatorcomment>Nápravy???</translatorcomment>
+        <translation>Opatření</translation>
     </message>
     <message>
         <source>Assembly record No.</source>
@@ -1902,30 +1915,30 @@
     </message>
     <message>
         <source>Assembly record type</source>
-        <translation>Typ montážneho listu</translation>
+        <translation>Typ montážního listu</translation>
     </message>
     <message>
         <source>Risks</source>
-        <translation>Riziká</translation>
+        <translation>Rizika</translation>
     </message>
     <message>
         <source>Circuit moved from customer %1 to %2.</source>
-        <translation>Okruh presunutý od zákazníka %1 k %2.</translation>
+        <translation>Okruh přesunutý od zákazníka %1 k %2.</translation>
     </message>
     <message>
         <source>Inspection carried out by another service company.</source>
-        <translation>Kontrola vykonaná inou servisnou organizáciou.</translation>
+        <translation>Kontrola vykonaná jinou servisní organizací.</translation>
     </message>
     <message>
         <source>Contact person</source>
-        <translation>Prevzal</translation>
+        <translation>Převzal</translation>
     </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
     <message>
         <source>Nominal Inspection:</source>
-        <translation>Nominálna kontrola:</translation>
+        <translation>Kontrola při uvedení do provozu:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -1937,7 +1950,7 @@
     </message>
     <message>
         <source>Other</source>
-        <translation>Iné</translation>
+        <translation>Jiné</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -1945,22 +1958,22 @@
     </message>
     <message>
         <source>Warnings</source>
-        <translation>Upozornenia</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
 </context>
 <context>
     <name>InspectionImagesView</name>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Nominálna kontrola:</translation>
+        <translation>Kontrola při uvedení do provozu:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -1983,11 +1996,11 @@
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -2006,7 +2019,7 @@
     <name>Inspector</name>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>E-mail:</source>
@@ -2014,11 +2027,11 @@
     </message>
     <message>
         <source>Phone:</source>
-        <translation>Telefón:</translation>
+        <translation>Telefon:</translation>
     </message>
     <message>
         <source>Acquisition price:</source>
-        <translation>Obstarávacia cena:</translation>
+        <translation>Pořizovací cena:</translation>
     </message>
     <message>
         <source>List price:</source>
@@ -2030,7 +2043,7 @@
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Customer ID</source>
@@ -2038,46 +2051,46 @@
     </message>
     <message>
         <source>Certificate number:</source>
-        <translation>Číslo osvedčenia:</translation>
+        <translation>Číslo certifikátu:</translation>
     </message>
     <message>
         <source>Full name:</source>
-        <translation>Celé meno:</translation>
+        <translation>Celé jméno:</translation>
     </message>
     <message>
         <source>Certificate number</source>
-        <translation>Číslo osvedčenia</translation>
+        <translation>Číslo certifikátu</translation>
     </message>
     <message>
         <source>Full name</source>
-        <translation>Celé meno</translation>
+        <translation>Celé jméno</translation>
     </message>
     <message>
         <source>Foreign certificate number:</source>
-        <translation>Číslo zahraničného osvedčenia:</translation>
+        <translation>Číslo zahraničního certifikátu:</translation>
     </message>
     <message>
         <source>Country of issue:</source>
-        <translation>Krajina vydania:</translation>
+        <translation>Země vydání:</translation>
     </message>
     <message>
         <source>Foreign certificate number</source>
-        <translation>Číslo zahraničného osvedčenia</translation>
+        <translation>Číslo zahraničního certifikátu</translation>
     </message>
     <message>
         <source>Country of issue</source>
-        <translation>Krajina vydania</translation>
+        <translation>Země vydání</translation>
     </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
     <message>
         <source>Assembly Records</source>
-        <translation>Montážne listy</translation>
+        <translation>Montážní listy</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Customer ID</source>
@@ -2085,11 +2098,11 @@
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zariadenia</translation>
+        <translation>Číslo zařízení</translation>
     </message>
     <message>
         <source>Assembly record</source>
-        <translation>Montážny list</translation>
+        <translation>Montážní list</translation>
     </message>
     <message>
         <source>Value</source>
@@ -2097,7 +2110,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -2105,11 +2118,11 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Total</source>
-        <translation>Celkom</translation>
+        <translation>Celkem</translation>
     </message>
     <message>
         <source>Inspections and Repairs</source>
@@ -2121,11 +2134,11 @@
     </message>
     <message>
         <source>Circuit name</source>
-        <translation>Názov okruhu</translation>
+        <translation>Název okruhu</translation>
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
 </context>
 <context>
@@ -2136,30 +2149,30 @@
     </message>
     <message>
         <source>Number of repairs</source>
-        <translation>Počet opráv</translation>
+        <translation>Počet oprav</translation>
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>View inspector activity</source>
-        <translation>Zobraziť aktivitu kontrolóra</translation>
+        <translation>Zobrazit aktivitu certifikované osoby</translation>
     </message>
     <message>
         <source>Inspectors</source>
-        <translation>Kontrolóri</translation>
+        <translation>Certifikované osoby</translation>
     </message>
 </context>
 <context>
     <name>LanguageNames</name>
     <message>
         <source>Slovak</source>
-        <translation>Slovenčina</translation>
+        <translation>Slovenština</translation>
     </message>
     <message>
         <source>Polish</source>
-        <translation>Poľština</translation>
+        <translation>Polština</translation>
     </message>
     <message>
         <source>Czech</source>
@@ -2170,26 +2183,26 @@
     <name>LeakagesByApplication</name>
     <message>
         <source>Amount of refrigerant in circuits</source>
-        <translation>Množstvo chladiva v okruhoch</translation>
+        <translation>Množství chladiva v okruzích</translation>
     </message>
     <message>
         <source>Percentage of leakage by application</source>
-        <translation>Percento úniku podľa nasadenia</translation>
+        <translation>Procento úniku podle typu použití</translation>
     </message>
 </context>
 <context>
     <name>LeakagesByApplicationView</name>
     <message>
         <source>Leakages by Application</source>
-        <translation>Úniky podľa nasadenia</translation>
+        <translation>Úniky podle typu použití</translation>
     </message>
     <message>
         <source>Fields</source>
-        <translation>Druhy nasadenia</translation>
+        <translation>Druhy použití</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Všetky</translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <source>Refrigerant</source>
@@ -2197,7 +2210,7 @@
     </message>
     <message>
         <source>Added</source>
-        <translation>Doplnené</translation>
+        <translation>Doplněné</translation>
     </message>
     <message>
         <source>Leakage</source>
@@ -2205,33 +2218,33 @@
     </message>
     <message>
         <source>Weighted Average</source>
-        <translation>Vážený priemer</translation>
+        <translation>Vážený průměr</translation>
     </message>
     <message>
         <source>Average Leakage</source>
-        <translation>Priemerný únik</translation>
+        <translation>Průměrný únik</translation>
     </message>
     <message>
         <source>In Circuits</source>
-        <translation>V okruhoch</translation>
+        <translation>V okruzích</translation>
     </message>
 </context>
 <context>
     <name>MDComboBox</name>
     <message>
         <source>Unknown value (%1)</source>
-        <translation>Neznáma hodnota (%1)</translation>
+        <translation>Neznámá hodnota (%1)</translation>
     </message>
 </context>
 <context>
     <name>MTAddressEdit</name>
     <message>
         <source>Street:</source>
-        <translation>Ulica:</translation>
+        <translation>Ulice:</translation>
     </message>
     <message>
         <source>City:</source>
-        <translation>Mesto:</translation>
+        <translation>Město:</translation>
     </message>
     <message>
         <source>Postal code:</source>
@@ -2258,7 +2271,7 @@
     </message>
     <message>
         <source>File</source>
-        <translation>Súbor</translation>
+        <translation>Soubor</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -2270,7 +2283,7 @@
     </message>
     <message>
         <source>About Leaklog</source>
-        <translation>O programe Leaklog</translation>
+        <translation>O programu Leaklog</translation>
     </message>
     <message>
         <source>Ctrl+N</source>
@@ -2278,7 +2291,7 @@
     </message>
     <message>
         <source>Open</source>
-        <translation>Otvoriť</translation>
+        <translation>Otevřít</translation>
     </message>
     <message>
         <source>Ctrl+O</source>
@@ -2286,7 +2299,7 @@
     </message>
     <message>
         <source>Save</source>
-        <translation>Uložiť</translation>
+        <translation>Uložit</translation>
     </message>
     <message>
         <source>Ctrl+S</source>
@@ -2294,7 +2307,7 @@
     </message>
     <message>
         <source>Close</source>
-        <translation>Zatvoriť</translation>
+        <translation>Zavřít</translation>
     </message>
     <message>
         <source>Ctrl+W</source>
@@ -2302,43 +2315,43 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation>Koniec</translation>
+        <translation>Konec</translation>
     </message>
     <message>
         <source>&amp;Save</source>
-        <translation>&amp;Uložiť</translation>
+        <translation>&amp;Uložit</translation>
     </message>
     <message>
         <source>&amp;Discard</source>
-        <translation>&amp;Zahodiť</translation>
+        <translation>&amp;Zahodit</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>Inspectors</source>
-        <translation>Kontrolóri</translation>
+        <translation>Certifikované osoby</translation>
     </message>
     <message>
         <source>untitled.lklg</source>
-        <translation>nepomenovany.lklg</translation>
+        <translation>nepojmenovaný.lklg</translation>
     </message>
     <message>
         <source>Cannot write file %1:
 %2.</source>
-        <translation>Nie je možné zapisovať do súboru %1:
+        <translation>Do souboru nelze zapisovat %1:
 %2.</translation>
     </message>
     <message>
         <source>Cannot read file %1:
 %2.</source>
-        <translation>Nie je možné čítať súbor %1:
+        <translation>Soubor nelze přečíst %1:
 %2.</translation>
     </message>
     <message>
         <source>File %1 does not exist.</source>
-        <translation>Súbor %1 neexistuje.</translation>
+        <translation>Soubor %1 neexistuje.</translation>
     </message>
     <message>
         <source>%1 (%2)</source>
@@ -2346,19 +2359,19 @@
     </message>
     <message>
         <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
-        <translation>Mali by ste pridať záznam o kúpe pre každé chladivo na sklade. Môžete tak urobiť kliknutím na tlačidlo „Pridať záznam o nakladaní s chladivom“.</translation>
+        <translation>Měli byste přidat záznam o každém nákupu chladiva do skladu. Můžete to provést kliknutím na „Přídat záznam o nakládaní s chladivem“.</translation>
     </message>
     <message>
         <source>Permission denied - Leaklog</source>
-        <translation>Prístup zamietnutý - Leaklog</translation>
+        <translation>Zamítnutý přístup - Leaklog</translation>
     </message>
     <message>
         <source>This operation is not permitted.</source>
-        <translation>Táto operácia nie je povolená.</translation>
+        <translation>Tato operace není povolená.</translation>
     </message>
     <message>
         <source>For more information, contact your administrator.</source>
-        <translation>Pre viac informácii kontaktujte svojho administrátora</translation>
+        <translation>Pro více informací kontaktujte administrátora.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2370,17 +2383,17 @@
     </message>
     <message>
         <source>Remove customer - Leaklog</source>
-        <translation>Odstrániť zákazníka - Leaklog</translation>
+        <translation>Odstranit zákazníka - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraného zákazníka?
-Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Skutečně chcete odstranit vybraného zákazníka?
+Pro odstranění všech údajů o zákazníkovi „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>This record is older than the current record in your database</source>
-        <translation>Tento záznam je starší ako aktuálny záznam vo vašej databáze</translation>
+        <translation>Tento záznam je starší než aktuální záznam ve vaší databázi</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -2388,11 +2401,11 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Import CSV - Leaklog</source>
-        <translation>Importovať CSV - Leaklog</translation>
+        <translation>Importovat CSV - Leaklog</translation>
     </message>
     <message>
         <source>CSV files (*.csv);;All files (*.*)</source>
-        <translation>Súbory CSV (*.csv);;Všetky súbory (*.*)</translation>
+        <translation>Soubory CSV (*.csv);;Všechny soubory (*.*)</translation>
     </message>
     <message>
         <source>Customers</source>
@@ -2404,15 +2417,15 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Street</source>
-        <translation>Ulica</translation>
+        <translation>Ulice</translation>
     </message>
     <message>
         <source>City</source>
-        <translation>Mesto</translation>
+        <translation>Město</translation>
     </message>
     <message>
         <source>Postal code</source>
@@ -2420,19 +2433,19 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Kontaktné osoby</translation>
+        <translation>Kontaktní osoby</translation>
     </message>
     <message>
         <source>Contact person name</source>
-        <translation>Meno kontaktnej osoby</translation>
+        <translation>Jméno kontaktní osoby</translation>
     </message>
     <message>
         <source>Contact person e-mail</source>
-        <translation>E-mail kontaktnej osoby</translation>
+        <translation>E-mail kontaktní osoby</translation>
     </message>
     <message>
         <source>Contact person phone</source>
-        <translation>Telefón kontaktnej osoby</translation>
+        <translation>Telefon kontaktní osoby</translation>
     </message>
     <message>
         <source>Circuits</source>
@@ -2444,11 +2457,11 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Name</source>
-        <translation>Názov</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>Place of operation</source>
-        <translation>Miesto prevádzky</translation>
+        <translation>Místo provozu</translation>
     </message>
     <message>
         <source>Building</source>
@@ -2456,11 +2469,11 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Device</source>
-        <translation>Zariadenie</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <source>Manufacturer</source>
-        <translation>Výrobca</translation>
+        <translation>Výrobce</translation>
     </message>
     <message>
         <source>Type</source>
@@ -2472,39 +2485,39 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Množstvo chladiva</translation>
+        <translation>Množství chladiva</translation>
     </message>
     <message>
         <source>Amount of oil</source>
-        <translation>Množstvo oleja</translation>
+        <translation>Množství oleje</translation>
     </message>
     <message>
         <source>Run-time per day</source>
-        <translation>Denná pracovná doba</translation>
+        <translation>Denní pracovní doba</translation>
     </message>
     <message>
         <source>Rate of utilisation</source>
-        <translation>Stupeň zaťaženia</translation>
+        <translation>Stupeň zatížení</translation>
     </message>
     <message>
         <source>Hermetically sealed</source>
-        <translation>Hermeticky uzavretý</translation>
+        <translation>Hermeticky uzavřený okruh</translation>
     </message>
     <message>
         <source>Fixed leakage detector installed</source>
-        <translation>Zabudovaný detektor únikov</translation>
+        <translation>Nainstalovaný detekční systém úníků</translation>
     </message>
     <message>
         <source>Year of purchase</source>
-        <translation>Rok zakúpenia</translation>
+        <translation>Rok zakoupení</translation>
     </message>
     <message>
         <source>Date of commissioning</source>
-        <translation>Uvedenie do prevádzky</translation>
+        <translation>Uvedení do provozu</translation>
     </message>
     <message>
         <source>Field of application</source>
-        <translation>Druh nasadenia</translation>
+        <translation>Typ použití</translation>
     </message>
     <message>
         <source>Oil</source>
@@ -2512,13 +2525,13 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Remove style - Leaklog</source>
-        <translation>Odstrániť vzhľad - Leaklog</translation>
+        <translation>Odstranit vzhled - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected style?
 To remove the style &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraný vzhľad?
-Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Skutečně chcete odstranit vybraný vzhled?
+Pro odstranění vzhledu „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Circuit units</source>
@@ -2534,15 +2547,15 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>Circuit unit types</source>
-        <translation>Typy jednotiek okruhov</translation>
+        <translation>Typy jednotek okruhů</translation>
     </message>
     <message>
         <source>Category ID</source>
-        <translation>IČ kategórie</translation>
+        <translation>IČ kategorie</translation>
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -2550,7 +2563,7 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>Location</source>
-        <translation>Poloha</translation>
+        <translation>Umístění</translation>
     </message>
     <message>
         <source>Output</source>
@@ -2562,7 +2575,7 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>Output at t0/tc</source>
-        <translation>Výkon pri t0/tk</translation>
+        <translation>Výkon při t0/tk</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -2574,11 +2587,11 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>This record was created by another user. Operation not permitted.</source>
-        <translation>Tento záznam bol vytvorený iným používateľom. Operácia nepovolená.</translation>
+        <translation>Tento záznam byl vytvořený jiným uživatelem. Nepovolená operace.</translation>
     </message>
     <message>
         <source>Assembly record item types</source>
-        <translation>Typy položiek montážneho listu</translation>
+        <translation>Typy položek montážního listu</translation>
     </message>
     <message>
         <source>EAN code</source>
@@ -2594,59 +2607,59 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>boolean</source>
-        <translation>áno/nie</translation>
+        <translation>ano/ne</translation>
     </message>
     <message>
         <source>Automatically add to assembly record</source>
-        <translation>Automaticky pridať do montážneho listu</translation>
+        <translation>Automaticky přídat do montážního listu</translation>
     </message>
     <message>
         <source>Failed to import %1 of %2 records.</source>
-        <translation>Nepodarilo sa importovať %1 z %2 záznamov.</translation>
+        <translation>Nepodařilo se importovat %1 z %2 záznamů.</translation>
     </message>
     <message numerus="yes">
         <source>Successfully imported %n record(s).</source>
         <translation>
-            <numerusform>%n záznam úspešne importovaný.</numerusform>
-            <numerusform>%n záznamy úspešne importované.</numerusform>
-            <numerusform>%n záznamov úspešne importovaných.</numerusform>
+            <numerusform>%n záznam úspešně importován.</numerusform>
+            <numerusform>%n záznamy úspešně importovány.</numerusform>
+            <numerusform>%n záznamů úspěšně importováno.</numerusform>
         </translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected assembly record type?
 To remove all data about the record &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraný typ montážneho listu?
-Na odstránenie všetkých údajov o type montážneho listu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybraný typ montážního listu?
+Na odstranění všech údajů o typu montážního listu „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove assembly record item type - Leaklog</source>
-        <translation>Odstrániť typ položky montážneho listu - Leaklog</translation>
+        <translation>Odstranit typ položky montážního listu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected assembly record item type?
 To remove all data about the record item &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraný typ položky montážneho listu?
-Na odstránenie všetkých údajov o type položky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybraný typ položky montážního listu?
+Pro odstranění všech údajů o typu položky „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove assembly record item category - Leaklog</source>
-        <translation>Odstrániť kategóriu položiek montážneho listu - Leaklog</translation>
+        <translation>Odstranit kategorii položek montážního listu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected assembly record item category?
 To remove all data about the item category &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú kategóriu položiek montážneho listu?
-Na odstránenie všetkých údajov o kategórii „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybraný zápis montážního listu?
+Pro odstranění všech údajů v zápisu „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove circuit unit type - Leaklog</source>
-        <translation>Odstrániť typ jednotky okruhu - Leaklog</translation>
+        <translation>Odstranit typ jednotky okruhu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraný typ jednotky okruhu?
-Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybraný typ jednotky okruhu?
+Pro odstranění všech údajů o typu jednotky okruhu „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>ID</source>
@@ -2658,23 +2671,23 @@ Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODS
     </message>
     <message>
         <source>Quit Leaklog</source>
-        <translation>Ukončiť Leaklog</translation>
+        <translation>Ukončit Leaklog</translation>
     </message>
     <message>
         <source>Search:</source>
-        <translation>Hľadať:</translation>
+        <translation>Hledat:</translation>
     </message>
     <message>
         <source>Variables</source>
-        <translation>Premenné</translation>
+        <translation>Proměnné</translation>
     </message>
     <message>
         <source>Table:</source>
-        <translation>Tabuľka:</translation>
+        <translation>Tabulka:</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Odstrániť</translation>
+        <translation>Odstranit</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
@@ -2694,7 +2707,7 @@ Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODS
     </message>
     <message>
         <source>Export</source>
-        <translation>Exportovať</translation>
+        <translation>Exportovat</translation>
     </message>
     <message>
         <source>Repair</source>
@@ -2702,23 +2715,23 @@ Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODS
     </message>
     <message>
         <source>Create a new variable</source>
-        <translation>Vytvoriť novú premennú</translation>
+        <translation>Vytvořit novou proměnnou</translation>
     </message>
     <message>
         <source>Remove the selected variable</source>
-        <translation>Odstrániť vybranú premennú</translation>
+        <translation>Odstranit vybranou proměnnou</translation>
     </message>
     <message>
         <source>Add table</source>
-        <translation>Pridať tabuľku</translation>
+        <translation>Přidat tabulku</translation>
     </message>
     <message>
         <source>Remove table</source>
-        <translation>Odstrániť tabuľku</translation>
+        <translation>Odstranit tabulku</translation>
     </message>
     <message>
         <source>Show variables</source>
-        <translation>Zobraziť premenné</translation>
+        <translation>Zobrazit proměnné</translation>
     </message>
     <message>
         <source>Ctrl+Shift+S</source>
@@ -2730,7 +2743,7 @@ Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODS
     </message>
     <message>
         <source>Print</source>
-        <translation>Tlačiť</translation>
+        <translation>Tisk</translation>
     </message>
     <message>
         <source>Ctrl+P</source>
@@ -2742,63 +2755,63 @@ Na odstránenie všetkých údajov o type jednotky okruhu „%1“ napíšte ODS
     </message>
     <message>
         <source>New variable</source>
-        <translation>Nová premenná</translation>
+        <translation>Nová proměnná</translation>
     </message>
     <message>
         <source>New subvariable</source>
-        <translation>Nová podpremenná</translation>
+        <translation>Nová podproměnná</translation>
     </message>
     <message>
         <source>Tool bar</source>
-        <translation>Panel nástrojov</translation>
+        <translation>Nástrojový panel</translation>
     </message>
     <message>
         <source>Remove circuit - Leaklog</source>
-        <translation>Odstrániť okruh - Leaklog</translation>
+        <translation>Odstranit okruh - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected circuit?
 To remove all data about the circuit &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraný okruh?
-Na odstránenie všetkých údajov o okruhu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybraný okruh?
+Pro odstranění všech údajů o okruhu „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove inspection - Leaklog</source>
-        <translation>Odstrániť kontrolu - Leaklog</translation>
+        <translation>Odstranit kontrolu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú kontrolu?
-Na odstránenie všetkých údajov o kontrole „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou kontrolu?
+Pro odstranění všech údajů o kontrole „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove variable - Leaklog</source>
-        <translation>Odstrániť premennú - Leaklog</translation>
+        <translation>Odstranit proměnnou - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected variable?
 To remove the variable &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú premennú?
-Na odstránenie premennej „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou proměnnou?
+Pro odstranění proměnné „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Remove table - Leaklog</source>
-        <translation>Odstrániť tabuľku - Leaklog</translation>
+        <translation>Odstranit tabulku - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected table?
 To remove the table &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú tabuľku?
-Na odstránenie tabuľky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou tabulku?
+Pro odstranění tabulky „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Add existing variable - Leaklog</source>
-        <translation>Pridať existujúcu premennú - Leaklog</translation>
+        <translation>Přidat existující proměnnou - Leaklog</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Upraviť</translation>
+        <translation>Upravit</translation>
     </message>
     <message>
         <source>Ctrl+F</source>
@@ -2814,93 +2827,93 @@ Na odstránenie tabuľky „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     </message>
     <message>
         <source>Are you sure you want to remove the variable &quot;%1&quot; from the selected table?</source>
-        <translation>Naozaj chcete odstrániť premennú „%1“ z vybranej tabuľky?</translation>
+        <translation>Opravdu chcete odstranit proměnnou „%1“ z vybrané tabulky?</translation>
     </message>
     <message>
         <source>View</source>
-        <translation>Zobraziť</translation>
+        <translation>Zobrazit</translation>
     </message>
     <message>
         <source>Remove warning - Leaklog</source>
-        <translation>Odstrániť upozornenie - Leaklog</translation>
+        <translation>Odstranit upozornění - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybrané upozornenie?
-Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybrané upozornění?
+Pro odstranění upozornění „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Tables</source>
-        <translation>Tabuľky</translation>
+        <translation>Tabulky</translation>
     </message>
     <message>
         <source>Create a new table</source>
-        <translation>Vytvoriť novú tabuľku</translation>
+        <translation>Vytvořit novou tabulku</translation>
     </message>
     <message>
         <source>Remove the selected table</source>
-        <translation>Odstrániť vybranú tabuľku</translation>
+        <translation>Odstranit vybranou tabulku</translation>
     </message>
     <message>
         <source>Add a variable to the selected table</source>
-        <translation>Pridať premennú do vybranej tabuľky</translation>
+        <translation>Přidat proměnnou do vybrané tabulky</translation>
     </message>
     <message>
         <source>Move up</source>
-        <translation>Posunúť hore</translation>
+        <translation>Posunout nahoru</translation>
     </message>
     <message>
         <source>Move the selected variable up</source>
-        <translation>Posunúť vybranú premennú hore</translation>
+        <translation>Posunout vybranou proměnnou nahoru</translation>
     </message>
     <message>
         <source>Move down</source>
-        <translation>Posunúť dole</translation>
+        <translation>Posunout dolů</translation>
     </message>
     <message>
         <source>Move the selected variable down</source>
-        <translation>Posunúť vybranú premennú dole</translation>
+        <translation>Posunout vybranou proměnnou dolů</translation>
     </message>
     <message>
         <source>Remove the selected variable from the table</source>
-        <translation>Odstrániť vybranú premennú z tabuľky</translation>
+        <translation>Odstranit vybranou proměnnou z tabulky</translation>
     </message>
     <message>
         <source>Warnings</source>
-        <translation>Upozornenia</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <source>Create a new warning</source>
-        <translation>Vytvoriť nové upozornenie</translation>
+        <translation>Vytvořit nové upozornění</translation>
     </message>
     <message>
         <source>Remove the selected warning</source>
-        <translation>Odstrániť vybrané upozornenie</translation>
+        <translation>Odstranit vybrané upozornění</translation>
     </message>
     <message>
         <source>Styles</source>
-        <translation>Vzhľady</translation>
+        <translation>Vzhledy</translation>
     </message>
     <message>
         <source>Information about Leaklog</source>
-        <translation>Informácie o programe Leaklog</translation>
+        <translation>Informace o programu Leaklog</translation>
     </message>
     <message>
         <source>Create a new database</source>
-        <translation>Vytvoriť novú databázu</translation>
+        <translation>Vytvořit novou databázi</translation>
     </message>
     <message>
         <source>Save changes</source>
-        <translation>Uložiť zmeny</translation>
+        <translation>Uložit změny</translation>
     </message>
     <message>
         <source>Close the database</source>
-        <translation>Zatvoriť databázu</translation>
+        <translation>Zavřít databázi</translation>
     </message>
     <message>
         <source>Add a new customer</source>
-        <translation>Pridať nového zákazníka</translation>
+        <translation>Přidat nového zákazníka</translation>
     </message>
     <message>
         <source>Ctrl++</source>
@@ -2908,7 +2921,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Remove the selected customer</source>
-        <translation>Odstrániť vybraného zákazníka</translation>
+        <translation>Odstranit vybraného zákazníka</translation>
     </message>
     <message>
         <source>Ctrl+-</source>
@@ -2916,15 +2929,15 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Add a new circuit to the selected customer</source>
-        <translation>Pridať nový okruh vybranému zákazníkovi</translation>
+        <translation>Přidat nový okruh vybranému zákazníkovi</translation>
     </message>
     <message>
         <source>Remove the selected circuit</source>
-        <translation>Odstrániť vybraný okruh</translation>
+        <translation>Odstranit vybraný okruh</translation>
     </message>
     <message>
         <source>Add a new inspection to the selected circuit</source>
-        <translation>Pridať novú kontrolu vybraného okruhu</translation>
+        <translation>Přidat novou kontrolu vybraného okruhu</translation>
     </message>
     <message>
         <source>Ctrl+Shift++</source>
@@ -2932,7 +2945,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Remove the selected inspection</source>
-        <translation>Odstrániť vybranú kontrolu</translation>
+        <translation>Odstranit vybranou kontrolu</translation>
     </message>
     <message>
         <source>Ctrl+Shift+-</source>
@@ -2940,7 +2953,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Show browser</source>
-        <translation>Zobraziť prehľad</translation>
+        <translation>Zobrazit přehled</translation>
     </message>
     <message>
         <source>Ctrl+Alt+B</source>
@@ -2952,7 +2965,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Save changes and compact the database</source>
-        <translation>Uložiť zmeny a stlačiť databázu</translation>
+        <translation>Uložit změny a stlačit databázi</translation>
     </message>
     <message>
         <source>Ctrl+*</source>
@@ -2964,15 +2977,15 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Print the current view</source>
-        <translation>Tlačiť aktuálny pohľad</translation>
+        <translation>Vytisknout aktuální náhled</translation>
     </message>
     <message>
         <source>Display a print preview of the current view</source>
-        <translation>Zobraziť náhľad tlače aktuálneho pohľadu</translation>
+        <translation>Zobrazit tiskový náhled aktuálního pohledu</translation>
     </message>
     <message>
         <source>Export all data of the selected customer</source>
-        <translation>Exportovať všetky údaje o vybranom zákazníkovi</translation>
+        <translation>Exportovat všechny údaje o vybraném zákazníkovi</translation>
     </message>
     <message>
         <source>Ctrl+E</source>
@@ -2980,7 +2993,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Export all data of the selected circuit</source>
-        <translation>Exportovať všetky údaje o vybranom okruhu</translation>
+        <translation>Exportovat všechny údaje o vybraném okruhu</translation>
     </message>
     <message>
         <source>Ctrl+Alt+E</source>
@@ -2988,7 +3001,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Export all data of the selected inspection</source>
-        <translation>Exportovať všetky údaje o vybranej kontrole</translation>
+        <translation>Exportovat všechny údaje o vybrané kontrole</translation>
     </message>
     <message>
         <source>Ctrl+Shift+E</source>
@@ -2996,23 +3009,23 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Import data from another database file</source>
-        <translation>Importovať údaje z iného databázového súboru</translation>
+        <translation>Importovat údaje z iiného databázového souboru</translation>
     </message>
     <message>
         <source>Search for a word in the current view</source>
-        <translation>Vyhľadať slovo v aktuálnom pohľade</translation>
+        <translation>Vyhledat slovo v aktuálním zobrazení</translation>
     </message>
     <message>
         <source>Find the next occurrence of the searched word</source>
-        <translation>Nájsť ďalší výskyt hľadaného slova</translation>
+        <translation>Najít další výskyt hledaného slova</translation>
     </message>
     <message>
         <source>Find the previous occurrence of the searched word</source>
-        <translation>Nájsť predchádzajúci výskyt hľadaného slova</translation>
+        <translation>Najít předchozí výskyt hledaného slova</translation>
     </message>
     <message>
         <source>Show tables</source>
-        <translation>Zobraziť tabuľky</translation>
+        <translation>Zobrazit tabulky</translation>
     </message>
     <message>
         <source>Ctrl+Alt+T</source>
@@ -3020,7 +3033,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Show warnings</source>
-        <translation>Zobraziť upozornenia</translation>
+        <translation>Zobrazit upozornění</translation>
     </message>
     <message>
         <source>Ctrl+Alt+W</source>
@@ -3028,15 +3041,15 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Print labels for the selected inspector</source>
-        <translation>Tlačiť štítky pre vybraného kontrolóra</translation>
+        <translation>Tisk štítků pro vybranou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Import a CSV (comma-separated values) file</source>
-        <translation>Importovať súbor CSV (čiarkou oddelené hodnoty)</translation>
+        <translation>Importovat soubor CSV (čárkou oddělené hodnoty)</translation>
     </message>
     <message>
         <source>Duplicate the selected circuit</source>
-        <translation>Duplikovať vybraný okruh</translation>
+        <translation>Duplikovat vybraný okruh</translation>
     </message>
     <message>
         <source>Ctrl+Alt+D</source>
@@ -3044,7 +3057,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Duplicate the selected customer</source>
-        <translation>Duplikovať vybraného zákazníka</translation>
+        <translation>Duplikovat vybraného zákazníka</translation>
     </message>
     <message>
         <source>Ctrl+D</source>
@@ -3052,7 +3065,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Duplicate the selected inspection</source>
-        <translation>Duplikovať vybranú kontrolu</translation>
+        <translation>Duplikovat vybranou kontrolu</translation>
     </message>
     <message>
         <source>Ctrl+Shift+D</source>
@@ -3060,7 +3073,7 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Duplicate the selected repair</source>
-        <translation>Duplikovať vybranú opravu</translation>
+        <translation>Duplikovat vybranou opravu</translation>
     </message>
     <message>
         <source>Meta+D</source>
@@ -3068,23 +3081,23 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Configure database access and modification permissions</source>
-        <translation>Nastaviť práva na prístup a zmeny v databáze</translation>
+        <translation>Nastavit práva na přístup a změny v databázi</translation>
     </message>
     <message>
         <source>Change the interface language</source>
-        <translation>Zmeniť jazyk prostredia</translation>
+        <translation>Změnit jazyk prostředí</translation>
     </message>
     <message>
         <source>Add a new inspector</source>
-        <translation>Pridať nového kontrolóra</translation>
+        <translation>Přidat novou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Remove the selected inspector</source>
-        <translation>Odstrániť vybraného kontrolóra</translation>
+        <translation>Odstranit vybranou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Print a detailed label for the selected circuit</source>
-        <translation>Tlačiť podrobný štítok pre vybraný okruh</translation>
+        <translation>Tisk podrobného štítku pro vybraný okruh</translation>
     </message>
     <message>
         <source>Ctrl+Shift+L</source>
@@ -3092,99 +3105,100 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Open a database file</source>
-        <translation>Otvoriť databázový súbor</translation>
+        <translation>Otevřít databázový soubor</translation>
     </message>
     <message>
         <source>Connect to a remote database server</source>
-        <translation>Pripojiť sa k vzdialenému databázovému serveru</translation>
+        <translation>Připojit se ke vzdálenému databázovému serveru</translation>
     </message>
     <message>
         <source>Add a new repair</source>
-        <translation>Pridať novú opravu</translation>
+        <translation>Přidat novou opravu</translation>
     </message>
     <message>
         <source>Remove the selected repair</source>
-        <translation>Odstrániť vybranú opravu</translation>
+        <translation>Odstranit vybranou opravu</translation>
     </message>
     <message>
         <source>Export the current view as a PDF document</source>
-        <translation>Exportovať aktuálny pohľad ako PDF dokument</translation>
+        <translation>Exportovat aktuální pohled jako PDF dokument</translation>
     </message>
     <message>
         <source>Export the current view as an HTML document</source>
-        <translation>Exportovať aktuálny pohľad ako HTML dokument</translation>
+        <translation>Exportovat aktuální pohled jako HTML dokument</translation>
     </message>
     <message>
         <source>Display a printer-friendly version of the current view</source>
-        <translation>Zobraziť aktuálny pohľad spôsobom vhodným pre tlač</translation>
+        <translation>Zobrazit aktuální pohled způsobem vhodným pro tisk</translation>
     </message>
     <message>
         <source>Lock the database</source>
-        <translation>Zamknúť databázu</translation>
+        <translation>Zamknout databázi</translation>
     </message>
     <message>
         <source>Report data to the notified body</source>
-        <translation>Oznámiť údaje certifikačnému orgánu</translation>
+        <translatorcomment>???</translatorcomment>
+        <translation>Oznámit údaje certifikačnímu orgánu</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>New database - Leaklog</source>
-        <translation>Nová databáza - Leaklog</translation>
+        <translation>Nová databáze - Leaklog</translation>
     </message>
     <message>
         <source>Leaklog Database (*.lklg)</source>
-        <translation>Databáza programu Leaklog (*.lklg)</translation>
+        <translation>Databáze programu Leaklog (*.lklg)</translation>
     </message>
     <message>
         <source>Open database - Leaklog</source>
-        <translation>Otvoriť databázu - Leaklog</translation>
+        <translation>Otevřít databázi - Leaklog</translation>
     </message>
     <message>
         <source>Leaklog Databases (*.lklg);;All files (*.*)</source>
-        <translation>Databázy programu Leaklog (*.lklg);;Všetky súbory (*.*)</translation>
+        <translation>Databáze programu Leaklog (*.lklg);;Všechny soubory (*.*)</translation>
     </message>
     <message>
         <source>Save database - Leaklog</source>
-        <translation>Uložiť databázu - Leaklog</translation>
+        <translation>Uložit databázi - Leaklog</translation>
     </message>
     <message>
         <source>Close database - Leaklog</source>
-        <translation>Zatvoriť databázu - Leaklog</translation>
+        <translation>Zavřít databázi - Leaklog</translation>
     </message>
     <message>
         <source>Remove subvariable - Leaklog</source>
-        <translation>Odstrániť podpremennú - Leaklog</translation>
+        <translation>Odstranit podproměnou - Leaklog</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>Žiadna</translation>
+        <translation>Žádná</translation>
     </message>
     <message>
         <source>Sum</source>
-        <translation>Spolu</translation>
+        <translation>Celkem</translation>
     </message>
     <message>
         <source>Database</source>
-        <translation>Databáza</translation>
+        <translation>Databáze</translation>
     </message>
     <message>
         <source>Foot</source>
-        <translation>Päta</translation>
+        <translation>Pata</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation>Pridať</translation>
+        <translation>Přidat</translation>
     </message>
     <message>
         <source>Export customer data - Leaklog</source>
-        <translation>Exportovať údaje o zákazníkovi - Leaklog</translation>
+        <translation>Exportovat údaje o zákazníkovi - Leaklog</translation>
     </message>
     <message>
         <source>Import data - Leaklog</source>
-        <translation>Importovať údaje - Leaklog</translation>
+        <translation>Importovat údaje - Leaklog</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -3204,11 +3218,11 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>Change language</source>
-        <translation>Zmeniť jazyk</translation>
+        <translation>Změnit jazyk</translation>
     </message>
     <message>
         <source>Change language - Leaklog</source>
-        <translation>Zmeniť jazyk - Leaklog</translation>
+        <translation>Změnit jazyk - Leaklog</translation>
     </message>
     <message>
         <source>Select your preferred language</source>
@@ -3216,81 +3230,81 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     </message>
     <message>
         <source>You need to restart Leaklog for the changes to apply.</source>
-        <translation>Aby sa zmeny prejavili, je potrebné reštartovať Leaklog.</translation>
+        <translation>Aby se změny projevily je nutné restartovat Leaklog.</translation>
     </message>
     <message>
         <source>Compact</source>
-        <translation>Stlačiť</translation>
+        <translation>Stlačit</translation>
     </message>
     <message>
         <source>Failed to check for updates.</source>
-        <translation>Nepodarilo sa skontrolovať aktualizácie.</translation>
+        <translation>Nepodařilo se zkontrolovat aktualizace.</translation>
     </message>
     <message>
         <source>&amp;Try again</source>
-        <translation>&amp;Skúsiť znovu</translation>
+        <translation>&amp;Zkusit znovu</translation>
     </message>
     <message>
         <source>You are running the latest version of Leaklog.</source>
-        <translation>Táto verzia programu Leaklog je aktuálna.</translation>
+        <translation>Tato verze programu Leaklog je aktuální.</translation>
     </message>
     <message>
         <source>Leaklog %1 is available now.</source>
-        <translation>Leaklog %1 je teraz dostupný.</translation>
+        <translation>Leaklog %1 je nyní dostupný.</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Do not import</source>
-        <translation>Neimportovať</translation>
+        <translation>Neimportovat</translation>
     </message>
     <message>
         <source>Import</source>
-        <translation>Importovať</translation>
+        <translation>Importovat</translation>
     </message>
     <message>
         <source>Export circuit data - Leaklog</source>
-        <translation>Exportovať údaje o okruhu - Leaklog</translation>
+        <translation>Exportovat údaje o okruhu - Leaklog</translation>
     </message>
     <message>
         <source>Export inspection data - Leaklog</source>
-        <translation>Exportovať údaje o kontrole - Leaklog</translation>
+        <translation>Exportovat údaje o kontrole - Leaklog</translation>
     </message>
     <message>
         <source>Export data - Leaklog</source>
-        <translation>Exportovať údaje - Leaklog</translation>
+        <translation>Exportovat údaje - Leaklog</translation>
     </message>
     <message>
         <source>Use existing and import</source>
-        <translation>Použiť existujúcu a importovať</translation>
+        <translation>Použít existující a importovat</translation>
     </message>
     <message>
         <source>Overwrite and import</source>
-        <translation>Prepísať a importovať</translation>
+        <translation>Přepsat a importovat</translation>
     </message>
     <message>
         <source>Remove inspector - Leaklog</source>
-        <translation>Odstrániť kontrolóra - Leaklog</translation>
+        <translation>Odstranit certifikovanou osobu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybraného kontrolóra?
-Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou cert. osobu?
+Pro odstranění všech údajů o cert. osobě „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>Show inspectors</source>
-        <translation>Zobraziť kontrolórov</translation>
+        <translation>Zobrazit certifikované osoby</translation>
     </message>
     <message>
         <source>Ctrl+Alt+I</source>
@@ -3310,7 +3324,7 @@ Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Export PDF - Leaklog</source>
-        <translation>Exportovať PDF - Leaklog</translation>
+        <translation>Exportovat PDF - Leaklog</translation>
     </message>
     <message>
         <source>Adobe PDF (*.pdf)</source>
@@ -3318,7 +3332,7 @@ Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Export HTML - Leaklog</source>
-        <translation>Exportovať HTML - Leaklog</translation>
+        <translation>Exportovat HTML - Leaklog</translation>
     </message>
     <message>
         <source>Webpage (*.html)</source>
@@ -3326,27 +3340,27 @@ Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Print label - Leaklog</source>
-        <translation>Tlačiť štítok - Leaklog</translation>
+        <translation>Vytiskout štítek - Leaklog</translation>
     </message>
     <message>
         <source>Print detailed label - Leaklog</source>
-        <translation>Tlačiť podrobný štítok - Leaklog</translation>
+        <translation>Vytiskout podrobný štítek - Leaklog</translation>
     </message>
     <message>
         <source>Choose the position of the label on the paper:</source>
-        <translation>Vyberte umiestnenie štítku na papieri:</translation>
+        <translation>Vyberte umístění štítku na stránce:</translation>
     </message>
     <message>
         <source>Row %1 Column %2</source>
-        <translation>Riadok %1 Stĺpec %2</translation>
+        <translation>Řádek %1 Sloupec %2</translation>
     </message>
     <message>
         <source>Print label</source>
-        <translation>Tlačiť štítok</translation>
+        <translation>Vytisknout štítek</translation>
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zariadenia</translation>
+        <translation>Číslo zařízení</translation>
     </message>
     <message>
         <source>3(6) - &lt;30 kg</source>
@@ -3362,65 +3376,64 @@ Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Annual leakage</source>
-        <translation>Ročný únik</translation>
+        <translation>Roční únik</translation>
     </message>
     <message>
         <source>Telephone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Registry number of
 person and company ID</source>
-        <translation>Číslo osvedčenia
+        <translation>Číslo certifikátu
 osoby a IČO firmy</translation>
     </message>
     <message>
         <source>Open containing folder</source>
-        <translation>Otvoriť nadradený priečinok</translation>
+        <translation>Otevřít nadřízenou složku</translation>
     </message>
     <message>
         <source>Open the folder which contains this database</source>
-        <translation>Otvoriť priečinok, ktorý obsahuje túto databázu</translation>
+        <translation>Otevřít složku, která obsahuje tuto databázi</translation>
     </message>
     <message>
         <source>Remove from list</source>
-        <translation>Odstrániť zo zoznamu</translation>
+        <translation>Odstranit ze seznamu</translation>
     </message>
     <message>
         <source>Remove the database from the list (the database will not be deleted)</source>
-        <translation>Odstrániť databázu zo zoznamu (databáza nebude vymazaná)</translation>
+        <translation>Odstranit databázi ze seznamu (databáze nebude vymazaná)</translation>
     </message>
     <message>
         <source>Date of inspection</source>
-        <translation>Dátum vykonania kontroly</translation>
+        <translation>Datum vykonání kontroly</translation>
     </message>
     <message>
         <source>Date of the next inspection</source>
-        <translation>Dátum nasledujúcej kontroly</translation>
+        <translation>Datum následující kontroly</translation>
     </message>
     <message>
         <source>Refrigerant leakage inspection
 in accordance with Regulation (EC)
 No. 842/2006</source>
-        <translation>Kontrola úniku chladiva podľa
-Nariadenia (ES) č. 842/2006 a zákona
-č. 286/2009 Z.z. a vyhl. 314/2009 Z.z.</translation>
+        <translation>Kontrola úniku chladiva podle
+Nařízení (EU) č. 517/2014 </translation>
     </message>
     <message>
         <source>once a year*</source>
-        <translation>raz za rok*</translation>
+        <translation>jednou za 12 měsíců*</translation>
     </message>
     <message>
         <source>once in 6 months*</source>
-        <translation>raz za 6 mesiacov*</translation>
+        <translation>jednou za 6 měsíců*</translation>
     </message>
     <message>
         <source>once in 3 months</source>
-        <translation>raz za 3 mesiace</translation>
+        <translation>jednou za 3 měsíce</translation>
     </message>
     <message>
         <source>Certified person</source>
-        <translation>Osoba s osvedčením</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source> days</source>
@@ -3436,23 +3449,23 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <source>Lock</source>
-        <translation>Zamknúť</translation>
+        <translation>Zamknout</translation>
     </message>
     <message>
         <source>Lock database - Leaklog</source>
-        <translation>Zamknúť databázu - Leaklog</translation>
+        <translation>Zamknout databázi - Leaklog</translation>
     </message>
     <message>
         <source>Lock inspections and repairs older than:</source>
-        <translation>Zamknúť kontroly a opravy staršie ako:</translation>
+        <translation>Zamknout kontroly a opravy starší než:</translation>
     </message>
     <message>
         <source>Unlock database - Leaklog</source>
-        <translation>Odomknúť databázu - Leaklog</translation>
+        <translation>Odemknout databázi - Leaklog</translation>
     </message>
     <message>
         <source>Wrong password.</source>
-        <translation>Nesprávne heslo.</translation>
+        <translation>Nesprávné heslo.</translation>
     </message>
     <message>
         <source>Ctrl+L</source>
@@ -3460,15 +3473,15 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <source>Open remote database - Leaklog</source>
-        <translation>Otvoriť vzdialenú databázu - Leaklog</translation>
+        <translation>Otevřít vzdálenou databázi - Leaklog</translation>
     </message>
     <message>
         <source>Enter password for %1@%2:</source>
-        <translation>Zadajte heslo pre %1@%2:</translation>
+        <translation>Zadejte heslo pro %1@%2:</translation>
     </message>
     <message>
         <source>Driver:</source>
-        <translation>Ovládač:</translation>
+        <translation>Ovladač:</translation>
     </message>
     <message>
         <source>Server:</source>
@@ -3480,15 +3493,15 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <source>Default</source>
-        <translation>Východzí</translation>
+        <translation>Výchozí</translation>
     </message>
     <message>
         <source>Database name:</source>
-        <translation>Názov databázy:</translation>
+        <translation>Název databáze:</translation>
     </message>
     <message>
         <source>User name:</source>
-        <translation>Meno používateľa:</translation>
+        <translation>Uživatelské jméno:</translation>
     </message>
     <message>
         <source>Password:</source>
@@ -3504,29 +3517,29 @@ Nariadenia (ES) č. 842/2006 a zákona
     </message>
     <message>
         <source>Discount</source>
-        <translation>Zľava</translation>
+        <translation>Sleva</translation>
     </message>
     <message>
         <source>Remove repair - Leaklog</source>
-        <translation>Odstrániť opravu - Leaklog</translation>
+        <translation>Odstranit opravu - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected repair?
 To remove all data about the repair &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Naozaj chcete odstrániť vybranú opravu?
-Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou opravu?
+Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Show icons only</source>
-        <translation>Zobraziť len ikony</translation>
+        <translation>Zobrazit jen ikony</translation>
     </message>
     <message>
         <source>Tolerance</source>
-        <translation>Tolerancia</translation>
+        <translation>Tolerancie</translation>
     </message>
     <message>
         <source>Refrigerant management</source>
-        <translation>Nakladanie s chladivami</translation>
+        <translation>Nakládání s chladivy</translation>
     </message>
     <message>
         <source>Meta++</source>
@@ -3542,11 +3555,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Add record of refrigerant management</source>
-        <translation>Pridať záznam o nakladaní s chladivom</translation>
+        <translation>Přidat záznam o nakládaní s chladivem</translation>
     </message>
     <message>
         <source>Average</source>
-        <translation>Priemer</translation>
+        <translation>Průměr</translation>
     </message>
     <message>
         <source>Leakages</source>
@@ -3558,67 +3571,67 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>The database has been modified.</source>
-        <translation>V databáze boli urobené zmeny.</translation>
+        <translation>V databázi byly provedeny změny.</translation>
     </message>
     <message>
         <source>Do you want to save your changes?</source>
-        <translation>Chcete uložiť tieto zmeny?</translation>
+        <translation>Chcete uložit tyto změny?</translation>
     </message>
     <message>
         <source>Recent Databases:</source>
-        <translation>Nedávne databázy:</translation>
+        <translation>Nedávné databáze:</translation>
     </message>
     <message>
         <source>Variable Name</source>
-        <translation>Názov premennej</translation>
+        <translation>Název proměnné</translation>
     </message>
     <message>
         <source>Add Variable</source>
-        <translation>Pridať premennú</translation>
+        <translation>Přidat proměnnou</translation>
     </message>
     <message>
         <source>Edit variable</source>
-        <translation>Upraviť premennú</translation>
+        <translation>Upravit proměnnou</translation>
     </message>
     <message>
         <source>Edit the selected variable</source>
-        <translation>Upraviť vybranú premennú</translation>
+        <translation>Upravit vybranou proměnnou</translation>
     </message>
     <message>
         <source>Remove Variable</source>
-        <translation>Odstrániť premennú</translation>
+        <translation>Odstranit proměnnou </translation>
     </message>
     <message>
         <source>Edit table</source>
-        <translation>Upraviť tabuľku</translation>
+        <translation>Upravit tabulku</translation>
     </message>
     <message>
         <source>Edit the selected table</source>
-        <translation>Upraviť vybranú tabuľku</translation>
+        <translation>Upravit vybranou tabulku</translation>
     </message>
     <message>
         <source>Add Warning</source>
-        <translation>Pridať upozornenie</translation>
+        <translation>Přidat upozornění</translation>
     </message>
     <message>
         <source>Edit warning</source>
-        <translation>Upraviť upozornenie</translation>
+        <translation>Upravit upozornění</translation>
     </message>
     <message>
         <source>Edit the selected warning</source>
-        <translation>Upraviť vybrané upozornenie</translation>
+        <translation>Upravit vybrané upozornění</translation>
     </message>
     <message>
         <source>Remove Warning</source>
-        <translation>Odstrániť upozornenie</translation>
+        <translation>Odstranit upozornění</translation>
     </message>
     <message>
         <source>Add Style</source>
-        <translation>Pridať vzhľad</translation>
+        <translation>Přidat vzhled</translation>
     </message>
     <message>
         <source>Remove Style</source>
-        <translation>Odstrániť vzhľad</translation>
+        <translation>Odstranit vzhled </translation>
     </message>
     <message>
         <source>New...</source>
@@ -3626,163 +3639,163 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Add Customer...</source>
-        <translation>Pridať zákazníka...</translation>
+        <translation>Přidat zákazníka...</translation>
     </message>
     <message>
         <source>Remove Customer...</source>
-        <translation>Odstrániť zákazníka...</translation>
+        <translation>Odstranit zákazníka...</translation>
     </message>
     <message>
         <source>Add Circuit...</source>
-        <translation>Pridať okruh...</translation>
+        <translation>Přidat okruh...</translation>
     </message>
     <message>
         <source>Remove Circuit...</source>
-        <translation>Odstrániť okruh...</translation>
+        <translation>Odstranit okruh...</translation>
     </message>
     <message>
         <source>Add Inspection...</source>
-        <translation>Pridať kontrolu...</translation>
+        <translation>Přidat kontrolu...</translation>
     </message>
     <message>
         <source>Remove Inspection...</source>
-        <translation>Odstrániť kontrolu...</translation>
+        <translation>Odstranit kontrolu...</translation>
     </message>
     <message>
         <source>Show Variables</source>
-        <translation>Zobraziť premenné</translation>
+        <translation>Zobrazit proměnné</translation>
     </message>
     <message>
         <source>Edit Circuit...</source>
-        <translation>Upraviť okruh...</translation>
+        <translation>Upravit okruh...</translation>
     </message>
     <message>
         <source>Edit the selected circuit</source>
-        <translation>Upraviť vybraný okruh</translation>
+        <translation>Upravit vybraný okruh</translation>
     </message>
     <message>
         <source>Edit Customer...</source>
-        <translation>Upraviť zákazníka...</translation>
+        <translation>Upravit zákazníka...</translation>
     </message>
     <message>
         <source>Edit the selected customer</source>
-        <translation>Upraviť vybraného zákazníka</translation>
+        <translation>Upravit vybraného zákazníka</translation>
     </message>
     <message>
         <source>Edit Inspection...</source>
-        <translation>Upraviť kontrolu...</translation>
+        <translation>Upravit kontrolu...</translation>
     </message>
     <message>
         <source>Edit the selected inspection</source>
-        <translation>Upraviť vybranú kontrolu</translation>
+        <translation>Upravit vybranou kontrolu</translation>
     </message>
     <message>
         <source>Print...</source>
-        <translation>Tlačiť...</translation>
+        <translation>Tisk...</translation>
     </message>
     <message>
         <source>Print Preview...</source>
-        <translation>Náhľad tlače...</translation>
+        <translation>Náhled tisku...</translation>
     </message>
     <message>
         <source>Export Customer Data...</source>
-        <translation>Exportovať údaje o zákazníkovi...</translation>
+        <translation>Exportovat údaje o zákazníkovi...</translation>
     </message>
     <message>
         <source>Export Circuit Data...</source>
-        <translation>Exportovať údaje o okruhu...</translation>
+        <translation>Exportovat údaje o okruhu...</translation>
     </message>
     <message>
         <source>Export Inspection Data...</source>
-        <translation>Exportovať údaje o kontrole...</translation>
+        <translation>Exportovat údaje o kontrole...</translation>
     </message>
     <message>
         <source>Another Database...</source>
-        <translation>Z inej databázy...</translation>
+        <translation>Z jiné databáze...</translation>
     </message>
     <message>
         <source>Check for Updates</source>
-        <translation>Skontrolovať aktualizácie</translation>
+        <translation>Zkontrolovat aktualizace</translation>
     </message>
     <message>
         <source>Find...</source>
-        <translation>Nájsť...</translation>
+        <translation>Vyhledat...</translation>
     </message>
     <message>
         <source>Find Next</source>
-        <translation>Nájsť nasledujúci</translation>
+        <translation>Vyhledat další</translation>
     </message>
     <message>
         <source>Find Previous</source>
-        <translation>Nájsť predchádzajúci</translation>
+        <translation>Vyhledat předcházející</translation>
     </message>
     <message>
         <source>Show Tables</source>
-        <translation>Zobraziť tabuľky</translation>
+        <translation>Zobrazit tabulky</translation>
     </message>
     <message>
         <source>Show Warnings</source>
-        <translation>Zobraziť upozornenia</translation>
+        <translation>Zobrazit upozornění</translation>
     </message>
     <message>
         <source>Change Language...</source>
-        <translation>Zmeniť jazyk...</translation>
+        <translation>Změnit jazyk</translation>
     </message>
     <message>
         <source>Add Inspector...</source>
-        <translation>Pridať kontrolóra...</translation>
+        <translation>Přidat certifikovanou osobu</translation>
     </message>
     <message>
         <source>Edit Inspector...</source>
-        <translation>Upraviť kontrolóra...</translation>
+        <translation>Upravit certifikovanou osobu</translation>
     </message>
     <message>
         <source>Edit the selected inspector</source>
-        <translation>Upraviť vybraného kontrolóra</translation>
+        <translation>Upravit vybranou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Remove Inspector...</source>
-        <translation>Odstrániť kontrolóra...</translation>
+        <translation>Odstranit certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Print Detailed Label...</source>
-        <translation>Tlačiť podrobný štítok...</translation>
+        <translation>Vytiskout podrobný štítek...</translation>
     </message>
     <message>
         <source>Local database...</source>
-        <translation>Lokálnu databázu...</translation>
+        <translation>Lokální databázi...</translation>
     </message>
     <message>
         <source>Remote database...</source>
-        <translation>Vzdialenú databázu...</translation>
+        <translation>Vzdálenou databázi...</translation>
     </message>
     <message>
         <source>Edit Service Company Information...</source>
-        <translation>Upraviť informácie o servisnej organizácii...</translation>
+        <translation>Upravit informace o servisní organizaci...</translation>
     </message>
     <message>
         <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
+        <translation>Upravit informace o servisní organizaci</translation>
     </message>
     <message>
         <source>Add Repair...</source>
-        <translation>Pridať opravu...</translation>
+        <translation>Přidat opravu...</translation>
     </message>
     <message>
         <source>Edit Repair...</source>
-        <translation>Upraviť opravu...</translation>
+        <translation>Upravit opravu...</translation>
     </message>
     <message>
         <source>Edit the selected repair</source>
-        <translation>Upraviť vybranú opravu</translation>
+        <translation>Upravit vybranou opravu</translation>
     </message>
     <message>
         <source>Remove Repair...</source>
-        <translation>Odstrániť opravu...</translation>
+        <translation>Odstranit opravu...</translation>
     </message>
     <message>
         <source>Add Record of Refrigerant Management...</source>
-        <translation>Pridať záznam o nakladaní s chladivom...</translation>
+        <translation>Přidat záznam o nakládání s chladivem...</translation>
     </message>
     <message>
         <source>PDF (Portrait)...</source>
@@ -3794,19 +3807,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Printer-Friendly Version</source>
-        <translation>Verzia pre tlač</translation>
+        <translation>Verze pro tisk</translation>
     </message>
     <message>
         <source>Lock...</source>
-        <translation>Zamknúť...</translation>
+        <translation>Zamknout...</translation>
     </message>
     <message>
         <source>Print Label...</source>
-        <translation>Tlačiť štítok...</translation>
+        <translation>Tisk štítku...</translation>
     </message>
     <message>
         <source>CSV File...</source>
-        <translation>Z CSV súboru...</translation>
+        <translation>Z CSV souboru...</translation>
     </message>
     <message>
         <source>PDF (Landscape)...</source>
@@ -3814,39 +3827,39 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Duplicate Circuit...</source>
-        <translation>Duplikovať okruh...</translation>
+        <translation>Duplikovat okruh...</translation>
     </message>
     <message>
         <source>Duplicate Customer...</source>
-        <translation>Duplikovať zákazníka...</translation>
+        <translation>Duplikovat zákazníka...</translation>
     </message>
     <message>
         <source>Duplicate Inspection...</source>
-        <translation>Duplikovať kontrolu...</translation>
+        <translation>Duplikovat kontrolu...</translation>
     </message>
     <message>
         <source>Duplicate Repair...</source>
-        <translation>Duplikovať opravu...</translation>
+        <translation>Duplikovat opravu...</translation>
     </message>
     <message>
         <source>Configure Permissions...</source>
-        <translation>Nastaviť prístupové práva...</translation>
+        <translation>Nastavit přístupová práva...</translation>
     </message>
     <message>
         <source>Show Styles</source>
-        <translation>Zobraziť vzhľady</translation>
+        <translation>Zobrazit vzhledy</translation>
     </message>
     <message>
         <source>Compare Values With Nominal Inspection</source>
-        <translation>Porovnať hodnoty s nominálnymi</translation>
+        <translation>Porovnat hodnoty s kontrolou při uvádění do provozu</translation>
     </message>
     <message>
         <source>A newer version of Leaklog is required to open this database.</source>
-        <translation>Na otvorenie tejto databázy sa vyžaduje novšia verzia programu Leaklog.</translation>
+        <translation>Pro otevření této databáze se vyžaduje novější verze programu Leaklog.</translation>
     </message>
     <message>
         <source>Unlock...</source>
-        <translation>Odomknúť...</translation>
+        <translation>Odemknout...</translation>
     </message>
     <message>
         <source>%1:</source>
@@ -3858,91 +3871,91 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Compressor name</source>
-        <translation>Názov kompresora</translation>
+        <translation>Název kompresoru</translation>
     </message>
     <message>
         <source>&amp;Download Update</source>
-        <translation>&amp;Stiahnuť aktualizáciu</translation>
+        <translation>&amp;Stáhnout aktualizaci</translation>
     </message>
     <message>
         <source>Remind Me &amp;Later</source>
-        <translation>Pripomenúť &amp;neskôr</translation>
+        <translation>Připomenout &amp;později</translation>
     </message>
     <message>
         <source>en_GB</source>
-        <translation>sk_SK</translation>
+        <translation>cs_CZ</translation>
     </message>
     <message>
         <source>Decommission All Circuits...</source>
-        <translation>Vyradiť všetky okruhy...</translation>
+        <translation>Vyřadit všechny okruhy...</translation>
     </message>
     <message>
         <source>Decommission all of the selected customer&apos;s circuits</source>
-        <translation>Vydariť všetky okruhy vybraného zákazníka</translation>
+        <translation>Vyřadit všechny okruhy vybraného zákazníka</translation>
     </message>
     <message>
         <source>Decommission all circuits - Leaklog</source>
-        <translation>Vyradiť všetky okruhy - Leaklog</translation>
+        <translation>Vyřadit všechny okruhy - Leaklog</translation>
     </message>
     <message>
         <source>Decommission</source>
-        <translation>Vyradiť</translation>
+        <translation>Vyřadit</translation>
     </message>
     <message>
         <source>Duplicate and Decommission Circuit...</source>
-        <translation>Duplikovať a vyradiť okruh...</translation>
+        <translation>Duplikovat a vyřadit okruh...</translation>
     </message>
     <message>
         <source>Duplicate the selected circuit and decommission the original</source>
-        <translation>Duplikovať vybraný okruh a vyradiť pôvodný</translation>
+        <translation>Duplikovat vybraný okruh a vyřadit původní</translation>
     </message>
     <message>
         <source>Decommission all circuits of:</source>
-        <translation>Vyradiť všetky okruhy zákazníka:</translation>
+        <translation>Vyřadit všechny okruhy zákazníka:</translation>
     </message>
     <message>
         <source>Duplicate and decommission - Leaklog</source>
-        <translation>Duplikovať a vyradiť - Leaklog</translation>
+        <translation>Duplikovat a vyřadit - Leaklog</translation>
     </message>
     <message>
         <source>Duplicate and decommission circuit:</source>
-        <translation>Duplikovať a vyradiť okruh:</translation>
+        <translation>Duplikovat a vyřadit okruh:</translation>
     </message>
     <message>
         <source>Change ID of the original to:</source>
-        <translation>Zmeniť IČ pôvodného na:</translation>
+        <translation>Změnit IČ původního na:</translation>
     </message>
     <message>
         <source>Choose a new ID for the duplicate:</source>
-        <translation>Vybrať nové IČ pre duplikát:</translation>
+        <translation>Vybrat nové IČ pro duplikát:</translation>
     </message>
     <message>
         <source>Duplicate and Decommission</source>
-        <translation>Duplikovať a vyradiť</translation>
+        <translation>Duplikovat a vyřadit</translation>
     </message>
     <message>
         <source>Database upgraded - Leaklog</source>
-        <translation>Databáza aktualizovaná - Leaklog</translation>
+        <translation>Databáze aktualizovaná - Leaklog</translation>
     </message>
     <message>
         <source>The database has been upgraded to work with this version of Leaklog. It is recommended that you save the changes now.</source>
-        <translation>Databáza bola aktualizovaná na prácu s touto verziou programu Leaklog. Odporúča sa teraz tieto zmeny uložiť.</translation>
+        <translation>Databáze byla aktualizovaná pro práci s touto verzí programu Leaklog. Doporučujeme nyní tyto změny uložit.</translation>
     </message>
     <message>
         <source>Once saved, you will not be able to use this database with previous versions of Leaklog. Do you want to save the changes?</source>
-        <translation>Po uložení už nebude možné používať túto databázu s predchádzajúcimi verziami programu Leaklog. Chcete tieto zmeny uložiť?</translation>
+        <translation>Po uložení už nebude možné používat tuto databázi s předcházejícími verzemi programu Leaklog. Chcete tyto změny uložit?</translation>
     </message>
     <message>
         <source>&amp;Later</source>
-        <translation>&amp;Neskôr</translation>
+        <translation>&amp;Později</translation>
     </message>
     <message>
         <source>Columns</source>
-        <translation>Stĺpce</translation>
+        <translation>Sloupce</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -3950,15 +3963,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Most Recent Records First</source>
-        <translation>Najnovšie záznamy najprv</translation>
+        <translation>Nejnovější záznam nahoře</translation>
     </message>
     <message>
         <source>Show most recent inspections, repairs and records of refrigerant management first</source>
-        <translation>Zobraziť najnovšie kontroly, opravy a záznamy o nakladaní s chladivom najprv</translation>
+        <translation>Zobrazit nejnovější kontroly, opravy a záznamy o nakládání s chladivem první</translation>
     </message>
     <message>
         <source>Date and Time Format</source>
-        <translation>Formát dátumu a času</translation>
+        <translation>Formát datumu a času</translation>
     </message>
     <message>
         <source>01/02/2003</source>
@@ -3978,11 +3991,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>1 Feb 2003</source>
-        <translation>1. feb. 2003</translation>
+        <translation>1. únor. 2003</translation>
     </message>
     <message>
         <source>1 Feb 03</source>
-        <translation>1. feb. 03</translation>
+        <translation>1. únor. 03</translation>
     </message>
     <message>
         <source>04:05</source>
@@ -3998,223 +4011,223 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Undo</source>
-        <translation>Krok späť</translation>
+        <translation>Krok zpět</translation>
     </message>
     <message>
         <source>Edit record of refrigerant management %1</source>
-        <translation>Upraviť záznam o nakladaní s chladivom %1</translation>
+        <translation>Upravit záznam o nakládání s chladivem %1</translation>
     </message>
     <message>
         <source>Add customer</source>
-        <translation>Pridať zákazníka</translation>
+        <translation>Přidat zákazníka</translation>
     </message>
     <message>
         <source>Edit customer %1%2</source>
-        <translation>Upraviť zákazníka %1%2</translation>
+        <translation>Upravit zákazníka %1%2</translation>
     </message>
     <message>
         <source>Duplicate customer %1%2</source>
-        <translation>Duplikovať zákazníka %1%2</translation>
+        <translation>Duplikovat zákazníka %1%2</translation>
     </message>
     <message>
         <source>Remove customer %1%2</source>
-        <translation>Odstrániť zákazníka %1%2</translation>
+        <translation>Odstranit zákazníka %1%2</translation>
     </message>
     <message>
         <source>Decommission all circuits of customer %1%2</source>
-        <translation>Vydariť všetky okruhy zákazníka %1%2</translation>
+        <translation>Vyřadit všechny okruhy zákazníka %1%2</translation>
     </message>
     <message>
         <source>Add circuit</source>
-        <translation>Pridať okruh</translation>
+        <translation>Přidat okruh</translation>
     </message>
     <message>
         <source>Edit circuit %1 (%2)</source>
-        <translation>Upraviť okruh %1 (%2)</translation>
+        <translation>Upravit okruh %1 (%2)</translation>
     </message>
     <message>
         <source>Duplicate circuit %1 (%2)</source>
-        <translation>Duplikovať okruh %1 (%2)</translation>
+        <translation>Duplikovat okruh %1 (%2)</translation>
     </message>
     <message>
         <source>Duplicate and decommission circuit %1 (%2)</source>
-        <translation>Duplikovať a vyradiť okruh %1 (%2)</translation>
+        <translation>Duplikovat a vyřadit okruh %1 (%2)</translation>
     </message>
     <message>
         <source>Remove circuit %1 (%2)</source>
-        <translation>Odstrániť okruh %1 (%2)</translation>
+        <translation>Odstranit okruh %1 (%2)</translation>
     </message>
     <message>
         <source>Add inspection</source>
-        <translation>Pridať kontrolu</translation>
+        <translation>Přidat kontrolu</translation>
     </message>
     <message>
         <source>Edit inspection %1 (%2, circuit %3)</source>
-        <translation>Upraviť kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Upravit kontrolu %1 (%2, okruh %3)</translation>
     </message>
     <message>
         <source>Duplicate inspection %1 (%2, circuit %3)</source>
-        <translation>Duplikovať kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Duplikovat kontrolu %1 (%2, okruh %3)</translation>
     </message>
     <message>
         <source>Remove inspection %1 (%2, circuit %3)</source>
-        <translation>Odstrániť kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Odstranit kontrolu %1 (%2, okruh %3)</translation>
     </message>
     <message>
         <source>Add repair</source>
-        <translation>Pridať opravu</translation>
+        <translation>Přidat opravu</translation>
     </message>
     <message>
         <source>Edit repair %1%2</source>
-        <translation>Upraviť opravu %1%2</translation>
+        <translation>Upravit opravu %1%2</translation>
     </message>
     <message>
         <source>Duplicate repair %1%2</source>
-        <translation>Duplikovať opravu %1%2</translation>
+        <translation>Duplikovat opravu %1%2</translation>
     </message>
     <message>
         <source>Remove repair %1%2</source>
-        <translation>Odstrániť opravu %1%2</translation>
+        <translation>Odstranit opravu %1%2</translation>
     </message>
     <message>
         <source>Add variable</source>
-        <translation>Pridať premennú</translation>
+        <translation>Přidat proměnnou</translation>
     </message>
     <message>
         <source>Edit variable %1</source>
-        <translation>Upraviť premennú %1</translation>
+        <translation>Upravit proměnnou %1</translation>
     </message>
     <message>
         <source>Remove variable %1</source>
-        <translation>Odstrániť premennú %1</translation>
+        <translation>Odstranit proměnnou %1</translation>
     </message>
     <message>
         <source>Edit table %1</source>
-        <translation>Upraviť tabuľku %1</translation>
+        <translation>Upravit tabulku %1</translation>
     </message>
     <message>
         <source>Remove table %1</source>
-        <translation>Odstrániť tabuľku %1</translation>
+        <translation>Odstranit tabulku %1</translation>
     </message>
     <message>
         <source>Add variable %1 to table %2</source>
-        <translation>Pridať premennú %1 do tabuľky %2</translation>
+        <translation>Přidat proměnnou %1 do tabulky %2</translation>
     </message>
     <message>
         <source>Remove variable %1 (%2) from table %3</source>
-        <translation>Odstrániť premennú %1 (%2) z tabuľky %3</translation>
+        <translation>Odstranit proměnnou %1 (%2) z tabulky %3</translation>
     </message>
     <message>
         <source>Move variable %1 (%2) up in table %3</source>
-        <translation>Posunúť premennú %1 (%2) hore v tabuľke %3</translation>
+        <translation>Posunout proměnnou %1 (%2) výše v tabulce %3</translation>
     </message>
     <message>
         <source>Move variable %1 (%2) down in table %3</source>
-        <translation>Posunúť premennú %1 (%2) dole v tabuľke %3</translation>
+        <translation>Posunout proměnnou %1 (%2) níže v tabulce %3</translation>
     </message>
     <message>
         <source>Add warning</source>
-        <translation>Pridať upozornenie</translation>
+        <translation>Přidat upozornění</translation>
     </message>
     <message>
         <source>Edit warning %1</source>
-        <translation>Upraviť upozornenie %1</translation>
+        <translation>Upravit upozornění %1</translation>
     </message>
     <message>
         <source>Remove warning %1</source>
-        <translation>Odstrániť upozornenie %1</translation>
+        <translation>Odstranit upozornění %1</translation>
     </message>
     <message>
         <source>Add inspector</source>
-        <translation>Pridať kontrolóra</translation>
+        <translation>Přidat certifikovanou osobu</translation>
     </message>
     <message>
         <source>Edit inspector %1</source>
-        <translation>Upraviť kontrolóra %1</translation>
+        <translation>Upravit certifikovanou osobu %1</translation>
     </message>
     <message>
         <source>Remove inspector %1</source>
-        <translation>Odstrániť kontrolóra %1</translation>
+        <translation>Odstranit certifikovanou osobu %1</translation>
     </message>
     <message>
         <source>Import database %1</source>
-        <translation>Importovať z databázy %1</translation>
+        <translation>Importovat z databáze %1</translation>
     </message>
     <message>
         <source>Import CSV %1</source>
-        <translation>Importovať z CSV %1</translation>
+        <translation>Importovat z CSV %1</translation>
     </message>
     <message>
         <source>Add assembly record type</source>
-        <translation>Pridať typ montážneho listu</translation>
+        <translation>Přidat typ montážního listu</translation>
     </message>
     <message>
         <source>Edit assembly record type %1</source>
-        <translation>Upraviť typ montážneho listu %1</translation>
+        <translation>Upravit typ montážního listu %1</translation>
     </message>
     <message>
         <source>Remove assembly record type %1</source>
-        <translation>Odstrániť typ montážneho listu %1</translation>
+        <translation>Odstranit typ montážního listu %1</translation>
     </message>
     <message>
         <source>Add assembly record item type</source>
-        <translation>Pridať typ položky montážneho listu</translation>
+        <translation>Přidat typ položky montážního listu</translation>
     </message>
     <message>
         <source>Edit assembly record item type %1</source>
-        <translation>Upraviť typ položky montážneho listu %1</translation>
+        <translation>Upravit typ položky montážního listu %1</translation>
     </message>
     <message>
         <source>Remove assembly record item type %1</source>
-        <translation>Odstrániť typ položky montážneho listu %1</translation>
+        <translation>Odstranit typ položky montážního listu %1</translation>
     </message>
     <message>
         <source>Add assembly record item category</source>
-        <translation>Pridať kategóriu položiek montážneho listu</translation>
+        <translation>Přidat kategorii položek montážního listu</translation>
     </message>
     <message>
         <source>Edit assembly record item category %1</source>
-        <translation>Upraviť kategóriu položiek montážneho listu %1</translation>
+        <translation>Upravit kategorii položek montážního listu %1</translation>
     </message>
     <message>
         <source>Remove assembly record item category %1</source>
-        <translation>Odstrániť kategóriu položiek montážneho listu %1</translation>
+        <translation>Odstranit kategorii položek montážního listu %1</translation>
     </message>
     <message>
         <source>Add circuit unit type</source>
-        <translation>Pridať typ jednotky okruhu</translation>
+        <translation>Přidat typ jednotky okruhu</translation>
     </message>
     <message>
         <source>Edit circuit unit type %1</source>
-        <translation>Upraviť typ jednotky okruhu %1</translation>
+        <translation>Upravit typ jednotky okruhu %1</translation>
     </message>
     <message>
         <source>Remove circuit unit type %1</source>
-        <translation>Odstrániť typ jednotky okruhu %1</translation>
+        <translation>Odstranit typ jednotky okruhu %1</translation>
     </message>
     <message>
         <source>Add style</source>
-        <translation>Pridať vzhľad</translation>
+        <translation>Přidat vzhled</translation>
     </message>
     <message>
         <source>Edit style %1</source>
-        <translation>Upraviť vzhľad %1</translation>
+        <translation>Upravit vzhled %1</translation>
     </message>
     <message>
         <source>Remove style %1</source>
-        <translation>Odstrániť vzhľad %1</translation>
+        <translation>Odstranit vzhled %1</translation>
     </message>
     <message>
         <source>Lock database</source>
-        <translation>Zamknúť databázu</translation>
+        <translation>Zamknout databázi</translation>
     </message>
     <message>
         <source>Unlock database</source>
-        <translation>Odomknúť databázu</translation>
+        <translation>Odemknout databázi</translation>
     </message>
     <message>
         <source>Previous refrigerant:</source>
-        <translation>Predchádzajúce chladivo:</translation>
+        <translation>Předchozí chladivo:</translation>
     </message>
     <message>
         <source>New refrigerant:</source>
@@ -4222,11 +4235,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Undo changes you have made</source>
-        <translation>Vrátiť späť vykonané zmeny</translation>
+        <translation>Vrátit zpět vykonané změny</translation>
     </message>
     <message>
         <source>Reporting</source>
-        <translation>Oznamovanie</translation>
+        <translation>Oznamování</translation>
     </message>
     <message>
         <source>Ctrl+Shift+W</source>
@@ -4238,7 +4251,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Open a new tab</source>
-        <translation>Otvoriť novú kartu</translation>
+        <translation>Otevřít novou kartu</translation>
     </message>
     <message>
         <source>Ctrl+T</source>
@@ -4246,19 +4259,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Zatvoriť kartu</translation>
+        <translation>Zavřít kartu</translation>
     </message>
     <message>
         <source>Close the current tab</source>
-        <translation>Zatvoriť aktuálnu kartu</translation>
+        <translation>Zavřít aktuální kartu</translation>
     </message>
     <message>
         <source>Find All</source>
-        <translation>Nájsť všetky</translation>
+        <translation>Najít vše</translation>
     </message>
     <message>
         <source>Find all occurrences of the searched word</source>
-        <translation>Nájsť všetky výskyty hľadaného slova</translation>
+        <translation>Najít všechny výsledky hledaného slova</translation>
     </message>
     <message>
         <source>Ctrl+Shift+F</source>
@@ -4266,55 +4279,55 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Remove assembly record type - Leaklog</source>
-        <translation>Odstrániť typ montážneho listu - Leaklog</translation>
+        <translation>Odstranit typ montážního listu - Leaklog</translation>
     </message>
     <message>
         <source>Auto Save...</source>
-        <translation>Automatické ukladanie...</translation>
+        <translation>Automatické ukladání...</translation>
     </message>
     <message>
         <source>Configure automatic saving for this database</source>
-        <translation>Nastaviť automatické ukladanie pre túto databázu</translation>
+        <translation>Nastavit automatické ukladání pro tuto databázi</translation>
     </message>
     <message>
         <source>Database modified - Leaklog</source>
-        <translation>Databáza upravená - Leaklog</translation>
+        <translation>Databáze upravená - Leaklog</translation>
     </message>
     <message>
         <source>Configure Auto Save - Leaklog</source>
-        <translation>Nastaviť automatické ukladanie - Leaklog</translation>
+        <translation>Nastavit automatické ukládání - Leaklog</translation>
     </message>
     <message>
         <source>Do not save automatically</source>
-        <translation>Neukladať automaticky</translation>
+        <translation>Neukládat automaticky</translation>
     </message>
     <message>
         <source>Save all changes immediately</source>
-        <translation>Okamžite uložiť všetky zmeny</translation>
+        <translation>Okamžitě uložit všechny změny</translation>
     </message>
     <message>
         <source>This will disable the Undo function.</source>
-        <translation>Táto možnosť deaktivuje funkciu Krok späť.</translation>
+        <translation>Tato možnost deaktivuje funkci Krok zpět.</translation>
     </message>
     <message>
         <source>Save all changes after 10 minutes of inactivity</source>
-        <translation>Uložiť všetky zmeny po 10 minútach nečinnosti</translation>
+        <translation>Uložit všechny změny po 10 minutách nečinnosti</translation>
     </message>
     <message>
         <source>Ask to save changes after 10 minutes of inactivity</source>
-        <translation>Opýtať sa po 10 minútach nečinnosti</translation>
+        <translation>Zeptat se po 10 minutách nečinnosti</translation>
     </message>
     <message>
         <source>Check for Leaklog updates online</source>
-        <translation>Skontrolovať dostupnosť aktualizácií programu Leaklog</translation>
+        <translation>Zkontrolovat dostupnost aktualizací programu Leaklog</translation>
     </message>
     <message>
         <source>Documentation</source>
-        <translation>Dokumentácia</translation>
+        <translation>Dokumentace</translation>
     </message>
     <message>
         <source>View the online documentation</source>
-        <translation>Zobraziť online dokumentáciu</translation>
+        <translation>Zobrazit online dokumentaci</translation>
     </message>
     <message>
         <source>http://github.com/szchkt/leaklog/wiki</source>
@@ -4322,11 +4335,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>What&apos;s New</source>
-        <translation>Čo je nové</translation>
+        <translation>Co je nové</translation>
     </message>
     <message>
         <source>View the changelog online</source>
-        <translation>Zobraziť zoznam zmien online</translation>
+        <translation>Zobrazit seznam změn online</translation>
     </message>
     <message>
         <source>http://github.com/szchkt/leaklog/releases</source>
@@ -4334,23 +4347,23 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Show Service Company Information</source>
-        <translation>Zobraziť informácie o servisnej organizácii</translation>
+        <translation>Zobrazit informace o servisní organizaci</translation>
     </message>
     <message>
         <source>Move Circuit to Another Customer...</source>
-        <translation>Presunúť okruh k inému zákazníkovi...</translation>
+        <translation>Přesunout okruh k jinému zákazníkovi...</translation>
     </message>
     <message>
         <source>Move the selected circuit to another customer</source>
-        <translation>Presunúť vybraný okruh k inému zákazníkovi</translation>
+        <translation>Přesunout vybraný okruh k jinému zákazníkovi</translation>
     </message>
     <message>
         <source>Move circuit to another customer - Leaklog</source>
-        <translation>Presunúť okruh k inému zákazníkovi - Leaklog</translation>
+        <translation>Přesunout okruh k jinému zákazníkovi - Leaklog</translation>
     </message>
     <message>
         <source>Move circuit:</source>
-        <translation>Presunúť okruh:</translation>
+        <translation>Přesunout okruh:</translation>
     </message>
     <message>
         <source>To customer:</source>
@@ -4358,81 +4371,81 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Change circuit ID to:</source>
-        <translation>Zmeniť IČ okruhu na:</translation>
+        <translation>Změnit IČ okruhu na:</translation>
     </message>
     <message>
         <source>Move</source>
-        <translation>Presunúť</translation>
+        <translation>Přesunout</translation>
     </message>
     <message>
         <source>Move circuit %1 (%2) to customer %3</source>
-        <translation>Presunúť okruh %1 (%2) k zákazníkovi %3</translation>
+        <translation>Přesunout okruh %1 (%2) k zákazníkovi %3</translation>
     </message>
     <message>
         <source>Date:</source>
-        <translation>Dátum:</translation>
+        <translation>Datum:</translation>
     </message>
     <message>
         <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
-        <translation>NEUPRAVUJTE TÚTO KONTROLU: Ak vidíte túto správu, používate staršiu verziu programu Leaklog ako tá, ktorou bola táto kontrola vytvorená. Zmeny vykonané v tejto kontrole nebudú viditeľné v novších verziách programu Leaklog.</translation>
+        <translation>NEUPRAVUJTE TUTO KONTROLU: Pokud vidíte tuto zprávu, používáte starší verzi programu Leaklog než tu, ve které byla tato kontrola vytvořená. Změny provedené v této kontrole nebudou viditelné v novějších verzích programu Leaklog.</translation>
     </message>
     <message>
         <source>Skip Inspection...</source>
-        <translation>Vynechať kontrolu...</translation>
+        <translation>Vynechat kontrolu...</translation>
     </message>
     <message>
         <source>Skip inspection - Leaklog</source>
-        <translation>Vynechať kontrolu - Leaklog</translation>
+        <translation>Vynechat kontrolu - Leaklog</translation>
     </message>
     <message>
         <source>Skip inspection of circuit:</source>
-        <translation>Vynechať kontrolu okruhu:</translation>
+        <translation>Vynechat kontrolu okruhu:</translation>
     </message>
     <message>
         <source>Date of skipped inspection:</source>
-        <translation>Dátum vynechanej kontroly:</translation>
+        <translation>Datum vynechané kontroly:</translation>
     </message>
     <message>
         <source>Reason:</source>
-        <translation>Dôvod:</translation>
+        <translation>Důvod:</translation>
     </message>
     <message>
         <source>Skip</source>
-        <translation>Vynechať</translation>
+        <translation>Vynechat</translation>
     </message>
     <message>
         <source>Skip inspection of circuit %1 (%2)</source>
-        <translation>Vynechať kontrolu okruhu %1 (%2)</translation>
+        <translation>Vynechat kontrolu okruhu %1 (%2)</translation>
     </message>
     <message>
         <source>Open Backup Folder</source>
-        <translation>Otvoriť priečinok so zálohami</translation>
+        <translation>Otevřít složku se zálohami</translation>
     </message>
     <message>
         <source>Open the folder containing automatic backups of this database</source>
-        <translation>Otvoriť priečinok obsahujúci automatické zálohy tejto databázy</translation>
+        <translation>Otevřít složku obsahující automatické zálohy této databáze</translation>
     </message>
     <message>
         <source>Failed to create backup: %1</source>
-        <translation>Nepodarilo sa vytvoriť zálohu: %1</translation>
+        <translation>Nepodařilo se vytvořit zálohu: %1</translation>
     </message>
     <message>
         <source>Failed to copy database.</source>
-        <translation>Kopírovanie databázy zlyhalo.</translation>
+        <translation>Kopírování databáze selhalo.</translation>
     </message>
     <message>
         <source>Could not create backup folder.</source>
-        <translation>Nepodarilo sa vytvoriť priečinok pre zálohy.</translation>
+        <translation>Nepodařilo se vytvořit složku pro zálohy.</translation>
     </message>
     <message>
         <source>Cannot open database %1:
 %2.</source>
-        <translation>Nie je možné otvoriť databázu %1:
+        <translation>Nelze otevřít databázi %1:
 %2.</translation>
     </message>
     <message>
         <source>Open Backup Folder - Leaklog</source>
-        <translation>Otvoriť priečinok so zálohami - Leaklog</translation>
+        <translation>Otevřít složku se zálohami - Leaklog</translation>
     </message>
     <message>
         <source>CO₂ equivalent</source>
@@ -4444,11 +4457,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Detector installed</source>
-        <translation>Inštalovaný detektor</translation>
+        <translation>Nainstalovaný detekční systém úniků</translation>
     </message>
     <message>
         <source>No detector installed</source>
-        <translation>Bez detektora</translation>
+        <translation>Bez detekčního systému</translation>
     </message>
     <message>
         <source>ID</source>
@@ -4461,11 +4474,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Leaked in Store</source>
-        <translation>Únik na sklade</translation>
+        <translation>Únik na skladě</translation>
     </message>
     <message>
         <source>decimal</source>
-        <translation>desatinné číslo</translation>
+        <translation>desetinné číslo</translation>
     </message>
     <message>
         <source>short text</source>
@@ -4473,11 +4486,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>long text</source>
-        <translation>dlhý text</translation>
+        <translation>dlouhý text</translation>
     </message>
     <message>
         <source>Exclude from Agenda only</source>
-        <translation>Vyradiť len z agendy</translation>
+        <translation>Vyřadit jen z agendy</translation>
     </message>
 </context>
 <context>
@@ -4523,7 +4536,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>Oils</name>
     <message>
         <source>MO (Mineral oil)</source>
-        <translation>MO (Minerálny olej)</translation>
+        <translation>MO (Minerální olej)</translation>
     </message>
     <message>
         <source>AB (Alkylbenzene oil)</source>
@@ -4554,7 +4567,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>OperatorReportView</name>
     <message>
         <source>Operator Report: %1</source>
-        <translation>Oznámenie prevádzkovateľa: %1</translation>
+        <translation>Oznámení provozovatele: %1</translation>
     </message>
     <message>
         <source>Owner information</source>
@@ -4562,44 +4575,44 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Operator information</source>
-        <translation>Údaje o prevádzkovateľovi</translation>
+        <translation>Údaje o provozovateli</translation>
     </message>
     <message>
         <source>Circuit information</source>
         <comment>Operator report</comment>
-        <translation>Údaje o okruhoch</translation>
+        <translation>Údaje o okruzích</translation>
     </message>
     <message>
         <source>At the beginning of the period</source>
-        <translation>Na začiatku obdobia</translation>
+        <translation>Na začátku období</translation>
     </message>
     <message>
         <source>At the beginning of the year</source>
-        <translation>Na začiatku roka</translation>
+        <translation>Na začátku roku</translation>
     </message>
     <message>
         <source>Added</source>
-        <translation>Doplnené</translation>
+        <translation>Doplněné</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Zhodnotené</translation>
+        <translation>Znovuzískané</translation>
     </message>
     <message>
         <source>At the end of the period</source>
-        <translation>Na konci obdobia</translation>
+        <translation>Na konci období</translation>
     </message>
     <message>
         <source>At the end of the year</source>
-        <translation>Na konci roka</translation>
+        <translation>Na konci roku</translation>
     </message>
     <message>
         <source>Compiled by:</source>
-        <translation>Spracoval:</translation>
+        <translation>Zpracoval:</translation>
     </message>
     <message>
         <source>Phone:</source>
-        <translation>Telefón:</translation>
+        <translation>Telefon:</translation>
     </message>
     <message>
         <source>E-mail:</source>
@@ -4607,164 +4620,164 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Place:</source>
-        <translation>Miesto:</translation>
+        <translation>Místo:</translation>
     </message>
     <message>
         <source>Date:</source>
-        <translation>Dátum:</translation>
+        <translation>Datum:</translation>
     </message>
     <message>
         <source>Operator Report</source>
-        <translation>Oznámenie prevádzkovateľa</translation>
+        <translation>Oznámení provozovatele</translation>
     </message>
 </context>
 <context>
     <name>PartnerWidgets</name>
     <message>
         <source>Business partner:</source>
-        <translation>Obchodný partner:</translation>
+        <translation>Obchodní partner:</translation>
     </message>
     <message>
         <source>Business partner (ID):</source>
-        <translation>IČO obchodného partnera:</translation>
+        <translation>IČO obchodního partnera:</translation>
     </message>
 </context>
 <context>
     <name>Permissions</name>
     <message>
         <source>Add record of refrigerant management</source>
-        <translation>Pridať záznam o nakladaní s chladivom</translation>
+        <translation>Přidat záznam o nakládání s chladivem</translation>
     </message>
     <message>
         <source>Add customer</source>
-        <translation>Pridať zákazníka</translation>
+        <translation>Přidat zákazníka</translation>
     </message>
     <message>
         <source>Remove customer</source>
-        <translation>Odstrániť zákazníka</translation>
+        <translation>Odstranit zákazníka</translation>
     </message>
     <message>
         <source>Add circuit</source>
-        <translation>Pridať okruh</translation>
+        <translation>Přidat okruh</translation>
     </message>
     <message>
         <source>Remove circuit</source>
-        <translation>Odstrániť okruh</translation>
+        <translation>Odstranit okruh</translation>
     </message>
     <message>
         <source>Add inspection</source>
-        <translation>Pridať kontrolu</translation>
+        <translation>Přidat kontrolu</translation>
     </message>
     <message>
         <source>Remove inspection</source>
-        <translation>Odstrániť kontrolu</translation>
+        <translation>Odstranit kontrolu</translation>
     </message>
     <message>
         <source>Add repair</source>
-        <translation>Pridať opravu</translation>
+        <translation>Přidat opravu</translation>
     </message>
     <message>
         <source>Remove repair</source>
-        <translation>Odstrániť opravu</translation>
+        <translation>Odstranit opravu</translation>
     </message>
     <message>
         <source>Add inspector</source>
-        <translation>Pridať kontrolóra</translation>
+        <translation>Přidat certifikovanou osobu</translation>
     </message>
     <message>
         <source>Remove inspector</source>
-        <translation>Odstrániť kontrolóra</translation>
+        <translation>Odstranit certifikovanou osobu</translation>
     </message>
     <message>
         <source>Add table</source>
-        <translation>Pridať tabuľku</translation>
+        <translation>Přidat tabulku</translation>
     </message>
     <message>
         <source>Remove table</source>
-        <translation>Odstrániť tabuľku</translation>
+        <translation>Odstranit tabulku</translation>
     </message>
     <message>
         <source>Add variable</source>
-        <translation>Pridať premennú</translation>
+        <translation>Přidat proměnnou</translation>
     </message>
     <message>
         <source>Remove variable</source>
-        <translation>Odstrániť premennú</translation>
+        <translation>Odstranit proměnnou</translation>
     </message>
     <message>
         <source>Add warning</source>
-        <translation>Pridať upozornenie</translation>
+        <translation>Přidat upozornění</translation>
     </message>
     <message>
         <source>Remove warning</source>
-        <translation>Odstrániť upozornenie</translation>
+        <translation>Odstranit upozornění</translation>
     </message>
     <message>
         <source>Import data</source>
-        <translation>Importovať údaje</translation>
+        <translation>Importovat údaje</translation>
     </message>
     <message>
         <source>Access assembly record acquisition prices</source>
-        <translation>Pristupovať k obstarávacím cenám na montážnych listoch</translation>
+        <translation>Přístup k pořizovacím cenám na montážních listech</translation>
     </message>
     <message>
         <source>Access assembly record list prices</source>
-        <translation>Pristupovať k cenníkovým cenám na montážnych listoch</translation>
+        <translation>Přístup k cenníkovým cenám na montážních listech</translation>
     </message>
     <message>
         <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
+        <translation>Upravit informace o servisní organizaci</translation>
     </message>
     <message>
         <source>Edit record of refrigerant management</source>
-        <translation>Upraviť záznam o nakladaní s chladivom</translation>
+        <translation>Upravit záznam o nakládání s chladivem</translation>
     </message>
     <message>
         <source>Edit customer</source>
-        <translation>Upraviť zákazníka</translation>
+        <translation>Upravit zákazníka</translation>
     </message>
     <message>
         <source>Edit circuit</source>
-        <translation>Upraviť okruh</translation>
+        <translation>Upravit okruh</translation>
     </message>
     <message>
         <source>Edit inspection</source>
-        <translation>Upraviť kontrolu</translation>
+        <translation>Upravit kontrolu</translation>
     </message>
     <message>
         <source>Edit repair</source>
-        <translation>Upraviť opravu</translation>
+        <translation>Upravit opravu</translation>
     </message>
     <message>
         <source>Edit inspector</source>
-        <translation>Upraviť kontrolóra</translation>
+        <translation>Upravit certifikovanou osobu</translation>
     </message>
     <message>
         <source>Edit table</source>
-        <translation>Upraviť tabuľku</translation>
+        <translation>Upravit tabulku</translation>
     </message>
     <message>
         <source>Edit variable</source>
-        <translation>Upraviť premennú</translation>
+        <translation>Upravit proměnnou</translation>
     </message>
     <message>
         <source>Edit warning</source>
-        <translation>Upraviť upozornenie</translation>
+        <translation>Upravit upozornění</translation>
     </message>
     <message>
         <source>Decommission circuit</source>
-        <translation>Vyradiť okruh</translation>
+        <translation>Vyřadit okruh</translation>
     </message>
 </context>
 <context>
     <name>PermissionsDialogue</name>
     <message>
         <source>Configure permissions - Leaklog</source>
-        <translation>Nastaviť prístupové práva - Leaklog</translation>
+        <translation>Nastavit přístupová práva - Leaklog</translation>
     </message>
     <message>
         <source>Permissions only apply when the database is locked.</source>
-        <translation>Prístupové práva platia len keď je databáza zamknutá.</translation>
+        <translation>Přístupová práva platí jen když je databáze zamknutá.</translation>
     </message>
     <message>
         <source>Administrator</source>
@@ -4772,19 +4785,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Nobody</source>
-        <translation>Nikto</translation>
+        <translation>Nikdo</translation>
     </message>
     <message>
         <source>Everyone</source>
-        <translation>Všetci</translation>
+        <translation>Všichni</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Uložiť</translation>
+        <translation>Uložit</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Zrušiť</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>Author</source>
@@ -4803,7 +4816,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Name</source>
-        <translation>Meno</translation>
+        <translation>Jméno</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -4811,18 +4824,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Phone</source>
-        <translation>Telefón</translation>
+        <translation>Telefon</translation>
     </message>
     <message>
         <source>Hidden</source>
-        <translation>Skrytá</translation>
+        <translation>Skrýt</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>No type</source>
-        <translation>Žiadny typ</translation>
+        <translation>Žádný typ</translation>
     </message>
     <message>
         <source>Integer</source>
@@ -4830,19 +4843,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Boolean</source>
-        <translation>Áno/Nie</translation>
+        <translation>ano/ne</translation>
     </message>
     <message>
         <source>Default</source>
-        <translation>Východzí</translation>
+        <translation>Výchozí</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>Partners:</source>
-        <translation>Partneri:</translation>
+        <translation>Partneři:</translation>
     </message>
     <message>
         <source>New charge</source>
@@ -4850,26 +4863,26 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Decimal Number</source>
-        <translation>Desatinné číslo</translation>
+        <translation>Desetinné číslo</translation>
     </message>
     <message>
         <source>Short Text</source>
-        <translation>Krátky text</translation>
+        <translation>krátky text</translation>
     </message>
     <message>
         <source>Long Text</source>
-        <translation>Dlhý text</translation>
+        <translation>dlouhý text</translation>
     </message>
 </context>
 <context>
     <name>RefrigerantManagementView</name>
     <message>
         <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
+        <translation>Nakládání s chladivy</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Refrigerant</source>
@@ -4877,11 +4890,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Purchased</source>
-        <translation>Kúpené</translation>
+        <translation>Koupené</translation>
     </message>
     <message>
         <source>Sold</source>
-        <translation>Predané</translation>
+        <translation>Předané</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -4889,15 +4902,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Zničené</translation>
+        <translation>Znehodnocené</translation>
     </message>
     <message>
         <source>Leaked in store</source>
-        <translation>Únik na sklade</translation>
+        <translation>Únik na skladě</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -4908,7 +4921,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>RefrigerantRecord</name>
     <message>
         <source>Date:</source>
-        <translation>Dátum:</translation>
+        <translation>Datum:</translation>
     </message>
     <message>
         <source>Refrigerant:</source>
@@ -4916,19 +4929,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Purchased (new):</source>
-        <translation>Kúpené (nové):</translation>
+        <translation>Koupené (nové):</translation>
     </message>
     <message>
         <source>Purchased (recovered):</source>
-        <translation>Kúpené (zhodnotené):</translation>
+        <translation>Koupené (znovuzískané):</translation>
     </message>
     <message>
         <source>Sold (new):</source>
-        <translation>Predané (nové):</translation>
+        <translation>Prodané (nové):</translation>
     </message>
     <message>
         <source>Sold (recovered):</source>
-        <translation>Predané (zhodnotené):</translation>
+        <translation>Prodané (znovuzískané):</translation>
     </message>
     <message>
         <source>Reclaimed:</source>
@@ -4936,27 +4949,27 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Disposed of:</source>
-        <translation>Zničené:</translation>
+        <translation>Znehodnocené:</translation>
     </message>
     <message>
         <source>Leaked (new):</source>
-        <translation>Uniknuté (nové):</translation>
+        <translation>Uniklé (nové):</translation>
     </message>
     <message>
         <source>Leaked (recovered):</source>
-        <translation>Uniknuté (zhodnotené):</translation>
+        <translation>Uniklé (znovuzískané):</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Business partner</source>
-        <translation>Obchodný partner</translation>
+        <translation>Obchodní partner</translation>
     </message>
     <message>
         <source>Business partner (ID)</source>
-        <translation>IČO obchodného partnera</translation>
+        <translation>IČO obchodního partnera</translation>
     </message>
     <message>
         <source>Refrigerant</source>
@@ -4964,19 +4977,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Purchased (new)</source>
-        <translation>Kúpené (nové)</translation>
+        <translation>Koupené (nové)</translation>
     </message>
     <message>
         <source>Purchased (recovered)</source>
-        <translation>Kúpené (zhodnotené)</translation>
+        <translation>Koupené (znovuzískané)</translation>
     </message>
     <message>
         <source>Sold (new)</source>
-        <translation>Predané (nové)</translation>
+        <translation>Prodané (nové)</translation>
     </message>
     <message>
         <source>Sold (recovered)</source>
-        <translation>Predané (zhodnotené)</translation>
+        <translation>Prodané (znovuzískané)</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -4984,26 +4997,26 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Zničené</translation>
+        <translation>Znehodnocené</translation>
     </message>
     <message>
         <source>Leaked (new)</source>
-        <translation>Uniknuté (nové)</translation>
+        <translation>Uniklé (nové)</translation>
     </message>
     <message>
         <source>Leaked (recovered)</source>
-        <translation>Uniknuté (zhodnotené)</translation>
+        <translation>Uniklé (znovuzískané)</translation>
     </message>
     <message>
         <source>Record of Refrigerant Management</source>
-        <translation>Záznam o nakladaní s chladivom</translation>
+        <translation>Záznam o nakládání s chladivem</translation>
     </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
     <message>
         <source>REMOVE</source>
-        <translation>ODSTRÁNIŤ</translation>
+        <translation>ODSTRANIT</translation>
     </message>
 </context>
 <context>
@@ -5014,7 +5027,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Date:</source>
-        <translation>Dátum:</translation>
+        <translation>Datum:</translation>
     </message>
     <message>
         <source>Customer:</source>
@@ -5022,11 +5035,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Device:</source>
-        <translation>Zariadenie:</translation>
+        <translation>Zařízení:</translation>
     </message>
     <message>
         <source>Field of application:</source>
-        <translation>Druh nasadenia:</translation>
+        <translation>Typ použití:</translation>
     </message>
     <message>
         <source>Refrigerant:</source>
@@ -5038,35 +5051,35 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Amount of refrigerant:</source>
-        <translation>Množstvo chladiva:</translation>
+        <translation>Množství chladiva:</translation>
     </message>
     <message>
         <source>Refrigerant addition:</source>
-        <translation>Doplnenie chladiva:</translation>
+        <translation>Doplnění chladiva:</translation>
     </message>
     <message>
         <source>Refrigerant recovery:</source>
-        <translation>Zhodnotenie chladiva:</translation>
+        <translation>Znovuzískání chladiva:</translation>
     </message>
     <message>
         <source>Device</source>
-        <translation>Zariadenie</translation>
+        <translation>Zařízení</translation>
     </message>
     <message>
         <source>Field of application</source>
-        <translation>Druh nasadenia</translation>
+        <translation>Typ použití</translation>
     </message>
     <message>
         <source>Amount of refrigerant</source>
-        <translation>Množstvo chladiva</translation>
+        <translation>Množství chladiva</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
-        <translation>Doplnenie chladiva</translation>
+        <translation>Doplnění chladiva</translation>
     </message>
     <message>
         <source>Refrigerant recovery</source>
-        <translation>Zhodnotenie chladiva</translation>
+        <translation>Znovuzískání chladiva</translation>
     </message>
     <message>
         <source>Assembly record No.</source>
@@ -5074,7 +5087,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -5086,18 +5099,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Inspector:</source>
-        <translation>Kontrolór:</translation>
+        <translation>Certifikovaná osoba:</translation>
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
 </context>
 <context>
     <name>RepairsView</name>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum zmeny</translation>
+        <translation>Datum změny</translation>
     </message>
     <message>
         <source>Author</source>
@@ -5112,11 +5125,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>ReportDataController</name>
     <message>
         <source>Report year: %1</source>
-        <translation>Rok oznamovania: %1</translation>
+        <translation>Rok oznamování: %1</translation>
     </message>
     <message>
         <source>A newer version of Leaklog is required.</source>
-        <translation>Vyžaduje sa novšia verzia programu Leaklog.</translation>
+        <translation>Vyžaduje se novější verze programu Leaklog.</translation>
     </message>
     <message>
         <source>http://szchkt.org/report_data/</source>
@@ -5125,14 +5138,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>all</source>
-        <translation>všetky</translation>
+        <translation>Vše</translation>
     </message>
 </context>
 <context>
     <name>ServiceCompany</name>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>ID:</source>
@@ -5144,7 +5157,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Phone:</source>
-        <translation>Telefón:</translation>
+        <translation>Telefon:</translation>
     </message>
     <message>
         <source>E-mail:</source>
@@ -5156,18 +5169,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Image:</source>
-        <translation>Obrázok:</translation>
+        <translation>Obrázek:</translation>
     </message>
     <message>
         <source>Service Company</source>
-        <translation>Servisná organizácia</translation>
+        <translation>Servisní organizace</translation>
     </message>
 </context>
 <context>
     <name>StoreView</name>
     <message>
         <source>Service Company</source>
-        <translation>Servisná organizácia</translation>
+        <translation>Servisní organizace</translation>
     </message>
     <message>
         <source>Store</source>
@@ -5183,39 +5196,39 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>New in store</source>
-        <translation>Nové na sklade</translation>
+        <translation>Nové na skladě</translation>
     </message>
     <message>
         <source>Recovered in store</source>
-        <translation>Zhodnotené na sklade</translation>
+        <translation>Znovuzískané na skladě</translation>
     </message>
     <message>
         <source>Leaked in store</source>
-        <translation>Únik na sklade</translation>
+        <translation>Únik na skladě</translation>
     </message>
     <message>
         <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
+        <translation>Nakládání s chladivy</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Purchased</source>
-        <translation>Kúpené</translation>
+        <translation>Koupené</translation>
     </message>
     <message>
         <source>Sold</source>
-        <translation>Predané</translation>
+        <translation>Prodané</translation>
     </message>
     <message>
         <source>Added</source>
-        <translation>Doplnené</translation>
+        <translation>Doplněné</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Zhodnotené</translation>
+        <translation>Znovuzískané</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -5223,44 +5236,44 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Zničené</translation>
+        <translation>Znehodnocené</translation>
     </message>
 </context>
 <context>
     <name>Style</name>
     <message>
         <source>Style</source>
-        <translation>Vzhľad</translation>
+        <translation>Vzhled</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Style:</source>
-        <translation>Vzhľad:</translation>
+        <translation>Vzhled:</translation>
     </message>
     <message>
         <source>Use div elements instead of tables</source>
-        <translation>Použiť div elementy namiesto tabuliek</translation>
+        <translation>Použít div elementy namísto tabulek</translation>
     </message>
 </context>
 <context>
     <name>TabbedEditDialogue</name>
     <message>
         <source>Basic information</source>
-        <translation>Základné informácie</translation>
+        <translation>Základní informace</translation>
     </message>
 </context>
 <context>
     <name>Table</name>
     <message>
         <source>Table</source>
-        <translation>Tabuľka</translation>
+        <translation>Tabulka</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Scope:</source>
@@ -5276,7 +5289,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Highlight nominal inspections</source>
-        <translation>Vyznačiť nominálne kontroly</translation>
+        <translation>Vyznačit kontroly při uvedení do provozu</translation>
     </message>
 </context>
 <context>
@@ -5284,131 +5297,131 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Table of Inspections</source>
         <comment>View Title</comment>
-        <translation>Tabuľka kontrol</translation>
+        <translation>Tabulka kontrol</translation>
     </message>
     <message>
         <source>Table of Inspections: %1</source>
         <comment>View Title</comment>
-        <translation>Tabuľka kontrol: %1</translation>
+        <translation>Tabulka kontrol: %1</translation>
     </message>
     <message>
         <source>All compressors</source>
-        <translation>Všetky kompresory</translation>
+        <translation>Všechny kompresory</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Dátum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Warnings</source>
-        <translation>Upozornenia</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <source>Sum</source>
-        <translation>Spolu</translation>
+        <translation>Celkem</translation>
     </message>
     <message>
         <source>Average</source>
-        <translation>Priemer</translation>
+        <translation>Průměr</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Áno</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Nie</translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <source>Table of Inspections</source>
-        <translation>Tabuľka kontrol</translation>
+        <translation>Tabulka kontrol</translation>
     </message>
 </context>
 <context>
     <name>ToolBarStack</name>
     <message>
         <source>Add record of refrigerant management</source>
-        <translation>Pridať záznam o nakladaní s chladivom</translation>
+        <translation>Přidat záznam o nakládaní s chladivem</translation>
     </message>
     <message>
         <source>Add a new inspector</source>
-        <translation>Pridať nového kontrolóra</translation>
+        <translation>Přidat novou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Remove the selected inspector</source>
-        <translation>Odstrániť vybraného kontrolóra</translation>
+        <translation>Odstranit vybranou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Add a new customer</source>
-        <translation>Pridať nového zákazníka</translation>
+        <translation>Přidat nového zákazníka</translation>
     </message>
     <message>
         <source>Remove the selected customer</source>
-        <translation>Odstrániť vybraného zákazníka</translation>
+        <translation>Odstranit vybraného zákazníka</translation>
     </message>
     <message>
         <source>Add a new repair</source>
-        <translation>Pridať novú opravu</translation>
+        <translation>Přidat novou opravu</translation>
     </message>
     <message>
         <source>Remove the selected repair</source>
-        <translation>Odstrániť vybranú opravu</translation>
+        <translation>Odstranit vybranou opravu</translation>
     </message>
     <message>
         <source>Add a new circuit to the selected customer</source>
-        <translation>Pridať nový okruh vybranému zákazníkovi</translation>
+        <translation>Přidat nový okruh vybranému zákazníkovi</translation>
     </message>
     <message>
         <source>Remove the selected circuit</source>
-        <translation>Odstrániť vybraný okruh</translation>
+        <translation>Odstranit vybraný okruh</translation>
     </message>
     <message>
         <source>Add a new inspection to the selected circuit</source>
-        <translation>Pridať novú kontrolu vybraného okruhu</translation>
+        <translation>Přidat novou kontrolu vybraného okruhu</translation>
     </message>
     <message>
         <source>Remove the selected inspection</source>
-        <translation>Odstrániť vybranú kontrolu</translation>
+        <translation>Odstranit vybranou kontrolu</translation>
     </message>
     <message>
         <source>Add a new assembly record type</source>
-        <translation>Pridať nový typ montážneho listu</translation>
+        <translation>Přidat nový typ montážního listu</translation>
     </message>
     <message>
         <source>Remove the selected assembly record type</source>
-        <translation>Odstrániť vybraný typ montážneho listu</translation>
+        <translation>Odstranit vybraný typ montážního listu</translation>
     </message>
     <message>
         <source>Add a new assembly record item type</source>
-        <translation>Pridať nový typ položky montážneho listu</translation>
+        <translation>Přidat nový typ montážního listu</translation>
     </message>
     <message>
         <source>Remove the selected assembly record item type</source>
-        <translation>Odstrániť vybraný typ položky montážneho listu</translation>
+        <translation>Odstranit vybraný typ montážního listu</translation>
     </message>
     <message>
         <source>Add a new assembly record item category</source>
-        <translation>Pridať novú kategóriu položiek montážneho listu</translation>
+        <translation>Přidat novou kategorii položek montážního listu</translation>
     </message>
     <message>
         <source>Remove the selected assembly record item category</source>
-        <translation>Odstrániť vybranú kategóriu položiek montážneho listu</translation>
+        <translation>Odstranit vybranou kategorii položek montážního listu</translation>
     </message>
     <message>
         <source>Add a new circuit unit type</source>
-        <translation>Pridať nový typ jednotky okruh</translation>
+        <translation>Přidat nový typ jednotky okruhu</translation>
     </message>
     <message>
         <source>Remove the selected circuit unit type</source>
-        <translation>Odstrániť vybraný typ jednotky okruhu</translation>
+        <translation>Odstranit vybraný typ jednotky okruhu</translation>
     </message>
     <message>
         <source>Show:</source>
-        <translation>Zobraziť:</translation>
+        <translation>Zobrazit:</translation>
     </message>
     <message>
         <source>Show list price on assembly record</source>
-        <translation>Zobraziť cenníkovú cenu na montážnom liste</translation>
+        <translation>Zobrazit cenníkovou cenu na montážním listě</translation>
     </message>
     <message>
         <source>List price</source>
@@ -5416,27 +5429,27 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Show total on assembly record</source>
-        <translation>Zobraziť celkovú cenu na montážnom liste</translation>
+        <translation>Zobrazit cenníkovou cenu na montážním listě</translation>
     </message>
     <message>
         <source>Total</source>
-        <translation>Celkom</translation>
+        <translation>Celkem</translation>
     </message>
     <message>
         <source>Show acquisition price on assembly record</source>
-        <translation>Zobraziť obstarávaciu cenu na montážnom liste</translation>
+        <translation>Zobrazit pořizovací cenu na montážním listě</translation>
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
+        <translation>Pořízovací cena</translation>
     </message>
     <message>
         <source>Choose a column to filter by</source>
-        <translation>Vyberte stĺpec, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
+        <translation>Vyberte sloupec, podle kterého chcete aktuální pohled filtrovat</translation>
     </message>
     <message>
         <source>Type a word to filter by</source>
-        <translation>Zadajte slovo, podľa ktorého chcete aktuálny pohľad filtrovať</translation>
+        <translation>Zadejte slovo, podle kterého chcete aktuální pohled filtrovat</translation>
     </message>
     <message>
         <source>Since:</source>
@@ -5444,15 +5457,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Show records entered since</source>
-        <translation>Zobraziť záznamy od roku</translation>
+        <translation>Zobrazit záznamy od roku</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Všetky</translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <source>Select a filter type</source>
-        <translation>Vyberte typ filtra</translation>
+        <translation>Vyberte typ filtru</translation>
     </message>
     <message>
         <source>contains:</source>
@@ -5464,7 +5477,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>starts with:</source>
-        <translation>začína na:</translation>
+        <translation>začíná na:</translation>
     </message>
     <message>
         <source>ends with:</source>
@@ -5472,183 +5485,183 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Autofill the form with values from the database</source>
-        <translation>Automaticky vyplniť formulár hodnotami z databázy</translation>
+        <translation>Automaticky vyplnit formulář hodnotami z databáze</translation>
     </message>
     <message>
         <source>Autofill</source>
-        <translation>Vyplniť</translation>
+        <translation>Automaticky vyplnit</translation>
     </message>
     <message>
         <source>Finish reporting data</source>
-        <translation>Ukončiť oznamovanie údajov</translation>
+        <translation>Ukončit oznamování údajů</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation>Dokončiť</translation>
+        <translation>Dokončit</translation>
     </message>
     <message>
         <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
+        <translation>Upravit informace o servisní organizaci</translation>
     </message>
     <message>
         <source>Edit Service Company Information...</source>
-        <translation>Upraviť informácie o servisnej organizácii...</translation>
+        <translation>Upravit informace o servisní organizaci...</translation>
     </message>
     <message>
         <source>Add Record of Refrigerant Management...</source>
-        <translation>Pridať záznam o nakladaní s chladivom...</translation>
+        <translation>Přidat záznam o nakládání s chladivem...</translation>
     </message>
     <message>
         <source>Add Customer...</source>
-        <translation>Pridať zákazníka...</translation>
+        <translation>Přidat zákazníka...</translation>
     </message>
     <message>
         <source>Edit the selected customer</source>
-        <translation>Upraviť vybraného zákazníka</translation>
+        <translation>Upravit vybraného zákazníka</translation>
     </message>
     <message>
         <source>Edit Customer...</source>
-        <translation>Upraviť zákazníka...</translation>
+        <translation>Upravit zákazníka...</translation>
     </message>
     <message>
         <source>Remove Customer...</source>
-        <translation>Odstrániť zákazníka...</translation>
+        <translation>Odstranit zákazníka...</translation>
     </message>
     <message>
         <source>Add Inspector...</source>
-        <translation>Pridať kontrolóra...</translation>
+        <translation>Přidat certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Edit the selected inspector</source>
-        <translation>Upraviť vybraného kontrolóra</translation>
+        <translation>Upravit vybranou certifikovanou osobu</translation>
     </message>
     <message>
         <source>Edit Inspector...</source>
-        <translation>Upraviť kontrolóra...</translation>
+        <translation>Upravit certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Remove Inspector...</source>
-        <translation>Odstrániť kontrolóra...</translation>
+        <translation>Odstranit certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Add Repair...</source>
-        <translation>Pridať opravu...</translation>
+        <translation>Přidat opravu...</translation>
     </message>
     <message>
         <source>Edit the selected repair</source>
-        <translation>Upraviť vybranú opravu</translation>
+        <translation>Upravit vybranou opravu</translation>
     </message>
     <message>
         <source>Edit Repair...</source>
-        <translation>Upraviť opravu...</translation>
+        <translation>Upravit opravu...</translation>
     </message>
     <message>
         <source>Remove Repair...</source>
-        <translation>Odstrániť opravu...</translation>
+        <translation>Odstranit opravu...</translation>
     </message>
     <message>
         <source>Add Circuit...</source>
-        <translation>Pridať okruh...</translation>
+        <translation>Přidat okruh...</translation>
     </message>
     <message>
         <source>Edit the selected circuit</source>
-        <translation>Upraviť vybraný okruh</translation>
+        <translation>Upravit vybraný okruh</translation>
     </message>
     <message>
         <source>Edit Circuit...</source>
-        <translation>Upraviť okruh...</translation>
+        <translation>Upravit okruh...</translation>
     </message>
     <message>
         <source>Remove Circuit...</source>
-        <translation>Odstrániť okruh...</translation>
+        <translation>Odstranit okruh...</translation>
     </message>
     <message>
         <source>Add Inspection...</source>
-        <translation>Pridať kontrolu...</translation>
+        <translation>Přidat kontrolu...</translation>
     </message>
     <message>
         <source>Edit the selected inspection</source>
-        <translation>Upraviť vybranú kontrolu</translation>
+        <translation>Upravit vybranou kontrolu</translation>
     </message>
     <message>
         <source>Edit Inspection...</source>
-        <translation>Upraviť kontrolu...</translation>
+        <translation>Upravit kontrolu...</translation>
     </message>
     <message>
         <source>Remove Inspection...</source>
-        <translation>Odstrániť kontrolu...</translation>
+        <translation>Odstranit kontrolu...</translation>
     </message>
     <message>
         <source>Add Record Type...</source>
-        <translation>Pridať typ montážneho listu...</translation>
+        <translation>Přidat typ montážního listu...</translation>
     </message>
     <message>
         <source>Edit the selected assembly record type</source>
-        <translation>Upraviť vybraný typ montážneho listu</translation>
+        <translation>Upravit vybraný typ montážního listu</translation>
     </message>
     <message>
         <source>Edit Record Type...</source>
-        <translation>Upraviť typ montážneho listu...</translation>
+        <translation>Upravit typ montážního listu...</translation>
     </message>
     <message>
         <source>Remove Record Type...</source>
-        <translation>Odstrániť typ montážneho listu...</translation>
+        <translation>Odstranit typ montážního listu...</translation>
     </message>
     <message>
         <source>Add Item Category...</source>
-        <translation>Pridať kategóriu položiek...</translation>
+        <translation>Přidat kategorii položek...</translation>
     </message>
     <message>
         <source>Edit the selected assembly record item category</source>
-        <translation>Upraviť vybranú kategóriu položiek montážneho listu</translation>
+        <translation>Upravit vybranou kategorii položek montážního listu</translation>
     </message>
     <message>
         <source>Edit Item Category...</source>
-        <translation>Upraviť kategóriu položiek...</translation>
+        <translation>Upravit kategorii položek...</translation>
     </message>
     <message>
         <source>Remove Item Category...</source>
-        <translation>Odstrániť kategóriu položiek...</translation>
+        <translation>Odstranit kategorii položek...</translation>
     </message>
     <message>
         <source>Add Item Type...</source>
-        <translation>Pridať typ položky...</translation>
+        <translation>Přidat typ položky...</translation>
     </message>
     <message>
         <source>Edit the selected assembly record item type</source>
-        <translation>Upraviť vybraný typ položky montážneho listu</translation>
+        <translation>Upravit vybraný typ položky montážního listu</translation>
     </message>
     <message>
         <source>Edit Item Type...</source>
-        <translation>Upraviť typ položky...</translation>
+        <translation>Upravit typ položky...</translation>
     </message>
     <message>
         <source>Remove Item Type...</source>
-        <translation>Odstrániť typ položky...</translation>
+        <translation>Odstranit typ položky...</translation>
     </message>
     <message>
         <source>Add Unit Type...</source>
-        <translation>Pridať typ jednotky...</translation>
+        <translation>Pridat typ jednotky...</translation>
     </message>
     <message>
         <source>Edit the selected circuit unit type</source>
-        <translation>Upraviť vybraný typ jednotky okruhu</translation>
+        <translation>Upravit vybraný typ jednotky okruhu</translation>
     </message>
     <message>
         <source>Edit Unit Type...</source>
-        <translation>Upraviť typ jednotky...</translation>
+        <translation>Upravit typ jednotky...</translation>
     </message>
     <message>
         <source>Remove Unit Type...</source>
-        <translation>Odstrániť typ jednotky...</translation>
+        <translation>Odstranit typ jednotky...</translation>
     </message>
     <message>
         <source>All Circuits</source>
-        <translation>Všetky okruhy</translation>
+        <translation>Všechny okruhy</translation>
     </message>
     <message>
         <source>Month:</source>
-        <translation>Mesiac:</translation>
+        <translation>Měsíc:</translation>
     </message>
     <message>
         <source>—</source>
@@ -5656,7 +5669,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>By Field of Application</source>
-        <translation>Podľa druhu nasadenia</translation>
+        <translation>Podle typu použití</translation>
     </message>
     <message>
         <source>Year:</source>
@@ -5664,15 +5677,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Last</source>
-        <translation>Posledný</translation>
+        <translation>Poslední</translation>
     </message>
     <message>
         <source>ToolBarStack</source>
-        <translation>Panely nástrojov</translation>
+        <translation>Nástrojový panel</translation>
     </message>
     <message>
         <source>Inspector: %1</source>
-        <translation>Kontrolór: %1</translation>
+        <translation>Certifikovaná osoba:%1</translation>
     </message>
     <message>
         <source>Customer: %1</source>
@@ -5684,15 +5697,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Assembly Record Type: %1</source>
-        <translation>Typ montážneho listu: %1</translation>
+        <translation>Typ montážního listu %1</translation>
     </message>
     <message>
         <source>Assembly Record Item Category: %1</source>
-        <translation>Kategória položiek montážneho listu: %1</translation>
+        <translation>Kategorie položek montážního listu %1</translation>
     </message>
     <message>
         <source>Assembly Record Item Type: %1</source>
-        <translation>Typ položky montážneho listu: %1</translation>
+        <translation>Typ položky montážního listu %1</translation>
     </message>
     <message>
         <source>Circuit Unit Type: %1</source>
@@ -5700,7 +5713,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Zrušiť výber</translation>
+        <translation>Zrušit výběr</translation>
     </message>
     <message>
         <source>Repair: &lt;b&gt;%1&lt;/b&gt;</source>
@@ -5712,19 +5725,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Business Partner</source>
-        <translation>Obchodný partner</translation>
+        <translation>Obchodní partner</translation>
     </message>
     <message>
         <source>Circuit Name</source>
-        <translation>Názov okruhu</translation>
+        <translation>Název okruhu</translation>
     </message>
     <message>
         <source>Convert refrigerant to CO₂ equivalent</source>
-        <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
+        <translation>Přepočítat chladivo na CO₂ ekvivalent</translation>
     </message>
     <message>
         <source>Except Decommissioned Before:</source>
-        <translation>Okrem vyradených pred:</translation>
+        <translation>Kromě vyřazených před:</translation>
     </message>
     <message>
         <source>dd/MM/yyyy</source>
@@ -5735,7 +5748,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>UndoStack</name>
     <message>
         <source>Unknown operation</source>
-        <translation>Neznáma operácia</translation>
+        <translation>Neznámá operace</translation>
     </message>
 </context>
 <context>
@@ -5746,7 +5759,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>hours</source>
-        <translation>hodín</translation>
+        <translation>hodin</translation>
     </message>
     <message>
         <source>%</source>
@@ -5793,11 +5806,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Subcooling</source>
-        <translation>Podchladenie</translation>
+        <translation>Podchlazení</translation>
     </message>
     <message>
         <source>Superheating</source>
-        <translation>Prehriatie</translation>
+        <translation>Přehřátí</translation>
     </message>
     <message>
         <source>evap.</source>
@@ -5809,7 +5822,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Pressure evaporating</source>
-        <translation>Výparný tlak</translation>
+        <translation>Výpařovací tlak</translation>
     </message>
     <message>
         <source>Temperature sec. medium</source>
@@ -5825,19 +5838,19 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Pressure condensing</source>
-        <translation>Kondenzačný tlak</translation>
+        <translation>Kondenzační tlak</translation>
     </message>
     <message>
         <source>Temperature evaporating</source>
-        <translation>Výparná teplota</translation>
+        <translation>Výpařovací teplota</translation>
     </message>
     <message>
         <source>Temperature condensing</source>
-        <translation>Kondenzačná teplota</translation>
+        <translation>Kondenzační teplota</translation>
     </message>
     <message>
         <source>Temperature EV</source>
-        <translation>Teplota pred EV</translation>
+        <translation>Teplota před EV</translation>
     </message>
     <message>
         <source>Temperature evap. out</source>
@@ -5845,7 +5858,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Temperature comp. in</source>
-        <translation>Teplota pred komp.</translation>
+        <translation>Teplota před komp.in</translation>
     </message>
     <message>
         <source>Temperature discharge</source>
@@ -5853,11 +5866,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Comp. el. power input</source>
-        <translation>Príkon komp.</translation>
+        <translation>Příkon komp.</translation>
     </message>
     <message>
         <source>Electric current</source>
-        <translation>Prúd</translation>
+        <translation>Proud</translation>
     </message>
     <message>
         <source>L1</source>
@@ -5873,7 +5886,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Electric voltage</source>
-        <translation>Napätie</translation>
+        <translation>Napětí</translation>
     </message>
     <message>
         <source>Pneumatic pressure switches</source>
@@ -5893,11 +5906,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Safety switch</source>
-        <translation>Poistný ventil</translation>
+        <translation>Pojistný ventil</translation>
     </message>
     <message>
         <source>Remedies</source>
-        <translation>Opatrenia</translation>
+        <translation>Opatření</translation>
     </message>
     <message>
         <source>Assembly record No.</source>
@@ -5905,11 +5918,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Assembly record type</source>
-        <translation>Typ montážneho listu</translation>
+        <translation>Typ montážního listu</translation>
     </message>
     <message>
         <source>Visual and aural check</source>
-        <translation>Vizuálna a sluchová kontrola</translation>
+        <translation>Vizuální a sluchová kontrola</translation>
     </message>
     <message>
         <source>Corr/Def</source>
@@ -5921,47 +5934,47 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Bubble/Level</source>
-        <translation>Priezor</translation>
+        <translation>Průhledítko</translation>
     </message>
     <message>
         <source>Oil leak</source>
-        <translation>Únik oleja</translation>
+        <translation>Únik oleje</translation>
     </message>
     <message>
         <source>Direct leak check (location)</source>
-        <translation>Priama kontrola úniku (miesto)</translation>
+        <translation>Přímá kontrola úniku (místo)</translation>
     </message>
     <message>
         <source>Electronic detection</source>
-        <translation>El. detekcia</translation>
+        <translation>El. detekce</translation>
     </message>
     <message>
         <source>UV detection</source>
-        <translation>UV detekcia</translation>
+        <translation>UV detekce</translation>
     </message>
     <message>
         <source>Bubble detection</source>
-        <translation>Penou</translation>
+        <translation>Pěnou</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
-        <translation>Doplnenie chladiva</translation>
+        <translation>Doplnění chladiva</translation>
     </message>
     <message>
         <source>Annual leakage</source>
-        <translation>Ročný únik</translation>
+        <translation>Roční únik</translation>
     </message>
     <message>
         <source>Recovered</source>
-        <translation>Zhodnotené</translation>
+        <translation>Znovuzískané</translation>
     </message>
     <message>
         <source>Refrigerant recovery</source>
-        <translation>Zhodnotenie chladiva</translation>
+        <translation>Znovuzískání chladiva</translation>
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>New</source>
@@ -5977,30 +5990,30 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Oil addition</source>
-        <translation>Doplnenie oleja</translation>
+        <translation>Doplnění oleje</translation>
     </message>
     <message>
         <source>Oil shortage</source>
-        <translation>Nedostatok oleja</translation>
+        <translation>Nedostatek oleja</translation>
     </message>
     <message>
         <source>Compressor run-time</source>
-        <translation>Beh kompresora</translation>
+        <translation>Běh kompresoru</translation>
     </message>
     <message>
         <source>Risks</source>
-        <translation>Riziká</translation>
+        <translation>Rizika</translation>
     </message>
     <message>
         <source>Contact person</source>
-        <translation>Prevzal</translation>
+        <translation>Převzal</translation>
     </message>
 </context>
 <context>
     <name>VariableRecord</name>
     <message>
         <source>Variable</source>
-        <translation>Premenná</translation>
+        <translation>Proměnná</translation>
     </message>
     <message>
         <source>ID:</source>
@@ -6008,7 +6021,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Unit:</source>
@@ -6024,15 +6037,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Tolerance:</source>
-        <translation>Tolerancia:</translation>
+        <translation>Tolerance:</translation>
     </message>
     <message>
         <source>Colour:</source>
-        <translation>Farba:</translation>
+        <translation>Barva:</translation>
     </message>
     <message>
         <source>Compare value with the nominal inspection</source>
-        <translation>Porovnať hodnotu s nominálnou</translation>
+        <translation>Porovnat hodnoty s kontrolou při uvádění do provozu</translation>
     </message>
     <message>
         <source>Scope:</source>
@@ -6055,7 +6068,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Boolean</source>
-        <translation>Áno/Nie</translation>
+        <translation>ano/ne</translation>
     </message>
     <message>
         <source>Group</source>
@@ -6063,7 +6076,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Decimal Number</source>
-        <translation>Desatinné číslo</translation>
+        <translation>Desetinné číslo</translation>
     </message>
     <message>
         <source>Short Text</source>
@@ -6071,7 +6084,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Long Text</source>
-        <translation>Dlhý text</translation>
+        <translation>dlouhý text</translation>
     </message>
 </context>
 <context>
@@ -6082,7 +6095,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Inspector:</source>
-        <translation>Kontrolór:</translation>
+        <translation>Certifikovaná osoba:</translation>
     </message>
 </context>
 <context>
@@ -6093,7 +6106,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Service Company</source>
-        <translation>Servisná organizácia</translation>
+        <translation>Servisní organizace</translation>
     </message>
     <message>
         <source>Store</source>
@@ -6101,11 +6114,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Refrigerant Management</source>
-        <translation>Nakladanie s chladivami</translation>
+        <translation>Nakládání s chladivy</translation>
     </message>
     <message>
         <source>Inspectors</source>
-        <translation>Kontrolóri</translation>
+        <translation>Certifikované osoby</translation>
     </message>
     <message>
         <source>Customers</source>
@@ -6113,11 +6126,11 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Operator Report</source>
-        <translation>Oznámenie prevádzkovateľa</translation>
+        <translation>Oznámení provozovatele</translation>
     </message>
     <message>
         <source>Leakages by Application</source>
-        <translation>Úniky podľa nasadenia</translation>
+        <translation>Úniky podle typu použití</translation>
     </message>
     <message>
         <source>Agenda</source>
@@ -6149,15 +6162,15 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Assembly Records</source>
-        <translation>Montážne listy</translation>
+        <translation>Montážní listy</translation>
     </message>
     <message>
         <source>Assembly Record</source>
-        <translation>Montážny list</translation>
+        <translation>Montážní list</translation>
     </message>
     <message>
         <source>Tables</source>
-        <translation>Tabuľky</translation>
+        <translation>Tabulky</translation>
     </message>
     <message>
         <source>Types</source>
@@ -6165,7 +6178,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Circuit Unit Types</source>
-        <translation>Typy jednotiek okruhov</translation>
+        <translation>Typy jednotek okruhů</translation>
     </message>
     <message>
         <source>Items</source>
@@ -6173,7 +6186,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Inspector</source>
-        <translation>Kontrolór</translation>
+        <translation>Certifikovaná osoba</translation>
     </message>
     <message>
         <source>Inspection</source>
@@ -6184,7 +6197,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>WarningRecord</name>
     <message>
         <source>Warning</source>
-        <translation>Upozornenie</translation>
+        <translation>Upozornění</translation>
     </message>
     <message>
         <source>%1: %2</source>
@@ -6196,7 +6209,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Name:</source>
-        <translation>Názov:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <source>Description:</source>
@@ -6204,7 +6217,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Delay:</source>
-        <translation>Oneskorenie:</translation>
+        <translation>Zpoždění:</translation>
     </message>
     <message>
         <source>days</source>
@@ -6227,7 +6240,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>Warnings</name>
     <message>
         <source>Refrigerant leakage above limit</source>
-        <translation>Nadlimitný únik chladiva</translation>
+        <translation>Nadlimitní únik chladiva</translation>
     </message>
     <message>
         <source>3 - 10 kg, before 2011</source>
@@ -6259,23 +6272,23 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>Compressor valve leakage</source>
-        <translation>Netesnosť ventilov kompresora</translation>
+        <translation>Netěsnost ventilů kompresoru</translation>
     </message>
     <message>
         <source>Liquid-line restriction</source>
-        <translation>Straty prietoku v kvapalinovom potrubí</translation>
+        <translation>Ztráty průtoku v kapalinovém potrubí</translation>
     </message>
     <message>
         <source>Condenser fouling</source>
-        <translation>Zanesenie kondenzátora</translation>
+        <translation>Zanesení kondenzátoru</translation>
     </message>
     <message>
         <source>Evaporator fouling</source>
-        <translation>Zanesenie výparníka</translation>
+        <translation>Zanesení výparníku</translation>
     </message>
     <message>
         <source>Needs inspection</source>
-        <translation>Potrebuje kontrolu</translation>
+        <translation>Potřebuje kontrolu</translation>
     </message>
     <message>
         <source>3 - 30 kg</source>
@@ -6283,7 +6296,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>6 - 30 kg, hermetically sealed</source>
-        <translation>6 - 30 kg, hermeticky uzavretý</translation>
+        <translation>6 - 30 kg, hermeticky uzavřený</translation>
     </message>
     <message>
         <source>30 - 300 kg</source>
@@ -6291,7 +6304,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>30 - 300 kg, leakage detector installed</source>
-        <translation>30 - 300 kg, zabudovaný detektor únikov</translation>
+        <translation>30 - 300 kg, nainstalovaný detekční systém úniků</translation>
     </message>
     <message>
         <source>above 300 kg</source>
@@ -6299,7 +6312,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     </message>
     <message>
         <source>above 300 kg, leakage detector installed</source>
-        <translation>nad 300 kg, zabudovaný detektor únikov</translation>
+        <translation>nad 300 kg, nainstalovaný detekční systém úniků</translation>
     </message>
 </context>
 </TS>
