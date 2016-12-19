@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Nominální kontrola:</translation>
+        <translation>Počáteční kontrola:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -314,7 +314,7 @@
     </message>
     <message>
         <source>Automatically add to assembly record</source>
-        <translation>Automaticky pridat do montážního listu</translation>
+        <translation>Automaticky přidat do montážního listu</translation>
     </message>
     <message>
         <source>Category:</source>
@@ -1855,7 +1855,7 @@
     <name>Inspection</name>
     <message>
         <source>Nominal</source>
-        <translation>Nominální</translation>
+        <translation>Počáteční</translation>
     </message>
     <message>
         <source>Repair</source>
@@ -1872,7 +1872,7 @@
     <message>
         <source>Nominal inspection</source>
         <translatorcomment>ze slov. Nominální kontrola</translatorcomment>
-        <translation>Kontrola při uvedení do provozu</translation>
+        <translation>Počáteční kontrola</translation>
     </message>
     <message>
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
@@ -1881,12 +1881,12 @@
     <message>
         <source>Nominal inspection already exists - Leaklog</source>
         <translatorcomment>z Nominální kontrola už existuje</translatorcomment>
-        <translation>Kontrola při uvedení do provozu již byla vykonána - Leaklog</translation>
+        <translation>Počáteční kontrola již byla vykonána - Leaklog</translation>
     </message>
     <message>
         <source>This circuit already has a nominal inspection.</source>
         <translatorcomment>z Tento okruh už má nominální kontrolu.</translatorcomment>
-        <translation>Na tomto okruhu již byla kontrola při uvedení do provozu provedena.</translation>
+        <translation>Na tomto okruhu již byla provedena počáteční kontrola.</translation>
     </message>
     <message>
         <source>Are you sure you want to add another?</source>
@@ -1894,7 +1894,7 @@
     </message>
     <message>
         <source>&amp;Add Another Nominal Inspection</source>
-        <translation>&amp;Pridat další kontrolu při uvedení do provozu</translation>
+        <translation>&amp;Přidat další počáteční kontrolu</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -1938,7 +1938,7 @@
     <name>InspectionDetailsView</name>
     <message>
         <source>Nominal Inspection:</source>
-        <translation>Kontrola při uvedení do provozu:</translation>
+        <translation>Počáteční kontrola:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -1973,7 +1973,7 @@
     <name>InspectionImagesView</name>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Kontrola při uvedení do provozu:</translation>
+        <translation>Počáteční kontrola:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -3295,8 +3295,8 @@ Pro odstranění upozornění „%1“ napište ODSTRANIT a potvrďte:</translat
     <message>
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Opravdu chcete odstranit vybranou cert. osobu?
-Pro odstranění všech údajů o cert. osobě „%1“ napište ODSTRANIT a potvrďte:</translation>
+        <translation>Opravdu chcete odstranit vybranou certifikovanou osobu?
+Pro odstranění všech údajů o certifikované osobě „%1“ napište ODSTRANIT a potvrďte:</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -3851,7 +3851,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Compare Values With Nominal Inspection</source>
-        <translation>Porovnat hodnoty s kontrolou při uvádění do provozu</translation>
+        <translation>Porovnat hodnoty s počáteční kontrolou</translation>
     </message>
     <message>
         <source>A newer version of Leaklog is required to open this database.</source>
@@ -5289,7 +5289,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Highlight nominal inspections</source>
-        <translation>Vyznačit kontroly při uvedení do provozu</translation>
+        <translation>Vyznačit počáteční kontroly</translation>
     </message>
 </context>
 <context>
@@ -5641,7 +5641,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Add Unit Type...</source>
-        <translation>Pridat typ jednotky...</translation>
+        <translation>Přidat typ jednotky...</translation>
     </message>
     <message>
         <source>Edit the selected circuit unit type</source>
@@ -6045,7 +6045,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Compare value with the nominal inspection</source>
-        <translation>Porovnat hodnoty s kontrolou při uvádění do provozu</translation>
+        <translation>Porovnat hodnoty s počáteční kontrolou</translation>
     </message>
     <message>
         <source>Scope:</source>
