@@ -116,6 +116,8 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
             if (null_var && value.isNull()) *null_var = true;
         } else if (var_name == "gwp") {
             values[i] = Global::refrigerantGWP(refrigerant);
+        } else if (var_name == "co2_equivalent") {
+            values[i] = Global::CO2Equivalent(refrigerant, circuit_attributes.value("refrigerant_amount").toDouble());
         } else {
             if (ok) *ok = false;
             if (null_var) *null_var = true;

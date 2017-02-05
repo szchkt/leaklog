@@ -26,7 +26,7 @@
 class Warnings : public MTSqlQueryResultBase<QString>
 {
 public:
-    Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QVariantMap & = QVariantMap(), int = 0);
+    Warnings(bool CO2_equivalent = true, bool = false, QVariantMap = QVariantMap(), int = 0);
 
     int warningConditionValueInsCount(int);
     Expression warningConditionValueIns(int, int);
@@ -35,20 +35,20 @@ public:
     int warningConditionFunctionCount(int);
     QString warningConditionFunction(int, int);
 
-    static void initWarnings(QSqlDatabase, ListOfVariantMaps *, int, int = -1, bool = false, int = 0);
+    static void initWarnings(ListOfVariantMaps *, int, int = -1, bool = false, bool = false, int = 0);
 
     static int circuitInspectionInterval(const QString &refrigerant, double refrigerant_amount, bool CO2_equivalent, bool hermetic, bool leak_detector, int interval = 0);
 
 protected:
     void saveResult();
 
-    static void initWarning(QSqlDatabase, ListOfVariantMaps *, const QString &, const QString &, const QString &, int, bool);
+    static void initWarning(ListOfVariantMaps *, const QString &, const QString &, const QString &, int, bool);
     static void initFilter(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
     static void initCondition(ListOfVariantMaps *, const QString &, const QString &, const QString &, const QString &);
 
     static QString tr(const char *);
 
-    QSqlDatabase database;
+    bool CO2_equivalent;
     bool enabled_only;
     int m_scope;
     QMap<int, QList<Expression> > conditions_value_ins;
@@ -59,37 +59,37 @@ protected:
 class Warning : public MTSqlQueryResultBase<QString>
 {
 public:
-    Warning(int, QSqlDatabase = QSqlDatabase());
+    Warning(int, bool CO2_equivalent = true);
 
 protected:
     void saveResult();
 
-    QSqlDatabase database;
     int id;
+    bool CO2_equivalent;
 };
 
 class WarningFilters : public MTSqlQueryResultBase<QString>
 {
 public:
-    WarningFilters(int, QSqlDatabase = QSqlDatabase());
+    WarningFilters(int, bool CO2_equivalent = true);
 
 protected:
     void saveResult();
 
-    QSqlDatabase database;
     int id;
+    bool CO2_equivalent;
 };
 
 class WarningConditions : public MTSqlQueryResultBase<QString>
 {
 public:
-    WarningConditions(int, QSqlDatabase = QSqlDatabase());
+    WarningConditions(int, bool CO2_equivalent = true);
 
 protected:
     void saveResult();
 
-    QSqlDatabase database;
     int id;
+    bool CO2_equivalent;
 };
 
 #endif // WARNINGS_H

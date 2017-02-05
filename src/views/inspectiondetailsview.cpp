@@ -158,7 +158,7 @@ QString InspectionDetailsView::renderHTML()
     }
 
 //*** Warnings ***
-    Warnings warnings(QSqlDatabase::database(), true, circuit);
+    Warnings warnings(settings->toolBarStack()->isCO2EquivalentChecked(), true, circuit);
     QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection);
     if (warnings_list.count()) {
         div.newLine();

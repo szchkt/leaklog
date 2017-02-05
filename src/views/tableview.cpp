@@ -45,6 +45,7 @@ QString TableView::renderHTML()
     QString cc_id = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuit();
     QString table_id = settings->currentTable();
     int year = settings->toolBarStack()->filterSinceValue();
+    bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
     QString compressor_id = settings->selectedCompressor();
 
     QString html; MTTextStream out(&html);
@@ -216,7 +217,7 @@ QString TableView::renderHTML()
 
         //*** Warnings ***
         if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_id.isEmpty()) {
-            Warnings warnings(QSqlDatabase::database(), true, circuit, table.value("scope").toInt());
+            Warnings warnings(CO2_equivalent, true, circuit, table.value("scope").toInt());
             QString warnings_html, inspection_date;
             QStringList last_warnings_list, warnings_list, backup_warnings;
             for (int i = 0; i < inspections.count(); ++i) {

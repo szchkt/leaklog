@@ -60,7 +60,7 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
                                                    QStringList() << tr("Inspection") << tr("Compressor")),
                                       QString(), enable_all));
     QStringList used_ids;
-    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp";
+    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
     used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);
