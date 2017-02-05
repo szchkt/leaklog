@@ -40,7 +40,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.1.3</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2008 – 2016 SZ CHKT</string>
+	<string>Copyright © 2008 – 2017 SZ CHKT</string>
 	<key>CFBundleName</key>
 	<string>Leaklog</string>
 	<key>LSMinimumSystemVersion</key>
