@@ -20,6 +20,7 @@
 #ifndef WARNINGS_H
 #define WARNINGS_H
 
+#include "expression.h"
 #include "mtsqlqueryresult.h"
 
 class Warnings : public MTSqlQueryResultBase<QString>
@@ -28,9 +29,9 @@ public:
     Warnings(QSqlDatabase = QSqlDatabase(), bool = false, const QVariantMap & = QVariantMap(), int = 0);
 
     int warningConditionValueInsCount(int);
-    MTDictionary warningConditionValueIns(int, int);
+    Expression warningConditionValueIns(int, int);
     int warningConditionValueNomCount(int);
-    MTDictionary warningConditionValueNom(int, int);
+    Expression warningConditionValueNom(int, int);
     int warningConditionFunctionCount(int);
     QString warningConditionFunction(int, int);
 
@@ -50,8 +51,8 @@ protected:
     QSqlDatabase database;
     bool enabled_only;
     int m_scope;
-    QMap<int, QList<MTDictionary> > conditions_value_ins;
-    QMap<int, QList<MTDictionary> > conditions_value_nom;
+    QMap<int, QList<Expression> > conditions_value_ins;
+    QMap<int, QList<Expression> > conditions_value_nom;
     QMap<int, QList<QString> > conditions_functions;
 };
 

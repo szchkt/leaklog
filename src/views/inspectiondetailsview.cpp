@@ -236,11 +236,11 @@ bool InspectionDetailsView::checkWarningConditions(Warnings &warnings, const QVa
     for (int i = 0; i < num_conditions; ++i) {
         bool ok = true;
 
-        double ins_value = evaluateExpression(inspection, warnings.warningConditionValueIns(id, i), circuit_attributes, &ok);
+        double ins_value = warnings.warningConditionValueIns(id, i).evaluate(inspection, circuit_attributes, &ok);
         if (!ok)
             return false;
 
-        double nom_value = evaluateExpression(nominal_ins, warnings.warningConditionValueNom(id, i), circuit_attributes, &ok);
+        double nom_value = warnings.warningConditionValueNom(id, i).evaluate(nominal_ins, circuit_attributes, &ok);
         if (!ok)
             return false;
 

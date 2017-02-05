@@ -43,8 +43,6 @@ namespace VariableEvaluation {
         QString evaluate(Variable *, QVariantMap &, QString &);
         QString evaluate(const QString &, QVariantMap &, QString &);
 
-        QStringList &usedIDs() { return used_ids; }
-
         QList<Variable *> listVariables() const { return vars_list; }
 
         QString variableName(Variable *, bool = false) const;
@@ -54,7 +52,6 @@ namespace VariableEvaluation {
 
         QMap<QString, Variable *> vars_map;
         QList<Variable *> vars_list;
-        QStringList used_ids;
         QString customer_id;
         QString circuit_id;
         QVariantMap circuit;

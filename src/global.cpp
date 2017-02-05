@@ -17,8 +17,6 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "fparser/fparser.hh"
-#include "refprop.h"
 #include "global.h"
 #include "variables.h"
 #include "reportdata.h"
@@ -340,128 +338,6 @@ QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
     return "(COALESCE(circuits.refrigerant_amount, 0)"
             " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
             " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id AND inspections.nominal = 1)) AS " + return_as;
-}
-
-QMap<QString, MTDictionary> Global::parsed_expressions;
-
-MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
-{
-    MTDictionary dict_exp(true);
-    if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
-        QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
-        QStringList functions; functions << "sum" << "p_to_t" << "p_to_t_vap";
-        for (int i = 0; i < circuit_attributes.count(); ++i) {
-            if (!used_ids.contains(circuit_attributes.at(i))) { used_ids << circuit_attributes.at(i); }
-        }
-        for (int i = 0; i < functions.count(); ++i) {
-            if (!used_ids.contains(functions.at(i))) { used_ids << functions.at(i); }
-        }
-        QSet<int> matched;
-        for (int i = 0; i < used_ids.count(); ++i) {
-            QRegExp expression(QString("\\b%1\\b").arg(used_ids.at(i)));
-            int index = exp.indexOf(expression);
-            while (index >= 0) {
-                int length = expression.matchedLength();
-                if (!matched.contains(index)) {
-                    for (int j = index; j < index + length; j++) { matched << j; }
-                }
-                index = exp.indexOf(expression, index + length);
-            }
-        }
-        QString id_, f_;
-        int last_f = 0;
-        for (int i = 0; i < exp.length(); ++i) {
-            if (matched.contains(i)) {
-                if (!f_.isEmpty()) {
-                    dict_exp.insert(f_, "function");
-                    f_.clear();
-                }
-                id_.append(exp.at(i));
-            } else {
-                if (!id_.isEmpty()) {
-                    if (!functions.contains(id_)) {
-                        if (circuit_attributes.contains(id_)) {
-                            dict_exp.insert(id_, "circuit_attribute");
-                        } else {
-                            dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
-                        }
-                    }
-                    last_f = functions.indexOf(id_) + 1;
-                    id_.clear();
-                }
-                f_.append(exp.at(i));
-            }
-        }
-        if (!f_.isEmpty()) {
-            dict_exp.insert(f_, "function");
-        }
-        if (!id_.isEmpty()) {
-            if (circuit_attributes.contains(id_)) {
-                dict_exp.insert(id_, "circuit_attribute");
-            } else {
-                dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
-            }
-        }
-        parsed_expressions.insert(exp, dict_exp);
-    } else {
-        return parsed_expressions.value(exp, MTDictionary(true));
-    }
-    return dict_exp;
-}
-
-double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_id, const QString &circuit_id, bool *ok, bool *null_var)
-{
-    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
-    QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
-    return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
-}
-
-double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QVariantMap &circuit_attributes, bool *ok, bool *null_var)
-{
-    static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
-                                   " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"
-                                   " AND (nominal <> 1 OR nominal IS NULL)");
-    if (null_var) *null_var = false;
-    QString inspection_date = inspection.value("date").toString();
-    FunctionParser fparser;
-    QString value;
-    for (int i = 0; i < expression.count(); ++i) {
-        if (expression.value(i) == "id") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(inspection.value(expression.key(i)).toDouble()));
-        } else if (expression.value(i) == "sum") {
-            double v = 0.0;
-            MTSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
-            sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
-            sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
-            if (sum_ins.exec() && sum_ins.next())
-                v = sum_ins.value(0).toDouble();
-            value.append(QString::number(v));
-        } else if (expression.value(i) == "circuit_attribute") {
-            value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
-        } else if (expression.value(i) == "p_to_t") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
-                                                                        inspection.value(expression.key(i)).toDouble(),
-                                                                        RefProp::Liquid)));
-        } else if (expression.value(i) == "p_to_t_vap") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
-                                                                        inspection.value(expression.key(i)).toDouble(),
-                                                                        RefProp::Vapour)));
-        } else {
-            value.append(expression.key(i));
-        }
-    }
-    if (fparser.Parse(value.toStdString(), "") >= 0) {
-        if (ok) *ok = false;
-        return 0;
-    }
-    if (ok) *ok = true;
-    long double result = fparser.Eval(NULL);
-    if (round(result) == result) return (double)result;
-    return (double)(round(result * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP);
 }
 
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)

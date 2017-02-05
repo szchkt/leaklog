@@ -71,8 +71,8 @@ Warnings::Warnings(QSqlDatabase db, bool enabled_only, const QVariantMap &circui
             if (skip) { result()->removeAt(i); i--; continue; }
             WarningConditions warning_conditions(id);
             while (warning_conditions.next()) {
-                conditions_value_ins[id] << parseExpression(warning_conditions.value("value_ins").toString(), used_ids);
-                conditions_value_nom[id] << parseExpression(warning_conditions.value("value_nom").toString(), used_ids);
+                conditions_value_ins[id] << Expression(warning_conditions.value("value_ins").toString());
+                conditions_value_nom[id] << Expression(warning_conditions.value("value_nom").toString());
                 conditions_functions[id] << warning_conditions.value("function").toString();
             }
         }
@@ -83,11 +83,11 @@ QString Warnings::tr(const char *s) { return QApplication::translate("Warnings",
 
 int Warnings::warningConditionValueInsCount(int id) { return conditions_value_ins.value(id).count(); }
 
-MTDictionary Warnings::warningConditionValueIns(int id, int i) { return conditions_value_ins.value(id).at(i); }
+Expression Warnings::warningConditionValueIns(int id, int i) { return conditions_value_ins.value(id).at(i); }
 
 int Warnings::warningConditionValueNomCount(int id) { return conditions_value_nom.value(id).count(); }
 
-MTDictionary Warnings::warningConditionValueNom(int id, int i) { return conditions_value_nom.value(id).at(i); }
+Expression Warnings::warningConditionValueNom(int id, int i) { return conditions_value_nom.value(id).at(i); }
 
 int Warnings::warningConditionFunctionCount(int id) { return conditions_functions.value(id).count(); }
 

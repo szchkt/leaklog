@@ -20,6 +20,7 @@
 #include "tableview.h"
 
 #include "global.h"
+#include "expression.h"
 #include "mttextstream.h"
 #include "records.h"
 #include "viewtabsettings.h"
@@ -452,14 +453,14 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
                                     value += inspections.at(ins).value(subvariable->id()).toDouble();
                                 }
                             } else {
-                                MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIDs());
+                                Expression expression(subvariable->value());
                                 for (int ins = 0; ins < inspections.count(); ++ins) {
                                     if (value_contains_sum && ins > 0 &&
                                         inspections.at(ins - 1).value("date").toString().split(".").first()
                                             == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
                                     num_ins++;
-                                    value += evaluateExpression(inspections[ins], expression, circuit);
+                                    value += expression.evaluate(inspections[ins], circuit);
                                 }
                             }
                             if (num_ins && (foot_functions.key(f) == "avg" || subvariable->unit() == "%"))
@@ -480,14 +481,14 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
                                 value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
-                            MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIDs());
+                            Expression expression(variable->value());
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 if (value_contains_sum && ins > 0 &&
                                     inspections.at(ins - 1).value("date").toString().split(".").first()
                                         == inspections.at(ins).value("date").toString().split(".").first())
                                     continue;
                                 num_ins++;
-                                value += evaluateExpression(inspections[ins], expression, circuit);
+                                value += expression.evaluate(inspections[ins], circuit);
                             }
                         }
                         if (num_ins && (foot_functions.key(f) == "avg" || variable->unit() == "%"))

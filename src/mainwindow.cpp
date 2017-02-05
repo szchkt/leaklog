@@ -19,6 +19,7 @@
 
 #include "mainwindow.h"
 #include "global.h"
+#include "expression.h"
 #include "records.h"
 #include "variables.h"
 #include "warnings.h"
@@ -602,9 +603,7 @@ void MainWindow::printLabel(bool detailed)
             refr_add_per.next();
             QString unparsed_expression = refr_add_per.valueExpression();
             if (!unparsed_expression.isEmpty()) {
-                QStringList var_ids = listVariableIds();
-                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids),
-                                                                     m_tab->selectedCustomer(), m_tab->selectedCircuit()));
+                attributes.insert("refr_add_per", Expression(unparsed_expression).evaluate(inspection, m_tab->selectedCustomer(), m_tab->selectedCircuit()));
             }
         }
     }

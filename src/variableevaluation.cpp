@@ -21,6 +21,7 @@
 
 #include "variables.h"
 #include "global.h"
+#include "expression.h"
 #include "records.h"
 
 using namespace Global;
@@ -85,8 +86,6 @@ void VariableEvaluation::EvaluationContext::init()
             parent_var->addSubvariable(var);
         }
     }
-
-    used_ids = listVariableIds();
 }
 
 QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool is_nominal) const
@@ -125,14 +124,14 @@ QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVari
             nom_value = context.nominal_ins.value(id()).toString();
         }
     } else {
-        MTDictionary expression = parseExpression(value(), context.used_ids);
+        Expression expression(value());
         bool ok_eval, is_null;
-        ins_value = QString::number(evaluateExpression(inspection, expression, context.circuit, &ok_eval, &is_null));
+        ins_value = QString::number(expression.evaluate(inspection, context.circuit, &ok_eval, &is_null));
         if (!ok_eval || is_null) ins_value.clear();
 
         if (context.nominal_ins.isEmpty()) nom_value.clear();
         else if (compareNom()) {
-            nom_value = QString::number(evaluateExpression(context.nominal_ins, expression, context.circuit, &ok_eval));
+            nom_value = QString::number(expression.evaluate(context.nominal_ins, context.circuit, &ok_eval));
             if (!ok_eval) nom_value.clear();
         }
     }

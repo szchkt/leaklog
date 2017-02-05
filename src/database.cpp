@@ -745,7 +745,6 @@ void MainWindow::closeDatabase(bool save)
     settings.setValue("current_index", tabw_main->currentIndex());
     settings.endGroup();
 
-    parsed_expressions.clear();
     m_undo_stack->clear();
     cb_table_edit->clear();
     trw_variables->clear();
@@ -1976,7 +1975,6 @@ void MainWindow::addVariable(bool subvar)
             addColumn(record.id(), "inspections", db);
         if (scope & Variable::Compressor)
             addColumn(record.id(), "inspections_compressors", db);
-        parsed_expressions.clear();
         setDatabaseModified(true);
         refreshView();
     }
@@ -2007,8 +2005,6 @@ void MainWindow::editVariable()
                 renameColumn(id, record.id(), "inspections", db);
             if (scope & Variable::Compressor)
                 renameColumn(id, record.id(), "inspections_compressors", db);
-
-            parsed_expressions.clear();
 
             MTSqlQuery update_subvariables;
             update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
@@ -2044,7 +2040,6 @@ void MainWindow::removeVariable()
     delete item;
     dropColumn(id, "inspections", db);
     dropColumn(id, "inspections_compressors", db);
-    parsed_expressions.clear();
     enableTools();
     setDatabaseModified(true);
     refreshView();
