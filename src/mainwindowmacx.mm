@@ -40,7 +40,7 @@ bool MainWindow::isFullScreen() const
     if (QSysInfo::MacintoshVersion <= QSysInfo::MV_10_6)
         return QWidget::isFullScreen();
     NSView *view = (NSView *)winId();
-    return ([[view window] styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask;
+    return ([[view window] styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen;
 #else
     return QWidget::isFullScreen();
 #endif

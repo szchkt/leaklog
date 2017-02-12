@@ -6332,5 +6332,45 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>above 300 kg, leakage detector installed</source>
         <translation>nad 300 kg, zabudovaný detektor únikov</translation>
     </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>raz za 2 roky</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>raz za rok</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>raz za 6 mesiacov</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>raz za 3 mesiace</translation>
+    </message>
 </context>
 </TS>

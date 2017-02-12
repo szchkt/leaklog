@@ -335,7 +335,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, int id, bool CO2_e
             w = "1212";
             if (id < 0 || id == w.toInt()) {
                 if (type == 0) {
-                    initWarning(map, w, tr("Needs inspection"), tr("twice a year"), 182, enabled_only);
+                    initWarning(map, w, tr("Needs inspection"), tr("once in 6 months"), 182, enabled_only);
                 } else if (type == 2) {
                     initCondition(map, w, "co2_equivalent", ">=", "if(leak_detector,500,50)");
                     initCondition(map, w, "if(leak_detector,0,co2_equivalent)", "<", "if(leak_detector,1,500)");
@@ -344,7 +344,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, int id, bool CO2_e
             w = "1213";
             if (id < 0 || id == w.toInt()) {
                 if (type == 0) {
-                    initWarning(map, w, tr("Needs inspection"), tr("4 times a year"), 91, enabled_only);
+                    initWarning(map, w, tr("Needs inspection"), tr("once in 3 months"), 91, enabled_only);
                 } else if (type == 1) {
                     initFilter(map, w, "leak_detector", "=", "0");
                 } else if (type == 2) {

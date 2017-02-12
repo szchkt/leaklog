@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Počáteční kontrola:</translation>
+        <translation>Kontrola při uvedení do provozu:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -1878,7 +1878,7 @@
     <name>Inspection</name>
     <message>
         <source>Nominal</source>
-        <translation>Počáteční</translation>
+        <translation>Uvedení do provozu</translation>
     </message>
     <message>
         <source>Repair</source>
@@ -1894,8 +1894,7 @@
     </message>
     <message>
         <source>Nominal inspection</source>
-        <translatorcomment>ze slov. Nominální kontrola</translatorcomment>
-        <translation>Počáteční kontrola</translation>
+        <translation>Kontrola při uvedení do provozu</translation>
     </message>
     <message>
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
@@ -1903,13 +1902,11 @@
     </message>
     <message>
         <source>Nominal inspection already exists - Leaklog</source>
-        <translatorcomment>z Nominální kontrola už existuje</translatorcomment>
-        <translation>Počáteční kontrola již byla vykonána - Leaklog</translation>
+        <translation>Kontrola při uvedení do provozu již byla vykonána - Leaklog</translation>
     </message>
     <message>
         <source>This circuit already has a nominal inspection.</source>
-        <translatorcomment>z Tento okruh už má nominální kontrolu.</translatorcomment>
-        <translation>Na tomto okruhu již byla provedena počáteční kontrola.</translation>
+        <translation>Na tomto okruhu již byla provedena kontrola při uvedení do provozu.</translation>
     </message>
     <message>
         <source>Are you sure you want to add another?</source>
@@ -1917,7 +1914,7 @@
     </message>
     <message>
         <source>&amp;Add Another Nominal Inspection</source>
-        <translation>&amp;Přidat další počáteční kontrolu</translation>
+        <translation>&amp;Přidat další kontrolu při uvedení do provozu</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -1965,7 +1962,7 @@
     <name>InspectionDetailsView</name>
     <message>
         <source>Nominal Inspection:</source>
-        <translation>Počáteční kontrola:</translation>
+        <translation>Kontrola při uvedení do provozu:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -1973,7 +1970,7 @@
     </message>
     <message>
         <source>Inspection:</source>
-        <translation>Kontrola:</translation>
+        <translation>Pravidelná kontrola:</translation>
     </message>
     <message>
         <source>Other</source>
@@ -2000,7 +1997,7 @@
     <name>InspectionImagesView</name>
     <message>
         <source>Nominal inspection:</source>
-        <translation>Počáteční kontrola:</translation>
+        <translation>Kontrola při uvedení do provozu:</translation>
     </message>
     <message>
         <source>Repair:</source>
@@ -3878,7 +3875,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Compare Values With Nominal Inspection</source>
-        <translation>Porovnat hodnoty s počáteční kontrolou</translation>
+        <translation>Porovnat hodnoty s kontrolou při uvedení do provozu</translation>
     </message>
     <message>
         <source>A newer version of Leaklog is required to open this database.</source>
@@ -4509,7 +4506,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>short text</source>
-        <translation>krátky text</translation>
+        <translation>krátký text</translation>
     </message>
     <message>
         <source>long text</source>
@@ -4870,7 +4867,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Boolean</source>
-        <translation>ano/ne</translation>
+        <translation>Ano/Ne</translation>
     </message>
     <message>
         <source>Default</source>
@@ -4894,11 +4891,11 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Short Text</source>
-        <translation>krátky text</translation>
+        <translation>Krátký text</translation>
     </message>
     <message>
         <source>Long Text</source>
-        <translation>dlouhý text</translation>
+        <translation>Dlouhý text</translation>
     </message>
 </context>
 <context>
@@ -5316,7 +5313,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Highlight nominal inspections</source>
-        <translation>Vyznačit počáteční kontroly</translation>
+        <translation>Vyznačit kontroly při uvedení do provozu</translation>
     </message>
 </context>
 <context>
@@ -6076,7 +6073,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Compare value with the nominal inspection</source>
-        <translation>Porovnat hodnoty s počáteční kontrolou</translation>
+        <translation>Porovnat hodnoty s kontrolou při uvedení do provozu</translation>
     </message>
     <message>
         <source>Scope:</source>
@@ -6099,7 +6096,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Boolean</source>
-        <translation>ano/ne</translation>
+        <translation>Ano/Ne</translation>
     </message>
     <message>
         <source>Group</source>
@@ -6111,11 +6108,11 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Short Text</source>
-        <translation>Krátky text</translation>
+        <translation>Krátký text</translation>
     </message>
     <message>
         <source>Long Text</source>
-        <translation>dlouhý text</translation>
+        <translation>Dlouhý text</translation>
     </message>
 </context>
 <context>
@@ -6344,6 +6341,46 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>above 300 kg, leakage detector installed</source>
         <translation>nad 300 kg, nainstalovaný detekční systém úniků</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>jednou za 2 roky</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>jednou za rok</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>jednou za 6 měsíců</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>jednou za 3 měsíce</translation>
     </message>
 </context>
 </TS>

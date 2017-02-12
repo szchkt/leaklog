@@ -6258,27 +6258,27 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>3 - 10 kg, before 2011</source>
-        <translation>3 - 10 kg, do 2011</translation>
+        <translation>3 - 10 kg, przed 2011</translation>
     </message>
     <message>
         <source>3 - 10 kg, after 2011</source>
-        <translation>3 - 10 kg, od 2011</translation>
+        <translation>3 - 10 kg, po 2011</translation>
     </message>
     <message>
         <source>10 - 100 kg, before 2011</source>
-        <translation>10 - 100 kg, do 2011</translation>
+        <translation>10 - 100 kg, przed 2011</translation>
     </message>
     <message>
         <source>10 - 100 kg, after 2011</source>
-        <translation>10 - 100 kg, od 2011</translation>
+        <translation>10 - 100 kg, po 2011</translation>
     </message>
     <message>
         <source>above 100 kg, before 2011</source>
-        <translation>powyżej 100 kg przed 2011</translation>
+        <translation>powyżej 100 kg, przed 2011</translation>
     </message>
     <message>
         <source>above 100 kg, after 2011</source>
-        <translation>powyżej 100 kg po 2011</translation>
+        <translation>powyżej 100 kg, po 2011</translation>
     </message>
     <message>
         <source>Refrigerant leakage</source>
@@ -6310,7 +6310,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>6 - 30 kg, hermetically sealed</source>
-        <translation>6 - 30 kg hermetycznie zamknięty</translation>
+        <translation>6 - 30 kg, hermetycznie zamknięty</translation>
     </message>
     <message>
         <source>30 - 300 kg</source>
@@ -6327,6 +6327,46 @@ dla ID osoby i firmy</translation>
     <message>
         <source>above 300 kg, leakage detector installed</source>
         <translation>powyżej 300 kg, zainstalowany czujnik wycieku</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5 - 50 t ekwiwalentu CO₂, do 2011</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5 - 50 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50 - 500 t ekwiwalentu CO₂, przed 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50 - 500 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>powyżej 500 t ekwiwalentu CO₂, przed 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>powyżej 500 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>raz na 2 lata</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>raz na rok</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>raz na 6 miesięcy</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>raz na 3 miesiące</translation>
     </message>
 </context>
 </TS>
