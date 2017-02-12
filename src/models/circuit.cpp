@@ -93,6 +93,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
+    notes->setRowSpan(0);
+    md->addInputWidget(notes);
     int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -227,6 +230,7 @@ public:
         columns << Column("runtime", "NUMERIC");
         columns << Column("utilisation", "NUMERIC");
         columns << Column("inspection_interval", "INTEGER");
+        columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

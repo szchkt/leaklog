@@ -520,6 +520,7 @@ public:
         dict.insert("sftsw", QApplication::translate("VariableNames", "Safety switch"));
         dict.insert("risks", QApplication::translate("VariableNames", "Risks"));
         dict.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
+        dict.insert("notes", QApplication::translate("VariableNames", "Notes"));
         dict.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
         dict.insert("ar_type", QApplication::translate("VariableNames", "Assembly record type"));
         dict.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
@@ -583,6 +584,7 @@ public:
         dict.insert("sftsw", "float");
         dict.insert("risks", "text");
         dict.insert("rmds", "text");
+        dict.insert("notes", "text");
         dict.insert("arno", "string");
         dict.insert("ar_type", "int");
         dict.insert("corr_def", "bool");

@@ -203,6 +203,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Customer", "Address"), "address");
             cb_filter_column->addItem(QApplication::translate("Customer", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
+            cb_filter_column->addItem(QApplication::translate("Customer", "Notes"), "notes");
             break;
         case View::Circuits:
             updateView_ListOfCircuits_CircuitAttributes:
@@ -218,6 +219,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Circuit", "Date of commissioning"), "commissioning");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Notes"), "notes");
             addFilterItems("field", fieldsOfApplication());
             break;
         case View::Inspections:
@@ -226,6 +228,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Inspection", "Contact person"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Risks"), "risks");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Notes"), "notes");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");
             break;

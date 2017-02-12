@@ -105,6 +105,8 @@ QString InspectionDetailsView::renderHTML()
             all_variables << vars.id();
     }
 
+    all_variables.remove("notes");
+
     while (tables.next() || all_variables.count()) {
         QStringList table_vars;
         cell = header_row->addHeaderCell("width=\"50%\"");
@@ -260,7 +262,7 @@ QString InspectionDetailsView::tableVarValue(const QString &var_type, const QStr
                                              const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
-        if (expand_text) return escapeString(ins_value);
+        if (expand_text) return escapeString(ins_value, false, true);
         return escapeString(elideRight(ins_value, 20));
     } else if (var_type == "string") {
         return escapeString(ins_value);

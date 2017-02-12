@@ -744,6 +744,14 @@
         <source>Status</source>
         <translation>Stav</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -1186,6 +1194,14 @@
         <source>Operator phone</source>
         <translation>Telefón prevádzkovateľa</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>
@@ -1358,6 +1374,13 @@
     <message>
         <source>Compressor 1</source>
         <translation>Kompresor 1</translation>
+    </message>
+</context>
+<context>
+    <name>EditCircuitDialogueNotesTab</name>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -1919,6 +1942,10 @@
     <message>
         <source>Contact person</source>
         <translation>Prevzal</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -5994,6 +6021,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Contact person</source>
         <translation>Prevzal</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>

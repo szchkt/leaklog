@@ -22,6 +22,17 @@
 
 #include "tabbededitdialogue.h"
 
+class EditCircuitDialogueNotesTab : public EditDialogueTab
+{
+    Q_OBJECT
+
+public:
+    EditCircuitDialogueNotesTab(MDAbstractInputWidget *notes, QWidget * = NULL);
+
+    void save(const QVariant &);
+    QWidget *widget() { return this; }
+};
+
 class EditCircuitDialogue : public TabbedEditDialogue
 {
     Q_OBJECT

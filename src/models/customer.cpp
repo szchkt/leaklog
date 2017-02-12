@@ -42,6 +42,9 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), attributes.value("address").toString()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
+    notes->setRowSpan(0);
+    md->addInputWidget(notes);
     (new OperatorInputWidget(attributes, md->widget()))->addToEditDialogue(*md);
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
@@ -98,6 +101,7 @@ public:
         columns << Column("operator_address", "TEXT");
         columns << Column("operator_mail", "TEXT");
         columns << Column("operator_phone", "TEXT");
+        columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

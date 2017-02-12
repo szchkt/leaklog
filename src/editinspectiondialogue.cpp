@@ -70,6 +70,11 @@ EditInspectionDialogue::EditInspectionDialogue(DBRecord *record, UndoStack *undo
     gl_rmds->addWidget(rmds->widget(), 1, 1);
     gl_rmds->setRowStretch(1, 2);
 
+    MDAbstractInputWidget *notes = inputWidget("notes");
+    gl_rmds->addWidget(notes->label()->widget(), 2, 0);
+    gl_rmds->addWidget(notes->widget(), 2, 1);
+    gl_rmds->setRowStretch(2, 1);
+
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
         compressors = new EditInspectionDialogueCompressors(md_record->parent("customer"), md_record->parent("circuit"), id, this);

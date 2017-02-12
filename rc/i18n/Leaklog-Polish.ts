@@ -744,6 +744,14 @@
         <source>Status</source>
         <translation>Status</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -1186,6 +1194,14 @@
         <source>Operator e-mail</source>
         <translation>E-mail operatora</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>
@@ -1358,6 +1374,13 @@
     <message>
         <source>Compressor 1</source>
         <translation>Sprężarka 1</translation>
+    </message>
+</context>
+<context>
+    <name>EditCircuitDialogueNotesTab</name>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
@@ -1919,6 +1942,10 @@
     <message>
         <source>Contact person</source>
         <translation>Osoba kontaktowa</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
@@ -5990,6 +6017,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Contact person</source>
         <translation>Osoba kontaktowa</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>

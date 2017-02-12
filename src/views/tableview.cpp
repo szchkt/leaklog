@@ -567,7 +567,7 @@ QString TableView::tableVarValue(const QString &var_type, const QString &ins_val
                                  const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
-        if (expand_text) return escapeString(ins_value);
+        if (expand_text) return escapeString(ins_value, false, true);
         return escapeString(elideRight(ins_value, 20));
     } else if (var_type == "string") {
         return escapeString(ins_value);
