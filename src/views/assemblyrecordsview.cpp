@@ -121,7 +121,7 @@ QString AssemblyRecordsView::renderHTML()
         *(_tr->addCell()) << escapeString(items.at(i).value("arno"));
         *(_tr->addCell()) << escapeString(items.at(i).value("record_name"));
         if (!customer_given) *(_tr->addCell()) << escapeString(items.at(i).value("company"));
-        if (!circuit_given) *(_tr->addCell()) << escapeString(items.at(i).value("circuit").toString().rightJustified(4, '0'));
+        if (!circuit_given) *(_tr->addCell()) << escapeString(items.at(i).value("circuit").toString().rightJustified(5, '0'));
         *(_tr->addCell()) << escapeString(inspectors.value(items.at(i).value("inspector").toString()));
         *(_tr->addCell()) << escapeString(items.at(i).value("operator"));
         if (show_date_updated)

@@ -39,7 +39,7 @@ VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer
 {
     circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
     persons = Person("", customer_id).mapAll("id", "name");
-    inspectors = Inspector("").mapAll("id", "person");
+    inspectors = Inspector("").mapAll("id", "certificate_number, person");
 
     init();
 }
@@ -114,10 +114,18 @@ QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVari
 
     if (value().isEmpty()) {
         if (!ins_value.isEmpty() && ins_value.toInt()) {
-            if (id() == "inspector")
-                ins_value = context.inspectors.value(ins_value).value("person", ins_value).toString();
-            else if (id() == "operator")
+            if (id() == "inspector") {
+                QVariantMap inspector = context.inspectors.value(ins_value);
+                if (inspector.isEmpty()) {
+                    ins_value = ins_value.rightJustified(4, '0');
+                } else {
+                    QString certificate_number = inspector.value("certificate_number").toString();
+                    ins_value = QString("%1 (%2)").arg(inspector.value("person").toString())
+                                .arg(certificate_number.isEmpty() ? ins_value.rightJustified(4, '0') : certificate_number);
+                }
+            } else if (id() == "operator") {
                 ins_value = context.persons.value(ins_value).value("name", ins_value).toString();
+            }
         }
 
         if (compareNom()) {
