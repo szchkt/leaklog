@@ -4930,6 +4930,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Author</source>
         <translation>Autor</translation>
     </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Číslo šarže</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -5024,6 +5028,22 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Record of Refrigerant Management</source>
         <translation>Záznam o nakladaní s chladivom</translation>
+    </message>
+    <message>
+        <source>Batch number:</source>
+        <translation>Číslo šarže:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Číslo šarže</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>

@@ -4926,6 +4926,10 @@ dla ID osoby i firmy</translation>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Numer serii</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -5020,6 +5024,22 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Leaked (recovered)</source>
         <translation>Wyciek (odzyskany)</translation>
+    </message>
+    <message>
+        <source>Batch number:</source>
+        <translation>Numer serii:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Numer serii</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
