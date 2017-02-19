@@ -31,11 +31,17 @@ a:active {
 	color: #333333;
 	text-decoration: none;
 }
-.centred_with_borders tr, .centred_with_borders td, .centred_with_borders th {
+table,td,th {
+	border-collapse: collapse;
+	border-style: none;
+}
+.centred_with_borders table, .centred_with_borders td, .centred_with_borders th {
 	border-collapse: collapse;
 	border-style: solid;
-	border-width: thin;
-	border-color: #DFDFDF;
+	border-width: 1px;
+	border-color: #A9A9A9;
+}
+.centred_with_borders td, .centred_with_borders th {
 	text-align: center;
 }
 .centred_with_borders th {

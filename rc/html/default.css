@@ -1,8 +1,5 @@
 body {
-	margin-top: 0px;
-	margin-bottom: 2px;
-	margin-left: 2px;
-	margin-right: 2px;
+	margin: 2px;
 }
 body,td,th {
 	color: #000000;
@@ -38,8 +35,8 @@ table {
 table,td,th {
 	border-collapse: collapse;
 	border-style: solid;
-	border-width: thin;
-	border-color: black;
+	border-width: 1px;
+	border-color: #A9A9A9;
 }
 .no_border {
 	border-collapse: collapse;
@@ -48,12 +45,6 @@ table,td,th {
 tr.nominal > td {
 	background-color: #FFFF33 !important;
 	color: #000000 !important;
-}
-.default_table {
-	background-color: #eee;
-	border-spacing: 2px;
-	border: 1px solid #CACACA;
-	border-collapse: collapse;
 }
 a:link {
 	color: inherit;
