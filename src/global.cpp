@@ -343,11 +343,11 @@ QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
 {
     if (value1 < value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%L1";
+        return "<span style=\"white-space: nowrap;\"><span style=\"font-weight: bold; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</span>&nbsp;%L1</span>";
     } else if (value1 > value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%L1";
+        return "<span style=\"white-space: nowrap;\"><span style=\"font-weight: bold; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</span>&nbsp;%L1</span>";
     } else {
-        return "%L1";
+        return "<span style=\"white-space: nowrap;\">%L1</span>";
     }
 }
 
