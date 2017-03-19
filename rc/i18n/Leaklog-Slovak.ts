@@ -977,6 +977,10 @@
         <source>Decommissioned Circuits (%1)</source>
         <translation>Okruhy vyradené z prevádzky (%1)</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>Compressor</name>
@@ -1244,6 +1248,10 @@
     <message>
         <source>Customers</source>
         <translation>Zákazníci</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>

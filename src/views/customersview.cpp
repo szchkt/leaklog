@@ -60,6 +60,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
+    bool show_notes = settings->isShowNotesChecked() && !customer_id.isEmpty();
 
     Customer all_customers(customer_id);
     if (customer_id.isEmpty() && !settings->toolBarStack()->isFilterEmpty()) {
@@ -155,6 +156,16 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_id, HTMLTa
                 *(row->addCell()) << settings->mainWindowSettings().formatDateTime(list.at(i).value("date_updated"));
             if (show_owner)
                 *(row->addCell()) << escapeString(list.at(i).value("updated_by"));
+
+            if (show_notes) {
+                QString notes = list.at(i).value("notes").toString();
+                if (!notes.isEmpty()) {
+                    row = table->addRow();
+                    *(row->addHeaderCell(QString("colspan=\"%1\"").arg(thead_colspan))) << tr("Notes");
+                    row = table->addRow();
+                    *(row->addCell(QString("colspan=\"%1\"").arg(thead_colspan))) << escapeString(notes, false, true);
+                }
+            }
         }
     }
 

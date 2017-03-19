@@ -977,6 +977,10 @@
         <source>Decommissioned Circuits (%1)</source>
         <translation>Obiegi wyłączone z eksploatacji (%1)</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>Compressor</name>
@@ -1244,6 +1248,10 @@
     <message>
         <source>Customers</source>
         <translation>Klienci</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>

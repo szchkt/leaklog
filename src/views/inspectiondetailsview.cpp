@@ -105,7 +105,8 @@ QString InspectionDetailsView::renderHTML()
             all_variables << vars.id();
     }
 
-    all_variables.remove("notes");
+    if (!settings->isShowNotesChecked())
+        all_variables.remove("notes");
 
     while (tables.next() || all_variables.count()) {
         QStringList table_vars;

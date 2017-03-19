@@ -61,6 +61,7 @@ public:
 
     bool isShowDateUpdatedChecked() const;
     bool isShowOwnerChecked() const;
+    bool isShowNotesChecked() const;
     bool isShowLeakedChecked() const;
     bool isShowMostRecentFirstChecked() const;
     bool isCompareValuesChecked() const;

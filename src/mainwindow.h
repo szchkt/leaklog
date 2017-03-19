@@ -65,6 +65,7 @@ public:
 
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
+    inline bool isShowNotesChecked() const { return actionShow_Notes->isChecked(); }
     inline bool isShowLeakedChecked() const { return actionShow_Leaked->isChecked(); }
     inline bool isShowMostRecentFirstChecked() const { return actionMost_recent_first->isChecked(); }
     inline bool isCompareValuesChecked() const { return actionCompare_values->isChecked(); }

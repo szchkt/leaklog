@@ -39,6 +39,7 @@ QString RefrigerantManagementView::renderHTML()
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool show_notes = settings->isShowNotesChecked();
     bool show_leaked = settings->isShowLeakedChecked();
 
     QString html; MTTextStream out(&html);
@@ -98,7 +99,7 @@ QString RefrigerantManagementView::renderHTML()
         QString notes = query.stringValue("notes");
 
         out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
-        out << (notes.isEmpty() ? "<td>" : "<td rowspan=\"2\" style=\"vertical-align: top;\">");
+        out << (show_notes && !notes.isEmpty() ? "<td rowspan=\"2\" style=\"vertical-align: top;\">" : "<td>");
         out << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
@@ -120,9 +121,9 @@ QString RefrigerantManagementView::renderHTML()
             out << "<td>" << escapeString(query.value("updated_by")) << "</th>";
         out << "</tr>";
 
-        if (!notes.isEmpty()) {
+        if (show_notes && !notes.isEmpty()) {
             out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
-            out << "<td colspan=\"14\">" << escapeString(notes) << "</td></tr>";
+            out << "<td colspan=\"14\">" << escapeString(notes, false, true) << "</td></tr>";
         }
     }
     out << "</table>";

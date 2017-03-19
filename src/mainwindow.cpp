@@ -233,6 +233,7 @@ MainWindow::MainWindow():
     QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_owner, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_Notes, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Leaked, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
@@ -1301,6 +1302,7 @@ void MainWindow::loadSettings()
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
     actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
     actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
+    actionShow_Notes->setChecked(settings.value("columns/notes", true).toBool());
     actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
@@ -1328,6 +1330,7 @@ void MainWindow::saveSettings()
     settings.setValue("compare_values", actionCompare_values->isChecked());
     settings.setValue("columns/date_updated", actionShow_date_updated->isChecked());
     settings.setValue("columns/owner", actionShow_owner->isChecked());
+    settings.setValue("columns/notes", actionShow_Notes->isChecked());
     settings.setValue("columns/leaked", actionShow_Leaked->isChecked());
     settings.setValue("most_recent_first", actionMost_recent_first->isChecked());
     m_settings.save(settings);

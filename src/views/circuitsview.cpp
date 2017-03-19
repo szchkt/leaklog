@@ -69,6 +69,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
     bool all_circuits = circuit_id.isEmpty();
+    bool show_notes = settings->isShowNotesChecked() && !all_circuits && cols_in_row > 0;
 
     Circuit circuits_record(customer_id, circuit_id);
     if (all_circuits && !settings->toolBarStack()->isFilterEmpty()) {
@@ -82,6 +83,9 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         order_by = "id";
     ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
                                                          all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
+
+    if (show_notes && (circuits.isEmpty() || circuits.first().value("notes").toString().isEmpty()))
+        show_notes = false;
 
     int commissioned_count = 0;
     int excluded_count = 0;
@@ -107,7 +111,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
     if (all_circuits || circuits_details_visible) {
         thead = new HTMLTableRow();
-        writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, !all_circuits && circuits.count() && circuits.first().value("disused").toInt() != Circuit::Commissioned, thead);
+        writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, !all_circuits && circuits.count() && circuits.first().value("disused").toInt() != Circuit::Commissioned, thead);
     }
 
     HTMLTableRow *_tr = table->addRow();
@@ -146,7 +150,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         foreach (const QVariantMap &circuit, circuits) {
             if (all_circuits && circuit.value("disused").toInt() != Circuit::Commissioned) continue;
-            writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, table);
+            writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, table);
         }
     }
 
@@ -162,7 +166,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         if (excluded_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, true, thead);
+            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, true, thead);
         } else {
             thead = NULL;
         }
@@ -179,7 +183,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         if (excluded_circuits_visible) {
             foreach (const QVariantMap &circuit, circuits) {
                 if (circuit.value("disused").toInt() > Circuit::ExcludedFromAgenda) continue;
-                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, table);
+                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, table);
             }
         }
         *div << table;
@@ -192,7 +196,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         if (decommissioned_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, true, thead);
+            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, true, thead);
         } else {
             thead = NULL;
         }
@@ -209,7 +213,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         if (decommissioned_circuits_visible) {
             foreach (const QVariantMap &circuit, circuits) {
                 if (circuit.value("disused").toInt() < Circuit::Decommissioned) continue;
-                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, table);
+                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, show_date_updated, show_owner, show_notes, table);
             }
         }
         *div << table;
@@ -218,7 +222,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
     return div;
 }
 
-void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool disused, HTMLTableRow *thead)
+void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, bool disused, HTMLTableRow *thead)
 {
     for (int n = 0; n < Circuit::numBasicAttributes(); ++n) {
         if (circuit_id.isEmpty())
@@ -250,9 +254,12 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString
         else
             *(thead->addHeaderCell()) << tr("Author");
     }
+    if (show_notes) {
+        *(thead->addHeaderCell(QString("colspan=\"%1\"").arg(cols_in_row > 0 ? cols_in_row : 1))) << tr("Notes");
+    }
 }
 
-void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, HTMLTable *table)
+void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, HTMLTable *table)
 {
     QString id = circuit.value("id").toString();
     QString tr_attr;
@@ -303,10 +310,13 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
     } else {
         *(_tr->addCell()) << settings->mainWindowSettings().formatDate(circuit.value("decommissioning"));
     }
+    QString align = show_notes ? "style=\"vertical-align: top;\"" : QString();
     if (show_date_updated)
-        *(_tr->addCell()) << settings->mainWindowSettings().formatDateTime(circuit.value("date_updated"));
+        *(_tr->addCell(align)) << settings->mainWindowSettings().formatDateTime(circuit.value("date_updated"));
     if (show_owner)
-        *(_tr->addCell()) << escapeString(circuit.value("updated_by"));
+        *(_tr->addCell(align)) << escapeString(circuit.value("updated_by"));
+    if (show_notes)
+        *(_tr->addCell(QString("colspan=\"%1\"").arg(cols_in_row > 0 ? cols_in_row : 1))) << escapeString(circuit.value("notes").toString(), false, true);
 }
 
 HTMLTable *CircuitsView::circuitCompressorsTable(const QString &customer_id, const QString &circuit_id, HTMLTable *table)

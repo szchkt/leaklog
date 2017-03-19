@@ -41,8 +41,8 @@ public:
 protected:
     void writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1);
     HTMLDiv *writeCircuitsTable(const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1, HTMLTable *table = NULL);
-    void writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool disused, HTMLTableRow *thead);
-    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, HTMLTable *table);
+    void writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, bool disused, HTMLTableRow *thead);
+    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, HTMLTable *table);
     HTMLTable *circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
     HTMLTable *circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
 };

@@ -365,6 +365,8 @@
      <addaction name="actionShow_date_updated"/>
      <addaction name="actionShow_owner"/>
      <addaction name="separator"/>
+     <addaction name="actionShow_Notes"/>
+     <addaction name="separator"/>
      <addaction name="actionShow_Leaked"/>
     </widget>
     <widget class="QMenu" name="menuDateTime_Format">
@@ -2223,6 +2225,14 @@
    </property>
    <property name="text">
     <string>Leaked in Store</string>
+   </property>
+  </action>
+  <action name="actionShow_Notes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Notes</string>
    </property>
   </action>
  </widget>
