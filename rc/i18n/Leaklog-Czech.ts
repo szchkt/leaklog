@@ -710,7 +710,7 @@
     <message>
         <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
         <translatorcomment>Nerozumím smyslu tohoto údaje</translatorcomment>
-        <translation>Změna chladiva ovlivní předchozí kontroly tohto okruhu.</translation>
+        <translation>Změna chladiva ovlivní předchozí kontroly tohoto okruhu.</translation>
     </message>
     <message>
         <source>Commissioned on</source>
@@ -4523,6 +4523,22 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>Exclude from Agenda only</source>
         <translation>Vyřadit jen z agendy</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nelze odstranit vybraného zákazníka.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nelze odstranit vybraný okruh.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Odstranění tohoto zákazníka by ovlivnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>Odstranění tohoto okruhu by ovlivnilo sklad.</translation>
     </message>
 </context>
 <context>

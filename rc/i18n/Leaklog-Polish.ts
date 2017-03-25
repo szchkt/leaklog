@@ -4510,6 +4510,22 @@ dla ID osoby i firmy</translation>
         <source>Exclude from Agenda only</source>
         <translation>Wyłącz tylko z agendy</translation>
     </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nie można usunąc wybraneho klienta.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nie można usunąc wybrany obieg.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Usunięcie tego klienta miałoby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>Usunięcie tego obiegu miałoby wpływ na magazyn.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

@@ -874,6 +874,33 @@ bool MainWindow::isOperationPermitted(const QString &operation, const QString &r
     return true;
 }
 
+bool MainWindow::canRemoveCircuit(const QString &customer_id, const QString &circuit_id)
+{
+    MTSqlQuery query;
+    query.prepare(QString("SELECT date FROM inspections"
+                          " WHERE %1 AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
+                          " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1")
+                  .arg(circuit_id.isEmpty() ? "customer = :customer" : "customer = :customer AND circuit = :circuit"));
+    query.bindValue(":customer", customer_id);
+    if (!circuit_id.isEmpty())
+        query.bindValue(":circuit", circuit_id);
+
+    if (query.exec() && query.next()) {
+        QMessageBox message(this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setWindowTitle(circuit_id.isEmpty() ? tr("Remove customer - Leaklog") : tr("Remove circuit - Leaklog"));
+        message.setText(circuit_id.isEmpty() ? tr("You cannot remove the selected customer.") : tr("You cannot remove the selected circuit."));
+        message.setInformativeText(circuit_id.isEmpty() ? tr("Removing this customer would affect the store.") : tr("Removing this circuit would affect the store."));
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return false;
+    }
+
+    return true;
+}
+
 bool MainWindow::isRecordLocked(const QString &date)
 {
     if (DBInfo::isRecordLocked(date)) {
@@ -1038,6 +1065,7 @@ void MainWindow::removeCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomer())) { return; }
     Customer record(m_tab->selectedCustomer());
     record.readValues("company, updated_by");
     if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
@@ -1566,6 +1594,7 @@ void MainWindow::removeCircuit()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomer(), m_tab->selectedCircuit())) { return; }
     Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
     if (!isOperationPermitted("remove_circuit", record.stringValue("updated_by"))) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove circuit - Leaklog"),

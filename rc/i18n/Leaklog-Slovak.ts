@@ -4514,6 +4514,22 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Exclude from Agenda only</source>
         <translation>Vyradiť len z agendy</translation>
     </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nie je možné odstrániť vybraného zákazníka.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nie je možné odstrániť vybraný okruh.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Odstránenie tohto zákazníka by ovplyvnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>Odstránenie tohto okruhu by ovplyvnilo sklad.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
