@@ -701,14 +701,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Change refrigerant - Leaklog</source>
-        <translation>Zmeniť chladivo - Leaklog</translation>
-    </message>
-    <message>
-        <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Zmena chladiva ovplyvní predchádzajúce kontroly tohto okruhu.</translation>
-    </message>
-    <message>
         <source>Commissioned on</source>
         <translation>Uvedenie do prevádzky</translation>
     </message>
@@ -751,6 +743,18 @@
     <message>
         <source>Notes</source>
         <translation>Poznámky</translation>
+    </message>
+    <message>
+        <source>Edit circuit - Leaklog</source>
+        <translation>Upraviť okruh - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot change the refrigerant in this circuit.</source>
+        <translation>Nie je možné zmeniť chladivo v tomto okruhu.</translation>
+    </message>
+    <message>
+        <source>Changing the refrigerant would affect the store.</source>
+        <translation>Zmena chladiva by ovplyvnila sklad.</translation>
     </message>
 </context>
 <context>

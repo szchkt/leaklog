@@ -116,21 +116,28 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     }
 }
 
-bool Circuit::checkValues(const QVariantMap &values, QWidget *parent)
+bool Circuit::checkValues(const QVariantMap &values, QWidget *parentWidget)
 {
     if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant")) {
-        QMessageBox message(parent);
-        message.setWindowTitle(tr("Change refrigerant - Leaklog"));
-        message.setWindowModality(Qt::WindowModal);
-        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
-        message.setIcon(QMessageBox::Information);
-        message.setText(tr("Changing the refrigerant will affect previous inspections of this circuit."));
-        message.setInformativeText(QApplication::translate("MainWindow", "Do you want to save your changes?"));
-        message.addButton(QApplication::translate("MainWindow", "&Save"), QMessageBox::AcceptRole);
-        message.addButton(QApplication::translate("MainWindow", "Cancel"), QMessageBox::RejectRole);
-        switch (message.exec()) {
-            case 1: // Cancel
-                return false;
+        MTSqlQuery query;
+        query.prepare("SELECT date FROM inspections"
+                      " WHERE customer = :customer AND circuit = :circuit"
+                      " AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
+                      " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1");
+        query.bindValue(":customer", parent("parent"));
+        query.bindValue(":circuit", id());
+
+        if (query.exec() && query.next()) {
+            QMessageBox message(parentWidget);
+            message.setWindowTitle(tr("Edit circuit - Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("You cannot change the refrigerant in this circuit."));
+            message.setInformativeText(tr("Changing the refrigerant would affect the store."));
+            message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
+            message.exec();
+            return false;
         }
     }
     return true;

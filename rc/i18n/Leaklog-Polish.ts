@@ -653,14 +653,6 @@
         <translation>Automatyczny</translation>
     </message>
     <message>
-        <source>Change refrigerant - Leaklog</source>
-        <translation>Zmień czynnik - Leaklog</translation>
-    </message>
-    <message>
-        <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Zmiana czynnika chłodniczego wpłynie na poprzednie kontrole tego obiegu.</translation>
-    </message>
-    <message>
         <source>ID</source>
         <translation>Numer obiegu</translation>
     </message>
@@ -751,6 +743,18 @@
     <message>
         <source>Notes</source>
         <translation>Notatki</translation>
+    </message>
+    <message>
+        <source>Edit circuit - Leaklog</source>
+        <translation>Edytuj obieg - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot change the refrigerant in this circuit.</source>
+        <translation>Nie można zmieniać czynnik w tym obiegu.</translation>
+    </message>
+    <message>
+        <source>Changing the refrigerant would affect the store.</source>
+        <translation>Zmiana czynnika chłodniczego miałaby wpływ na magazyn.</translation>
     </message>
 </context>
 <context>
