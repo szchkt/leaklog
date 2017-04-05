@@ -50,12 +50,7 @@ QString TableView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     QVariantMap customer = Customer(customer_id).list("company, address, mail, phone");
 

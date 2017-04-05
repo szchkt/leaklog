@@ -63,12 +63,7 @@ QString OperatorReportView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     Customer customer(customer_id);
     customer.readOperatorValues();

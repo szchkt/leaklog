@@ -144,7 +144,7 @@
     </message>
     <message>
         <source>Assembly record No.</source>
-        <translation>Numer Książki Serwisowej</translation>
+        <translation>Numer książki serwisowej</translation>
     </message>
     <message>
         <source>Assembly record type ID</source>
@@ -4529,6 +4529,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Removing this circuit would affect the store.</source>
         <translation>Usunięcie tego obiegu miałoby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Drukuj informacje o firmie serwisowej</translation>
     </message>
 </context>
 <context>

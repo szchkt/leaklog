@@ -4534,6 +4534,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Removing this circuit would affect the store.</source>
         <translation>Odstránenie tohto okruhu by ovplyvnilo sklad.</translation>
     </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Tlačiť informácie o servisnej organizácii</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

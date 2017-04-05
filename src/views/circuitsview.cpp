@@ -38,10 +38,7 @@ QString CircuitsView::renderHTML()
 {
     QString customer_id = settings->selectedCustomer();
     HTMLMain main;
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        main << writeServiceCompany();
-        main.newLine();
-    }
+    writeServiceCompany(main);
     main << writeCustomersTable(customer_id);
     if (settings->mainWindowSettings().customerDetailsVisible()) {
         main.newLine();

@@ -19,14 +19,15 @@
 
 #include "view.h"
 #include "viewtabsettings.h"
+#include "mainwindowsettings.h"
 #include "global.h"
 #include "htmlbuilder.h"
 #include "records.h"
 #include "dbfile.h"
+#include "mttextstream.h"
 #include "mtvariant.h"
 
 #include <QFile>
-#include <QTextStream>
 
 using namespace Global;
 
@@ -97,4 +98,41 @@ HTMLTable *View::writeServiceCompany(HTMLTable *table)
         *_td << MTVariant(serv_company.value(attr_value), attr_value);
     }
     return table;
+}
+
+void View::writeServiceCompany(MTTextStream &out)
+{
+    if (!settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        if (!settings->mainWindowSettings().serviceCompanyInformationPrinted())
+            return;
+        out << "<div class=\"print_only\">";
+    }
+
+    HTMLTable *service_company = writeServiceCompany();
+    out << service_company->html();
+    delete service_company;
+    out << "<br>";
+
+    if (!settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        out << "</div>";
+    }
+}
+
+void View::writeServiceCompany(HTMLParent &div)
+{
+    HTMLParent *service_company_parent;
+
+    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
+        service_company_parent = &div;
+    } else if (settings->mainWindowSettings().serviceCompanyInformationPrinted()) {
+        HTMLDiv *service_company_div = new HTMLDiv;
+        service_company_div->addClass("print_only");
+        div << service_company_div;
+        service_company_parent = service_company_div;
+    } else {
+        return;
+    }
+
+    *service_company_parent << writeServiceCompany();
+    service_company_parent->newLine();
 }

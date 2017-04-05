@@ -41,12 +41,7 @@ QString LeakagesByApplicationView::renderHTML()
 {
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     QStringList units;
     units << "&nbsp;" + QApplication::translate("Units", "kg");

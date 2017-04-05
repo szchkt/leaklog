@@ -43,12 +43,7 @@ QString AgendaView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     QMultiMap<QString, QList<QVariant> > next_inspections_map;
 

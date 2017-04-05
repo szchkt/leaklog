@@ -40,10 +40,7 @@ QString InspectorDetailsView::renderHTML()
 
     HTMLDiv div;
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        div << writeServiceCompany();
-        div.newLine();
-    }
+    writeServiceCompany(div);
 
     div << writeInspectorsTable(QString(), inspector_id);
     div.newLine();

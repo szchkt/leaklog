@@ -54,12 +54,7 @@ QString AssemblyRecordsView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     if (customer_given) {
         writeCustomersTable(out, customer_id);

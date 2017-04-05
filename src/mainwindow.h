@@ -179,7 +179,7 @@ private slots:
     void exportHTML();
     void printDetailedLabel();
     void printLabel(bool = false);
-    void serviceCompanyInformationVisibilityChanged(bool visible);
+    void serviceCompanyInformationVisibilityChanged();
     void dateFormatChanged(MainWindowSettings::DateFormat);
     void dateFormatChanged(QAction *);
     void timeFormatChanged(MainWindowSettings::TimeFormat);

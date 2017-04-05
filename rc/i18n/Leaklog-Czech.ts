@@ -3375,11 +3375,11 @@ Pro odstranění všech údajů o certifikované osobě „%1“ napište ODSTRA
     </message>
     <message>
         <source>Print label - Leaklog</source>
-        <translation>Vytiskout štítek - Leaklog</translation>
+        <translation>Vytisknout štítek - Leaklog</translation>
     </message>
     <message>
         <source>Print detailed label - Leaklog</source>
-        <translation>Vytiskout podrobný štítek - Leaklog</translation>
+        <translation>Vytisknout podrobný štítek - Leaklog</translation>
     </message>
     <message>
         <source>Choose the position of the label on the paper:</source>
@@ -4542,6 +4542,10 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>Removing this circuit would affect the store.</source>
         <translation>Odstranění tohoto okruhu by ovlivnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Tisknout informace o servisní organizaci</translation>
     </message>
 </context>
 <context>

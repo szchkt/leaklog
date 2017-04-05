@@ -223,8 +223,9 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
-    QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
-    QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
+    QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged()), this, SLOT(serviceCompanyInformationVisibilityChanged()));
+    QObject::connect(actionPrint_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationPrinted(bool)));
+    QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationVisible(bool)));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -952,10 +953,10 @@ void MainWindow::updateLockButton()
     }
 }
 
-void MainWindow::serviceCompanyInformationVisibilityChanged(bool visible)
+void MainWindow::serviceCompanyInformationVisibilityChanged()
 {
-    actionShow_Service_Company_Information->setChecked(visible);
-    m_settings.setServiceCompanyInformationVisible(visible);
+    actionPrint_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationPrinted());
+    actionShow_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationVisible());
     if (QSqlDatabase::database().isOpen())
         refreshView();
 }

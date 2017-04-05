@@ -394,6 +394,7 @@
     <addaction name="menuColumns"/>
     <addaction name="menuDateTime_Format"/>
     <addaction name="actionPrinter_friendly_version"/>
+    <addaction name="actionPrint_Service_Company_Information"/>
     <addaction name="actionShow_Service_Company_Information"/>
     <addaction name="actionCompare_values"/>
     <addaction name="actionMost_recent_first"/>
@@ -2233,6 +2234,17 @@
    </property>
    <property name="text">
     <string>Notes</string>
+   </property>
+  </action>
+  <action name="actionPrint_Service_Company_Information">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Print Service Company Information</string>
    </property>
   </action>
  </widget>

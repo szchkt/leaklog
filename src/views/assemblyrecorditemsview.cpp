@@ -46,11 +46,7 @@ QString AssemblyRecordItemsView::renderHTML()
     ListOfVariantMaps item_categories = all_item_categories.listAll("*", order_by);
 
     HTMLDiv div;
-
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        div << writeServiceCompany();
-        div.newLine();
-    }
+    writeServiceCompany(div);
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;

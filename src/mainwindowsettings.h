@@ -76,8 +76,15 @@ public:
     void setDecommissionedCircuitsVisible(bool decommissioned_circuits_visible) { m_decommissioned_circuits_visible = decommissioned_circuits_visible; }
     void toggleDecommissionedCircuitsVisible() { m_decommissioned_circuits_visible = !m_decommissioned_circuits_visible; }
 
+    inline bool serviceCompanyInformationPrinted() const { return m_service_company_information_printed; }
+public slots:
+    void setServiceCompanyInformationPrinted(bool service_company_information_printed);
+public:
+
     inline bool serviceCompanyInformationVisible() const { return m_service_company_information_visible; }
+public slots:
     void setServiceCompanyInformationVisible(bool service_company_information_visible);
+public:
 
     inline DateFormat dateFormat() const { return m_date_format; }
     inline QString dateFormatString() const { return m_date_format_string; }
@@ -96,7 +103,7 @@ public:
     QString orderByForView(quint64 view) const;
 
 signals:
-    void serviceCompanyInformationVisibilityChanged(bool);
+    void serviceCompanyInformationVisibilityChanged();
     void dateFormatChanged(MainWindowSettings::DateFormat);
     void timeFormatChanged(MainWindowSettings::TimeFormat);
 
@@ -106,6 +113,7 @@ private:
     bool m_circuits_visible;
     bool m_excluded_circuits_visible;
     bool m_decommissioned_circuits_visible;
+    bool m_service_company_information_printed;
     bool m_service_company_information_visible;
 
     DateFormat m_date_format;
