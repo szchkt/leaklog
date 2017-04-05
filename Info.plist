@@ -36,9 +36,9 @@
 	<key>CFBundleSignature</key>
 	<string>LKLG</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.3</string>
+	<string>1.2.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.3</string>
+	<string>1.2.0</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2008 – 2017 SZ CHKT</string>
 	<key>CFBundleName</key>
