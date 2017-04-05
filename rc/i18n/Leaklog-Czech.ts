@@ -557,7 +557,7 @@
     </message>
     <message>
         <source>Manufacturer:</source>
-        <translation>Výrobce</translation>
+        <translation>Výrobce:</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -878,7 +878,7 @@
     </message>
     <message>
         <source>Location</source>
-        <translation>Umístění:</translation>
+        <translation>Umístění</translation>
     </message>
     <message>
         <source>Unit of measure</source>
@@ -3774,15 +3774,15 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Change Language...</source>
-        <translation>Změnit jazyk</translation>
+        <translation>Změnit jazyk...</translation>
     </message>
     <message>
         <source>Add Inspector...</source>
-        <translation>Přidat certifikovanou osobu</translation>
+        <translation>Přidat certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Edit Inspector...</source>
-        <translation>Upravit certifikovanou osobu</translation>
+        <translation>Upravit certifikovanou osobu...</translation>
     </message>
     <message>
         <source>Edit the selected inspector</source>
