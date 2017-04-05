@@ -426,11 +426,11 @@ void MainWindow::print(QPrinter *printer)
 {
 #ifdef Q_OS_MAC
     m_tab->webView()->setZoomFactor(0.75);
-#else
-    m_tab->webView()->setZoomFactor(1.0);
 #endif
     m_tab->webView()->print(printer);
+#ifdef Q_OS_MAC
     m_tab->webView()->setZoomFactor(Global::scaleFactor());
+#endif
 }
 
 QString MainWindow::fileNameForCurrentView()
@@ -468,7 +468,7 @@ void MainWindow::exportPDF(int orientation)
     printer.setOrientation((QPrinter::Orientation)orientation);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(path);
-    m_tab->webView()->print(&printer);
+    print(&printer);
 }
 
 void MainWindow::exportHTML()
