@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -65,6 +65,7 @@ public:
 
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
+    inline bool isShowNotesChecked() const { return actionShow_Notes->isChecked(); }
     inline bool isShowLeakedChecked() const { return actionShow_Leaked->isChecked(); }
     inline bool isShowMostRecentFirstChecked() const { return actionMost_recent_first->isChecked(); }
     inline bool isCompareValuesChecked() const { return actionCompare_values->isChecked(); }
@@ -174,7 +175,7 @@ private slots:
     void exportHTML();
     void printDetailedLabel();
     void printLabel(bool = false);
-    void serviceCompanyInformationVisibilityChanged(bool visible);
+    void serviceCompanyInformationVisibilityChanged();
     void dateFormatChanged(MainWindowSettings::DateFormat);
     void dateFormatChanged(QAction *);
     void timeFormatChanged(MainWindowSettings::TimeFormat);
@@ -241,6 +242,7 @@ private:
     void openDatabase(QString path, const QString &connection_string);
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
+    bool canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid = QString());
     bool isRecordLocked(const QString &);
     void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());
     void addVariable(bool);

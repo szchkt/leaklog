@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -43,8 +43,6 @@ namespace VariableEvaluation {
         QString evaluate(Variable *, const QVariantMap &, QString &);
         QString evaluate(const QString &, const QVariantMap &, QString &);
 
-        QStringList &usedIDs() { return used_ids; }
-
         QList<Variable *> listVariables() const { return vars_list; }
 
         QString variableName(Variable *, bool = false) const;
@@ -54,7 +52,6 @@ namespace VariableEvaluation {
 
         QMap<QString, Variable *> vars_map;
         QList<Variable *> vars_list;
-        QStringList used_ids;
         QString customer_id;
         QString circuit_id;
         QVariantMap circuit;

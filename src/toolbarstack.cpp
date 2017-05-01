@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -41,7 +41,13 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 
     scaleFactorChanged();
 
+    de_table_except_decommissioned_before->setDate(QDate::currentDate().addYears(-1));
+
     QObject::connect(chb_table_all_circuits, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
+    QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), chb_table_except_decommissioned_before, SLOT(setEnabled(bool)));
+    QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), de_table_except_decommissioned_before, SLOT(setEnabled(bool)));
+    QObject::connect(chb_table_except_decommissioned_before, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
+    QObject::connect(de_table_except_decommissioned_before, SIGNAL(dateChanged(const QDate &)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(spb_filter_month_from, SIGNAL(valueChanged(int)), this, SLOT(monthFromChanged(int)));
     QObject::connect(spb_filter_month_until, SIGNAL(valueChanged(int)), this, SLOT(monthUntilChanged(int)));
@@ -197,6 +203,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Customer", "Address"), "address");
             cb_filter_column->addItem(QApplication::translate("Customer", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
+            cb_filter_column->addItem(QApplication::translate("Customer", "Notes"), "notes");
             break;
         case View::Circuits:
             updateView_ListOfCircuits_CircuitAttributes:
@@ -212,6 +219,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Circuit", "Date of commissioning"), "commissioning");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Refrigerant"), "refrigerant");
             cb_filter_column->addItem(QApplication::translate("Circuit", "Oil"), "oil");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Notes"), "notes");
             addFilterItems("field", fieldsOfApplication());
             break;
         case View::Inspections:
@@ -219,6 +227,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Risks"), "risks");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
+            cb_filter_column->addItem(QApplication::translate("Inspection", "Notes"), "notes");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
             break;
         case View::Repairs:
@@ -294,6 +303,8 @@ void ToolBarStack::viewChanged(View::ViewID view)
     chb_CO2_equivalent->setVisible(view == View::Agenda || view == View::OperatorReport);
 
     chb_table_all_circuits->setVisible(filter_all_circuits_visible);
+    chb_table_except_decommissioned_before->setVisible(filter_all_circuits_visible);
+    de_table_except_decommissioned_before->setVisible(filter_all_circuits_visible);
 
     cb_filter_column->setVisible(cb_filter_column->count());
     cb_filter_type->setVisible(cb_filter_column->count());

@@ -22,7 +22,7 @@
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Słowacki Związek ds. chłodnictwa i klimatyzacji</translation>
+        <translation>Słowacki związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -63,6 +63,14 @@
     <message>
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1 na licencji GNU GPL</translation>
+    </message>
+    <message>
+        <source>Czech translation: %1</source>
+        <translation>Czeskie tłumaczenie: %1</translation>
+    </message>
+    <message>
+        <source>Czech Association for Cooling and Air Conditioning Technology</source>
+        <translation>Czeski związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
 </context>
 <context>
@@ -136,7 +144,7 @@
     </message>
     <message>
         <source>Assembly record No.</source>
-        <translation>Numer Książki Serwisowej</translation>
+        <translation>Numer książki serwisowej</translation>
     </message>
     <message>
         <source>Assembly record type ID</source>
@@ -499,7 +507,7 @@
     </message>
     <message>
         <source>Circuit</source>
-        <translation>Obwód</translation>
+        <translation>Obieg</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -645,14 +653,6 @@
         <translation>Automatyczny</translation>
     </message>
     <message>
-        <source>Change refrigerant - Leaklog</source>
-        <translation>Zmień czynnik - Leaklog</translation>
-    </message>
-    <message>
-        <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Zmiana czynnika chłodniczego wpłynie na poprzednie kontrole tego obiegu.</translation>
-    </message>
-    <message>
         <source>ID</source>
         <translation>Numer obiegu</translation>
     </message>
@@ -735,6 +735,26 @@
     <message>
         <source>Status</source>
         <translation>Status</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
+    <message>
+        <source>Edit circuit - Leaklog</source>
+        <translation>Edytuj obieg - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot change the refrigerant in this circuit.</source>
+        <translation>Nie można zmieniać czynnik w tym obiegu.</translation>
+    </message>
+    <message>
+        <source>Changing the refrigerant would affect the store.</source>
+        <translation>Zmiana czynnika chłodniczego miałaby wpływ na magazyn.</translation>
     </message>
 </context>
 <context>
@@ -961,6 +981,10 @@
         <source>Decommissioned Circuits (%1)</source>
         <translation>Obiegi wyłączone z eksploatacji (%1)</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>Compressor</name>
@@ -1178,6 +1202,14 @@
         <source>Operator e-mail</source>
         <translation>E-mail operatora</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>
@@ -1220,6 +1252,10 @@
     <message>
         <source>Customers</source>
         <translation>Klienci</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
@@ -1350,6 +1386,13 @@
     <message>
         <source>Compressor 1</source>
         <translation>Sprężarka 1</translation>
+    </message>
+</context>
+<context>
+    <name>EditCircuitDialogueNotesTab</name>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
@@ -1912,6 +1955,10 @@
         <source>Contact person</source>
         <translation>Osoba kontaktowa</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -2153,12 +2200,16 @@
         <source>Polish</source>
         <translation>Polski</translation>
     </message>
+    <message>
+        <source>Czech</source>
+        <translation>Czeski</translation>
+    </message>
 </context>
 <context>
     <name>LeakagesByApplication</name>
     <message>
         <source>Amount of refrigerant in circuits</source>
-        <translation>Ilość czynnika w obiegu</translation>
+        <translation>Ilość czynnika w obiegach</translation>
     </message>
     <message>
         <source>Percentage of leakage by application</source>
@@ -2178,6 +2229,30 @@
     <message>
         <source>All</source>
         <translation>Wszystko</translation>
+    </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Czynnik</translation>
+    </message>
+    <message>
+        <source>Added</source>
+        <translation>Dodany</translation>
+    </message>
+    <message>
+        <source>Leakage</source>
+        <translation>Wyciek</translation>
+    </message>
+    <message>
+        <source>Weighted Average</source>
+        <translation>Średnia ważona</translation>
+    </message>
+    <message>
+        <source>Average Leakage</source>
+        <translation>Średni wyciek</translation>
+    </message>
+    <message>
+        <source>In Circuits</source>
+        <translation>W obiegach</translation>
     </message>
 </context>
 <context>
@@ -4439,6 +4514,26 @@ dla ID osoby i firmy</translation>
         <source>Exclude from Agenda only</source>
         <translation>Wyłącz tylko z agendy</translation>
     </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nie można usunąc wybraneho klienta.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nie można usunąc wybrany obieg.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Usunięcie tego klienta miałoby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>Usunięcie tego obiegu miałoby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Drukuj informacje o firmie serwisowej</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4539,7 +4634,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Added</source>
-        <translation>Dodaj</translation>
+        <translation>Dodany</translation>
     </message>
     <message>
         <source>Recovered</source>
@@ -4863,6 +4958,10 @@ dla ID osoby i firmy</translation>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Numer serii</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -4957,6 +5056,22 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Leaked (recovered)</source>
         <translation>Wyciek (odzyskany)</translation>
+    </message>
+    <message>
+        <source>Batch number:</source>
+        <translation>Numer serii:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Numer serii</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
     </message>
 </context>
 <context>
@@ -5682,6 +5797,14 @@ dla ID osoby i firmy</translation>
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Przeliczenie czynnika chłodniczego do ekwiwalentu CO₂</translation>
     </message>
+    <message>
+        <source>Except Decommissioned Before:</source>
+        <translation>Z wyjątkiem wyłączonych przed dniem:</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>dd.MM.yyyy</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>
@@ -5947,6 +6070,10 @@ dla ID osoby i firmy</translation>
         <source>Contact person</source>
         <translation>Osoba kontaktowa</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
 </context>
 <context>
     <name>VariableRecord</name>
@@ -6183,27 +6310,27 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>3 - 10 kg, before 2011</source>
-        <translation>3 - 10 kg, do 2011</translation>
+        <translation>3 - 10 kg, przed 2011</translation>
     </message>
     <message>
         <source>3 - 10 kg, after 2011</source>
-        <translation>3 - 10 kg, od 2011</translation>
+        <translation>3 - 10 kg, po 2011</translation>
     </message>
     <message>
         <source>10 - 100 kg, before 2011</source>
-        <translation>10 - 100 kg, do 2011</translation>
+        <translation>10 - 100 kg, przed 2011</translation>
     </message>
     <message>
         <source>10 - 100 kg, after 2011</source>
-        <translation>10 - 100 kg, od 2011</translation>
+        <translation>10 - 100 kg, po 2011</translation>
     </message>
     <message>
         <source>above 100 kg, before 2011</source>
-        <translation>powyżej 100 kg przed 2011</translation>
+        <translation>powyżej 100 kg, przed 2011</translation>
     </message>
     <message>
         <source>above 100 kg, after 2011</source>
-        <translation>powyżej 100 kg po 2011</translation>
+        <translation>powyżej 100 kg, po 2011</translation>
     </message>
     <message>
         <source>Refrigerant leakage</source>
@@ -6235,7 +6362,7 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>6 - 30 kg, hermetically sealed</source>
-        <translation>6 - 30 kg hermetycznie zamknięty</translation>
+        <translation>6 - 30 kg, hermetycznie zamknięty</translation>
     </message>
     <message>
         <source>30 - 300 kg</source>
@@ -6252,6 +6379,46 @@ dla ID osoby i firmy</translation>
     <message>
         <source>above 300 kg, leakage detector installed</source>
         <translation>powyżej 300 kg, zainstalowany czujnik wycieku</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5 - 50 t ekwiwalentu CO₂, do 2011</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5 - 50 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50 - 500 t ekwiwalentu CO₂, przed 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50 - 500 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>powyżej 500 t ekwiwalentu CO₂, przed 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>powyżej 500 t ekwiwalentu CO₂, po 2011</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>raz na 2 lata</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>raz na rok</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>raz na 6 miesięcy</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>raz na 3 miesiące</translation>
     </message>
 </context>
 </TS>

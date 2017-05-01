@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -26,6 +26,25 @@
 #include "editcircuitdialoguecompressorstab.h"
 #include "editcircuitdialogueunitstab.h"
 
+EditCircuitDialogueNotesTab::EditCircuitDialogueNotesTab(MDAbstractInputWidget *notes, QWidget *parent)
+    : EditDialogueTab(parent)
+{
+    setName(tr("Notes"));
+
+    static_cast<QLabel *>(notes->label()->widget())->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(9, 9, 9, 9);
+    layout->setSpacing(9);
+
+    layout->addWidget(notes->label()->widget());
+    layout->addWidget(notes->widget());
+}
+
+void EditCircuitDialogueNotesTab::save(const QString &)
+{
+}
+
 EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent)
     : TabbedEditDialogue(record, undo_stack, parent)
 {
@@ -37,6 +56,9 @@ EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack
     EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->id(), this);
     QObject::connect(units_tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
     addTab(units_tab);
+
+    EditCircuitDialogueNotesTab *notes_tab = new EditCircuitDialogueNotesTab(inputWidget("notes"), this);
+    addTab(notes_tab);
 }
 
 void EditCircuitDialogue::updateCircuit(MTDictionary dict)

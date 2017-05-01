@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -63,6 +63,8 @@ public:
     inline void setOperatorMail(const QString &value) { setValue("operator_mail", value); }
     inline QString operatorPhone() { return stringValue("operator_phone"); }
     inline void setOperatorPhone(const QString &value) { setValue("operator_phone", value); }
+    inline QString notes() { return stringValue("notes"); }
+    inline void setNotes(const QString &value) { setValue("notes", value); }
 
     MTRecordQuery<Repair> repairs() const;
     MTRecordQuery<Circuit> circuits() const;

@@ -29,6 +29,7 @@ HEADERS       += src/aboutwidget.h \
                  src/editinspectiondialoguelayout.h \
                  src/editinspectordialogue.h \
                  src/editwarningdialogue.h \
+                 src/expression.h \
                  src/searchlineedit.h \
                  src/global.h \
                  src/highlighter.h \
@@ -146,6 +147,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/editinspectiondialoguelayout.cpp \
                  src/editinspectordialogue.cpp \
                  src/editwarningdialogue.cpp \
+                 src/expression.cpp \
                  src/global.cpp \
                  src/highlighter.cpp \
                  src/htmlbuilder.cpp \
@@ -237,8 +239,9 @@ lessThan(QT_MAJOR_VERSION, 5) {
 }
 
 # fparser
-HEADERS           += include/fparser/fpconfig.hh include/fparser/fptypes.hh include/fparser/fparser.hh
-SOURCES           += include/fparser/fpoptimizer.cc include/fparser/fparser.cc
+HEADERS           += include/fparser/fparser_gmpint.hh include/fparser/fparser_mpfr.hh include/fparser/fparser.hh include/fparser/fpconfig.hh
+HEADERS           += include/fparser/extrasrc/fpaux.hh include/fparser/extrasrc/fptypes.hh
+SOURCES           += include/fparser/fparser.cc include/fparser/fpoptimizer.cc
 DEFINES           += FP_NO_SUPPORT_OPTIMIZER
 
 # csvparser
@@ -360,5 +363,6 @@ refprop:exists(refprop/include/refprop_lib.h) {
 
 CODECFORTR         = UTF-8
 TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
-                     rc/i18n/Leaklog-Polish.ts
+                     rc/i18n/Leaklog-Polish.ts \
+                     rc/i18n/Leaklog-Czech.ts
 QMAKE_RESOURCE_FLAGS += -compress 9

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -38,6 +38,9 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), stringValue("address")));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
+    notes->setRowSpan(0);
+    md->addInputWidget(notes);
     (new OperatorInputWidget(savedValues(), md->widget()))->addToEditDialogue(*md);
 }
 
@@ -113,6 +116,7 @@ public:
         columns << Column("operator_address", "TEXT");
         columns << Column("operator_mail", "TEXT");
         columns << Column("operator_phone", "TEXT");
+        columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

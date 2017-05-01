@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -40,10 +40,7 @@ QString InspectorDetailsView::renderHTML()
 
     HTMLDiv div;
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        div << writeServiceCompany();
-        div.newLine();
-    }
+    writeServiceCompany(div);
 
     div << writeInspectorsTable(QString(), inspector_uuid);
     div.newLine();

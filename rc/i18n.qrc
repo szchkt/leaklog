@@ -3,5 +3,6 @@
         <file>i18n/Leaklog-i18n.qm</file>
         <file>i18n/Leaklog-Slovak.qm</file>
         <file>i18n/Leaklog-Polish.qm</file>
+        <file>i18n/Leaklog-Czech.qm</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -37,12 +37,7 @@ CustomersView::CustomersView(ViewTabSettings *settings):
 QString CustomersView::renderHTML()
 {
     QString html; MTTextStream out(&html);
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
     writeCustomersTable(out);
     return viewTemplate("customers").arg(html);
 }
@@ -60,6 +55,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     bool customer_details_visible = settings->mainWindowSettings().customerDetailsVisible() || disable_hiding_details;
     bool show_date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     bool show_owner = settings->isShowOwnerChecked() && !disable_hiding_details;
+    bool show_notes = settings->isShowNotesChecked() && !customer_uuid.isEmpty();
 
     MTQuery all_customers = Customer::query();
     if (!customer_uuid.isEmpty()) {
@@ -157,6 +153,16 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
                 *(row->addCell()) << settings->mainWindowSettings().formatDateTime(list.at(i).value("date_updated"));
             if (show_owner)
                 *(row->addCell()) << escapeString(list.at(i).value("updated_by"));
+
+            if (show_notes) {
+                QString notes = list.at(i).value("notes").toString();
+                if (!notes.isEmpty()) {
+                    row = table->addRow();
+                    *(row->addHeaderCell(QString("colspan=\"%1\"").arg(thead_colspan))) << tr("Notes");
+                    row = table->addRow();
+                    *(row->addCell(QString("colspan=\"%1\"").arg(thead_colspan))) << escapeString(notes, false, true);
+                }
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -40,7 +40,7 @@ bool MainWindow::isFullScreen() const
     if (QSysInfo::MacintoshVersion <= QSysInfo::MV_10_6)
         return QWidget::isFullScreen();
     NSView *view = (NSView *)winId();
-    return ([[view window] styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask;
+    return ([[view window] styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen;
 #else
     return QWidget::isFullScreen();
 #endif

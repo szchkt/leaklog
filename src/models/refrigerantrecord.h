@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -35,6 +35,8 @@ public:
     inline QString partner() { return stringValue("partner"); }
     inline QString partnerID() { return stringValue("partner_id"); }
     inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline QString batchNumber() { return stringValue("batch_number"); }
+    inline void setBatchNumber(const QString &value) { setValue("batch_number", value); }
     inline double purchased() { return doubleValue("purchased"); }
     inline double purchasedRecovered() { return doubleValue("purchased_reco"); }
     inline double sold() { return doubleValue("sold"); }
@@ -43,6 +45,8 @@ public:
     inline double disposedOf() { return doubleValue("refr_disp"); }
     inline double leaked() { return doubleValue("leaked"); }
     inline double leakedRecovered() { return doubleValue("leaked_reco"); }
+    inline QString notes() { return stringValue("notes"); }
+    inline void setNotes(const QString &value) { setValue("notes", value); }
 
     static QString tableName();
     static inline MTRecordQuery<RefrigerantRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<RefrigerantRecord>(tableName(), parents); }

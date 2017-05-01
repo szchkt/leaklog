@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -19,6 +19,7 @@
 
 #include "mainwindow.h"
 #include "global.h"
+#include "expression.h"
 #include "records.h"
 #include "variables.h"
 #include "warnings.h"
@@ -69,6 +70,7 @@ MainWindow::MainWindow():
     leaklog_i18n.insert("English", "English");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Slovak"), "Slovak");
     leaklog_i18n.insert(translator.translate("LanguageNames", "Polish"), "Polish");
+    leaklog_i18n.insert(translator.translate("LanguageNames", "Czech"), "Czech");
 
     // UI
     if (tr("LTR") == "RTL")
@@ -221,8 +223,9 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
-    QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
-    QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), this, SLOT(serviceCompanyInformationVisibilityChanged(bool)));
+    QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged()), this, SLOT(serviceCompanyInformationVisibilityChanged()));
+    QObject::connect(actionPrint_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationPrinted(bool)));
+    QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationVisible(bool)));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -231,6 +234,7 @@ MainWindow::MainWindow():
     QObject::connect(actionCompare_values, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_owner, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_Notes, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Leaked, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
@@ -420,11 +424,11 @@ void MainWindow::print(QPrinter *printer)
 {
 #ifdef Q_OS_MAC
     m_tab->webView()->setZoomFactor(0.75);
-#else
-    m_tab->webView()->setZoomFactor(1.0);
 #endif
     m_tab->webView()->print(printer);
+#ifdef Q_OS_MAC
     m_tab->webView()->setZoomFactor(Global::scaleFactor());
+#endif
 }
 
 QString MainWindow::fileNameForCurrentView()
@@ -462,7 +466,7 @@ void MainWindow::exportPDF(int orientation)
     printer.setOrientation((QPrinter::Orientation)orientation);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(path);
-    m_tab->webView()->print(&printer);
+    print(&printer);
 }
 
 void MainWindow::exportHTML()
@@ -598,9 +602,7 @@ void MainWindow::printLabel(bool detailed)
             refr_add_per.next();
             QString unparsed_expression = refr_add_per.valueExpression();
             if (!unparsed_expression.isEmpty()) {
-                QStringList var_ids = listVariableIds();
-                attributes.insert("refr_add_per", evaluateExpression(inspection, parseExpression(unparsed_expression, var_ids),
-                                                                     m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID()));
+                attributes.insert("refr_add_per", Expression(unparsed_expression).evaluate(inspection, m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID()));
             }
         }
     }
@@ -946,10 +948,10 @@ void MainWindow::updateLockButton()
     }
 }
 
-void MainWindow::serviceCompanyInformationVisibilityChanged(bool visible)
+void MainWindow::serviceCompanyInformationVisibilityChanged()
 {
-    actionShow_Service_Company_Information->setChecked(visible);
-    m_settings.setServiceCompanyInformationVisible(visible);
+    actionPrint_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationPrinted());
+    actionShow_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationVisible());
     if (QSqlDatabase::database().isOpen())
         refreshView();
 }
@@ -1296,6 +1298,7 @@ void MainWindow::loadSettings()
     actionCompare_values->setChecked(settings.value("compare_values", true).toBool());
     actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
     actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
+    actionShow_Notes->setChecked(settings.value("columns/notes", true).toBool());
     actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
     m_settings.restore(settings);
@@ -1323,6 +1326,7 @@ void MainWindow::saveSettings()
     settings.setValue("compare_values", actionCompare_values->isChecked());
     settings.setValue("columns/date_updated", actionShow_date_updated->isChecked());
     settings.setValue("columns/owner", actionShow_owner->isChecked());
+    settings.setValue("columns/notes", actionShow_Notes->isChecked());
     settings.setValue("columns/leaked", actionShow_Leaked->isChecked());
     settings.setValue("most_recent_first", actionMost_recent_first->isChecked());
     m_settings.save(settings);

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -121,8 +121,11 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
     cell = new EditDialogueTableCell(tr("Phone"), Global::String);
     cell->setId("phone");
     cells.append(cell);
+
+    int row_span = md_grid_main->rowCount() / 2;
+
     persons_table = new EditDialogueBasicTable(tr("Contact persons"), cells, this);
-    md_grid_main->addWidget(persons_table, 0, 2, md_grid_main->rowCount(), 1);
+    md_grid_main->addWidget(persons_table, 0, 2, row_span, 1);
     persons_table->setMinimumWidth(500);
 
     ListOfVariantMaps persons = Customer(md_record->id()).persons().listAll();
@@ -148,6 +151,11 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
     }
 
     if (!persons.count()) persons_table->addNewRow();
+
+    MDAbstractInputWidget *notes = inputWidget("notes");
+    static_cast<QLabel *>(notes->label()->widget())->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    md_grid_main->addWidget(notes->label()->widget(), row_span, 2);
+    md_grid_main->addWidget(notes->widget(), row_span + 1, 2, md_grid_main->rowCount() - row_span - 1, 1);
 }
 
 void EditCustomerDialogue::save()

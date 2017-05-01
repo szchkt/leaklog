@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -45,11 +45,7 @@ QString AssemblyRecordItemsView::renderHTML()
     ListOfVariantMaps item_categories = AssemblyRecordItemCategory::query().listAll("*", order_by);
 
     HTMLDiv div;
-
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        div << writeServiceCompany();
-        div.newLine();
-    }
+    writeServiceCompany(div);
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
     int thead_colspan = 5;

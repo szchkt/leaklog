@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -17,8 +17,6 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ********************************************************************/
 
-#include "fparser/fparser.hh"
-#include "refprop.h"
 #include "global.h"
 #include "variables.h"
 #include "reportdata.h"
@@ -441,135 +439,14 @@ QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
             " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.nominal = 1)) AS " + return_as;
 }
 
-QMap<QString, MTDictionary> Global::parsed_expressions;
-
-MTDictionary Global::parseExpression(const QString &exp, QStringList &used_ids)
-{
-    MTDictionary dict_exp(true);
-    if (!exp.isEmpty() && !parsed_expressions.contains(exp)) {
-        QStringList circuit_attributes; circuit_attributes << "refrigerant_amount" << "oil_amount";
-        QStringList functions; functions << "sum" << "p_to_t" << "p_to_t_vap";
-        for (int i = 0; i < circuit_attributes.count(); ++i) {
-            if (!used_ids.contains(circuit_attributes.at(i))) { used_ids << circuit_attributes.at(i); }
-        }
-        for (int i = 0; i < functions.count(); ++i) {
-            if (!used_ids.contains(functions.at(i))) { used_ids << functions.at(i); }
-        }
-        QSet<int> matched;
-        for (int i = 0; i < used_ids.count(); ++i) {
-            QRegExp expression(QString("\\b%1\\b").arg(used_ids.at(i)));
-            int index = exp.indexOf(expression);
-            while (index >= 0) {
-                int length = expression.matchedLength();
-                if (!matched.contains(index)) {
-                    for (int j = index; j < index + length; j++) { matched << j; }
-                }
-                index = exp.indexOf(expression, index + length);
-            }
-        }
-        QString id_, f_;
-        int last_f = 0;
-        for (int i = 0; i < exp.length(); ++i) {
-            if (matched.contains(i)) {
-                if (!f_.isEmpty()) {
-                    dict_exp.insert(f_, "function");
-                    f_.clear();
-                }
-                id_.append(exp.at(i));
-            } else {
-                if (!id_.isEmpty()) {
-                    if (!functions.contains(id_)) {
-                        if (circuit_attributes.contains(id_)) {
-                            dict_exp.insert(id_, "circuit_attribute");
-                        } else {
-                            dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
-                        }
-                    }
-                    last_f = functions.indexOf(id_) + 1;
-                    id_.clear();
-                }
-                f_.append(exp.at(i));
-            }
-        }
-        if (!f_.isEmpty()) {
-            dict_exp.insert(f_, "function");
-        }
-        if (!id_.isEmpty()) {
-            if (circuit_attributes.contains(id_)) {
-                dict_exp.insert(id_, "circuit_attribute");
-            } else {
-                dict_exp.insert(id_, last_f ? functions.at(last_f - 1) : "id");
-            }
-        }
-        parsed_expressions.insert(exp, dict_exp);
-    } else {
-        return parsed_expressions.value(exp, MTDictionary(true));
-    }
-    return dict_exp;
-}
-
-double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QString &customer_uuid, const QString &circuit_uuid, bool *ok, bool *null_var)
-{
-    MTQuery circuit = Circuit::query({{"customer_uuid", customer_uuid}, {"uuid", circuit_uuid}});
-    QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
-    return evaluateExpression(inspection, expression, circuit_attributes, ok, null_var);
-}
-
-double Global::evaluateExpression(const QVariantMap &inspection, const MTDictionary &expression, const QVariantMap &circuit_attributes, bool *ok, bool *null_var)
-{
-    static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
-                                   " WHERE date LIKE '%2%' AND circuit_uuid = :circuit_uuid"
-                                   " AND (nominal <> 1 OR nominal IS NULL)");
-    if (null_var) *null_var = false;
-    QString inspection_date = inspection.value("date").toString();
-    FunctionParser fparser;
-    QString value;
-    for (int i = 0; i < expression.count(); ++i) {
-        if (expression.value(i) == "id") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(inspection.value(expression.key(i)).toDouble()));
-        } else if (expression.value(i) == "sum") {
-            double v = 0.0;
-            MTSqlQuery sum_ins;
-            sum_ins.prepare(sum_query.arg(expression.key(i)).arg(inspection_date.left(4)));
-            sum_ins.bindValue(":circuit_uuid", circuit_attributes.value("uuid"));
-            if (sum_ins.exec() && sum_ins.next())
-                v = sum_ins.value(0).toDouble();
-            value.append(QString::number(v));
-        } else if (expression.value(i) == "circuit_attribute") {
-            value.append(QString::number(circuit_attributes.value(expression.key(i)).toDouble()));
-        } else if (expression.value(i) == "p_to_t") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
-                                                                        inspection.value(expression.key(i)).toDouble(),
-                                                                        RefProp::Liquid)));
-        } else if (expression.value(i) == "p_to_t_vap") {
-            if (null_var && inspection.value(expression.key(i)).isNull()) *null_var = true;
-            value.append(QString::number(RefProp::pressureToTemperature(circuit_attributes.value("refrigerant").toString(),
-                                                                        inspection.value(expression.key(i)).toDouble(),
-                                                                        RefProp::Vapour)));
-        } else {
-            value.append(expression.key(i));
-        }
-    }
-    if (fparser.Parse(value.toStdString(), "") >= 0) {
-        if (ok) *ok = false;
-        return 0;
-    }
-    if (ok) *ok = true;
-    long double result = fparser.Eval(NULL);
-    if (round(result) == result) return (double)result;
-    return (double)(round(result * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP);
-}
-
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
 {
     if (value1 < value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</div>&nbsp;%L1";
+        return "<span style=\"white-space: nowrap;\"><span style=\"font-weight: bold; " + QString(value2 - value1 > tolerance ? "color: #FF0000; " : "") + "\">" + upArrow() + "</span>&nbsp;%L1</span>";
     } else if (value1 > value2) {
-        return "<div style=\"float: left; font-size: large;" + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</div>&nbsp;%L1";
+        return "<span style=\"white-space: nowrap;\"><span style=\"font-weight: bold; " + QString(value1 - value2 > tolerance ? "color: #FF0000; " : "") + "\">" + downArrow() + "</span>&nbsp;%L1</span>";
     } else {
-        return "%L1";
+        return "<span style=\"white-space: nowrap;\">%L1</span>";
     }
 }
 
@@ -744,6 +621,7 @@ public:
         dict.insert("sftsw", QApplication::translate("VariableNames", "Safety switch"));
         dict.insert("risks", QApplication::translate("VariableNames", "Risks"));
         dict.insert("rmds", QApplication::translate("VariableNames", "Remedies"));
+        dict.insert("notes", QApplication::translate("VariableNames", "Notes"));
         dict.insert("arno", QApplication::translate("VariableNames", "Assembly record No."));
         dict.insert("ar_type_uuid", QApplication::translate("VariableNames", "Assembly record type"));
         dict.insert("vis_aur_chk", QApplication::translate("VariableNames", "Visual and aural check"));
@@ -807,6 +685,7 @@ public:
         dict.insert("sftsw", "float");
         dict.insert("risks", "text");
         dict.insert("rmds", "text");
+        dict.insert("notes", "text");
         dict.insert("arno", "string");
         dict.insert("ar_type_uuid", "uuid");
         dict.insert("corr_def", "bool");
@@ -1083,9 +962,9 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R134a", 1430);
         GWP.insert("R141b", 700);
         GWP.insert("R143", 353);
-        GWP.insert("R143a", 4300);
+        GWP.insert("R143a", 4470);
         GWP.insert("R152", 53);
-        GWP.insert("R152a", 120);
+        GWP.insert("R152a", 124);
         GWP.insert("R161", 12);
         GWP.insert("R22", 1700);
         GWP.insert("R227ea", 3220);
@@ -1111,7 +990,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R407A", 2107);
         GWP.insert("R407B", 2700);
         GWP.insert("R407C", 1774);
-        GWP.insert("R407D", 1500);
+        GWP.insert("R407D", 1627);
         GWP.insert("R407E", 1430);
         GWP.insert("R407F", 1825);
         GWP.insert("R408A", 3020);
@@ -1125,6 +1004,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R414B", 1320);
         GWP.insert("R416A", 1010);
         GWP.insert("R417A", 2346);
+        GWP.insert("R419A", 2967);
         GWP.insert("R420A", 1430);
         GWP.insert("R421A", 2520);
         GWP.insert("R421B", 3090);
@@ -1142,7 +1022,9 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R437A", 1805);
         GWP.insert("R438", 2265);
         GWP.insert("R442A", 1888);
+        GWP.insert("R448A", 1273);
         GWP.insert("R449A", 1397);
+        GWP.insert("R450A", 547);
         GWP.insert("R452A", 2141);
         GWP.insert("R500", 7850);
         GWP.insert("R501", 3920);
@@ -1151,7 +1033,8 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R507", 3985);
         GWP.insert("R508A", 13214);
         GWP.insert("R508B", 13396);
-        GWP.insert("R600a", 3);
+        GWP.insert("R513A", 631);
+        GWP.insert("R600a", 4);
         GWP.insert("R717", 0);
         GWP.insert("R744", 1);
         GWP.insert("SF6", 22800);
@@ -1166,7 +1049,7 @@ double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amou
 
 QString Global::listRefrigerantsToString()
 {
-    return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R452A;R500;R501;R502;R503;R507;R508A;R508B;R600a;SF6";
+    return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R419A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R448A;R449A;R450A;R452A;R500;R501;R502;R503;R507;R508A;R508B;R513A;R600a;SF6";
 }
 
 MTDictionary Global::listInspectors()

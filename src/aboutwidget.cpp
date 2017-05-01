@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -65,7 +65,7 @@ void AboutWidget::showAcknowledgements(bool show)
         HTMLParentElement *body = html_doc.body();
 
         HTMLParagraph *p = body->paragraph();
-        *p << "Copyright &copy; 2008&ndash;2016 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
+        *p << "Copyright &copy; 2008&ndash;2017 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
         p->newLine();
         *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
@@ -75,6 +75,7 @@ void AboutWidget::showAcknowledgements(bool show)
 
         *(body->subHeading()) << tr("Translation");
 
+        *(body->paragraph()) << tr("Czech translation: %1").arg(QString("%1 <i>(<a href=\"http://www.chlazeni.cz\">chlazeni.cz</a>)</i>").arg(tr("Czech Association for Cooling and Air Conditioning Technology")));
         *(body->paragraph()) << tr("Polish translation: %1").arg("PROZON Fundacja Ochrony Klimatu <i>(<a href=\"http://prozon.org.pl\">prozon.org.pl</a>)</i>");
 
         *(body->subHeading()) << tr("Contributors");
@@ -97,7 +98,7 @@ void AboutWidget::showAcknowledgements(bool show)
 
         *(body->paragraph()) << tr("%1, licensed under the GNU LGPL").arg("Oxygen Icons <i>(<a href=\"http://www.oxygen-icons.org\">www.oxygen-icons.org</a>)</i>");
 
-        *(body->paragraph()) << tr("%1, licensed under the GNU GPL").arg("Function Parser v3.1.2 <i>(<a href=\"http://warp.povusers.org/FunctionParser\">warp.povusers.org/FunctionParser</a>)</i>");
+        *(body->paragraph()) << tr("%1, licensed under the GNU GPL").arg("Function Parser v4.5.2 <i>(<a href=\"http://warp.povusers.org/FunctionParser\">warp.povusers.org/FunctionParser</a>)</i>");
 
 #ifdef REFPROP
         *(body->paragraph()) << "NIST Reference Fluid Thermodynamic and Transport Properties Database (REFPROP) v9.1 <i>(<a href=\"http://www.nist.gov/srd/nist23.cfm\">www.nist.gov/srd/nist23.cfm</a>)</i>";

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -69,6 +69,11 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
     gl_rmds->addWidget(rmds->label()->widget(), 1, 0);
     gl_rmds->addWidget(rmds->widget(), 1, 1);
     gl_rmds->setRowStretch(1, 2);
+
+    MDAbstractInputWidget *notes = inputWidget("notes");
+    gl_rmds->addWidget(notes->label()->widget(), 2, 0);
+    gl_rmds->addWidget(notes->widget(), 2, 1);
+    gl_rmds->setRowStretch(2, 1);
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;

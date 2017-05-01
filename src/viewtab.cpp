@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -493,6 +493,11 @@ bool ViewTab::isShowOwnerChecked() const
     return parentWindow()->isShowOwnerChecked();
 }
 
+bool ViewTab::isShowNotesChecked() const
+{
+    return parentWindow()->isShowNotesChecked();
+}
+
 bool ViewTab::isShowLeakedChecked() const
 {
     return parentWindow()->isShowLeakedChecked();
@@ -617,15 +622,19 @@ void ViewTab::executeLink(Link *link)
             setView(View::Circuits);
         }
 
-        if (link->countViews() <= 1 && link->action() == Link::Edit)
+        if (link->countViews() <= 1 && link->action() == Link::Edit) {
+            select_with_javascript = true;
             parentWindow()->editCustomer();
+        }
         break;
 
     case LinkParser::Repair:
         select_with_javascript = !view_changed;
         loadRepair(link->idValue("repair"), view_changed && link->action() == Link::View);
-        if (link->action() == Link::Edit)
+        if (link->action() == Link::Edit) {
+            select_with_javascript = true;
             parentWindow()->editRepair();
+        }
         break;
 
     case LinkParser::Store:
@@ -734,8 +743,10 @@ void ViewTab::executeLink(Link *link)
         else if (link->countViews() <= 2 && link->action() == Link::View)
             setView(View::Inspections);
 
-        if (link->countViews() <= 2 && link->action() == Link::Edit)
+        if (link->countViews() <= 2 && link->action() == Link::Edit) {
+            select_with_javascript = true;
             parentWindow()->editCircuit();
+        }
         break;
 
     case LinkParser::AllAssemblyRecords:
@@ -763,8 +774,10 @@ void ViewTab::executeLink(Link *link)
         else if (link->countViews() <= 3 && link->action() == Link::View)
             setView(View::InspectionDetails);
 
-        if (link->action() == Link::Edit)
+        if (link->action() == Link::Edit) {
+            select_with_javascript = true;
             parentWindow()->editInspection();
+        }
         break;
 
     case LinkParser::AssemblyRecord:

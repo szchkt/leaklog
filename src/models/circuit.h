@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -96,6 +96,8 @@ public:
     inline void setUtilisation(double value) { setValue("utilisation", value); }
     inline int inspectionInterval() { return intValue("inspection_interval"); }
     inline void setInspectionInterval(int value) { setValue("inspection_interval", value); }
+    inline QString notes() { return stringValue("notes"); }
+    inline void setNotes(const QString &value) { setValue("notes", value); }
 
     MTRecordQuery<Compressor> compressors() const;
     MTRecordQuery<CircuitUnit> units() const;

@@ -64,6 +64,14 @@
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1, pod licenciou GNU GPL</translation>
     </message>
+    <message>
+        <source>Czech translation: %1</source>
+        <translation>Český preklad: %1</translation>
+    </message>
+    <message>
+        <source>Czech Association for Cooling and Air Conditioning Technology</source>
+        <translation>Český zväz chladiacej a klimatizačnej techniky</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -693,14 +701,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Change refrigerant - Leaklog</source>
-        <translation>Zmeniť chladivo - Leaklog</translation>
-    </message>
-    <message>
-        <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Zmena chladiva ovplyvní predchádzajúce kontroly tohto okruhu.</translation>
-    </message>
-    <message>
         <source>Commissioned on</source>
         <translation>Uvedenie do prevádzky</translation>
     </message>
@@ -735,6 +735,26 @@
     <message>
         <source>Status</source>
         <translation>Stav</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
+    <message>
+        <source>Edit circuit - Leaklog</source>
+        <translation>Upraviť okruh - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot change the refrigerant in this circuit.</source>
+        <translation>Nie je možné zmeniť chladivo v tomto okruhu.</translation>
+    </message>
+    <message>
+        <source>Changing the refrigerant would affect the store.</source>
+        <translation>Zmena chladiva by ovplyvnila sklad.</translation>
     </message>
 </context>
 <context>
@@ -961,6 +981,10 @@
         <source>Decommissioned Circuits (%1)</source>
         <translation>Okruhy vyradené z prevádzky (%1)</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>Compressor</name>
@@ -1178,6 +1202,14 @@
         <source>Operator phone</source>
         <translation>Telefón prevádzkovateľa</translation>
     </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>
@@ -1220,6 +1252,10 @@
     <message>
         <source>Customers</source>
         <translation>Zákazníci</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -1350,6 +1386,13 @@
     <message>
         <source>Compressor 1</source>
         <translation>Kompresor 1</translation>
+    </message>
+</context>
+<context>
+    <name>EditCircuitDialogueNotesTab</name>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -1912,6 +1955,10 @@
         <source>Contact person</source>
         <translation>Prevzal</translation>
     </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -2153,6 +2200,10 @@
         <source>Polish</source>
         <translation>Poľština</translation>
     </message>
+    <message>
+        <source>Czech</source>
+        <translation>Čeština</translation>
+    </message>
 </context>
 <context>
     <name>LeakagesByApplication</name>
@@ -2178,6 +2229,30 @@
     <message>
         <source>All</source>
         <translation>Všetky</translation>
+    </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Chladivo</translation>
+    </message>
+    <message>
+        <source>Added</source>
+        <translation>Doplnené</translation>
+    </message>
+    <message>
+        <source>Leakage</source>
+        <translation>Únik</translation>
+    </message>
+    <message>
+        <source>Weighted Average</source>
+        <translation>Vážený priemer</translation>
+    </message>
+    <message>
+        <source>Average Leakage</source>
+        <translation>Priemerný únik</translation>
+    </message>
+    <message>
+        <source>In Circuits</source>
+        <translation>V okruhoch</translation>
     </message>
 </context>
 <context>
@@ -4443,6 +4518,26 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Exclude from Agenda only</source>
         <translation>Vyradiť len z agendy</translation>
     </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nie je možné odstrániť vybraného zákazníka.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nie je možné odstrániť vybraný okruh.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Odstránenie tohto zákazníka by ovplyvnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>Odstránenie tohto okruhu by ovplyvnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Tlačiť informácie o servisnej organizácii</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4867,6 +4962,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Author</source>
         <translation>Autor</translation>
     </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Číslo šarže</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -4961,6 +5060,22 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Record of Refrigerant Management</source>
         <translation>Záznam o nakladaní s chladivom</translation>
+    </message>
+    <message>
+        <source>Batch number:</source>
+        <translation>Číslo šarže:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Číslo šarže</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -5686,6 +5801,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Convert refrigerant to CO₂ equivalent</source>
         <translation>Prepočítať chladivo na CO₂ ekvivalent</translation>
     </message>
+    <message>
+        <source>Except Decommissioned Before:</source>
+        <translation>Okrem vyradených pred:</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>dd.MM.yyyy</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>
@@ -5950,6 +6073,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Contact person</source>
         <translation>Prevzal</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
     </message>
 </context>
 <context>
@@ -6256,6 +6383,46 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>above 300 kg, leakage detector installed</source>
         <translation>nad 300 kg, zabudovaný detektor únikov</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5 - 50 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50 - 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, do 2011</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>nad 500 t CO₂ ekvivalentu, od 2011</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>raz za 2 roky</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>raz za rok</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>raz za 6 mesiacov</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>raz za 3 mesiace</translation>
     </message>
 </context>
 </TS>

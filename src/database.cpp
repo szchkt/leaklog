@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -744,7 +744,6 @@ void MainWindow::closeDatabase(bool save)
     settings.setValue("current_index", tabw_main->currentIndex());
     settings.endGroup();
 
-    parsed_expressions.clear();
     m_undo_stack->clear();
     cb_table_edit->clear();
     trw_variables->clear();
@@ -874,6 +873,33 @@ bool MainWindow::isOperationPermitted(const QString &operation, const QString &r
     return true;
 }
 
+bool MainWindow::canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid)
+{
+    MTSqlQuery query;
+    query.prepare(QString("SELECT date FROM inspections"
+                          " WHERE %1 AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
+                          " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1")
+                  .arg(circuit_uuid.isEmpty() ? "customer_uuid = :customer_uuid" : "customer_uuid = :customer_uuid AND circuit_uuid = :circuit_uuid"));
+    query.bindValue(":customer_uuid", customer_uuid);
+    if (!circuit_uuid.isEmpty())
+        query.bindValue(":circuit_uuid", circuit_uuid);
+
+    if (query.exec() && query.next()) {
+        QMessageBox message(this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setWindowTitle(circuit_uuid.isEmpty() ? tr("Remove customer - Leaklog") : tr("Remove circuit - Leaklog"));
+        message.setText(circuit_uuid.isEmpty() ? tr("You cannot remove the selected customer.") : tr("You cannot remove the selected circuit."));
+        message.setInformativeText(circuit_uuid.isEmpty() ? tr("Removing this customer would affect the store.") : tr("Removing this circuit would affect the store."));
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return false;
+    }
+
+    return true;
+}
+
 bool MainWindow::isRecordLocked(const QString &date)
 {
     if (DBInfo::isRecordLocked(date)) {
@@ -998,6 +1024,7 @@ void MainWindow::removeCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomerUUID())) { return; }
     Customer record(m_tab->selectedCustomerUUID());
     if (!isOperationPermitted("remove_customer", record.updatedBy())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove customer - Leaklog"),
@@ -1490,6 +1517,7 @@ void MainWindow::removeCircuit()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID())) { return; }
     Circuit record(m_tab->selectedCircuitUUID());
     if (!isOperationPermitted("remove_circuit", record.updatedBy())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove circuit - Leaklog"),
@@ -1890,7 +1918,6 @@ void MainWindow::addVariable(bool subvar)
             addColumn(record.id(), "inspections", db);
         if (scope & Variable::Compressor)
             addColumn(record.id(), "inspections_compressors", db);
-        parsed_expressions.clear();
         setDatabaseModified(true);
         refreshView();
     }
@@ -1920,8 +1947,6 @@ void MainWindow::editVariable()
                 renameColumn(id, record.id(), "inspections", db);
             if (scope & Variable::Compressor)
                 renameColumn(id, record.id(), "inspections_compressors", db);
-
-            parsed_expressions.clear();
 
             MTSqlQuery update_subvariables;
             update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
@@ -1957,7 +1982,6 @@ void MainWindow::removeVariable()
     delete item;
     dropColumn(id, "inspections", db);
     dropColumn(id, "inspections_compressors", db);
-    parsed_expressions.clear();
     enableTools();
     setDatabaseModified(true);
     refreshView();

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -83,6 +83,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
+    notes->setRowSpan(0);
+    md->addInputWidget(notes);
 
     int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
@@ -107,18 +110,24 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 bool Circuit::checkValues(QWidget *parent)
 {
     if (!id().isEmpty() && value("refrigerant") != savedValue("refrigerant")) {
-        QMessageBox message(parent);
-        message.setWindowTitle(tr("Change refrigerant - Leaklog"));
-        message.setWindowModality(Qt::WindowModal);
-        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
-        message.setIcon(QMessageBox::Information);
-        message.setText(tr("Changing the refrigerant will affect previous inspections of this circuit."));
-        message.setInformativeText(QApplication::translate("MainWindow", "Do you want to save your changes?"));
-        message.addButton(QApplication::translate("MainWindow", "&Save"), QMessageBox::AcceptRole);
-        message.addButton(QApplication::translate("MainWindow", "Cancel"), QMessageBox::RejectRole);
-        switch (message.exec()) {
-            case 1: // Cancel
-                return false;
+        MTSqlQuery query;
+        query.prepare("SELECT date FROM inspections"
+                      " WHERE circuit_uuid = :circuit_uuid"
+                      " AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
+                      " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1");
+        query.bindValue(":circuit_uuid", id());
+
+        if (query.exec() && query.next()) {
+            QMessageBox message(parent);
+            message.setWindowTitle(tr("Edit circuit - Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("You cannot change the refrigerant in this circuit."));
+            message.setInformativeText(tr("Changing the refrigerant would affect the store."));
+            message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
+            message.exec();
+            return false;
         }
     }
     return true;
@@ -178,6 +187,7 @@ public:
         columns << Column("runtime", "NUMERIC");
         columns << Column("utilisation", "NUMERIC");
         columns << Column("inspection_interval", "INTEGER");
+        columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

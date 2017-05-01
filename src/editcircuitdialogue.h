@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -21,6 +21,17 @@
 #define EDIT_CIRCUIT_DIALOGUE_H
 
 #include "tabbededitdialogue.h"
+
+class EditCircuitDialogueNotesTab : public EditDialogueTab
+{
+    Q_OBJECT
+
+public:
+    EditCircuitDialogueNotesTab(MDAbstractInputWidget *notes, QWidget * = NULL);
+
+    void save(const QString &uuid);
+    QWidget *widget() { return this; }
+};
 
 class EditCircuitDialogue : public TabbedEditDialogue
 {

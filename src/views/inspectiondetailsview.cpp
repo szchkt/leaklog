@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -45,12 +45,7 @@ QString InspectionDetailsView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     writeCustomersTable(out, customer_uuid);
     out << "<br>";
@@ -102,6 +97,9 @@ QString InspectionDetailsView::renderHTML()
         if (vars.parentID().isEmpty())
             all_variables << vars.id();
     }
+
+    if (!settings->isShowNotesChecked())
+        all_variables.remove("notes");
 
     while (tables.next() || all_variables.count()) {
         QStringList table_vars;
@@ -155,7 +153,7 @@ QString InspectionDetailsView::renderHTML()
     }
 
 //*** Warnings ***
-    Warnings warnings(QSqlDatabase::database(), true, circuit);
+    Warnings warnings(settings->toolBarStack()->isCO2EquivalentChecked(), true, circuit);
     QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection.savedValues());
     if (warnings_list.count()) {
         div.newLine();
@@ -233,11 +231,11 @@ bool InspectionDetailsView::checkWarningConditions(Warnings &warnings, const QVa
     for (int i = 0; i < num_conditions; ++i) {
         bool ok = true;
 
-        double ins_value = evaluateExpression(inspection, warnings.warningConditionValueIns(uuid, i), circuit_attributes, &ok);
+        double ins_value = warnings.warningConditionValueIns(uuid, i).evaluate(inspection, circuit_attributes, &ok);
         if (!ok)
             return false;
 
-        double nom_value = evaluateExpression(nominal_ins, warnings.warningConditionValueNom(uuid, i), circuit_attributes, &ok);
+        double nom_value = warnings.warningConditionValueNom(uuid, i).evaluate(nominal_ins, circuit_attributes, &ok);
         if (!ok)
             return false;
 
@@ -257,7 +255,7 @@ QString InspectionDetailsView::tableVarValue(const QString &var_type, const QStr
                                              const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
-        if (expand_text) return escapeString(ins_value);
+        if (expand_text) return escapeString(ins_value, false, true);
         return escapeString(elideRight(ins_value, 20));
     } else if (var_type == "string") {
         return escapeString(ins_value);

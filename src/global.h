@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -67,10 +67,6 @@ namespace Global {
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());
     bool isOwnerPermissionApplicable(const QString &);
     QString circuitRefrigerantAmountQuery(const QString &return_as = "refrigerant_amount");
-    extern QMap<QString, MTDictionary> parsed_expressions;
-    MTDictionary parseExpression(const QString &, QStringList &);
-    double evaluateExpression(const QVariantMap &, const MTDictionary &, const QString &, const QString &, bool * = 0, bool * = 0);
-    double evaluateExpression(const QVariantMap &, const MTDictionary &, const QVariantMap &, bool * = 0, bool * = 0);
     QString compareValues(double, double, double = 0.0, const QString & = QString());
     enum CompanyIDFormat {
         CompanyIDFormatNone = 0,

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -48,6 +48,7 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(partner_widgets->partnerNameWidget());
     md->addInputWidget(partner_widgets->partnerIdWidget());
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDLineEdit("batch_number", tr("Batch number:"), md->widget(), batchNumber()));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, purchased(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, purchasedRecovered(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, sold(), QApplication::translate("Units", "kg")));
@@ -58,6 +59,7 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
         md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
         md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
     }
+    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
 }
 
 QString RefrigerantRecord::tableName()
@@ -74,6 +76,7 @@ public:
         columns << Column("partner", "TEXT");
         columns << Column("partner_id", "TEXT");
         columns << Column("refrigerant", "TEXT");
+        columns << Column("batch_number", "TEXT");
         columns << Column("purchased", "NUMERIC");
         columns << Column("purchased_reco", "NUMERIC");
         columns << Column("sold", "NUMERIC");
@@ -82,6 +85,7 @@ public:
         columns << Column("refr_disp", "NUMERIC");
         columns << Column("leaked", "NUMERIC");
         columns << Column("leaked_reco", "NUMERIC");
+        columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -103,6 +107,7 @@ public:
         dict.insert("partner", QApplication::translate("RefrigerantRecord", "Business partner"));
         dict.insert("partner_id", QApplication::translate("RefrigerantRecord", "Business partner (ID)"));
         dict.insert("refrigerant", QApplication::translate("RefrigerantRecord", "Refrigerant"));
+        dict.insert("batch_number", QApplication::translate("RefrigerantRecord", "Batch number"));
         dict.insert("purchased", QApplication::translate("RefrigerantRecord", "Purchased (new)"));
         dict.insert("purchased_reco", QApplication::translate("RefrigerantRecord", "Purchased (recovered)"));
         dict.insert("sold", QApplication::translate("RefrigerantRecord", "Sold (new)"));
@@ -111,6 +116,7 @@ public:
         dict.insert("refr_disp", QApplication::translate("RefrigerantRecord", "Disposed of"));
         dict.insert("leaked", QApplication::translate("RefrigerantRecord", "Leaked (new)"));
         dict.insert("leaked_reco", QApplication::translate("RefrigerantRecord", "Leaked (recovered)"));
+        dict.insert("notes", QApplication::translate("RefrigerantRecord", "Notes"));
     }
 
     MTDictionary dict;

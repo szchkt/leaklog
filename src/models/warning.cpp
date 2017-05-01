@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -58,7 +58,7 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
         {QString::number(Variable::Compressor), tr("Compressor")}
     }, QString(), enable_all));
     QStringList used_ids;
-    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap";
+    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
     used_ids << listSupportedFunctions();
     used_ids << listVariableIds();
     md->setUsedIds(used_ids);

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -23,7 +23,9 @@
 #include <QObject>
 #include <QMap>
 
+class HTMLParent;
 class HTMLTable;
+class MTTextStream;
 class ViewTabSettings;
 
 class QString;
@@ -68,6 +70,8 @@ protected:
     static QString viewTemplate(const QString &view_template);
 
     HTMLTable *writeServiceCompany(HTMLTable *table = NULL);
+    void writeServiceCompany(MTTextStream &out);
+    void writeServiceCompany(HTMLParent &div);
 
     ViewTabSettings *settings;
 

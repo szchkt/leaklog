@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -43,12 +43,7 @@ QString AgendaView::renderHTML()
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     QMultiMap<QString, QList<QVariant> > next_inspections_map;
 
@@ -145,30 +140,34 @@ QString AgendaView::renderHTML()
             case 1: next_inspection = tr("Tomorrow"); break;
             default: next_inspection = settings->mainWindowSettings().formatDate(i.key()); break;
         }
-        QString colour;
-        if (days_to < 0) colour = "tomato";
-        else if (days_to < 31) colour = "yellow";
-        out << "<tr><td class=\"" << colour << "\">";
+        QString style;
+        if (!settings->isPrinterFriendlyVersionChecked()) {
+            if (days_to < 0)
+                style = "background-color: #eacccc;";
+            else if (days_to < 31)
+                style = "background-color: #f2f27f;";
+        }
+        out << "<tr><td style=\"" << style << "\">";
         if (reinspection)
             out << "<i>";
         out << next_inspection;
         if (reinspection)
             out << "*</i>";
-        out << "</td><td class=\"" << colour << "\"><a href=\"customer:" << customer_uuid << "\">";
+        out << "</td><td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "\">";
         out << escapeString(customers.value(customer_uuid).value("id").toString());
         out << " (" << escapeString(customers.value(customer_uuid).value("company").toString()) << ")</a></td>";
-        out << "<td class=\"" << colour << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
+        out << "<td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
         out << circuit_id.rightJustified(5, '0');
         if (!circuit_name.isEmpty()) {
             out << " (" << escapeString(circuit_name) << ")";
         }
         out << "</a></td>";
-        out << "<td class=\"" << colour << "\">" << escapeString(operation) << "</td>";
-        out << "<td class=\"" << colour << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
+        out << "<td style=\"" << style << "\">" << escapeString(operation) << "</td>";
+        out << "<td style=\"" << style << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
             << " " << escapeString(refrigerant) << "</td>";
-        out << "<td class=\"" << colour << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)
+        out << "<td style=\"" << style << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)
             << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
-        out << "<td class=\"" << colour << "\">";
+        out << "<td style=\"" << style << "\">";
         if (last_inspection_date.contains("-"))
             out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/inspection:"
                 << last_inspection_date << "\">" << settings->mainWindowSettings().formatDateTime(last_inspection_date) << "</a>";
@@ -178,10 +177,7 @@ QString AgendaView::renderHTML()
     }
     out << "</table>";
 
-    return viewTemplate("agenda")
-            .arg(settings->isPrinterFriendlyVersionChecked() ? "/*" : "")
-            .arg(settings->isPrinterFriendlyVersionChecked() ? "*/" : "")
-            .arg(html);
+    return viewTemplate("agenda").arg(html);
 }
 
 QString AgendaView::title() const

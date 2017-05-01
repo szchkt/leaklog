@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -82,7 +82,7 @@ void EditCircuitDialogueCompressorsTab::load(const QString &circuit_uuid)
 {
     EditDialogueTableCell *cell;
     QMap<QString, EditDialogueTableCell *> compressors_data;
-    if (!circuit_uuid.isEmpty()) {
+    if (!circuit_uuid.isEmpty() && Circuit(circuit_uuid).exists()) {
         ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
         for (int i = 0; i < compressors.count(); ++i) {
             former_ids << compressors.at(i).value("uuid").toString();

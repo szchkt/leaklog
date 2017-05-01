@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -135,6 +135,7 @@ void Variables::initVariables()
     initVariable("sftsw", Variable::Inspection, QApplication::translate("Units", "Bar"), "", true, 0.0, "");
     initVariable("risks", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("rmds", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("notes", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("arno", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("ar_type_uuid", Variable::Inspection, "", "", false, 0.0, "");
 
@@ -247,7 +248,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                 iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
             }
             md->addInputWidget(iw);
-        } else if (var_id == "risks" || var_id == "rmds") {
+        } else if (var_id == "risks" || var_id == "rmds" || var_id == "notes") {
             iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
                                      attributes.value(var_id).toString(), col_bg);
             iw->setRowSpan(0);

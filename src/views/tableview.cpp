@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -20,6 +20,7 @@
 #include "tableview.h"
 
 #include "global.h"
+#include "expression.h"
 #include "mttextstream.h"
 #include "records.h"
 #include "viewtabsettings.h"
@@ -44,22 +45,21 @@ QString TableView::renderHTML()
     QString circuit_uuid = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuitUUID();
     QString table_uuid = settings->currentTableUUID();
     int year = settings->toolBarStack()->filterSinceValue();
+    bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
     QString compressor_uuid = settings->selectedCompressorUUID();
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     Customer customer(customer_uuid);
 
     MTQuery circuits_query = customer.circuits();
     if (!circuit_uuid.isEmpty())
         circuits_query.parents().insert("uuid", circuit_uuid);
+    if (settings->toolBarStack()->isTableForAllCircuitsExceptDecommissionedChecked()) {
+        circuits_query.setPredicate(QString("(disused = %1 OR decommissioning >= '%2')").arg(Circuit::Commissioned).arg(settings->toolBarStack()->minimumDecommissioningDateForTableOfAllCircuits().toString(DATE_FORMAT)));
+    }
     ListOfVariantMaps circuits = circuits_query.listAll("*, " + circuitRefrigerantAmountQuery());
 
     Table table(table_uuid);
@@ -206,7 +206,7 @@ QString TableView::renderHTML()
 
         //*** Warnings ***
         if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_uuid.isEmpty()) {
-            Warnings warnings(QSqlDatabase::database(), true, circuit, table.value("scope").toInt());
+            Warnings warnings(CO2_equivalent, true, circuit, table.value("scope").toInt());
             QString warnings_html, inspection_date;
             QStringList last_warnings_list, warnings_list, backup_warnings;
             for (int i = 0; i < inspections.count(); ++i) {
@@ -443,14 +443,14 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                                     value += inspections.at(ins).value(subvariable->id()).toDouble();
                                 }
                             } else {
-                                MTDictionary expression = parseExpression(subvariable->value(), var_evaluation.usedIDs());
+                                Expression expression(subvariable->value());
                                 for (int ins = 0; ins < inspections.count(); ++ins) {
                                     if (value_contains_sum && ins > 0 &&
                                         inspections.at(ins - 1).value("date").toString().split(".").first()
                                             == inspections.at(ins).value("date").toString().split(".").first())
                                         continue;
                                     num_ins++;
-                                    value += evaluateExpression(inspections[ins], expression, circuit);
+                                    value += expression.evaluate(inspections[ins], circuit);
                                 }
                             }
                             if (num_ins && (foot_functions.key(f) == "avg" || subvariable->unit() == "%"))
@@ -471,14 +471,14 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                                 value += inspections.at(ins).value(table_vars.at(i)).toDouble();
                             }
                         } else {
-                            MTDictionary expression = parseExpression(variable->value(), var_evaluation.usedIDs());
+                            Expression expression(variable->value());
                             for (int ins = 0; ins < inspections.count(); ++ins) {
                                 if (value_contains_sum && ins > 0 &&
                                     inspections.at(ins - 1).value("date").toString().split(".").first()
                                         == inspections.at(ins).value("date").toString().split(".").first())
                                     continue;
                                 num_ins++;
-                                value += evaluateExpression(inspections[ins], expression, circuit);
+                                value += expression.evaluate(inspections[ins], circuit);
                             }
                         }
                         if (num_ins && (foot_functions.key(f) == "avg" || variable->unit() == "%"))
@@ -554,7 +554,7 @@ QString TableView::tableVarValue(const QString &var_type, const QString &ins_val
                                  const QString &bg_class, bool compare_nom, double tolerance, bool expand_text)
 {
     if (var_type == "text") {
-        if (expand_text) return escapeString(ins_value);
+        if (expand_text) return escapeString(ins_value, false, true);
         return escapeString(elideRight(ins_value, 20));
     } else if (var_type == "string") {
         return escapeString(ins_value);

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -21,6 +21,7 @@
 
 #include "variables.h"
 #include "global.h"
+#include "expression.h"
 #include "records.h"
 
 using namespace Global;
@@ -38,7 +39,7 @@ VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer
 {
     circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
     persons = Customer(customer_uuid).persons().mapAll("uuid", "name");
-    inspectors = Inspector::query().mapAll("uuid", "person");
+    inspectors = Inspector::query().mapAll("uuid", "certificate_number, person");
     ar_types = AssemblyRecordType::query().mapAll("uuid", "name");
 
     init();
@@ -86,8 +87,6 @@ void VariableEvaluation::EvaluationContext::init()
             parent_var->addSubvariable(var);
         }
     }
-
-    used_ids = listVariableIds();
 }
 
 QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool is_nominal) const
@@ -116,26 +115,37 @@ QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, const
 
     if (value().isEmpty()) {
         if (!ins_value.isEmpty()) {
-            if (id() == "inspector_uuid")
-                ins_value = context.inspectors.value(ins_value).value("person").toString();
-            else if (id() == "person_uuid")
+            if (id() == "inspector_uuid") {
+                QVariantMap inspector = context.inspectors.value(ins_value);
+                if (inspector.isEmpty()) {
+                    ins_value.clear();
+                } else {
+                    QString certificate_number = inspector.value("certificate_number").toString();
+                    if (certificate_number.isEmpty()) {
+                        ins_value = inspector.value("person").toString();
+                    } else {
+                        ins_value = QString("%1 (%2)").arg(inspector.value("person").toString()).arg(certificate_number);
+                    }
+                }
+            } else if (id() == "person_uuid") {
                 ins_value = context.persons.value(ins_value).value("name").toString();
-            else if (id() == "ar_type_uuid")
+            } else if (id() == "ar_type_uuid") {
                 ins_value = context.ar_types.value(ins_value).value("name").toString();
+            }
         }
 
         if (compareNom()) {
             nom_value = context.nominal_ins.value(id()).toString();
         }
     } else {
-        MTDictionary expression = parseExpression(value(), context.used_ids);
+        Expression expression(value());
         bool ok_eval, is_null;
-        ins_value = QString::number(evaluateExpression(inspection, expression, context.circuit, &ok_eval, &is_null));
+        ins_value = QString::number(expression.evaluate(inspection, context.circuit, &ok_eval, &is_null));
         if (!ok_eval || is_null) ins_value.clear();
 
         if (context.nominal_ins.isEmpty()) nom_value.clear();
         else if (compareNom()) {
-            nom_value = QString::number(evaluateExpression(context.nominal_ins, expression, context.circuit, &ok_eval));
+            nom_value = QString::number(expression.evaluate(context.nominal_ins, context.circuit, &ok_eval));
             if (!ok_eval) nom_value.clear();
         }
     }

@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -39,23 +39,20 @@ QString RefrigerantManagementView::renderHTML()
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool show_notes = settings->isShowNotesChecked();
     bool show_leaked = settings->isShowLeakedChecked();
 
     QString html; MTTextStream out(&html);
 
-    if (settings->mainWindowSettings().serviceCompanyInformationVisible()) {
-        HTMLTable *service_company = writeServiceCompany();
-        out << service_company->html();
-        delete service_company;
-        out << "<br>";
-    }
+    writeServiceCompany(out);
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">";
+    out << "<tr><th colspan=\"15\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
     out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Batch number") << "</th>";
     out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
     out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
@@ -91,10 +88,15 @@ QString RefrigerantManagementView::renderHTML()
     QString date;
     while (query.next()) {
         date = query.stringValue("date");
-        if (since && date.left(4).toInt() < since) continue;
+        if (since && date.left(4).toInt() < since)
+            continue;
+
+        QString notes = query.stringValue("notes");
+
         out << "<tr onclick=\"window.location = 'refrigerantrecord:" << query.stringValue("uuid") << "/edit'\" style=\"cursor: pointer;\">";
-        out << "<td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
-        for (int n = 1; n < RefrigerantRecord::attributes().count(); ++n) {
+        out << (show_notes && !notes.isEmpty() ? "<td rowspan=\"2\" style=\"vertical-align: top;\">" : "<td>");
+        out << settings->mainWindowSettings().formatDateTime(date) << "</td>";
+        for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
             if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
                 out << "<td>" << query.doubleValue(key) << "</td>";
@@ -111,6 +113,11 @@ QString RefrigerantManagementView::renderHTML()
         if (show_owner)
             out << "<td>" << escapeString(query.value("updated_by")) << "</th>";
         out << "</tr>";
+
+        if (show_notes && !notes.isEmpty()) {
+            out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
+            out << "<td colspan=\"14\">" << escapeString(notes, false, true) << "</td></tr>";
+        }
     }
     out << "</table>";
     return viewTemplate("refrigerant_management").arg(html);

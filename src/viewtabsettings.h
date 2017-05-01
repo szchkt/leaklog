@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2016 Matus & Michal Tomlein
+ Copyright (C) 2008-2017 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -56,6 +56,7 @@ public:
 
     virtual bool isShowDateUpdatedChecked() const = 0;
     virtual bool isShowOwnerChecked() const = 0;
+    virtual bool isShowNotesChecked() const = 0;
     virtual bool isShowLeakedChecked() const = 0;
     virtual bool isShowMostRecentFirstChecked() const = 0;
     virtual bool isCompareValuesChecked() const = 0;
