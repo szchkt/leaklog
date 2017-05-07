@@ -1379,7 +1379,7 @@ void MainWindow::languageChanged()
 
 void MainWindow::checkForUpdates(bool silent)
 {
-    QNetworkRequest request(QString("http://leaklog.org/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5&debug=%6&automatic=%7")
+    QNetworkRequest request(QString("https://leaklog.org/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5&debug=%6&automatic=%7")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
@@ -1486,10 +1486,10 @@ void MainWindow::about()
 
 void MainWindow::openDocumentation()
 {
-    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/wiki"));
+    QDesktopServices::openUrl(tr("https://github.com/szchkt/leaklog/wiki"));
 }
 
 void MainWindow::openReleaseNotes()
 {
-    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/releases"));
+    QDesktopServices::openUrl(tr("https://github.com/szchkt/leaklog/releases"));
 }

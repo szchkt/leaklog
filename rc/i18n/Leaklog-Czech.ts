@@ -5207,9 +5207,9 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <translation>Vyžaduje se novější verze programu Leaklog.</translation>
     </message>
     <message>
-        <source>http://szchkt.org/report_data/</source>
+        <source>https://szchkt.org/report_data/</source>
         <extracomment>URL to the data report system of the notified body</extracomment>
-        <translation>http://szchkt.org/report_data/</translation>
+        <translation>https://szchkt.org/report_data/</translation>
     </message>
     <message>
         <source>all</source>

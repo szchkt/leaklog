@@ -5190,9 +5190,9 @@ dla ID osoby i firmy</translation>
         <translation>Rok raportowania: %1</translation>
     </message>
     <message>
-        <source>http://szchkt.org/report_data/</source>
+        <source>https://szchkt.org/report_data/</source>
         <extracomment>URL to the data report system of the notified body</extracomment>
-        <translation>http://szchkt.org/report_data/</translation>
+        <translation>https://szchkt.org/report_data/</translation>
     </message>
     <message>
         <source>A newer version of Leaklog is required.</source>
