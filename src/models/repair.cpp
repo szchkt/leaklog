@@ -33,7 +33,7 @@ Repair::Repair(const QString &date):
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Repair"));
     QVariantMap attributes = values();

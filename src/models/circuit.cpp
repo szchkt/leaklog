@@ -39,7 +39,7 @@ Circuit::Circuit(const QString &parent, const QString &id):
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     QString customer = Customer(parent("parent")).stringValue("company");
     if (customer.isEmpty())

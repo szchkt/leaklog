@@ -34,7 +34,7 @@ RefrigerantRecord::RefrigerantRecord(const QString &date):
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Record of Refrigerant Management"));
     QVariantMap attributes;

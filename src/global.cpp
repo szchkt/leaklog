@@ -731,7 +731,7 @@ public:
         for (int i = 0; i < Global::oils().count(); ++i)
             dict.insert(QString("oil::%1").arg(Global::oils().key(i)), Global::oils().value(i));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
-        QStringList list_refrigerants = Global::listRefrigerantsToString().split(";");
+        QStringList list_refrigerants = Global::listRefrigerants();
         for (int i = 0; i < list_refrigerants.count(); ++i)
             dict.insert(QString("refrigerant::%1").arg(list_refrigerants.at(i)), list_refrigerants.at(i));
         // OBSOLETE
@@ -946,9 +946,83 @@ double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amou
     return refrigerantGWP(refrigerant) * refrigerant_amount / 1000.0;
 }
 
-QString Global::listRefrigerantsToString()
+QStringList Global::listRefrigerants()
 {
-    return "R11;R12;R22;R23;R32;R123;R1234yf;R124;R125;R134a;R141b;R143a;R152a;R227ea;R236fa;R245fa;R290;R365mfc;R401A;R401B;R401C;R402A;R402B;R403A;R403B;R404A;R405A;R406;R407A;R407B;R407C;R407D;R407E;R407F;R408A;R409A;R409B;R410A;R410B;R413A;R414A;R414B;R416A;R417A;R419A;R420A;R421A;R421B;R422A;R422B;R422C;R422D;R423A;R424A;R425A;R426A;R427A;R428A;R437A;R438;R448A;R449A;R450A;R452A;R500;R501;R502;R503;R507;R508A;R508B;R513A;R600a;SF6";
+    return QStringList()
+        << "R11"
+        << "R12"
+        << "R22"
+        << "R23"
+        << "R32"
+        << "R123"
+        << "R1234yf"
+        << "R124"
+        << "R125"
+        << "R134a"
+        << "R141b"
+        << "R143a"
+        << "R152a"
+        << "R227ea"
+        << "R236fa"
+        << "R245fa"
+        << "R290"
+        << "R365mfc"
+        << "R401A"
+        << "R401B"
+        << "R401C"
+        << "R402A"
+        << "R402B"
+        << "R403A"
+        << "R403B"
+        << "R404A"
+        << "R405A"
+        << "R406"
+        << "R407A"
+        << "R407B"
+        << "R407C"
+        << "R407D"
+        << "R407E"
+        << "R407F"
+        << "R408A"
+        << "R409A"
+        << "R409B"
+        << "R410A"
+        << "R410B"
+        << "R413A"
+        << "R414A"
+        << "R414B"
+        << "R416A"
+        << "R417A"
+        << "R419A"
+        << "R420A"
+        << "R421A"
+        << "R421B"
+        << "R422A"
+        << "R422B"
+        << "R422C"
+        << "R422D"
+        << "R423A"
+        << "R424A"
+        << "R425A"
+        << "R426A"
+        << "R427A" 
+        << "R428A" 
+        << "R437A" 
+        << "R438" 
+        << "R448A" 
+        << "R449A" 
+        << "R450A" 
+        << "R452A" 
+        << "R500" 
+        << "R501" 
+        << "R502" 
+        << "R503" 
+        << "R507" 
+        << "R508A" 
+        << "R508B" 
+        << "R513A" 
+        << "R600a" 
+        << "SF6";
 }
 
 MTDictionary Global::listInspectors()

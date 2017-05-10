@@ -36,7 +36,7 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Circuit Unit Type"));
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
     MTDictionary locations;
     locations.insert(QString::number(CircuitUnitType::External), tr("External"));
     locations.insert(QString::number(CircuitUnitType::Internal), tr("Internal"));

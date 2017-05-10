@@ -1304,7 +1304,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 3, 0);
 
-    QStringList refrigerants = listRefrigerantsToString().split(';');
+    QStringList refrigerants = listRefrigerants();
 
     lbl = new QLabel(tr("Previous refrigerant:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -3535,7 +3535,7 @@ void MainWindow::importCSV()
     if (path.isEmpty()) { return; }
 
     QString string_value;
-    QStringList refrigerants(listRefrigerantsToString().split(';'));
+    QStringList refrigerants(listRefrigerants());
 
     QList<ImportDialogueTable *> tables;
     ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");
