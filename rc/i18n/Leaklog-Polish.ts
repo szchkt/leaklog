@@ -4534,6 +4534,18 @@ dla ID osoby i firmy</translation>
         <source>Print Service Company Information</source>
         <translation>Drukuj informacje o firmie serwisowej</translation>
     </message>
+    <message>
+        <source>Edit Refrigerants...</source>
+        <translation>Edytuj czynniki...</translation>
+    </message>
+    <message>
+        <source>Edit refrigerants - Leaklog</source>
+        <translation>Edytuj czynniki - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerants</source>
+        <translation>Czynniki</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

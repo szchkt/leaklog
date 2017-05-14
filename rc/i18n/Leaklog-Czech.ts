@@ -4547,6 +4547,18 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <source>Print Service Company Information</source>
         <translation>Tisknout informace o servisní organizaci</translation>
     </message>
+    <message>
+        <source>Edit Refrigerants...</source>
+        <translation>Upravit chladiva...</translation>
+    </message>
+    <message>
+        <source>Edit refrigerants - Leaklog</source>
+        <translation>Upravit chladiva - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerants</source>
+        <translation>Chladiva</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

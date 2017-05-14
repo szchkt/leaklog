@@ -337,6 +337,7 @@
     <addaction name="actionConfigure_permissions"/>
     <addaction name="actionAutosave"/>
     <addaction name="actionOpen_Backup_Folder"/>
+    <addaction name="actionEdit_Refrigerants"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_service_company_information"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
@@ -2245,6 +2246,11 @@
    </property>
    <property name="text">
     <string>Print Service Company Information</string>
+   </property>
+  </action>
+  <action name="actionEdit_Refrigerants">
+   <property name="text">
+    <string>Edit Refrigerants...</string>
    </property>
   </action>
  </widget>

@@ -938,7 +938,20 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R744", 1);
         GWP.insert("SF6", 22800);
     }
-    return GWP.value(refrigerant);
+
+    double value = GWP.value(refrigerant, -1);
+    if (value < 0) {
+        value = 0;
+        QList<QVariantMap> user_refrigerants = DBInfo::refrigerants();
+        foreach (const QVariantMap &user_refrigerant, user_refrigerants) {
+            if (user_refrigerant.value("name").toString() == refrigerant) {
+                value = user_refrigerant.value("gwp").toDouble();
+                break;
+            }
+        }
+    }
+
+    return value;
 }
 
 double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amount)
@@ -946,9 +959,10 @@ double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amou
     return refrigerantGWP(refrigerant) * refrigerant_amount / 1000.0;
 }
 
-QStringList Global::listRefrigerants()
+QStringList Global::listRefrigerants(bool include_user_refrigerants)
 {
-    return QStringList()
+    QStringList refrigerants;
+    refrigerants
         << "R11"
         << "R12"
         << "R22"
@@ -1023,6 +1037,15 @@ QStringList Global::listRefrigerants()
         << "R513A" 
         << "R600a" 
         << "SF6";
+
+    if (include_user_refrigerants) {
+        QList<QVariantMap> user_refrigerants = DBInfo::refrigerants();
+        foreach (const QVariantMap &refrigerant, user_refrigerants) {
+            refrigerants << refrigerant.value("name").toString();
+        }
+    }
+
+    return refrigerants;
 }
 
 MTDictionary Global::listInspectors()

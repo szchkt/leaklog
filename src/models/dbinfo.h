@@ -37,6 +37,8 @@ public:
     static bool isRecordLocked(const QString &);
     static QString lockDate();
     static int isOperationPermitted(const QString &, const QString & = QString());
+    static QList<QVariantMap> refrigerants();
+    static void setRefrigerants(const QList<QVariantMap> &refrigerants);
 
     static QString tableName();
     static const ColumnList &columns();

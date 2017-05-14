@@ -91,6 +91,31 @@ int DBInfo::isOperationPermitted(const QString &operation, const QString &record
     return -1;
 }
 
+QList<QVariantMap> DBInfo::refrigerants()
+{
+    QList<QVariantMap> refrigerants;
+
+    QString refrigerants_string = valueForKey("refrigerants");
+    if (!refrigerants_string.isEmpty()) {
+        QByteArray refrigerants_bytes = QByteArray::fromBase64(refrigerants_string.toLatin1());
+        QDataStream stream(refrigerants_bytes);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream >> refrigerants;
+    }
+
+    return refrigerants;
+}
+
+void DBInfo::setRefrigerants(const QList<QVariantMap> &refrigerants)
+{
+    QByteArray refrigerants_bytes;
+    QDataStream stream(&refrigerants_bytes, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_4_6);
+    stream << refrigerants;
+
+    setValueForKey("refrigerants", QString::fromLatin1(refrigerants_bytes.toBase64()));
+}
+
 QString DBInfo::tableName()
 {
     return "db_info";
