@@ -402,11 +402,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, DATE_TIME_FORMAT));
     setCalendarPopup(true);
     calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
 }
 
 QVariant MDDateTimeEdit::variantValue() const
@@ -432,11 +428,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, DATE_FORMAT));
     setCalendarPopup(true);
     calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
 }
 
 QVariant MDDateEdit::variantValue() const

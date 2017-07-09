@@ -27,9 +27,6 @@
   <property name="dockOptions">
    <set>QMainWindow::AnimatedDocks</set>
   </property>
-  <property name="unifiedTitleAndToolBarOnMac">
-   <bool>true</bool>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <property name="margin">
@@ -342,7 +339,6 @@
     <addaction name="actionUndo"/>
     <addaction name="separator"/>
     <addaction name="actionFind"/>
-    <addaction name="actionFind_All"/>
     <addaction name="actionFind_next"/>
     <addaction name="actionFind_previous"/>
     <addaction name="separator"/>
@@ -416,9 +412,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
-   </property>
    <property name="windowTitle">
     <string>Tool bar</string>
    </property>
@@ -2119,21 +2112,6 @@
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionFind_All">
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/find16.png</normaloff>:/images/images/find16.png</iconset>
-   </property>
-   <property name="text">
-    <string>Find All</string>
-   </property>
-   <property name="statusTip">
-    <string>Find all occurrences of the searched word</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+F</string>
    </property>
   </action>
   <action name="actionAutosave">

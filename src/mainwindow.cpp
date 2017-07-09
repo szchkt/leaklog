@@ -218,7 +218,7 @@ MainWindow::MainWindow():
     QObject::connect(actionHTML, SIGNAL(triggered()), this, SLOT(exportHTML()));
     QObject::connect(le_search, SIGNAL(textChanged(QString)), this, SLOT(find()));
     QObject::connect(actionFind, SIGNAL(triggered()), le_search, SLOT(setFocus()));
-    QObject::connect(actionFind_All, SIGNAL(triggered()), this, SLOT(findAll()));
+    QObject::connect(actionFind, SIGNAL(triggered()), le_search, SLOT(selectAll()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
@@ -407,28 +407,35 @@ void MainWindow::showIconsOnly(bool show)
 void MainWindow::printPreview()
 {
     QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(print(QPrinter *)));
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(printPreview(QPrinter *)));
     d.exec();
+}
+
+void MainWindow::printPreview(QPrinter *printer)
+{
+    bool printing = true;
+    m_tab->webView()->page()->print(printer, [printer, &printing](bool) {
+        printing = false;
+    });
+    while (printing) {
+        QApplication::processEvents();
+    }
 }
 
 void MainWindow::print()
 {
-    QPrinter printer(QPrinter::HighResolution);
-    QPrintDialog d(&printer, this);
+    QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+    QPrintDialog d(printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    print(&printer);
+    print(printer);
 }
 
 void MainWindow::print(QPrinter *printer)
 {
-#ifdef Q_OS_MAC
-    m_tab->webView()->setZoomFactor(0.75);
-#endif
-    m_tab->webView()->print(printer);
-#ifdef Q_OS_MAC
-    m_tab->webView()->setZoomFactor(Global::scaleFactor());
-#endif
+    m_tab->webView()->page()->print(printer, [printer](bool) {
+        delete printer;
+    });
 }
 
 QString MainWindow::fileNameForCurrentView()
@@ -447,12 +454,12 @@ QString MainWindow::fileNameForCurrentView()
 
 void MainWindow::exportPDFPortrait()
 {
-    exportPDF(QPrinter::Portrait);
+    exportPDF(QPageLayout::Portrait);
 }
 
 void MainWindow::exportPDFLandscape()
 {
-    exportPDF(QPrinter::Landscape);
+    exportPDF(QPageLayout::Landscape);
 }
 
 void MainWindow::exportPDF(int orientation)
@@ -462,11 +469,10 @@ void MainWindow::exportPDF(int orientation)
                                                 tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
-    QPrinter printer(QPrinter::HighResolution);
-    printer.setOrientation((QPrinter::Orientation)orientation);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(path);
-    print(&printer);
+    m_tab->webView()->page()->printToPdf(path, QPageLayout(QPageSize(QPageSize::A4),
+                                                           (QPageLayout::Orientation)orientation,
+                                                           QMarginsF(10, 10, 10, 10),
+                                                           QPageLayout::Millimeter));
 }
 
 void MainWindow::exportHTML()
@@ -809,15 +815,7 @@ void MainWindow::reportDataFinished()
 void MainWindow::find()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
-    m_tab->webView()->findText(le_search->text(), QWebPage::FindWrapsAroundDocument);
-}
-
-void MainWindow::findAll()
-{
-    if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
-    m_tab->webView()->findText(le_search->text(), QWebPage::HighlightAllOccurrences);
+    m_tab->webView()->findText(le_search->text());
 }
 
 void MainWindow::findNext()
@@ -829,7 +827,7 @@ void MainWindow::findNext()
 void MainWindow::findPrevious()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(le_search->text(), QWebPage::FindBackward);
+    m_tab->webView()->findText(le_search->text(), QWebEnginePage::FindBackward);
 }
 
 void MainWindow::refreshView()
@@ -889,7 +887,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionReporting->setEnabled(enable);
 
     actionFind->setEnabled(enable || everything);
-    actionFind_All->setEnabled(enable || everything);
     actionFind_next->setEnabled(enable || everything);
     actionFind_previous->setEnabled(enable || everything);
 
@@ -1071,11 +1068,7 @@ void MainWindow::toggleLocked()
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, DATE_FORMAT));
         date->setCalendarPopup(true);
         date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-        date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
         date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
         gl->addWidget(date, r, 1);
 
         r++;

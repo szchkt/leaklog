@@ -21,7 +21,17 @@
 
 #include <QNetworkRequest>
 
-bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest &request, QWebPage::NavigationType type)
+void MTWebPage::setLinkDelegationPolicy(LinkDelegationPolicy policy)
+{
+    _linkDelegationPolicy = policy;
+}
+
+MTWebPage::LinkDelegationPolicy MTWebPage::linkDelegationPolicy() const
+{
+    return _linkDelegationPolicy;
+}
+
+bool MTWebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool /*isMainFrame*/)
 {
     if (type == NavigationTypeLinkClicked || type == NavigationTypeOther) {
         switch (linkDelegationPolicy()) {
@@ -29,8 +39,8 @@ bool MTWebPage::acceptNavigationRequest(QWebFrame *, const QNetworkRequest &requ
                 break;
             case DelegateExternalLinks:
             case DelegateAllLinks:
-                emit linkClicked(request.url());
-                break;
+                emit linkClicked(url);
+                return false;
         }
     }
     return true;

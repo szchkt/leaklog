@@ -26,14 +26,14 @@
 #include "global.h"
 
 #include <QTextStream>
-#include <QWebView>
-#include <QWebFrame>
 #include <QDate>
 #include <QMessageBox>
+#include <QtWebEngine/QtWebEngine>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
 using namespace Global;
 
-ReportDataController::ReportDataController(QWebView *wv, ToolBarStack *parent):
+ReportDataController::ReportDataController(QWebEngineView *wv, ToolBarStack *parent):
 QObject(parent), toolbarstack(parent) {
     wv_main = wv;
     toolbarstack->setReportDataGroupBoxVisible(true);
@@ -43,7 +43,9 @@ QObject(parent), toolbarstack(parent) {
     toolbarstack->reportDataProgressBar()->setVisible(false);
     QObject::connect(toolbarstack->autofillButton(), SIGNAL(clicked()), this, SLOT(autofill()));
     QObject::connect(toolbarstack->doneButton(), SIGNAL(clicked()), this, SLOT(done()));
-    wv_main->setPage(new QWebPage(wv_main));
+    QWebEnginePage *page = new QWebEnginePage(wv_main);
+    page->profile()->setHttpUserAgent(page->profile()->httpUserAgent() + QString(" Leaklog/%1").arg(LEAKLOG_VERSION));
+    wv_main->setPage(page);
     wv_main->setZoomFactor(Global::scaleFactor());
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
@@ -51,19 +53,21 @@ QObject(parent), toolbarstack(parent) {
     wv_main->load(QUrl(tr("https://szchkt.org/report_data/")));
 }
 
-int ReportDataController::currentReportYear()
+void ReportDataController::currentReportYear(std::function<void(int)> callback)
 {
-    int year = QDate::currentDate().year() - 1;
-    QVariant variant = wv_main->page()->mainFrame()->evaluateJavaScript("currentReportYear();");
-    if (!variant.toString().isEmpty())
-        year = variant.toInt();
-
-    return year;
+    wv_main->page()->runJavaScript("currentReportYear();", [callback](const QVariant &result) {
+        int year = QDate::currentDate().year() - 1;
+        if (!result.toString().isEmpty())
+            year = result.toInt();
+        callback(year);
+    });
 }
 
-bool ReportDataController::shouldExportLeakages()
+void ReportDataController::canImportLeakagesByApplication(std::function<void(bool)> callback)
 {
-    return wv_main->page()->mainFrame()->evaluateJavaScript("canImportLeakagesByApplication();").toBool();
+    wv_main->page()->runJavaScript("canImportLeakagesByApplication();", [callback](const QVariant &result) {
+        callback(result.toBool());
+    });
 }
 
 void ReportDataController::updateProgressBar(int progress)
@@ -74,21 +78,29 @@ void ReportDataController::updateProgressBar(int progress)
 
 void ReportDataController::enableAutofill()
 {
-    QVariant version_required = wv_main->page()->mainFrame()->evaluateJavaScript(QString("minimumLeaklogVersionRequired(%1);").arg(F_LEAKLOG_VERSION));
-    bool valid = !version_required.toString().isEmpty();
-    bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
-    toolbarstack->autofillButton()->setEnabled(valid && sufficient);
+    wv_main->page()->runJavaScript(QString("minimumLeaklogVersionRequired(%1);").arg(F_LEAKLOG_VERSION), [this](const QVariant &version_required){
+        bool valid = !version_required.toString().isEmpty();
+        bool sufficient = version_required.toDouble() <= F_LEAKLOG_VERSION;
+        toolbarstack->autofillButton()->setEnabled(valid && sufficient);
 
-    if (valid) {
-        if (!sufficient)
-            QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
-        else if (shouldExportLeakages())
-            toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(tr("all")));
-        else
-            toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(currentReportYear()));
-    }
+        if (valid) {
+            if (!sufficient) {
+                QMessageBox::warning((QWidget *)parent(), "Leaklog", tr("A newer version of Leaklog is required."));
+            } else {
+                canImportLeakagesByApplication([this](bool result) {
+                    if (result) {
+                        toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(tr("all")));
+                    } else {
+                        currentReportYear([this](int year) {
+                            toolbarstack->reportYearLabel()->setText(tr("Report year: %1").arg(year));
+                        });
+                    }
+                });
+            }
+        }
 
-    toolbarstack->reportDataProgressBar()->setVisible(false);
+        toolbarstack->reportDataProgressBar()->setVisible(false);
+    });
 }
 
 void ReportDataController::autofill()
@@ -96,18 +108,21 @@ void ReportDataController::autofill()
     emit processing(true);
     QApplication::processEvents();
 
-    if (shouldExportLeakages())
-        reportLeakages();
-    else
-        reportData();
+    canImportLeakagesByApplication([this](bool result) {
+        if (result) {
+            reportLeakages();
+        } else {
+            currentReportYear([this](int year) {
+                reportData(year);
+            });
+        }
+    });
 
     emit processing(false);
 }
 
-void ReportDataController::reportData()
+void ReportDataController::reportData(int year)
 {
-    int year = currentReportYear();
-
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
 
@@ -183,7 +198,7 @@ void ReportDataController::reportData()
         }
     }
 
-    wv_main->page()->mainFrame()->evaluateJavaScript(js);
+    wv_main->page()->runJavaScript(js);
 }
 
 void ReportDataController::reportLeakages()
@@ -239,7 +254,7 @@ void ReportDataController::reportLeakages()
 
     out << endl << "});" << endl;
 
-    wv_main->page()->mainFrame()->evaluateJavaScript(js);
+    wv_main->page()->runJavaScript(js);
 }
 
 void ReportDataController::done()

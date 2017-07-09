@@ -89,7 +89,7 @@
         <widget class="ToolBarStack" name="toolbarstack" native="true"/>
        </item>
        <item>
-        <widget class="QWebView" name="wv_main">
+        <widget class="QWebEngineView" name="wv_main">
          <property name="url">
           <url>
            <string>about:blank</string>
@@ -105,9 +105,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QWebView</class>
+   <class>QWebEngineView</class>
    <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
   </customwidget>
   <customwidget>
    <class>ToolBarStack</class>

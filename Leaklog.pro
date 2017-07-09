@@ -231,12 +231,8 @@ SOURCES       += src/aboutwidget.cpp \
                  src/viewtabsettings.cpp \
                  src/warnings.cpp
 
-lessThan(QT_MAJOR_VERSION, 5) {
-    QT            += network webkit sql
-    CONFIG        += depend_includepath
-} else {
-    QT            += widgets network webkitwidgets sql printsupport
-}
+QT                += widgets network webengine webenginewidgets sql printsupport
+CONFIG            += c++11
 
 # fparser
 HEADERS           += include/fparser/fparser_gmpint.hh include/fparser/fparser_mpfr.hh include/fparser/fparser.hh include/fparser/fpconfig.hh
@@ -269,7 +265,7 @@ macx {
     icons.files    = rc/images/lklg.icns
     QMAKE_BUNDLE_DATA += icons
     CONFIG        += x86_64
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
     QMAKE_CC       = clang
     QMAKE_CXX      = clang++
     QMAKE_LINK     = clang++

@@ -30,7 +30,7 @@ class MainWindowSettings;
 
 class QObject;
 class QSettings;
-class QWebView;
+class QWebEngineView;
 
 class ViewTabSettings
 {
@@ -44,7 +44,7 @@ public:
     virtual MainWindowSettings &mainWindowSettings() = 0;
 
     virtual ToolBarStack *toolBarStack() const = 0;
-    virtual QWebView *webView() const = 0;
+    virtual QWebEngineView *webView() const = 0;
 
     virtual void setView(View::ViewID view, const QString &table = QString()) = 0;
     virtual void refreshView() = 0;

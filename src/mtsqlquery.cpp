@@ -20,11 +20,7 @@
 #include "mtsqlquery.h"
 
 #include <QDebug>
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QDesktopServices>
-#else
 #include <QStandardPaths>
-#endif
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
@@ -73,11 +69,7 @@ void MTSqlQuery::printLastError() const
         qDebug() << lastQuery();
         qDebug() << error.text();
 #else
-    #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        QDir desktop(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-    #else
         QDir desktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
-    #endif
 
         QFile file(desktop.absoluteFilePath("Leaklog-errors.log"));
         file.open(QIODevice::Append | QIODevice::Text);

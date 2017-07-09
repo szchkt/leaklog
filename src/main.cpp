@@ -23,10 +23,6 @@
 #include <QSettings>
 #include <QTranslator>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QTextCodec>
-#endif
-
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_MAC
@@ -38,10 +34,6 @@ int main(int argc, char *argv[])
     MTApplication app(argc, argv);
     app.setApplicationName("Leaklog");
     app.setApplicationVersion(LEAKLOG_VERSION);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-#endif
 
 #ifdef Q_OS_WIN32
     if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)

@@ -42,7 +42,7 @@ class QPainter;
 class QPrinter;
 class QNetworkReply;
 class QNetworkAccessManager;
-class QWebView;
+class QWebEngineView;
 namespace VariableEvaluation {
     class Variable;
     class EvaluationContext;
@@ -168,6 +168,7 @@ private slots:
     void openDocumentation();
     void openReleaseNotes();
     void printPreview();
+    void printPreview(QPrinter *printer);
     void print();
     void print(QPrinter *printer);
     void exportPDFPortrait();
@@ -186,7 +187,6 @@ private slots:
     void configureAutosave();
     void openBackupDirectory();
     void find();
-    void findAll();
     void findNext();
     void findPrevious();
     void refreshView();

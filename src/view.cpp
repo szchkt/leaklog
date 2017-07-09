@@ -43,18 +43,31 @@ QString View::viewTemplate(const QString &view_template)
 {
     if (!view_templates.contains(view_template)) {
 #ifdef Q_OS_MAC
-        QString font = "\"Lucida Grande\", \"Lucida Sans Unicode\"";
-        QString font_size = "9pt";
+        QString style = R"(
+            body, td, th {
+                font-family: "Lucida Grande", "Lucida Sans Unicode";
+                font-size: 9pt;
+            }
+            @media print {
+                body {
+                    zoom: 0.75;
+                }
+            }
+        )";
 #else
-        QString font = "\"MS Shell Dlg 2\", \"MS Shell Dlg\", \"Lucida Grande\", \"Lucida Sans Unicode\", verdana, lucida, sans-serif";
-        QString font_size = "small";
+        QString style = R"(
+            body, td, th {
+                font-family: "MS Shell Dlg 2", "MS Shell Dlg", "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;
+                font-size: small;
+            }
+        )";
 #endif
         QFile file;
         QTextStream in(&file);
         in.setCodec("UTF-8");
         file.setFileName(QString(":/html/%1.html").arg(view_template));
         file.open(QIODevice::ReadOnly | QIODevice::Text);
-        view_templates.insert(view_template, in.readAll().arg(font).arg(font_size));
+        view_templates.insert(view_template, in.readAll().arg(style));
         file.close();
     }
     return view_templates.value(view_template);

@@ -45,8 +45,6 @@
 #include "records.h"
 #include "global.h"
 
-#include <QWebFrame>
-
 ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
     ui(new Ui::ViewTab),
@@ -62,8 +60,6 @@ ViewTab::ViewTab(QWidget *parent):
 
     QObject::connect(this, SIGNAL(viewChanged(View::ViewID)),
                      ui->toolbarstack, SLOT(viewChanged(View::ViewID)));
-
-    QObject::connect(ui->wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 
     setDefaultWebPage();
 
@@ -393,7 +389,7 @@ ToolBarStack *ViewTab::toolBarStack() const
     return ui->toolbarstack;
 }
 
-QWebView *ViewTab::webView() const
+QWebEngineView *ViewTab::webView() const
 {
     return ui->wv_main;
 }
@@ -663,7 +659,7 @@ void ViewTab::executeLink(Link *link)
         id = link->idValue("toggledetailedview");
         ((StoreView *)views[View::Store])->toggleYear(id.toInt());
         refreshView();
-        ui->wv_main->page()->mainFrame()->evaluateJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
+        ui->wv_main->page()->runJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
         break;
 
     case LinkParser::RefrigerantManagement:
@@ -823,16 +819,18 @@ void ViewTab::executeLink(Link *link)
     if (!link->countIds())
         select_with_javascript = false;
     if (select_with_javascript) {
-        ui->wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
+        ui->wv_main->page()->runJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
     }
 }
 
 void ViewTab::setDefaultWebPage()
 {
     MTWebPage *page = new MTWebPage(ui->wv_main);
-    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
     ui->wv_main->setZoomFactor(Global::scaleFactor());
+
+    QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 }
 
 void ViewTab::reportData()

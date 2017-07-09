@@ -69,8 +69,4 @@ typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
 #include <QtGlobal>
 #include <QDebug>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define setSectionResizeMode setResizeMode
-#endif
-
 #endif // DEFS_H

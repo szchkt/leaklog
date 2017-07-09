@@ -1076,11 +1076,7 @@ void MainWindow::decommissionAllCircuits()
     date->setDate(QDate::currentDate());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 2, 1);
 
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning_reason")), &d);
@@ -1223,11 +1219,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     date->setDate(QDate::currentDate());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 1, 1);
 
     QRadioButton *set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
@@ -1406,11 +1398,7 @@ void MainWindow::moveCircuit()
     date->setDateTime(QDateTime::currentDateTime());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 5, 1);
 
     QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
@@ -1696,11 +1684,7 @@ void MainWindow::skipInspection()
     date->setDateTime(next_regular_inspection_date);
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 1, 1);
 
     QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);

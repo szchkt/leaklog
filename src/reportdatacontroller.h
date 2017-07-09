@@ -20,17 +20,19 @@
 #ifndef REPORT_DATA_CONTROLLER_H
 #define REPORT_DATA_CONTROLLER_H
 
+#include <functional>
+
 #include <QObject>
 
 class ToolBarStack;
-class QWebView;
+class QWebEngineView;
 
 class ReportDataController : public QObject
 {
     Q_OBJECT
 
 public:
-    ReportDataController(QWebView *, ToolBarStack *);
+    ReportDataController(QWebEngineView *, ToolBarStack *);
 
 private slots:
     void updateProgressBar(int);
@@ -42,14 +44,14 @@ signals:
     void processing(bool);
 
 protected:
-    int currentReportYear();
-    bool shouldExportLeakages();
+    void currentReportYear(std::function<void(int)> callback);
+    void canImportLeakagesByApplication(std::function<void(bool)> callback);
 
-    void reportData();
+    void reportData(int year);
     void reportLeakages();
 
 private:
-    QWebView *wv_main;
+    QWebEngineView *wv_main;
     ToolBarStack *toolbarstack;
 };
 

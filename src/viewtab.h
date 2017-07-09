@@ -27,7 +27,7 @@
 
 class ToolBarStack;
 class QTreeWidgetItem;
-class QWebView;
+class QWebEngineView;
 class QUrl;
 
 namespace Ui {
@@ -52,7 +52,7 @@ public:
     MainWindowSettings &mainWindowSettings();
 
     ToolBarStack *toolBarStack() const;
-    QWebView *webView() const;
+    QWebEngineView *webView() const;
 
     View *view(View::ViewID view) { return views[view]; }
     View::ViewID currentView() const;
