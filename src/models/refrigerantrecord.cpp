@@ -34,7 +34,7 @@ RefrigerantRecord::RefrigerantRecord(const QString &uuid):
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Record of Refrigerant Management"));
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());

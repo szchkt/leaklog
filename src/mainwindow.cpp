@@ -256,6 +256,7 @@ MainWindow::MainWindow():
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
     QObject::connect(actionOpen_Backup_Folder, SIGNAL(triggered()), this, SLOT(openBackupDirectory()));
+    QObject::connect(actionEdit_Refrigerants, SIGNAL(triggered()), this, SLOT(editRefrigerants()));
     QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRefrigerantRecord()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
@@ -909,6 +910,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionConfigure_permissions->setEnabled(enable);
     actionAutosave->setEnabled(enable);
     actionOpen_Backup_Folder->setEnabled(enable && !isDatabaseRemote());
+    actionEdit_Refrigerants->setEnabled(enable);
 
     actionEdit_service_company_information->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
@@ -1311,6 +1313,7 @@ void MainWindow::loadSettings()
     actionShow_Notes->setChecked(settings.value("columns/notes", true).toBool());
     actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionMost_recent_first->setChecked(settings.value("most_recent_first", false).toBool());
+    actionEdit_Refrigerants->setVisible(settings.value("edit_refrigerants_enabled", false).toBool());
     m_settings.restore(settings);
 #ifndef QT_DEBUG
     if (settings.value("check_for_updates", true).toBool())

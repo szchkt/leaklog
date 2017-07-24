@@ -33,7 +33,7 @@ Repair::Repair(const QString &uuid, const QVariantMap &savedValues):
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Repair"));
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());

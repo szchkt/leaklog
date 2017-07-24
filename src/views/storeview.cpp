@@ -111,7 +111,7 @@ QString StoreView::renderHTML()
     out << "</tr>";
     ReportData data(settings->toolBarStack()->filterSinceValue(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
-    QStringList list_refrigerants = listRefrigerantsToString().split(";");
+    QStringList list_refrigerants = listRefrigerants();
     list_refrigerants.insert(0, "");
     QString refrigerant;
     QMap<QString, double> store_map;

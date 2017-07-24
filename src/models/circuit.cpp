@@ -35,7 +35,7 @@ Circuit::Circuit(const QString &uuid, const QVariantMap &savedValues):
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerantsToString().split(';'));
+    MTDictionary refrigerants(listRefrigerants());
 
     Customer customer(customerUUID());
     md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())

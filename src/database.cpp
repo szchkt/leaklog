@@ -30,6 +30,7 @@
 #include "editassemblyrecorddialogue.h"
 #include "editcircuitdialogue.h"
 #include "editinspectordialogue.h"
+#include "editdialoguetable.h"
 #include "importdialogue.h"
 #include "importcsvdialogue.h"
 #include "records.h"
@@ -964,6 +965,70 @@ bool MainWindow::isRecordLocked(const QString &date)
     return false;
 }
 
+void MainWindow::editRefrigerants()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!isOperationPermitted("edit_service_company")) { return; }
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Edit refrigerants - Leaklog"));
+    d.setWindowModality(Qt::WindowModal);
+    d.setWindowFlags(d.windowFlags() | Qt::Sheet);
+    QGridLayout *gl = new QGridLayout(&d);
+
+    QList<EditDialogueTableCell *> cells;
+    cells << new EditDialogueTableCell(tr("Refrigerant"), "name", Global::String);
+    cells << new EditDialogueTableCell(tr("GWP"), "gwp", Global::Numeric);
+
+    EditDialogueBasicTable *table = new EditDialogueBasicTable(tr("Refrigerants"), cells, this);
+    gl->addWidget(table, 0, 0);
+
+    QSet<QString> predefined_refrigerants = listRefrigerants(false).toSet();
+    QSet<QString> used_refrigerants;
+    MTSqlQuery query("SELECT refrigerant FROM circuits UNION SELECT refrigerant FROM repairs UNION SELECT refrigerant FROM refrigerant_management");
+    while (query.next()) {
+        used_refrigerants << query.value(0).toString();
+    }
+
+    QList<QVariantMap> refrigerants = DBInfo::refrigerants();
+    foreach (const QVariantMap &refrigerant, refrigerants) {
+        QString refrigerant_name = refrigerant.value("name").toString();
+        bool editable = predefined_refrigerants.contains(refrigerant_name) || !used_refrigerants.contains(refrigerant_name);
+
+        QMap<QString, EditDialogueTableCell *> row;
+        row.insert("name", new EditDialogueTableCell(refrigerant_name, "name", editable ? Global::String : -1));
+        row.insert("gwp", new EditDialogueTableCell(refrigerant.value("gwp"), "gwp", Global::Numeric));
+
+        table->addRow(row, true, editable ? EditDialogueTable::Removable : EditDialogueTable::Default);
+    }
+
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Save"));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    bb->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    gl->addWidget(bb, 1, 0);
+
+    if (d.exec() != QDialog::Accepted)
+        return;
+
+    refrigerants.clear();
+
+    QList<MTDictionary> updated_refrigerants = table->allValues();
+    foreach (const MTDictionary &updated_refrigerant, updated_refrigerants) {
+        QVariantMap refrigerant;
+        refrigerant.insert("name", updated_refrigerant.value("name"));
+        refrigerant.insert("gwp", updated_refrigerant.value("gwp"));
+        refrigerants << refrigerant;
+    }
+
+    DBInfo::setRefrigerants(refrigerants);
+    setDatabaseModified(true);
+    refreshView();
+}
+
 void MainWindow::editServiceCompany()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
@@ -1281,7 +1346,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 3, 0);
 
-    QStringList refrigerants = listRefrigerantsToString().split(';');
+    QStringList refrigerants = listRefrigerants();
 
     lbl = new QLabel(tr("Previous refrigerant:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -3315,7 +3380,7 @@ void MainWindow::importCSV()
     if (path.isEmpty()) { return; }
 
     QString string_value;
-    QStringList refrigerants(listRefrigerantsToString().split(';'));
+    QStringList refrigerants(listRefrigerants());
 
     QList<ImportDialogueTable *> tables;
     ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");

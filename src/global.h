@@ -98,7 +98,7 @@ namespace Global {
     double refrigerantGWP(const QString &refrigerant);
     double CO2Equivalent(const QString &refrigerant, double refrigerant_amount);
     // List
-    QString listRefrigerantsToString();
+    QStringList listRefrigerants(bool include_user_refrigerants = true);
     MTDictionary listInspectors();
     MTDictionary listAssemblyRecordItemCategories(bool = false);
     MTDictionary listAssemblyRecordTypes();
