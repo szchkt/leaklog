@@ -230,8 +230,6 @@ private:
     // UI
 #ifdef Q_OS_MAC
     void macInitUI();
-    bool isFullScreen() const;
-    void showFullScreen();
 #endif
     bool hasActiveModalWidget();
     void clearWindowTitle();
