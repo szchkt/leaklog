@@ -36,7 +36,7 @@ public:
     inline int position() { return intValue("position"); }
     inline void setPosition(int value) { setValue("position", value); }
     inline bool highlightNominal() { return intValue("highlight_nominal"); }
-    inline void setHighlightNominal(bool value) { setValue("highlight_nominal", value); }
+    inline void setHighlightNominal(bool value) { setValue("highlight_nominal", (int)value); }
     inline int scope() { return intValue("scope"); }
     inline void setScope(int value) { setValue("scope", value); }
     inline QStringList variables() { return stringValue("variables").split(';', QString::SkipEmptyParts); }

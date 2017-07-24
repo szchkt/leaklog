@@ -25,6 +25,10 @@
 class JournalEntry : public MTRecord
 {
 public:
+    enum {
+        Version = 0,
+    };
+
     enum Operation {
         Insertion = 1,
         Update = 2,
@@ -51,10 +55,10 @@ public:
     static const ColumnList &columns();
 
     static int tableIDForName(const QString &name);
-    static QString tableNameForID(int id);
+    static QString tableNameForID(int id, const QString &default_value = QString());
 
     static int columnIDForName(const QString &name);
-    static QString columnNameForID(int id);
+    static QString columnNameForID(int id, const QString &default_value = QString());
 
 protected:
     bool isJournaled() const;

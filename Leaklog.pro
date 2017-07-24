@@ -93,6 +93,7 @@ HEADERS       += src/aboutwidget.h \
                  src/reportdata.h \
                  src/reportdatacontroller.h \
                  src/sha256.h \
+                 src/syncengine.h \
                  src/tabbededitdialogue.h \
                  src/toolbarstack.h \
                  src/undostack.h \
@@ -202,6 +203,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/reportdata.cpp \
                  src/reportdatacontroller.cpp \
                  src/sha256.cpp \
+                 src/syncengine.cpp \
                  src/tabbededitdialogue.cpp \
                  src/toolbarstack.cpp \
                  src/undostack.cpp \

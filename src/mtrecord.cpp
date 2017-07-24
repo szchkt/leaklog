@@ -158,12 +158,44 @@ bool MTRecord::save(bool add_columns)
         r_current_values.insert("uuid", journal_uuid);
     }
 
+    if (!r_current_values.contains("date_updated"))
+        r_current_values.insert("date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
+    if (!r_current_values.contains("updated_by"))
+        r_current_values.insert("updated_by", currentUser());
+
     if (has_id && !exists()) {
         has_id = false;
     }
 
     if (isJournaled()) {
         if (has_id) {
+            QStringList columns; {
+                QVariantMapIterator i(r_current_values);
+                while (i.hasNext()) { i.next();
+                    if (!r_saved_values.contains(i.key())) {
+                        columns << i.key();
+                    }
+                }
+            }
+
+            if (columns.count()) {
+                MTSqlQuery query = select(columns.join(", "), QString());
+                query.setForwardOnly(true);
+                query.exec();
+
+                if (query.next()) {
+                    for (int i = 0; i < query.record().count(); ++i) {
+                        QString column = query.record().fieldName(i);
+                        QVariant value = query.value(i);
+                        r_saved_values.insert(column, value);
+
+                        if (r_current_values.contains(column) && r_current_values.value(column) == value) {
+                            r_current_values.remove(column);
+                        }
+                    }
+                }
+            }
+
             QVariantMapIterator i(r_current_values);
             while (i.hasNext()) { i.next();
                 if (!journalUpdate(r_table, r_id, i.key()))
@@ -174,11 +206,6 @@ bool MTRecord::save(bool add_columns)
                 return false;
         }
     }
-
-    if (!r_current_values.contains("date_updated"))
-        r_current_values.insert("date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-    if (!r_current_values.contains("updated_by"))
-        r_current_values.insert("updated_by", currentUser());
 
     QVariantMapIterator i(r_current_values);
     if (add_columns) {

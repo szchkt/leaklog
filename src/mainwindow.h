@@ -30,6 +30,8 @@
 #include <QSqlDatabase>
 
 class UndoStack;
+class Authenticator;
+class SyncEngine;
 class Warnings;
 class MTTextStream;
 class HTMLTable;
@@ -192,6 +194,13 @@ private slots:
     void refreshView();
     void changeLanguage();
     void languageChanged();
+    void logIn();
+    void doLogIn();
+    void doLogOut(QAbstractButton *);
+    void doSignUp(QAbstractButton *);
+    void loginFinished(bool);
+    void loginFinished(QAbstractButton *button);
+    void logoutFinished();
     void checkForUpdates(bool silent = false);
     void httpRequestFinished(QNetworkReply *reply);
     void httpRequestFailed(bool silent);
@@ -206,6 +215,9 @@ private slots:
     void saveAndCompact();
     void autosave();
     void closeDatabase(bool = true);
+    void sync();
+    void syncStarted();
+    void syncFinished(bool);
     void setDatabaseModified(bool modified);
     // TABS
     void newTab(bool init = true);
@@ -266,6 +278,9 @@ private:
     ViewTab *m_tab;
     QString m_connection_string;
     double m_current_scale;
+    Authenticator *authenticator;
+    SyncEngine *sync_engine;
+    QProgressBar *progress_bar;
 };
 
 #endif // MAINWINDOW_H

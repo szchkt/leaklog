@@ -324,6 +324,7 @@
     <property name="title">
      <string>Database</string>
     </property>
+    <addaction name="actionSync"/>
     <addaction name="actionLock"/>
     <addaction name="actionConfigure_permissions"/>
     <addaction name="actionAutosave"/>
@@ -439,6 +440,7 @@
    <addaction name="separator"/>
    <addaction name="actionPrint"/>
    <addaction name="actionLock"/>
+   <addaction name="actionLog_In"/>
   </widget>
   <widget class="QDockWidget" name="dw_variables">
    <property name="windowTitle">
@@ -2217,6 +2219,20 @@
    </property>
    <property name="text">
     <string>Print Service Company Information</string>
+   </property>
+  </action>
+  <action name="actionSync">
+   <property name="text">
+    <string>Sync...</string>
+   </property>
+  </action>
+  <action name="actionLog_In">
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/user.png</normaloff>:/images/images/user.png</iconset>
+   </property>
+   <property name="text">
+    <string>Log In</string>
    </property>
   </action>
  </widget>

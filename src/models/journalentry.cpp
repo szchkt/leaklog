@@ -95,9 +95,9 @@ int JournalEntry::tableIDForName(const QString &name)
     return table_ids.table_ids.value(name);
 }
 
-QString JournalEntry::tableNameForID(int id)
+QString JournalEntry::tableNameForID(int id, const QString &default_value)
 {
-    return table_ids.table_names.value(id);
+    return table_ids.table_names.value(id, default_value);
 }
 
 static class ColumnIDs
@@ -269,9 +269,9 @@ int JournalEntry::columnIDForName(const QString &name)
     return column_ids.column_ids.value(name);
 }
 
-QString JournalEntry::columnNameForID(int id)
+QString JournalEntry::columnNameForID(int id, const QString &default_value)
 {
-    return column_ids.column_names.value(id);
+    return column_ids.column_names.value(id, default_value);
 }
 
 bool JournalEntry::isJournaled() const

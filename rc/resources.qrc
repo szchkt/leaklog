@@ -96,5 +96,6 @@
         <file>images/help_contents.png</file>
         <file>images/changelog.png</file>
         <file>images/attachment16.png</file>
+        <file>images/user.png</file>
     </qresource>
 </RCC>

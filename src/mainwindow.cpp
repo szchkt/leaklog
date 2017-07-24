@@ -28,6 +28,7 @@
 #include "aboutwidget.h"
 #include "permissionsdialogue.h"
 #include "sha256.h"
+#include "syncengine.h"
 #include "undostack.h"
 #include "viewtab.h"
 
@@ -80,6 +81,11 @@ MainWindow::MainWindow():
     scaleFactorChanged();
 
     network_access_manager = new QNetworkAccessManager(this);
+    authenticator = new Authenticator(this);
+    QObject::connect(authenticator, SIGNAL(loginFinished(bool)), this, SLOT(loginFinished(bool)));
+    QObject::connect(authenticator, SIGNAL(logoutFinished()), this, SLOT(logoutFinished()));
+
+    loginFinished(!authenticator->token().isEmpty());
 
     // Dock widgets
     dw_variables->setVisible(false);
@@ -129,6 +135,13 @@ MainWindow::MainWindow():
     }
 
     // Status bar
+
+    progress_bar = new QProgressBar(statusBar());
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(false);
+    progress_bar->setMaximumSize(150, 16);
+    statusBar()->addPermanentWidget(progress_bar);
+    statusBar()->setMaximumHeight(20);
 
     if (isYosemite) {
         statusbar->setStyleSheet("QStatusBar { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ECECEC, stop: 1 #D5D5D5); border-top: 1px solid #ACACAC; }");
@@ -222,6 +235,7 @@ MainWindow::MainWindow():
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
+    QObject::connect(actionLog_In, SIGNAL(triggered()), this, SLOT(logIn()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
     QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged()), this, SLOT(serviceCompanyInformationVisibilityChanged()));
     QObject::connect(actionPrint_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationPrinted(bool)));
@@ -237,6 +251,7 @@ MainWindow::MainWindow():
     QObject::connect(actionShow_Notes, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Leaked, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionSync, SIGNAL(triggered()), this, SLOT(sync()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
@@ -990,6 +1005,8 @@ void MainWindow::enableTools()
     tabw_main->setTabsClosable(tabw_main->count() > 1);
     actionClose_Tab->setEnabled(tabw_main->count() > 1);
 
+    actionSync->setEnabled(m_tab);
+
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
@@ -1368,6 +1385,120 @@ void MainWindow::languageChanged()
     QWidget *w_lang = (QWidget *)cb_lang->parent();
     w_lang->close();
     cb_lang = NULL;
+}
+
+void MainWindow::logIn()
+{
+    QWidget *w = new QWidget(this, Qt::Dialog);
+    w->setWindowModality(Qt::WindowModal);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MAC
+    w->setWindowTitle(tr("Log In"));
+#else
+    w->setWindowTitle(tr("Log In - Leaklog"));
+#endif
+
+    QGridLayout *layout = new QGridLayout(w);
+    layout->addWidget(new QLabel(tr("Enter your szchkt.org username and password:"), w), 0, 0, 1, 2);
+
+    QLineEdit *username = new QLineEdit(authenticator->username(), w);
+    username->setObjectName("username");
+    layout->addWidget(username, 1, 0);
+
+    QLineEdit *password = new QLineEdit(w);
+    password->setObjectName("password");
+    password->setEchoMode(QLineEdit::Password);
+    layout->addWidget(password, 1, 1);
+
+    QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Reset | QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Log In"));
+    if (authenticator->token().isEmpty()) {
+        bb->button(QDialogButtonBox::Reset)->setText(tr("Register"));
+        QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doSignUp(QAbstractButton *)));
+    } else {
+        bb->button(QDialogButtonBox::Reset)->setText(tr("Log Out"));
+        QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doLogOut(QAbstractButton *)));
+    }
+    QObject::connect(bb, SIGNAL(accepted()), this, SLOT(doLogIn()));
+    QObject::connect(bb, SIGNAL(rejected()), w, SLOT(close()));
+    layout->addWidget(bb, 2, 0, 1, 2);
+
+    w->show();
+}
+
+void MainWindow::doLogIn()
+{
+    QWidget *button = qobject_cast<QWidget *>(sender());
+    if (!button)
+        return;
+
+    QWidget *w = button->window();
+    QString username = w->findChild<QLineEdit *>("username")->text();
+    QString password = w->findChild<QLineEdit *>("password")->text();
+
+    w->close();
+
+    if (!username.isEmpty() && !password.isEmpty()) {
+        authenticator->logIn(username, password);
+    } else {
+        logIn();
+    }
+}
+
+void MainWindow::doLogOut(QAbstractButton *sender)
+{
+    if (qobject_cast<QDialogButtonBox *>(sender->parent())->buttonRole(sender) != QDialogButtonBox::ResetRole)
+        return;
+
+    sender->window()->close();
+
+    authenticator->logOut();
+}
+
+void MainWindow::doSignUp(QAbstractButton *sender)
+{
+    if (qobject_cast<QDialogButtonBox *>(sender->parent())->buttonRole(sender) != QDialogButtonBox::ResetRole)
+        return;
+
+    sender->window()->close();
+
+    QDesktopServices::openUrl(QUrl("https://leaklog.org"));
+}
+
+void MainWindow::loginFinished(bool success)
+{
+    actionLog_In->setText(success ? authenticator->username() : tr("Log In"));
+
+    if (!success && !authenticator->error().isEmpty()) {
+        QMessageBox message(this);
+#ifdef Q_OS_MAC
+        message.setWindowTitle(tr("Log In"));
+#else
+        message.setWindowTitle(tr("Log In - Leaklog"));
+#endif
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setText(tr("Failed to log in."));
+        message.setInformativeText(authenticator->error());
+        message.addButton(tr("Cancel"), QMessageBox::AcceptRole);
+        message.setDefaultButton(message.addButton(tr("Try Again"), QMessageBox::ActionRole));
+        QObject::connect(&message, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(loginFinished(QAbstractButton *)));
+        message.exec();
+    }
+}
+
+void MainWindow::loginFinished(QAbstractButton *button)
+{
+    if (qobject_cast<QDialogButtonBox *>(button->parent())->buttonRole(button) != QDialogButtonBox::ActionRole)
+        return;
+
+    logIn();
+}
+
+void MainWindow::logoutFinished()
+{
+    actionLog_In->setText(tr("Log In"));
 }
 
 void MainWindow::checkForUpdates(bool silent)

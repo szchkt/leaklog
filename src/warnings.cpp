@@ -443,16 +443,20 @@ int Warnings::circuitInspectionInterval(const QString &refrigerant, double refri
 
 void Warnings::initWarning(ListOfVariantMaps *map, const QString &uuid, const QString &name, const QString &description, int delay, bool enabled_only)
 {
-    MTSqlQuery query;
-    query.prepare("SELECT enabled FROM warnings WHERE uuid = :uuid");
-    query.bindValue(":uuid", uuid);
-    query.exec();
     QVariantMap set;
-    if (query.next()) {
-        if (enabled_only && !query.value(0).toInt()) { return; }
-        set.insert("enabled", query.value(0).toInt());
-    } else {
+    if (uuid.toInt()) {
         set.insert("enabled", 1);
+    } else {
+        MTSqlQuery query;
+        query.prepare("SELECT enabled FROM warnings WHERE uuid = :uuid");
+        query.bindValue(":uuid", uuid);
+        query.exec();
+        if (query.next()) {
+            if (enabled_only && !query.value(0).toInt()) { return; }
+            set.insert("enabled", query.value(0).toInt());
+        } else {
+            set.insert("enabled", 1);
+        }
     }
     set.insert("uuid", uuid);
     set.insert("name", name);

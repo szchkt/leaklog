@@ -39,6 +39,7 @@
 #include "mtvariant.h"
 #include "undostack.h"
 #include "sha256.h"
+#include "syncengine.h"
 
 #include <QBuffer>
 #include <QMessageBox>
@@ -585,6 +586,10 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
     enableTools();
     stw_main->setCurrentIndex(1);
 
+    sync_engine = new SyncEngine(authenticator, this);
+    connect(sync_engine, SIGNAL(syncStarted()), this, SLOT(syncStarted()));
+    connect(sync_engine, SIGNAL(syncFinished(bool)), this, SLOT(syncFinished(bool)));
+
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next())
         QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
@@ -646,11 +651,19 @@ void MainWindow::loadDatabase(bool reload)
 void MainWindow::save()
 {
     saveDatabase(false);
+
+    if (sync_engine) {
+        sync_engine->sync();
+    }
 }
 
 void MainWindow::saveAndCompact()
 {
     saveDatabase(true);
+
+    if (sync_engine) {
+        sync_engine->sync();
+    }
 }
 
 void MainWindow::saveDatabase(bool compact, bool update_ui)
@@ -730,6 +743,11 @@ void MainWindow::closeDatabase(bool save)
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false))
         return;
 
+    if (sync_engine) {
+        delete sync_engine;
+        sync_engine = NULL;
+    }
+
     QSettings settings("SZCHKT", "Leaklog");
     settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));
     settings.remove(QString());
@@ -774,6 +792,35 @@ void MainWindow::closeDatabase(bool save)
     stw_main->setCurrentIndex(0);
     clearWindowTitle();
     setDatabaseModified(false);
+}
+
+void MainWindow::sync()
+{
+    if (sync_engine) {
+        saveDatabase(false);
+        sync_engine->sync();
+    }
+}
+
+void MainWindow::syncStarted()
+{
+    progress_bar->setVisible(true);
+
+    if (isWindowModified()) {
+        saveDatabase(false, false);
+    }
+}
+
+void MainWindow::syncFinished(bool success)
+{
+    progress_bar->setVisible(false);
+
+    if (success) {
+        saveDatabase(false);
+        refreshView();
+    } else {
+        statusBar()->showMessage(sync_engine->error());
+    }
 }
 
 void MainWindow::setDatabaseModified(bool modified)
