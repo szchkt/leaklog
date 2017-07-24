@@ -118,17 +118,23 @@ void ToolBarStack::scaleFactorChanged()
 {
     QString style;
 #ifdef Q_OS_MAC
-    bool isYosemite = macVersion() >= QSysInfo::MV_10_0 + 10;
-    style += QString(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 %1, stop: 1 %2);"
-                                "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
-                     "QToolButton { border-color: %3; border-style: solid; border-width: 1px; border-radius: 3px; min-height: 16px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, %4); }"
-                     "QToolButton:pressed { color: white; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, %5); %6}")
-                     .arg(isYosemite ? "#F6F6F6" : "#F5F5F5")
-                     .arg(isYosemite ? "#E2E2E2" : "#CDCDCD")
-                     .arg(isYosemite ? "#ACACAC" : "#888888")
-                     .arg(isYosemite ? "stop: 0 #FFFFFF, stop: 1 #F0F0F0" : "stop: 0 #F9F9F9, stop: 1 #D6D6D6")
-                     .arg(isYosemite ? "stop: 0 #4A96FD, stop: 1 #0867E4" : "stop: 0 #6F6F6F, stop: 1 #9C9C9C")
-                     .arg(isYosemite ? "border-color: #125FEE; " : "");
+    style += R"(
+        .QWidget {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F6F6F6, stop: 1 #E2E2E2);
+            color: white;
+            border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px;
+        }
+        QToolButton {
+            border-color: #ACACAC; border-style: solid; border-width: 1px; border-radius: 3px;
+            min-height: 16px;
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0);
+        }
+        QToolButton:pressed {
+            color: white;
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4A96FD, stop: 1 #0867E4);
+            border-color: #125FEE;
+        }
+    )";
 #else
     double scale = scaleFactor();
     style += QString(".QWidget { background-color: #F0F0F0; color: white; border-color: #A0A0A0; border-style: solid; border-width: 0px 0px 1px 1px; }");

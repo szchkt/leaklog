@@ -91,25 +91,18 @@ void ViewTab::scaleFactorChanged()
 
     QString style = QString("QTreeWidget::item { padding-top: %1px; padding-bottom: %1px; }").arg(2 * scale);
 #ifdef Q_OS_MAC
-    bool isYosemite = Global::macVersion() >= QSysInfo::MV_10_0 + 10;
-    style += QString("QTreeWidget { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
-    style += QString("QTreeWidget:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
-    if (isYosemite) {
-        style += QString("QTreeWidget::item:!has-children:!selected:!disabled { color: #3D3D50; }");
-        style += QString("QTreeWidget::item:!has-children:!selected:disabled { color: #777777; }");
-    }
-    style += QString("QTreeWidget::item:selected { background-color: %1; color: %2; %3}")
-                     .arg(isYosemite ? "#CECECE" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #77BBE7, stop: 1 #3E8ACF)")
-                     .arg(isYosemite ? "#281C28" : "white")
-                     .arg(isYosemite ? "" : "border-color: #62A6DC; border-style: solid; border-width: 1px 0px 1px 0px; ");
-    style += QString("QTreeWidget::item:selected:!active { background-color: %1; color: %2; %3}")
-                     .arg(isYosemite ? "#CDCDCD" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8)")
-                     .arg(isYosemite ? "#281C28" : "white")
-                     .arg(isYosemite ? "" : "border-color: #BCC6D6; border-style: solid; border-width: 1px 0px 0px 0px; ");
-    style += QString("QTreeWidget::item:!selected { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
-    style += QString("QTreeWidget::item:!selected:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
-    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: %1; }").arg(isYosemite ? "#777777" : "#717E8B");
-    style += QString("QTreeWidget::item:has-children:!active { color: %1; }").arg(isYosemite ? "#777777" : "#868B92");
+    style += R"(
+        QTreeWidget { background-color: #EEEEEE; }
+        QTreeWidget:!active { background-color: #F6F6F6; }
+        QTreeWidget::item:!has-children:!selected:!disabled { color: #3D3D50; }
+        QTreeWidget::item:!has-children:!selected:disabled { color: #777777; }
+        QTreeWidget::item:selected { background-color: #CECECE; color: #281C28; }
+        QTreeWidget::item:selected:!active { background-color: #CDCDCD; color: #281C28; }
+        QTreeWidget::item:!selected { background-color: transparent; }
+        QTreeWidget::item:!selected:!active { background-color: transparent; }
+        QTreeWidget::item:has-children { padding-left: 3px; color: #777777; }
+        QTreeWidget::item:has-children:!active { color: #777777; }
+    )";
 #else
     style += QString("QTreeWidget { background-color: white; }");
     style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
@@ -294,9 +287,7 @@ void ViewTab::formatGroupItem(QTreeWidgetItem *item)
     QFont font = item->font(0);
 #ifdef Q_OS_MAC
     font.setBold(true);
-    if (Global::macVersion() < QSysInfo::MV_10_0 + 10) {
-        font.setCapitalization(QFont::AllUppercase);
-    } else if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
+    if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
     }
     font.setPointSize(font.pointSize() - 1);
@@ -524,25 +515,8 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     if (current == previous)
         return;
 
-#ifdef Q_OS_MAC
-    bool isYosemite = Global::macVersion() >= QSysInfo::MV_10_0 + 10;
-    if (!isYosemite && previous && previous->parent()) {
-        QFont font = previous->font(0);
-        font.setBold(false);
-        previous->setFont(0, font);
-    }
-#endif
-
     if (!current || !current->parent())
         return;
-
-#ifdef Q_OS_MAC
-    if (!isYosemite) {
-        QFont font = current->font(0);
-        font.setBold(true);
-        current->setFont(0, font);
-    }
-#endif
 
     View::ViewID view = (View::ViewID)current->data(0, Qt::UserRole).toInt();
 
