@@ -125,7 +125,8 @@ MDAbstractInputWidget(id, widget)
 
 MDLineEdit::MDLineEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, int maxintvalue, const QString &colour, bool enabled):
 QLineEdit(parent),
-MDInputWidget(id, labeltext, parent, this)
+MDInputWidget(id, labeltext, parent, this),
+nullvalue(QVariant::String)
 {
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
     setMinimumSize(150, sizeHint().height());
@@ -280,7 +281,7 @@ MDNullableInputWidget(id, labeltext, parent, this)
 
 QVariant MDNullableDoubleSpinBox::variantValue() const
 {
-    return label()->wasChanged() ? value() : QVariant();
+    return label()->wasChanged() ? value() : QVariant(QVariant::String);
 }
 
 void MDNullableDoubleSpinBox::setVariantValue(const QVariant &value)
@@ -306,7 +307,8 @@ MDComboBox::MDComboBox(const QString &id, const QString &labeltext, QWidget *par
 #endif
     , bool enabled):
 QComboBox(parent),
-MDInputWidget(id, labeltext, parent, this)
+MDInputWidget(id, labeltext, parent, this),
+nullvalue(QVariant::String)
 {
     installEventFilter(new WheelEventEater(this));
 #ifndef Q_OS_MAC
@@ -587,7 +589,7 @@ QVariant MDRadioButtonGroup::variantValue() const
         if (i.key()->isChecked())
             return i.value();
     }
-    return QVariant();
+    return QVariant(QVariant::String);
 }
 
 MDHiddenIdField::MDHiddenIdField(const QString &id, QWidget *parent, const QVariant &value):

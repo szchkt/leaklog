@@ -393,7 +393,7 @@ public:
 
     void addWidget(MDAbstractInputWidget *);
 
-    QVariant variantValue() const { return QVariant(); }
+    QVariant variantValue() const { return QVariant(QVariant::String); }
     void setVariantValue(const QVariant &) {}
 
 protected:

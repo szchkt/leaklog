@@ -161,7 +161,7 @@ void EditDialogueTable::addNewRow()
 {
     QMap<QString, EditDialogueTableCell *> cells_map;
     for (int i = 0; i < header.count(); ++i) {
-        cells_map.insert(header.at(i)->id(), new EditDialogueTableCell(QVariant(), header.at(i)->dataType()));
+        cells_map.insert(header.at(i)->id(), new EditDialogueTableCell(QVariant(QVariant::String), header.at(i)->dataType()));
     }
     QList<EditDialogueTableCell *> other_cells = hiddenAttributes();
     for (int i = 0; i < other_cells.count(); ++i) {
@@ -346,8 +346,8 @@ double EditDialogueTableRow::total() const
 {
     if (!isInTable() || !widgets.contains("value"))
         return 0.0;
-    else
-        return widgets.value("value")->variantValue().toDouble() * listPrice();
+
+    return widgets.value("value")->variantValue().toDouble() * listPrice();
 }
 
 void EditDialogueTableRow::setListPrice(double lp)
@@ -374,18 +374,18 @@ double EditDialogueTableRow::acquisitionOrListPrice() const
 {
     if (widgets.contains("acquisition_price"))
         return widgets.value("acquisition_price")->variantValue().toDouble();
-    else if (widgets.contains("list_price"))
+    if (widgets.contains("list_price"))
         return widgets.value("list_price")->variantValue().toDouble();
-    else
-        return 0.0;
+
+    return 0.0;
 }
 
 QVariant EditDialogueTableRow::widgetValue(const QString &col_id) const
 {
     if (widgets.contains(col_id))
         return widgets.value(col_id)->variantValue();
-    else
-        return QVariant();
+
+    return QVariant(QVariant::String);
 }
 
 void EditDialogueTableRow::addWidget(const QString &name, MDTInputWidget *le)
@@ -475,14 +475,14 @@ QString EditDialogueTableRow::value(const QString &name) const
 {
     if (values.contains(name))
         return values.value(name)->value().toString();
-    else
-        return QString();
+
+    return QString();
 }
 
 QTreeWidgetItem *EditDialogueTableRow::treeItem()
 {
     if (m_tree_item)
-        return  m_tree_item;
+        return m_tree_item;
 
     m_tree_item = new QTreeWidgetItem(m_tree);
     return m_tree_item;
