@@ -80,6 +80,7 @@ public:
 
 signals:
     void syncStarted();
+    void syncProgress(double progress);
     void syncFinished(bool);
 
 private:
@@ -89,6 +90,8 @@ private:
 
 private slots:
     void requestFinished(QNetworkReply *reply);
+    void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private:
     Authenticator *_authenticator;

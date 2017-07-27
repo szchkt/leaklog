@@ -219,6 +219,7 @@ private slots:
     void closeDatabase(bool = true);
     void sync();
     void syncStarted();
+    void syncProgress(double progress);
     void syncFinished(bool);
     void setDatabaseModified(bool modified);
     // TABS

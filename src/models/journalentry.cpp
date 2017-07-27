@@ -253,6 +253,7 @@ public:
         column_names.insert(147, "warning_uuid");
         column_names.insert(148, "website");
         column_names.insert(149, "year");
+        column_names.insert(150, "batch_number");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();

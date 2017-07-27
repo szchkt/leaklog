@@ -435,6 +435,8 @@ void SyncEngine::sendRequest(const QJsonDocument &document)
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
 
     _reply = _network_manager->post(request, document.toJson(QJsonDocument::Compact));
+    connect(_reply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(uploadProgress(qint64, qint64)));
+    connect(_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
 }
 
 void SyncEngine::requestFinished(QNetworkReply *reply)
@@ -467,6 +469,16 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
     } else {
         emit syncFinished(false);
     }
+}
+
+void SyncEngine::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
+{
+    emit syncProgress(bytesSent / (long double)bytesTotal / 2.0);
+}
+
+void SyncEngine::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+    emit syncProgress(bytesReceived / (long double)bytesTotal / 2.0 + 0.5);
 }
 
 QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &variant)
