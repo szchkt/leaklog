@@ -451,27 +451,25 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
         _reply = NULL;
     }
 
-    if (reply->error() != QNetworkReply::NoError) {
-        _error = reply->errorString();
-        emit syncFinished(false);
-        return;
-    }
-
     QJsonParseError error;
     QByteArray data = reply->readAll();
     QJsonDocument response = QJsonDocument::fromJson(data, &error);
     if (response.isNull()) {
-        _error = error.errorString();
+        _error = reply->error() != QNetworkReply::NoError ? reply->errorString() : error.errorString();
         emit syncFinished(false);
         return;
     }
 
     _error = response.object().value("error").toString();
-    if (_error.isEmpty()) {
+
+    if (!_error.isEmpty()) {
+        emit syncFinished(false);
+    } else if (reply->error() != QNetworkReply::NoError) {
+        _error = reply->errorString();
+        emit syncFinished(false);
+    } else {
         sync(response);
         emit syncFinished(true);
-    } else {
-        emit syncFinished(false);
     }
 }
 
