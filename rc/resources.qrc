@@ -97,5 +97,7 @@
         <file>images/changelog.png</file>
         <file>images/attachment16.png</file>
         <file>images/user.png</file>
+        <file>images/tab_close.svg</file>
+        <file>images/tab_close_hover.svg</file>
     </qresource>
 </RCC>

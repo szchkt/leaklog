@@ -123,13 +123,18 @@ MainWindow::MainWindow():
     tabw_main->setStyleSheet(R"(
         QTabWidget::pane { border-top: 1px solid #ACACAC; }
         QTabWidget::tab-bar { alignment: left; }
-        QTabBar::tab { background-color: #C7C6C7; border-right: 1px solid #ACACAC; padding: 3px 10px; }
-        QTabBar::tab:!active { background-color: #ECECEC; border-right: 1px solid #DBDBDB; }
-        QTabBar::tab:selected { background-color: #D8D8D8; }
-        QTabBar::tab:!active:selected { background-color: #F6F6F6; }
-        QTabBar::tab:!selected:hover { background-color: #BEBEBE; border-right: 1px solid #9B9A9B; }
+        QTabBar::tab {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #BDBDBD, stop: 1 #B4B4B4);
+            border-right: 1px solid #ACACAC; padding: 3px 10px;
+        }
+        QTabBar::tab:!active { background-color: #E7E7E7; border-right: 1px solid #DBDBDB; }
+        QTabBar::tab:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #D9D9D9, stop: 1 #D0D0D0); }
+        QTabBar::tab:!active:selected { background-color: #F4F4F4; }
+        QTabBar::tab:!selected:hover { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #B4B4B4, stop: 1 #ABABAB); }
         QTabBar::tab:!selected:pressed { background-color: #9C9E9C; border-right: 1px solid #7C7A7C; }
-        QTabBar::tab:!active:!selected:hover { background-color: #E3E3E3; border-right: 1px solid #DBDBDB; }
+        QTabBar::tab:!active:!selected:hover { background-color: #DEDEDE; border-right: 1px solid #DBDBDB; }
+        QTabBar::close-button { image: url(:/images/images/tab_close.svg); }
+        QTabBar::close-button:hover { image: url(:/images/images/tab_close_hover.svg); }
     )");
 
     // Status bar
