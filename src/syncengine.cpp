@@ -34,6 +34,8 @@
 
 using namespace Global;
 
+static QString const baseURL = "https://leaklog.org";
+
 static QString JournalEntryStringID(int operation_id, int column_id, QString record_uuid)
 {
     return QString("%1:%2:%3").arg(operation_id).arg(column_id).arg(record_uuid);
@@ -56,11 +58,12 @@ void Authenticator::logIn(const QString &username, const QString &password)
     _username = username;
     _token.clear();
 
-    QNetworkRequest request(QUrl("https://leaklog.org/auth/"));
+    QNetworkRequest request(QUrl(baseURL + "/auth/"));
     request.setRawHeader("User-Agent", "Leaklog/" LEAKLOG_VERSION);
     QByteArray authorization = "Basic ";
     authorization.append(QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
     request.setRawHeader("Authorization", authorization);
+    request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
     sendRequest(request, QJsonDocument(QJsonObject()));
 }
@@ -429,9 +432,10 @@ void SyncEngine::sendRequest(const QJsonDocument &document)
         _reply = NULL;
     }
 
-    QNetworkRequest request(QUrl("https://leaklog.org/sync/"));
+    QNetworkRequest request(QUrl(baseURL + "/sync/"));
     request.setRawHeader("User-Agent", "Leaklog/" LEAKLOG_VERSION);
     request.setRawHeader("X-Auth-Token", _authenticator->token().toUtf8());
+    request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
 
     _reply = _network_manager->post(request, document.toJson(QJsonDocument::Compact));
