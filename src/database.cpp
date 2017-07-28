@@ -829,7 +829,19 @@ void MainWindow::syncFinished(bool success)
         saveDatabase(false);
         refreshView();
     } else {
-        statusBar()->showMessage(sync_engine->error());
+        QMessageBox message(this);
+#ifdef Q_OS_MAC
+        message.setWindowTitle(tr("Sync"));
+#else
+        message.setWindowTitle(tr("Sync - Leaklog"));
+#endif
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setText(tr("Failed to sync with the server."));
+        message.setInformativeText(sync_engine->error());
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
     }
 }
 
