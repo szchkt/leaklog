@@ -32,7 +32,7 @@ class CustomersView : public View
 public:
     CustomersView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

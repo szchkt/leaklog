@@ -29,7 +29,7 @@ class AgendaView : public View
 public:
     AgendaView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

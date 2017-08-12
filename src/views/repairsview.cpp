@@ -34,7 +34,7 @@ RepairsView::RepairsView(ViewTabSettings *settings):
 {
 }
 
-QString RepairsView::renderHTML()
+QString RepairsView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     QString highlighted_uuid = settings->selectedRepairUUID();

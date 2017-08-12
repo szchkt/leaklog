@@ -31,7 +31,7 @@ class InspectorsView : public View
 public:
     InspectorsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

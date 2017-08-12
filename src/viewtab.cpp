@@ -43,7 +43,10 @@
 #include "mtwebpage.h"
 #include "reportdatacontroller.h"
 #include "records.h"
+#include "dbfile.h"
 #include "global.h"
+
+#include <QWebEngineProfile>
 
 ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
@@ -803,6 +806,10 @@ void ViewTab::setDefaultWebPage()
     page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
     ui->wv_main->setZoomFactor(Global::scaleFactor());
+
+    QByteArray scheme = QString("dbfile").toUtf8();
+    if (!page->profile()->urlSchemeHandler(scheme))
+        page->profile()->installUrlSchemeHandler(scheme, new DBFileUrlSchemeHandler);
 
     QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 }

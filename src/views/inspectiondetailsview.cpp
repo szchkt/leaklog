@@ -37,7 +37,7 @@ InspectionDetailsView::InspectionDetailsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectionDetailsView::renderHTML()
+QString InspectionDetailsView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     QString circuit_uuid = settings->selectedCircuitUUID();

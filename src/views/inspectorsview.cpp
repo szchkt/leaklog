@@ -34,7 +34,7 @@ InspectorsView::InspectorsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectorsView::renderHTML()
+QString InspectorsView::renderHTML(bool)
 {
     QString highlighted_uuid = settings->selectedInspectorUUID();
     HTMLDiv div;

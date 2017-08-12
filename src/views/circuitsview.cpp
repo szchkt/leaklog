@@ -34,7 +34,7 @@ CircuitsView::CircuitsView(ViewTabSettings *settings):
 {
 }
 
-QString CircuitsView::renderHTML()
+QString CircuitsView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     HTMLMain main;

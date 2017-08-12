@@ -31,7 +31,7 @@ class AssemblyRecordItemsView : public View
 public:
     AssemblyRecordItemsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

@@ -39,7 +39,7 @@ TableView::TableView(ViewTabSettings *settings):
 {
 }
 
-QString TableView::renderHTML()
+QString TableView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     QString circuit_uuid = settings->toolBarStack()->isTableForAllCircuitsChecked() ? QString() : settings->selectedCircuitUUID();

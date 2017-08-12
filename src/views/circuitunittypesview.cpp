@@ -34,7 +34,7 @@ CircuitUnitTypesView::CircuitUnitTypesView(ViewTabSettings *settings):
 {
 }
 
-QString CircuitUnitTypesView::renderHTML()
+QString CircuitUnitTypesView::renderHTML(bool)
 {
     QString highlighted_uuid = settings->selectedCircuitUnitTypeUUID();
 

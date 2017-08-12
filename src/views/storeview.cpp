@@ -34,7 +34,7 @@ StoreView::StoreView(ViewTabSettings *settings):
 {
 }
 
-QString StoreView::renderHTML()
+QString StoreView::renderHTML(bool)
 {
     QString html; MTTextStream out(&html);
     ServiceCompany serv_company(DBInfo::valueForKey("default_service_company_uuid"));

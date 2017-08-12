@@ -37,7 +37,7 @@ AgendaView::AgendaView(ViewTabSettings *settings):
 {
 }
 
-QString AgendaView::renderHTML()
+QString AgendaView::renderHTML(bool)
 {
     bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
 

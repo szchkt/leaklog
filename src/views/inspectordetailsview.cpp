@@ -34,7 +34,7 @@ InspectorDetailsView::InspectorDetailsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectorDetailsView::renderHTML()
+QString InspectorDetailsView::renderHTML(bool)
 {
     QString inspector_uuid = settings->selectedInspectorUUID();
 

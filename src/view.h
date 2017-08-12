@@ -62,7 +62,7 @@ public:
 
     View(ViewTabSettings *settings);
 
-    virtual QString renderHTML() = 0;
+    virtual QString renderHTML(bool for_export = false) = 0;
 
     virtual QString title() const = 0;
 

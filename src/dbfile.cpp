@@ -28,8 +28,34 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QLabel>
+#include <QWebEngineUrlRequestJob>
 
 #define IMAGE_MAX_SIZE 1600
+
+class DBFileBuffer : public QBuffer
+{
+public:
+    DBFileBuffer(QByteArray *buf, QObject *parent): QBuffer(buf, parent), _buffer(buf) {}
+
+    ~DBFileBuffer() {
+        delete _buffer;
+    }
+
+private:
+    QByteArray *_buffer;
+};
+
+void DBFileUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
+{
+    QByteArray *byte_array = new QByteArray(DBFile(job->requestUrl().host()).data());
+    if (byte_array->isNull()) {
+        delete byte_array;
+        job->fail(QWebEngineUrlRequestJob::UrlNotFound);
+    } else {
+        DBFileBuffer *buffer = new DBFileBuffer(byte_array, job);
+        job->reply(QString("image/jpeg").toUtf8(), buffer);
+    }
+}
 
 DBFile::DBFile(const QString &file_uuid):
     File(file_uuid)

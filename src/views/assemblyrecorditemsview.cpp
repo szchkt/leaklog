@@ -34,7 +34,7 @@ AssemblyRecordItemsView::AssemblyRecordItemsView(ViewTabSettings *settings):
 {
 }
 
-QString AssemblyRecordItemsView::renderHTML()
+QString AssemblyRecordItemsView::renderHTML(bool)
 {
     QString highlighted_category_uuid = settings->selectedAssemblyRecordItemCategoryUUID();
     QString highlighted_type_uuid = settings->selectedAssemblyRecordItemTypeUUID();

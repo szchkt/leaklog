@@ -29,7 +29,7 @@ class OperatorReportView : public View
 public:
     OperatorReportView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

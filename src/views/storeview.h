@@ -31,7 +31,7 @@ class StoreView : public View
 public:
     StoreView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

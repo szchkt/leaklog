@@ -37,7 +37,7 @@ OperatorReportView::OperatorReportView(ViewTabSettings *settings):
 {
 }
 
-QString OperatorReportView::renderHTML()
+QString OperatorReportView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     int year = settings->toolBarStack()->filterSinceValue();

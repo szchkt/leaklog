@@ -34,7 +34,7 @@ AssemblyRecordDetailsView::AssemblyRecordDetailsView(ViewTabSettings *settings):
 {
 }
 
-QString AssemblyRecordDetailsView::renderHTML()
+QString AssemblyRecordDetailsView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     QString circuit_uuid = settings->selectedCircuitUUID();

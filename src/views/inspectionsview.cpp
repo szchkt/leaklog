@@ -48,7 +48,7 @@ InspectionsView::InspectionsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectionsView::renderHTML()
+QString InspectionsView::renderHTML(bool)
 {
     int year = settings->toolBarStack()->filterSinceValue();
     QString customer_uuid = settings->selectedCustomerUUID();

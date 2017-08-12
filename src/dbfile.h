@@ -22,10 +22,20 @@
 
 #include "records.h"
 
+#include <QWebEngineUrlSchemeHandler>
 #include <QWidget>
 
+class QBuffer;
 class QPixmap;
 class QLabel;
+
+class DBFileUrlSchemeHandler : public QWebEngineUrlSchemeHandler
+{
+    Q_OBJECT
+
+public:
+    void requestStarted(QWebEngineUrlRequestJob *job);
+};
 
 class DBFile : public File
 {

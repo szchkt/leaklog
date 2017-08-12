@@ -37,7 +37,7 @@ class InspectionDetailsView : public CircuitsView
 public:
     InspectionDetailsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

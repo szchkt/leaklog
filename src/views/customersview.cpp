@@ -34,7 +34,7 @@ CustomersView::CustomersView(ViewTabSettings *settings):
 {
 }
 
-QString CustomersView::renderHTML()
+QString CustomersView::renderHTML(bool)
 {
     QString html; MTTextStream out(&html);
     writeServiceCompany(out);

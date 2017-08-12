@@ -34,7 +34,7 @@ RefrigerantManagementView::RefrigerantManagementView(ViewTabSettings *settings):
 {
 }
 
-QString RefrigerantManagementView::renderHTML()
+QString RefrigerantManagementView::renderHTML(bool)
 {
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();

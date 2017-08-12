@@ -29,7 +29,7 @@ class RepairsView : public CustomersView
 public:
     RepairsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

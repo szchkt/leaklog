@@ -33,7 +33,7 @@ class TableView : public InspectionDetailsView
 public:
     TableView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

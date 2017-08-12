@@ -36,7 +36,7 @@ InspectionImagesView::InspectionImagesView(ViewTabSettings *settings):
 {
 }
 
-QString InspectionImagesView::renderHTML()
+QString InspectionImagesView::renderHTML(bool for_export)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
     QString circuit_uuid = settings->selectedCircuitUUID();
@@ -71,9 +71,14 @@ QString InspectionImagesView::renderHTML()
     ListOfVariantMaps images = inspection.images().listAll("*", "file_uuid");
 
     for (int i = 0; i < images.count(); ++i) {
-        QByteArray byte_array = DBFile(images.at(i).value("file_uuid").toString()).data().toBase64();
-        if (!byte_array.isNull()) {
-            *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"data:image/jpeg;base64," << byte_array << "\">";
+        QString uuid = images.at(i).value("file_uuid").toString();
+        if (for_export) {
+            QByteArray byte_array = DBFile(uuid).data().toBase64();
+            if (!byte_array.isNull()) {
+                *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"data:image/jpeg;base64," << byte_array << "\">";
+            }
+        } else {
+            *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"dbfile://" << uuid << "\">";
         }
         *(table->addRow()->addCell()) << images.at(i).value("description").toString();
     }

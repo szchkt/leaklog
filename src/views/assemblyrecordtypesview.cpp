@@ -34,7 +34,7 @@ AssemblyRecordTypesView::AssemblyRecordTypesView(ViewTabSettings *settings):
 {
 }
 
-QString AssemblyRecordTypesView::renderHTML()
+QString AssemblyRecordTypesView::renderHTML(bool)
 {
     QString highlighted_uuid = settings->selectedAssemblyRecordTypeUUID();
 

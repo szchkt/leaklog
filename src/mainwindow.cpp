@@ -512,7 +512,7 @@ void MainWindow::exportHTML()
     if (m_tab->currentView() == View::ViewCount)
         return;
 
-    QString html = m_tab->view(m_tab->currentView())->renderHTML();
+    QString html = m_tab->view(m_tab->currentView())->renderHTML(true);
     if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);

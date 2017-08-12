@@ -34,7 +34,7 @@ class CircuitsView : public CustomersView
 public:
     CircuitsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 

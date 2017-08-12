@@ -29,7 +29,7 @@ class InspectionImagesView : public CircuitsView
 public:
     InspectionImagesView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };
