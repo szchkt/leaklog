@@ -73,7 +73,7 @@ QString InspectionImagesView::renderHTML()
     for (int i = 0; i < images.count(); ++i) {
         QByteArray byte_array = DBFile(images.at(i).value("file_uuid").toString()).data().toBase64();
         if (!byte_array.isNull()) {
-            *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
+            *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"data:image/jpeg;base64," << byte_array << "\">";
         }
         *(table->addRow()->addCell()) << images.at(i).value("description").toString();
     }

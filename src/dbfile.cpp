@@ -29,7 +29,7 @@
 #include <QFileDialog>
 #include <QLabel>
 
-#define IMAGE_MAX_SIZE 800
+#define IMAGE_MAX_SIZE 1600
 
 DBFile::DBFile(const QString &file_uuid):
     File(file_uuid)
