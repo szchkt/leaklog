@@ -230,9 +230,13 @@ void SyncEngine::sync(const QJsonDocument &response_document)
             }
         }
 
+        int entry_count = 0;
+        int total_length = 0;
         QJsonObject records;
 
         foreach (const QJsonValue &entry_value, entries) {
+            entry_count++;
+
             QJsonObject entry = entry_value.toObject();
             QString record_uuid = entry.value("r").toString();
 
@@ -260,7 +264,9 @@ void SyncEngine::sync(const QJsonDocument &response_document)
                         if (!column_id)
                             continue;
 
-                        record.insert(QString::number(column_id), jsonValueForVariant(column_id, record_query.value(i)));
+                        int length = 0;
+                        record.insert(QString::number(column_id), jsonValueForVariant(column_id, record_query.value(i), &length));
+                        total_length += length;
                     }
 
                     records.insert(record_uuid, record);
@@ -268,6 +274,13 @@ void SyncEngine::sync(const QJsonDocument &response_document)
                     records.insert(record_uuid, QJsonValue::Null);
                 }
             }
+
+            if (total_length > 5242880)
+                break;
+        }
+
+        while (entries.count() > entry_count) {
+            entries.removeLast();
         }
 
         root.insert("journal_entries", entries);
@@ -483,7 +496,7 @@ void SyncEngine::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     emit syncProgress(bytesReceived / (long double)bytesTotal / 2.0 + 0.5);
 }
 
-QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &variant)
+QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &variant, int *length)
 {
     if (!variant.isNull()) {
         switch (column_id) {
@@ -492,7 +505,10 @@ QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &varian
                 return variant.toString() == "-1" ? QJsonValue(QJsonValue::Null) : variant.toString();
 
             case 24: // data
-                return QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+                QString data = QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+                if (length)
+                    *length = data.length();
+                return data;
         }
 
         switch (variant.type()) {
@@ -514,8 +530,12 @@ QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &varian
             case QVariant::String:
                 return variant.toString();
 
-            case QVariant::ByteArray:
-                return QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+            case QVariant::ByteArray: {
+                QString data = QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+                if (length)
+                    *length = data.length();
+                return data;
+            }
 
             default:
                 break;

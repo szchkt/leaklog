@@ -75,7 +75,7 @@ public:
     static QJsonObject journalStateForVersion(QJsonObject journal_state, int maximum_version);
     void sync();
 
-    static QJsonValue jsonValueForVariant(int column_id, const QVariant &variant);
+    static QJsonValue jsonValueForVariant(int column_id, const QVariant &variant, int *length = NULL);
     static QVariant variantForJsonValue(int column_id, const QJsonValue &value);
 
 signals:
