@@ -28,7 +28,7 @@
 using namespace Global;
 
 AssemblyRecordItemType::AssemblyRecordItemType(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void AssemblyRecordItemType::initEditDialogue(EditDialogueWidgets *md)

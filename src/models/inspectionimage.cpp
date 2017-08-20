@@ -23,7 +23,7 @@
 #include "file.h"
 
 InspectionImage::InspectionImage(const QString &uuid, const QVariantMap &savedValues):
-    MTRecord(tableName(), "uuid", uuid, savedValues)
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 Inspection InspectionImage::inspection()

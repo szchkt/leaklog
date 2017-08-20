@@ -25,7 +25,7 @@
 #include <QApplication>
 
 AssemblyRecordItem::AssemblyRecordItem(const QString &uuid, const QVariantMap &savedValues):
-    MTRecord(tableName(), "uuid", uuid, savedValues)
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 QString AssemblyRecordItem::tableName()

@@ -31,14 +31,13 @@ class MTRecord
 {
 public:
     MTRecord() {}
-    MTRecord(const QString &table, const QString &id_field, const QString &id, const QVariantMap &savedValues = QVariantMap());
+    MTRecord(const QString &table, const QString &uuid, const QVariantMap &savedValues = QVariantMap());
     MTRecord(const MTRecord &other);
     virtual ~MTRecord() {}
     MTRecord &operator=(const MTRecord &other);
     inline QString table() const { return r_table; }
-    inline QString idField() const { return r_id_field; }
-    inline QString id() const { return r_id; }
-    inline QString &id() { return r_id; }
+    inline QString uuid() const { return r_uuid; }
+    inline QString &uuid() { return r_uuid; }
     bool exists() const;
     MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder) const;
     MTSqlQuery select(const QString &fields, const QString &order_by) const;
@@ -55,12 +54,12 @@ public:
         return r_current_values;
     }
     inline QVariantMap savedValues() {
-        if (r_saved_values.isEmpty() && !r_id.isEmpty())
+        if (r_saved_values.isEmpty() && !r_uuid.isEmpty())
             refresh(false);
         return r_saved_values;
     }
     inline QVariant savedValue(const QString &field, const QVariant &default_value = QVariant()) {
-        if (r_saved_values.isEmpty() && !r_id.isEmpty())
+        if (r_saved_values.isEmpty() && !r_uuid.isEmpty())
             refresh(false);
         return r_saved_values.value(field, default_value);
     }
@@ -94,8 +93,7 @@ protected:
 
 private:
     QString r_table;
-    QString r_id_field;
-    QString r_id;
+    QString r_uuid;
     QVariantMap r_saved_values;
     QVariantMap r_current_values;
 };

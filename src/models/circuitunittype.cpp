@@ -28,7 +28,7 @@
 using namespace Global;
 
 CircuitUnitType::CircuitUnitType(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)

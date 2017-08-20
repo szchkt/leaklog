@@ -19,10 +19,6 @@
 
 #include "journalentry.h"
 
-JournalEntry::JournalEntry(const QString &id):
-    MTRecord(tableName(), "id", id)
-{}
-
 QString JournalEntry::tableName()
 {
     return "journal";
@@ -79,6 +75,7 @@ public:
         table_names.insert(100, "warnings");
         table_names.insert(101, "warnings_conditions");
         table_names.insert(102, "warnings_filters");
+        table_names.insert(110, "variables");
 
         QMapIterator<int, QString> i(table_names);
         while (i.hasNext()) { i.next();
@@ -254,6 +251,10 @@ public:
         column_names.insert(148, "website");
         column_names.insert(149, "year");
         column_names.insert(150, "batch_number");
+        column_names.insert(151, "parent_uuid");
+        column_names.insert(152, "compare_nom");
+        column_names.insert(153, "tolerance");
+        column_names.insert(154, "col_bg");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -273,9 +274,4 @@ int JournalEntry::columnIDForName(const QString &name)
 QString JournalEntry::columnNameForID(int id, const QString &default_value)
 {
     return column_ids.column_names.value(id, default_value);
-}
-
-bool JournalEntry::isJournaled() const
-{
-    return false;
 }

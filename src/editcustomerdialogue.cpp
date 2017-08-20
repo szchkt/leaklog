@@ -132,7 +132,7 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
     md_grid_main->addWidget(persons_table, 0, 2, row_span, 1);
     persons_table->setMinimumWidth(500);
 
-    ListOfVariantMaps persons = Customer(md_record->id()).persons().listAll();
+    ListOfVariantMaps persons = Customer(md_record->uuid()).persons().listAll();
     QMap<QString, EditDialogueTableCell *> person_data;
 
     for (int i = 0; i < persons.count(); ++i) {
@@ -178,7 +178,7 @@ void EditCustomerDialogue::save()
             person = Person(uuid);
         } else {
             person = Person();
-            person.setCustomerUUID(md_record->id());
+            person.setCustomerUUID(md_record->uuid());
         }
 
         person.setName(all_values.at(i).value("name"));

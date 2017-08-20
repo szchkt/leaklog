@@ -152,6 +152,11 @@ QString Global::createUUID()
     return QUuid::createUuid().toString().mid(1, 36);
 }
 
+QString Global::createUUIDv5(const QString &ns, const QString &name)
+{
+    return QUuid::createUuidV5(QUuid(ns), name).toString().mid(1, 36);
+}
+
 QString Global::sourceUUID()
 {
     static QString source_uuid;
@@ -1204,7 +1209,7 @@ MTDictionary Global::listAllVariables()
     Variables variables;
     QString name;
     while (variables.next()) {
-        if (variables.parentID().isEmpty())
+        if (variables.parentUUID().isEmpty())
             name = variables.name();
         else
             name = QString("%1: %2")

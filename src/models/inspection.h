@@ -47,7 +47,6 @@ public:
     static const ColumnList &columns();
 
     Inspection(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
-    Inspection(const QString &table, const QString &id_column, const QString &id, const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
 

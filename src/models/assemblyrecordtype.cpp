@@ -29,7 +29,7 @@
 using namespace Global;
 
 AssemblyRecordType::AssemblyRecordType(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void AssemblyRecordType::initEditDialogue(EditDialogueWidgets *md)
@@ -86,7 +86,7 @@ Style AssemblyRecordType::style()
 
 MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordType::typeCategories() const
 {
-    return AssemblyRecordTypeCategory::query({"ar_type_uuid", id()});
+    return AssemblyRecordTypeCategory::query({"ar_type_uuid", uuid()});
 }
 
 QString AssemblyRecordType::tableName()

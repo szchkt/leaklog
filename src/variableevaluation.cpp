@@ -60,14 +60,15 @@ void VariableEvaluation::EvaluationContext::init()
     VariableEvaluation::Variable *parent_var, *var;
 
     while (vars.next()) {
-        var = vars_map.value(vars.id(), NULL);
+        var = vars_map.value(vars.uuid(), NULL);
         if (!var) {
             var = new VariableEvaluation::Variable;
-            vars_map.insert(vars.id(), var);
+            vars_map.insert(vars.uuid(), var);
             vars_list.append(var);
         }
 
-        var->setParentID(vars.parentID());
+        var->setParentUUID(vars.parentUUID());
+        var->setUUID(vars.uuid());
         var->setID(vars.id());
         var->setName(vars.name());
         var->setType(vars.type());
@@ -77,11 +78,11 @@ void VariableEvaluation::EvaluationContext::init()
         var->setColBg(vars.colBg());
         var->setTolerance(vars.tolerance());
 
-        if (!vars.parentID().isEmpty()) {
-            parent_var = vars_map.value(vars.parentID(), NULL);
+        if (!vars.parentUUID().isEmpty()) {
+            parent_var = vars_map.value(vars.parentUUID(), NULL);
             if (!parent_var) {
                 parent_var = new VariableEvaluation::Variable;
-                vars_map.insert(vars.parentID(), parent_var);
+                vars_map.insert(vars.parentUUID(), parent_var);
             }
 
             parent_var->addSubvariable(var);
@@ -99,7 +100,7 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool 
 
 QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, const QVariantMap &inspection, QString &nom_value)
 {
-    VariableEvaluation::Variable *var = vars_map.value(var_name);
+    VariableEvaluation::Variable *var = vars_map.value(createUUIDv5(DBInfo::databaseUUID(), var_name));
     if (!var) return QString();
     return var->evaluate(*this, inspection, nom_value);
 }

@@ -28,10 +28,6 @@
 
 using namespace Global;
 
-DBInfo::DBInfo(const QString &key):
-    DBRecord(tableName(), "id", key)
-{}
-
 QString DBInfo::valueForKey(const QString &key, const QString &default_value, const QSqlDatabase &database)
 {
     MTSqlQuery query(QString("SELECT value FROM db_info WHERE id = '%1'").arg(key), database);
@@ -46,6 +42,16 @@ QSqlError DBInfo::setValueForKey(const QString &key, const QString &value, const
     if (query.next())
         return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key), database).lastError();
     return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value), database).lastError();
+}
+
+QString DBInfo::databaseUUID(const QSqlDatabase &database)
+{
+    QString database_uuid = valueForKey("database_uuid", QString(), database);
+    if (database_uuid.isEmpty()) {
+        database_uuid = createUUID();
+        setValueForKey("database_uuid", database_uuid, database);
+    }
+    return database_uuid;
 }
 
 bool DBInfo::isCurrentUserAdmin()

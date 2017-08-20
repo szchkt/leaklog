@@ -83,8 +83,10 @@ namespace VariableEvaluation {
         QString value() const { return _value; }
         void setID(const QString &id) { _id = id; }
         QString id() const { return _id; }
-        void setParentID(const QString &parent_id) { _parent_id = parent_id; }
-        QString parentID() const { return _parent_id; }
+        void setUUID(const QString &uuid) { _uuid = uuid; }
+        QString uuid() const { return _uuid; }
+        void setParentUUID(const QString &parent_uuid) { _parent_uuid = parent_uuid; }
+        QString parentUUID() const { return _parent_uuid; }
 
         void addSubvariable(Variable *var) { subvars.append(var); }
         QList<Variable *> subvariables() const { return subvars; }
@@ -101,7 +103,8 @@ namespace VariableEvaluation {
         double _tolerance;
         QString _value;
         QString _id;
-        QString _parent_id;
+        QString _uuid;
+        QString _parent_uuid;
 
         QList<Variable *> subvars;
     };

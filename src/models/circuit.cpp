@@ -30,7 +30,7 @@
 using namespace Global;
 
 Circuit::Circuit(const QString &uuid, const QVariantMap &savedValues):
-    DBRecord(tableName(), "uuid", uuid, savedValues)
+    DBRecord(tableName(), uuid, savedValues)
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
@@ -109,13 +109,13 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 
 bool Circuit::checkValues(QWidget *parent)
 {
-    if (!id().isEmpty() && value("refrigerant") != savedValue("refrigerant")) {
+    if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant")) {
         MTSqlQuery query;
         query.prepare("SELECT date FROM inspections"
                       " WHERE circuit_uuid = :circuit_uuid"
                       " AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
                       " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1");
-        query.bindValue(":circuit_uuid", id());
+        query.bindValue(":circuit_uuid", uuid());
 
         if (query.exec() && query.next()) {
             QMessageBox message(parent);
@@ -140,17 +140,17 @@ Customer Circuit::customer()
 
 MTRecordQuery<Compressor> Circuit::compressors() const
 {
-    return Compressor::query({"circuit_uuid", id()});
+    return Compressor::query({"circuit_uuid", uuid()});
 }
 
 MTRecordQuery<CircuitUnit> Circuit::units() const
 {
-    return CircuitUnit::query({"circuit_uuid", id()});
+    return CircuitUnit::query({"circuit_uuid", uuid()});
 }
 
 MTRecordQuery<Inspection> Circuit::inspections() const
 {
-    return Inspection::query({"circuit_uuid", id()});
+    return Inspection::query({"circuit_uuid", uuid()});
 }
 
 QString Circuit::tableName()

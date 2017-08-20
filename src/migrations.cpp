@@ -22,6 +22,7 @@
 #include "records.h"
 
 #include <QSqlError>
+#include <QUuid>
 
 using namespace Global;
 
@@ -39,6 +40,33 @@ static QString insertQuery(const QString &table_name, const QStringList &columns
 {
     return QString("INSERT INTO %1 (%2) VALUES (%3)").arg(table_name).arg(columns.join(", "))
            .arg(map(columns, [](const QString &column) { return ":" + column; }).join(", "));
+}
+
+static void migrateV1Variables(QSqlDatabase &database)
+{
+    QUuid database_uuid = QUuid(DBInfo::databaseUUID(database));
+
+    MTSqlQuery query(database);
+
+    QString update_variable = "UPDATE variables SET uuid = :uuid, parent_uuid = :parent_uuid WHERE id = :id";
+
+    MTSqlQuery variables("SELECT parent_id, id FROM variables", database);
+    while (variables.next()) {
+        QString id = variables.stringValue("id");
+        QString parent_id = variables.stringValue("parent_id");
+
+        QString uuid = QUuid::createUuidV5(database_uuid, id).toString().mid(1, 36);
+        QString parent_uuid;
+        if (!parent_id.isEmpty())
+            parent_uuid = QUuid::createUuidV5(database_uuid, parent_id).toString().mid(1, 36);
+
+        MTSqlQuery variable(database);
+        variable.prepare(update_variable);
+        variable.bindValue(":uuid", uuid);
+        variable.bindValue(":parent_uuid", parent_uuid);
+        variable.bindValue(":id", id);
+        variable.exec();
+    }
 }
 
 static QMap<int, QString> migrateV1Inspectors(QSqlDatabase &database)
@@ -946,6 +974,8 @@ static QMap<int, QString> migrateV1Styles(QSqlDatabase &database)
 
 void migrateV1Database(QSqlDatabase &database)
 {
+    migrateV1Variables(database);
+
     auto style_uuids = migrateV1Styles(database);
 
     auto assembly_record_type_uuids = migrateV1AssemblyRecordTypes(style_uuids, database);

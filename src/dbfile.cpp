@@ -131,7 +131,7 @@ void DBFile::save()
 
 QByteArray DBFile::data()
 {
-    if (!file_data.isNull() || id().isEmpty())
+    if (!file_data.isNull() || uuid().isEmpty())
         return file_data;
 
     if (Global::isDatabaseRemote())
@@ -189,5 +189,5 @@ QVariant DBFileChooser::variantValue() const
     if (changed)
         db_file->save();
 
-    return db_file->id();
+    return db_file->uuid();
 }

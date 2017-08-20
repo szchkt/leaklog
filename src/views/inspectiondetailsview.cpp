@@ -94,7 +94,7 @@ QString InspectionDetailsView::renderHTML(bool)
 
     Variables vars;
     while (vars.next()) {
-        if (vars.parentID().isEmpty())
+        if (vars.parentUUID().isEmpty())
             all_variables << vars.id();
     }
 
@@ -141,7 +141,7 @@ QString InspectionDetailsView::renderHTML(bool)
             *(header_row->addHeaderCell("width=\"50%\"")) << compressor.value("name").toString();
             _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
             for (int n = 0; n < compressor_vars.count(); ++n) {
-                if (compressor_vars[n]->parentID().isEmpty())
+                if (compressor_vars[n]->parentUUID().isEmpty())
                     showVariableInInspectionTable(compressor_vars[n], compressor_var_evaluation, inspections_compressors[i], _table);
             }
         }

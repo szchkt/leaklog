@@ -22,16 +22,16 @@
 
 #include "dbrecord.h"
 
-class DBInfo : public DBRecord
+class DBInfo
 {
-    Q_OBJECT
+private:
+    DBInfo() {}
 
 public:
-    DBInfo(const QString &key);
-
     static QString valueForKey(const QString &, const QString & = QString(), const QSqlDatabase & = QSqlDatabase::database());
     static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
 
+    static QString databaseUUID(const QSqlDatabase & = QSqlDatabase::database());
     static bool isCurrentUserAdmin();
     static int isDatabaseLocked();
     static bool isRecordLocked(const QString &);
@@ -41,7 +41,6 @@ public:
     static void setRefrigerants(const QList<QVariantMap> &refrigerants);
 
     static QString tableName();
-    static inline MTRecordQuery<DBInfo> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<DBInfo>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

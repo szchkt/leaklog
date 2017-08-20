@@ -26,7 +26,7 @@
 #include <QApplication>
 
 Table::Table(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void Table::initEditDialogue(EditDialogueWidgets *md)
@@ -43,7 +43,7 @@ void Table::initEditDialogue(EditDialogueWidgets *md)
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT name FROM tables" + QString(name().isEmpty() ? "" : " WHERE name <> :name"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":name", name()); }
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":name", name()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();

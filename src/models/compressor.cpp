@@ -23,7 +23,7 @@
 #include <QApplication>
 
 Compressor::Compressor(const QString &uuid, const QVariantMap &savedValues):
-    MTRecord(tableName(), "uuid", uuid, savedValues)
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 Circuit Compressor::circuit()

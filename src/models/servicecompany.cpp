@@ -25,7 +25,7 @@
 #include <QApplication>
 
 ServiceCompany::ServiceCompany(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)

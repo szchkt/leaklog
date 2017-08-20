@@ -26,18 +26,16 @@
 
 using namespace Global;
 
-MTRecord::MTRecord(const QString &table, const QString &id_field, const QString &id, const QVariantMap &savedValues):
+MTRecord::MTRecord(const QString &table, const QString &uuid, const QVariantMap &savedValues):
     r_table(table),
-    r_id_field(id_field),
-    r_id(id),
+    r_uuid(uuid),
     r_saved_values(savedValues)
 {}
 
 MTRecord::MTRecord(const MTRecord &other)
 {
     r_table = other.r_table;
-    r_id_field = other.r_id_field;
-    r_id = other.r_id;
+    r_uuid = other.r_uuid;
     r_saved_values = other.r_saved_values;
     r_current_values = other.r_current_values;
 }
@@ -45,8 +43,7 @@ MTRecord::MTRecord(const MTRecord &other)
 MTRecord &MTRecord::operator=(const MTRecord &other)
 {
     r_table = other.r_table;
-    r_id_field = other.r_id_field;
-    r_id = other.r_id;
+    r_uuid = other.r_uuid;
     r_saved_values = other.r_saved_values;
     r_current_values = other.r_current_values;
     return *this;
@@ -54,38 +51,37 @@ MTRecord &MTRecord::operator=(const MTRecord &other)
 
 bool MTRecord::exists() const
 {
-    if (r_id.isEmpty()) { return false; }
-    MTSqlQuery find_record = select(r_id_field);
+    if (r_uuid.isEmpty()) { return false; }
+    MTSqlQuery find_record = select("uuid");
     find_record.exec();
     return find_record.next();
 }
 
 MTSqlQuery MTRecord::select(const QString &fields, Qt::SortOrder order) const
 {
-    return select(fields, QString("%1.%2 %3").arg(r_table.split(' ').first()).arg(r_id_field).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
+    return select(fields, QString("%1.uuid %3").arg(r_table.split(' ').first()).arg(order == Qt::DescendingOrder ? "DESC" : "ASC"));
 }
 
 MTSqlQuery MTRecord::select(const QString &fields, const QString &order_by) const
 {
-    bool has_id = !r_id.isEmpty();
+    bool has_uuid = !r_uuid.isEmpty();
     QString select = "SELECT " + fields + " FROM " + r_table;
-    if (has_id) {
-        select.append(" WHERE ");
-        select.append(r_id_field + " = :_id");
+    if (has_uuid) {
+        select.append(" WHERE uuid = :_uuid");
     }
-    if (!r_id_field.isEmpty() && !order_by.isEmpty())
+    if (!order_by.isEmpty())
         select.append(QString(" ORDER BY %1").arg(order_by));
     MTSqlQuery query;
     if (!query.prepare(select)) {
         qDebug() << query.lastError();
     }
-    if (has_id) { query.bindValue(":_id", r_id); }
+    if (has_uuid) { query.bindValue(":_uuid", r_uuid); }
     return query;
 }
 
 QVariantMap MTRecord::list(const QString &fields) const
 {
-    return list(fields, QString("%1.%2 ASC").arg(r_table.split(' ').first()).arg(r_id_field));
+    return list(fields, QString("%1.uuid ASC").arg(r_table.split(' ').first()));
 }
 
 QVariantMap MTRecord::list(const QString &fields, const char *order_by) const
@@ -120,7 +116,7 @@ void MTRecord::reset()
 
 void MTRecord::setValue(const QString &field, const QVariant &value)
 {
-    if (r_saved_values.isEmpty() && !r_id.isEmpty())
+    if (r_saved_values.isEmpty() && !r_uuid.isEmpty())
         refresh(false);
     if (!r_saved_values.contains(field) || r_saved_values.value(field) != value) {
         r_current_values.insert(field, value);
@@ -150,10 +146,10 @@ bool MTRecord::save(bool add_columns)
     if (r_current_values.isEmpty())
         return true;
 
-    bool has_id = !r_id.isEmpty();
-    QString journal_uuid = r_id;
+    bool has_uuid = !r_uuid.isEmpty();
+    QString journal_uuid = r_uuid;
 
-    if (!has_id && r_id_field == "uuid" && !r_current_values.contains("uuid")) {
+    if (!has_uuid && !r_current_values.contains("uuid")) {
         journal_uuid = createUUID();
         r_current_values.insert("uuid", journal_uuid);
     }
@@ -163,12 +159,12 @@ bool MTRecord::save(bool add_columns)
     if (!r_current_values.contains("updated_by"))
         r_current_values.insert("updated_by", currentUser());
 
-    if (has_id && !exists()) {
-        has_id = false;
+    if (has_uuid && !exists()) {
+        has_uuid = false;
     }
 
     if (isJournaled()) {
-        if (has_id) {
+        if (has_uuid) {
             QStringList columns; {
                 QVariantMapIterator i(r_current_values);
                 while (i.hasNext()) { i.next();
@@ -198,7 +194,7 @@ bool MTRecord::save(bool add_columns)
 
             QVariantMapIterator i(r_current_values);
             while (i.hasNext()) { i.next();
-                if (!journalUpdate(r_table, r_id, i.key()))
+                if (!journalUpdate(r_table, r_uuid, i.key()))
                     return false;
             }
         } else {
@@ -220,14 +216,14 @@ bool MTRecord::save(bool add_columns)
     }
 
     QString update;
-    if (has_id) {
+    if (has_uuid) {
         update = "UPDATE " + r_table + " SET ";
         while (i.hasNext()) { i.next();
             update.append(i.key() + " = :" + i.key());
             if (i.hasNext()) update.append(", ");
         }
-        if (has_id)
-            update.append(" WHERE " + r_id_field + " = :_id");
+        if (has_uuid)
+            update.append(" WHERE uuid = :_uuid");
     } else {
         bool append_comma = false;
         update = "INSERT INTO " + r_table + " (";
@@ -236,9 +232,9 @@ bool MTRecord::save(bool add_columns)
             if (i.hasNext()) { update.append(", "); }
             else { append_comma = true; }
         }
-        if (!r_id.isEmpty() && !r_id_field.isEmpty() && !r_current_values.contains(r_id_field)) {
+        if (!r_uuid.isEmpty() && !r_current_values.contains("uuid")) {
             if (append_comma) { update.append(", "); }
-            update.append(r_id_field);
+            update.append("uuid");
         }
         update.append(") VALUES (");
         append_comma = false;
@@ -248,9 +244,9 @@ bool MTRecord::save(bool add_columns)
             if (i.hasNext()) { update.append(", "); }
             else { append_comma = true; }
         }
-        if (!r_id.isEmpty() && !r_id_field.isEmpty() && !r_current_values.contains(r_id_field)) {
+        if (!r_uuid.isEmpty() && !r_current_values.contains("uuid")) {
             if (append_comma) { update.append(", "); }
-            update.append(":_id");
+            update.append(":_uuid");
         }
         update.append(")");
     }
@@ -260,8 +256,8 @@ bool MTRecord::save(bool add_columns)
         qDebug() << query.lastError();
     }
 
-    if (has_id || (!r_id.isEmpty() && !r_id_field.isEmpty() && !r_current_values.contains(r_id_field)))
-        query.bindValue(":_id", r_id);
+    if (has_uuid || (!r_uuid.isEmpty() && !r_current_values.contains("uuid")))
+        query.bindValue(":_uuid", r_uuid);
 
     i.toFront();
     while (i.hasNext()) { i.next();
@@ -269,10 +265,10 @@ bool MTRecord::save(bool add_columns)
     }
 
     bool result = query.exec();
-    if (!r_id.isEmpty()) {
-        r_id = r_current_values.value(r_id_field, r_id).toString();
+    if (!r_uuid.isEmpty()) {
+        r_uuid = r_current_values.value("uuid", r_uuid).toString();
     } else {
-        r_id = r_current_values.value(r_id_field, query.lastInsertId()).toString();
+        r_uuid = r_current_values.value("uuid", query.lastInsertId()).toString();
     }
 
     i.toFront();
@@ -286,17 +282,17 @@ bool MTRecord::save(bool add_columns)
 
 bool MTRecord::remove() const
 {
-    if (r_id.isEmpty())
+    if (r_uuid.isEmpty())
         return false;
-    QString remove = QString("DELETE FROM %1 WHERE %2 = :_id").arg(r_table).arg(r_id_field);
+    QString remove = QString("DELETE FROM %1 WHERE uuid = :_uuid").arg(r_table);
     MTSqlQuery query;
     if (!query.prepare(remove)) {
         qDebug() << query.lastError();
     }
-    query.bindValue(":_id", r_id);
+    query.bindValue(":_uuid", r_uuid);
     bool result = query.exec();
     if (result && isJournaled()) {
-        journalDeletion(r_table, r_id);
+        journalDeletion(r_table, r_uuid);
     }
     return result;
 }

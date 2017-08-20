@@ -25,7 +25,7 @@
 #include <QApplication>
 
 AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 bool AssemblyRecordItemCategory::isPredefined()
@@ -50,7 +50,7 @@ AssemblyRecordItemCategory::DisplayPosition AssemblyRecordItemCategory::displayP
 
 MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordItemCategory::typeCategories()
 {
-    return AssemblyRecordTypeCategory::query({"ar_item_category_uuid", id()});
+    return AssemblyRecordTypeCategory::query({"ar_item_category_uuid", uuid()});
 }
 
 QString AssemblyRecordItemCategory::tableName()

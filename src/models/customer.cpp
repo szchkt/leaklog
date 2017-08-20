@@ -27,7 +27,7 @@
 #include <QApplication>
 
 Customer::Customer(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void Customer::initEditDialogue(EditDialogueWidgets *md)
@@ -82,17 +82,17 @@ MTAddress Customer::operatorAddress()
 
 MTRecordQuery<Repair> Customer::repairs() const
 {
-    return Repair::query({"customer_uuid", id()});
+    return Repair::query({"customer_uuid", uuid()});
 }
 
 MTRecordQuery<Circuit> Customer::circuits() const
 {
-    return Circuit::query({"customer_uuid", id()});
+    return Circuit::query({"customer_uuid", uuid()});
 }
 
 MTRecordQuery<Person> Customer::persons() const
 {
-    return Person::query({"customer_uuid", id()});
+    return Person::query({"customer_uuid", uuid()});
 }
 
 QString Customer::tableName()

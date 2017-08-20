@@ -28,7 +28,7 @@
 using namespace Global;
 
 Repair::Repair(const QString &uuid, const QVariantMap &savedValues):
-    DBRecord(tableName(), "uuid", uuid, savedValues)
+    DBRecord(tableName(), uuid, savedValues)
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
@@ -56,8 +56,8 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date FROM repairs" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
+    query_used_ids.prepare("SELECT date FROM repairs" + QString(uuid().isEmpty() ? "" : " WHERE uuid <> :uuid"));
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":uuid", uuid()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();

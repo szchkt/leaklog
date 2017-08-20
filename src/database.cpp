@@ -112,7 +112,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
+                    if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         addColumn(variableNames().key(v) + " " + type, "inspections_compressors", database);
                 }
             }
@@ -130,7 +130,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
+                    if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
             }
@@ -1058,7 +1058,7 @@ void MainWindow::editServiceCompany()
     UndoCommand command(m_undo_stack, tr("Edit service company information"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        DBInfo::setValueForKey("default_service_company_uuid", record.id());
+        DBInfo::setValueForKey("default_service_company_uuid", record.uuid());
         setDatabaseModified(true);
         refreshView();
     }
@@ -1102,7 +1102,7 @@ void MainWindow::addCustomer()
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCustomer(record.id(), true);
+        m_tab->loadCustomer(record.uuid(), true);
     }
 }
 
@@ -1141,7 +1141,7 @@ void MainWindow::duplicateCustomer()
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record(m_tab->selectedCustomerUUID());
     record.refresh();
-    record.id().clear();
+    record.uuid().clear();
     QString company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
                         .arg(record.companyID())
@@ -1149,7 +1149,7 @@ void MainWindow::duplicateCustomer()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCustomer(record.id(), true);
+        m_tab->loadCustomer(record.uuid(), true);
     }
 }
 
@@ -1261,7 +1261,7 @@ void MainWindow::addCircuit()
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCircuit(record.id(), true);
+        m_tab->loadCircuit(record.uuid(), true);
     }
 }
 
@@ -1293,7 +1293,7 @@ void MainWindow::duplicateCircuit()
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(m_tab->selectedCircuitUUID());
     record.refresh();
-    record.id().clear();
+    record.uuid().clear();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
@@ -1305,7 +1305,7 @@ void MainWindow::duplicateCircuit()
 
         for (int i = 0; i < compressors.size(); ++i) {
             compressors[i].insert("uuid", createUUID());
-            compressors[i].insert("circuit_uuid", record.id());
+            compressors[i].insert("circuit_uuid", record.uuid());
             Compressor().update(compressors[i]);
         }
 
@@ -1313,12 +1313,12 @@ void MainWindow::duplicateCircuit()
 
         for (int i = 0; i < circuit_units.size(); ++i) {
             circuit_units[i].insert("uuid", createUUID());
-            circuit_units[i].insert("circuit_uuid", record.id());
+            circuit_units[i].insert("circuit_uuid", record.uuid());
             CircuitUnit().update(circuit_units[i]);
         }
 
         setDatabaseModified(true);
-        m_tab->loadCircuit(record.id(), true);
+        m_tab->loadCircuit(record.uuid(), true);
     }
 }
 
@@ -1443,19 +1443,19 @@ void MainWindow::duplicateAndDecommissionCircuit()
     ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
     for (int i = 0; i < compressors.size(); ++i) {
         compressors[i].insert("uuid", createUUID());
-        compressors[i].insert("circuit_uuid", duplicate.id());
+        compressors[i].insert("circuit_uuid", duplicate.uuid());
         Compressor().update(compressors[i]);
     }
 
     ListOfVariantMaps circuit_units = CircuitUnit::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
     for (int i = 0; i < circuit_units.size(); ++i) {
         circuit_units[i].insert("uuid", createUUID());
-        circuit_units[i].insert("circuit_uuid", duplicate.id());
+        circuit_units[i].insert("circuit_uuid", duplicate.uuid());
         CircuitUnit().update(circuit_units[i]);
     }
 
     setDatabaseModified(true);
-    m_tab->loadCircuit(duplicate.id(), true);
+    m_tab->loadCircuit(duplicate.uuid(), true);
 }
 
 void MainWindow::moveCircuit()
@@ -1587,7 +1587,7 @@ void MainWindow::moveCircuit()
 
     QVariantMap inspection;
     inspection.insert("customer_uuid", customer_uuid);
-    inspection.insert("circuit_uuid", circuit.id());
+    inspection.insert("circuit_uuid", circuit.uuid());
     inspection.insert("date", inspection_date);
     inspection.insert("nominal", 0);
     inspection.insert("repair", 0);
@@ -1608,7 +1608,7 @@ void MainWindow::moveCircuit()
 
     setDatabaseModified(true);
     m_tab->setSelectedCustomerUUID(customer_uuid);
-    m_tab->loadCircuit(circuit.id(), true);
+    m_tab->loadCircuit(circuit.uuid(), true);
 }
 
 void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
@@ -1677,7 +1677,7 @@ void MainWindow::addInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), true);
+        m_tab->loadInspection(record.uuid(), true);
     }
 }
 
@@ -1699,7 +1699,7 @@ void MainWindow::editInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), false);
+        m_tab->loadInspection(record.uuid(), false);
         refreshView();
     }
 }
@@ -1713,7 +1713,7 @@ void MainWindow::duplicateInspection()
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(m_tab->selectedInspectionUUID());
     record.refresh();
-    record.id().clear();
+    record.uuid().clear();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
@@ -1723,7 +1723,7 @@ void MainWindow::duplicateInspection()
     EditInspectionDialogue md(&record, m_undo_stack, this, m_tab->selectedInspectionUUID());
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), true);
+        m_tab->loadInspection(record.uuid(), true);
     }
 }
 
@@ -1899,7 +1899,7 @@ void MainWindow::addRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1917,7 +1917,7 @@ void MainWindow::editRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1928,7 +1928,7 @@ void MainWindow::duplicateRepair()
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record(m_tab->selectedRepairUUID());
     record.refresh();
-    record.id().clear();
+    record.uuid().clear();
     if (!record.customerUUID().isEmpty()) {
         record.setCustomerUUID(record.customerUUID());
     }
@@ -1939,7 +1939,7 @@ void MainWindow::duplicateRepair()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1973,26 +1973,27 @@ void MainWindow::loadVariables(QTreeWidget *trw, QSqlDatabase database)
     Variables variables(database);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.uuid(), NULL);
         if (!item) {
-            if (variables.parentID().isEmpty())
+            if (variables.parentUUID().isEmpty())
                 item = new QTreeWidgetItem(trw);
             else
                 item = new QTreeWidgetItem;
-            variable_items.insert(variables.id(), item);
+            variable_items.insert(variables.uuid(), item);
         }
 
-        if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
+        if (!variables.parentUUID().isEmpty()) {
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentUUID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(trw);
-                variable_items.insert(variables.parentID(), parent_item);
+                variable_items.insert(variables.parentUUID(), parent_item);
             }
             parent_item->addChild(item);
         }
 
         item->setText(0, variables.name());
         item->setText(1, variables.id());
+        item->setData(1, Qt::UserRole, variables.uuid());
         item->setText(2, variables.unit());
         item->setText(3, variables.value(Variable::Tolerance).toString());
     }
@@ -2007,34 +2008,35 @@ void MainWindow::addVariable(bool subvar)
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!isOperationPermitted("add_variable")) { return; }
-    QString parent_id;
+    QString parent_uuid;
     if (subvar) {
         if (trw_variables->currentItem()->parent() != NULL)
             return;
-        parent_id = trw_variables->currentItem()->text(1);
+        parent_uuid = trw_variables->currentItem()->data(1, Qt::UserRole).toString();
     }
     VariableRecord record;
-    record.setParentID(parent_id);
+    record.setParentUUID(parent_uuid);
     UndoCommand command(m_undo_stack, tr("Add variable"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         QTreeWidgetItem *item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
-            VariableRecord(parent_id).update("type", "group");
+            VariableRecord(parent_uuid).update("type", "group");
         } else {
             item = new QTreeWidgetItem(trw_variables);
         }
         item->setText(0, record.name());
-        item->setText(1, record.id());
+        item->setText(1, record.variableID());
+        item->setData(1, Qt::UserRole, record.uuid());
         item->setText(2, record.unit());
         item->setText(3, record.stringValue("tolerance"));
 
         int scope = record.scope();
         if (scope & Variable::Inspection)
-            addColumn(record.id(), "inspections", db);
+            addColumn(record.variableID(), "inspections", db);
         if (scope & Variable::Compressor)
-            addColumn(record.id(), "inspections_compressors", db);
+            addColumn(record.variableID(), "inspections_compressors", db);
         setDatabaseModified(true);
         refreshView();
     }
@@ -2049,28 +2051,14 @@ void MainWindow::editVariable()
 
     QTreeWidgetItem *item = trw_variables->currentItem();
     QString id = item->text(1);
-    VariableRecord record(id);
+    VariableRecord record(item->data(1, Qt::UserRole).toString(), {{"id", id}});
     UndoCommand command(m_undo_stack, tr("Edit variable %1").arg(id));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         item->setText(0, record.name());
-        item->setText(1, record.id());
         item->setText(2, record.unit());
         item->setText(3, record.stringValue("tolerance"));
 
-        if (id != record.id()) {
-            int scope = record.scope();
-            if (scope & Variable::Inspection)
-                renameColumn(id, record.id(), "inspections", db);
-            if (scope & Variable::Compressor)
-                renameColumn(id, record.id(), "inspections_compressors", db);
-
-            MTSqlQuery update_subvariables;
-            update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
-            update_subvariables.bindValue(":old_id", id);
-            update_subvariables.bindValue(":new_id", record.id());
-            update_subvariables.exec();
-        }
         setDatabaseModified(true);
         refreshView();
     }
@@ -2086,6 +2074,7 @@ void MainWindow::removeVariable()
     if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
+    QString uuid = item->data(1, Qt::UserRole).toString();
     if (RemoveDialogue::confirm(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"),
                                 tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:")
                                 .arg(id)) != QDialog::Accepted)
@@ -2094,8 +2083,8 @@ void MainWindow::removeVariable()
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
     m_undo_stack->savepoint();
 
-    VariableRecord::query({"parent_id", id}).removeAll();
-    MTRecord("variables", "id", id).remove();
+    VariableRecord::query({"parent_uuid", uuid}).removeAll();
+    MTRecord("variables", uuid).remove();
     delete item;
     dropColumn(id, "inspections", db);
     dropColumn(id, "inspections_compressors", db);
@@ -2112,8 +2101,8 @@ void MainWindow::addTable()
     UndoCommand command(m_undo_stack, tr("Add table"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        emit tableAdded(-1, record.id(), record.name());
-        cb_table_edit->addItem(record.name(), record.id());
+        emit tableAdded(-1, record.uuid(), record.name());
+        cb_table_edit->addItem(record.name(), record.uuid());
         setDatabaseModified(true);
         refreshView();
     }
@@ -2129,10 +2118,10 @@ void MainWindow::editTable()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
-        emit tableRemoved(record.id());
+        emit tableRemoved(record.uuid());
         cb_table_edit->removeItem(i);
-        emit tableAdded(i, record.id(), record.name());
-        cb_table_edit->insertItem(i, record.name(), record.id());
+        emit tableAdded(i, record.uuid(), record.name());
+        cb_table_edit->insertItem(i, record.name(), record.uuid());
         cb_table_edit->setCurrentIndex(i);
         setDatabaseModified(true);
         refreshView();
@@ -2373,7 +2362,7 @@ void MainWindow::addWarning()
         QString description = record.description();
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
-        item->setData(Qt::UserRole, record.id());
+        item->setData(Qt::UserRole, record.uuid());
         lw_warnings->addItem(item);
         setDatabaseModified(true);
         refreshView();
@@ -2393,7 +2382,7 @@ void MainWindow::editWarning()
         QString name = record.name();
         QString description = record.description();
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
-        item->setData(Qt::UserRole, record.id());
+        item->setData(Qt::UserRole, record.uuid());
         setDatabaseModified(true);
         refreshView();
     }
@@ -2430,7 +2419,7 @@ void MainWindow::addInspector()
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspector(record.id(), true);
+        m_tab->loadInspector(record.uuid(), true);
     }
 }
 
@@ -2719,25 +2708,25 @@ void MainWindow::importData()
     Variables variables(data);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.uuid(), NULL);
         if (!item) {
-            if (variables.parentID().isEmpty())
+            if (variables.parentUUID().isEmpty())
                 item = new QTreeWidgetItem(id->variables());
             else
                 item = new QTreeWidgetItem;
-            variable_items.insert(variables.id(), item);
+            variable_items.insert(variables.uuid(), item);
         }
 
-        if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
+        if (!variables.parentUUID().isEmpty()) {
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentUUID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(id->variables());
-                variable_items.insert(variables.parentID(), parent_item);
+                variable_items.insert(variables.parentUUID(), parent_item);
             }
             parent_item->addChild(item);
             parent_item->setExpanded(true);
 
-            variable_names.remove(variables.parentID());
+            variable_names.remove(variables.parentUUID());
             if (variables.valueExpression().isEmpty() && variables.type() != "group") {
                 variable_names.insert(variables.id(),
                                       tr("%1: %2")
@@ -2754,6 +2743,7 @@ void MainWindow::importData()
 
         item->setText(0, variables.name());
         item->setText(1, variables.id());
+        item->setData(1, Qt::UserRole, variables.uuid());
         item->setText(2, variables.unit());
         item->setText(3, variableTypes().value(variables.type()));
         item->setData(3, Qt::UserRole, variables.type());
@@ -3222,12 +3212,13 @@ void MainWindow::importData()
                 inspections_skip_columns << item->text(1);
                 skip_parent = true;
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                VariableRecord record(item->text(1));
+                VariableRecord record(item->data(1, Qt::UserRole).toString());
                 Variable variable(item->text(1));
                 if (!variable.next()) {
                     new_item = new QTreeWidgetItem(trw_variables);
                     new_item->setText(0, item->text(0));
                     new_item->setText(1, item->text(1));
+                    new_item->setData(1, Qt::UserRole, item->data(1, Qt::UserRole));
                     new_item->setText(2, item->text(2));
                     new_item->setText(3, item->text(7));
                 }
@@ -3249,18 +3240,19 @@ void MainWindow::importData()
                 if (skip_parent || current_text == tr("Do not import")) {
                     inspections_skip_columns << subitem->text(1);
                 } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                    VariableRecord record(subitem->text(1));
+                    VariableRecord record(subitem->data(1, Qt::UserRole).toString());
                     Variable subvariable(subitem->text(1));
                     if (new_item != NULL && !subvariable.next()) {
                         QTreeWidgetItem *new_subitem = new QTreeWidgetItem(new_item);
                         new_subitem->setText(0, subitem->text(0));
                         new_subitem->setText(1, subitem->text(1));
+                        new_subitem->setData(1, Qt::UserRole, subitem->data(1, Qt::UserRole));
                         new_subitem->setText(2, subitem->text(2));
                         new_subitem->setText(3, subitem->text(7));
                     }
                     set.clear();
                     set.insert("name", subitem->text(0));
-                    set.insert("parent_id", item->text(1));
+                    set.insert("parent_uuid", item->data(1, Qt::UserRole).toString());
                     set.insert("id", subitem->text(1));
                     set.insert("unit", subitem->text(2));
                     set.insert("type", subitem->data(3, Qt::UserRole));
@@ -3415,14 +3407,14 @@ void MainWindow::importCSV()
     table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
     tables.append(table);
 
-    table = table->addChildTableTemplate(tr("Contact persons"), "persons", {"uuid", "customer_uuid"}, true);
+    table = table->addChildTableTemplate(tr("Contact persons"), "persons", {"uuid", "customer_uuid"});
     table->addColumn(tr("Contact person name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
     ImportDialogueTable *circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
     circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
-    circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "uuid", "customers");
+    circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "customers");
     circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
@@ -3459,14 +3451,14 @@ void MainWindow::importCSV()
         col->addSelectValue(string_value.toLower(), string_value);
     tables.append(circuits_table);
 
-    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", {"uuid", "circuit_uuid"}, true);
+    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", {"uuid", "circuit_uuid"});
     table->addColumn(tr("Compressor name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
 
-    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", {"uuid", "circuit_uuid"}, true);
-    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_uuid", "uuid", "circuit_unit_types");
+    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", {"uuid", "circuit_uuid"});
+    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_uuid", "circuit_unit_types");
     table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
@@ -3510,7 +3502,7 @@ void MainWindow::importCSV()
     col->addSelectValue(tr("long text"), QString::number(Global::Text));
     col->addSelectValue(tr("boolean"), QString::number(Global::Boolean));
     table->addColumn(tr("Automatically add to assembly record"), "auto_show", ImportDialogueTableColumn::Boolean);
-    table->addForeignKeyColumn(tr("Category ID"), "ar_item_category_uuid", "uuid", "assembly_record_item_categories");
+    table->addForeignKeyColumn(tr("Category ID"), "ar_item_category_uuid", "assembly_record_item_categories");
     tables.append(table);
 
     ImportCsvDialogue id(path, tables, this);
@@ -3538,7 +3530,7 @@ void MainWindow::addAssemblyRecordType()
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordType(record.id(), true);
+        m_tab->loadAssemblyRecordType(record.uuid(), true);
     }
 }
 
@@ -3551,7 +3543,7 @@ void MainWindow::editAssemblyRecordType()
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordType(record.id(), false);
+        m_tab->loadAssemblyRecordType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3588,7 +3580,7 @@ void MainWindow::addAssemblyRecordItemType()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemType(record.id(), true);
+        m_tab->loadAssemblyRecordItemType(record.uuid(), true);
     }
 }
 
@@ -3601,7 +3593,7 @@ void MainWindow::editAssemblyRecordItemType()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemType(record.id(), false);
+        m_tab->loadAssemblyRecordItemType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3634,7 +3626,7 @@ void MainWindow::addAssemblyRecordItemCategory()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemCategory(record.id(), true);
+        m_tab->loadAssemblyRecordItemCategory(record.uuid(), true);
     }
 }
 
@@ -3647,7 +3639,7 @@ void MainWindow::editAssemblyRecordItemCategory()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemCategory(record.id(), false);
+        m_tab->loadAssemblyRecordItemCategory(record.uuid(), false);
         refreshView();
     }
 }
@@ -3682,7 +3674,7 @@ void MainWindow::addCircuitUnitType()
     EditDialogue md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCircuitUnitType(unit_type.id(), true);
+        m_tab->loadCircuitUnitType(unit_type.uuid(), true);
     }
 }
 
@@ -3695,7 +3687,7 @@ void MainWindow::editCircuitUnitType()
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCircuitUnitType(record.id(), false);
+        m_tab->loadCircuitUnitType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3733,7 +3725,7 @@ void MainWindow::addStyle()
     if (md.exec() == QDialog::Accepted) {
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(record.name());
-        item->setData(Qt::UserRole, record.id());
+        item->setData(Qt::UserRole, record.uuid());
         lw_styles->addItem(item);
         setDatabaseModified(true);
         refreshView();

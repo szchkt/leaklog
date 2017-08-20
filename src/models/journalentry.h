@@ -22,8 +22,11 @@
 
 #include "dbrecord.h"
 
-class JournalEntry : public MTRecord
+class JournalEntry
 {
+private:
+    JournalEntry() {}
+
 public:
     enum {
         Version = 0,
@@ -35,22 +38,6 @@ public:
         Deletion = 3
     };
 
-    JournalEntry(const QString &id = QString());
-
-    inline QString sourceUUID() { return stringValue("source_uuid"); }
-    inline void setSourceUUID(const QString &value) { setValue("source_uuid", value); }
-    inline int entryID() { return intValue("entry_id"); }
-    inline void setEntryID(int value) { setValue("entry_id", value); }
-    inline Operation operation() { return (Operation)intValue("operation_id"); }
-    inline void setOperation(Operation value) { setValue("operation_id", value); }
-    inline int tableID() { return intValue("table_id"); }
-    inline void setTableID(int value) { setValue("table_id", value); }
-    inline QString recordUUID() { return stringValue("row_uuid"); }
-    inline void setRecordUUID(const QString &value) { setValue("row_uuid", value); }
-    inline int columnID() { return intValue("column_id"); }
-    inline void setColumnID(int value) { setValue("column_id", value); }
-    inline QString dateCreated() { return stringValue("date_created"); }
-
     static QString tableName();
     static const ColumnList &columns();
 
@@ -59,9 +46,6 @@ public:
 
     static int columnIDForName(const QString &name);
     static QString columnNameForID(int id, const QString &default_value = QString());
-
-protected:
-    bool isJournaled() const;
 };
 
 #endif // JOURNALENTRY_H

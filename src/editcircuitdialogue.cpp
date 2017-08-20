@@ -50,10 +50,10 @@ EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
 
-    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->id(), this);
+    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->uuid(), this);
     addTab(compressors_tab);
 
-    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->id(), this);
+    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->uuid(), this);
     QObject::connect(units_tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
     addTab(units_tab);
 

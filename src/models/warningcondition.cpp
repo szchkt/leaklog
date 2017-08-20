@@ -20,7 +20,7 @@
 #include "warningcondition.h"
 
 WarningCondition::WarningCondition(const QString &uuid, const QVariantMap &savedValues):
-    MTRecord(tableName(), "uuid", uuid, savedValues)
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 QString WarningCondition::tableName()

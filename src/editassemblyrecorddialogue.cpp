@@ -31,7 +31,7 @@ EditAssemblyRecordDialogue::EditAssemblyRecordDialogue(DBRecord *record, UndoSta
     TabbedEditDialogue(record, undo_stack, parent)
 {
     main_tabw->setTabText(0, tr("Assembly record type"));
-    addTab(new EditAssemblyRecordDialogueTab(md_record->id()));
+    addTab(new EditAssemblyRecordDialogueTab(md_record->uuid()));
 }
 
 void EditAssemblyRecordDialogue::save()

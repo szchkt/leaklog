@@ -23,7 +23,7 @@
 #include "circuitunittype.h"
 
 CircuitUnit::CircuitUnit(const QString &uuid, const QVariantMap &savedValues):
-    MTRecord(tableName(), "uuid", uuid, savedValues)
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 Circuit CircuitUnit::circuit()

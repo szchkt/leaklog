@@ -76,7 +76,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
     gl_rmds->setRowStretch(2, 1);
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
-        QString id = duplicate_from.isEmpty() ? md_record->id() : duplicate_from;
+        QString id = duplicate_from.isEmpty() ? md_record->uuid() : duplicate_from;
         compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, this);
         compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         splitter->addWidget(compressors);
@@ -88,7 +88,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
                                                        new EditInspectionDialogueAccess(this),
                                                        record->customerUUID(),
                                                        record->circuitUUID()));
-    addTab(new EditInspectionDialogueImagesTab(record->id()));
+    addTab(new EditInspectionDialogueImagesTab(record->uuid()));
 
     splitter->setSizes(QList<int>() << 1000 << 1 << 200);
 
@@ -138,7 +138,7 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
     EditDialogueTableCell *cell;
 
     foreach (auto image, images) {
-        cell = new EditDialogueTableCell(image.id(), Global::File);
+        cell = new EditDialogueTableCell(image.uuid(), Global::File);
         cell->setId("uuid");
         image_data.insert("uuid", cell);
         cell = new EditDialogueTableCell(image.description(), Global::Text);

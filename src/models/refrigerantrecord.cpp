@@ -29,7 +29,7 @@
 using namespace Global;
 
 RefrigerantRecord::RefrigerantRecord(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)

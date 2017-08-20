@@ -345,7 +345,7 @@ QString EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDiction
     item_type.setValue("list_price", dict.value("list_price"));
     item_type.setValue("ar_item_category_uuid", dict.value("ar_item_category_uuid"));
     item_type.save();
-    return item_type.id();
+    return item_type.uuid();
 }
 
 void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()

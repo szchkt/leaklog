@@ -26,7 +26,7 @@
 #include <QApplication>
 
 Inspector::Inspector(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void Inspector::initEditDialogue(EditDialogueWidgets *md)

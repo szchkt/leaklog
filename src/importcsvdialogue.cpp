@@ -277,10 +277,9 @@ ImportDialogueTableColumn *ImportDialogueTable::addColumn(const QString &name, c
     return col;
 }
 
-ImportDialogueTableColumn *ImportDialogueTable::addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_column, const QString &foreign_key_table)
+ImportDialogueTableColumn *ImportDialogueTable::addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_table)
 {
     ImportDialogueTableColumn *col = addColumn(name, id, ImportDialogueTableColumn::ForeignKey);
-    col->setForeignKeyColumn(foreign_key_column);
     col->setForeignKeyTable(foreign_key_table);
     return col;
 }
@@ -290,9 +289,9 @@ void ImportDialogueTable::addColumn(ImportDialogueTableColumn *column)
     columns.append(column);
 }
 
-ImportDialogueTableTemplate *ImportDialogueTable::addChildTableTemplate(const QString &name, const QString &id, const MTDictionary &parent_cols, bool generate_id)
+ImportDialogueTableTemplate *ImportDialogueTable::addChildTableTemplate(const QString &name, const QString &id, const MTDictionary &parent_cols)
 {
-    ImportDialogueTableTemplate *table = new ImportDialogueTableTemplate(name, id, generate_id);
+    ImportDialogueTableTemplate *table = new ImportDialogueTableTemplate(name, id);
     table->setParentColumns(parent_cols);
 
     child_templates.append(table);
@@ -345,7 +344,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
 
         case ImportDialogueTableColumn::ForeignKey:
             if (!ok) break;
-            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), columns.at(i)->foreignKeyColumn(), row->value(columns.at(i)).toString());
+            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), row->value(columns.at(i)).toString());
             if (!frecord->exists()) {
                 ok = false;
                 break;
@@ -429,13 +428,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
         set.insert("address", address.toString());
     }
 
-    if (generate_id) {
-        int next_id = (int)MTQuery(id()).max("id") + 1;
-        set.insert("id", QString::number(next_id));
-        id_column = "id";
-    }
-
-    MTRecord record(id(), id_column, set.value(id_column).toString());
+    MTRecord record(id(), set.value("uuid").toString());
     ok = ok && record.update(set);
 
     for (int i = 0; i < child_tables.count(); ++i) {
@@ -457,7 +450,7 @@ void ImportDialogueTableRow::addValue(ImportDialogueTableColumn *key, const QVar
 
 ImportDialogueTable *ImportDialogueTableTemplate::table()
 {
-    ImportDialogueTable *table = new ImportDialogueTableTemplate(name(), id(), generate_id);
+    ImportDialogueTable *table = new ImportDialogueTableTemplate(name(), id());
     for (int i = 0; i < columns.count(); ++i) {
         table->addColumn(new ImportDialogueTableColumn(columns.at(i)));
     }

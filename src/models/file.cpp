@@ -20,7 +20,7 @@
 #include "file.h"
 
 File::File(const QString &uuid):
-    MTRecord(tableName(), "uuid", uuid)
+    MTRecord(tableName(), uuid)
 {}
 
 QString File::tableName()

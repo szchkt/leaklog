@@ -108,12 +108,7 @@ const ColumnList &Inspection::columns()
 }
 
 Inspection::Inspection(const QString &uuid, const QVariantMap &savedValues):
-    DBRecord(tableName(), "uuid", uuid, savedValues),
-    m_scope(Variable::Inspection)
-{}
-
-Inspection::Inspection(const QString &table, const QString &id_column, const QString &id, const QVariantMap &savedValues):
-    DBRecord(table, id_column, id, savedValues),
+    DBRecord(tableName(), uuid, savedValues),
     m_scope(Variable::Inspection)
 {}
 
@@ -130,9 +125,9 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     bool nominal_found = false;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(id().isEmpty() ? "" : " AND date <> :date"));
-    query_used_ids.bindValue(":circuit_uuid", circuit_record.id());
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", date()); }
+    query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
+    query_used_ids.bindValue(":circuit_uuid", circuit_record.uuid());
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":date", date()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
@@ -159,7 +154,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), isOutsideInterval()));
 
-    if (!id().isEmpty() && !compressors().exists()) {
+    if (!uuid().isEmpty() && !compressors().exists()) {
         m_scope |= Variable::Compressor;
         md->setMaximumRowCount(14);
     }
@@ -180,12 +175,12 @@ Circuit Inspection::circuit()
 
 MTRecordQuery<InspectionCompressor> Inspection::compressors() const
 {
-    return InspectionCompressor::query({"inspection_uuid", id()});
+    return InspectionCompressor::query({"inspection_uuid", uuid()});
 }
 
 MTRecordQuery<InspectionImage> Inspection::images() const
 {
-    return InspectionImage::query({"inspection_uuid", id()});
+    return InspectionImage::query({"inspection_uuid", uuid()});
 }
 
 bool Inspection::remove() const

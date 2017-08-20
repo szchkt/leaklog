@@ -25,12 +25,22 @@
 #include "global.h"
 
 #include <QApplication>
+#include <QMessageBox>
 
 using namespace Global;
 
-VariableRecord::VariableRecord(const QString &id, const QVariantMap &savedValues):
-    DBRecord(tableName(), "id", id, savedValues)
+VariableRecord::VariableRecord(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), uuid, savedValues)
 {}
+
+QStringList VariableRecord::highlightedVariableIDs()
+{
+    QStringList used_ids;
+    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
+    used_ids << listSupportedFunctions();
+    used_ids << listVariableIds(true);
+    return used_ids;
+}
 
 void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
 {
@@ -38,11 +48,14 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
 
     QVariantMap attributes;
     bool enable_all = true;
+    bool enable_id = true;
 
-    if (!id().isEmpty()) {
-        Variable variable(id());
+    if (!uuid().isEmpty()) {
+        enable_id = false;
+
+        Variable variable(variableID());
         if (variable.next()) {
-            attributes.insert("parent_id", variable.value(Variable::ParentID));
+            attributes.insert("parent_uuid", variable.value(Variable::ParentUUID));
             attributes.insert("id", variable.value(Variable::ID));
             attributes.insert("name", variable.value(Variable::Name));
             attributes.insert("type", variable.value(Variable::Type));
@@ -53,19 +66,11 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
             attributes.insert("col_bg", variable.value(Variable::ColBg));
         }
 
-        if (variableNames().contains(id()))
+        if (variableNames().contains(variableID()))
             enable_all = false;
     }
 
-    QStringList used_ids;
-    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
-    used_ids << listSupportedFunctions();
-    used_ids << listVariableIds(true);
-    if (!id().isEmpty())
-        used_ids.removeAll(id());
-    md->setUsedIds(used_ids);
-
-    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_all));
+    md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_id));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString(), 0, "", enable_all));
     MDComboBox *cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), variableTypes(), "", enable_all);
@@ -75,13 +80,30 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(), {
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
-    }, "", id().isEmpty()));
-    md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), used_ids, enable_all));
+    }, "", uuid().isEmpty()));
+    md->addInputWidget(new MDHighlightedPlainTextEdit("value", tr("Value:"), md->widget(), attributes.value("value").toString(), highlightedVariableIDs(), enable_all));
     md->addInputWidget(new MDCheckBox("compare_nom", tr("Compare value with the nominal inspection"), md->widget(), attributes.value("compare_nom").toInt()));
     md->addInputWidget(new MDDoubleSpinBox("tolerance", tr("Tolerance:"), md->widget(), 0.0, 999999.9, attributes.value("tolerance").toDouble()));
-    if (attributes.value("parent_id").toString().isEmpty()) {
+    if (attributes.value("parent_uuid").toString().isEmpty()) {
         md->addInputWidget(new MDColourComboBox("col_bg", tr("Colour:"), md->widget(), attributes.value("col_bg").toString()));
     }
+}
+
+bool VariableRecord::checkValues(QWidget *)
+{
+    if (uuid().isEmpty()) {
+        QString id = variableID();
+        if (id.isEmpty()) {
+            QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
+            return false;
+        } else if (highlightedVariableIDs().contains(id)) {
+            QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
+            return false;
+        }
+        uuid() = createUUIDv5(DBInfo::databaseUUID(), id);
+    }
+
+    return true;
 }
 
 QString VariableRecord::tableName()
@@ -93,7 +115,8 @@ class VariableColumns
 {
 public:
     VariableColumns() {
-        columns << Column("parent_id", "TEXT");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("parent_uuid", "UUID");
         columns << Column("id", "TEXT");
         columns << Column("name", "TEXT");
         columns << Column("type", "TEXT");
@@ -114,9 +137,4 @@ const ColumnList &VariableRecord::columns()
 {
     static VariableColumns columns;
     return columns.columns;
-}
-
-bool VariableRecord::isJournaled() const
-{
-    return false;
 }

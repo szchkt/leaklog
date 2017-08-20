@@ -27,14 +27,16 @@ class VariableRecord : public DBRecord
     Q_OBJECT
 
 public:
-    VariableRecord(const QString &id = QString(), const QVariantMap &savedValues = QVariantMap());
+    VariableRecord(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
+    static QStringList highlightedVariableIDs();
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QWidget * = 0);
 
+    inline QString parentUUID() { return stringValue("parent_uuid"); }
+    inline void setParentUUID(const QString &value) { setValue("parent_uuid", value); }
     inline QString variableID() { return stringValue("id"); }
     inline void setVariableID(const QString &value) { setValue("id", value); }
-    inline QString parentID() { return stringValue("parent_id"); }
-    inline void setParentID(const QString &value) { setValue("parent_id", value); }
     inline QString name() { return stringValue("name"); }
     inline void setName(const QString &value) { setValue("name", value); }
     inline QString type() { return stringValue("type"); }
@@ -55,9 +57,6 @@ public:
     static QString tableName();
     static inline MTRecordQuery<VariableRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<VariableRecord>(tableName(), parents); }
     static const ColumnList &columns();
-
-protected:
-    bool isJournaled() const;
 };
 
 #endif // VARIABLE_H

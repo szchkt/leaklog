@@ -49,6 +49,7 @@ namespace Global {
     QString longMonthName(int);
     QColor textColourForBaseColour(const QColor &);
     QString createUUID();
+    QString createUUIDv5(const QString &ns, const QString &name);
     QString sourceUUID();
     QString sqlStringForDatabaseType(QString, const QSqlDatabase & = QSqlDatabase::database());
     QString variantTypeToSqlType(int);

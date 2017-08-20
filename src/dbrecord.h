@@ -68,7 +68,7 @@ class DBRecord : public QObject, public MTRecord, public Modifiable
 
 public:
     DBRecord();
-    DBRecord(const QString &type, const QString &id_field, const QString &id, const QVariantMap &savedValues = QVariantMap());
+    DBRecord(const QString &type, const QString &uuid, const QVariantMap &savedValues = QVariantMap());
     DBRecord(const DBRecord &other): MTRecord(other) {}
     DBRecord &operator=(const DBRecord &other) { MTRecord::operator=(other); return *this; };
 

@@ -214,7 +214,7 @@ EditDialogue(undo_stack, parent)
     }*/
     EditDialogueLayout md_layout(&md_inputwidgets, md_grid_main);
     md_layout.layout();
-    bool disable_input = md_record->id().toInt() >= 1000;
+    bool disable_input = md_record->uuid().toInt() >= 1000;
     md_layout.addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
     QToolButton *tbtn_add_filter = new QToolButton(this);
     tbtn_add_filter->setDisabled(disable_input);
@@ -233,12 +233,12 @@ EditDialogue(undo_stack, parent)
     md_conditions->setDisabled(disable_input);
     QObject::connect(tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_layout.addWidget(md_conditions, r + 3, 0, 1, 4);
-    if (!md_record->id().isEmpty()) {
-        WarningFilters filters(md_record->id());
+    if (!md_record->uuid().isEmpty()) {
+        WarningFilters filters(md_record->uuid());
         while (filters.next()) {
             md_filters->add(filters.value("circuit_attribute").toString(), filters.value("function").toString(), filters.value("value").toString());
         }
-        WarningConditions conditions(md_record->id());
+        WarningConditions conditions(md_record->uuid());
         while (conditions.next()) {
             md_conditions->add(conditions.value("value_ins").toString(), conditions.value("function").toString(), conditions.value("value_nom").toString());
         }
@@ -255,9 +255,9 @@ void EditWarningDialogue::save()
 {
     md_undo_stack->savepoint();
 
-    if (!md_record->id().isEmpty()) {
-        WarningFilter::query({"warning_uuid", md_record->id()}).removeAll();
-        WarningCondition::query({"warning_uuid", md_record->id()}).removeAll();
+    if (!md_record->uuid().isEmpty()) {
+        WarningFilter::query({"warning_uuid", md_record->uuid()}).removeAll();
+        WarningCondition::query({"warning_uuid", md_record->uuid()}).removeAll();
     }
 
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
@@ -266,10 +266,10 @@ void EditWarningDialogue::save()
 
     md_record->save();
 
-    if (md_record->id().toInt() < 1000) {
+    if (md_record->uuid().toInt() < 1000) {
         for (int i = 0; i < md_filters->count(); ++i) {
             WarningFilter filter;
-            filter.setValue("warning_uuid", md_record->id());
+            filter.setValue("warning_uuid", md_record->uuid());
             filter.setValue("circuit_attribute", md_filters->attribute(i));
             filter.setValue("function", md_filters->function(i));
             filter.setValue("value", md_filters->value(i));
@@ -277,7 +277,7 @@ void EditWarningDialogue::save()
         }
         for (int i = 0; i < md_conditions->count(); ++i) {
             WarningCondition condition;
-            condition.setValue("warning_uuid", md_record->id());
+            condition.setValue("warning_uuid", md_record->uuid());
             condition.setValue("value_ins", md_conditions->expressionIns(i));
             condition.setValue("function", md_conditions->function(i));
             condition.setValue("value_nom", md_conditions->expressionNom(i));

@@ -126,11 +126,7 @@ SyncEngine::SyncEngine(Authenticator *authenticator, QObject *parent):
     _network_manager(new QNetworkAccessManager(this)),
     _reply(NULL)
 {
-    _database_uuid = DBInfo::valueForKey("database_uuid");
-    if (_database_uuid.isEmpty()) {
-        _database_uuid = createUUID();
-        DBInfo::setValueForKey("database_uuid", _database_uuid);
-    }
+    _database_uuid = DBInfo::databaseUUID();
 
     connect(_network_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 }

@@ -25,7 +25,7 @@
 #include <QApplication>
 
 Style::Style(const QString &uuid):
-    DBRecord(tableName(), "uuid", uuid)
+    DBRecord(tableName(), uuid)
 {}
 
 void Style::initEditDialogue(EditDialogueWidgets *md)
@@ -34,16 +34,6 @@ void Style::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
     md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), content()));
     md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), usesDivElements()));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
 }
 
 QString Style::tableName()
@@ -76,8 +66,8 @@ class StyleAttributes
 {
 public:
     StyleAttributes() {
-        dict.insert("name", QApplication::translate("CircuitUnitType", "ID"));
-        dict.insert("content", QApplication::translate("CircuitUnitType", "Content"));
+        dict.insert("name", QApplication::translate("Style", "Name"));
+        dict.insert("content", QApplication::translate("Style", "Content"));
     }
 
     MTDictionary dict;
