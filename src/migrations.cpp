@@ -110,7 +110,7 @@ static QMap<int, QString> migrateV1Customers(QSqlDatabase &database)
     query.exec(renameV1TableQuery("customers"));
     query.exec(createTableQuery(Customer::tableName(), Customer::columns(), database));
 
-    QStringList customers_columns = QStringList() << "uuid" << "id" << "company" << "address" << "mail" << "phone" << "operator_type" << "operator_id" << "operator_company" << "operator_address" << "operator_mail" << "operator_phone" << "date_updated" << "updated_by";
+    QStringList customers_columns = QStringList() << "uuid" << "id" << "company" << "address" << "mail" << "phone" << "operator_type" << "operator_id" << "operator_company" << "operator_address" << "operator_mail" << "operator_phone" << "notes" << "date_updated" << "updated_by";
     QString insert_customer = insertQuery(Customer::tableName(), customers_columns);
 
     MTSqlQuery customers("SELECT * FROM v1_customers", database);
@@ -205,7 +205,7 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
     query.exec(renameV1TableQuery("circuits"));
     query.exec(createTableQuery(Circuit::tableName(), Circuit::columns(), database));
 
-    QStringList columns = QStringList() << "uuid" << "customer_uuid" << "id" << "name" << "disused" << "operation" << "building" << "device" << "hermetic" << "manufacturer" << "type" << "sn" << "year" << "commissioning" << "decommissioning" << "field" << "refrigerant" << "refrigerant_amount" << "oil" << "oil_amount" << "leak_detector" << "runtime" << "utilisation" << "inspection_interval" << "date_updated" << "updated_by";
+    QStringList columns = QStringList() << "uuid" << "customer_uuid" << "id" << "name" << "disused" << "operation" << "building" << "device" << "hermetic" << "manufacturer" << "type" << "sn" << "year" << "commissioning" << "decommissioning" << "field" << "refrigerant" << "refrigerant_amount" << "oil" << "oil_amount" << "leak_detector" << "runtime" << "utilisation" << "inspection_interval" << "notes" << "date_updated" << "updated_by";
     QString insert_query = insertQuery(Circuit::tableName(), columns);
 
     MTSqlQuery circuits("SELECT * FROM v1_circuits", database);
@@ -644,7 +644,7 @@ static void migrateV1RefrigerantManagement(QSqlDatabase &database)
     query.exec(renameV1TableQuery("refrigerant_management"));
     query.exec(createTableQuery(RefrigerantRecord::tableName(), RefrigerantRecord::columns(), database));
 
-    QStringList columns = QStringList() << "uuid" << "date" << "partner" << "partner_id" << "refrigerant" << "purchased" << "purchased_reco" << "sold" << "sold_reco" << "refr_rege" << "refr_disp" << "leaked" << "leaked_reco" << "date_updated" << "updated_by";
+    QStringList columns = QStringList() << "uuid" << "date" << "partner" << "partner_id" << "refrigerant" << "batch_number" << "purchased" << "purchased_reco" << "sold" << "sold_reco" << "refr_rege" << "refr_disp" << "leaked" << "leaked_reco" << "notes" << "date_updated" << "updated_by";
     QString insert_query = insertQuery(RefrigerantRecord::tableName(), columns);
 
     MTSqlQuery refrigerant_management("SELECT * FROM v1_refrigerant_management", database);
