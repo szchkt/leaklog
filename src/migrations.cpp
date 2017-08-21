@@ -26,6 +26,13 @@
 
 using namespace Global;
 
+static const QUuid migration_namespace("6f607242-def6-4c4c-a9a2-429ce4ea73d3");
+
+static inline QString createUUIDv5(const QUuid &ns, const QString &name)
+{
+    return QUuid::createUuidV5(ns, name).toString().mid(1, 36);
+}
+
 static QString renameV1TableQuery(const QString &table_name)
 {
     return QString("ALTER TABLE %1 RENAME TO v1_%1").arg(table_name);
@@ -42,6 +49,61 @@ static QString insertQuery(const QString &table_name, const QStringList &columns
            .arg(map(columns, [](const QString &column) { return ":" + column; }).join(", "));
 }
 
+static inline QString inspectorUUID(int id)
+{
+    return id ? createUUIDv5(migration_namespace, QString("inspector:%1").arg(id)) : QString();
+}
+
+static inline QString customerUUID(int id)
+{
+    return id ? createUUIDv5(migration_namespace, QString("customer:%1").arg(id)) : QString();
+}
+
+static inline QString personUUID(qlonglong id)
+{
+    return id ? createUUIDv5(migration_namespace, QString("person:%1").arg(id)) : QString();
+}
+
+static inline QString circuitUUID(int customer, int circuit)
+{
+    return customer && circuit ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2").arg(customer).arg(circuit)) : QString();
+}
+
+static inline QString compressorUUID(qlonglong id)
+{
+    return id ? createUUIDv5(migration_namespace, QString("compressor:%1").arg(id)) : QString();
+}
+
+static inline QString inspectionUUID(int customer, int circuit, const QString &date)
+{
+    return customer && circuit && !date.isEmpty() ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3").arg(customer).arg(circuit).arg(date)) : QString();
+}
+
+static inline QString inspectionCompressorUUID(int customer, int circuit, const QString &date, qlonglong compressor)
+{
+    return customer && circuit && !date.isEmpty() && compressor ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/compressor:%4").arg(customer).arg(circuit).arg(date).arg(compressor)) : QString();
+}
+
+static inline QString inspectionImageUUID(int customer, int circuit, const QString &date, const QString &file_uuid)
+{
+    return customer && circuit && !date.isEmpty() && !file_uuid.isEmpty() ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/file:%4").arg(customer).arg(circuit).arg(date).arg(file_uuid)) : QString();
+}
+
+static inline QString repairUUID(const QString &date)
+{
+    return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("repair:%1").arg(date)) : QString();
+}
+
+static inline QString serviceCompanyUUID(int id)
+{
+    return id ? createUUIDv5(migration_namespace, QString("servicecompany:%1").arg(id)) : QString();
+}
+
+static inline QString refrigerantRecordUUID(const QString &date)
+{
+    return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("refrigerantrecord:%1").arg(date)) : QString();
+}
+
 static void migrateV1Variables(QSqlDatabase &database)
 {
     QUuid database_uuid = QUuid(DBInfo::databaseUUID(database));
@@ -55,10 +117,10 @@ static void migrateV1Variables(QSqlDatabase &database)
         QString id = variables.stringValue("id");
         QString parent_id = variables.stringValue("parent_id");
 
-        QString uuid = QUuid::createUuidV5(database_uuid, id).toString().mid(1, 36);
+        QString uuid = createUUIDv5(database_uuid, id);
         QString parent_uuid;
         if (!parent_id.isEmpty())
-            parent_uuid = QUuid::createUuidV5(database_uuid, parent_id).toString().mid(1, 36);
+            parent_uuid = createUUIDv5(database_uuid, parent_id);
 
         MTSqlQuery variable(database);
         variable.prepare(update_variable);
@@ -69,10 +131,8 @@ static void migrateV1Variables(QSqlDatabase &database)
     }
 }
 
-static QMap<int, QString> migrateV1Inspectors(QSqlDatabase &database)
+static void migrateV1Inspectors(QSqlDatabase &database)
 {
-    QMap<int, QString> inspector_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("inspectors"));
     query.exec(createTableQuery(Inspector::tableName(), Inspector::columns(), database));
@@ -88,8 +148,7 @@ static QMap<int, QString> migrateV1Inspectors(QSqlDatabase &database)
         int pos = 0;
         foreach (const QString &column, inspectors_columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                inspector_uuids.insert(inspectors.intValue("id"), uuid);
+                QString uuid = inspectorUUID(inspectors.intValue("id"));
                 inspector.bindValue(pos, uuid);
             } else {
                 inspector.bindValue(pos, inspectors.value(column));
@@ -98,14 +157,10 @@ static QMap<int, QString> migrateV1Inspectors(QSqlDatabase &database)
         }
         inspector.exec();
     }
-
-    return inspector_uuids;
 }
 
-static QMap<int, QString> migrateV1Customers(QSqlDatabase &database)
+static void migrateV1Customers(QSqlDatabase &database)
 {
-    QMap<int, QString> customer_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("customers"));
     query.exec(createTableQuery(Customer::tableName(), Customer::columns(), database));
@@ -123,8 +178,7 @@ static QMap<int, QString> migrateV1Customers(QSqlDatabase &database)
         int pos = 0;
         foreach (const QString &column, customers_columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                customer_uuids.insert(customers.intValue("id"), uuid);
+                QString uuid = customerUUID(customers.intValue("id"));
                 customer.bindValue(pos, uuid);
             } else if (column == "id") {
                 QString id = customers.stringValue(column);
@@ -158,14 +212,10 @@ static QMap<int, QString> migrateV1Customers(QSqlDatabase &database)
         }
         customer.exec();
     }
-
-    return customer_uuids;
 }
 
-static QMap<qlonglong, QString> migrateV1Persons(const QMap<int, QString> &customer_uuids, QSqlDatabase &database)
+static void migrateV1Persons(QSqlDatabase &database)
 {
-    QMap<qlonglong, QString> person_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("persons"));
     query.exec(createTableQuery(Person::tableName(), Person::columns(), database));
@@ -181,11 +231,10 @@ static QMap<qlonglong, QString> migrateV1Persons(const QMap<int, QString> &custo
         int pos = 0;
         foreach (const QString &column, persons_columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                person_uuids.insert(persons.longLongValue("id"), uuid);
+                QString uuid = personUUID(persons.longLongValue("id"));
                 person.bindValue(pos, uuid);
             } else if (column == "customer_uuid") {
-                person.bindValue(pos, customer_uuids.value(persons.intValue("company_id")));
+                person.bindValue(pos, customerUUID(persons.intValue("company_id")));
             } else {
                 person.bindValue(pos, persons.value(column));
             }
@@ -193,14 +242,10 @@ static QMap<qlonglong, QString> migrateV1Persons(const QMap<int, QString> &custo
         }
         person.exec();
     }
-
-    return person_uuids;
 }
 
-static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString> &customer_uuids, QSqlDatabase &database)
+static void migrateV1Circuits(QSqlDatabase &database)
 {
-    QMap<QPair<int, int>, QString> circuit_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("circuits"));
     query.exec(createTableQuery(Circuit::tableName(), Circuit::columns(), database));
@@ -212,8 +257,6 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
     while (circuits.next()) {
         int parent = circuits.intValue("parent");
         int id = circuits.intValue("id");
-        QString uuid = createUUID();
-        circuit_uuids.insert(QPair<int, int>(parent, id), uuid);
 
         MTSqlQuery circuit(database);
         circuit.prepare(insert_query);
@@ -221,9 +264,9 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                circuit.bindValue(pos, uuid);
+                circuit.bindValue(pos, circuitUUID(parent, id));
             } else if (column == "customer_uuid") {
-                circuit.bindValue(pos, customer_uuids.value(parent));
+                circuit.bindValue(pos, customerUUID(parent));
             } else {
                 circuit.bindValue(pos, circuits.value(column));
             }
@@ -231,14 +274,10 @@ static QMap<QPair<int, int>, QString> migrateV1Circuits(const QMap<int, QString>
         }
         circuit.exec();
     }
-
-    return circuit_uuids;
 }
 
-static QMap<qlonglong, QString> migrateV1Compressors(const QMap<QPair<int, int>, QString> &circuit_uuids, QSqlDatabase &database)
+static void migrateV1Compressors(QSqlDatabase &database)
 {
-    QMap<qlonglong, QString> compressor_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("compressors"));
     query.exec(createTableQuery(Compressor::tableName(), Compressor::columns(), database));
@@ -254,11 +293,9 @@ static QMap<qlonglong, QString> migrateV1Compressors(const QMap<QPair<int, int>,
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                compressor_uuids.insert(compressors.longLongValue("id"), uuid);
-                compressor.bindValue(pos, uuid);
+                compressor.bindValue(pos, compressorUUID(compressors.longLongValue("id")));
             } else if (column == "circuit_uuid") {
-                compressor.bindValue(pos, circuit_uuids.value(QPair<int, int>(compressors.intValue("customer_id"), compressors.intValue("circuit_id"))));
+                compressor.bindValue(pos, circuitUUID(compressors.intValue("customer_id"), compressors.intValue("circuit_id")));
             } else {
                 compressor.bindValue(pos, compressors.value(column));
             }
@@ -266,18 +303,16 @@ static QMap<qlonglong, QString> migrateV1Compressors(const QMap<QPair<int, int>,
         }
         compressor.exec();
     }
-
-    return compressor_uuids;
 }
 
-static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString &type_data, const QMap<int, QString> &customer_uuids)
+static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString &type_data)
 {
     switch (type) {
         case Inspection::CircuitMovedType: {
             QStringList data = type_data.split(UNIT_SEPARATOR);
             if (data.count() > 2) {
-                data[0] = customer_uuids.value(data[0].toInt());
-                data[1] = customer_uuids.value(data[1].toInt());
+                data[0] = customerUUID(data[0].toInt());
+                data[1] = customerUUID(data[1].toInt());
             }
             return data.join(UNIT_SEPARATOR);
         }
@@ -289,52 +324,38 @@ static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString
     return type_data;
 }
 
-static QMap<QPair<QPair<int, int>, QString>, QString> migrateV1Inspections(const QMap<int, QString> &customer_uuids,
-                                                                           const QMap<QPair<int, int>, QString> &circuit_uuids,
-                                                                           const QMap<int, QString> &inspector_uuids,
-                                                                           const QMap<qlonglong, QString> &person_uuids,
-                                                                           const QMap<int, QString> &assembly_record_type_uuids,
-                                                                           QSqlDatabase &database)
+static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_uuids, QSqlDatabase &database)
 {
-    QMap<QPair<QPair<int, int>, QString>, QString> inspection_uuids;
-
     QString update_inspection = "UPDATE inspections SET uuid = :uuid, customer_uuid = :customer_uuid, circuit_uuid = :circuit_uuid, inspector_uuid = :inspector_uuid, person_uuid = :person_uuid, ar_type_uuid = :ar_type_uuid, inspection_type_data = :inspection_type_data WHERE customer = :customer AND circuit = :circuit AND date = :date";
 
     MTSqlQuery inspections("SELECT customer, circuit, date, inspector, operator, ar_type, inspection_type, inspection_type_data FROM inspections", database);
     while (inspections.next()) {
         int customer = inspections.intValue("customer");
         int circuit = inspections.intValue("circuit");
-        QPair<int, int> customer_circuit(customer, circuit);
         QString date = inspections.stringValue("date");
         int inspector = inspections.intValue("inspector");
         qlonglong operator_id = inspections.longLongValue("operator");
         int ar_type = inspections.intValue("ar_type");
         Inspection::Type inspection_type = (Inspection::Type)inspections.intValue("inspection_type");
         QString inspection_type_data = inspections.stringValue("inspection_type_data");
-        QString uuid = createUUID();
-        inspection_uuids.insert(QPair<QPair<int, int>, QString>(customer_circuit, date), uuid);
 
         MTSqlQuery inspection(database);
         inspection.prepare(update_inspection);
-        inspection.bindValue(":uuid", uuid);
-        inspection.bindValue(":customer_uuid", customer_uuids.value(customer));
-        inspection.bindValue(":circuit_uuid", circuit_uuids.value(customer_circuit));
-        inspection.bindValue(":inspector_uuid", inspector_uuids.value(inspector));
-        inspection.bindValue(":person_uuid", person_uuids.value(operator_id));
+        inspection.bindValue(":uuid", inspectionUUID(customer, circuit, date));
+        inspection.bindValue(":customer_uuid", customerUUID(customer));
+        inspection.bindValue(":circuit_uuid", circuitUUID(customer, circuit));
+        inspection.bindValue(":inspector_uuid", inspectorUUID(inspector));
+        inspection.bindValue(":person_uuid", personUUID(operator_id));
         inspection.bindValue(":ar_type_uuid", assembly_record_type_uuids.value(ar_type));
-        inspection.bindValue(":inspection_type_data", inspectionTypeDataFromV1Data(inspection_type, inspection_type_data, customer_uuids));
+        inspection.bindValue(":inspection_type_data", inspectionTypeDataFromV1Data(inspection_type, inspection_type_data));
         inspection.bindValue(":customer", customer);
         inspection.bindValue(":circuit", circuit);
         inspection.bindValue(":date", date);
         inspection.exec();
     }
-
-    return inspection_uuids;
 }
 
-static void migrateV1InspectionCompressors(const QMap<QPair<QPair<int, int>, QString>, QString> &inspection_uuids,
-                                           const QMap<qlonglong, QString> &compressor_uuids,
-                                           QSqlDatabase &database)
+static void migrateV1InspectionCompressors(QSqlDatabase &database)
 {
     QString update_inspection_compressor = "UPDATE inspections_compressors SET uuid = :uuid, inspection_uuid = :inspection_uuid, compressor_uuid = :compressor_uuid WHERE id = :id";
 
@@ -343,16 +364,14 @@ static void migrateV1InspectionCompressors(const QMap<QPair<QPair<int, int>, QSt
         int id = inspection_compressors.intValue("id");
         int customer_id = inspection_compressors.intValue("customer_id");
         int circuit_id = inspection_compressors.intValue("circuit_id");
-        QPair<int, int> customer_circuit(customer_id, circuit_id);
         QString date = inspection_compressors.stringValue("date");
         qlonglong compressor_id = inspection_compressors.longLongValue("compressor_id");
-        QString uuid = createUUID();
 
         MTSqlQuery inspection_compressor(database);
         inspection_compressor.prepare(update_inspection_compressor);
-        inspection_compressor.bindValue(":uuid", uuid);
-        inspection_compressor.bindValue(":inspection_uuid", inspection_uuids.value(QPair<QPair<int, int>, QString>(customer_circuit, date)));
-        inspection_compressor.bindValue(":compressor_uuid", compressor_uuids.value(compressor_id));
+        inspection_compressor.bindValue(":uuid", inspectionCompressorUUID(customer_id, circuit_id, date, compressor_id));
+        inspection_compressor.bindValue(":inspection_uuid", inspectionUUID(customer_id, circuit_id, date));
+        inspection_compressor.bindValue(":compressor_uuid", compressorUUID(compressor_id));
         inspection_compressor.bindValue(":id", id);
         inspection_compressor.exec();
     }
@@ -364,10 +383,10 @@ static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
 
     QString update_file = "UPDATE files SET uuid = :uuid WHERE id = :id";
 
-    MTSqlQuery files("SELECT id FROM files", database);
+    MTSqlQuery files("SELECT id, name FROM files", database);
     while (files.next()) {
         int id = files.intValue("id");
-        QString uuid = createUUID();
+        QString uuid = createUUIDv5(migration_namespace, QString("file:%1[%2]").arg(id).arg(files.stringValue("name")));
         file_uuids.insert(id, uuid);
 
         MTSqlQuery file(database);
@@ -380,8 +399,7 @@ static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
     return file_uuids;
 }
 
-static void migrateV1InspectionImages(const QMap<QPair<QPair<int, int>, QString>, QString> &inspection_uuids,
-                                      const QMap<int, QString> &file_uuids,
+static void migrateV1InspectionImages(const QMap<int, QString> &file_uuids,
                                       QSqlDatabase &database)
 {
     MTSqlQuery query(database);
@@ -395,10 +413,9 @@ static void migrateV1InspectionImages(const QMap<QPair<QPair<int, int>, QString>
     while (inspection_images.next()) {
         int customer = inspection_images.intValue("customer");
         int circuit = inspection_images.intValue("circuit");
-        QPair<int, int> customer_circuit(customer, circuit);
         QString date = inspection_images.stringValue("date");
         int file_id = inspection_images.intValue("file_id");
-        QString uuid = createUUID();
+        QString file_uuid = file_uuids.value(file_id);
 
         MTSqlQuery inspection_image(database);
         inspection_image.prepare(insert_query);
@@ -406,11 +423,11 @@ static void migrateV1InspectionImages(const QMap<QPair<QPair<int, int>, QString>
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                inspection_image.bindValue(pos, uuid);
+                inspection_image.bindValue(pos, inspectionImageUUID(customer, circuit, date, file_uuid));
             } else if (column == "inspection_uuid") {
-                inspection_image.bindValue(pos, inspection_uuids.value(QPair<QPair<int, int>, QString>(customer_circuit, date)));
+                inspection_image.bindValue(pos, inspectionUUID(customer, circuit, date));
             } else if (column == "file_uuid") {
-                inspection_image.bindValue(pos, file_uuids.value(file_id));
+                inspection_image.bindValue(pos, file_uuid);
             } else {
                 inspection_image.bindValue(pos, inspection_images.value(column));
             }
@@ -420,9 +437,7 @@ static void migrateV1InspectionImages(const QMap<QPair<QPair<int, int>, QString>
     }
 }
 
-static void migrateV1Repairs(const QMap<int, QString> &customer_uuids,
-                             const QMap<int, QString> &inspector_uuids,
-                             QSqlDatabase &database)
+static void migrateV1Repairs(QSqlDatabase &database)
 {
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("repairs"));
@@ -439,12 +454,11 @@ static void migrateV1Repairs(const QMap<int, QString> &customer_uuids,
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                repair.bindValue(pos, uuid);
+                repair.bindValue(pos, repairUUID(repairs.stringValue("date")));
             } else if (column == "customer_uuid") {
-                repair.bindValue(pos, customer_uuids.value(repairs.intValue("parent")));
+                repair.bindValue(pos, customerUUID(repairs.intValue("parent")));
             } else if (column == "inspector_uuid") {
-                repair.bindValue(pos, inspector_uuids.value(repairs.intValue("repairman")));
+                repair.bindValue(pos, inspectorUUID(repairs.intValue("repairman")));
             } else {
                 repair.bindValue(pos, repairs.value(column));
             }
@@ -456,8 +470,6 @@ static void migrateV1Repairs(const QMap<int, QString> &customer_uuids,
 
 static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSqlDatabase &database)
 {
-    QMap<int, QString> service_company_uuids;
-
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("service_companies"));
     query.exec(createTableQuery(ServiceCompany::tableName(), ServiceCompany::columns(), database));
@@ -473,12 +485,9 @@ static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSql
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                service_company_uuids.insert(service_companies.intValue("id"), uuid);
-                service_company.bindValue(pos, uuid);
+                service_company.bindValue(pos, serviceCompanyUUID(service_companies.intValue("id")));
             } else if (column == "id") {
-                QString id = service_companies.stringValue("id");
-                service_company.bindValue(pos, formatCompanyID(id));
+                service_company.bindValue(pos, formatCompanyID(service_companies.stringValue("id")));
             } else if (column == "image_file_uuid") {
                 service_company.bindValue(pos, file_uuids.value(service_companies.intValue("image")));
             } else {
@@ -489,7 +498,7 @@ static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSql
         service_company.exec();
     }
 
-    DBInfo::setValueForKey("default_service_company_uuid", service_company_uuids.value(DBInfo::valueForKey("default_service_company", QString(), database).toInt()), database);
+    DBInfo::setValueForKey("default_service_company_uuid", serviceCompanyUUID(DBInfo::valueForKey("default_service_company", QString(), database).toInt()), database);
 }
 
 static void migrateV1Tables(QSqlDatabase &database)
@@ -655,8 +664,7 @@ static void migrateV1RefrigerantManagement(QSqlDatabase &database)
         int pos = 0;
         foreach (const QString &column, columns) {
             if (column == "uuid") {
-                QString uuid = createUUID();
-                refrigerant_record.bindValue(pos, uuid);
+                refrigerant_record.bindValue(pos, refrigerantRecordUUID(refrigerant_management.stringValue("date")));
             } else if (column == "partner_id") {
                 refrigerant_record.bindValue(pos, formatCompanyID(refrigerant_management.stringValue(column)));
             } else {
@@ -827,7 +835,6 @@ static void migrateV1AssemblyRecordTypeCategories(const QMap<int, QString> &asse
 static void migrateV1AssemblyRecordItems(const QMap<int, QString> &assembly_record_item_category_uuids,
                                          const QMap<int, QString> &assembly_record_item_type_uuids,
                                          const QMap<int, QString> &circuit_unit_type_uuids,
-                                         const QMap<int, QString> &inspector_uuids,
                                          QSqlDatabase &database)
 {
     MTSqlQuery query(database);
@@ -854,7 +861,7 @@ static void migrateV1AssemblyRecordItems(const QMap<int, QString> &assembly_reco
                         break;
 
                     case AssemblyRecordItem::Inspectors:
-                        item.bindValue(pos, inspector_uuids.value(items.intValue("item_type_id")));
+                        item.bindValue(pos, inspectorUUID(items.intValue("item_type_id")));
                         break;
 
                     default:
@@ -905,8 +912,7 @@ static QMap<int, QString> migrateV1CircuitUnitTypes(QSqlDatabase &database)
     return circuit_unit_type_uuids;
 }
 
-static void migrateV1CircuitUnits(const QMap<QPair<int, int>, QString> &circuit_uuids,
-                                  const QMap<int, QString> &circuit_unit_type_uuids,
+static void migrateV1CircuitUnits(const QMap<int, QString> &circuit_unit_type_uuids,
                                   QSqlDatabase &database)
 {
     MTSqlQuery query(database);
@@ -927,7 +933,7 @@ static void migrateV1CircuitUnits(const QMap<QPair<int, int>, QString> &circuit_
                 QString uuid = createUUID();
                 unit.bindValue(pos, uuid);
             } else if (column == "circuit_uuid") {
-                unit.bindValue(pos, circuit_uuids.value(QPair<int, int>(units.intValue("company_id"), units.intValue("circuit_id"))));
+                unit.bindValue(pos, circuitUUID(units.intValue("company_id"), units.intValue("circuit_id")));
             } else if (column == "unit_type_uuid") {
                 unit.bindValue(pos, circuit_unit_type_uuids.value(units.intValue("unit_type_id")));
             } else {
@@ -980,25 +986,25 @@ void migrateV1Database(QSqlDatabase &database)
 
     auto assembly_record_type_uuids = migrateV1AssemblyRecordTypes(style_uuids, database);
 
-    auto inspector_uuids = migrateV1Inspectors(database);
+    migrateV1Inspectors(database);
 
-    auto customer_uuids = migrateV1Customers(database);
+    migrateV1Customers(database);
 
-    auto person_uuids = migrateV1Persons(customer_uuids, database);
+    migrateV1Persons(database);
 
-    auto circuit_uuids = migrateV1Circuits(customer_uuids, database);
+    migrateV1Circuits(database);
 
-    auto compressor_uuids = migrateV1Compressors(circuit_uuids, database);
+    migrateV1Compressors(database);
 
-    auto inspection_uuids = migrateV1Inspections(customer_uuids, circuit_uuids, inspector_uuids, person_uuids, assembly_record_type_uuids, database);
+    migrateV1Inspections(assembly_record_type_uuids, database);
 
-    migrateV1InspectionCompressors(inspection_uuids, compressor_uuids, database);
+    migrateV1InspectionCompressors(database);
 
     auto file_uuids = migrateV1Files(database);
 
-    migrateV1InspectionImages(inspection_uuids, file_uuids, database);
+    migrateV1InspectionImages(file_uuids, database);
 
-    migrateV1Repairs(customer_uuids, inspector_uuids, database);
+    migrateV1Repairs(database);
 
     migrateV1ServiceCompanies(file_uuids, database);
 
@@ -1014,7 +1020,7 @@ void migrateV1Database(QSqlDatabase &database)
 
     auto circuit_unit_type_uuids = migrateV1CircuitUnitTypes(database);
 
-    migrateV1CircuitUnits(circuit_uuids, circuit_unit_type_uuids, database);
+    migrateV1CircuitUnits(circuit_unit_type_uuids, database);
 
     auto assembly_record_item_category_uuids = migrateV1AssemblyRecordItemCategories(database);
 
@@ -1022,5 +1028,5 @@ void migrateV1Database(QSqlDatabase &database)
 
     migrateV1AssemblyRecordTypeCategories(assembly_record_item_category_uuids, assembly_record_item_type_uuids, database);
 
-    migrateV1AssemblyRecordItems(assembly_record_item_category_uuids, assembly_record_item_type_uuids, circuit_unit_type_uuids, inspector_uuids, database);
+    migrateV1AssemblyRecordItems(assembly_record_item_category_uuids, assembly_record_item_type_uuids, circuit_unit_type_uuids, database);
 }
