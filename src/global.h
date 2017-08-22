@@ -57,6 +57,7 @@ namespace Global {
     void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
     void dropColumn(const QString &, const QString &, const QSqlDatabase &);
     QPair<bool, QDir> backupDirectoryForDatabasePath(const QString &path);
+    bool superuserModeEnabled();
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());
     bool isOwnerPermissionApplicable(const QString &);
