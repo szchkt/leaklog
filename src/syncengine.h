@@ -70,6 +70,7 @@ public:
 
     inline QString databaseUUID() const { return _database_uuid; }
     inline QString error() const { return _error; }
+    inline QString action() const { return _action; }
 
     QJsonObject journalState() const;
     static QJsonObject journalStateForVersion(QJsonObject journal_state, int maximum_version);
@@ -97,6 +98,7 @@ private:
     Authenticator *_authenticator;
     QString _database_uuid;
     QString _error;
+    QString _action;
     QNetworkAccessManager *_network_manager;
     QNetworkReply *_reply;
 };

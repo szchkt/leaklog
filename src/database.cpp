@@ -842,6 +842,11 @@ void MainWindow::syncFinished(bool success)
         message.setInformativeText(sync_engine->error());
         message.addButton(tr("OK"), QMessageBox::AcceptRole);
         message.exec();
+
+        if (sync_engine->action() == "login") {
+            logoutFinished();
+            logIn();
+        }
     }
 }
 

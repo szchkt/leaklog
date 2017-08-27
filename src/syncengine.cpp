@@ -469,7 +469,9 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
         return;
     }
 
-    _error = response.object().value("error").toString();
+    QJsonObject root = response.object();
+    _error = root.value("error").toString();
+    _action = root.value("action").toString();
 
     if (!_error.isEmpty()) {
         emit syncFinished(false);
@@ -496,10 +498,6 @@ QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &varian
 {
     if (!variant.isNull()) {
         switch (column_id) {
-            case 6: // ar_type_uuid
-            case 122: // style_uuid
-                return variant.toString() == "-1" ? QJsonValue(QJsonValue::Null) : variant.toString();
-
             case 24: // data
                 QString data = QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
                 if (length)
