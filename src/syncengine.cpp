@@ -22,11 +22,13 @@
 #include "global.h"
 #include "records.h"
 
+#include <QApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSqlError>
 #include <QSettings>
+#include <QUrlQuery>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -58,7 +60,13 @@ void Authenticator::logIn(const QString &username, const QString &password)
     _username = username;
     _token.clear();
 
-    QNetworkRequest request(QUrl(baseURL + "/auth/"));
+    QUrlQuery query;
+    query.addQueryItem("locale", QApplication::translate("MainWindow", "en_GB"));
+
+    QUrl url(baseURL + "/auth/");
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
     request.setRawHeader("User-Agent", "Leaklog/" LEAKLOG_VERSION);
     QByteArray authorization = "Basic ";
     authorization.append(QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
@@ -441,7 +449,13 @@ void SyncEngine::sendRequest(const QJsonDocument &document)
         _reply = NULL;
     }
 
-    QNetworkRequest request(QUrl(baseURL + "/sync/"));
+    QUrlQuery query;
+    query.addQueryItem("locale", QApplication::translate("MainWindow", "en_GB"));
+
+    QUrl url(baseURL + "/sync/");
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
     request.setRawHeader("User-Agent", "Leaklog/" LEAKLOG_VERSION);
     request.setRawHeader("X-Auth-Token", _authenticator->token().toUtf8());
     request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
