@@ -437,8 +437,6 @@ bool SyncEngine::applyJournalEntries(const QJsonArray &journal_entries, const QJ
             return false;
     }
 
-    lastJournalEntryID(true);
-
     return true;
 }
 

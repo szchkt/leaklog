@@ -253,6 +253,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec(index + "index_inspections_compressors_compressor_uuid ON inspections_compressors (compressor_uuid ASC)");
             query.exec(index + "index_inspection_images_inspection_uuid ON inspection_images (inspection_uuid ASC)");
             query.exec(index + "index_inspection_images_file_uuid ON inspection_images (file_uuid ASC)");
+            query.exec(index + "index_journal_source_uuid_entry_id ON journal (source_uuid ASC, entry_id ASC)");
             query.exec(index + "index_persons_customer_uuid ON persons (customer_uuid ASC)");
             query.exec(index + "index_repairs_customer_uuid ON repairs (customer_uuid ASC)");
             query.exec(index + "index_repairs_inspector_uuid ON repairs (inspector_uuid ASC)");
@@ -550,8 +551,6 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
         closeDatabase(false);
         return;
     }
-
-    lastJournalEntryID(true);
 
     QSettings settings("SZCHKT", "Leaklog");
     settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));

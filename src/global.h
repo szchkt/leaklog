@@ -59,10 +59,9 @@ namespace Global {
     void addColumn(const QString &, const QString &, const QSqlDatabase &);
     void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
     void dropColumn(const QString &, const QString &, const QSqlDatabase &);
-    int lastJournalEntryID(bool refresh = false, const QSqlDatabase &database = QSqlDatabase::database());
-    bool journalInsertion(const QString &table_name, const QString &record_uuid);
-    bool journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name);
-    bool journalDeletion(const QString &table_name, const QString &record_uuid);
+    bool journalInsertion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalDeletion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
     QPair<bool, QDir> backupDirectoryForDatabasePath(const QString &path);
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());

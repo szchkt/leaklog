@@ -327,72 +327,37 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
     }
 }
 
-int Global::lastJournalEntryID(bool refresh, const QSqlDatabase &database)
+bool Global::journalInsertion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database)
 {
-    static int last_id = -1;
-    if (last_id < 0 || refresh) {
-        MTSqlQuery query(database);
-        query.prepare("SELECT MAX(entry_id) FROM journal WHERE source_uuid = :source_uuid");
-        query.bindValue(":source_uuid", sourceUUID());
-        if (query.exec() && query.next()) {
-            last_id = query.value(0).toInt();
-        } else {
-            last_id = -1;
-        }
-    }
-    int id = last_id;
-    if (!refresh) {
-        last_id++;
-    }
-    return id;
-}
-
-bool Global::journalInsertion(const QString &table_name, const QString &record_uuid)
-{
-    int entry_id = lastJournalEntryID();
-    if (entry_id < 0)
-        return false;
-
-    MTSqlQuery query;
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (?, ?, ?, ?, ?)");
-    query.bindValue(0, sourceUUID());
-    query.bindValue(1, entry_id + 1);
-    query.bindValue(2, JournalEntry::Insertion);
-    query.bindValue(3, JournalEntry::tableIDForName(table_name));
-    query.bindValue(4, record_uuid);
+    MTSqlQuery query(database);
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid)");
+    query.bindValue(":source_uuid", sourceUUID());
+    query.bindValue(":operation_id", JournalEntry::Insertion);
+    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":record_uuid", record_uuid);
     return query.exec();
 }
 
-bool Global::journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name)
+bool Global::journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name, const QSqlDatabase &database)
 {
-    int entry_id = lastJournalEntryID();
-    if (entry_id < 0)
-        return false;
-
-    MTSqlQuery query;
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, sourceUUID());
-    query.bindValue(1, entry_id + 1);
-    query.bindValue(2, JournalEntry::Update);
-    query.bindValue(3, JournalEntry::tableIDForName(table_name));
-    query.bindValue(4, record_uuid);
-    query.bindValue(5, JournalEntry::columnIDForName(column_name));
+    MTSqlQuery query(database);
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
+    query.bindValue(":source_uuid", sourceUUID());
+    query.bindValue(":operation_id", JournalEntry::Update);
+    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":record_uuid", record_uuid);
+    query.bindValue(":column_id", JournalEntry::columnIDForName(column_name));
     return query.exec();
 }
 
-bool Global::journalDeletion(const QString &table_name, const QString &record_uuid)
+bool Global::journalDeletion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database)
 {
-    int entry_id = lastJournalEntryID();
-    if (entry_id < 0)
-        return false;
-
-    MTSqlQuery query;
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (?, ?, ?, ?, ?)");
-    query.bindValue(0, sourceUUID());
-    query.bindValue(1, entry_id + 1);
-    query.bindValue(2, JournalEntry::Deletion);
-    query.bindValue(3, JournalEntry::tableIDForName(table_name));
-    query.bindValue(4, record_uuid);
+    MTSqlQuery query(database);
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
+    query.bindValue(":source_uuid", sourceUUID());
+    query.bindValue(":operation_id", JournalEntry::Deletion);
+    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":record_uuid", record_uuid);
     return query.exec();
 }
 
