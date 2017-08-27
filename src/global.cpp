@@ -329,34 +329,49 @@ void Global::dropColumn(const QString &column, const QString &table, const QSqlD
 
 bool Global::journalInsertion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database)
 {
+    return journalInsertion(JournalEntry::tableIDForName(table_name), record_uuid, database);
+}
+
+bool Global::journalInsertion(int table_id, const QString &record_uuid, const QSqlDatabase &database)
+{
     MTSqlQuery query(database);
     query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid)");
     query.bindValue(":source_uuid", sourceUUID());
     query.bindValue(":operation_id", JournalEntry::Insertion);
-    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":table_id", table_id);
     query.bindValue(":record_uuid", record_uuid);
     return query.exec();
 }
 
 bool Global::journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name, const QSqlDatabase &database)
 {
+    return journalUpdate(JournalEntry::tableIDForName(table_name), record_uuid, JournalEntry::columnIDForName(column_name), database);
+}
+
+bool Global::journalUpdate(int table_id, const QString &record_uuid, int column_id, const QSqlDatabase &database)
+{
     MTSqlQuery query(database);
     query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
     query.bindValue(":source_uuid", sourceUUID());
     query.bindValue(":operation_id", JournalEntry::Update);
-    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":table_id", table_id);
     query.bindValue(":record_uuid", record_uuid);
-    query.bindValue(":column_id", JournalEntry::columnIDForName(column_name));
+    query.bindValue(":column_id", column_id);
     return query.exec();
 }
 
 bool Global::journalDeletion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database)
 {
+    return journalDeletion(JournalEntry::tableIDForName(table_name), record_uuid, database);
+}
+
+bool Global::journalDeletion(int table_id, const QString &record_uuid, const QSqlDatabase &database)
+{
     MTSqlQuery query(database);
     query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
     query.bindValue(":source_uuid", sourceUUID());
     query.bindValue(":operation_id", JournalEntry::Deletion);
-    query.bindValue(":table_id", JournalEntry::tableIDForName(table_name));
+    query.bindValue(":table_id", table_id);
     query.bindValue(":record_uuid", record_uuid);
     return query.exec();
 }
