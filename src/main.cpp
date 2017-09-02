@@ -52,10 +52,12 @@ int main(int argc, char *argv[])
     QString lang = settings.value("lang").toString();
     if (lang.isEmpty()) {
         lang = QLocale::languageToString(QLocale::system().language());
-        if (lang == "Czech") lang = "Slovak";
         settings.setValue("lang", lang);
     }
-    if (lang == "C") { lang = "Slovak"; settings.setValue("lang", lang); }
+    if (lang == "C") {
+        lang = "Slovak";
+        settings.setValue("lang", lang);
+    }
     if (lang != "English") {
         QTranslator *translator = new QTranslator;
         translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
