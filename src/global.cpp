@@ -387,6 +387,12 @@ QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
     return QPair<bool, QDir>(false, QDir());
 }
 
+bool Global::superuserModeEnabled()
+{
+    QSettings settings("SZCHKT", "Leaklog");
+    return settings.value("superuser_mode_enabled", false).toBool();
+}
+
 QString Global::currentUser(const QSqlDatabase &database)
 {
     return database.userName();

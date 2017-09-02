@@ -948,6 +948,9 @@ bool MainWindow::isOperationPermitted(const QString &operation, const QString &r
 
 bool MainWindow::canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid)
 {
+    if (superuserModeEnabled())
+        return true;
+
     MTSqlQuery query;
     query.prepare(QString("SELECT date FROM inspections"
                           " WHERE %1 AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"

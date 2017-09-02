@@ -66,6 +66,7 @@ namespace Global {
     bool journalDeletion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
     bool journalDeletion(int table_id, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
     QPair<bool, QDir> backupDirectoryForDatabasePath(const QString &path);
+    bool superuserModeEnabled();
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
     bool isDatabaseRemote(const QSqlDatabase & = QSqlDatabase::database());
     bool isOwnerPermissionApplicable(const QString &);

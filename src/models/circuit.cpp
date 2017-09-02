@@ -109,7 +109,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 
 bool Circuit::checkValues(QWidget *parent)
 {
-    if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant")) {
+    if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant") && !superuserModeEnabled()) {
         MTSqlQuery query;
         query.prepare("SELECT date FROM inspections"
                       " WHERE circuit_uuid = :circuit_uuid"
