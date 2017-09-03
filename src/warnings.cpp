@@ -29,7 +29,7 @@ using namespace Global;
 
 static const QUuid warnings_namespace("70811249-9951-4bdb-a8c3-5df917746843");
 
-QString Warnings::predefinedWarningUUID(int id)
+QString Warnings::predefinedUUID(int id)
 {
     return QUuid::createUuidV5(warnings_namespace, QString::number(id)).toString().mid(1, 36);
 }
@@ -130,7 +130,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
 {
     QString w;
     if (scope == 0 || (scope & Variable::Inspection)) {
-        w = predefinedWarningUUID(1000);
+        w = predefinedUUID(1000);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -151,7 +151,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "8");
             }
         }
-        w = predefinedWarningUUID(1001);
+        w = predefinedUUID(1001);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -172,7 +172,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "6");
             }
         }
-        w = predefinedWarningUUID(1002);
+        w = predefinedUUID(1002);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -193,7 +193,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "6");
             }
         }
-        w = predefinedWarningUUID(1003);
+        w = predefinedUUID(1003);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -214,7 +214,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "4");
             }
         }
-        w = predefinedWarningUUID(1004);
+        w = predefinedUUID(1004);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -233,7 +233,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "4");
             }
         }
-        w = predefinedWarningUUID(1005);
+        w = predefinedUUID(1005);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
@@ -252,7 +252,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "100*(refr_add_am-refr_reco)/refrigerant_amount", ">", "2");
             }
         }
-        w = predefinedWarningUUID(1100);
+        w = predefinedUUID(1100);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage"), "", 0, enabled_only);
@@ -266,7 +266,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
-        w = predefinedWarningUUID(1101);
+        w = predefinedUUID(1101);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Compressor valve leakage"), "", 0, enabled_only);
@@ -280,7 +280,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
-        w = predefinedWarningUUID(1102);
+        w = predefinedUUID(1102);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Liquid-line restriction"), "", 0, enabled_only);
@@ -294,7 +294,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
-        w = predefinedWarningUUID(1103);
+        w = predefinedUUID(1103);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Condenser fouling"), "", 0, enabled_only);
@@ -308,7 +308,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initCondition(map, w, "abs(t_sec_evap_in-p_to_t_vap(p_0))", "<", "abs(t_sec_evap_in-p_to_t_vap(p_0))");
             }
         }
-        w = predefinedWarningUUID(1104);
+        w = predefinedUUID(1104);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Evaporator fouling"), "", 0, enabled_only);
@@ -324,7 +324,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         }
 
         if (CO2_equivalent) {
-            w = predefinedWarningUUID(1210);
+            w = predefinedUUID(1210);
             if (id.isEmpty() || id == w) {
                 if (type == 0) {
                     initWarning(map, w, tr("Needs inspection"), tr("once in 2 years"), 730, enabled_only);
@@ -335,7 +335,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                     initCondition(map, w, "co2_equivalent", "<", "50");
                 }
             }
-            w = predefinedWarningUUID(1211);
+            w = predefinedUUID(1211);
             if (id.isEmpty() || id == w) {
                 if (type == 0) {
                     initWarning(map, w, tr("Needs inspection"), tr("once a year"), 365, enabled_only);
@@ -344,7 +344,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                     initCondition(map, w, "co2_equivalent", "<", "if(leak_detector,500,50)");
                 }
             }
-            w = predefinedWarningUUID(1212);
+            w = predefinedUUID(1212);
             if (id.isEmpty() || id == w) {
                 if (type == 0) {
                     initWarning(map, w, tr("Needs inspection"), tr("once in 6 months"), 182, enabled_only);
@@ -353,7 +353,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                     initCondition(map, w, "if(leak_detector,0,co2_equivalent)", "<", "if(leak_detector,1,500)");
                 }
             }
-            w = predefinedWarningUUID(1213);
+            w = predefinedUUID(1213);
             if (id.isEmpty() || id == w) {
                 if (type == 0) {
                     initWarning(map, w, tr("Needs inspection"), tr("once in 3 months"), 91, enabled_only);
@@ -368,7 +368,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
 
         // Pre-CO2 equivalent
 
-        w = predefinedWarningUUID(1200);
+        w = predefinedUUID(1200);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("3 - 30 kg"), 365, enabled_only);
@@ -378,7 +378,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initFilter(map, w, "refrigerant_amount", "<", "30");
             }
         }
-        w = predefinedWarningUUID(1202);
+        w = predefinedUUID(1202);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("6 - 30 kg, hermetically sealed"), 365, enabled_only);
@@ -388,7 +388,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initFilter(map, w, "refrigerant_amount", "<", "30");
             }
         }
-        w = predefinedWarningUUID(1204);
+        w = predefinedUUID(1204);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("30 - 300 kg"), 182, enabled_only);
@@ -398,7 +398,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initFilter(map, w, "refrigerant_amount", "<", "300");
             }
         }
-        w = predefinedWarningUUID(1205);
+        w = predefinedUUID(1205);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("30 - 300 kg, leakage detector installed"), 365, enabled_only);
@@ -408,7 +408,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initFilter(map, w, "refrigerant_amount", "<", "300");
             }
         }
-        w = predefinedWarningUUID(1206);
+        w = predefinedUUID(1206);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("above 300 kg"), 91, enabled_only);
@@ -417,7 +417,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
                 initFilter(map, w, "refrigerant_amount", ">=", "300");
             }
         }
-        w = predefinedWarningUUID(1207);
+        w = predefinedUUID(1207);
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Needs inspection"), tr("above 300 kg, leakage detector installed"), 182, enabled_only);

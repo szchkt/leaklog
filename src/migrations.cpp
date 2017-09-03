@@ -107,12 +107,17 @@ static inline QString refrigerantRecordUUID(const QString &date)
 
 static inline QString tableUUID(int uid)
 {
-    return uid ? Table::predefinedTableUUID(uid) : createUUID();
+    return uid ? Table::predefinedUUID(uid) : createUUID();
 }
 
 static inline QString warningUUID(int id)
 {
-    return id < 1000 ? createUUID() : Warnings::predefinedWarningUUID(id);
+    return id >= 1000 ? Warnings::predefinedUUID(id) : createUUID();
+}
+
+static inline QString assemblyRecordItemCategoryUUID(int id)
+{
+    return id >= 1000 ? AssemblyRecordItemCategory::predefinedUUID(id) : createUUID();
 }
 
 static void migrateV1Variables(QSqlDatabase &database)
@@ -784,29 +789,14 @@ static QMap<int, QString> migrateV1AssemblyRecordItemCategories(QSqlDatabase &da
     query.exec(renameV1TableQuery("assembly_record_item_categories"));
     query.exec(createTableQuery(AssemblyRecordItemCategory::tableName(), AssemblyRecordItemCategory::columns(), database));
 
-    QStringList columns = QStringList() << "uuid" << "predefined" << "name" << "display_options" << "display_position" << "date_updated" << "updated_by";
+    QStringList columns = QStringList() << "uuid" << "name" << "display_options" << "display_position" << "date_updated" << "updated_by";
     QString insert_query = insertQuery(AssemblyRecordItemCategory::tableName(), columns);
     int assembly_record_item_categories_table_id = JournalEntry::tableIDForName("assembly_record_item_categories");
 
     MTSqlQuery item_categories("SELECT * FROM v1_assembly_record_item_categories", database);
     while (item_categories.next()) {
         int id = item_categories.intValue("id");
-        QString uuid;
-
-        switch (id) {
-            case 1000:
-                uuid = INSPECTORS_CATEGORY_UUID;
-                break;
-
-            case 1001:
-                uuid = CIRCUIT_UNITS_CATEGORY_UUID;
-                break;
-
-            default:
-                uuid = createUUID();
-                break;
-        }
-
+        QString uuid = assemblyRecordItemCategoryUUID(id);
         assembly_record_item_category_uuids.insert(id, uuid);
 
         MTSqlQuery item_category(database);
@@ -816,8 +806,6 @@ static QMap<int, QString> migrateV1AssemblyRecordItemCategories(QSqlDatabase &da
         foreach (const QString &column, columns) {
             if (column == "uuid") {
                 item_category.bindValue(pos, uuid);
-            } else if (column == "predefined") {
-                item_category.bindValue(pos, (int)(id >= 1000));
             } else {
                 item_category.bindValue(pos, item_categories.value(column));
             }

@@ -200,7 +200,7 @@ public:
         column_names.insert(97, "ppsw_diff");
         column_names.insert(98, "ppsw_hip");
         column_names.insert(99, "ppsw_lop");
-        column_names.insert(100, "predefined");
+        // column_names.insert(100, "predefined");
         column_names.insert(101, "purchased");
         column_names.insert(102, "purchased_reco");
         column_names.insert(103, "p_0");

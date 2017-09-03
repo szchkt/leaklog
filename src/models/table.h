@@ -50,7 +50,7 @@ public:
     inline void setAveragedVariables(const QString &value) { setValue("avg", value); }
 
     static QString tableName();
-    static QString predefinedTableUUID(int uid);
+    static QString predefinedUUID(int uid);
     static bool isPredefined(const QString &uuid);
     static inline MTRecordQuery<Table> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Table>(tableName(), parents); }
     static const ColumnList &columns();

@@ -60,7 +60,7 @@ QString Table::tableName()
     return "tables";
 }
 
-QString Table::predefinedTableUUID(int uid)
+QString Table::predefinedUUID(int uid)
 {
     return QUuid::createUuidV5(tables_namespace, QString::number(uid)).toString().mid(1, 36);
 }

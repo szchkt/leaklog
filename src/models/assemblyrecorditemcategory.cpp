@@ -23,6 +23,9 @@
 #include "editdialoguewidgets.h"
 
 #include <QApplication>
+#include <QUuid>
+
+static const QUuid assembly_record_item_categories_namespace("7c90559e-1270-4775-8040-abba28bd418b");
 
 AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &uuid):
     DBRecord(tableName(), uuid)
@@ -30,7 +33,7 @@ AssemblyRecordItemCategory::AssemblyRecordItemCategory(const QString &uuid):
 
 bool AssemblyRecordItemCategory::isPredefined()
 {
-    return intValue("predefined");
+    return isPredefined(uuid());
 }
 
 QString AssemblyRecordItemCategory::name()
@@ -58,12 +61,21 @@ QString AssemblyRecordItemCategory::tableName()
     return "assembly_record_item_categories";
 }
 
+QString AssemblyRecordItemCategory::predefinedUUID(int id)
+{
+    return QUuid::createUuidV5(assembly_record_item_categories_namespace, QString::number(id)).toString().mid(1, 36);
+}
+
+bool AssemblyRecordItemCategory::isPredefined(const QString &uuid)
+{
+    return QUuid(uuid).version() == QUuid::Sha1;
+}
+
 class AssemblyRecordItemCategoryColumns
 {
 public:
     AssemblyRecordItemCategoryColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
-        columns << Column("predefined", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("name", "TEXT");
         columns << Column("display_options", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("display_position", "INTEGER NOT NULL DEFAULT 0");

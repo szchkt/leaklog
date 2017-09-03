@@ -1158,16 +1158,18 @@ MTDictionary Global::listOperators(const QString &customer_uuid)
     return operators;
 }
 
-MTDictionary Global::listAssemblyRecordItemCategories(bool hide_default)
+MTDictionary Global::listAssemblyRecordItemCategories(bool exclude_predefined)
 {
     MTDictionary categories;
     categories.allowDuplicateKeys();
     MTSqlQuery query;
     query.setForwardOnly(true);
-    if (query.exec(QString("SELECT uuid, name FROM assembly_record_item_categories%1")
-        .arg(hide_default ? " WHERE predefined = 0" : ""))) {
+    if (query.exec("SELECT uuid, name FROM assembly_record_item_categories")) {
         while (query.next()) {
-            categories.insert(query.value(0).toString(), query.value(1).toString());
+            QString uuid = query.value(0).toString();
+            if (!exclude_predefined || !AssemblyRecordItemCategory::isPredefined(uuid)) {
+                categories.insert(uuid, query.value(1).toString());
+            }
         }
     }
     return categories;

@@ -169,8 +169,8 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
     }
 
     if (v < 0.908) {
-        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, predefined, name, display_options, display_position) VALUES ('%1', 1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_UUID).arg(tr("Inspectors")));
-        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, predefined, name, display_options, display_position) VALUES ('%1', 1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_UUID).arg(tr("Circuit units")));
+        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, name, display_options, display_position) VALUES ('%1', '%2', 31, 0)").arg(INSPECTORS_CATEGORY_UUID).arg(tr("Inspectors")));
+        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, name, display_options, display_position) VALUES ('%1', '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_UUID).arg(tr("Circuit units")));
     }
 
     if (v > 0 && v < 0.9083) {
@@ -3588,8 +3588,7 @@ void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
-    AssemblyRecordItemCategory category(m_tab->selectedAssemblyRecordItemCategoryUUID());
-    if (category.isPredefined()) { return; }
+    if (AssemblyRecordItemCategory::isPredefined(m_tab->selectedAssemblyRecordItemCategoryUUID())) { return; }
     AssemblyRecordItemType record;
     record.setValue("ar_item_category_uuid", m_tab->selectedAssemblyRecordItemCategoryUUID());
     UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
