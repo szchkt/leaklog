@@ -214,7 +214,7 @@ EditDialogue(undo_stack, parent)
     }*/
     EditDialogueLayout md_layout(&md_inputwidgets, md_grid_main);
     md_layout.layout();
-    bool disable_input = md_record->uuid().toInt() >= 1000;
+    bool disable_input = Warnings::isPredefined(md_record->uuid());
     md_layout.addWidget(new QLabel(tr("Circuit filter:"), this), r, 0, 1, 3);
     QToolButton *tbtn_add_filter = new QToolButton(this);
     tbtn_add_filter->setDisabled(disable_input);
@@ -266,7 +266,7 @@ void EditWarningDialogue::save()
 
     md_record->save();
 
-    if (md_record->uuid().toInt() < 1000) {
+    if (!Warnings::isPredefined(md_record->uuid())) {
         for (int i = 0; i < md_filters->count(); ++i) {
             WarningFilter filter;
             filter.setValue("warning_uuid", md_record->uuid());

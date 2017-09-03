@@ -47,7 +47,7 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
         if (!attributes.value("name").toString().isEmpty()) {
             md->setWindowTitle(tr("%1: %2").arg(tr("Warning")).arg(attributes.value("name").toString()));
         }
-        enable_all = uuid().toInt() < 1000;
+        enable_all = !Warnings::isPredefined(uuid());
     }
     md->addInputWidget(new MDCheckBox("enabled", tr("Enabled"), md->widget(), attributes.value("enabled").toInt()));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));

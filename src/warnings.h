@@ -26,6 +26,9 @@
 class Warnings : public MTSqlQueryResultBase<QString>
 {
 public:
+    static QString predefinedWarningUUID(int id);
+    static bool isPredefined(const QString &uuid);
+
     Warnings(bool CO2_equivalent = true, bool = false, QVariantMap = QVariantMap(), int = 0);
 
     int warningConditionValueInsCount(const QString &uuid);

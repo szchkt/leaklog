@@ -20,6 +20,7 @@
 #include "mainwindow.h"
 #include "global.h"
 #include "records.h"
+#include "warnings.h"
 
 #include <QSqlError>
 #include <QUuid>
@@ -102,6 +103,11 @@ static inline QString serviceCompanyUUID(int id)
 static inline QString refrigerantRecordUUID(const QString &date)
 {
     return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("refrigerantrecord:%1").arg(date)) : QString();
+}
+
+static inline QString warningUUID(int id)
+{
+    return id < 1000 ? createUUID() : Warnings::predefinedWarningUUID(id);
 }
 
 static void migrateV1Variables(QSqlDatabase &database)
@@ -618,8 +624,9 @@ static QMap<int, QString> migrateV1Warnings(QSqlDatabase &database)
 
     MTSqlQuery warnings("SELECT * FROM v1_warnings", database);
     while (warnings.next()) {
-        QString uuid = createUUID();
-        warning_uuids.insert(warnings.intValue("id"), uuid);
+        int id = warnings.intValue("id");
+        QString uuid = warningUUID(id);
+        warning_uuids.insert(id, uuid);
 
         MTSqlQuery warning(database);
         warning.prepare(insert_query);
