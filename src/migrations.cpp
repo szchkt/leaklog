@@ -823,7 +823,7 @@ static QMap<int, QString> migrateV1AssemblyRecordItemCategories(QSqlDatabase &da
             if (column == "uuid") {
                 item_category.bindValue(pos, uuid);
             } else if (column == "predefined") {
-                item_category.bindValue(pos, id >= 1000);
+                item_category.bindValue(pos, (int)(id >= 1000));
             } else {
                 item_category.bindValue(pos, item_categories.value(column));
             }
