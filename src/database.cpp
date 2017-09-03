@@ -837,23 +837,30 @@ void MainWindow::syncFinished(bool success)
         saveDatabase(false);
         refreshView();
     } else {
-        QMessageBox message(this);
+        bool has_modal_widget = hasActiveModalWidget();
+
+        if (!has_modal_widget) {
+            QMessageBox message(this);
 #ifdef Q_OS_MAC
-        message.setWindowTitle(tr("Sync"));
+            message.setWindowTitle(tr("Sync"));
 #else
-        message.setWindowTitle(tr("Sync - Leaklog"));
+            message.setWindowTitle(tr("Sync - Leaklog"));
 #endif
-        message.setWindowModality(Qt::WindowModal);
-        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
-        message.setIcon(QMessageBox::Warning);
-        message.setText(tr("Failed to sync with the server."));
-        message.setInformativeText(sync_engine->error());
-        message.addButton(tr("OK"), QMessageBox::AcceptRole);
-        message.exec();
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("Failed to sync with the server."));
+            message.setInformativeText(sync_engine->error());
+            message.addButton(tr("OK"), QMessageBox::AcceptRole);
+            message.exec();
+        }
 
         if (sync_engine->action() == "login") {
             logoutFinished();
-            logIn();
+
+            if (!has_modal_widget) {
+                logIn();
+            }
         }
     }
 }
