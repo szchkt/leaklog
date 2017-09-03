@@ -64,7 +64,8 @@ using namespace Global;
 
 MainWindow::MainWindow():
     m_tab(NULL),
-    m_current_scale(1.0)
+    m_current_scale(1.0),
+    sync_engine(NULL)
 {
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -383,7 +384,9 @@ void MainWindow::openFile(const QString &file)
     QFileInfo file_info(file);
     if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
         addRecent(file_info.absoluteFilePath());
-        openDatabase(file_info.absoluteFilePath(), file_info.absoluteFilePath());
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(file_info.absoluteFilePath());
+        openDatabase(db, file_info.absoluteFilePath());
     }
 }
 

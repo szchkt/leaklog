@@ -91,7 +91,7 @@ bool MainWindow::saveChangesBeforeProceeding(const QString &title, bool close_)
     return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool save_on_upgrade)
+bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool save_on_upgrade)
 {
     if (transaction) { database.transaction(); }
 { // (SCOPE)
@@ -277,11 +277,14 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 case 0: // Save
                     saveDatabase(true, false);
                     break;
+                case 1: // Later
+                    return false;
             }
         }
     }
 } // (SCOPE)
     if (transaction) { database.commit(); }
+    return true;
 }
 
 void MainWindow::initTables(bool transaction)
@@ -352,10 +355,9 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(db);
     initTables();
-    db.transaction();
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-    openDatabase(QString(), path);
+    openDatabase(db, path);
 }
 
 void MainWindow::openRecent(QListWidgetItem *item)
@@ -373,13 +375,11 @@ void MainWindow::openRecent(QListWidgetItem *item)
         db.setDatabaseName(path.at(1));
         db.setUserName(path.at(0).split(":").at(2));
         db.setPassword(password);
-        if (db.open()) {
-            db.transaction();
-            initDatabase(db, false);
-        }
-        openDatabase(QString(), s);
+        openDatabase(db, s);
     } else {
-        openDatabase(s, s);
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(s);
+        openDatabase(db, s);
     }
 }
 
@@ -390,7 +390,9 @@ void MainWindow::open()
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
     addRecent(path);
-    openDatabase(path, path);
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path);
+    openDatabase(db, path);
 }
 
 void MainWindow::openRemote()
@@ -457,11 +459,9 @@ void MainWindow::openRemote()
 
     if (db.open()) {
         addRecent(connection_string);
-        db.transaction();
-        initDatabase(db, false);
     }
 
-    openDatabase(QString(), connection_string);
+    openDatabase(db, connection_string);
 }
 
 static QDate dateForFileName(const QString &file_name)
@@ -513,19 +513,23 @@ void MainWindow::backupDatabase(const QString &path)
     }
 }
 
-void MainWindow::openDatabase(QString path, const QString &connection_string)
+void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string)
 {
     m_connection_string = connection_string;
 
-    if (path.isEmpty()) {
-        QSqlDatabase db = QSqlDatabase::database();
+    QString path;
+
+    if (isDatabaseRemote(db)) {
         path = db.databaseName();
-        if (!db.isOpen()) {
+
+        if (!db.isOpen() && !db.open()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot open database %1:\n%2.").arg(path).arg(db.lastError().text()));
             clearWindowTitle();
             return;
         }
     } else {
+        path = connection_string;
+
         QFile file(path);
         if (!file.exists()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("File %1 does not exist.").arg(path));
@@ -533,22 +537,27 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
             return;
         }
 
-        backupDatabase(path);
+        if (!db.isOpen()) {
+            backupDatabase(path);
 
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName(path);
-        if (!db.open()) {
-            QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
-            clearWindowTitle();
-            return;
+            if (!db.open()) {
+                QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
+                clearWindowTitle();
+                return;
+            }
         }
-        db.transaction();
-        initDatabase(db, false);
+    }
+
+    db.transaction();
+
+    if (!initDatabase(db, false)) {
+        QMetaObject::invokeMethod(this, "closeDatabase", Qt::QueuedConnection, Q_ARG(bool, false));
+        return;
     }
 
     if (DBInfo::valueForKey("min_leaklog_version", DBInfo::valueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
-        closeDatabase(false);
+        QMetaObject::invokeMethod(this, "closeDatabase", Qt::QueuedConnection, Q_ARG(bool, false));
         return;
     }
 

@@ -249,10 +249,10 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(const QString &, bool);
-    void initDatabase(QSqlDatabase &database, bool transaction = true, bool save_on_upgrade = true);
+    bool initDatabase(QSqlDatabase &database, bool transaction = true, bool save_on_upgrade = true);
     void initTables(bool = true);
     void backupDatabase(const QString &path);
-    void openDatabase(QString path, const QString &connection_string);
+    void openDatabase(QSqlDatabase &database, const QString &connection_string);
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid = QString());

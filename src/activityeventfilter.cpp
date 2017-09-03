@@ -37,9 +37,15 @@ ActivityEventFilter::ActivityEventFilter(QObject *parent)
 
 bool ActivityEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress ||
-        event->type() == QEvent::MouseButtonPress)
-        timer->start();
+    switch (event->type()) {
+        case QEvent::MouseButtonPress:
+        case QEvent::KeyPress:
+            timer->start();
+            break;
+
+        default:
+            break;
+    }
 
     return QObject::eventFilter(obj, event);
 }
