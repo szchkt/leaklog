@@ -203,9 +203,12 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
     }
 
     if (v > 0 && v < 1.9) {
+        query.exec("DROP INDEX IF EXISTS index_refrigerant_management_id");
         query.exec("DROP INDEX IF EXISTS index_circuits_id");
         query.exec("DROP INDEX IF EXISTS index_inspections_id");
+        query.exec("DROP INDEX IF EXISTS index_repairs_id");
         query.exec("DROP INDEX IF EXISTS index_tables_id");
+        query.exec("DROP INDEX IF EXISTS index_variables_id");
         query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
         query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
         query.exec("DROP INDEX IF EXISTS index_compressors_id");
@@ -224,17 +227,10 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
 
         if (v == 0) {
             query.exec(unique_index + "index_db_info_id ON db_info (id ASC)");
-            query.exec(unique_index + "index_repairs_id ON repairs (date ASC)");
-            query.exec(unique_index + "index_variables_id ON variables (id ASC)");
-            query.exec(unique_index + "index_refrigerant_management_id ON refrigerant_management (date ASC)");
         }
 
         if (v < 0.9082) {
             query.exec(index + "index_assembly_record_items_parent ON assembly_record_items (arno ASC)");
-        }
-
-        if (v > 0 && v < 1.9) {
-            query.exec(unique_index + "index_files_uuid ON files (uuid ASC)");
         }
 
         if (v < 1.9) {
@@ -251,12 +247,16 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec(index + "index_inspections_circuit_uuid ON inspections (circuit_uuid ASC)");
             query.exec(index + "index_inspections_compressors_inspection_uuid ON inspections_compressors (inspection_uuid ASC)");
             query.exec(index + "index_inspections_compressors_compressor_uuid ON inspections_compressors (compressor_uuid ASC)");
+            query.exec(index + "index_inspections_date ON inspections (date ASC)");
             query.exec(index + "index_inspection_images_inspection_uuid ON inspection_images (inspection_uuid ASC)");
             query.exec(index + "index_inspection_images_file_uuid ON inspection_images (file_uuid ASC)");
             query.exec(index + "index_journal_source_uuid_entry_id ON journal (source_uuid ASC, entry_id ASC)");
             query.exec(index + "index_persons_customer_uuid ON persons (customer_uuid ASC)");
+            query.exec(index + "index_refrigerant_management_date ON refrigerant_management (date ASC)");
             query.exec(index + "index_repairs_customer_uuid ON repairs (customer_uuid ASC)");
+            query.exec(index + "index_repairs_date ON repairs (date ASC)");
             query.exec(index + "index_repairs_inspector_uuid ON repairs (inspector_uuid ASC)");
+            query.exec(index + "index_variables_id ON variables (id ASC)");
             query.exec(index + "index_warnings_conditions_warning_uuid ON warnings_conditions (warning_uuid ASC)");
             query.exec(index + "index_warnings_filters_warning_uuid ON warnings_filters (warning_uuid ASC)");
         }

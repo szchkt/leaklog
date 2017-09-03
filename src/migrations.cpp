@@ -124,8 +124,6 @@ static void migrateV1Variables(QSqlDatabase &database)
 {
     QUuid database_uuid = QUuid(DBInfo::databaseUUID(database));
 
-    MTSqlQuery query(database);
-
     QString update_variable = "UPDATE variables SET uuid = :uuid, parent_uuid = :parent_uuid WHERE id = :id";
     int variables_table_id = JournalEntry::tableIDForName("variables");
 
@@ -147,6 +145,13 @@ static void migrateV1Variables(QSqlDatabase &database)
         variable.exec();
 
         journalInsertion(variables_table_id, uuid, database);
+    }
+
+    MTSqlQuery query(database);
+
+    if (isDatabaseRemote(database)) {
+        query.exec("ALTER TABLE variables DROP COLUMN parent_id");
+        query.exec("ALTER TABLE variables ADD PRIMARY KEY (uuid)");
     }
 }
 
@@ -396,6 +401,19 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
 
         journalInsertion(inspections_table_id, uuid, database);
     }
+
+    MTSqlQuery query(database);
+
+    if (isDatabaseRemote(database)) {
+        query.exec("ALTER TABLE inspections DROP COLUMN customer");
+        query.exec("ALTER TABLE inspections DROP COLUMN circuit");
+        query.exec("ALTER TABLE inspections DROP COLUMN inspector");
+        query.exec("ALTER TABLE inspections DROP COLUMN operator");
+        query.exec("ALTER TABLE inspections DROP COLUMN ar_type");
+        query.exec("ALTER TABLE inspections ADD PRIMARY KEY (uuid)");
+    } else {
+        query.exec("CREATE INDEX IF NOT EXISTS index_inspections_uuid ON inspections (uuid ASC)");
+    }
 }
 
 static void migrateV1InspectionCompressors(QSqlDatabase &database)
@@ -422,6 +440,19 @@ static void migrateV1InspectionCompressors(QSqlDatabase &database)
 
         journalInsertion(inspections_compressors_table_id, uuid, database);
     }
+
+    MTSqlQuery query(database);
+
+    if (isDatabaseRemote(database)) {
+        query.exec("ALTER TABLE inspections_compressors DROP COLUMN id");
+        query.exec("ALTER TABLE inspections_compressors DROP COLUMN customer_id");
+        query.exec("ALTER TABLE inspections_compressors DROP COLUMN circuit_id");
+        query.exec("ALTER TABLE inspections_compressors DROP COLUMN date");
+        query.exec("ALTER TABLE inspections_compressors DROP COLUMN compressor_id");
+        query.exec("ALTER TABLE inspections_compressors ADD PRIMARY KEY (uuid)");
+    } else {
+        query.exec("CREATE INDEX IF NOT EXISTS index_inspections_compressors_uuid ON inspections_compressors (uuid ASC)");
+    }
 }
 
 static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
@@ -444,6 +475,15 @@ static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
         file.exec();
 
         journalInsertion(files_table_id, uuid, database);
+    }
+
+    MTSqlQuery query(database);
+
+    if (isDatabaseRemote(database)) {
+        query.exec("ALTER TABLE files DROP COLUMN id");
+        query.exec("ALTER TABLE files ADD PRIMARY KEY (uuid)");
+    } else {
+        query.exec("CREATE INDEX IF NOT EXISTS index_files_uuid ON files (uuid ASC)");
     }
 
     return file_uuids;
