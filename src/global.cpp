@@ -686,7 +686,7 @@ public:
         dict.insert("refr_add_per", "float");
         dict.insert("refr_reco", "float");
         dict.insert("inspector_uuid", "uuid");
-        dict.insert("person_uuid", "string");
+        dict.insert("person_uuid", "uuid");
     }
 
     QHash<QString, QString> dict;
