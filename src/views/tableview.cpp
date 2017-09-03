@@ -175,12 +175,11 @@ QString TableView::renderHTML(bool)
             }
             for (int i = 0; i < compressor_uuids.count(); ++i) {
                 MTQuery inspections_compressors_query = InspectionCompressor::query({{"circuit_uuid", circuit_uuid}, {"compressor_uuid", compressor_uuids.at(i)}});
-                inspections_compressors_query.setTable("inspections_compressors JOIN inspections"
-                                                     " ON inspections.uuid = inspections_compressors.inspection_uuid");
+                inspections_compressors_query.setTable("inspections_compressors JOIN inspections ON inspections.uuid = inspections_compressors.inspection_uuid");
                 if (table.value("highlight_nominal").toInt())
-                    inspections_compressors_query.setPredicate("(inspections_compressors.date > '" + QString::number(year) + "' OR nominal > 0)");
+                    inspections_compressors_query.setPredicate("(inspections.date > '" + QString::number(year) + "' OR nominal > 0)");
                 else
-                    inspections_compressors_query.setPredicate("inspections_compressors.date > '" + QString::number(year) + "'");
+                    inspections_compressors_query.setPredicate("inspections.date > '" + QString::number(year) + "'");
 
                 ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
 
