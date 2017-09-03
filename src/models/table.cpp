@@ -24,6 +24,9 @@
 #include "variables.h"
 
 #include <QApplication>
+#include <QUuid>
+
+static const QUuid tables_namespace("76fe7a5f-7c6b-46a6-9ec5-b4ae83e4d957");
 
 Table::Table(const QString &uuid):
     DBRecord(tableName(), uuid)
@@ -55,6 +58,16 @@ void Table::initEditDialogue(EditDialogueWidgets *md)
 QString Table::tableName()
 {
     return "tables";
+}
+
+QString Table::predefinedTableUUID(int uid)
+{
+    return QUuid::createUuidV5(tables_namespace, QString::number(uid)).toString().mid(1, 36);
+}
+
+bool Table::isPredefined(const QString &uuid)
+{
+    return QUuid(uuid).version() == QUuid::Sha1;
 }
 
 class TableColumns

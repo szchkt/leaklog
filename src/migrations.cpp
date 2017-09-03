@@ -105,6 +105,11 @@ static inline QString refrigerantRecordUUID(const QString &date)
     return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("refrigerantrecord:%1").arg(date)) : QString();
 }
 
+static inline QString tableUUID(int uid)
+{
+    return uid ? Table::predefinedTableUUID(uid) : createUUID();
+}
+
 static inline QString warningUUID(int id)
 {
     return id < 1000 ? createUUID() : Warnings::predefinedWarningUUID(id);
@@ -568,25 +573,7 @@ static void migrateV1Tables(QSqlDatabase &database)
     MTSqlQuery tables("SELECT * FROM v1_tables", database);
     while (tables.next()) {
         int uid = tables.intValue("uid");
-        QString uuid;
-
-        switch (uid) {
-            case 90:
-                uuid = LEAKAGES_TABLE_UUID;
-                break;
-
-            case 70:
-                uuid = PRESSURES_AND_TEMPERATURES_TABLE_UUID;
-                break;
-
-            case 40:
-                uuid = COMPRESSORS_TABLE_UUID;
-                break;
-
-            default:
-                uuid = createUUID();
-                break;
-        }
+        QString uuid = tableUUID(uid);
 
         MTSqlQuery table(database);
         table.prepare(insert_query);
