@@ -511,7 +511,7 @@ QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &varian
     if (!variant.isNull()) {
         switch (column_id) {
             case 24: // data
-                QString data = QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+                QString data = QString::fromLatin1(variant.toByteArray().toBase64());
                 if (length)
                     *length = data.length();
                 return data;
@@ -537,7 +537,7 @@ QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &varian
                 return variant.toString();
 
             case QVariant::ByteArray: {
-                QString data = QString::fromLatin1(isDatabaseRemote() ? variant.toByteArray() : variant.toByteArray().toBase64());
+                QString data = QString::fromLatin1(variant.toByteArray().toBase64());
                 if (length)
                     *length = data.length();
                 return data;
@@ -561,7 +561,7 @@ QVariant SyncEngine::variantForJsonValue(int column_id, const QJsonValue &value)
         default:
             // data
             if (column_id == 24) {
-                return isDatabaseRemote() ? value.toString().toLatin1() : QByteArray::fromBase64(value.toString().toLatin1());
+                return QByteArray::fromBase64(value.toString().toLatin1());
             }
 
             return value.toVariant();

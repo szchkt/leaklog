@@ -120,10 +120,7 @@ bool DBFile::saveData(const QString &file_name)
 void DBFile::save()
 {
     QVariantMap update_map;
-    if (Global::isDatabaseRemote())
-        update_map.insert("data", file_data.toBase64());
-    else
-        update_map.insert("data", file_data);
+    update_map.insert("data", file_data);
     update_map.insert("name", file_name);
 
     update(update_map);
@@ -134,11 +131,7 @@ QByteArray DBFile::data()
     if (!file_data.isNull() || uuid().isEmpty())
         return file_data;
 
-    if (Global::isDatabaseRemote())
-        file_data = QByteArray::fromBase64(list("data").value("data").toByteArray());
-    else
-        file_data = list("data").value("data").toByteArray();
-
+    file_data = list("data").value("data").toByteArray();
     return file_data;
 }
 

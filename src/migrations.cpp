@@ -482,6 +482,7 @@ static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
     if (isDatabaseRemote(database)) {
         query.exec("ALTER TABLE files DROP COLUMN id");
         query.exec("ALTER TABLE files ADD PRIMARY KEY (uuid)");
+        query.exec("UPDATE files SET data = decode(convert_from(data, 'UTF8'), 'base64')");
     } else {
         query.exec("CREATE INDEX IF NOT EXISTS index_files_uuid ON files (uuid ASC)");
     }
