@@ -63,7 +63,7 @@ public:
         table_names.insert(43, "circuit_units");
         table_names.insert(50, "inspections");
         table_names.insert(51, "inspections_compressors");
-        table_names.insert(52, "inspection_images");
+        table_names.insert(52, "inspections_files");
         table_names.insert(60, "files");
         table_names.insert(70, "tables");
         table_names.insert(80, "assembly_record_types");

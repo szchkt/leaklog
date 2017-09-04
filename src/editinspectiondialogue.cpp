@@ -132,52 +132,52 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
         return;
     }
 
-    auto images = Inspection(inspection_uuid).images().all();
+    auto files = Inspection(inspection_uuid).files().all();
 
     QMap<QString, EditDialogueTableCell *> image_data;
     EditDialogueTableCell *cell;
 
-    foreach (auto image, images) {
-        cell = new EditDialogueTableCell(image.uuid(), Global::File);
+    foreach (auto file, files) {
+        cell = new EditDialogueTableCell(file.uuid(), Global::File);
         cell->setId("uuid");
         image_data.insert("uuid", cell);
-        cell = new EditDialogueTableCell(image.description(), Global::Text);
+        cell = new EditDialogueTableCell(file.description(), Global::Text);
         cell->setId("description");
         image_data.insert("description", cell);
-        cell = new EditDialogueTableCell(image.fileUUID(), Global::File);
+        cell = new EditDialogueTableCell(file.fileUUID(), Global::File);
         cell->setId("file_uuid");
         image_data.insert("file_uuid", cell);
         table->addRow(image_data);
     }
 
-    if (!images.count()) table->addNewRow();
+    if (!files.count()) table->addNewRow();
 }
 
 void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
 {
     QList<MTDictionary> dicts = table->allValues();
-    auto images = Inspection(inspection_uuid).images().map("uuid");
+    auto files = Inspection(inspection_uuid).files().map("uuid");
 
     for (int i = 0; i < dicts.count(); ++i) {
         QString file_uuid = dicts.at(i).value("file_uuid");
         if (file_uuid.isEmpty())
             continue;
 
-        InspectionImage image;
+        InspectionFile file;
         QString uuid = dicts.at(i).value("uuid");
 
-        if (!uuid.isEmpty() && images.contains(uuid)) {
-            image = images.value(uuid);
-            images.remove(uuid);
+        if (!uuid.isEmpty() && files.contains(uuid)) {
+            file = files.value(uuid);
+            files.remove(uuid);
         }
 
-        image.setInspectionUUID(inspection_uuid);
-        image.setFileUUID(file_uuid);
-        image.setDescription(dicts.at(i).value("description"));
-        image.save();
+        file.setInspectionUUID(inspection_uuid);
+        file.setFileUUID(file_uuid);
+        file.setDescription(dicts.at(i).value("description"));
+        file.save();
     }
 
-    QMapIterator<QVariant, InspectionImage> i(images);
+    QMapIterator<QVariant, InspectionFile> i(files);
     while (i.hasNext()) { i.next();
         i.value().remove();
     }

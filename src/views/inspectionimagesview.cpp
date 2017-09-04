@@ -68,10 +68,10 @@ QString InspectionImagesView::renderHTML(bool for_export)
     else *el << tr("Inspection:");
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_uuid);
 
-    ListOfVariantMaps images = inspection.images().listAll("*", "file_uuid");
+    ListOfVariantMaps files = inspection.files().listAll("*", "file_uuid");
 
-    for (int i = 0; i < images.count(); ++i) {
-        QString uuid = images.at(i).value("file_uuid").toString();
+    for (int i = 0; i < files.count(); ++i) {
+        QString uuid = files.at(i).value("file_uuid").toString();
         if (for_export) {
             QByteArray byte_array = DBFile(uuid).data().toBase64();
             if (!byte_array.isNull()) {
@@ -80,7 +80,7 @@ QString InspectionImagesView::renderHTML(bool for_export)
         } else {
             *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"dbfile://" << uuid << "\">";
         }
-        *(table->addRow()->addCell()) << images.at(i).value("description").toString();
+        *(table->addRow()->addCell()) << files.at(i).value("description").toString();
     }
 
     return viewTemplate("inspection_images").arg(div.html());

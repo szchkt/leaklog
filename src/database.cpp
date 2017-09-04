@@ -248,8 +248,8 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec(index + "index_inspections_compressors_inspection_uuid ON inspections_compressors (inspection_uuid ASC)");
             query.exec(index + "index_inspections_compressors_compressor_uuid ON inspections_compressors (compressor_uuid ASC)");
             query.exec(index + "index_inspections_date ON inspections (date ASC)");
-            query.exec(index + "index_inspection_images_inspection_uuid ON inspection_images (inspection_uuid ASC)");
-            query.exec(index + "index_inspection_images_file_uuid ON inspection_images (file_uuid ASC)");
+            query.exec(index + "index_inspections_files_inspection_uuid ON inspections_files (inspection_uuid ASC)");
+            query.exec(index + "index_inspections_files_file_uuid ON inspections_files (file_uuid ASC)");
             query.exec(index + "index_journal_source_uuid_entry_id ON journal (source_uuid ASC, entry_id ASC)");
             query.exec(index + "index_persons_customer_uuid ON persons (customer_uuid ASC)");
             query.exec(index + "index_refrigerant_management_date ON refrigerant_management (date ASC)");

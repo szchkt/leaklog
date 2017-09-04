@@ -17,34 +17,34 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  ********************************************************************/
 
-#include "inspectionimage.h"
+#include "inspectionfile.h"
 
 #include "inspection.h"
 #include "file.h"
 
-InspectionImage::InspectionImage(const QString &uuid, const QVariantMap &savedValues):
+InspectionFile::InspectionFile(const QString &uuid, const QVariantMap &savedValues):
     MTRecord(tableName(), uuid, savedValues)
 {}
 
-Inspection InspectionImage::inspection()
+Inspection InspectionFile::inspection()
 {
     return inspectionUUID();
 }
 
-File InspectionImage::file()
+File InspectionFile::file()
 {
     return fileUUID();
 }
 
-QString InspectionImage::tableName()
+QString InspectionFile::tableName()
 {
-    return "inspection_images";
+    return "inspections_files";
 }
 
-class InspectionImageColumns
+class InspectionFileColumns
 {
 public:
-    InspectionImageColumns() {
+    InspectionFileColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("inspection_uuid", "UUID");
         columns << Column("file_uuid", "UUID");
@@ -56,8 +56,8 @@ public:
     ColumnList columns;
 };
 
-const ColumnList &InspectionImage::columns()
+const ColumnList &InspectionFile::columns()
 {
-    static InspectionImageColumns columns;
+    static InspectionFileColumns columns;
     return columns.columns;
 }

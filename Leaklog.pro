@@ -50,7 +50,7 @@ HEADERS       += src/aboutwidget.h \
                  src/models/compressor.h \
                  src/models/inspection.h \
                  src/models/inspectioncompressor.h \
-                 src/models/inspectionimage.h \
+                 src/models/inspectionfile.h \
                  src/models/repair.h \
                  src/models/inspector.h \
                  src/models/variable.h \
@@ -168,7 +168,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/models/compressor.cpp \
                  src/models/inspection.cpp \
                  src/models/inspectioncompressor.cpp \
-                 src/models/inspectionimage.cpp \
+                 src/models/inspectionfile.cpp \
                  src/models/repair.cpp \
                  src/models/inspector.cpp \
                  src/models/variable.cpp \

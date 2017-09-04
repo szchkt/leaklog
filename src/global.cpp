@@ -514,7 +514,7 @@ public:
         dict.insert(Compressor::tableName(), Compressor::columns().toString());
         dict.insert(Inspection::tableName(), Inspection::columns().toString());
         dict.insert(InspectionCompressor::tableName(), InspectionCompressor::columns().toString());
-        dict.insert(InspectionImage::tableName(), InspectionImage::columns().toString());
+        dict.insert(InspectionFile::tableName(), InspectionFile::columns().toString());
         dict.insert(Repair::tableName(), Repair::columns().toString());
         dict.insert(Inspector::tableName(), Inspector::columns().toString());
         dict.insert(VariableRecord::tableName(), VariableRecord::columns().toString());

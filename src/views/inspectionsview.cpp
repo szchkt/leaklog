@@ -83,7 +83,7 @@ QString InspectionsView::renderHTML(bool)
     ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, nominal, repair, outside_interval, risks, rmds, arno, inspector_uuid, "
                                                               "person_uuid, refr_add_am, refr_reco, date_updated, updated_by, "
                                                               "inspection_type, inspection_type_data, "
-                                                              "(SELECT COUNT(uuid) FROM inspection_images WHERE inspection_uuid = inspections.uuid) AS image_count",
+                                                              "(SELECT COUNT(uuid) FROM inspections_files WHERE inspection_uuid = inspections.uuid) AS file_count",
                                                               settings->appendDefaultOrderToColumn(order_by));
     if (year) {
         for (int i = 0; i < inspections.count();) {
@@ -149,7 +149,7 @@ QString InspectionsView::renderHTML(bool)
         if (is_outside_interval) { out << "*"; }
         if (is_nominal) { out << "</b>"; }
         else if (is_repair) { out << "</i>"; }
-        if (inspections.at(i).value("image_count").toInt()) {
+        if (inspections.at(i).value("file_count").toInt()) {
             out << "&nbsp;<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid
                 << "/" << (is_repair ? "repair:" : "inspection:") << uuid << "/images"
                 << "\"><img src=\"data:image/png;base64," << attachmentImage()

@@ -25,10 +25,10 @@
 class Inspection;
 class File;
 
-class InspectionImage : public MTRecord
+class InspectionFile : public MTRecord
 {
 public:
-    InspectionImage(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+    InspectionFile(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     inline QString inspectionUUID() { return stringValue("inspection_uuid"); }
     inline void setInspectionUUID(const QString &value) { setValue("inspection_uuid", value); }
@@ -41,7 +41,7 @@ public:
     File file();
 
     static QString tableName();
-    static inline MTRecordQuery<InspectionImage> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<InspectionImage>(tableName(), parents); }
+    static inline MTRecordQuery<InspectionFile> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<InspectionFile>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

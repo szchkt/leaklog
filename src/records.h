@@ -27,7 +27,7 @@
 #include "compressor.h"
 #include "inspection.h"
 #include "inspectioncompressor.h"
-#include "inspectionimage.h"
+#include "inspectionfile.h"
 #include "repair.h"
 #include "inspector.h"
 #include "variable.h"

@@ -24,7 +24,7 @@
 #include "global.h"
 #include "customer.h"
 #include "circuit.h"
-#include "inspectionimage.h"
+#include "inspectionfile.h"
 #include "variables.h"
 
 #include <QApplication>
@@ -178,15 +178,15 @@ MTRecordQuery<InspectionCompressor> Inspection::compressors() const
     return InspectionCompressor::query({"inspection_uuid", uuid()});
 }
 
-MTRecordQuery<InspectionImage> Inspection::images() const
+MTRecordQuery<InspectionFile> Inspection::files() const
 {
-    return InspectionImage::query({"inspection_uuid", uuid()});
+    return InspectionFile::query({"inspection_uuid", uuid()});
 }
 
 bool Inspection::remove() const
 {
     compressors().removeAll();
-    images().removeAll();
+    files().removeAll();
     return MTRecord::remove();
 }
 

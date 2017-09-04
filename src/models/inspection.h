@@ -26,7 +26,7 @@ class MTCheckBox;
 class Customer;
 class Circuit;
 class InspectionCompressor;
-class InspectionImage;
+class InspectionFile;
 
 class Inspection : public DBRecord
 {
@@ -72,7 +72,7 @@ public:
     inline void setTypeData(const QString &value) { setValue("inspection_type_data", value); }
 
     MTRecordQuery<InspectionCompressor> compressors() const;
-    MTRecordQuery<InspectionImage> images() const;
+    MTRecordQuery<InspectionFile> files() const;
 
     bool remove() const;
 
