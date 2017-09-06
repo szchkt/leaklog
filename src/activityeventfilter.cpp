@@ -23,7 +23,7 @@
 #include <QEvent>
 #include <QTimer>
 
-static const int task_timer_interval = 3000;
+static const int task_timer_interval = 10000;
 
 ActivityEventFilter::ActivityEventFilter(QObject *parent)
     : QObject(parent)
@@ -69,5 +69,5 @@ void ActivityEventFilter::taskTimerTimeout()
 
     emit performPeriodicTasks();
 
-    task_timer->start(qMax(task_timer_interval, time_since_activity / 3));
+    task_timer->start(qMax(task_timer_interval, time_since_activity));
 }
