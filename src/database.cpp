@@ -97,7 +97,7 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
 { // (SCOPE)
     MTSqlQuery query(database);
     QStringList tables = database.tables();
-    Variables *variables = Variables::defaultVariables();
+    Variables *variables = NULL;
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
             query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + sqlStringForDatabaseType(databaseTables().value(i), database) + ")");
@@ -112,6 +112,8 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (!variables)
+                        variables = Variables::defaultVariables();
                     if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         addColumn(variableNames().key(v) + " " + type, "inspections_compressors", database);
                 }
@@ -130,6 +132,8 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
+                    if (!variables)
+                        variables = Variables::defaultVariables();
                     if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
@@ -355,6 +359,8 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(db);
     initTables();
+    DBInfo::setValueForKey("db_version", QString::number(F_DB_VERSION));
+    DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
     openDatabase(db, path);

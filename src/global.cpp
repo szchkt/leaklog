@@ -507,6 +507,7 @@ class DatabaseTables
 {
 public:
     DatabaseTables() {
+        dict.insert(DBInfo::tableName(), DBInfo::columns().toString());
         dict.insert(ServiceCompany::tableName(), ServiceCompany::columns().toString());
         dict.insert(Customer::tableName(), Customer::columns().toString());
         dict.insert(Person::tableName(), Person::columns().toString());
@@ -531,7 +532,6 @@ public:
         dict.insert(File::tableName(), File::columns().toString());
         dict.insert(CircuitUnitType::tableName(), CircuitUnitType::columns().toString());
         dict.insert(CircuitUnit::tableName(), CircuitUnit::columns().toString());
-        dict.insert(DBInfo::tableName(), DBInfo::columns().toString());
         dict.insert(Style::tableName(), Style::columns().toString());
         dict.insert(JournalEntry::tableName(), JournalEntry::columns().toString());
     }
