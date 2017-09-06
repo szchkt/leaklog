@@ -72,6 +72,10 @@
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Český zväz chladiacej a klimatizačnej techniky</translation>
     </message>
+    <message>
+        <source>about:blank</source>
+        <translation>about:blank</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -145,14 +149,6 @@
     <message>
         <source>Assembly record No.</source>
         <translation>Číslo ML</translation>
-    </message>
-    <message>
-        <source>Assembly record type ID</source>
-        <translation>IČ typu montážneho listu</translation>
-    </message>
-    <message>
-        <source>Inspector certificate number</source>
-        <translation>Číslo osvedčenia kontrolóra</translation>
     </message>
 </context>
 <context>
@@ -231,10 +227,6 @@
 </context>
 <context>
     <name>AssemblyRecordItemCategory</name>
-    <message>
-        <source>ID</source>
-        <translation>IČ</translation>
-    </message>
     <message>
         <source>Name</source>
         <translation>Názov</translation>
@@ -325,10 +317,6 @@
     <message>
         <source>Data type:</source>
         <translation>Údajový typ:</translation>
-    </message>
-    <message>
-        <source>ID</source>
-        <translation>IČ</translation>
     </message>
     <message>
         <source>Name</source>
@@ -445,10 +433,6 @@
         <translation>Vzhľad:</translation>
     </message>
     <message>
-        <source>ID</source>
-        <translation>IČ</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Názov</translation>
     </message>
@@ -500,14 +484,6 @@
     <message>
         <source>Assembly record name</source>
         <translation>Názov montážneho listu</translation>
-    </message>
-    <message>
-        <source>Customer</source>
-        <translation>Zákazník</translation>
-    </message>
-    <message>
-        <source>Circuit</source>
-        <translation>Okruh</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -886,10 +862,6 @@
     <message>
         <source>Notes</source>
         <translation>Poznámky</translation>
-    </message>
-    <message>
-        <source>Content</source>
-        <translation>Obsah</translation>
     </message>
     <message>
         <source>Circuit Unit Type</source>
@@ -1463,10 +1435,6 @@
         <translation>Zrušiť</translation>
     </message>
     <message>
-        <source>%1: %2</source>
-        <translation>%1: %2</translation>
-    </message>
-    <message>
         <source>Save changes</source>
         <translation>Uložiť zmeny</translation>
     </message>
@@ -1608,14 +1576,6 @@
     <message>
         <source>Conditions:</source>
         <translation>Podmienky:</translation>
-    </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Uložiť zmeny</translation>
-    </message>
-    <message>
-        <source>You cannot create more than 1000 warnings.</source>
-        <translation>Nie je možné vytvoriť viac ako 1000 upozornení.</translation>
     </message>
 </context>
 <context>
@@ -1936,10 +1896,6 @@
         <translation>Číslo ML</translation>
     </message>
     <message>
-        <source>Assembly record type</source>
-        <translation>Typ montážneho listu</translation>
-    </message>
-    <message>
         <source>Risks</source>
         <translation>Riziká</translation>
     </message>
@@ -1950,10 +1906,6 @@
     <message>
         <source>Inspection carried out by another service company.</source>
         <translation>Kontrola vykonaná inou servisnou organizáciou.</translation>
-    </message>
-    <message>
-        <source>Contact person</source>
-        <translation>Prevzal</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -2092,16 +2044,8 @@
         <translation>Celé meno</translation>
     </message>
     <message>
-        <source>Foreign certificate number:</source>
-        <translation>Číslo zahraničného osvedčenia:</translation>
-    </message>
-    <message>
         <source>Country of issue:</source>
         <translation>Krajina vydania:</translation>
-    </message>
-    <message>
-        <source>Foreign certificate number</source>
-        <translation>Číslo zahraničného osvedčenia</translation>
     </message>
     <message>
         <source>Country of issue</source>
@@ -3218,10 +3162,6 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
         <translation>Pridať</translation>
     </message>
     <message>
-        <source>Export customer data - Leaklog</source>
-        <translation>Exportovať údaje o zákazníkovi - Leaklog</translation>
-    </message>
-    <message>
         <source>Import data - Leaklog</source>
         <translation>Importovať údaje - Leaklog</translation>
     </message>
@@ -3292,18 +3232,6 @@ Na odstránenie upozornenia „%1“ napíšte ODSTRÁNIŤ a potvrďte:</transla
     <message>
         <source>Import</source>
         <translation>Importovať</translation>
-    </message>
-    <message>
-        <source>Export circuit data - Leaklog</source>
-        <translation>Exportovať údaje o okruhu - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export inspection data - Leaklog</source>
-        <translation>Exportovať údaje o kontrole - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export data - Leaklog</source>
-        <translation>Exportovať údaje - Leaklog</translation>
     </message>
     <message>
         <source>Use existing and import</source>
@@ -4292,18 +4220,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zatvoriť aktuálnu kartu</translation>
     </message>
     <message>
-        <source>Find All</source>
-        <translation>Nájsť všetky</translation>
-    </message>
-    <message>
-        <source>Find all occurrences of the searched word</source>
-        <translation>Nájsť všetky výskyty hľadaného slova</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+F</source>
-        <translation>Ctrl+Shift+F</translation>
-    </message>
-    <message>
         <source>Remove assembly record type - Leaklog</source>
         <translation>Odstrániť typ montážneho listu - Leaklog</translation>
     </message>
@@ -4356,20 +4272,12 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Zobraziť online dokumentáciu</translation>
     </message>
     <message>
-        <source>http://github.com/szchkt/leaklog/wiki</source>
-        <translation>http://github.com/szchkt/leaklog/wiki/Dokumentácia</translation>
-    </message>
-    <message>
         <source>What&apos;s New</source>
         <translation>Čo je nové</translation>
     </message>
     <message>
         <source>View the changelog online</source>
         <translation>Zobraziť zoznam zmien online</translation>
-    </message>
-    <message>
-        <source>http://github.com/szchkt/leaklog/releases</source>
-        <translation>http://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
     </message>
     <message>
         <source>Show Service Company Information</source>
@@ -4549,6 +4457,74 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Refrigerants</source>
         <translation>Chladivá</translation>
+    </message>
+    <message>
+        <source>Sync...</source>
+        <translation>Synchronizovať...</translation>
+    </message>
+    <message>
+        <source>Log In</source>
+        <translation>Prihlásiť sa</translation>
+    </message>
+    <message>
+        <source>Sync database - Leaklog</source>
+        <translation>Synchronizovať databázu - Leaklog</translation>
+    </message>
+    <message>
+        <source>Do you want to sync this database with leaklog.org?</source>
+        <translation>Chcete synchronizovať túto databázu so serverom leaklog.org?</translation>
+    </message>
+    <message>
+        <source>&amp;Sync</source>
+        <translation>&amp;Synchronizovať</translation>
+    </message>
+    <message>
+        <source>Do &amp;Not Sync</source>
+        <translation>&amp;Nesynchronizovať</translation>
+    </message>
+    <message>
+        <source>Sync</source>
+        <translation>Synchronizovať</translation>
+    </message>
+    <message>
+        <source>Sync - Leaklog</source>
+        <translation>Synchronizácia - Leaklog</translation>
+    </message>
+    <message>
+        <source>Failed to sync with the server.</source>
+        <translation>Nepodarilo sa synchronizovať so serverom.</translation>
+    </message>
+    <message>
+        <source>Log In - Leaklog</source>
+        <translation>Prihlásiť sa - Leaklog</translation>
+    </message>
+    <message>
+        <source>Enter your szchkt.org username and password:</source>
+        <translation>Zadajte svoje prihlasovacie údaje zo servera szchkt.org:</translation>
+    </message>
+    <message>
+        <source>Register</source>
+        <translation>Registrovať sa</translation>
+    </message>
+    <message>
+        <source>Log Out</source>
+        <translation>Odhlásiť sa</translation>
+    </message>
+    <message>
+        <source>Failed to log in.</source>
+        <translation>Nepodarilo sa prihlásiť.</translation>
+    </message>
+    <message>
+        <source>Try Again</source>
+        <translation>Skúsiť znovu</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/wiki</source>
+        <translation>https://github.com/szchkt/leaklog/wiki/Dokumentácia</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/releases</source>
+        <translation>https://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
     </message>
 </context>
 <context>
@@ -4864,14 +4840,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
 </context>
 <context>
     <name>Person</name>
-    <message>
-        <source>ID</source>
-        <translation>IČ</translation>
-    </message>
-    <message>
-        <source>Company ID</source>
-        <translation>IČO firmy</translation>
-    </message>
     <message>
         <source>Name</source>
         <translation>Meno</translation>
@@ -5334,6 +5302,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Use div elements instead of tables</source>
         <translation>Použiť div elementy namiesto tabuliek</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Názov</translation>
+    </message>
+    <message>
+        <source>Content</source>
+        <translation>Obsah</translation>
     </message>
 </context>
 <context>
@@ -6141,6 +6117,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Compressor</source>
         <translation>Kompresor</translation>
     </message>
+    <message>
+        <source>Save changes</source>
+        <translation>Uložiť zmeny</translation>
+    </message>
+    <message>
+        <source>Invalid ID.</source>
+        <translation>Neplatné ID.</translation>
+    </message>
+    <message>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>Toto ID nie je voľné. Prosím zvoľte iné ID.</translation>
+    </message>
 </context>
 <context>
     <name>VariableTypes</name>
@@ -6167,6 +6155,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Long Text</source>
         <translation>Dlhý text</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation>UUID</translation>
     </message>
 </context>
 <context>
