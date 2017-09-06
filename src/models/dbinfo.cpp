@@ -54,6 +54,16 @@ QString DBInfo::databaseUUID(const QSqlDatabase &database)
     return database_uuid;
 }
 
+QString DBInfo::autosaveMode()
+{
+    return valueForKey("autosave", "immediate");
+}
+
+void DBInfo::setAutosaveMode(const QString &autosave_mode)
+{
+    setValueForKey("autosave", autosave_mode);
+}
+
 bool DBInfo::isCurrentUserAdmin()
 {
     QString current_user = currentUser();

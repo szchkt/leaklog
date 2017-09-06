@@ -32,6 +32,8 @@ public:
     static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
 
     static QString databaseUUID(const QSqlDatabase & = QSqlDatabase::database());
+    static QString autosaveMode();
+    static void setAutosaveMode(const QString &autosave_mode);
     static bool isCurrentUserAdmin();
     static int isDatabaseLocked();
     static bool isRecordLocked(const QString &);

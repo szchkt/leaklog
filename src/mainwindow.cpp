@@ -215,6 +215,7 @@ MainWindow::MainWindow():
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
 
     setAllEnabled(false);
+    setDatabaseModified(false);
 
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
@@ -1209,7 +1210,7 @@ void MainWindow::configureAutosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfo::valueForKey("autosave");
+    QString autosave_mode = DBInfo::autosaveMode();
 
     QDialog *d = new QDialog(this);
     d->setWindowTitle(tr("Configure Auto Save - Leaklog"));
@@ -1265,8 +1266,8 @@ void MainWindow::configureAutosave()
         else
             autosave_mode.clear();
 
-        if (DBInfo::valueForKey("autosave") != autosave_mode) {
-            DBInfo::setValueForKey("autosave", autosave_mode);
+        if (DBInfo::autosaveMode() != autosave_mode) {
+            DBInfo::setAutosaveMode(autosave_mode);
             setDatabaseModified(true);
         }
     }

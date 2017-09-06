@@ -712,7 +712,7 @@ void MainWindow::autosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfo::valueForKey("autosave");
+    QString autosave_mode = DBInfo::autosaveMode();
     if (autosave_mode.isEmpty() || autosave_mode == "immediate")
         return;
 
@@ -740,8 +740,10 @@ void MainWindow::autosave()
         }
     }
 
-    if (autosave_mode == "ask" || autosave_mode == "delayed")
+    if (autosave_mode == "ask" || autosave_mode == "delayed") {
         saveDatabase(false);
+        sync(false, false);
+    }
 }
 
 void MainWindow::closeDatabase(bool save)
@@ -898,7 +900,7 @@ void MainWindow::setDatabaseModified(bool modified)
     if (modified)
         emit databaseModified();
 
-    if (QSqlDatabase::database().isOpen() && DBInfo::valueForKey("autosave") == "immediate") {
+    if (!QSqlDatabase::database().isOpen() || DBInfo::autosaveMode() == "immediate") {
         actionSave->setVisible(false);
         actionSave_and_compact->setVisible(false);
         actionUndo->setVisible(false);
