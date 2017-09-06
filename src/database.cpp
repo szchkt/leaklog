@@ -607,10 +607,11 @@ void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string
     connect(sync_engine, SIGNAL(syncFinished(bool)), this, SLOT(syncFinished(bool)));
 
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
-    if (!query.next())
+    if (!query.next()) {
         QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
-
-    sync(false);
+    } else {
+        sync(false);
+    }
 }
 
 void MainWindow::loadDatabase(bool reload)
@@ -810,7 +811,7 @@ void MainWindow::closeDatabase(bool save)
 
 void MainWindow::autosync()
 {
-    if (sync_engine && sync_engine->error().isEmpty() && !isWindowModified()) {
+    if (sync_engine && sync_engine->error().isEmpty() && !isWindowModified() && !hasActiveModalWidget()) {
         sync(false);
     }
 }

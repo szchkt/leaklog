@@ -1481,7 +1481,9 @@ void MainWindow::loginFinished(bool success)
 {
     actionLog_In->setText(success ? authenticator->username() : tr("Log In"));
 
-    if (!success && !authenticator->error().isEmpty()) {
+    if (success) {
+        sync();
+    } else if (!authenticator->error().isEmpty()) {
         QMessageBox message(this);
 #ifdef Q_OS_MAC
         message.setWindowTitle(tr("Log In"));
