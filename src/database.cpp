@@ -825,7 +825,7 @@ void MainWindow::sync(bool force, bool save)
         QString server = DBInfo::valueForKey("sync_server");
         if (server == "leaklog.org") {
             if (save) {
-                saveDatabase(false);
+                saveDatabase(false, false);
             }
             sync_engine->sync(force);
         } else if (force || server.isNull() || !server.isEmpty()) {
@@ -840,13 +840,13 @@ void MainWindow::sync(bool force, bool save)
             switch (message.exec()) {
                 case 0: // Sync
                     DBInfo::setValueForKey("sync_server", "leaklog.org");
-                    saveDatabase(false);
+                    saveDatabase(false, false);
                     sync_engine->sync(force);
                     break;
                 case 1: // Do Not Sync
                     if (server.isNull()) {
                         DBInfo::setValueForKey("sync_server", "");
-                        saveDatabase(false);
+                        saveDatabase(false, false);
                     }
                     break;
             }
@@ -876,9 +876,7 @@ void MainWindow::syncFinished(bool success, bool changed)
     progress_bar->setVisible(false);
 
     if (success) {
-        saveDatabase(false);
-        if (changed)
-            refreshView();
+        saveDatabase(false, changed);
     } else {
         bool has_modal_widget = hasActiveModalWidget();
 
