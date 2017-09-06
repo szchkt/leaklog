@@ -98,6 +98,11 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool 
     return var->name();
 }
 
+VariableEvaluation::Variable *VariableEvaluation::EvaluationContext::variable(const QString &name) const
+{
+    return vars_map.value(createUUIDv5(DBInfo::databaseUUID(), name));
+}
+
 QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, const QVariantMap &inspection, QString &nom_value)
 {
     VariableEvaluation::Variable *var = vars_map.value(createUUIDv5(DBInfo::databaseUUID(), var_name));

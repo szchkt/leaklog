@@ -39,7 +39,7 @@ namespace VariableEvaluation {
         void setNominalInspection(const QVariantMap &nominal_ins) { this->nominal_ins = nominal_ins; }
         QVariantMap &nominalInspection() { return nominal_ins; }
 
-        Variable *variable(const QString &name) const { return vars_map.value(name); }
+        Variable *variable(const QString &name) const;
         QString evaluate(Variable *, const QVariantMap &, QString &);
         QString evaluate(const QString &, const QVariantMap &, QString &);
 
