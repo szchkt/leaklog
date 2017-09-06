@@ -802,6 +802,13 @@ void MainWindow::closeDatabase(bool save)
     setDatabaseModified(false);
 }
 
+void MainWindow::autosync()
+{
+    if (sync_engine && sync_engine->error().isEmpty() && !isWindowModified()) {
+        sync(false);
+    }
+}
+
 void MainWindow::sync(bool force, bool save)
 {
     if (authenticator->token().isEmpty()) {

@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
 
     ActivityEventFilter *filter = new ActivityEventFilter(&app);
     QObject::connect(filter, SIGNAL(timeout()), window, SLOT(autosave()));
+    QObject::connect(filter, SIGNAL(performPeriodicTasks()), window, SLOT(autosync()));
     app.installEventFilter(filter);
 
     return app.exec();
