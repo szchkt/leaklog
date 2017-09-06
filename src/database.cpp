@@ -603,6 +603,8 @@ void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next())
         QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+
+    sync(false);
 }
 
 void MainWindow::loadDatabase(bool reload)
@@ -804,11 +806,38 @@ void MainWindow::closeDatabase(bool save)
     setDatabaseModified(false);
 }
 
-void MainWindow::sync()
+void MainWindow::sync(bool force)
 {
-    if (sync_engine) {
-        saveDatabase(false);
-        sync_engine->sync();
+    if (authenticator->token().isEmpty()) {
+        if (force)
+            logIn();
+    } else if (sync_engine) {
+        QString server = DBInfo::valueForKey("sync_server");
+        if (server == "leaklog.org") {
+            saveDatabase(false);
+            sync_engine->sync();
+        } else if (force || server.isNull() || !server.isEmpty()) {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Sync database - Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Information);
+            message.setText(tr("Do you want to sync this database with leaklog.org?"));
+            message.addButton(tr("&Sync"), QMessageBox::AcceptRole);
+            message.addButton(tr("Do &Not Sync"), QMessageBox::RejectRole);
+            switch (message.exec()) {
+                case 0: // Sync
+                    DBInfo::setValueForKey("sync_server", "leaklog.org");
+                    saveDatabase(false);
+                    sync_engine->sync();
+                    break;
+                case 1: // Do Not Sync
+                    if (server.isNull()) {
+                        DBInfo::setValueForKey("sync_server", "");
+                    }
+                    break;
+            }
+        }
     }
 }
 
