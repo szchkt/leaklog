@@ -217,7 +217,7 @@ private slots:
     void saveAndCompact();
     void autosave();
     void closeDatabase(bool = true);
-    void sync(bool = true);
+    void sync(bool force = true, bool save = true);
     void syncStarted();
     void syncProgress(double progress);
     void syncFinished(bool);

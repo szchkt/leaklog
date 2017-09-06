@@ -663,19 +663,13 @@ void MainWindow::loadDatabase(bool reload)
 void MainWindow::save()
 {
     saveDatabase(false);
-
-    if (sync_engine) {
-        sync_engine->sync();
-    }
+    sync(false, false);
 }
 
 void MainWindow::saveAndCompact()
 {
     saveDatabase(true);
-
-    if (sync_engine) {
-        sync_engine->sync();
-    }
+    sync(false, false);
 }
 
 void MainWindow::saveDatabase(bool compact, bool update_ui)
@@ -806,7 +800,7 @@ void MainWindow::closeDatabase(bool save)
     setDatabaseModified(false);
 }
 
-void MainWindow::sync(bool force)
+void MainWindow::sync(bool force, bool save)
 {
     if (authenticator->token().isEmpty()) {
         if (force)
@@ -814,7 +808,9 @@ void MainWindow::sync(bool force)
     } else if (sync_engine) {
         QString server = DBInfo::valueForKey("sync_server");
         if (server == "leaklog.org") {
-            saveDatabase(false);
+            if (save) {
+                saveDatabase(false);
+            }
             sync_engine->sync();
         } else if (force || server.isNull() || !server.isEmpty()) {
             QMessageBox message(this);
@@ -834,6 +830,7 @@ void MainWindow::sync(bool force)
                 case 1: // Do Not Sync
                     if (server.isNull()) {
                         DBInfo::setValueForKey("sync_server", "");
+                        saveDatabase(false);
                     }
                     break;
             }
