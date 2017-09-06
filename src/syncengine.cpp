@@ -161,9 +161,9 @@ QJsonObject SyncEngine::journalStateForVersion(QJsonObject journal_state, int ma
     return journal_state;
 }
 
-void SyncEngine::sync()
+void SyncEngine::sync(bool force)
 {
-    if (!_authenticator->token().isEmpty()) {
+    if (!_authenticator->token().isEmpty() && (force || !_reply)) {
         sync(QJsonDocument());
     }
 }

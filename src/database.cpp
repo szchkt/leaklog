@@ -827,7 +827,7 @@ void MainWindow::sync(bool force, bool save)
             if (save) {
                 saveDatabase(false);
             }
-            sync_engine->sync();
+            sync_engine->sync(force);
         } else if (force || server.isNull() || !server.isEmpty()) {
             QMessageBox message(this);
             message.setWindowTitle(tr("Sync database - Leaklog"));
@@ -841,7 +841,7 @@ void MainWindow::sync(bool force, bool save)
                 case 0: // Sync
                     DBInfo::setValueForKey("sync_server", "leaklog.org");
                     saveDatabase(false);
-                    sync_engine->sync();
+                    sync_engine->sync(force);
                     break;
                 case 1: // Do Not Sync
                     if (server.isNull()) {
