@@ -368,7 +368,7 @@ bool Global::journalDeletion(const QString &table_name, const QString &record_uu
 bool Global::journalDeletion(int table_id, const QString &record_uuid, const QSqlDatabase &database)
 {
     MTSqlQuery query(database);
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
+    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid)");
     query.bindValue(":source_uuid", sourceUUID());
     query.bindValue(":operation_id", JournalEntry::Deletion);
     query.bindValue(":table_id", table_id);
