@@ -221,7 +221,7 @@ private slots:
     void sync(bool force = true, bool save = true);
     void syncStarted();
     void syncProgress(double progress);
-    void syncFinished(bool);
+    void syncFinished(bool success, bool changed);
     void setDatabaseModified(bool modified);
     // TABS
     void newTab(bool init = true);

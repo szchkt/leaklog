@@ -604,7 +604,7 @@ void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string
     sync_engine = new SyncEngine(authenticator, this);
     connect(sync_engine, SIGNAL(syncStarted()), this, SLOT(syncStarted()));
     connect(sync_engine, SIGNAL(syncProgress(double)), this, SLOT(syncProgress(double)));
-    connect(sync_engine, SIGNAL(syncFinished(bool)), this, SLOT(syncFinished(bool)));
+    connect(sync_engine, SIGNAL(syncFinished(bool, bool)), this, SLOT(syncFinished(bool, bool)));
 
     MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
     if (!query.next()) {
@@ -870,14 +870,15 @@ void MainWindow::syncProgress(double progress)
     progress_bar->setValue(progress * 100);
 }
 
-void MainWindow::syncFinished(bool success)
+void MainWindow::syncFinished(bool success, bool changed)
 {
     progress_bar->setRange(0, 0);
     progress_bar->setVisible(false);
 
     if (success) {
         saveDatabase(false);
-        refreshView();
+        if (changed)
+            refreshView();
     } else {
         bool has_modal_widget = hasActiveModalWidget();
 

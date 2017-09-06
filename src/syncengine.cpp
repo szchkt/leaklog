@@ -168,8 +168,10 @@ void SyncEngine::sync(bool force)
     }
 }
 
-void SyncEngine::sync(const QJsonDocument &response_document)
+bool SyncEngine::sync(const QJsonDocument &response_document)
 {
+    bool changed = false;
+
     emit syncStarted();
 
     QJsonObject root = {
@@ -187,7 +189,7 @@ void SyncEngine::sync(const QJsonDocument &response_document)
         QJsonObject local_journal_state = journalStateForVersion(journal_state, response.value("journal_version").toInt());
         QJsonObject server_journal_state = journalStateForVersion(response.value("journal").toObject(), JournalEntry::Version);
         if (local_journal_state == server_journal_state) {
-            return;
+            return changed;
         }
 
         QJsonArray entries;
@@ -231,6 +233,7 @@ void SyncEngine::sync(const QJsonDocument &response_document)
         if (journal_entries.count()) {
             if (applyJournalEntries(journal_entries, response.value("records").toObject(), entries, journal_state)) {
                 journal_state = journalState();
+                changed = true;
             }
         }
 
@@ -293,6 +296,8 @@ void SyncEngine::sync(const QJsonDocument &response_document)
 
     root.insert("journal", journal_state);
     sendRequest(QJsonDocument(root));
+
+    return changed;
 }
 
 bool SyncEngine::applyJournalEntries(const QJsonArray &journal_entries, const QJsonObject &records, const QJsonArray &local_entries, const QJsonObject &journal_state)
@@ -477,7 +482,7 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
     QJsonDocument response = QJsonDocument::fromJson(data, &error);
     if (response.isNull()) {
         _error = reply->error() != QNetworkReply::NoError ? reply->errorString() : error.errorString();
-        emit syncFinished(false);
+        emit syncFinished(false, false);
         return;
     }
 
@@ -486,13 +491,13 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
     _action = root.value("action").toString();
 
     if (!_error.isEmpty()) {
-        emit syncFinished(false);
+        emit syncFinished(false, false);
     } else if (reply->error() != QNetworkReply::NoError) {
         _error = reply->errorString();
-        emit syncFinished(false);
+        emit syncFinished(false, false);
     } else {
-        sync(response);
-        emit syncFinished(true);
+        bool changed = sync(response);
+        emit syncFinished(true, changed);
     }
 }
 

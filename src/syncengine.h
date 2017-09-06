@@ -82,10 +82,10 @@ public:
 signals:
     void syncStarted();
     void syncProgress(double progress);
-    void syncFinished(bool);
+    void syncFinished(bool success, bool changed);
 
 private:
-    void sync(const QJsonDocument &response_document);
+    bool sync(const QJsonDocument &response_document);
     bool applyJournalEntries(const QJsonArray &journal_entries, const QJsonObject &records, const QJsonArray &local_entries, const QJsonObject &journal_state);
     void sendRequest(const QJsonDocument &document);
 
