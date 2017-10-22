@@ -5830,6 +5830,22 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <source>dd/MM/yyyy</source>
         <translation>dd.MM.yyyy</translation>
     </message>
+    <message>
+        <source>≥ 5 t of CO₂ equivalent (10 t if hermetic)</source>
+        <translation>≥ 5 t CO₂ ekvivalentu (10 t, je-li okruh hermetický)</translation>
+    </message>
+    <message>
+        <source>≥ 5 (10) t CO₂</source>
+        <translation>≥ 5 (10) t CO₂</translation>
+    </message>
+    <message>
+        <source>≥ 3 kg of refrigerant (6 kg if hermetic)</source>
+        <translation>≥ 3 kg chladiva (6 kg, je-li okruh hermetický)</translation>
+    </message>
+    <message>
+        <source>≥ 3 (6) kg</source>
+        <translation>≥ 3 (6) kg</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

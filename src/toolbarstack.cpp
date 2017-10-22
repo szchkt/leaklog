@@ -37,17 +37,21 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 
 #ifdef Q_OS_WIN32
     chb_CO2_equivalent->setText(replaceUnsupportedCharacters(chb_CO2_equivalent->text()));
+    chb_min_5tCO2->setText(replaceUnsupportedCharacters(chb_min_5tCO2->text()));
 #endif
 
     scaleFactorChanged();
 
     de_table_except_decommissioned_before->setDate(QDate::currentDate().addYears(-1));
 
+    QObject::connect(chb_CO2_equivalent, SIGNAL(clicked()), this, SLOT(toggleCO2Equivalent()));
     QObject::connect(chb_table_all_circuits, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), chb_table_except_decommissioned_before, SLOT(setEnabled(bool)));
     QObject::connect(chb_table_all_circuits, SIGNAL(toggled(bool)), de_table_except_decommissioned_before, SLOT(setEnabled(bool)));
     QObject::connect(chb_table_except_decommissioned_before, SIGNAL(clicked(bool)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(de_table_except_decommissioned_before, SIGNAL(dateChanged(const QDate &)), this, SLOT(toggleTableForAllCircuits()));
+    QObject::connect(chb_min_5tCO2, SIGNAL(toggled(bool)), chb_min_3kg, SLOT(setChecked(bool)));
+    QObject::connect(chb_min_3kg, SIGNAL(toggled(bool)), chb_min_5tCO2, SLOT(setChecked(bool)));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(spb_filter_month_from, SIGNAL(valueChanged(int)), this, SLOT(monthFromChanged(int)));
     QObject::connect(spb_filter_month_until, SIGNAL(valueChanged(int)), this, SLOT(monthUntilChanged(int)));
@@ -112,6 +116,8 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(chb_assembly_record_list_price, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_assembly_record_total, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_CO2_equivalent, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_min_5tCO2, SIGNAL(clicked()), receiver, SLOT(refreshView()));
+    QObject::connect(chb_min_3kg, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
 void ToolBarStack::scaleFactorChanged()
@@ -334,6 +340,14 @@ void ToolBarStack::viewChanged(View::ViewID view)
                               filter_since_visible ||
                               filter_month_visible ||
                               assembly_record_widgets_visible);
+
+    toggleCO2Equivalent();
+}
+
+void ToolBarStack::toggleCO2Equivalent()
+{
+    chb_min_5tCO2->setVisible(_view == View::OperatorReport && chb_CO2_equivalent->isChecked());
+    chb_min_3kg->setVisible(_view == View::OperatorReport && !chb_CO2_equivalent->isChecked());
 }
 
 void ToolBarStack::toggleTableForAllCircuits()

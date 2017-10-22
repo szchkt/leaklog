@@ -59,6 +59,7 @@ public:
     bool isShowCircuitNameChecked() const { return chb_show_circuit_name->isChecked(); }
 
     bool isCO2EquivalentChecked() const { return chb_CO2_equivalent->isChecked(); }
+    bool isMin5tCO2EquivalentChecked() const { return chb_CO2_equivalent->isChecked() ? chb_min_5tCO2->isChecked() : chb_min_3kg->isChecked(); }
 
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);
@@ -81,6 +82,7 @@ public slots:
     void viewChanged(View::ViewID view);
 
 private slots:
+    void toggleCO2Equivalent();
     void toggleTableForAllCircuits();
     void emitFilterChanged();
     void monthFromChanged(int);

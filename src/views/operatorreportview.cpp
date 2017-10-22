@@ -45,6 +45,7 @@ QString OperatorReportView::renderHTML()
     int month_until = settings->toolBarStack()->filterMonthUntilValue();
     bool show_circuit_name = settings->toolBarStack()->isShowCircuitNameChecked();
     bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
+    bool min_5tCO2 = settings->toolBarStack()->isMin5tCO2EquivalentChecked();
 
     if (year == 0)
         year = QDate::currentDate().year() - 1;
@@ -136,7 +137,7 @@ QString OperatorReportView::renderHTML()
         circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
 
-    MTSqlQuery circuits = circuits_record.select("id, name, refrigerant, refrigerant_amount, field, operation, disused, commissioning, decommissioning");
+    MTSqlQuery circuits = circuits_record.select("id, name, refrigerant, refrigerant_amount, field, operation, disused, hermetic, commissioning, decommissioning");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -176,15 +177,22 @@ QString OperatorReportView::renderHTML()
         if (decommissioning_date >= date_from && decommissioning_date < date_until)
             refrigerant_amount_end = 0.0;
 
+        QString refrigerant = circuits.stringValue("refrigerant");
+        double GWP = refrigerantGWP(refrigerant);
+        if (min_5tCO2) {
+            bool hermetic = circuits.boolValue("hermetic");
+            if (CO2_equivalent ? (qMax(refrigerant_amount_begin, refrigerant_amount_end) * GWP < (hermetic ? 10000.0 : 5000.0))
+                               : (qMax(refrigerant_amount_begin, refrigerant_amount_end) < (hermetic ? 6.0 : 3.0)))
+                continue;
+        }
+
         out << "<tr onclick=\"window.location = 'customer:" << customer_id
             << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
         if (show_circuit_name) {
             out << "<td>" << MTVariant(circuits.stringValue("name")) << "</td>";
         }
-        QString refrigerant = circuits.stringValue("refrigerant");
         out << "<td>" << refrigerant << "</td>";
-        double GWP = refrigerantGWP(refrigerant);
         double multiplier = CO2_equivalent ? (GWP / 1000.0) : 1.0;
         if (CO2_equivalent)
             out << "<td>" << GWP << "</td>";
