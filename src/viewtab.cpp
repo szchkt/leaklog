@@ -501,6 +501,56 @@ bool ViewTab::isShowLeakedChecked() const
     return parentWindow()->isShowLeakedChecked();
 }
 
+bool ViewTab::isShowPlaceOfOperationChecked() const
+{
+    return parentWindow()->isShowPlaceOfOperationChecked();
+}
+
+bool ViewTab::isShowBuildingChecked() const
+{
+    return parentWindow()->isShowBuildingChecked();
+}
+
+bool ViewTab::isShowDeviceChecked() const
+{
+    return parentWindow()->isShowDeviceChecked();
+}
+
+bool ViewTab::isShowManufacturerChecked() const
+{
+    return parentWindow()->isShowManufacturerChecked();
+}
+
+bool ViewTab::isShowTypeChecked() const
+{
+    return parentWindow()->isShowTypeChecked();
+}
+
+bool ViewTab::isShowSerialNumberChecked() const
+{
+    return parentWindow()->isShowSerialNumberChecked();
+}
+
+bool ViewTab::isShowYearOfPurchaseChecked() const
+{
+    return parentWindow()->isShowYearOfPurchaseChecked();
+}
+
+bool ViewTab::isShowDateOfCommissioningChecked() const
+{
+    return parentWindow()->isShowDateOfCommissioningChecked();
+}
+
+bool ViewTab::isShowFieldOfApplicationChecked() const
+{
+    return parentWindow()->isShowFieldOfApplicationChecked();
+}
+
+bool ViewTab::isShowOilChecked() const
+{
+    return parentWindow()->isShowOilChecked();
+}
+
 bool ViewTab::isShowMostRecentFirstChecked() const
 {
     return parentWindow()->isShowMostRecentFirstChecked();

@@ -27,6 +27,23 @@
 class HTMLDiv;
 class HTMLTableRow;
 
+struct CircuitsColumns
+{
+    int date_updated : 1;
+    int owner : 1;
+    int notes : 1;
+    int operation : 1;
+    int building : 1;
+    int device : 1;
+    int manufacturer : 1;
+    int type : 1;
+    int sn : 1;
+    int year : 1;
+    int commissioning : 1;
+    int field : 1;
+    int oil : 1;
+};
+
 class CircuitsView : public CustomersView
 {
     Q_OBJECT
@@ -41,8 +58,8 @@ public:
 protected:
     void writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1);
     HTMLDiv *writeCircuitsTable(const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1, HTMLTable *table = NULL);
-    void writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, bool disused, HTMLTableRow *thead);
-    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, bool show_date_updated, bool show_owner, bool show_notes, HTMLTable *table);
+    void writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, bool disused, HTMLTableRow *thead);
+    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, HTMLTable *table);
     HTMLTable *circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
     HTMLTable *circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
 };

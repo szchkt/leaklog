@@ -67,6 +67,16 @@ public:
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
     inline bool isShowNotesChecked() const { return actionShow_Notes->isChecked(); }
     inline bool isShowLeakedChecked() const { return actionShow_Leaked->isChecked(); }
+    inline bool isShowPlaceOfOperationChecked() const { return actionShow_Place_of_operation->isChecked(); }
+    inline bool isShowBuildingChecked() const { return actionShow_Building->isChecked(); }
+    inline bool isShowDeviceChecked() const { return actionShow_Device->isChecked(); }
+    inline bool isShowManufacturerChecked() const { return actionShow_Manufacturer->isChecked(); }
+    inline bool isShowTypeChecked() const { return actionShow_Type->isChecked(); }
+    inline bool isShowSerialNumberChecked() const { return actionShow_Serial_number->isChecked(); }
+    inline bool isShowYearOfPurchaseChecked() const { return actionShow_Year_of_purchase->isChecked(); }
+    inline bool isShowDateOfCommissioningChecked() const { return actionShow_Date_of_commissioning->isChecked(); }
+    inline bool isShowFieldOfApplicationChecked() const { return actionShow_Field_of_application->isChecked(); }
+    inline bool isShowOilChecked() const { return actionShow_Oil->isChecked(); }
     inline bool isShowMostRecentFirstChecked() const { return actionMost_recent_first->isChecked(); }
     inline bool isCompareValuesChecked() const { return actionCompare_values->isChecked(); }
     inline bool isPrinterFriendlyVersionChecked() const { return actionPrinter_friendly_version->isChecked(); }
