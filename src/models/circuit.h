@@ -44,7 +44,6 @@ public:
     static QString tableName();
     static const ColumnList &columns();
     static const MTDictionary &attributes();
-    static int numBasicAttributes();
 };
 
 #endif // CIRCUIT_H

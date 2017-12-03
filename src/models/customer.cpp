@@ -124,7 +124,6 @@ public:
         dict.insert("address", QApplication::translate("Customer", "Address"));
         dict.insert("mail", QApplication::translate("Customer", "E-mail"));
         dict.insert("phone", QApplication::translate("Customer", "Phone"));
-        // numBasicAttributes: 5
         dict.insert("operator_id", QApplication::translate("Customer", "Operator ID"));
         dict.insert("operator_company", QApplication::translate("Customer", "Operator"));
         dict.insert("operator_address", QApplication::translate("Customer", "Operator address"));
@@ -139,9 +138,4 @@ const MTDictionary &Customer::attributes()
 {
     static CustomerAttributes dict;
     return dict.dict;
-}
-
-int Customer::numBasicAttributes()
-{
-    return 5;
 }

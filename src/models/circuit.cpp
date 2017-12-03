@@ -266,7 +266,6 @@ public:
         dict.insert("year", QApplication::translate("Circuit", "Year of purchase"));
         dict.insert("commissioning", QApplication::translate("Circuit", "Date of commissioning"));
         dict.insert("field", QApplication::translate("Circuit", "Field of application"));
-        // numBasicAttributes: 11
         dict.insert("hermetic", QApplication::translate("Circuit", "Hermetically sealed"));
         dict.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
         dict.insert("disused", QApplication::translate("Circuit", "Status"));
@@ -288,9 +287,4 @@ const MTDictionary &Circuit::attributes()
 {
     static CircuitAttributes dict;
     return dict.dict;
-}
-
-int Circuit::numBasicAttributes()
-{
-    return 11;
 }
