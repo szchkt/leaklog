@@ -95,7 +95,7 @@ bool DBFile::saveData(const QString &file_name)
 int DBFile::save()
 {
     if (file_id <= 0) {
-        file_id = File("").max("id") + 1;
+        file_id = (int)File("").max("id") + 1;
         File::setId(QString::number(file_id));
     }
 

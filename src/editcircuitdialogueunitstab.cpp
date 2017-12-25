@@ -118,7 +118,7 @@ void EditCircuitDialogueUnitsTab::save(const QVariant &circuit_id)
                 former_ids.removeAll(all_values.at(i).value("id").toInt());
         } else {
             if (next_id < 0)
-                next_id = CircuitUnit().max("id");
+                next_id = (int)CircuitUnit().max("id");
 
             unit = CircuitUnit();
             map.insert("id", QString::number(++next_id));

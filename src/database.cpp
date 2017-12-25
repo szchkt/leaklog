@@ -1366,7 +1366,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
-    new_id->setValue(Circuit(m_tab->selectedCustomer(), QString()).max("id") + 1);
+    new_id->setValue((int)Circuit(m_tab->selectedCustomer(), QString()).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
@@ -1651,7 +1651,7 @@ void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
     int customer_id = customer_index < 0 ? 0 : cb_customer->itemData(customer_index).toInt();
 
     if (customer_id && Circuit(QString::number(customer_id), m_tab->selectedCircuit()).exists()) {
-        spb_circuit_id->setValue(Circuit(QString::number(customer_id), QString()).max("id") + 1);
+        spb_circuit_id->setValue((int)Circuit(QString::number(customer_id), QString()).max("id") + 1);
     } else {
         spb_circuit_id->setValue(m_tab->selectedCircuit().toInt());
     }
