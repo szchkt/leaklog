@@ -4625,7 +4625,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>OperatorReportView</name>
     <message>
         <source>Operator Report: %1</source>
-        <translation>Oznámenie prevádzkovateľa: %1</translation>
+        <translation>Oznámenie prevádzkovateľa: %1&lt;br&gt;
+&lt;small&gt;Príloha č. 1 k oznámeniu prevádzkovateľa o fluórovaných skleníkových plynoch podľa vyhl. 382/2016 Z.z.&lt;/small&gt;</translation>
     </message>
     <message>
         <source>Owner information</source>
