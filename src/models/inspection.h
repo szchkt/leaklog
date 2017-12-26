@@ -22,19 +22,29 @@
 
 #include "dbrecord.h"
 
-class MTCheckBox;
+class MDComboBox;
 
 class Inspection : public DBRecord
 {
     Q_OBJECT
 
 public:
+    enum Repair {
+        IsNotRepair = 0,
+        IsRepair = 1,
+        IsAfterRepair = 2,
+    };
     enum Type {
         DefaultType = 0,
         CircuitMovedType = 1,
         InspectionSkippedType = 2
     };
 
+    inline bool nominal() { return value("nominal").toInt() != 0; }
+    inline Repair repair() { return (Repair)value("repair").toInt(); }
+    inline Type inspectionType() { return (Type)value("inspection_type").toInt(); }
+
+    static QString titleForInspection(bool nominal, Repair repair);
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
@@ -45,11 +55,12 @@ public:
     Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
 
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QVariantMap &, QWidget * = 0);
 
     int scope() { return m_scope; }
 
 public slots:
-    void showSecondNominalInspectionWarning(MTCheckBox *, bool);
+    void showSecondNominalInspectionWarning(MDComboBox *, int);
 
 private:
     int m_scope;

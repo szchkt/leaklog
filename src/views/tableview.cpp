@@ -75,7 +75,7 @@ QString TableView::renderHTML()
             date = inspections.at(i).value("date").toString();
             if (date > last_entry_date) {
                 last_entry_date = date;
-                if (!inspections.at(i).value("repair").toInt()) {
+                if (inspections.at(i).value("repair").toInt() != Inspection::IsRepair) {
                     last_inspection_date = date;
                 }
             }
@@ -227,7 +227,7 @@ QString TableView::renderHTML()
                 }
                 if (warnings_list.count()) {
                     warnings_html.append("<tr><td><a href=\"customer:" + customer_id + "/circuit:" + circuit_id);
-                    warnings_html.append(inspections.at(i).value("repair").toInt() ? "/repair:" : "/inspection:");
+                    warnings_html.append(inspections.at(i).value("repair").toInt() == Inspection::IsRepair ? "/repair:" : "/inspection:");
                     warnings_html.append(inspection_date + "\">");
                     warnings_html.append(settings->mainWindowSettings().formatDateTime(inspection_date) + "</a>");
                     warnings_html.append("</td><td>");
@@ -333,7 +333,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
     HTMLTableBody *tbody = table->tbody();
     for (int i = 0; i < inspections.count(); ++i) {
         bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         QString inspection_date = inspections.at(i).value("date").toString();
         QString customer_id = circuit.value("parent").toString();

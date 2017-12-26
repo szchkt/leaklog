@@ -53,7 +53,7 @@ QString InspectionImagesView::renderHTML()
     Inspection inspection_record(customer_id, circuit_id, inspection_date);
     QVariantMap inspection = inspection_record.list();
     bool nominal = inspection.value("nominal").toInt();
-    bool repair = inspection.value("repair").toInt();
+    Inspection::Repair repair = (Inspection::Repair)inspection.value("repair").toInt();
 
     HTMLParentElement *el;
     HTMLDiv div;
@@ -63,10 +63,8 @@ QString InspectionImagesView::renderHTML()
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-         ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
-    if (nominal) *el << tr("Nominal inspection:");
-    else if (repair) *el << tr("Repair:");
-    else *el << tr("Inspection:");
+        ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
+    *el << Inspection::titleForInspection(nominal, repair);
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
 
     InspectionImage images_record(customer_id, circuit_id, inspection_date);

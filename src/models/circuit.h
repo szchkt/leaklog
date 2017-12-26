@@ -37,7 +37,7 @@ public:
     Circuit(const QString &, const QString &);
 
     void initEditDialogue(EditDialogueWidgets *);
-    bool checkValues(const QVariantMap &, QWidget * = 0);
+    bool checkValues(QVariantMap &, QWidget * = 0);
 
     static void cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id = -1, bool compressors_and_units = false);
 

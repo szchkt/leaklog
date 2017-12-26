@@ -71,6 +71,7 @@ class MTLabeledWidget : public MTObject
 public:
     MTLabeledWidget(const QString &, QWidget *);
 
+    void setDefaultText(const QString &text) { labeltext = text; }
     void setAlternativeText(const QString &alt) { altlabeltext = alt; }
     QWidget *widget() const { return w; }
 
@@ -280,6 +281,7 @@ public:
     void setNullValue(const QVariant &);
 
 signals:
+    void currentIndexChanged(MDComboBox *, int);
     void toggled(bool);
 
 protected slots:

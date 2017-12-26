@@ -31,6 +31,23 @@
 
 using namespace Global;
 
+QString Inspection::titleForInspection(bool nominal, Repair repair)
+{
+    if (nominal)
+        return QApplication::translate("MainWindow", "%1:").arg(tr("Nominal Inspection"));
+
+    switch (repair) {
+        case Inspection::IsNotRepair:
+            break;
+        case Inspection::IsRepair:
+            return QApplication::translate("MainWindow", "%1:").arg(tr("Repair"));
+        case Inspection::IsAfterRepair:
+            return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection After Repair"));
+    }
+
+    return QApplication::translate("MainWindow", "%1:").arg(tr("Regular Inspection"));
+}
+
 QString Inspection::descriptionForInspectionType(Inspection::Type type, const QString &type_data)
 {
     QStringList data = type_data.split(UNIT_SEPARATOR);
@@ -143,16 +160,20 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
         date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
     md->addInputWidget(date);
-    MTCheckBoxGroup *chbgrp_i_type = new MTCheckBoxGroup(md->widget());
-    MDCheckBox *chb_nominal = new MDCheckBox("nominal", tr("Nominal inspection"), md->widget(), attributes.value("nominal").toInt(), true);
-    if (nominal_found)
-        QObject::connect(chb_nominal, SIGNAL(toggled(MTCheckBox *, bool)), this, SLOT(showSecondNominalInspectionWarning(MTCheckBox *, bool)));
 
-    md->addInputWidget(chb_nominal);
-    chbgrp_i_type->addCheckBox((MTCheckBox *)chb_nominal->widget());
-    MDCheckBox *chb_repair = new MDCheckBox("repair", tr("Repair"), md->widget(), attributes.value("repair").toInt(), true);
-    md->addInputWidget(chb_repair);
-    chbgrp_i_type->addCheckBox((MTCheckBox *)chb_repair->widget());
+    QString type = attributes.value("nominal").toInt() || (id().isEmpty() && used_ids.isEmpty()) ? "-1" : QString::number(attributes.value("repair").toInt());
+    MTDictionary types;
+    types.insert("-1", tr("Nominal Inspection"));
+    types.insert("0", tr("Regular Inspection"));
+    types.insert("1", tr("Repair"));
+    types.insert("2", tr("Inspection After Repair"));
+
+    MDComboBox *cb_repair = new MDComboBox("repair", tr("Type:"), md->widget(), type, types);
+    cb_repair->setSkipSave(true);
+    if (nominal_found)
+        QObject::connect(cb_repair, SIGNAL(currentIndexChanged(MDComboBox *, int)), this, SLOT(showSecondNominalInspectionWarning(MDComboBox *, int)));
+    md->addInputWidget(cb_repair);
+
     md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
 
     if (!id().isEmpty()) {
@@ -166,13 +187,30 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     }
 
     Variables query(QSqlDatabase(), m_scope);
-    query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), chb_repair, chb_nominal);
+    query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), cb_repair);
 }
 
-void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool state)
+bool Inspection::checkValues(QVariantMap &values, QWidget *parentWidget)
 {
-    if (state) {
-        QMessageBox message(checkbox->parentWidget());
+    EditDialogueWidgets *dialogue = dynamic_cast<EditDialogueWidgets *>(parentWidget);
+    if (dialogue) {
+        MDAbstractInputWidget *cb_repair = dialogue->inputWidget("repair");
+        int value = cb_repair->variantValue().toInt();
+        if (value < 0) {
+            values.insert("nominal", 1);
+            values.insert("repair", 0);
+        } else {
+            values.insert("nominal", 0);
+            values.insert("repair", value);
+        }
+    }
+    return true;
+}
+
+void Inspection::showSecondNominalInspectionWarning(MDComboBox *combobox, int index)
+{
+    if (index == 0) {
+        QMessageBox message(combobox->parentWidget());
         message.setWindowTitle(tr("Nominal inspection already exists - Leaklog"));
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
@@ -185,7 +223,7 @@ void Inspection::showSecondNominalInspectionWarning(MTCheckBox *checkbox, bool s
             case 0: // Add
                 break;
             case 1: // Cancel
-                QMetaObject::invokeMethod(checkbox, "toggle", Qt::QueuedConnection);
+                QMetaObject::invokeMethod(combobox, "setCurrentIndex", Qt::QueuedConnection, Q_ARG(int, 1));
                 break;
         }
     }

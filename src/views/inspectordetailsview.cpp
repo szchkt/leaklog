@@ -50,7 +50,6 @@ QString InspectorDetailsView::renderHTML()
     HTMLTableCell *_td;
     HTMLParentElement *elem;
 
-    bool is_nominal, is_repair, is_outside_interval;
     bool show_acquisition_price = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     bool show_list_price = DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0;
 
@@ -82,9 +81,9 @@ QString InspectorDetailsView::renderHTML()
         QString id = ar_items.at(i).value("date").toString();
         QString customer_id = ar_items.at(i).value("customer").toString();
         QString circuit_id = ar_items.at(i).value("circuit").toString();
-        is_nominal = ar_items.at(i).value("nominal").toInt();
-        is_repair = ar_items.at(i).value("repair").toInt();
-        is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
+        bool is_nominal = ar_items.at(i).value("nominal").toInt();
+        bool is_repair = ar_items.at(i).value("repair").toInt() == Inspection::IsRepair;
+        bool is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
 
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/%3:%4/assemblyrecord'\" style=\"cursor: pointer;\"")
                             .arg(customer_id)
@@ -149,9 +148,9 @@ QString InspectorDetailsView::renderHTML()
         QString id = inspections.at(i).value("date").toString();
         QString customer_id = inspections.at(i).value("customer").toString();
         QString circuit_id = inspections.at(i).value("circuit").toString();
-        is_nominal = inspections.at(i).value("nominal").toInt();
-        is_repair = inspections.at(i).value("repair").toInt();
-        is_outside_interval = inspections.at(i).value("outside_interval").toInt();
+        bool is_nominal = inspections.at(i).value("nominal").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
+        bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
 
         QString inspection_link = "onclick=\"window.location = 'customer:" + customer_id + "/circuit:" + circuit_id;
         inspection_link.append((is_repair ? "/repair:" : "/inspection:") + id + "'\" style=\"cursor: pointer;\"");

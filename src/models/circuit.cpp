@@ -116,7 +116,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     }
 }
 
-bool Circuit::checkValues(const QVariantMap &values, QWidget *parentWidget)
+bool Circuit::checkValues(QVariantMap &values, QWidget *parentWidget)
 {
     if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant") && !superuserModeEnabled()) {
         MTSqlQuery query;

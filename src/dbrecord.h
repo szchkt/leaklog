@@ -58,7 +58,7 @@ public:
     virtual ~Modifiable() {}
 
     virtual void initEditDialogue(EditDialogueWidgets *) = 0;
-    virtual bool checkValues(const QVariantMap &, QWidget * = 0) { return true; }
+    virtual bool checkValues(QVariantMap &, QWidget * = 0) { return true; }
 };
 
 class DBRecord : public QObject, public MTRecord, public Modifiable

@@ -52,9 +52,6 @@ protected:
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
-    int inputWidgetCount() { return md_inputwidgets.count(); }
-    MDAbstractInputWidget *inputWidget(const QString);
-
     virtual const QVariant idFieldValue();
 
     DBRecord *md_record;

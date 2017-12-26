@@ -31,3 +31,13 @@ void EditDialogueWidgets::addGroupedInputWidgets(const QString &group_name, cons
         gw->addWidget(widgets.at(i));
     }
 }
+
+MDAbstractInputWidget *EditDialogueWidgets::inputWidget(const QString &id) const
+{
+    for (int i = 0; i < md_inputwidgets.count(); ++i) {
+        if (md_inputwidgets.at(i)->id() == id) {
+            return md_inputwidgets.at(i);
+        }
+    }
+    return NULL;
+}

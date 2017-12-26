@@ -164,18 +164,6 @@
         <translation>Montážní list číslo %1</translation>
     </message>
     <message>
-        <source>Nominal inspection:</source>
-        <translation>Kontrola při uvedení do provozu:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
@@ -933,14 +921,6 @@
     <message>
         <source>Circuit: %1 %2</source>
         <translation>Okruh: %1 %2</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation>Ano</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Ne</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -1904,10 +1884,6 @@
         <translation>Mimo interval kontrol těsnosti</translation>
     </message>
     <message>
-        <source>Nominal inspection</source>
-        <translation>Kontrola při uvedení do provozu</translation>
-    </message>
-    <message>
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
         <translation>Zákazník: %2 %1 Okruh: %3 %1 Kontrola</translation>
     </message>
@@ -1968,21 +1944,25 @@
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Nominal Inspection</source>
+        <translation>Kontrola při uvedení do provozu</translation>
+    </message>
+    <message>
+        <source>Regular Inspection</source>
+        <translation>Pravidelná kontrola</translation>
+    </message>
+    <message>
+        <source>Inspection After Repair</source>
+        <translation>Kontrola do jednoho měsíce</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
-    <message>
-        <source>Nominal Inspection:</source>
-        <translation>Kontrola při uvedení do provozu:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Pravidelná kontrola:</translation>
-    </message>
     <message>
         <source>Other</source>
         <translation>Jiné</translation>
@@ -2006,18 +1986,6 @@
 </context>
 <context>
     <name>InspectionImagesView</name>
-    <message>
-        <source>Nominal inspection:</source>
-        <translation>Kontrola při uvedení do provozu:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
     <message>
         <source>Inspection Images</source>
         <translation>Obrázky z kontroly</translation>
@@ -6199,10 +6167,6 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>New charge:</source>
         <translation>Nová náplň:</translation>
-    </message>
-    <message>
-        <source>Inspector:</source>
-        <translation>Certifikovaná osoba:</translation>
     </message>
 </context>
 <context>

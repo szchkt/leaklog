@@ -25,7 +25,7 @@
 #include <QDateTime>
 
 class EditDialogueWidgets;
-class MDCheckBox;
+class MDComboBox;
 
 class VariableContractBase
 {
@@ -111,7 +111,7 @@ public:
         return variable(parentID());
     }
 
-    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDCheckBox * = NULL, MDCheckBox * = NULL);
+    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDComboBox * = NULL);
 
 protected:
     Variables(int);
