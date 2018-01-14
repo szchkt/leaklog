@@ -393,7 +393,7 @@ void ToolBarStack::enableTools()
 
         lbl_inspector->setText(tr("Inspector: %1").arg(description.join(", ")));
     }
-    widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails) && _settings->isInspectorSelected());
+    widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails || _view == View::OperatorReport) && _settings->isInspectorSelected());
 
     if (_settings->isCustomerSelected()) {
         Customer customer(_settings->selectedCustomer());
