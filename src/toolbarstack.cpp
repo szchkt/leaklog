@@ -42,6 +42,12 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 
     scaleFactorChanged();
 
+    cb_refrigerant->addItem(tr("All"), QString());
+    foreach (const QString &refrigerant, listRefrigerants()) {
+        cb_refrigerant->addItem(refrigerant, refrigerant);
+    }
+    cb_refrigerant->setCurrentIndex(0);
+
     de_table_except_decommissioned_before->setDate(QDate::currentDate().addYears(-1));
 
     QObject::connect(chb_CO2_equivalent, SIGNAL(clicked()), this, SLOT(toggleCO2Equivalent()));
@@ -52,6 +58,7 @@ ToolBarStack::ToolBarStack(QWidget *parent):
     QObject::connect(de_table_except_decommissioned_before, SIGNAL(dateChanged(const QDate &)), this, SLOT(toggleTableForAllCircuits()));
     QObject::connect(chb_min_5tCO2, SIGNAL(toggled(bool)), chb_min_3kg, SLOT(setChecked(bool)));
     QObject::connect(chb_min_3kg, SIGNAL(toggled(bool)), chb_min_5tCO2, SLOT(setChecked(bool)));
+    QObject::connect(cb_refrigerant, SIGNAL(currentIndexChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(spb_filter_since, SIGNAL(valueChanged(int)), this, SIGNAL(filterChanged()));
     QObject::connect(spb_filter_month_from, SIGNAL(valueChanged(int)), this, SLOT(monthFromChanged(int)));
     QObject::connect(spb_filter_month_until, SIGNAL(valueChanged(int)), this, SLOT(monthUntilChanged(int)));
@@ -320,6 +327,9 @@ void ToolBarStack::viewChanged(View::ViewID view)
     cb_filter_column->setVisible(cb_filter_column->count());
     cb_filter_type->setVisible(cb_filter_column->count());
     le_filter->setVisible(cb_filter_column->count());
+
+    lbl_refrigerant->setVisible(view == View::Store);
+    cb_refrigerant->setVisible(view == View::Store);
 
     lbl_filter_since->setVisible(filter_since_visible);
     spb_filter_since->setVisible(filter_since_visible);

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2089</width>
+    <width>2177</width>
     <height>403</height>
    </rect>
   </property>
@@ -2143,6 +2143,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_refrigerant">
+        <property name="text">
+         <string>Refrigerant:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cb_refrigerant"/>
       </item>
       <item>
        <widget class="QLabel" name="lbl_filter_since">

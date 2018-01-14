@@ -5801,6 +5801,10 @@ dla ID osoby i firmy</translation>
         <source>≥ 3 (6) kg</source>
         <translation>≥ 3 (6) kg</translation>
     </message>
+    <message>
+        <source>Refrigerant:</source>
+        <translation>Czynnik:</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

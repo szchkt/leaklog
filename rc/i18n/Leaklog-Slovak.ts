@@ -5806,6 +5806,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>≥ 3 (6) kg</source>
         <translation>≥ 3 (6) kg</translation>
     </message>
+    <message>
+        <source>Refrigerant:</source>
+        <translation>Chladivo:</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>

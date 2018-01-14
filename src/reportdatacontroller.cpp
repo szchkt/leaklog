@@ -119,7 +119,7 @@ void ReportDataController::reportData()
     QSet<QString> refrigerants_by_field;
     refrigerants_by_field << "R134a" << "R404A" << "R407C" << "R410A";
 
-    ReportData data(year, true, refrigerants_by_field);
+    ReportData data(year, QString(), true, refrigerants_by_field);
     QMap<QString, QVector<double> *>::const_iterator sums_iterator = data.sums_map.constFind(QString::number(year));
     QVector<double> *sum_list = NULL;
     QString refrigerant;
