@@ -1437,9 +1437,11 @@ void MainWindow::duplicateAndDecommissionCircuit()
                                                                QStringList() << m_tab->selectedCustomer()
                                                                              << m_tab->selectedCircuit())).listAll();
 
+    QString date_string = date->date().toString(DATE_FORMAT);
+
     QVariantMap set;
     set.insert("disused", Circuit::Decommissioned);
-    set.insert("decommissioning", date->date().toString(DATE_FORMAT));
+    set.insert("decommissioning", date_string);
     set.insert("refrigerant", old_refrigerant->currentText());
     circuit.update(set);
 
@@ -1455,6 +1457,10 @@ void MainWindow::duplicateAndDecommissionCircuit()
     }
 
     attributes.insert("refrigerant", new_refrigerant->currentText());
+    attributes.insert("refrigerant_amount", 0.0);
+    attributes.insert("disused", Circuit::Commissioned);
+    attributes.insert("commissioning", date_string);
+    attributes.remove("decommissioning");
     Circuit().update(attributes);
 
     qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
