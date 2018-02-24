@@ -52,9 +52,6 @@ protected:
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
-    int inputWidgetCount() { return md_inputwidgets.count(); }
-    MDAbstractInputWidget *inputWidget(const QString);
-
     DBRecord *md_record;
     UndoStack *md_undo_stack;
     QGridLayout *md_grid_main;

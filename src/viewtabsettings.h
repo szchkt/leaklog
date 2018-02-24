@@ -58,6 +58,16 @@ public:
     virtual bool isShowOwnerChecked() const = 0;
     virtual bool isShowNotesChecked() const = 0;
     virtual bool isShowLeakedChecked() const = 0;
+    virtual bool isShowPlaceOfOperationChecked() const = 0;
+    virtual bool isShowBuildingChecked() const = 0;
+    virtual bool isShowDeviceChecked() const = 0;
+    virtual bool isShowManufacturerChecked() const = 0;
+    virtual bool isShowTypeChecked() const = 0;
+    virtual bool isShowSerialNumberChecked() const = 0;
+    virtual bool isShowYearOfPurchaseChecked() const = 0;
+    virtual bool isShowDateOfCommissioningChecked() const = 0;
+    virtual bool isShowFieldOfApplicationChecked() const = 0;
+    virtual bool isShowOilChecked() const = 0;
     virtual bool isShowMostRecentFirstChecked() const = 0;
     virtual bool isCompareValuesChecked() const = 0;
     virtual bool isPrinterFriendlyVersionChecked() const = 0;

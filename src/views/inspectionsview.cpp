@@ -121,7 +121,7 @@ QString InspectionsView::renderHTML(bool)
         QString uuid = inspections.at(i).value("uuid").toString();
         QString date = settings->mainWindowSettings().formatDateTime(inspections.at(i).value("date").toString());
         bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 

@@ -26,7 +26,7 @@
 
 class EditDialogueWidgets;
 class Inspection;
-class MDCheckBox;
+class MDComboBox;
 
 class VariableContractBase
 {
@@ -118,7 +118,7 @@ public:
         return variableForUUID(parentUUID());
     }
 
-    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, Inspection * = NULL, const QDateTime & = QDateTime(), MDCheckBox * = NULL, MDCheckBox * = NULL);
+    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, Inspection * = NULL, const QDateTime & = QDateTime(), MDComboBox * = NULL);
 
 protected:
     Variables(int);

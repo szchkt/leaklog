@@ -107,7 +107,6 @@ public:
     static inline MTRecordQuery<Circuit> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Circuit>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
-    static int numBasicAttributes();
     bool remove() const;
 };
 

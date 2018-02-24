@@ -363,6 +363,7 @@ void MDComboBox::setNullValue(const QVariant &value)
 
 void MDComboBox::emitToggled(int index)
 {
+    emit currentIndexChanged(this, index);
     emit toggled(index != 0);
 }
 

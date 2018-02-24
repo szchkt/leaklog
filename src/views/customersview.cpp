@@ -42,6 +42,14 @@ QString CustomersView::renderHTML(bool)
     return viewTemplate("customers").arg(html);
 }
 
+static void addCustomerHeaderCell(const QString &key, const QString &customer_uuid, HTMLTableRow *row)
+{
+    if (customer_uuid.isEmpty())
+        *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << key << "\">" << Customer::attributes().value(key) << "</a>";
+    else
+        *(row->addHeaderCell()) << Customer::attributes().value(key);
+}
+
 void CustomersView::writeCustomersTable(MTTextStream &out, const QString &customer_id)
 {
     HTMLTable *table = writeCustomersTable(customer_id);
@@ -79,19 +87,17 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     if (customer_uuid.isEmpty())
         table->addClass("highlight");
 
-    int thead_colspan = 2;
+    int thead_colspan = 7;
     HTMLTableRow *row = NULL;
 
     if (customer_uuid.isEmpty() || customer_details_visible) {
         row = new HTMLTableRow();
 
-        for (int n = 0; n < Customer::numBasicAttributes(); ++n) {
-            if (customer_uuid.isEmpty())
-                *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << Customer::attributes().key(n) << "\">" << Customer::attributes().value(n) << "</a>";
-            else
-                *(row->addHeaderCell()) << Customer::attributes().value(n);
-            thead_colspan++;
-        }
+        addCustomerHeaderCell("id", customer_uuid, row);
+        addCustomerHeaderCell("company", customer_uuid, row);
+        addCustomerHeaderCell("address", customer_uuid, row);
+        addCustomerHeaderCell("mail", customer_uuid, row);
+        addCustomerHeaderCell("phone", customer_uuid, row);
         *(row->addHeaderCell()) << tr("Number of circuits");
         *(row->addHeaderCell()) << tr("Total number of inspections");
         if (show_date_updated) {
@@ -143,10 +149,10 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
             }
             row = table->addRow(row_attrs);
             *(row->addCell()) << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
-            for (int n = 1; n < Customer::numBasicAttributes(); ++n) {
-                QString key = Customer::attributes().key(n);
-                *(row->addCell()) << MTVariant(list.at(i).value(key), key);
-            }
+            *(row->addCell()) << escapeString(list.at(i).value("company"));
+            *(row->addCell()) << MTVariant(list.at(i).value("address"), MTVariant::Address);
+            *(row->addCell()) << escapeString(list.at(i).value("mail"));
+            *(row->addCell()) << escapeString(list.at(i).value("phone"));
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
             if (show_date_updated)

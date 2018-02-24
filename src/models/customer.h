@@ -74,7 +74,6 @@ public:
     static inline MTRecordQuery<Customer> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Customer>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
-    static int numBasicAttributes();
     bool remove() const;
 };
 

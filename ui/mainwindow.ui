@@ -360,6 +360,17 @@
      <addaction name="actionShow_Notes"/>
      <addaction name="separator"/>
      <addaction name="actionShow_Leaked"/>
+     <addaction name="separator"/>
+     <addaction name="actionShow_Place_of_operation"/>
+     <addaction name="actionShow_Building"/>
+     <addaction name="actionShow_Device"/>
+     <addaction name="actionShow_Manufacturer"/>
+     <addaction name="actionShow_Type"/>
+     <addaction name="actionShow_Serial_number"/>
+     <addaction name="actionShow_Year_of_purchase"/>
+     <addaction name="actionShow_Date_of_commissioning"/>
+     <addaction name="actionShow_Field_of_application"/>
+     <addaction name="actionShow_Oil"/>
     </widget>
     <widget class="QMenu" name="menuDateTime_Format">
      <property name="title">
@@ -2225,6 +2236,86 @@
   <action name="actionEdit_Refrigerants">
    <property name="text">
     <string>Edit Refrigerants...</string>
+   </property>
+  </action>
+  <action name="actionShow_Place_of_operation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Place of operation</string>
+   </property>
+  </action>
+  <action name="actionShow_Building">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Building</string>
+   </property>
+  </action>
+  <action name="actionShow_Device">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Device</string>
+   </property>
+  </action>
+  <action name="actionShow_Manufacturer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Manufacturer</string>
+   </property>
+  </action>
+  <action name="actionShow_Type">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Type</string>
+   </property>
+  </action>
+  <action name="actionShow_Serial_number">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Serial number</string>
+   </property>
+  </action>
+  <action name="actionShow_Year_of_purchase">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Year of purchase</string>
+   </property>
+  </action>
+  <action name="actionShow_Date_of_commissioning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Date of commissioning</string>
+   </property>
+  </action>
+  <action name="actionShow_Oil">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Oil</string>
+   </property>
+  </action>
+  <action name="actionShow_Field_of_application">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Field of application</string>
    </property>
   </action>
   <action name="actionSync">

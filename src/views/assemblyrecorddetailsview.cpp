@@ -42,7 +42,7 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
 
     Inspection inspection(inspection_uuid);
     bool nominal = inspection.isNominal();
-    bool repair = inspection.isRepair();
+    Inspection::Repair repair = inspection.repair();
     bool locked = DBInfo::isRecordLocked(inspection.date());
 
     VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
@@ -116,10 +116,12 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
     _td = top_table->addRow()->addHeaderCell("colspan=\"6\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"");
     if (!locked) {
         elem = _td->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid
-                         + (repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
-    } else elem = _td;
-    if (nominal) *elem << tr("Nominal inspection:"); else if (repair) *elem << tr("Repair:"); else *elem << tr("Inspection:");
-    *elem << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.value("date"));
+                         + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
+    } else {
+        elem = _td;
+    }
+    *elem << Inspection::titleForInspection(nominal, repair);
+    *elem << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.date());
 
     enum QUERY_RESULTS {
         VALUE,

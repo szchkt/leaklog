@@ -56,7 +56,7 @@ QString InspectionDetailsView::renderHTML(bool)
     Inspection inspection(inspection_uuid);
     QString inspection_date = inspection.date();
     bool nominal = inspection.isNominal();
-    bool repair = inspection.isRepair();
+    Inspection::Repair repair = inspection.repair();
     MTQuery nom_inspection_record = Inspection::query({{"circuit_uuid", circuit_uuid}, {"nominal", "1"}});
     nom_inspection_record.addFilter("date <= ?", inspection_date);
     QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
@@ -74,10 +74,8 @@ QString InspectionDetailsView::renderHTML(bool)
 
     el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")
             ->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-            ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
-    if (nominal) *el << tr("Nominal Inspection:");
-    else if (repair) *el << tr("Repair:");
-    else *el << tr("Inspection:");
+            ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
+    *el << Inspection::titleForInspection(nominal, repair);
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
     div.newLine();
 

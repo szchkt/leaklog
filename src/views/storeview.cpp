@@ -109,7 +109,7 @@ QString StoreView::renderHTML(bool)
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     }
     out << "</tr>";
-    ReportData data(settings->toolBarStack()->filterSinceValue(), by_field);
+    ReportData data(settings->toolBarStack()->filterSinceValue(), settings->toolBarStack()->selectedRefrigerant(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerants();
     list_refrigerants.insert(0, "");

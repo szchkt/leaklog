@@ -83,7 +83,7 @@ QString InspectorDetailsView::renderHTML(bool)
         QString customer_uuid = ar_items.at(i).value("customer_uuid").toString();
         QString circuit_uuid = ar_items.at(i).value("circuit_uuid").toString();
         bool is_nominal = ar_items.at(i).value("nominal").toInt();
-        bool is_repair = ar_items.at(i).value("repair").toInt();
+        bool is_repair = ar_items.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
 
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/%3:%4/assemblyrecord'\" style=\"cursor: pointer;\"")
@@ -151,7 +151,7 @@ QString InspectorDetailsView::renderHTML(bool)
         QString customer_uuid = inspections.at(i).value("customer_uuid").toString();
         QString circuit_uuid = inspections.at(i).value("circuit_uuid").toString();
         bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt();
+        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
 
         QString inspection_link = "onclick=\"window.location = 'customer:" + customer_uuid + "/circuit:" + circuit_uuid;

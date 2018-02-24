@@ -1487,8 +1487,10 @@ void MainWindow::duplicateAndDecommissionCircuit()
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
+    QString date_string = date->date().toString(DATE_FORMAT);
+
     circuit.setStatus(Circuit::Decommissioned);
-    circuit.setDateOfDecommissioning(date->date().toString(DATE_FORMAT));
+    circuit.setDateOfDecommissioning(date_string);
     circuit.setRefrigerant(old_refrigerant->currentText());
     circuit.save();
 
@@ -1500,6 +1502,10 @@ void MainWindow::duplicateAndDecommissionCircuit()
     }
 
     attributes.insert("refrigerant", new_refrigerant->currentText());
+    attributes.insert("refrigerant_amount", 0.0);
+    attributes.insert("disused", Circuit::Commissioned);
+    attributes.insert("commissioning", date_string);
+    attributes.remove("decommissioning");
     attributes.insert("uuid", createUUID());
     Circuit duplicate;
     duplicate.update(attributes);

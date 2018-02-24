@@ -22,7 +22,7 @@
 
 #include "dbrecord.h"
 
-class MTCheckBox;
+class MDComboBox;
 class Customer;
 class Circuit;
 class InspectionCompressor;
@@ -33,12 +33,22 @@ class Inspection : public DBRecord
     Q_OBJECT
 
 public:
+    enum Repair {
+        IsNotRepair = 0,
+        IsRepair = 1,
+        IsAfterRepair = 2,
+    };
     enum Type {
         DefaultType = 0,
         CircuitMovedType = 1,
         InspectionSkippedType = 2
     };
 
+    inline bool nominal() { return value("nominal").toInt() != 0; }
+    inline Repair repair() { return (Repair)value("repair").toInt(); }
+    inline Type inspectionType() { return (Type)value("inspection_type").toInt(); }
+
+    static QString titleForInspection(bool nominal, Repair repair);
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
@@ -49,6 +59,7 @@ public:
     Inspection(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QWidget * = 0);
 
     int scope() { return m_scope; }
 
@@ -62,7 +73,7 @@ public:
     inline void setDate(const QString &value) { setValue("date", value); }
     inline bool isNominal() { return intValue("nominal"); }
     inline void setNominal(bool value) { setValue("nominal", (int)value); }
-    inline bool isRepair() { return intValue("repair"); }
+    inline bool isRepair() { return intValue("repair") == IsRepair; }
     inline void setRepair(bool value) { setValue("repair", (int)value); }
     inline bool isOutsideInterval() { return intValue("outside_interval"); }
     inline void setOutsideInterval(bool value) { setValue("outside_interval", (int)value); }
@@ -77,7 +88,7 @@ public:
     bool remove() const;
 
 public slots:
-    void showSecondNominalInspectionWarning(MTCheckBox *, bool);
+    void showSecondNominalInspectionWarning(MDComboBox *, int);
 
 private:
     int m_scope;

@@ -158,18 +158,6 @@
         <translation>Montážny list číslo %1</translation>
     </message>
     <message>
-        <source>Nominal inspection:</source>
-        <translation>Nominálna kontrola:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
@@ -900,14 +888,6 @@
     <message>
         <source>Circuit: %1 %2</source>
         <translation>Okruh: %1 %2</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation>Áno</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nie</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -1856,10 +1836,6 @@
         <translation>Mimo intervalu kontrol</translation>
     </message>
     <message>
-        <source>Nominal inspection</source>
-        <translation>Nominálna kontrola</translation>
-    </message>
-    <message>
         <source>Customer: %2 %1 Circuit: %3 %1 Inspection</source>
         <translation>Zákazník: %2 %1 Okruh: %3 %1 Kontrola</translation>
     </message>
@@ -1911,21 +1887,25 @@
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Nominal Inspection</source>
+        <translation>Nominálna kontrola</translation>
+    </message>
+    <message>
+        <source>Regular Inspection</source>
+        <translation>Pravidelná kontrola</translation>
+    </message>
+    <message>
+        <source>Inspection After Repair</source>
+        <translation>Kontrola do jedného mesiaca</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
-    <message>
-        <source>Nominal Inspection:</source>
-        <translation>Nominálna kontrola:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
     <message>
         <source>Other</source>
         <translation>Iné</translation>
@@ -1949,18 +1929,6 @@
 </context>
 <context>
     <name>InspectionImagesView</name>
-    <message>
-        <source>Nominal inspection:</source>
-        <translation>Nominálna kontrola:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Oprava:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
     <message>
         <source>Inspection Images</source>
         <translation>Obrázky z kontroly</translation>
@@ -4601,7 +4569,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <name>OperatorReportView</name>
     <message>
         <source>Operator Report: %1</source>
-        <translation>Oznámenie prevádzkovateľa: %1</translation>
+        <translation>Oznámenie prevádzkovateľa: %1&lt;br&gt;
+&lt;small&gt;Príloha č. 1 k oznámeniu prevádzkovateľa o fluórovaných skleníkových plynoch podľa vyhl. 382/2016 Z.z.&lt;/small&gt;</translation>
     </message>
     <message>
         <source>Owner information</source>
@@ -5797,6 +5766,26 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>dd/MM/yyyy</source>
         <translation>dd.MM.yyyy</translation>
     </message>
+    <message>
+        <source>≥ 5 t of CO₂ equivalent (10 t if hermetic)</source>
+        <translation>≥ 5 t CO₂ ekvivalentu (10 t ak je okruh hermetický)</translation>
+    </message>
+    <message>
+        <source>≥ 5 (10) t CO₂</source>
+        <translation>≥ 5 (10) t CO₂</translation>
+    </message>
+    <message>
+        <source>≥ 3 kg of refrigerant (6 kg if hermetic)</source>
+        <translation>≥ 3 kg chladiva (6 kg ak je okruh hermetický)</translation>
+    </message>
+    <message>
+        <source>≥ 3 (6) kg</source>
+        <translation>≥ 3 (6) kg</translation>
+    </message>
+    <message>
+        <source>Refrigerant:</source>
+        <translation>Chladivo:</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>
@@ -6166,10 +6155,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>New charge:</source>
         <translation>Nová náplň:</translation>
-    </message>
-    <message>
-        <source>Inspector:</source>
-        <translation>Kontrolór:</translation>
     </message>
 </context>
 <context>

@@ -162,18 +162,6 @@
         <translation>Książka serwisowa nr. %1</translation>
     </message>
     <message>
-        <source>Nominal inspection:</source>
-        <translation>Kontrola nominalna:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Naprawa:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Wartość</translation>
     </message>
@@ -928,14 +916,6 @@
     <message>
         <source>Circuit: %1 %2</source>
         <translation>Obieg: %1 %2</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation>Tak</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nie</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -1896,10 +1876,6 @@
         <translation>Data:</translation>
     </message>
     <message>
-        <source>Nominal inspection</source>
-        <translation>Nominalna kontrola</translation>
-    </message>
-    <message>
         <source>Outside the inspection interval</source>
         <translation>Poza przedziałem kontroli</translation>
     </message>
@@ -1959,21 +1935,25 @@
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
+    <message>
+        <source>Nominal Inspection</source>
+        <translation>Kontrola nominalna</translation>
+    </message>
+    <message>
+        <source>Regular Inspection</source>
+        <translation>Kontrola regularna</translation>
+    </message>
+    <message>
+        <source>Inspection After Repair</source>
+        <translation>Kontrola po naprawie</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
-    <message>
-        <source>Nominal Inspection:</source>
-        <translation>Nominalna kontrola:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Naprawa:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
     <message>
         <source>Other</source>
         <translation>Inne</translation>
@@ -1997,18 +1977,6 @@
 </context>
 <context>
     <name>InspectionImagesView</name>
-    <message>
-        <source>Nominal inspection:</source>
-        <translation>Nominalna kontrola:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Naprawa:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Kontrola:</translation>
-    </message>
     <message>
         <source>Inspection Images</source>
         <translation>Obrazy z kontroli</translation>
@@ -5817,6 +5785,26 @@ dla ID osoby i firmy</translation>
         <source>dd/MM/yyyy</source>
         <translation>dd.MM.yyyy</translation>
     </message>
+    <message>
+        <source>≥ 5 t of CO₂ equivalent (10 t if hermetic)</source>
+        <translation>≥ 5 t ekwiwalentu CO₂ (10 t jeśli obieg jest hermetyczny)</translation>
+    </message>
+    <message>
+        <source>≥ 5 (10) t CO₂</source>
+        <translation>≥ 5 (10) t CO₂</translation>
+    </message>
+    <message>
+        <source>≥ 3 kg of refrigerant (6 kg if hermetic)</source>
+        <translation>≥ 3 kg czynnika (6 kg jeśli obieg jest hermetyczny)</translation>
+    </message>
+    <message>
+        <source>≥ 3 (6) kg</source>
+        <translation>≥ 3 (6) kg</translation>
+    </message>
+    <message>
+        <source>Refrigerant:</source>
+        <translation>Czynnik:</translation>
+    </message>
 </context>
 <context>
     <name>UndoStack</name>
@@ -6170,10 +6158,6 @@ dla ID osoby i firmy</translation>
     <message>
         <source>New charge:</source>
         <translation>Nowe napełnienie:</translation>
-    </message>
-    <message>
-        <source>Inspector:</source>
-        <translation>Kontroler:</translation>
     </message>
 </context>
 <context>

@@ -106,13 +106,3 @@ bool EditDialogue::save(bool call_accept)
     if (call_accept) accept();
     return true;
 }
-
-MDAbstractInputWidget *EditDialogue::inputWidget(const QString id)
-{
-    for (int i = 0; i < md_inputwidgets.count(); ++i) {
-        if (md_inputwidgets.at(i)->id() == id) {
-            return md_inputwidgets.at(i);
-        }
-    }
-    return NULL;
-}

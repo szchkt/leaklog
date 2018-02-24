@@ -230,7 +230,7 @@ void Variables::initSubvariable(const QString &parent, int scope, const QString 
 }
 
 void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, Inspection *inspection,
-                                        const QDateTime &date, MDCheckBox *chb_repair, MDCheckBox *chb_nominal)
+                                        const QDateTime &date, MDComboBox *cb_nominal)
 {
     while (next()) {
         QString var_type = type();
@@ -256,11 +256,6 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         if (var_id == "inspector_uuid") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listInspectors(), col_bg);
-            iw->label()->setAlternativeText(QApplication::translate("Variables", "Inspector:"));
-            if (chb_repair) {
-                iw->label()->toggleAlternativeText(chb_repair->isChecked());
-                iw->label()->addConnection(chb_repair, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
-            }
             md->addInputWidget(iw);
         } else if (var_id == "risks" || var_id == "rmds" || var_id == "notes") {
             iw = new MDPlainTextEdit(var_id, var_name, md->widget(),
@@ -286,10 +281,10 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
                                              attributes.value(var_id), unit(), col_bg);
             if (var_id == "refr_add_am") {
-                iw->label()->setAlternativeText(QApplication::translate("Variables", "New charge:"));
-                if (chb_nominal) {
-                    iw->label()->toggleAlternativeText(chb_nominal->isChecked());
-                    iw->label()->addConnection(chb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+                iw->label()->setDefaultText(QApplication::translate("Variables", "New charge:"));
+                if (cb_nominal) {
+                    iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
+                    iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
                 }
             }
             md->addInputWidget(iw);

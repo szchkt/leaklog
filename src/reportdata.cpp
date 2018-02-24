@@ -41,11 +41,16 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int>
     }
 }
 
-ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigerants_by_field)
+ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_field, const QSet<QString> &refrigerants_by_field)
 {
     QVector<double> *sum_list;
 
-    foreach (const QVariantMap &refr_man, RefrigerantRecord::query().listAll()) {
+    MTQuery refrigerant_query = RefrigerantRecord::query();
+
+    if (!filter_refrigerant.isEmpty())
+        refrigerant_query.parents().insert("refrigerant", filter_refrigerant);
+
+    foreach (const QVariantMap &refr_man, refrigerant_query.listAll()) {
         QString refrigerant = refr_man.value("refrigerant").toString();
         QVariant purchased = refr_man.value("purchased");
         QVariant purchased_reco = refr_man.value("purchased_reco");
@@ -105,17 +110,16 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
 
-    MultiMapOfVariantMaps circuits(Circuit::query().mapAll("uuid", "refrigerant"));
-
     MTQuery inspections_query = Inspection::query();
     inspections_query.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
-    if (by_field)
-        inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
+    inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
     QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, "
                      "inspections.nominal, inspections.refr_add_am, inspections.refr_reco, "
-                     "customers.company, customers.id AS company_id";
+                     "customers.company, customers.id AS company_id, circuits.refrigerant";
     if (by_field)
         fields += ", circuits.field";
+    if (!filter_refrigerant.isEmpty())
+        inspections_query.addFilter("circuits.refrigerant = ?", filter_refrigerant);
     ListOfVariantMaps inspections(inspections_query.listAll(fields));
 
     MTQuery repairs_query = Repair::query();
@@ -125,6 +129,8 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
              "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
+    if (!filter_refrigerant.isEmpty())
+        repairs_query.parents().insert("refrigerant", filter_refrigerant);
     inspections << repairs_query.listAll(fields);
 
     foreach (const QVariantMap &inspection, inspections) {
@@ -136,7 +142,7 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
         QString uuid = inspection.value("uuid").toString();
         QString date = inspection.value("date").toString();
         int year = date.left(4).toInt();
-        QString refrigerant;
+        QString refrigerant = inspection.value("refrigerant").toString();
         QVector<QString> entries_list(ENTRIES::COUNT);
         if (inspection.contains("circuit_uuid")) {
             entries_list[ENTRIES::LINK] = QString("customer:%1/circuit:%2/%3:%4")
@@ -144,10 +150,8 @@ ReportData::ReportData(int since, bool by_field, const QSet<QString> &refrigeran
                                         .arg(inspection.value("circuit_uuid").toString())
                                         .arg(inspection.value("nominal").toInt() ? "nominalinspection" : "inspection")
                                         .arg(uuid);
-            refrigerant = circuits.value(inspection.value("circuit_uuid").toString()).value("refrigerant").toString();
         } else {
             entries_list[ENTRIES::LINK] = QString("repair:%1/edit").arg(uuid);
-            refrigerant = inspection.value("refrigerant").toString();
         }
 
         addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());

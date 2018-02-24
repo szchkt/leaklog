@@ -63,6 +63,16 @@ public:
     bool isShowOwnerChecked() const;
     bool isShowNotesChecked() const;
     bool isShowLeakedChecked() const;
+    bool isShowPlaceOfOperationChecked() const;
+    bool isShowBuildingChecked() const;
+    bool isShowDeviceChecked() const;
+    bool isShowManufacturerChecked() const;
+    bool isShowTypeChecked() const;
+    bool isShowSerialNumberChecked() const;
+    bool isShowYearOfPurchaseChecked() const;
+    bool isShowDateOfCommissioningChecked() const;
+    bool isShowFieldOfApplicationChecked() const;
+    bool isShowOilChecked() const;
     bool isShowMostRecentFirstChecked() const;
     bool isCompareValuesChecked() const;
     bool isPrinterFriendlyVersionChecked() const;

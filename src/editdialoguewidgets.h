@@ -32,6 +32,9 @@ public:
     EditDialogueWidgets(): md_rows_in_column(14) {}
 
     void addInputWidget(MDAbstractInputWidget *iw) { md_inputwidgets << iw; }
+    int inputWidgetCount() const { return md_inputwidgets.count(); }
+    MDAbstractInputWidget *inputWidget(const QString &) const;
+
     void addInputWidgetGroup(const QString &group_id, const QString &group_name) {
         md_groups.insert(group_id, group_name);
     }
