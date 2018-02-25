@@ -32,18 +32,21 @@
 
 using namespace Global;
 
-QString Inspection::titleForInspection(bool nominal, Repair repair)
+QString Inspection::titleForInspectionType(Inspection::Type type)
 {
-    if (nominal)
-        return QApplication::translate("MainWindow", "%1:").arg(tr("Nominal Inspection"));
-
-    switch (repair) {
-        case Inspection::IsNotRepair:
+    switch (type) {
+        case RegularInspection:
             break;
-        case Inspection::IsRepair:
+        case NominalInspection:
+            return QApplication::translate("MainWindow", "%1:").arg(tr("Nominal Inspection"));
+        case Repair:
             return QApplication::translate("MainWindow", "%1:").arg(tr("Repair"));
-        case Inspection::IsAfterRepair:
+        case InspectionAfterRepair:
             return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection After Repair"));
+        case CircuitMoved:
+            return QApplication::translate("MainWindow", "%1:").arg(tr("Circuit Moved"));
+        case SkippedInspection:
+            return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection Skipped"));
     }
 
     return QApplication::translate("MainWindow", "%1:").arg(tr("Regular Inspection"));
@@ -54,7 +57,7 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
     QStringList data = type_data.split(UNIT_SEPARATOR);
 
     switch (type) {
-        case Inspection::CircuitMovedType: {
+        case CircuitMoved: {
             QString from_id = data.value(0);
             QVariantMap from_values = from_id.isEmpty() ? QVariantMap() : Customer(from_id).list("id, company");
             QString from = from_values.value("company").toString();
@@ -76,7 +79,7 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
             return tr("Circuit moved from customer %1 to %2.").arg(from).arg(to);
         }
 
-        case Inspection::InspectionSkippedType:
+        case SkippedInspection:
             return data.value(0);
 
         default:
@@ -106,11 +109,9 @@ public:
         columns << Column("customer_uuid", "UUID");
         columns << Column("circuit_uuid", "UUID");
         columns << Column("date", "TEXT");
-        columns << Column("nominal", "INTEGER");
-        columns << Column("repair", "INTEGER");
-        columns << Column("outside_interval", "INTEGER");
         columns << Column("inspection_type", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("inspection_type_data", "TEXT");
+        columns << Column("outside_interval", "INTEGER");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -142,13 +143,13 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     bool nominal_found = false;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
+    query_used_ids.prepare("SELECT date, inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
     query_used_ids.bindValue(":circuit_uuid", circuit_record.uuid());
     if (!uuid().isEmpty()) { query_used_ids.bindValue(":date", date()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
-            if (!nominal_found && query_used_ids.value(1).toInt())
+            if (!nominal_found && query_used_ids.value(1).toInt() == Inspection::NominalInspection)
                 nominal_found = true;
         }
     }
@@ -160,15 +161,14 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     }
     md->addInputWidget(date_edit);
 
-    QString type = isNominal() || (uuid().isEmpty() && used_ids.isEmpty()) ? "-1" : QString::number(repair());
+    QString inspection_type = isNominal() || (uuid().isEmpty() && used_ids.isEmpty()) ? QString::number(NominalInspection) : QString::number(type());
     MTDictionary types;
-    types.insert("-1", tr("Nominal Inspection"));
-    types.insert("0", tr("Regular Inspection"));
-    types.insert("1", tr("Repair"));
-    types.insert("2", tr("Inspection After Repair"));
+    types.insert(QString::number(NominalInspection), tr("Nominal Inspection"));
+    types.insert(QString::number(RegularInspection), tr("Regular Inspection"));
+    types.insert(QString::number(Repair), tr("Repair"));
+    types.insert(QString::number(InspectionAfterRepair), tr("Inspection After Repair"));
 
-    MDComboBox *cb_repair = new MDComboBox("repair", tr("Type:"), md->widget(), type, types);
-    cb_repair->setSkipSave(true);
+    MDComboBox *cb_repair = new MDComboBox("inspection_type", tr("Type:"), md->widget(), inspection_type, types);
     if (nominal_found)
         QObject::connect(cb_repair, SIGNAL(currentIndexChanged(MDComboBox *, int)), this, SLOT(showSecondNominalInspectionWarning(MDComboBox *, int)));
     md->addInputWidget(cb_repair);
@@ -182,23 +182,6 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
 
     Variables query(QSqlDatabase(), m_scope);
     query.initEditDialogueWidgets(md, savedValues(), this, date_edit->variantValue().toDateTime(), cb_repair);
-}
-
-bool Inspection::checkValues(QWidget *parentWidget)
-{
-    EditDialogueWidgets *dialogue = dynamic_cast<EditDialogueWidgets *>(parentWidget);
-    if (dialogue) {
-        MDAbstractInputWidget *cb_repair = dialogue->inputWidget("repair");
-        int value = cb_repair->variantValue().toInt();
-        if (value < 0) {
-            setValue("nominal", 1);
-            setValue("repair", 0);
-        } else {
-            setValue("nominal", 0);
-            setValue("repair", value);
-        }
-    }
-    return true;
 }
 
 Customer Inspection::customer()

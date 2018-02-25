@@ -82,21 +82,28 @@ QString InspectorDetailsView::renderHTML(bool)
         QString uuid = ar_items.at(i).value("inspection_uuid").toString();
         QString customer_uuid = ar_items.at(i).value("customer_uuid").toString();
         QString circuit_uuid = ar_items.at(i).value("circuit_uuid").toString();
-        bool is_nominal = ar_items.at(i).value("nominal").toInt();
-        bool is_repair = ar_items.at(i).value("repair").toInt() == Inspection::IsRepair;
+        Inspection::Type type = (Inspection::Type)ar_items.at(i).value("inspection_type").toInt();
         bool is_outside_interval = ar_items.at(i).value("outside_interval").toInt();
 
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/%3:%4/assemblyrecord'\" style=\"cursor: pointer;\"")
                             .arg(customer_uuid)
                             .arg(circuit_uuid)
-                            .arg(is_repair ? "repair" : "inspection")
+                            .arg(type == Inspection::Repair ? "repair" : "inspection")
                             .arg(uuid));
         _td = _tr->addCell();
 
-        if (is_nominal) elem = _td->bold();
-        else if (is_repair) elem = _td->italics();
-        else elem = _td;
-        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
+        switch (type) {
+            case Inspection::NominalInspection:
+                elem = _td->bold();
+                break;
+            case Inspection::Repair:
+                elem = _td->italics();
+                break;
+            default:
+                elem = _td;
+                break;
+        }
+        *elem << toolTipLink(type == Inspection::Repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
         if (is_outside_interval) { *elem << "*"; }
 
         *(_tr->addCell()) << ar_items.at(i).value("customer_id").toString();
@@ -143,27 +150,34 @@ QString InspectorDetailsView::renderHTML(bool)
     if (!settings->toolBarStack()->isFilterEmpty()) {
         inspections_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    ListOfVariantMaps inspections(inspections_query.listAll("inspections.uuid, date, inspections.customer_uuid, customers.id AS customer_id, customers.company, circuit_uuid, circuits.id AS circuit_id, circuits.name AS circuit_name, repair, nominal"));
+    ListOfVariantMaps inspections(inspections_query.listAll("inspections.uuid, date, inspections.customer_uuid, customers.id AS customer_id, customers.company, circuit_uuid, circuits.id AS circuit_id, circuits.name AS circuit_name, inspection_type"));
 
     for (int i = 0; i < inspections.count(); ++i) {
         QString date = settings->mainWindowSettings().formatDateTime(inspections.at(i).value("date").toString());
         QString uuid = inspections.at(i).value("uuid").toString();
         QString customer_uuid = inspections.at(i).value("customer_uuid").toString();
         QString circuit_uuid = inspections.at(i).value("circuit_uuid").toString();
-        bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
+        Inspection::Type type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
 
         QString inspection_link = "onclick=\"window.location = 'customer:" + customer_uuid + "/circuit:" + circuit_uuid;
-        inspection_link.append((is_repair ? "/repair:" : "/inspection:") + uuid + "'\" style=\"cursor: pointer;\"");
+        inspection_link.append((type == Inspection::Repair ? "/repair:" : "/inspection:") + uuid + "'\" style=\"cursor: pointer;\"");
 
         _tr = table->addRow(inspection_link);
         _td = _tr->addCell();
 
-        if (is_nominal) elem = _td->bold();
-        else if (is_repair) elem = _td->italics();
-        else elem = _td;
-        *elem << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
+        switch (type) {
+            case Inspection::NominalInspection:
+                elem = _td->bold();
+                break;
+            case Inspection::Repair:
+                elem = _td->italics();
+                break;
+            default:
+                elem = _td;
+                break;
+        }
+        *elem << toolTipLink(type == Inspection::Repair ? "customer/circuit/repair" : "customer/circuit/inspection", date, customer_uuid, circuit_uuid, uuid);
         if (is_outside_interval) { *elem << "*"; }
 
         *(_tr->addCell()) << inspections.at(i).value("customer_id").toString();

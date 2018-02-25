@@ -114,7 +114,7 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
     inspections_query.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
     inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
     QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, "
-                     "inspections.nominal, inspections.refr_add_am, inspections.refr_reco, "
+                     "inspections.inspection_type, inspections.refr_add_am, inspections.refr_reco, "
                      "customers.company, customers.id AS company_id, circuits.refrigerant";
     if (by_field)
         fields += ", circuits.field";
@@ -148,7 +148,7 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
             entries_list[ENTRIES::LINK] = QString("customer:%1/circuit:%2/%3:%4")
                                         .arg(inspection.value("customer_uuid").toString())
                                         .arg(inspection.value("circuit_uuid").toString())
-                                        .arg(inspection.value("nominal").toInt() ? "nominalinspection" : "inspection")
+                                        .arg(inspection.value("inspection_type").toInt() == Inspection::NominalInspection ? "nominalinspection" : "inspection")
                                         .arg(uuid);
         } else {
             entries_list[ENTRIES::LINK] = QString("repair:%1/edit").arg(uuid);
@@ -163,7 +163,7 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
         entries_list[ENTRIES::COMPANY_ID] = inspection.value("company_id").toString();
 
         QVariant new_charge = 0.0;
-        if (inspection.contains("nominal") && inspection.value("nominal").toInt()) {
+        if (inspection.value("inspection_type").toInt() == Inspection::NominalInspection) {
             new_charge = refr_add_am;
             refr_add_am = 0.0;
         }

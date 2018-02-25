@@ -173,7 +173,7 @@ public:
         column_names.insert(70, "name_format");
         column_names.insert(71, "noise_vibr");
         column_names.insert(72, "noise_vibr_comp");
-        column_names.insert(73, "nominal");
+        // column_names.insert(73, "nominal");
         column_names.insert(74, "notes");
         column_names.insert(75, "oil");
         column_names.insert(76, "oil_amount");
@@ -212,7 +212,7 @@ public:
         column_names.insert(109, "refr_disp");
         column_names.insert(110, "refr_reco");
         column_names.insert(111, "refr_rege");
-        column_names.insert(112, "repair");
+        // column_names.insert(112, "repair");
         column_names.insert(113, "risks");
         column_names.insert(114, "rmds");
         column_names.insert(115, "runtime");

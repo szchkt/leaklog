@@ -33,22 +33,17 @@ class Inspection : public DBRecord
     Q_OBJECT
 
 public:
-    enum Repair {
-        IsNotRepair = 0,
-        IsRepair = 1,
-        IsAfterRepair = 2,
-    };
     enum Type {
-        DefaultType = 0,
-        CircuitMovedType = 1,
-        InspectionSkippedType = 2
+        RegularInspection = 0,
+        NominalInspection = 1,
+        Repair = 2,
+        InspectionAfterRepair = 3,
+
+        CircuitMoved = -1,
+        SkippedInspection = -2,
     };
 
-    inline bool nominal() { return value("nominal").toInt() != 0; }
-    inline Repair repair() { return (Repair)value("repair").toInt(); }
-    inline Type inspectionType() { return (Type)value("inspection_type").toInt(); }
-
-    static QString titleForInspection(bool nominal, Repair repair);
+    static QString titleForInspectionType(Type type);
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
@@ -59,7 +54,6 @@ public:
     Inspection(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
-    bool checkValues(QWidget * = 0);
 
     int scope() { return m_scope; }
 
@@ -71,10 +65,8 @@ public:
     Circuit circuit();
     inline QString date() { return stringValue("date"); }
     inline void setDate(const QString &value) { setValue("date", value); }
-    inline bool isNominal() { return intValue("nominal"); }
-    inline void setNominal(bool value) { setValue("nominal", (int)value); }
-    inline bool isRepair() { return intValue("repair") == IsRepair; }
-    inline void setRepair(bool value) { setValue("repair", (int)value); }
+    inline bool isNominal() { return intValue("inspection_type") == NominalInspection; }
+    inline bool isRepair() { return intValue("inspection_type") == Repair; }
     inline bool isOutsideInterval() { return intValue("outside_interval"); }
     inline void setOutsideInterval(bool value) { setValue("outside_interval", (int)value); }
     inline Type type() { return (Type)intValue("inspection_type"); }

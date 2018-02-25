@@ -77,11 +77,11 @@ QString TableView::renderHTML(bool)
         for (int i = 0; i < inspections.count(); ++i) {
             QString uuid = inspections.at(i).value("uuid").toString();
             last_entry_uuid = uuid;
-            if (inspections.at(i).value("repair").toInt() != Inspection::IsRepair) {
+            if (inspections.at(i).value("inspection_type").toInt() != Inspection::Repair) {
                 last_inspection_uuid = uuid;
             }
             QString date = inspections.at(i).value("date").toString();
-            if ((!table.highlightNominal() || !inspections.at(i).value("nominal").toInt())
+            if ((!table.highlightNominal() || inspections.at(i).value("inspection_type").toInt() != Inspection::NominalInspection)
                 && date.split(".").first().toInt() < year) {
                 inspections.removeAt(i);
                 i--;
@@ -177,11 +177,11 @@ QString TableView::renderHTML(bool)
                 MTQuery inspections_compressors_query = InspectionCompressor::query({{"circuit_uuid", circuit_uuid}, {"compressor_uuid", compressor_uuids.at(i)}});
                 inspections_compressors_query.setTable("inspections_compressors JOIN inspections ON inspections.uuid = inspections_compressors.inspection_uuid");
                 if (table.value("highlight_nominal").toInt())
-                    inspections_compressors_query.setPredicate("(inspections.date > '" + QString::number(year) + "' OR nominal > 0)");
+                    inspections_compressors_query.setPredicate("(inspections.date > '" + QString::number(year) + "' OR inspection_type = 1)");
                 else
                     inspections_compressors_query.setPredicate("inspections.date > '" + QString::number(year) + "'");
 
-                ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.nominal", "date ASC");
+                ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.inspection_type", "date ASC");
 
                 if (compressor_uuids.count() > 1) {
                     for (int n = 0; n < compressors.count(); ++n) {
@@ -220,7 +220,7 @@ QString TableView::renderHTML(bool)
                 }
                 if (warnings_list.count()) {
                     warnings_html.append("<tr><td><a href=\"customer:" + customer_uuid + "/circuit:" + circuit_uuid);
-                    warnings_html.append(inspections.at(i).value("repair").toInt() == Inspection::IsRepair ? "/repair:" : "/inspection:");
+                    warnings_html.append(inspections.at(i).value("inspection_type").toInt() == Inspection::Repair ? "/repair:" : "/inspection:");
                     warnings_html.append(inspection_date + "\">");
                     warnings_html.append(settings->mainWindowSettings().formatDateTime(inspection_date) + "</a>");
                     warnings_html.append("</td><td>");
@@ -325,15 +325,13 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
 //*** Body ***
     HTMLTableBody *tbody = table->tbody();
     for (int i = 0; i < inspections.count(); ++i) {
-        bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         QString inspection_date = inspections.at(i).value("date").toString();
         QString customer_uuid = circuit.value("customer_uuid").toString();
         QString circuit_uuid = circuit.value("uuid").toString();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
-        if (inspection_type != Inspection::DefaultType) {
+        if (inspection_type < 0) {
             QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
 
             if (!description.isEmpty()) {
@@ -346,17 +344,25 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
             }
         }
 
-        if (is_nominal)
+        if (inspection_type == Inspection::NominalInspection)
             var_evaluation.setNominalInspection(inspections.at(i));
 
         row = tbody->addRow();
-        if (is_nominal && table_record.highlightNominal()) {
+        if (inspection_type == Inspection::NominalInspection && table_record.highlightNominal()) {
             row->addClass("nominal");
         }
         el = cell = row->addCell();
-        if (is_nominal) { el = cell->bold(); }
-        else if (is_repair) { el = cell->italics(); }
-        *el << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
+        switch (inspection_type) {
+            case Inspection::NominalInspection:
+                el = cell->bold();
+                break;
+            case Inspection::Repair:
+                el = cell->italics();
+                break;
+            default:
+                break;
+        }
+        *el << toolTipLink(inspection_type == Inspection::Repair ? "customer/circuit/repair" : "customer/circuit/inspection",
                            settings->mainWindowSettings().formatDateTime(inspection_date),
                            customer_uuid, circuit_uuid, inspection_date);
         if (is_outside_interval) { *el << "*"; }

@@ -352,7 +352,7 @@ static void migrateV1Compressors(QSqlDatabase &database)
 static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString &type_data)
 {
     switch (type) {
-        case Inspection::CircuitMovedType: {
+        case Inspection::CircuitMoved: {
             QStringList data = type_data.split(UNIT_SEPARATOR);
             if (data.count() > 2) {
                 data[0] = customerUUID(data[0].toInt());
@@ -370,10 +370,10 @@ static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString
 
 static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_uuids, QSqlDatabase &database)
 {
-    QString update_inspection = "UPDATE inspections SET uuid = :uuid, customer_uuid = :customer_uuid, circuit_uuid = :circuit_uuid, inspector_uuid = :inspector_uuid, person_uuid = :person_uuid, ar_type_uuid = :ar_type_uuid, inspection_type_data = :inspection_type_data WHERE customer = :customer AND circuit = :circuit AND date = :date";
+    QString update_inspection = "UPDATE inspections SET uuid = :uuid, customer_uuid = :customer_uuid, circuit_uuid = :circuit_uuid, inspector_uuid = :inspector_uuid, person_uuid = :person_uuid, ar_type_uuid = :ar_type_uuid, inspection_type = :inspection_type, inspection_type_data = :inspection_type_data WHERE customer = :customer AND circuit = :circuit AND date = :date";
     int inspections_table_id = JournalEntry::tableIDForName(Inspection::tableName());
 
-    MTSqlQuery inspections("SELECT customer, circuit, date, inspector, operator, ar_type, inspection_type, inspection_type_data FROM inspections", database);
+    MTSqlQuery inspections("SELECT customer, circuit, date, nominal, repair, inspector, operator, ar_type, inspection_type, inspection_type_data FROM inspections", database);
     while (inspections.next()) {
         int customer = inspections.intValue("customer");
         int circuit = inspections.intValue("circuit");
@@ -382,8 +382,19 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
         int inspector = inspections.intValue("inspector");
         qlonglong operator_id = inspections.longLongValue("operator");
         int ar_type = inspections.intValue("ar_type");
-        Inspection::Type inspection_type = (Inspection::Type)inspections.intValue("inspection_type");
+        Inspection::Type inspection_type = (Inspection::Type)(inspections.intValue("inspection_type") * -1);
         QString inspection_type_data = inspections.stringValue("inspection_type_data");
+
+        if (inspections.intValue("nominal")) {
+            inspection_type = Inspection::NominalInspection;
+        } else switch (inspections.intValue("repair")) {
+            case 1:
+                inspection_type = Inspection::Repair;
+                break;
+            case 2:
+                inspection_type = Inspection::InspectionAfterRepair;
+                break;
+        }
 
         MTSqlQuery inspection(database);
         inspection.prepare(update_inspection);
@@ -393,6 +404,7 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
         inspection.bindValue(":inspector_uuid", inspectorUUID(inspector));
         inspection.bindValue(":person_uuid", personUUID(operator_id));
         inspection.bindValue(":ar_type_uuid", assembly_record_type_uuids.value(ar_type));
+        inspection.bindValue(":inspection_type", (int)inspection_type);
         inspection.bindValue(":inspection_type_data", inspectionTypeDataFromV1Data(inspection_type, inspection_type_data));
         inspection.bindValue(":customer", customer);
         inspection.bindValue(":circuit", circuit);

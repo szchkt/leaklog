@@ -24,6 +24,7 @@
 #include "mtsqlquery.h"
 #include "mtrecord.h"
 #include "circuit.h"
+#include "inspection.h"
 
 #include <QRegExp>
 #include <QStringList>
@@ -78,7 +79,7 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
 {
     static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
                                    " WHERE date LIKE '%2%' AND circuit_uuid = :circuit_uuid"
-                                   " AND (nominal <> 1 OR nominal IS NULL)");
+                                   " AND inspection_type <> 1");
 
     if (null_var) *null_var = false;
 
@@ -114,6 +115,10 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
             QVariant value = circuit_attributes.value(var_name);
             values[i] = value.toDouble();
             if (null_var && value.isNull()) *null_var = true;
+        } else if (var_name == "nominal") {
+            values[i] = inspection.value("inspection_type").toInt() == Inspection::NominalInspection;
+        } else if (var_name == "repair") {
+            values[i] = inspection.value("inspection_type").toInt() == Inspection::Repair;
         } else if (var_name == "gwp") {
             values[i] = Global::refrigerantGWP(refrigerant);
         } else if (var_name == "co2_equivalent") {

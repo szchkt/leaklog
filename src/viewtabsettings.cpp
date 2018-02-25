@@ -138,7 +138,7 @@ void ViewTabSettings::loadInspection(const QString &inspection_uuid, bool refres
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
     if (inspection_uuid.isEmpty()) { return; }
-    if (Inspection(inspection_uuid).intValue("inspection_type") != Inspection::DefaultType) {
+    if (Inspection(inspection_uuid).intValue("inspection_type") < 0) {
         clearSelectedInspection();
         enableAllTools();
         if (refresh) {

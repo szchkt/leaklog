@@ -36,7 +36,7 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
 
     MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
                            " FROM inspections LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
-                           " WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
+                           " WHERE inspections.inspection_type <> 1");
 
     int current_year = QDate::currentDate().year();
 
@@ -63,7 +63,7 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
         addToValues(Key(year), RefrigerantAddition, refr_add_am);
     }
 
-    MTDictionary nominal_inspection_parents("nominal", "1");
+    MTDictionary nominal_inspection_parents("inspection_type", "1");
 
     MTSqlQuery circuits("SELECT uuid, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
 

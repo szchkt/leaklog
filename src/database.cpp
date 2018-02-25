@@ -1659,10 +1659,8 @@ void MainWindow::moveCircuit()
     inspection.insert("customer_uuid", customer_uuid);
     inspection.insert("circuit_uuid", circuit.uuid());
     inspection.insert("date", inspection_date);
-    inspection.insert("nominal", 0);
-    inspection.insert("repair", 0);
+    inspection.insert("inspection_type", Inspection::CircuitMoved);
     inspection.insert("outside_interval", 1);
-    inspection.insert("inspection_type", Inspection::CircuitMovedType);
     QStringList data;
     data << m_tab->selectedCustomerUUID();
     data << customer_uuid;
@@ -1938,10 +1936,8 @@ void MainWindow::skipInspection()
     inspection.insert("customer_uuid", m_tab->selectedCustomerUUID());
     inspection.insert("circuit_uuid", m_tab->selectedCircuitUUID());
     inspection.insert("date", inspection_date);
-    inspection.insert("nominal", 0);
-    inspection.insert("repair", 0);
+    inspection.insert("inspection_type", Inspection::SkippedInspection);
     inspection.insert("outside_interval", 0);
-    inspection.insert("inspection_type", Inspection::InspectionSkippedType);
     QStringList data;
     data << reason->text().remove(UNIT_SEPARATOR);
     inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
@@ -2772,8 +2768,7 @@ void MainWindow::importData()
     variable_scopes << QApplication::translate("VariableRecord", "Inspection");
     variable_scopes << QApplication::translate("VariableRecord", "Compressor");
     MTDictionary variable_names;
-    variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
-    variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));
+    variable_names.insert("inspection_type", QApplication::translate("Inspection", "Type"));
     QStringList compressor_variable_names;
     Variables variables(data);
     QMap<QString, QTreeWidgetItem *> variable_items;

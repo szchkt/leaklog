@@ -51,8 +51,7 @@ QString InspectionImagesView::renderHTML(bool for_export)
     writeCircuitsTable(out, customer_uuid, circuit_uuid, 8);
 
     Inspection inspection(inspection_uuid);
-    bool nominal = inspection.isNominal();
-    Inspection::Repair repair = inspection.repair();
+    Inspection::Type type = inspection.type();
 
     HTMLParentElement *el;
     HTMLDiv div;
@@ -62,8 +61,8 @@ QString InspectionImagesView::renderHTML(bool for_export)
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-         ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
-    *el << Inspection::titleForInspection(nominal, repair);
+         ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (type == Inspection::Repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
+    *el << Inspection::titleForInspectionType(type);
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.date());
 
     ListOfVariantMaps files = inspection.files().listAll("*", "file_uuid");

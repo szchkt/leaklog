@@ -80,7 +80,7 @@ QString InspectionsView::renderHTML(bool)
     QString order_by = settings->mainWindowSettings().orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, nominal, repair, outside_interval, risks, rmds, arno, inspector_uuid, "
+    ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, outside_interval, risks, rmds, arno, inspector_uuid, "
                                                               "person_uuid, refr_add_am, refr_reco, date_updated, updated_by, "
                                                               "inspection_type, inspection_type_data, "
                                                               "(SELECT COUNT(uuid) FROM inspections_files WHERE inspection_uuid = inspections.uuid) AS file_count",
@@ -120,12 +120,10 @@ QString InspectionsView::renderHTML(bool)
     for (int i = 0; i < inspections.count(); ++i) {
         QString uuid = inspections.at(i).value("uuid").toString();
         QString date = settings->mainWindowSettings().formatDateTime(inspections.at(i).value("date").toString());
-        bool is_nominal = inspections.at(i).value("nominal").toInt();
-        bool is_repair = inspections.at(i).value("repair").toInt() == Inspection::IsRepair;
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
-        if (inspection_type != Inspection::DefaultType) {
+        if (inspection_type < 0) {
             QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
 
             if (!description.isEmpty()) {
@@ -138,20 +136,20 @@ QString InspectionsView::renderHTML(bool)
         }
 
         out << QString("<tr id=\"%3\" onclick=\"window.location = 'customer:%1/circuit:%2/%3'\" style=\"cursor: pointer;\"")
-               .arg(customer_uuid).arg(circuit_uuid).arg((is_repair ? "repair:" : "inspection:") + uuid);
+               .arg(customer_uuid).arg(circuit_uuid).arg((inspection_type == Inspection::Repair ? "repair:" : "inspection:") + uuid);
         if (uuid == highlighted_uuid)
             out << " class=\"selected\"";
         out << "><td>";
-        if (is_nominal) { out << "<b>"; }
-        else if (is_repair) { out << "<i>"; }
-        out << toolTipLink(is_repair ? "customer/circuit/repair" : "customer/circuit/inspection",
+        if (inspection_type == Inspection::NominalInspection) { out << "<b>"; }
+        else if (inspection_type == Inspection::Repair) { out << "<i>"; }
+        out << toolTipLink(inspection_type == Inspection::Repair ? "customer/circuit/repair" : "customer/circuit/inspection",
                            date, customer_uuid, circuit_uuid, uuid);
         if (is_outside_interval) { out << "*"; }
-        if (is_nominal) { out << "</b>"; }
-        else if (is_repair) { out << "</i>"; }
+        if (inspection_type == Inspection::NominalInspection) { out << "</b>"; }
+        else if (inspection_type == Inspection::Repair) { out << "</i>"; }
         if (inspections.at(i).value("file_count").toInt()) {
             out << "&nbsp;<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid
-                << "/" << (is_repair ? "repair:" : "inspection:") << uuid << "/images"
+                << "/" << (inspection_type == Inspection::Repair ? "repair:" : "inspection:") << uuid << "/images"
                 << "\"><img src=\"data:image/png;base64," << attachmentImage()
                 << "\" alt=\"" << tr("Images") << "\" style=\"vertical-align: bottom;\"></a>";
         }

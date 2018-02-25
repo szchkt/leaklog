@@ -56,7 +56,7 @@ QString AgendaView::renderHTML(bool)
     circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
-    circuits_query.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.date, i.nominal, i.refr_add_am FROM inspections AS i"
+    circuits_query.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.date, i.inspection_type, i.refr_add_am FROM inspections AS i"
                            " LEFT JOIN inspections AS j ON i.circuit_uuid = j.circuit_uuid"
                            " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
                            " ON all_ins.circuit_uuid = circuits.uuid");
@@ -65,7 +65,7 @@ QString AgendaView::renderHTML(bool)
                                                 + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
                                                 " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
-                                                " all_ins.nominal, all_ins.refr_add_am");
+                                                " all_ins.inspection_type, all_ins.refr_add_am");
     circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
@@ -86,7 +86,8 @@ QString AgendaView::renderHTML(bool)
                 QString next_inspection_date = QDate::fromString(last_inspection_date.split("-").first(), DATE_FORMAT)
                         .addDays(30).toString(DATE_FORMAT);
                 if (next_inspection_date < next_regular_inspection_date &&
-                        circuits.intValue("nominal") == 0 && circuits.doubleValue("refr_add_am") > 0.0)
+                    circuits.intValue("inspection_type") != Inspection::NominalInspection &&
+                    circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
                                                 QList<QVariant>()
                                                     << circuits.stringValue("customer_uuid")

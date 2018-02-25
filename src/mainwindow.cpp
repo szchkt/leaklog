@@ -616,7 +616,7 @@ void MainWindow::printLabel(bool detailed)
 
         MTSqlQuery query;
         query.prepare("SELECT * FROM inspections WHERE circuit_uuid = :circuit_uuid"
-                      " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
+                      " AND inspection_type <> 1 AND outside_interval = 0 ORDER BY date DESC");
         query.bindValue(":circuit_uuid", m_tab->selectedCircuitUUID());
         query.exec();
         if (query.next()) {

@@ -419,7 +419,7 @@ QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
 {
     return "(COALESCE(circuits.refrigerant_amount, 0)"
             " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
-            " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.nominal = 1)) AS " + return_as;
+            " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.inspection_type = 1)) AS " + return_as;
 }
 
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
@@ -1237,9 +1237,9 @@ MTDictionary Global::listStyles()
 QStringList Global::listVariableIds(bool all)
 {
     QStringList ids;
-    ids << "customer_uuid" << "circuit_uuid" << "nominal" << "repair" << "outside_interval";
+    ids << "customer_uuid" << "circuit_uuid" << "inspection_type" << "nominal" << "repair" << "outside_interval";
     if (all)
-        ids << "date" << "inspection_type" << "inspection_type_data" << "id" << "customer_id" << "circuit_id" << "compressor_id" << "date_updated" << "updated_by";
+        ids << "date" << "inspection_type_data" << "uuid" << "customer_uuid" << "circuit_uuid" << "compressor_uuid" << "date_updated" << "updated_by";
     Variables variables;
     while (variables.next()) {
         if (all || variables.type() != "group")

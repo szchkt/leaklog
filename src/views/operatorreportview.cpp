@@ -114,7 +114,8 @@ QString OperatorReportView::renderHTML(bool)
                           tr("At the end of the year")) << "</th>";
     out << "</tr>";
 
-    MTQuery inspections = Inspection::query({"nominal", "0"});
+    MTQuery inspections = Inspection::query();
+    inspections.addFilter("inspection_type <> ?", QString::number(Inspection::NominalInspection));
     if (month_from > 1)
         inspections.addFilter("date >= ?", date_from);
     if (month_until < 12)
@@ -122,8 +123,7 @@ QString OperatorReportView::renderHTML(bool)
     if (month_from <= 1 || month_until >= 12)
         inspections.addFilter("date", QString("%1%").arg(year));
 
-    MTDictionary nominal_inspection_parents;
-    nominal_inspection_parents.insert("nominal", "1");
+    MTDictionary nominal_inspection_parents = {"inspection_type", "1"};
 
     QVariantMap sums;
     ListOfVariantMaps nominal_inspections;
