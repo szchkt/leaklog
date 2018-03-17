@@ -140,13 +140,6 @@ MainWindow::MainWindow():
 
     // Status bar
 
-    progress_bar = new QProgressBar(statusBar());
-    progress_bar->setRange(0, 0);
-    progress_bar->setVisible(false);
-    progress_bar->setMaximumSize(150, 16);
-    statusBar()->addPermanentWidget(progress_bar);
-    statusBar()->setMaximumHeight(20);
-
     statusbar->setStyleSheet(R"(
         QStatusBar {
             background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ECECEC, stop: 1 #D5D5D5);
@@ -154,6 +147,13 @@ MainWindow::MainWindow():
         }
     )");
 #endif
+
+    progress_bar = new QProgressBar(statusbar);
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(false);
+    progress_bar->setMaximumSize(150, 16);
+    statusbar->addPermanentWidget(progress_bar);
+    statusbar->setMaximumHeight(20);
 
     // Toolbar
     tbtn_open = new QToolButton(this);
