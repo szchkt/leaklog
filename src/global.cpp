@@ -44,6 +44,9 @@
 
 #include <windows.h>
 
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "gdi32.lib")
+
 double Global::scaleFactor(bool refresh)
 {
     static double scale = 0.0;

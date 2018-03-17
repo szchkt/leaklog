@@ -164,7 +164,7 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
 
     QString last_category;
     int num_columns = 6, i, n;
-    int colspans[num_columns];
+    int *colspans = new int[num_columns];
     bool show_list_price = settings->toolBarStack()->isAssemblyRecordListPriceChecked();
     bool show_acquisition_price = settings->toolBarStack()->isAssemblyRecordAcquisitionPriceChecked();
     bool show_total = settings->toolBarStack()->isAssemblyRecordTotalChecked();
@@ -296,6 +296,8 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
         absolute_total += total;
         acquisition_total += item_value.toDouble() * categories_query.value(ACQUISITION_PRICE).toDouble();
     }
+
+    delete[] colspans;
 
     if (show_total) {
         table = top_table;

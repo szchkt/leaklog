@@ -255,6 +255,9 @@ win32 {
     OBJECTS_DIR    = build/win32
     MOC_DIR        = build/win32
     RCC_DIR        = build/win32
+}
+
+win32-g++ {
     LIBS          += C:\MinGW\lib\libgdi32.a
 }
 
@@ -275,7 +278,11 @@ macx {
     QMAKE_LFLAGS   += -stdlib=libc++
 }
 
-QMAKE_CXXFLAGS    += -std=c++0x
+win32-msvc* {
+    QMAKE_CXXFLAGS += /std:c++14
+} else {
+    QMAKE_CXXFLAGS += -std=c++0x
+}
 
 unix {
     OBJECTS_DIR    = build/unix

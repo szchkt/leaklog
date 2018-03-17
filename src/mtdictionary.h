@@ -37,7 +37,6 @@ public:
         dict_keys << key_and_value[0];
         dict_values << key_and_value[1];
     }
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     MTDictionary(std::initializer_list<QString[2]> keys_and_values) {
         allow_duplicate_keys = false;
         for (auto i = keys_and_values.begin(); i != keys_and_values.end(); ++i) {
@@ -45,7 +44,6 @@ public:
             dict_values << (*i)[1];
         }
     }
-#endif
     explicit MTDictionary(bool allow_duplicate_keys) { this->allow_duplicate_keys = allow_duplicate_keys; }
     MTDictionary(const QStringList &keys, const QStringList &values = QStringList()) {
         dict_keys = keys;
