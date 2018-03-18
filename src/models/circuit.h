@@ -49,6 +49,8 @@ public:
 
     inline QString customerUUID() { return stringValue("customer_uuid"); }
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline bool isStarred() { return intValue("starred"); }
+    inline void setStarred(bool value) { setValue("starred", (int)value); }
     inline QString circuitID() { return stringValue("id").rightJustified(5, '0'); }
     inline void setCircuitID(const QString &value) { setValue("id", value.toInt()); }
     inline void setCircuitID(int value) { setValue("id", value); }
@@ -98,6 +100,8 @@ public:
     inline void setInspectionInterval(int value) { setValue("inspection_interval", value); }
     inline QString notes() { return stringValue("notes"); }
     inline void setNotes(const QString &value) { setValue("notes", value); }
+    inline QString operatorLink() { return stringValue("operator_link"); }
+    inline void setOperatorLink(const QString &value) { setValue("operator_link", value); }
 
     MTRecordQuery<Compressor> compressors() const;
     MTRecordQuery<CircuitUnit> units() const;

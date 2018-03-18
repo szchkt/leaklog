@@ -105,6 +105,7 @@ class CustomerColumns
 public:
     CustomerColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("starred", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("id", "TEXT");
         columns << Column("company", "TEXT");
         columns << Column("address", "TEXT");

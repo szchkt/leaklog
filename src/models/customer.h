@@ -43,6 +43,8 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     void readOperatorValues();
 
+    inline bool isStarred() { return intValue("starred"); }
+    inline void setStarred(bool value) { setValue("starred", (int)value); }
     inline QString companyID() { return stringValue("id"); }
     inline void setCompanyID(const QString &value) { setValue("id", value); }
     inline QString companyName() { return stringValue("company"); }

@@ -255,6 +255,8 @@ public:
         column_names.insert(152, "compare_nom");
         column_names.insert(153, "tolerance");
         column_names.insert(154, "col_bg");
+        column_names.insert(155, "starred");
+        column_names.insert(156, "operator_link");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();

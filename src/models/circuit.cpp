@@ -164,6 +164,7 @@ public:
     CircuitColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("customer_uuid", "UUID");
+        columns << Column("starred", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("id", "INTEGER");
         columns << Column("name", "TEXT");
         columns << Column("disused", "INTEGER");
@@ -188,6 +189,7 @@ public:
         columns << Column("utilisation", "NUMERIC");
         columns << Column("inspection_interval", "INTEGER");
         columns << Column("notes", "TEXT");
+        columns << Column("operator_link", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
