@@ -28,6 +28,8 @@
 #include "variables.h"
 
 #include <QApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMessageBox>
 
 using namespace Global;
@@ -112,6 +114,7 @@ public:
         columns << Column("inspection_type", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("inspection_type_data", "TEXT");
         columns << Column("outside_interval", "INTEGER");
+        columns << Column("inspection_data", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -192,6 +195,16 @@ Customer Inspection::customer()
 Circuit Inspection::circuit()
 {
     return circuitUUID();
+}
+
+QJsonObject Inspection::data()
+{
+    return QJsonDocument::fromJson(stringValue("inspection_data").toUtf8()).object();
+}
+
+void Inspection::setData(const QJsonObject &value)
+{
+    setValue("inspection_data", QJsonDocument(value).toJson(QJsonDocument::Compact));
 }
 
 MTRecordQuery<InspectionCompressor> Inspection::compressors() const

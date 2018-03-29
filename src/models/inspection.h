@@ -73,6 +73,8 @@ public:
     inline void setType(Type value) { setValue("inspection_type", (int)value); }
     inline QString typeData() { return stringValue("inspection_type_data"); }
     inline void setTypeData(const QString &value) { setValue("inspection_type_data", value); }
+    QJsonObject data();
+    void setData(const QJsonObject &value);
 
     MTRecordQuery<InspectionCompressor> compressors() const;
     MTRecordQuery<InspectionFile> files() const;

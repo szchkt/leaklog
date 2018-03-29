@@ -257,6 +257,7 @@ public:
         column_names.insert(154, "col_bg");
         column_names.insert(155, "starred");
         column_names.insert(156, "operator_link");
+        column_names.insert(157, "inspection_data");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
