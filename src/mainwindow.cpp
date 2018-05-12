@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2017 Matus & Michal Tomlein
+ Copyright (C) 2008-2018 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -1333,10 +1333,10 @@ void MainWindow::loadSettings()
     actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionShow_Place_of_operation->setChecked(settings.value("columns/operation", false).toBool());
     actionShow_Building->setChecked(settings.value("columns/building", false).toBool());
-    actionShow_Device->setChecked(settings.value("columns/device", false).toBool());
-    actionShow_Manufacturer->setChecked(settings.value("columns/manufacturer", false).toBool());
-    actionShow_Type->setChecked(settings.value("columns/type", false).toBool());
-    actionShow_Serial_number->setChecked(settings.value("columns/sn", false).toBool());
+    actionShow_Device->setChecked(settings.value("columns/device", true).toBool());
+    actionShow_Manufacturer->setChecked(settings.value("columns/manufacturer", true).toBool());
+    actionShow_Type->setChecked(settings.value("columns/type", true).toBool());
+    actionShow_Serial_number->setChecked(settings.value("columns/sn", true).toBool());
     actionShow_Year_of_purchase->setChecked(settings.value("columns/year", true).toBool());
     actionShow_Date_of_commissioning->setChecked(settings.value("columns/commissioning", true).toBool());
     actionShow_Field_of_application->setChecked(settings.value("columns/field", true).toBool());

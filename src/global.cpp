@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2017 Matus & Michal Tomlein
+ Copyright (C) 2008-2018 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -935,6 +935,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
 {
     static QMap<QString, double> GWP;
     if (GWP.isEmpty()) {
+        GWP.insert("C4F8", 8700);
         GWP.insert("NH3", 0);
         GWP.insert("R11", 4600);
         GWP.insert("R1150", 3);
@@ -979,6 +980,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R407D", 1627);
         GWP.insert("R407E", 1430);
         GWP.insert("R407F", 1825);
+        GWP.insert("R407H", 1495);
         GWP.insert("R408A", 3020);
         GWP.insert("R409A", 1540);
         GWP.insert("R409B", 1500);
@@ -1050,21 +1052,29 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
 {
     QStringList refrigerants;
     refrigerants
+        << "C4F8"
         << "R11"
         << "R12"
         << "R22"
         << "R23"
         << "R32"
+        << "R41"
         << "R123"
-        << "R1234yf"
         << "R124"
         << "R125"
+        << "R134"
         << "R134a"
         << "R141b"
+        << "R143"
         << "R143a"
+        << "R152"
         << "R152a"
+        << "R161"
         << "R227ea"
+        << "R236cb"
+        << "R236ea"
         << "R236fa"
+        << "R245ca"
         << "R245fa"
         << "R290"
         << "R365mfc"
@@ -1084,6 +1094,7 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         << "R407D"
         << "R407E"
         << "R407F"
+        << "R407H"
         << "R408A"
         << "R409A"
         << "R409B"
@@ -1106,23 +1117,30 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         << "R424A"
         << "R425A"
         << "R426A"
-        << "R427A" 
-        << "R428A" 
-        << "R437A" 
-        << "R438" 
-        << "R448A" 
-        << "R449A" 
-        << "R450A" 
-        << "R452A" 
-        << "R500" 
-        << "R501" 
-        << "R502" 
-        << "R503" 
-        << "R507" 
-        << "R508A" 
-        << "R508B" 
-        << "R513A" 
-        << "R600a" 
+        << "R427A"
+        << "R428A"
+        << "R434A"
+        << "R437A"
+        << "R438"
+        << "R442A"
+        << "R448A"
+        << "R449A"
+        << "R450A"
+        << "R452A"
+        << "R500"
+        << "R501"
+        << "R502"
+        << "R503"
+        << "R507"
+        << "R508A"
+        << "R508B"
+        << "R513A"
+        << "R600a"
+        << "R717"
+        << "R744"
+        << "R1150"
+        << "R1234yf"
+        << "R1234ze"
         << "SF6";
 
     if (include_user_refrigerants) {
