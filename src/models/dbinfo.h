@@ -32,6 +32,8 @@ public:
     static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
 
     static QString databaseUUID(const QSqlDatabase & = QSqlDatabase::database());
+    static QString databaseName(const QSqlDatabase & = QSqlDatabase::database());
+    static void setDatabaseName(const QString &database_name, const QSqlDatabase & = QSqlDatabase::database());
     static QString autosaveMode();
     static void setAutosaveMode(const QString &autosave_mode);
     static bool isCurrentUserAdmin();

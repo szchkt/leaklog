@@ -24,6 +24,7 @@
 
 #include <QDataStream>
 #include <QDate>
+#include <QFileInfo>
 #include <QSqlError>
 
 using namespace Global;
@@ -52,6 +53,20 @@ QString DBInfo::databaseUUID(const QSqlDatabase &database)
         setValueForKey("database_uuid", database_uuid, database);
     }
     return database_uuid;
+}
+
+QString DBInfo::databaseName(const QSqlDatabase &database)
+{
+    QString database_name = valueForKey("database_name", QString(), database);
+    if (database_name.isEmpty()) {
+        database_name = QFileInfo(database.databaseName()).completeBaseName();
+    }
+    return database_name;
+}
+
+void DBInfo::setDatabaseName(const QString &database_name, const QSqlDatabase &database)
+{
+    setValueForKey("database_name", database_name, database);
 }
 
 QString DBInfo::autosaveMode()

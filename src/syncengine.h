@@ -69,6 +69,7 @@ public:
     SyncEngine(Authenticator *authenticator, QObject *parent = NULL);
 
     inline QString databaseUUID() const { return _database_uuid; }
+    QString databaseName();
     inline QString error() const { return _error; }
     inline QString action() const { return _action; }
 
@@ -97,6 +98,7 @@ private slots:
 private:
     Authenticator *_authenticator;
     QString _database_uuid;
+    QString _database_name;
     QString _error;
     QString _action;
     QNetworkAccessManager *_network_manager;

@@ -139,6 +139,13 @@ SyncEngine::SyncEngine(Authenticator *authenticator, QObject *parent):
     connect(_network_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 }
 
+QString SyncEngine::databaseName()
+{
+    if (_database_name.isEmpty())
+        _database_name = DBInfo::databaseName();
+    return _database_name;
+}
+
 QJsonObject SyncEngine::journalState() const
 {
     QJsonObject journal;
@@ -178,7 +185,8 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
         {"version", F_LEAKLOG_VERSION},
         {"db_version", F_DB_VERSION},
         {"source_uuid", sourceUUID()},
-        {"database_uuid", _database_uuid},
+        {"database_uuid", databaseUUID()},
+        {"database_name", databaseName()},
         {"journal_version", JournalEntry::Version},
     };
 
