@@ -65,7 +65,7 @@ bool ActivityEventFilter::eventFilter(QObject *obj, QEvent *event)
 
 void ActivityEventFilter::taskTimerTimeout()
 {
-    int time_since_activity = QDateTime::currentMSecsSinceEpoch() - last_activity_time;
+    int time_since_activity = (int)(QDateTime::currentMSecsSinceEpoch() - last_activity_time);
 
     emit performPeriodicTasks();
 

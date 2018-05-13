@@ -449,7 +449,7 @@ void MainWindow::printPreview()
 void MainWindow::printPreview(QPrinter *printer)
 {
     bool printing = true;
-    m_tab->webView()->page()->print(printer, [printer, &printing](bool) {
+    m_tab->webView()->page()->print(printer, [&printing](bool) {
         printing = false;
     });
     while (printing) {
