@@ -26,9 +26,10 @@ class MTSqlQuery : public QSqlQuery
 {
 public:
     MTSqlQuery(QSqlResult *result);
-    MTSqlQuery(const QString &query = QString(), QSqlDatabase db = QSqlDatabase());
-    MTSqlQuery(QSqlDatabase db);
+    MTSqlQuery(const QString &query = QString(), QSqlDatabase db = QSqlDatabase(), bool forward = true);
+    MTSqlQuery(QSqlDatabase db, bool forward = true);
     MTSqlQuery(const QSqlQuery &other);
+    MTSqlQuery(const MTSqlQuery &other);
 
     bool exec(const QString &query);
     bool exec();

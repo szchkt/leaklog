@@ -1846,7 +1846,6 @@ void MainWindow::skipInspection()
     MTSqlQuery circuit_query = circuit_record.select("circuits.hermetic, circuits.leak_detector, circuits.inspection_interval, "
                                                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
                                                      "circuits.refrigerant, " + circuitRefrigerantAmountQuery());
-    circuit_query.setForwardOnly(true);
     circuit_query.exec();
     if (circuit_query.next()) {
         int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.stringValue("refrigerant"),

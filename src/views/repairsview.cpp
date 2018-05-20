@@ -61,7 +61,6 @@ QString RepairsView::renderHTML(bool)
     if (order_by.isEmpty())
         order_by = "date";
     MTSqlQuery repairs = repairs_record.select("*", settings->appendDefaultOrderToColumn(order_by));
-    repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">" << tr("Repairs") << "</th></tr><tr>";

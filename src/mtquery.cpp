@@ -105,7 +105,6 @@ QVariantMap MTQuery::list(const QString &fields, const QString &order_by) const
 {
     QVariantMap list;
     MTSqlQuery query = select(fields, order_by);
-    query.setForwardOnly(true);
     query.exec();
     if (!query.next()) { return list; }
     for (int i = 0; i < query.record().count(); ++i) {
@@ -118,7 +117,6 @@ ListOfVariantMaps MTQuery::listAll(const QString &fields, const QString &order_b
 {
     ListOfVariantMaps list;
     MTSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
-    query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
         QVariantMap map;
@@ -135,7 +133,6 @@ QVariantMap MTQuery::sumAll(const QString &fields) const
 {
     QVariantMap list;
     MTSqlQuery query = select(fields);
-    query.setForwardOnly(true);
     query.exec();
     while (query.next()) {
         for (int i = 0; i < query.record().count(); ++i) {
@@ -150,7 +147,6 @@ MultiMapOfVariantMaps MTQuery::mapAll(const QString &map_to, const QString &fiel
     MultiMapOfVariantMaps map;
     QStringList list_map_to = map_to.split("::");
     MTSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
-    query.setForwardOnly(true);
     query.exec();
     QList<int> indices;
     for (int i = 0; i < list_map_to.count(); ++i) {

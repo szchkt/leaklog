@@ -66,7 +66,6 @@ QString AgendaView::renderHTML(bool)
                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
                                                 " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
                                                 " all_ins.inspection_type, all_ins.refr_add_am");
-    circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
         QString refrigerant = circuits.stringValue("refrigerant");

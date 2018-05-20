@@ -154,7 +154,9 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
         if (!_open)
             return -273.15;
 
-        QSqlQuery limits("SELECT refrigerant, MIN(pressure), MAX(pressure) FROM satp GROUP BY refrigerant", database);
+        QSqlQuery limits(database);
+        limits.setForwardOnly(true);
+        limits.exec("SELECT refrigerant, MIN(pressure), MAX(pressure) FROM satp GROUP BY refrigerant");
         while (limits.next()) {
             _limits.insert(limits.value(0).toString(), QPair<double, double>(limits.value(1).toDouble(), limits.value(2).toDouble()));
         }
@@ -174,6 +176,7 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
     QSqlDatabase database = QSqlDatabase::database("RefPropDatabase");
 
     QSqlQuery query(database);
+    query.setForwardOnly(true);
     query.prepare("SELECT temp_liq, temp_vap FROM satp WHERE refrigerant = :r AND pressure >= :p_min AND pressure <= :p_max");
     query.bindValue(":r", refrigerant);
 
@@ -210,6 +213,7 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
 
     if (!count) {
         QSqlQuery query(database);
+        query.setForwardOnly(true);
         query.prepare("SELECT temp_liq, temp_vap, pressure FROM satp WHERE refrigerant = :r ORDER BY ABS(pressure - :p) LIMIT 2");
         query.bindValue(":r", refrigerant);
         query.bindValue(":p", pressure);

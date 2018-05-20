@@ -72,7 +72,6 @@ public:
 
     void each(std::function<void(T &)> f) const {
         MTSqlQuery query = select();
-        query.setForwardOnly(true);
         query.exec();
         while (query.next()) {
             QVariantMap values;
@@ -87,7 +86,6 @@ public:
     QList<T> all(const QString &order_by = QString()) const {
         QList<T> records;
         MTSqlQuery query = order_by.isEmpty() ? select() : select("*", order_by);
-        query.setForwardOnly(true);
         query.exec();
         while (query.next()) {
             QVariantMap values;
@@ -102,7 +100,6 @@ public:
     QMap<QVariant, T> map(const QString &key) const {
         QMap<QVariant, T> result;
         MTSqlQuery query = select();
-        query.setForwardOnly(true);
         query.exec();
         while (query.next()) {
             QVariantMap values;

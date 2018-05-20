@@ -93,7 +93,6 @@ QVariantMap MTRecord::list(const QString &fields, const QString &order_by) const
 {
     QVariantMap list;
     MTSqlQuery query = select(fields, order_by);
-    query.setForwardOnly(true);
     query.exec();
     if (!query.next()) { return list; }
     for (int i = 0; i < query.record().count(); ++i) {
@@ -176,7 +175,6 @@ bool MTRecord::save(bool add_columns)
 
             if (columns.count()) {
                 MTSqlQuery query = select(columns.join(", "), QString());
-                query.setForwardOnly(true);
                 query.exec();
 
                 if (query.next()) {

@@ -44,7 +44,6 @@ void Table::initEditDialogue(EditDialogueWidgets *md)
     }));
 
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT name FROM tables" + QString(name().isEmpty() ? "" : " WHERE name <> :name"));
     if (!uuid().isEmpty()) { query_used_ids.bindValue(":name", name()); }
     if (query_used_ids.exec()) {

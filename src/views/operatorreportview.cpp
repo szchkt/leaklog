@@ -136,7 +136,6 @@ QString OperatorReportView::renderHTML(bool)
     }
 
     MTSqlQuery circuits = circuits_query.select("uuid, id, name, refrigerant, refrigerant_amount, field, operation, disused, hermetic, commissioning, decommissioning");
-    circuits.setForwardOnly(true);
     circuits.exec();
     while (circuits.next()) {
         QString circuit_uuid = circuits.stringValue("uuid");

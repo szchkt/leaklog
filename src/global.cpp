@@ -1157,7 +1157,6 @@ MTDictionary Global::listInspectors()
 {
     MTDictionary inspectors(true);
     MTSqlQuery query;
-    query.setForwardOnly(true);
     if (query.exec("SELECT uuid, person FROM inspectors")) {
         while (query.next()) {
             inspectors.insert(query.value(0).toString(), query.value(1).toString());
@@ -1170,7 +1169,6 @@ MTDictionary Global::listOperators(const QString &customer_uuid)
 {
     MTDictionary operators(true);
     MTSqlQuery query;
-    query.setForwardOnly(true);
     if (query.exec(QString("SELECT uuid, name FROM persons WHERE customer_uuid = '%1' AND hidden = 0").arg(customer_uuid))) {
         while (query.next()) {
             operators.insert(query.value(0).toString(), query.value(1).toString());
@@ -1184,7 +1182,6 @@ MTDictionary Global::listAssemblyRecordItemCategories(bool exclude_predefined)
     MTDictionary categories;
     categories.allowDuplicateKeys();
     MTSqlQuery query;
-    query.setForwardOnly(true);
     if (query.exec("SELECT uuid, name FROM assembly_record_item_categories")) {
         while (query.next()) {
             QString uuid = query.value(0).toString();
@@ -1201,7 +1198,6 @@ MTDictionary Global::listAssemblyRecordTypes()
     MTDictionary dict(QString(), QObject::tr("No type"));
     dict.allowDuplicateKeys();
     MTSqlQuery query;
-    query.setForwardOnly(true);
     if (query.exec("SELECT uuid, name FROM assembly_record_types")) {
         while (query.next()) {
             QString name = query.value(1).toString().left(40);
@@ -1246,7 +1242,6 @@ MTDictionary Global::listStyles()
     MTDictionary styles(QString(), QObject::tr("Default"));
     styles.allowDuplicateKeys();
     MTSqlQuery query;
-    query.setForwardOnly(true);
     if (query.exec(QString("SELECT uuid, name FROM styles"))) {
         while (query.next()) {
             styles.insert(query.value(0).toString(), query.value(1).toString());

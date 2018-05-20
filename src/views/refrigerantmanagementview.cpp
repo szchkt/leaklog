@@ -83,7 +83,6 @@ QString RefrigerantManagementView::renderHTML(bool)
     if (order_by.isEmpty())
         order_by = "date";
     MTSqlQuery query = records.select("*", settings->appendDefaultOrderToColumn(order_by));
-    query.setForwardOnly(true);
     query.exec();
     QString date;
     while (query.next()) {

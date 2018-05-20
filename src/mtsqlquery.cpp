@@ -32,18 +32,26 @@ MTSqlQuery::MTSqlQuery(QSqlResult *result):
     QSqlQuery(result)
 {}
 
-MTSqlQuery::MTSqlQuery(const QString &query, QSqlDatabase db):
-    QSqlQuery(query, db)
+MTSqlQuery::MTSqlQuery(const QString &query, QSqlDatabase db, bool forward):
+    QSqlQuery(db)
 {
+    setForwardOnly(forward);
+
     if (!query.isEmpty())
-        printLastError();
+        exec(query);
 }
 
-MTSqlQuery::MTSqlQuery(QSqlDatabase db):
+MTSqlQuery::MTSqlQuery(QSqlDatabase db, bool forward):
     QSqlQuery(db)
-{}
+{
+    setForwardOnly(forward);
+}
 
 MTSqlQuery::MTSqlQuery(const QSqlQuery &other):
+    QSqlQuery(other)
+{}
+
+MTSqlQuery::MTSqlQuery(const MTSqlQuery &other):
     QSqlQuery(other)
 {}
 

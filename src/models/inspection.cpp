@@ -145,7 +145,6 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
 
     bool nominal_found = false;
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
     query_used_ids.prepare("SELECT date, inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
     query_used_ids.bindValue(":circuit_uuid", circuit_record.uuid());
     if (!uuid().isEmpty()) { query_used_ids.bindValue(":date", date()); }

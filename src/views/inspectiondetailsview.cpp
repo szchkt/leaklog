@@ -84,7 +84,6 @@ QString InspectionDetailsView::renderHTML(bool)
     var_evaluation.setNominalInspection(nominal_ins);
 
     MTSqlQuery tables = Table::query({"scope", "1"}).select("name, variables", "position");
-    tables.setForwardOnly(true);
     tables.exec();
 
     QSet<QString> all_variables;

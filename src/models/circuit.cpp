@@ -89,7 +89,6 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 
     int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
     query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 ORDER BY id ASC").arg(QString(id.isEmpty() ? "" : " AND id <> :id")));
     query_used_ids.bindValue(":customer_uuid", customerUUID());
     if (!id.isEmpty()) { query_used_ids.bindValue(":id", id); }
