@@ -2918,6 +2918,7 @@ void MainWindow::importData()
                .arg(inspections_compressors_columns.join(", ")));
     last_uuid.clear();
     last_item = NULL;
+    QSqlRecord record = query.record();
     while (query.next()) {
         QString inspection_uuid = query.stringValue("uuid");
         if (last_uuid != inspection_uuid) {
@@ -2988,7 +2989,7 @@ void MainWindow::importData()
                 columns.insert(QString(), "0");
 
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    if (!query.record().contains("compressor_" + variable_names.key(i))) {
+                    if (!record.contains("compressor_" + variable_names.key(i))) {
                         columns.insert(QString(), "0");
                         continue;
                     }
@@ -3018,7 +3019,7 @@ void MainWindow::importData()
                 item->setData(0, Qt::UserRole, compressor_uuid);
                 item->setText(1, query.stringValue("compressor_name"));
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    if (!query.record().contains("compressor_" + variable_names.key(i)))
+                    if (!record.contains("compressor_" + variable_names.key(i)))
                         continue;
                     shown_sections << i + 3;
                     item->setText(i + 3, query.stringValue("compressor_" + variable_names.key(i)));
@@ -3193,10 +3194,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM customers WHERE uuid = :uuid");
                 query.bindValue(":uuid", customer_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                     Customer(customer_uuid).update(set);
                 }
@@ -3215,10 +3217,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM persons WHERE uuid = :uuid");
                 query.bindValue(":uuid", person_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                     Person(person_uuid).update(set);
                 }
@@ -3239,10 +3242,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM circuits WHERE uuid = :uuid");
                 query.bindValue(":uuid", circuit_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                     Circuit(circuit_uuid).update(set);
                 }
@@ -3253,10 +3257,11 @@ void MainWindow::importData()
                     query.prepare("SELECT * FROM compressors WHERE uuid = :uuid");
                     query.bindValue(":uuid", compressor_uuid);
                     query.exec();
+                    QSqlRecord record = query.record();
                     if (query.next()) {
-                        for (int f = 0; f < query.record().count(); ++f) {
-                            if (compressors_fields.contains(query.record().fieldName(f)))
-                                set.insert(query.record().fieldName(f), query.value(f));
+                        for (int f = 0; f < record.count(); ++f) {
+                            if (compressors_fields.contains(record.fieldName(f)))
+                                set.insert(record.fieldName(f), query.value(f));
                         }
                         Compressor(compressor_uuid).update(set);
                     }
@@ -3344,12 +3349,13 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM inspections WHERE uuid = :uuid");
                 query.bindValue(":uuid", inspection_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    set.insert("inspection_type", query.value(query.record().indexOf("inspection_type")).toInt()); // NOT NULL
+                    set.insert("inspection_type", query.value(record.indexOf("inspection_type")).toInt()); // NOT NULL
 
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (!inspections_skip_columns.contains(query.record().fieldName(f))) {
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (!inspections_skip_columns.contains(record.fieldName(f))) {
+                            set.insert(record.fieldName(f), query.value(f));
                         }
                     }
                 }
@@ -3362,11 +3368,12 @@ void MainWindow::importData()
                     query.prepare("SELECT * FROM inspections_compressors WHERE uuid = :uuid");
                     query.bindValue(":uuid", compressor_uuid);
                     query.exec();
+                    QSqlRecord record = query.record();
                     if (query.next()) {
-                        for (int f = 0; f < query.record().count(); ++f) {
-                            if (inspections_compressors_fields.contains(query.record().fieldName(f))
-                                && !inspections_skip_columns.contains(query.record().fieldName(f)))
-                                set.insert(query.record().fieldName(f), query.value(f));
+                        for (int f = 0; f < record.count(); ++f) {
+                            if (inspections_compressors_fields.contains(record.fieldName(f))
+                                && !inspections_skip_columns.contains(record.fieldName(f)))
+                                set.insert(record.fieldName(f), query.value(f));
                         }
                         InspectionCompressor(compressor_uuid).update(set);
                     }
@@ -3386,10 +3393,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM repairs WHERE uuid = :uuid");
                 query.bindValue(":uuid", repair_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
                 Repair(repair_uuid).update(set);
@@ -3408,10 +3416,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM refrigerant_management WHERE uuid = :uuid");
                 query.bindValue(":uuid", record_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
                 RefrigerantRecord(record_uuid).update(set);
@@ -3430,10 +3439,11 @@ void MainWindow::importData()
                 query.prepare("SELECT * FROM inspectors WHERE uuid = :uuid");
                 query.bindValue(":uuid", inspector_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
                 Inspector(inspector_uuid).update(set);

@@ -73,10 +73,11 @@ public:
     void each(std::function<void(T &)> f) const {
         MTSqlQuery query = select();
         query.exec();
+        QSqlRecord query_record = query.record();
         while (query.next()) {
             QVariantMap values;
-            for (int i = 0; i < query.record().count(); ++i) {
-                values.insert(query.record().fieldName(i), query.value(i));
+            for (int i = 0; i < query_record.count(); ++i) {
+                values.insert(query_record.fieldName(i), query.value(i));
             }
             T record(values.value("uuid").toString(), values);
             f(record);
@@ -87,10 +88,11 @@ public:
         QList<T> records;
         MTSqlQuery query = order_by.isEmpty() ? select() : select("*", order_by);
         query.exec();
+        QSqlRecord record = query.record();
         while (query.next()) {
             QVariantMap values;
-            for (int i = 0; i < query.record().count(); ++i) {
-                values.insert(query.record().fieldName(i), query.value(i));
+            for (int i = 0; i < record.count(); ++i) {
+                values.insert(record.fieldName(i), query.value(i));
             }
             records << T(values.value("uuid").toString(), values);
         }
@@ -101,10 +103,11 @@ public:
         QMap<QVariant, T> result;
         MTSqlQuery query = select();
         query.exec();
+        QSqlRecord record = query.record();
         while (query.next()) {
             QVariantMap values;
-            for (int i = 0; i < query.record().count(); ++i) {
-                values.insert(query.record().fieldName(i), query.value(i));
+            for (int i = 0; i < record.count(); ++i) {
+                values.insert(record.fieldName(i), query.value(i));
             }
             result.insert(values.value(key), T(values.value("uuid").toString(), values));
         }

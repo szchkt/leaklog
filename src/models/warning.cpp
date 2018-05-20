@@ -39,9 +39,10 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
     QVariantMap attributes; bool enable_all = true;
     if (!uuid().isEmpty()) {
         Warning query(uuid());
+        QSqlRecord record = query.record();
         if (query.next()) {
-            for (int i = 0; i < query.record().count(); ++i) {
-                attributes.insert(query.record().fieldName(i), query.value(query.record().fieldName(i)));
+            for (int i = 0; i < record.count(); ++i) {
+                attributes.insert(record.fieldName(i), query.value(record.fieldName(i)));
             }
         }
         if (!attributes.value("name").toString().isEmpty()) {

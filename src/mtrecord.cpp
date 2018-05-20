@@ -94,9 +94,10 @@ QVariantMap MTRecord::list(const QString &fields, const QString &order_by) const
     QVariantMap list;
     MTSqlQuery query = select(fields, order_by);
     query.exec();
+    QSqlRecord record = query.record();
     if (!query.next()) { return list; }
-    for (int i = 0; i < query.record().count(); ++i) {
-        list.insert(query.record().fieldName(i), query.value(i));
+    for (int i = 0; i < record.count(); ++i) {
+        list.insert(record.fieldName(i), query.value(i));
     }
     return list;
 }
@@ -176,10 +177,10 @@ bool MTRecord::save(bool add_columns)
             if (columns.count()) {
                 MTSqlQuery query = select(columns.join(", "), QString());
                 query.exec();
-
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int i = 0; i < query.record().count(); ++i) {
-                        QString column = query.record().fieldName(i);
+                    for (int i = 0; i < record.count(); ++i) {
+                        QString column = record.fieldName(i);
                         QVariant value = query.value(i);
                         r_saved_values.insert(column, value);
 

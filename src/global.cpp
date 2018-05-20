@@ -213,8 +213,9 @@ MTDictionary Global::getTableFieldNames(const QString &table, const QSqlDatabase
     MTDictionary field_names;
     MTSqlQuery query(database);
     query.exec(QString("SELECT * FROM \"%1\"").arg(table));
-    for (int i = 0; i < query.record().count(); ++i) {
-        field_names.insert(query.record().fieldName(i), variantTypeToSqlType(query.record().field(i).type()));
+    QSqlRecord record = query.record();
+    for (int i = 0; i < record.count(); ++i) {
+        field_names.insert(record.fieldName(i), variantTypeToSqlType(record.field(i).type()));
     }
     return field_names;
 }
@@ -222,30 +223,32 @@ MTDictionary Global::getTableFieldNames(const QString &table, const QSqlDatabase
 void Global::copyTable(const QString &table, const QSqlDatabase &from, const QSqlDatabase &to, const QString &filter)
 {
     MTSqlQuery select(from);
-    select.exec(QString("SELECT * FROM \"%1\"%2").arg(table).arg(QString(filter.isEmpty() ? "" : (" WHERE " + filter))));
-    if (select.next() && select.record().count()) {
+    if (!select.exec(QString("SELECT * FROM \"%1\"%2").arg(table).arg(QString(filter.isEmpty() ? "" : (" WHERE " + filter)))))
+        return;
+    QSqlRecord record = select.record();
+    if (record.count() && select.next()) {
         QString copy(QString("INSERT INTO \"%1\" (").arg(table));
         MTDictionary field_names = getTableFieldNames(table, to);
         QString field_name;
-        for (int i = 0; i < select.record().count(); ++i) {
-            field_name = select.record().fieldName(i);
+        for (int i = 0; i < record.count(); ++i) {
+            field_name = record.fieldName(i);
             copy.append(i == 0 ? "" : ", ");
             copy.append(QString("\"%1\"").arg(field_name));
             if (!field_names.contains(field_name)) {
-                addColumn(field_name + " " + variantTypeToSqlType(select.record().field(i).type()), table, to);
+                addColumn(field_name + " " + variantTypeToSqlType(record.field(i).type()), table, to);
             }
         }
         copy.append(") VALUES (");
-        for (int i = 0; i < select.record().count(); ++i) {
+        for (int i = 0; i < record.count(); ++i) {
             copy.append(i == 0 ? ":" : ", :");
-            copy.append(select.record().fieldName(i));
+            copy.append(record.fieldName(i));
         }
         copy.append(")");
         do {
             MTSqlQuery insert(to);
             insert.prepare(copy);
-            for (int i = 0; i < select.record().count(); ++i) {
-                insert.bindValue(":" + select.record().fieldName(i), select.value(i));
+            for (int i = 0; i < record.count(); ++i) {
+                insert.bindValue(":" + record.fieldName(i), select.value(i));
             }
             insert.exec();
         } while (select.next());

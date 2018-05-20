@@ -619,10 +619,11 @@ void MainWindow::printLabel(bool detailed)
                       " AND inspection_type <> 1 AND outside_interval = 0 ORDER BY date DESC");
         query.bindValue(":circuit_uuid", m_tab->selectedCircuitUUID());
         query.exec();
+        QSqlRecord record = query.record();
         if (query.next()) {
             QVariantMap inspection;
-            for (int i = 0; i < query.record().count(); ++i)
-                inspection.insert(query.record().fieldName(i), query.value(i));
+            for (int i = 0; i < record.count(); ++i)
+                inspection.insert(record.fieldName(i), query.value(i));
 
             attributes.insert("date", inspection.value("date").toString());
 

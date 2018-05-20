@@ -106,9 +106,10 @@ QVariantMap MTQuery::list(const QString &fields, const QString &order_by) const
     QVariantMap list;
     MTSqlQuery query = select(fields, order_by);
     query.exec();
+    QSqlRecord record = query.record();
     if (!query.next()) { return list; }
-    for (int i = 0; i < query.record().count(); ++i) {
-        list.insert(query.record().fieldName(i), query.value(i));
+    for (int i = 0; i < record.count(); ++i) {
+        list.insert(record.fieldName(i), query.value(i));
     }
     return list;
 }
@@ -118,10 +119,11 @@ ListOfVariantMaps MTQuery::listAll(const QString &fields, const QString &order_b
     ListOfVariantMaps list;
     MTSqlQuery query = order_by.isEmpty() ? select(fields) : select(fields, order_by);
     query.exec();
+    QSqlRecord record = query.record();
     while (query.next()) {
         QVariantMap map;
-        for (int i = 0; i < query.record().count(); ++i) {
-            map.insert(query.record().fieldName(i), query.value(i));
+        for (int i = 0; i < record.count(); ++i) {
+            map.insert(record.fieldName(i), query.value(i));
         }
         list << map;
     }
@@ -134,9 +136,10 @@ QVariantMap MTQuery::sumAll(const QString &fields) const
     QVariantMap list;
     MTSqlQuery query = select(fields);
     query.exec();
+    QSqlRecord record = query.record();
     while (query.next()) {
-        for (int i = 0; i < query.record().count(); ++i) {
-            list[query.record().fieldName(i)] = list[query.record().fieldName(i)].toDouble() + query.value(i).toDouble();
+        for (int i = 0; i < record.count(); ++i) {
+            list[record.fieldName(i)] = list[record.fieldName(i)].toDouble() + query.value(i).toDouble();
         }
     }
     return list;
@@ -148,15 +151,16 @@ MultiMapOfVariantMaps MTQuery::mapAll(const QString &map_to, const QString &fiel
     QStringList list_map_to = map_to.split("::");
     MTSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
     query.exec();
+    QSqlRecord record = query.record();
     QList<int> indices;
     for (int i = 0; i < list_map_to.count(); ++i) {
-        indices << query.record().indexOf(list_map_to.at(i));
+        indices << record.indexOf(list_map_to.at(i));
         if (indices.last() < 0) { return map; }
     }
     while (query.next()) {
         QVariantMap row_map; QStringList list_key;
-        for (int i = 0; i < query.record().count(); ++i) {
-            row_map.insert(query.record().fieldName(i), query.value(i));
+        for (int i = 0; i < record.count(); ++i) {
+            row_map.insert(record.fieldName(i), query.value(i));
         }
         for (int i = 0; i < indices.count(); ++i) {
             list_key << query.value(indices.at(i)).toString();

@@ -273,9 +273,11 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
             record_query.addBindValue(record_uuid);
 
             if (record_query.exec()) {
+                QSqlRecord record_query_record = record_query.record();
+
                 if (record_query.next()) {
-                    for (int i = 0; i < record_query.record().count(); ++i) {
-                        column_id = JournalEntry::columnIDForName(record_query.record().fieldName(i));
+                    for (int i = 0; i < record_query_record.count(); ++i) {
+                        column_id = JournalEntry::columnIDForName(record_query_record.fieldName(i));
                         if (!column_id)
                             continue;
 
