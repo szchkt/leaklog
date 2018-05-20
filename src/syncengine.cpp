@@ -204,7 +204,6 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
 
         QStringList local_journal_state_keys = local_journal_state.keys();
         if (local_journal_state_keys.count()) {
-            MTSqlQuery query;
             QStringList predicates;
             QVariantList values;
             foreach (const QJsonValue &source_uuid, local_journal_state_keys) {
@@ -215,7 +214,8 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
                 values << server_journal_state.value(source_uuid.toString()).toInt();
             }
 
-            query.prepare(QString("SELECT source_uuid, entry_id, operation_id, table_id, record_uuid, column_id, date_created FROM journal WHERE %1 ORDER BY date_created, source_uuid, entry_id").arg(predicates.join(" OR ")));
+            MTSqlQuery query;
+            query.prepare(QString("SELECT source_uuid, entry_id, operation_id, table_id, record_uuid, column_id, date_created FROM journal WHERE %1 ORDER BY date_created, source_uuid, entry_id LIMIT 1000").arg(predicates.join(" OR ")));
 
             foreach (const QVariant &value, values) {
                 query.addBindValue(value);
