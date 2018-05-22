@@ -167,7 +167,8 @@ static void migrateV1Inspectors(QSqlDatabase &database)
 
     MTSqlQuery inspectors("SELECT * FROM v1_inspectors", database);
     while (inspectors.next()) {
-        QString uuid = inspectorUUID(inspectors.intValue("id"));
+        int id = inspectors.intValue("id");
+        QString uuid = inspectorUUID(id);
 
         MTSqlQuery inspector(database);
         inspector.prepare(insert_inspector);
@@ -176,6 +177,9 @@ static void migrateV1Inspectors(QSqlDatabase &database)
         foreach (const QString &column, inspectors_columns) {
             if (column == "uuid") {
                 inspector.bindValue(pos, uuid);
+            } else if (column == "certificate_number") {
+                QString value = inspectors.value(column).toString();
+                inspector.bindValue(pos, value.isEmpty() ? QString::number(id).rightJustified(4, '0') : value);
             } else {
                 inspector.bindValue(pos, inspectors.value(column));
             }
