@@ -125,3 +125,8 @@ QString MTSqlQuery::stringValue(const QString &field) const
 {
     return MTSqlQuery::value(record().indexOf(field)).toString();
 }
+
+QVariant MTSqlQuery::nextValue(int index)
+{
+    return next() ? value(index) : QVariant(QVariant::String);
+}

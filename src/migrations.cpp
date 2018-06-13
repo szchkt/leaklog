@@ -25,6 +25,8 @@
 #include <QSqlError>
 #include <QUuid>
 
+#include <functional>
+
 using namespace Global;
 
 static const QUuid migration_namespace("6f607242-def6-4c4c-a9a2-429ce4ea73d3");
@@ -283,7 +285,7 @@ static void migrateV1Persons(QSqlDatabase &database)
     }
 }
 
-static void migrateV1Circuits(QSqlDatabase &database)
+static void migrateV1Circuits(QSqlDatabase &database, std::function<void(int, int)> progress)
 {
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("circuits"));
@@ -292,6 +294,9 @@ static void migrateV1Circuits(QSqlDatabase &database)
     QStringList columns = QStringList() << "uuid" << "customer_uuid" << "id" << "name" << "disused" << "operation" << "building" << "device" << "hermetic" << "manufacturer" << "type" << "sn" << "year" << "commissioning" << "decommissioning" << "field" << "refrigerant" << "refrigerant_amount" << "oil" << "oil_amount" << "leak_detector" << "runtime" << "utilisation" << "inspection_interval" << "notes" << "date_updated" << "updated_by";
     QString insert_query = insertQuery(Circuit::tableName(), columns);
     int circuits_table_id = JournalEntry::tableIDForName(Circuit::tableName());
+
+    int current = 0;
+    int total = MTSqlQuery("SELECT COUNT(*) FROM v1_circuits", database).nextValue().toInt();
 
     MTSqlQuery circuits("SELECT * FROM v1_circuits", database);
     while (circuits.next()) {
@@ -316,10 +321,15 @@ static void migrateV1Circuits(QSqlDatabase &database)
         circuit.exec();
 
         journalInsertion(circuits_table_id, uuid, database);
+
+        if (total > 0) {
+            progress(current, total);
+            current++;
+        }
     }
 }
 
-static void migrateV1Compressors(QSqlDatabase &database)
+static void migrateV1Compressors(QSqlDatabase &database, std::function<void(int, int)> progress)
 {
     MTSqlQuery query(database);
     query.exec(renameV1TableQuery("compressors"));
@@ -328,6 +338,9 @@ static void migrateV1Compressors(QSqlDatabase &database)
     QStringList columns = QStringList() << "uuid" << "circuit_uuid" << "name" << "manufacturer" << "type" << "sn" << "date_updated" << "updated_by";
     QString insert_compressor = insertQuery(Compressor::tableName(), columns);
     int compressors_table_id = JournalEntry::tableIDForName(Compressor::tableName());
+
+    int current = 0;
+    int total = MTSqlQuery("SELECT COUNT(*) FROM v1_compressors", database).nextValue().toInt();
 
     MTSqlQuery compressors("SELECT * FROM v1_compressors", database);
     while (compressors.next()) {
@@ -350,6 +363,11 @@ static void migrateV1Compressors(QSqlDatabase &database)
         compressor.exec();
 
         journalInsertion(compressors_table_id, uuid, database);
+
+        if (total > 0) {
+            progress(current, total);
+            current++;
+        }
     }
 }
 
@@ -372,10 +390,13 @@ static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString
     return type_data;
 }
 
-static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_uuids, QSqlDatabase &database)
+static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_uuids, QSqlDatabase &database, std::function<void(int, int)> progress)
 {
     QString update_inspection = "UPDATE inspections SET uuid = :uuid, customer_uuid = :customer_uuid, circuit_uuid = :circuit_uuid, inspector_uuid = :inspector_uuid, person_uuid = :person_uuid, ar_type_uuid = :ar_type_uuid, inspection_type = :inspection_type, inspection_type_data = :inspection_type_data WHERE customer = :customer AND circuit = :circuit AND date = :date";
     int inspections_table_id = JournalEntry::tableIDForName(Inspection::tableName());
+
+    int current = 0;
+    int total = MTSqlQuery("SELECT COUNT(*) FROM inspections", database).nextValue().toInt();
 
     MTSqlQuery inspections("SELECT customer, circuit, date, nominal, repair, inspector, operator, ar_type, inspection_type, inspection_type_data FROM inspections", database);
     while (inspections.next()) {
@@ -416,6 +437,11 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
         inspection.exec();
 
         journalInsertion(inspections_table_id, uuid, database);
+
+        if (total > 0) {
+            progress(current, total);
+            current++;
+        }
     }
 
     MTSqlQuery query(database);
@@ -432,10 +458,13 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
     }
 }
 
-static void migrateV1InspectionCompressors(QSqlDatabase &database)
+static void migrateV1InspectionCompressors(QSqlDatabase &database, std::function<void(int, int)> progress)
 {
     QString update_inspection_compressor = "UPDATE inspections_compressors SET uuid = :uuid, inspection_uuid = :inspection_uuid, compressor_uuid = :compressor_uuid WHERE id = :id";
     int inspections_compressors_table_id = JournalEntry::tableIDForName(InspectionCompressor::tableName());
+
+    int current = 0;
+    int total = MTSqlQuery("SELECT COUNT(*) FROM inspections_compressors", database).nextValue().toInt();
 
     MTSqlQuery inspection_compressors("SELECT id, customer_id, circuit_id, date, compressor_id FROM inspections_compressors", database);
     while (inspection_compressors.next()) {
@@ -455,6 +484,11 @@ static void migrateV1InspectionCompressors(QSqlDatabase &database)
         inspection_compressor.exec();
 
         journalInsertion(inspections_compressors_table_id, uuid, database);
+
+        if (total > 0) {
+            progress(current, total);
+            current++;
+        }
     }
 
     MTSqlQuery query(database);
@@ -1114,55 +1148,101 @@ static QMap<int, QString> migrateV1Styles(QSqlDatabase &database)
     return style_uuids;
 }
 
-void migrateV1Database(QSqlDatabase &database)
+void migrateV1Database(QSqlDatabase &database, QProgressBar *progress)
 {
+    std::function<void(int)> setProgress = [progress](int value) {
+        progress->setValue(value);
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    };
+
+    int last = 0;
+    std::function<std::function<void(int, int)>(int)> progressUpTo = [progress, setProgress, &last](int max) {
+        last = progress->value();
+        int min = last;
+        return [setProgress, min, max, &last](int current, int total) {
+            int value = min + (current / (double)total) * (max - min);
+            if (last < value) {
+                last = value;
+                setProgress(value);
+            }
+        };
+    };
+
+    progress->setRange(0, 100);
+    setProgress(0);
+
     migrateV1Variables(database);
+    setProgress(1);
 
     auto style_uuids = migrateV1Styles(database);
+    setProgress(2);
 
     auto assembly_record_type_uuids = migrateV1AssemblyRecordTypes(style_uuids, database);
+    setProgress(3);
 
     migrateV1Inspectors(database);
+    setProgress(4);
 
     migrateV1Customers(database);
+    setProgress(5);
 
     migrateV1Persons(database);
+    setProgress(6);
 
-    migrateV1Circuits(database);
+    migrateV1Circuits(database, progressUpTo(18));
+    setProgress(18);
 
-    migrateV1Compressors(database);
+    migrateV1Compressors(database, progressUpTo(30));
+    setProgress(30);
 
-    migrateV1Inspections(assembly_record_type_uuids, database);
+    migrateV1Inspections(assembly_record_type_uuids, database, progressUpTo(60));
+    setProgress(60);
 
-    migrateV1InspectionCompressors(database);
+    migrateV1InspectionCompressors(database, progressUpTo(85));
+    setProgress(85);
 
     auto file_uuids = migrateV1Files(database);
+    setProgress(86);
 
     migrateV1InspectionFiles(file_uuids, database);
+    setProgress(87);
 
     migrateV1Repairs(database);
+    setProgress(88);
 
     migrateV1ServiceCompanies(file_uuids, database);
+    setProgress(89);
 
     migrateV1Tables(database);
+    setProgress(90);
 
     auto warning_uuids = migrateV1Warnings(database);
+    setProgress(91);
 
     migrateV1WarningFilters(warning_uuids, database);
+    setProgress(92);
 
     migrateV1WarningConditions(warning_uuids, database);
+    setProgress(93);
 
     migrateV1RefrigerantManagement(database);
+    setProgress(94);
 
     auto circuit_unit_type_uuids = migrateV1CircuitUnitTypes(database);
+    setProgress(95);
 
     migrateV1CircuitUnits(circuit_unit_type_uuids, database);
+    setProgress(96);
 
     auto assembly_record_item_category_uuids = migrateV1AssemblyRecordItemCategories(database);
+    setProgress(97);
 
     auto assembly_record_item_type_uuids = migrateV1AssemblyRecordItemTypes(assembly_record_item_category_uuids, database);
+    setProgress(98);
 
     migrateV1AssemblyRecordTypeCategories(assembly_record_item_category_uuids, assembly_record_item_type_uuids, database);
+    setProgress(99);
 
     migrateV1AssemblyRecordItems(assembly_record_item_category_uuids, assembly_record_item_type_uuids, circuit_unit_type_uuids, database);
+    setProgress(100);
 }

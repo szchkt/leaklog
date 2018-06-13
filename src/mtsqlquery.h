@@ -42,6 +42,8 @@ public:
     double doubleValue(const QString &field) const;
     QString stringValue(const QString &field) const;
 
+    QVariant nextValue(int index = 0);
+
 protected:
     void printLastError() const;
 };

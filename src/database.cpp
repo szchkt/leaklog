@@ -221,7 +221,9 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
         query.exec("DROP INDEX IF EXISTS index_circuit_units_id");
         query.exec("DROP INDEX IF EXISTS index_styles_id");
 
-        migrateV1Database(database);
+        progress_bar->setVisible(true);
+        migrateV1Database(database, progress_bar);
+        progress_bar->setVisible(false);
     }
 
     if (v < F_DB_VERSION) {

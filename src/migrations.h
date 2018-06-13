@@ -22,6 +22,8 @@
 
 #include <QSqlDatabase>
 
-void migrateV1Database(QSqlDatabase &database);
+class QProgressBar;
+
+void migrateV1Database(QSqlDatabase &database, QProgressBar *progress);
 
 #endif // MIGRATIONS_H
