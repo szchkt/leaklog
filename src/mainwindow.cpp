@@ -224,6 +224,7 @@ MainWindow::MainWindow():
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionLocal_database, SIGNAL(triggered()), this, SLOT(open()));
     QObject::connect(actionRemote_database, SIGNAL(triggered()), this, SLOT(openRemote()));
+    QObject::connect(actionServer_database, SIGNAL(triggered()), this, SLOT(downloadDatabase()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
     QObject::connect(actionSave_and_compact, SIGNAL(triggered()), this, SLOT(saveAndCompact()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));

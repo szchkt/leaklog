@@ -55,6 +55,9 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QTimer>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include <limits>
 
@@ -342,11 +345,11 @@ void MainWindow::initTables(bool transaction)
     if (transaction) { db.commit(); }
 }
 
-void MainWindow::newDatabase()
+void MainWindow::newDatabase(const QString &uuid, const QString &name)
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"),
-                                                QDir::home().absoluteFilePath(tr("untitled.lklg")),
+                                                QDir::home().absoluteFilePath(name.isEmpty() ? tr("untitled.lklg") : QString("%1.lklg").arg(name)),
                                                 tr("Leaklog Database (*.lklg)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
@@ -365,7 +368,77 @@ void MainWindow::newDatabase()
     DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
+    if (!uuid.isEmpty())
+        DBInfo::setValueForKey("database_uuid", uuid);
+    if (!name.isEmpty())
+        DBInfo::setDatabaseName(name);
     openDatabase(db, path);
+}
+
+void MainWindow::downloadDatabase()
+{
+    if (authenticator->token().isEmpty()) {
+        logIn();
+        return;
+    }
+
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(true);
+    setEnabled(false);
+
+    authenticator->getDatabases([this](bool success, const QJsonDocument &document) {
+        setEnabled(true);
+        progress_bar->setVisible(false);
+
+        if (success) {
+            QJsonArray databases = document.object().value("databases").toArray();
+            MTDictionary items;
+
+            foreach (const QJsonValue &value, databases) {
+                QJsonObject database = value.toObject();
+                QString uuid = database.value("uuid").toString();
+                if (uuid.isEmpty())
+                    continue;
+                QString name = database.value("name").toString();
+                if (name.isEmpty())
+                    name = uuid;
+                QString identifier = name;
+                int i = 1;
+                while (items.contains(identifier)) {
+                    i++;
+                    identifier = QString("%1 (%2)").arg(name).arg(i);
+                }
+                items.insert(identifier, uuid);
+            }
+
+            if (items.isEmpty()) {
+                QMessageBox message(this);
+                message.setWindowTitle(tr("Download database from Leaklog.org"));
+                message.setWindowModality(Qt::WindowModal);
+                message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+                message.setIcon(QMessageBox::Information);
+                message.setText(tr("No databases found."));
+                message.setInformativeText(tr("Create a new database or open an existing database, then sync with Leaklog.org."));
+                message.addButton(tr("OK"), QMessageBox::AcceptRole);
+                message.exec();
+            } else {
+                bool ok = false;
+                QString identifier = QInputDialog::getItem(this, tr("Download database from Leaklog.org"), tr("Select a database to download:"), items.keys(), 0, false, &ok, Qt::Sheet);
+                if (ok) {
+                    newDatabase(items.value(identifier), identifier);
+                }
+            }
+        } else {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Download database from Leaklog.org"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("Failed to connect to Leaklog.org."));
+            message.addButton(tr("OK"), QMessageBox::AcceptRole);
+            message.exec();
+        }
+    });
 }
 
 void MainWindow::openRecent(QListWidgetItem *item)

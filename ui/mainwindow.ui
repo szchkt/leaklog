@@ -226,6 +226,7 @@
      </property>
      <addaction name="actionLocal_database"/>
      <addaction name="actionRemote_database"/>
+     <addaction name="actionServer_database"/>
     </widget>
     <widget class="QMenu" name="menuExport">
      <property name="title">
@@ -2330,6 +2331,15 @@
    </property>
    <property name="text">
     <string>Log In</string>
+   </property>
+  </action>
+  <action name="actionServer_database">
+   <property name="icon">
+    <iconset resource="../rc/resources.qrc">
+     <normaloff>:/images/images/server_database.png</normaloff>:/images/images/server_database.png</iconset>
+   </property>
+   <property name="text">
+    <string>From Leaklog.org...</string>
    </property>
   </action>
  </widget>

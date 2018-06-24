@@ -46,13 +46,19 @@ static QString JournalEntryStringID(int operation_id, int column_id, QString rec
 Authenticator::Authenticator(QObject *parent):
     QObject(parent),
     _network_manager(new QNetworkAccessManager(this)),
-    _reply(NULL)
+    _reply(NULL),
+    _completionHandlers(new QMap<QNetworkReply *, std::function<void(bool, const QJsonDocument &)>>)
 {
     QSettings settings("SZCHKT", "Leaklog");
     _username = settings.value("username").toString();
     _token = settings.value("auth_token").toString();
 
     connect(_network_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
+}
+
+Authenticator::~Authenticator()
+{
+    delete _completionHandlers;
 }
 
 void Authenticator::logIn(const QString &username, const QString &password)
@@ -88,6 +94,23 @@ void Authenticator::logOut()
     emit logoutFinished();
 }
 
+void Authenticator::getDatabases(std::function<void(bool success, const QJsonDocument &databases)> completionHandler)
+{
+    QUrlQuery query;
+    query.addQueryItem("locale", QApplication::translate("MainWindow", "en_GB"));
+
+    QUrl url(baseURL + "/api/databases/");
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", "Leaklog/" LEAKLOG_VERSION);
+    request.setRawHeader("X-Auth-Token", _token.toUtf8());
+    request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
+    request.setRawHeader("Content-Type", "application/json; charset=utf-8");
+
+    _completionHandlers->insert(_network_manager->get(request), completionHandler);
+}
+
 void Authenticator::sendRequest(const QNetworkRequest &request, const QJsonDocument &document)
 {
     if (_reply) {
@@ -108,6 +131,16 @@ void Authenticator::requestFinished(QNetworkReply *reply)
 
     QJsonParseError error;
     QJsonDocument response = QJsonDocument::fromJson(reply->readAll(), &error);
+
+    if (_completionHandlers->contains(reply)) {
+        std::function<void(bool, const QJsonDocument &)> completionHandler = _completionHandlers->value(reply);
+        _completionHandlers->remove(reply);
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        completionHandler(status >= 200 && status < 300, response);
+        reply->deleteLater();
+        return;
+    }
+
     if (response.isNull()) {
         _error = error.errorString();
         emit loginFinished(false);

@@ -99,5 +99,6 @@
         <file>images/user.png</file>
         <file>images/tab_close.svg</file>
         <file>images/tab_close_hover.svg</file>
+        <file>images/server_database.png</file>
     </qresource>
 </RCC>

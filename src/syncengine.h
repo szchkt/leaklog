@@ -35,9 +35,12 @@ class Authenticator : public QObject
 
 public:
     Authenticator(QObject *parent = NULL);
+    ~Authenticator();
 
     void logIn(const QString &username, const QString &password);
     void logOut();
+
+    void getDatabases(std::function<void(bool success, const QJsonDocument &databases)> completionHandler);
 
     inline QString username() const { return _username; }
     inline QString token() const { return _token; }
@@ -59,6 +62,7 @@ private:
     QString _error;
     QNetworkAccessManager *_network_manager;
     QNetworkReply *_reply;
+    QMap<QNetworkReply *, std::function<void(bool, const QJsonDocument &)>> *_completionHandlers;
 };
 
 class SyncEngine : public QObject

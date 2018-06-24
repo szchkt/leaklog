@@ -219,7 +219,8 @@ private slots:
     void customerChangedInMoveCircuitDialogue(int customer_index);
     // DATABASE
     void openRecent(QListWidgetItem *);
-    void newDatabase();
+    void newDatabase(const QString &uuid = QString(), const QString &name = QString());
+    void downloadDatabase();
     void open();
     void openRemote();
     void loadDatabase(bool reload = true);
