@@ -368,11 +368,14 @@ void MainWindow::newDatabase(const QString &uuid, const QString &name)
     DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-    if (!uuid.isEmpty())
+    if (!uuid.isEmpty()) {
         DBInfo::setValueForKey("database_uuid", uuid);
-    if (!name.isEmpty())
+        DBInfo::setValueForKey("sync_server", "leaklog.org");
+    }
+    if (!name.isEmpty()) {
         DBInfo::setDatabaseName(name);
-    openDatabase(db, path);
+    }
+    openDatabase(db, path, uuid.isEmpty());
 }
 
 void MainWindow::downloadDatabase()
@@ -594,7 +597,7 @@ void MainWindow::backupDatabase(const QString &path)
     }
 }
 
-void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string)
+void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string, bool show_warnings)
 {
     m_connection_string = connection_string;
 
@@ -681,12 +684,14 @@ void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string
     connect(sync_engine, SIGNAL(syncProgress(double)), this, SLOT(syncProgress(double)));
     connect(sync_engine, SIGNAL(syncFinished(bool, bool)), this, SLOT(syncFinished(bool, bool)));
 
-    MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
-    if (!query.next()) {
-        QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
-    } else {
-        sync(false);
+    if (show_warnings) {
+        MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
+        if (!query.next()) {
+            QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+        }
     }
+
+    sync(false);
 }
 
 void MainWindow::loadDatabase(bool reload)
