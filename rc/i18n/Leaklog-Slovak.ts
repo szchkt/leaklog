@@ -1820,10 +1820,6 @@
 <context>
     <name>Inspection</name>
     <message>
-        <source>Nominal</source>
-        <translation>Nominálna</translation>
-    </message>
-    <message>
         <source>Repair</source>
         <translation>Oprava</translation>
     </message>
@@ -1902,6 +1898,18 @@
     <message>
         <source>Type:</source>
         <translation>Typ:</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <source>Circuit Moved</source>
+        <translation>Okruh presunutý</translation>
+    </message>
+    <message>
+        <source>Inspection Skipped</source>
+        <translation>Kontrola vynechaná</translation>
     </message>
 </context>
 <context>
@@ -4493,6 +4501,30 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>https://github.com/szchkt/leaklog/releases</source>
         <translation>https://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
+    </message>
+    <message>
+        <source>From Leaklog.org...</source>
+        <translation>Z Leaklog.org...</translation>
+    </message>
+    <message>
+        <source>Download database from Leaklog.org</source>
+        <translation>Stiahnuť databázu z Leaklog.org</translation>
+    </message>
+    <message>
+        <source>No databases found.</source>
+        <translation>Žiadne databázy sa nenašli.</translation>
+    </message>
+    <message>
+        <source>Create a new database or open an existing database, then sync with Leaklog.org.</source>
+        <translation>Vytvorte novú alebo otvorte existujúcu databázu, potom zvoľte možnosť synchronizovať so serverom Leaklog.org.</translation>
+    </message>
+    <message>
+        <source>Select a database to download:</source>
+        <translation>Vyberte databázu na stiahnutie:</translation>
+    </message>
+    <message>
+        <source>Failed to connect to Leaklog.org.</source>
+        <translation>Nepodarilo sa spojiť so serverom Leaklog.org.</translation>
     </message>
 </context>
 <context>
