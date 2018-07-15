@@ -143,10 +143,11 @@ bool MTRecord::update(const QVariantMap &values, bool add_columns)
 
 bool MTRecord::save(bool add_columns)
 {
-    if (r_current_values.isEmpty())
+    bool has_uuid = !r_uuid.isEmpty();
+
+    if (has_uuid && r_current_values.isEmpty())
         return true;
 
-    bool has_uuid = !r_uuid.isEmpty();
     QString journal_uuid = r_uuid;
 
     if (!has_uuid && !r_current_values.contains("uuid")) {

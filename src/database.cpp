@@ -364,6 +364,7 @@ void MainWindow::newDatabase(const QString &uuid, const QString &name)
     addRecent(path);
     initDatabase(db);
     initTables();
+    ServiceCompany().save();
     DBInfo::setValueForKey("db_version", QString::number(F_DB_VERSION));
     DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
