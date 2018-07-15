@@ -37,7 +37,7 @@ StoreView::StoreView(ViewTabSettings *settings):
 QString StoreView::renderHTML(bool)
 {
     QString html; MTTextStream out(&html);
-    ServiceCompany serv_company(DBInfo::valueForKey("default_service_company_uuid"));
+    ServiceCompany serv_company;
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
     out << "<a href=\"servicecompany:" << serv_company.companyID() << "/edit\">";

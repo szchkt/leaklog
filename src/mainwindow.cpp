@@ -655,7 +655,7 @@ void MainWindow::printLabel(bool detailed)
         attributes.unite(inspector.list("certificate_number, person"));
     }
 
-    ServiceCompany service_company(DBInfo::valueForKey("default_service_company_uuid"));
+    ServiceCompany service_company;
     if (service_company.exists()) {
         attributes.unite(service_company.list("id, name, address, mail, phone"));
         attributes.insert("id", attributes.value("id").toString());

@@ -75,7 +75,7 @@ QString View::viewTemplate(const QString &view_template)
 
 HTMLTable *View::writeServiceCompany(HTMLTable *table)
 {
-    ServiceCompany serv_company(DBInfo::valueForKey("default_service_company_uuid"));
+    ServiceCompany serv_company;
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("service_company");
     HTMLTableRow *_tr = table->addRow();

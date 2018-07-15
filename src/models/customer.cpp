@@ -48,7 +48,7 @@ void Customer::readOperatorValues()
 {
     switch (operatorType()) {
         case OperatorTypeServiceCompany: {
-            ServiceCompany service_company = ServiceCompany(DBInfo::valueForKey("default_service_company_uuid"));
+            ServiceCompany service_company;
             setValue("operator_id", service_company.value("id"));
             setValue("operator_company", service_company.value("name"));
             setValue("operator_address", service_company.value("address"));

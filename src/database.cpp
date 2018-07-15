@@ -1198,11 +1198,10 @@ void MainWindow::editServiceCompany()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
-    ServiceCompany record(DBInfo::valueForKey("default_service_company_uuid"));
+    ServiceCompany record;
     UndoCommand command(m_undo_stack, tr("Edit service company information"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        DBInfo::setValueForKey("default_service_company_uuid", record.uuid());
         setDatabaseModified(true);
         refreshView();
     }

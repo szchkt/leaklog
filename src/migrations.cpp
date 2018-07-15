@@ -651,8 +651,6 @@ static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSql
 
         journalInsertion(service_companies_table_id, uuid, database);
     }
-
-    DBInfo::setValueForKey("default_service_company_uuid", serviceCompanyUUID(DBInfo::valueForKey("default_service_company", QString(), database).toInt()), database);
 }
 
 static void migrateV1Tables(QSqlDatabase &database)
