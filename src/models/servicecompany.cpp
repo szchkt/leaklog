@@ -37,7 +37,7 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), website()));
-    md->addInputWidget(new MDFileChooser("image", tr("Image:"), md->widget(), imageFileUUID()));
+    md->addInputWidget(new MDFileChooser("image_file_uuid", tr("Image:"), md->widget(), imageFileUUID()));
 }
 
 MTAddress ServiceCompany::address()
