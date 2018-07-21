@@ -40,7 +40,7 @@ public:
         d.setLabelText(label);
         d.setTextEchoMode(QLineEdit::Normal);
         d.setWindowModality(Qt::WindowModal);
-        d.setWindowFlags(d.windowFlags() | Qt::Sheet);
+        d.setWindowFlags(Qt::Sheet);
 
         d.show();
         d.findOkButton();
