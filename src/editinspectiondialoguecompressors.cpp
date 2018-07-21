@@ -63,10 +63,10 @@ InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(const Inspect
     return tab;
 }
 
-void EditInspectionDialogueCompressors::save(const QString &)
+void EditInspectionDialogueCompressors::save(const QString &inspection_uuid)
 {
     for (int i = 0; i < tabs.count(); ++i) {
-        tabs.at(i)->save();
+        tabs.at(i)->save(inspection_uuid);
     }
 }
 
@@ -88,12 +88,13 @@ void InspectionCompressorTab::init(const QVariantMap &var_values)
     EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, layout).layout();
 }
 
-bool InspectionCompressorTab::save()
+bool InspectionCompressorTab::save(const QString &inspection_uuid)
 {
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave())
             continue;
         inspection_compressor.setValue((*i)->id(), (*i)->variantValue());
     }
+    inspection_compressor.setValue("inspection_uuid", inspection_uuid);
     return inspection_compressor.save(true);
 }

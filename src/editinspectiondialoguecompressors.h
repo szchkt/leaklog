@@ -39,7 +39,7 @@ class EditInspectionDialogueCompressors : public QWidget, public EditDialogueAre
 public:
     EditInspectionDialogueCompressors(const QString &, const QString &, const QString &, QWidget *);
 
-    void save(const QString &);
+    void save(const QString &inspection_uuid);
 
 private:
     InspectionCompressorTab *addTab(const InspectionCompressor &inspection_compressor, const QString &name);
@@ -61,7 +61,7 @@ public:
     void init(const QVariantMap & = QVariantMap());
 
     void setWindowTitle(const QString &) {}
-    bool save();
+    bool save(const QString &inspection_uuid);
 
     QWidget *widget() { return this; }
 
