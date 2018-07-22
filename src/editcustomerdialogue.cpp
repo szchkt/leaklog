@@ -151,7 +151,7 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
         person_data.insert("uuid", new EditDialogueTableCell(persons.at(i).value("uuid"), "uuid"));
         person_data.insert("hidden", new EditDialogueTableCell(persons.at(i).value("hidden"), "hidden"));
 
-        persons_table->addRow(person_data, true, Inspection::query({"person_uuid", uuid}).exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
+        persons_table->addRow(person_data, true, Inspection::query({{"person_uuid", uuid}}).exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
     }
 
     if (!persons.count()) persons_table->addNewRow();

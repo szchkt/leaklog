@@ -53,7 +53,7 @@ AssemblyRecordItemCategory::DisplayPosition AssemblyRecordItemCategory::displayP
 
 MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordItemCategory::typeCategories()
 {
-    return AssemblyRecordTypeCategory::query({"ar_item_category_uuid", uuid()});
+    return AssemblyRecordTypeCategory::query({{"ar_item_category_uuid", uuid()}});
 }
 
 QString AssemblyRecordItemCategory::tableName()

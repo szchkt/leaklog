@@ -55,7 +55,7 @@ public:
     static QString tableName();
     static QString predefinedUUID(int uid);
     static bool isPredefined(const QString &uuid);
-    static inline MTRecordQuery<AssemblyRecordItemCategory> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordItemCategory>(tableName(), parents); }
+    static inline MTRecordQuery<AssemblyRecordItemCategory> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<AssemblyRecordItemCategory>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

@@ -139,17 +139,17 @@ Customer Circuit::customer()
 
 MTRecordQuery<Compressor> Circuit::compressors() const
 {
-    return Compressor::query({"circuit_uuid", uuid()});
+    return Compressor::query({{"circuit_uuid", uuid()}});
 }
 
 MTRecordQuery<CircuitUnit> Circuit::units() const
 {
-    return CircuitUnit::query({"circuit_uuid", uuid()});
+    return CircuitUnit::query({{"circuit_uuid", uuid()}});
 }
 
 MTRecordQuery<Inspection> Circuit::inspections() const
 {
-    return Inspection::query({"circuit_uuid", uuid()});
+    return Inspection::query({{"circuit_uuid", uuid()}});
 }
 
 QString Circuit::tableName()

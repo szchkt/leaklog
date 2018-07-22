@@ -83,7 +83,7 @@ QString InspectionDetailsView::renderHTML(bool)
 
     var_evaluation.setNominalInspection(nominal_ins);
 
-    MTSqlQuery tables = Table::query({"scope", "1"}).select("name, variables", "position");
+    MTSqlQuery tables = Table::query({{"scope", Variable::Inspection}}).select("name, variables", "position");
     tables.exec();
 
     QSet<QString> all_variables;
@@ -121,7 +121,7 @@ QString InspectionDetailsView::renderHTML(bool)
     }
     div << table->customHtml(2);
 
-    MTQuery inspections_compressor_query = InspectionCompressor::query({"inspection_uuid", inspection_uuid});
+    MTQuery inspections_compressor_query = InspectionCompressor::query({{"inspection_uuid", inspection_uuid}});
     ListOfVariantMaps inspections_compressors = inspections_compressor_query.listAll();
     if (inspections_compressors.count()) {
         VariableEvaluation::EvaluationContext compressor_var_evaluation = VariableEvaluation::EvaluationContext(customer_uuid, circuit_uuid, Variable::Compressor);

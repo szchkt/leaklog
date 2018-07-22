@@ -42,7 +42,7 @@ public:
     inline void setSerialNumber(const QString &value) { setValue("sn", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<Compressor> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Compressor>(tableName(), parents); }
+    static inline MTRecordQuery<Compressor> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Compressor>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

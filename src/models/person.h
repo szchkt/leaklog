@@ -39,7 +39,7 @@ public:
     inline void setHidden(bool value) { setValue("hidden", (int)value); }
 
     static QString tableName();
-    static inline MTRecordQuery<Person> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Person>(tableName(), parents); }
+    static inline MTRecordQuery<Person> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Person>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

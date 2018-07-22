@@ -57,7 +57,7 @@ public:
     inline void setDiscount(double value) { setValue("discount", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<AssemblyRecordItem> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordItem>(tableName(), parents); }
+    static inline MTRecordQuery<AssemblyRecordItem> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<AssemblyRecordItem>(tableName(), parents); }
     static MTQuery queryByInspector(const QString &inspector_uuid);
     static const ColumnList &columns();
     static const MTDictionary &attributes();

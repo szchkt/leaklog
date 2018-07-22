@@ -49,7 +49,7 @@ QString AgendaView::renderHTML(bool)
 
     MultiMapOfVariantMaps customers(Customer::query().mapAll("uuid", "id, company"));
 
-    MTQuery circuits_query = Circuit::query({"disused", "0"});
+    MTQuery circuits_query = Circuit::query({{"disused", Circuit::Commissioned}});
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

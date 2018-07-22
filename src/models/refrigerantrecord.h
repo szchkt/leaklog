@@ -49,7 +49,7 @@ public:
     inline void setNotes(const QString &value) { setValue("notes", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<RefrigerantRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<RefrigerantRecord>(tableName(), parents); }
+    static inline MTRecordQuery<RefrigerantRecord> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<RefrigerantRecord>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

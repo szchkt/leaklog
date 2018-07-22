@@ -293,7 +293,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {
                 if (inspection && inspection->uuid().isEmpty()) {
-                    MTQuery other_inspections = Inspection::query({"circuit_uuid", inspection->circuitUUID()});
+                    MTQuery other_inspections = Inspection::query({{"circuit_uuid", inspection->circuitUUID()}});
                     other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
                     int count = other_inspections.list("COUNT(date) AS count", QString()).value("count").toInt();
                     iw->setVariantValue(QString("%1-%2-%3%4")

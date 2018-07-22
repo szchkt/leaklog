@@ -83,7 +83,7 @@ QString AssemblyRecordsView::renderHTML(bool)
     if (show_owner)
         *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.updated_by")) << tr("Author");
 
-    MTDictionary parents;
+    QVariantMap parents;
     if (!circuit_uuid.isEmpty()) parents.insert("circuit_uuid", circuit_uuid);
     MTQuery query("inspections LEFT JOIN assembly_record_types ON inspections.ar_type_uuid = assembly_record_types.uuid"
                   " LEFT JOIN customers ON customers.uuid = inspections.customer_uuid"

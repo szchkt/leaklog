@@ -1445,7 +1445,7 @@ void MainWindow::duplicateCircuit()
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+        ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
 
         for (int i = 0; i < compressors.size(); ++i) {
             compressors[i].insert("uuid", createUUID());
@@ -1453,7 +1453,7 @@ void MainWindow::duplicateCircuit()
             Compressor().update(compressors[i]);
         }
 
-        ListOfVariantMaps circuit_units = CircuitUnit::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+        ListOfVariantMaps circuit_units = CircuitUnit::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
 
         for (int i = 0; i < circuit_units.size(); ++i) {
             circuit_units[i].insert("uuid", createUUID());
@@ -1505,7 +1505,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
-    new_id->setValue((int)Circuit::query({"customer_uuid", m_tab->selectedCustomerUUID()}).max("id") + 1);
+    new_id->setValue((int)Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}}).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
@@ -1590,14 +1590,14 @@ void MainWindow::duplicateAndDecommissionCircuit()
     Circuit duplicate;
     duplicate.update(attributes);
 
-    ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+    ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
     for (int i = 0; i < compressors.size(); ++i) {
         compressors[i].insert("uuid", createUUID());
         compressors[i].insert("circuit_uuid", duplicate.uuid());
         Compressor().update(compressors[i]);
     }
 
-    ListOfVariantMaps circuit_units = CircuitUnit::query({"circuit_uuid", m_tab->selectedCircuitUUID()}).listAll();
+    ListOfVariantMaps circuit_units = CircuitUnit::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
     for (int i = 0; i < circuit_units.size(); ++i) {
         circuit_units[i].insert("uuid", createUUID());
         circuit_units[i].insert("circuit_uuid", duplicate.uuid());
@@ -1777,7 +1777,7 @@ void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
     QString circuit_id = QString::number(spb_circuit_id->value());
 
     if (!customer_uuid.isEmpty() && Circuit::query({{"customer_uuid", customer_uuid}, {"id", circuit_id}}).exists()) {
-        spb_circuit_id->setValue((int)Circuit::query({"customer_uuid", customer_uuid}).max("id") + 1);
+        spb_circuit_id->setValue((int)Circuit::query({{"customer_uuid", customer_uuid}}).max("id") + 1);
     }
 }
 
@@ -1919,7 +1919,7 @@ void MainWindow::skipInspection()
 
     QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
 
-    MTQuery circuit_record = Circuit::query({"uuid", m_tab->selectedCircuitUUID()});
+    MTQuery circuit_record = Circuit::query({{"uuid", m_tab->selectedCircuitUUID()}});
     circuit_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
@@ -2228,7 +2228,7 @@ void MainWindow::removeVariable()
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
     m_undo_stack->savepoint();
 
-    VariableRecord::query({"parent_uuid", uuid}).removeAll();
+    VariableRecord::query({{"parent_uuid", uuid}}).removeAll();
     MTRecord("variables", uuid).remove();
     delete item;
     dropColumn(id, "inspections", db);

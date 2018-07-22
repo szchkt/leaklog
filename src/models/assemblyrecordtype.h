@@ -52,7 +52,7 @@ public:
     MTRecordQuery<AssemblyRecordTypeCategory> typeCategories() const;
 
     static QString tableName();
-    static inline MTRecordQuery<AssemblyRecordType> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordType>(tableName(), parents); }
+    static inline MTRecordQuery<AssemblyRecordType> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<AssemblyRecordType>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
     bool remove() const;

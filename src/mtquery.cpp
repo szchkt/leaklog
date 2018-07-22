@@ -24,7 +24,7 @@
 
 using namespace Global;
 
-MTQuery::MTQuery(const QString &table, const MTDictionary &parents):
+MTQuery::MTQuery(const QString &table, const QVariantMap &parents):
     r_table(table),
     r_parents(parents)
 {}
@@ -68,12 +68,11 @@ MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int l
     if (!r_joins.isEmpty())
         select.append(" " + r_joins.join(" "));
     if (r_parents.count() || r_filter.count() || !r_predicate.isEmpty()) { select.append(" WHERE "); }
-    int i;
-    for (i = 0; i < r_parents.count(); ++i) {
-        if (i) { select.append(" AND "); }
-        select.append(r_parents.key(i) + " = :" + r_parents.key(i));
+    for (auto i = r_parents.constBegin(); i != r_parents.constEnd(); ++i) {
+        if (i != r_parents.constBegin()) { select.append(" AND "); }
+        select.append(i.key() + " = :" + i.key());
     }
-    for (i = 0; i < r_filter.count(); ++i) {
+    for (int i = 0; i < r_filter.count(); ++i) {
         if (r_parents.count() || i) { select.append(" AND "); }
         if (r_filter.key(i).contains('?'))
             select.append(r_filter.key(i).replace('?', QString(":_filter%1").arg(i)));
@@ -81,7 +80,7 @@ MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int l
             select.append(QString(is_remote ? "%1::text LIKE :_filter%2" : "%1 LIKE :_filter%2").arg(r_filter.key(i)).arg(i));
     }
     if (!r_predicate.isEmpty()) {
-        if (r_parents.count() || i) { select.append(" AND "); }
+        if (r_parents.count() || r_filter.count()) { select.append(" AND "); }
         select.append(r_predicate);
     }
     if (!order_by.isEmpty())
@@ -92,8 +91,8 @@ MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int l
     if (!query.prepare(select)) {
         qDebug() << query.lastError();
     }
-    for (int i = 0; i < r_parents.count(); ++i) {
-        query.bindValue(":" + r_parents.key(i), r_parents.value(i));
+    for (auto i = r_parents.constBegin(); i != r_parents.constEnd(); ++i) {
+        query.bindValue(":" + i.key(), i.value());
     }
     for (int i = 0; i < r_filter.count(); ++i) {
         query.bindValue(QString(":_filter%1").arg(i), r_filter.value(i));

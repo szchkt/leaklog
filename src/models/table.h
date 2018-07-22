@@ -52,7 +52,7 @@ public:
     static QString tableName();
     static QString predefinedUUID(int uid);
     static bool isPredefined(const QString &uuid);
-    static inline MTRecordQuery<Table> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Table>(tableName(), parents); }
+    static inline MTRecordQuery<Table> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Table>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

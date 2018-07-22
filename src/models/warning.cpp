@@ -67,12 +67,12 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
 
 MTRecordQuery<WarningFilter> WarningRecord::filters() const
 {
-    return WarningFilter::query({"warning_uuid", uuid()});
+    return WarningFilter::query({{"warning_uuid", uuid()}});
 }
 
 MTRecordQuery<WarningCondition> WarningRecord::conditions() const
 {
-    return WarningCondition::query({"warning_uuid", uuid()});
+    return WarningCondition::query({{"warning_uuid", uuid()}});
 }
 
 QString WarningRecord::tableName()

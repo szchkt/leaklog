@@ -41,7 +41,7 @@ public:
     File file();
 
     static QString tableName();
-    static inline MTRecordQuery<InspectionFile> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<InspectionFile>(tableName(), parents); }
+    static inline MTRecordQuery<InspectionFile> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<InspectionFile>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

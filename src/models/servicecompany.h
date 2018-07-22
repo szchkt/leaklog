@@ -50,7 +50,7 @@ public:
     inline void setWebsite(const QString &value) { setValue("website", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<ServiceCompany> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<ServiceCompany>(tableName(), parents); }
+    static inline MTRecordQuery<ServiceCompany> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<ServiceCompany>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

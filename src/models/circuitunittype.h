@@ -54,7 +54,7 @@ public:
     inline double discount() { return doubleValue("discount"); }
 
     static QString tableName();
-    static inline MTRecordQuery<CircuitUnitType> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<CircuitUnitType>(tableName(), parents); }
+    static inline MTRecordQuery<CircuitUnitType> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<CircuitUnitType>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

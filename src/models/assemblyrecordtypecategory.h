@@ -28,7 +28,7 @@ public:
     AssemblyRecordTypeCategory(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     static QString tableName();
-    static inline MTRecordQuery<AssemblyRecordTypeCategory> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordTypeCategory>(tableName(), parents); }
+    static inline MTRecordQuery<AssemblyRecordTypeCategory> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<AssemblyRecordTypeCategory>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

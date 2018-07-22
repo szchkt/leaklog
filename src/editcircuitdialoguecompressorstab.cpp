@@ -83,7 +83,7 @@ void EditCircuitDialogueCompressorsTab::load(const QString &circuit_uuid)
     EditDialogueTableCell *cell;
     QMap<QString, EditDialogueTableCell *> compressors_data;
     if (!circuit_uuid.isEmpty() && Circuit(circuit_uuid).exists()) {
-        ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
+        ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", circuit_uuid}}).listAll();
         for (int i = 0; i < compressors.count(); ++i) {
             former_ids << compressors.at(i).value("uuid").toString();
 

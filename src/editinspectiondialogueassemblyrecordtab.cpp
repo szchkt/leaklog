@@ -300,7 +300,7 @@ void EditInspectionDialogueAssemblyRecordTab::loadItemInputWidgets(bool initial)
 void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
 {
     if (!original_arno.isEmpty()) {
-        AssemblyRecordItem::query({"arno", original_arno}).removeAll();
+        AssemblyRecordItem::query({{"arno", original_arno}}).removeAll();
     }
 
     QString arno = assemblyRecordId().toString();
@@ -308,11 +308,11 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
         return;
 
     if (arno != original_arno) {
-        AssemblyRecordItem::query({"arno", arno}).removeAll();
+        AssemblyRecordItem::query({{"arno", arno}}).removeAll();
     }
 
     QString ar_type_uuid = ar_type_w->variantValue().toString();
-    auto inspections = Inspection::query({"arno", arno}).all();
+    auto inspections = Inspection::query({{"arno", arno}}).all();
     foreach (auto inspection, inspections) {
         inspection.setValue("ar_type_uuid", ar_type_uuid);
         inspection.save();

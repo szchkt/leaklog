@@ -43,7 +43,7 @@ public:
     bool autoShow();
 
     static QString tableName();
-    static inline MTRecordQuery<AssemblyRecordItemType> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<AssemblyRecordItemType>(tableName(), parents); }
+    static inline MTRecordQuery<AssemblyRecordItemType> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<AssemblyRecordItemType>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

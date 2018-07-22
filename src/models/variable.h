@@ -55,7 +55,7 @@ public:
     inline void setColBg(const QString &value) { setValue("col_bg", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<VariableRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<VariableRecord>(tableName(), parents); }
+    static inline MTRecordQuery<VariableRecord> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<VariableRecord>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

@@ -47,7 +47,7 @@ QString RepairsView::renderHTML(bool)
 
     writeServiceCompany(out);
 
-    MTDictionary parent;
+    QVariantMap parent;
     if (!customer_uuid.isEmpty()) {
         parent.insert("customer_uuid", customer_uuid);
         writeCustomersTable(out, customer_uuid);

@@ -63,7 +63,7 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
         addToValues(Key(year), RefrigerantAddition, refr_add_am);
     }
 
-    MTDictionary nominal_inspection_parents("inspection_type", "1");
+    QVariantMap nominal_inspection_parents = {{"inspection_type", Inspection::NominalInspection}};
 
     MTSqlQuery circuits("SELECT uuid, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
 

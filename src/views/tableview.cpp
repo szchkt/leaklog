@@ -72,7 +72,7 @@ QString TableView::renderHTML(bool)
 
         VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
 
-        ListOfVariantMaps inspections(Inspection::query({"circuit_uuid", circuit_uuid}).listAll("*", "date ASC"));
+        ListOfVariantMaps inspections(Inspection::query({{"circuit_uuid", circuit_uuid}}).listAll("*", "date ASC"));
         QString last_inspection_uuid, last_entry_uuid;
         for (int i = 0; i < inspections.count(); ++i) {
             QString uuid = inspections.at(i).value("uuid").toString();
@@ -153,7 +153,7 @@ QString TableView::renderHTML(bool)
             *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + "/compressor:-1/table"))
                     << tr("All compressors");
 
-            ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
+            ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", circuit_uuid}}).listAll();
             for (int i = 0; i < compressors.count(); ++i) {
                 if (compressor_uuid == compressors.at(i).value("uuid").toString())
                     cell = compressors_table_row->addHeaderCell();

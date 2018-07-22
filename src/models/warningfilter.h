@@ -28,7 +28,7 @@ public:
     WarningFilter(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     static QString tableName();
-    static inline MTRecordQuery<WarningFilter> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<WarningFilter>(tableName(), parents); }
+    static inline MTRecordQuery<WarningFilter> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<WarningFilter>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

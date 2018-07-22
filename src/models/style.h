@@ -39,7 +39,7 @@ public:
     inline void setUsesDivElements(bool value) { setValue("div_tables", (int)value); }
 
     static QString tableName();
-    static inline MTRecordQuery<Style> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Style>(tableName(), parents); }
+    static inline MTRecordQuery<Style> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Style>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

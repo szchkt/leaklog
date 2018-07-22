@@ -47,7 +47,7 @@ public:
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
-    static inline MTRecordQuery<Inspection> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Inspection>(tableName(), parents); }
+    static inline MTRecordQuery<Inspection> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Inspection>(tableName(), parents); }
     static MTQuery queryByInspector(const QString &inspector_uuid);
     static const ColumnList &columns();
 

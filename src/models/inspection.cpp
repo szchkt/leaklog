@@ -100,7 +100,7 @@ MTQuery Inspection::queryByInspector(const QString &inspector_uuid)
 {
     return MTQuery("inspections LEFT JOIN customers ON inspections.customer_uuid = customers.uuid"
                    " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid",
-                   {"inspector_uuid", inspector_uuid});
+                   {{"inspector_uuid", inspector_uuid}});
 }
 
 class InspectionColumns
@@ -208,12 +208,12 @@ void Inspection::setData(const QJsonObject &value)
 
 MTRecordQuery<InspectionCompressor> Inspection::compressors() const
 {
-    return InspectionCompressor::query({"inspection_uuid", uuid()});
+    return InspectionCompressor::query({{"inspection_uuid", uuid()}});
 }
 
 MTRecordQuery<InspectionFile> Inspection::files() const
 {
-    return InspectionFile::query({"inspection_uuid", uuid()});
+    return InspectionFile::query({{"inspection_uuid", uuid()}});
 }
 
 bool Inspection::remove() const

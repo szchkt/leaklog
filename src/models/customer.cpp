@@ -82,17 +82,17 @@ MTAddress Customer::operatorAddress()
 
 MTRecordQuery<Repair> Customer::repairs() const
 {
-    return Repair::query({"customer_uuid", uuid()});
+    return Repair::query({{"customer_uuid", uuid()}});
 }
 
 MTRecordQuery<Circuit> Customer::circuits() const
 {
-    return Circuit::query({"customer_uuid", uuid()});
+    return Circuit::query({{"customer_uuid", uuid()}});
 }
 
 MTRecordQuery<Person> Customer::persons() const
 {
-    return Person::query({"customer_uuid", uuid()});
+    return Person::query({{"customer_uuid", uuid()}});
 }
 
 QString Customer::tableName()

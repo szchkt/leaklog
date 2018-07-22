@@ -123,14 +123,14 @@ QString OperatorReportView::renderHTML(bool)
     if (month_from <= 1 || month_until >= 12)
         inspections.addFilter("date", QString("%1%").arg(year));
 
-    MTDictionary nominal_inspection_parents = {"inspection_type", "1"};
+    QVariantMap nominal_inspection_parents = {{"inspection_type", Inspection::NominalInspection}};
 
     QVariantMap sums;
     ListOfVariantMaps nominal_inspections;
     QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
 
-    MTQuery circuits_query = Circuit::query({"customer_uuid", customer_uuid});
+    MTQuery circuits_query = Circuit::query({{"customer_uuid", customer_uuid}});
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

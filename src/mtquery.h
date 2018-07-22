@@ -33,7 +33,7 @@ class MTQuery
 {
 public:
     MTQuery() {}
-    MTQuery(const QString &table, const MTDictionary &parents = MTDictionary());
+    MTQuery(const QString &table, const QVariantMap &parents = QVariantMap());
     MTQuery(const MTQuery &other);
     virtual ~MTQuery() {}
     MTQuery &operator=(const MTQuery &other);
@@ -41,9 +41,9 @@ public:
     inline QString table() const { return r_table; }
     void setTable(const QString &table) { r_table = table; }
     void addJoin(const QString &join) { r_joins << join; }
-    inline MTDictionary &parents() { return r_parents; }
-    inline const MTDictionary &parents() const { return r_parents; }
-    inline QString parent(const QString &field) const { return r_parents.value(field); }
+    inline QVariantMap &parents() { return r_parents; }
+    inline const QVariantMap &parents() const { return r_parents; }
+    inline QVariant parent(const QString &field) const { return r_parents.value(field); }
     bool exists() const;
     MTSqlQuery select(const QString &fields = "*", const QString &order_by = QString(), int limit = 0) const;
     QVariantMap list(const QString &fields = "*", const QString &order_by = QString()) const;
@@ -58,7 +58,7 @@ public:
 private:
     QString r_table;
     QStringList r_joins;
-    MTDictionary r_parents;
+    QVariantMap r_parents;
     QString r_predicate;
     MTDictionary r_filter;
 };
@@ -68,7 +68,7 @@ class MTRecordQuery : public MTQuery
 {
 public:
     MTRecordQuery(): MTQuery() {}
-    MTRecordQuery(const QString &table, const MTDictionary &parents = MTDictionary()): MTQuery(table, parents) {}
+    MTRecordQuery(const QString &table, const QVariantMap &parents = QVariantMap()): MTQuery(table, parents) {}
     MTRecordQuery(const MTQuery &other): MTQuery(other) {}
 
     void each(std::function<void(T &)> f) const {
@@ -97,8 +97,8 @@ public:
             return T(values.value("uuid").toString(), values);
         }
         T record;
-        for (int i = 0; i < parents().count(); ++i) {
-            record.setValue(parents().key(i), parents().value(i));
+        for (auto i = parents().constBegin(); i != parents().constEnd(); ++i) {
+            record.setValue(i.key(), i.value());
         }
         return record;
     }

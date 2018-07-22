@@ -256,8 +256,8 @@ void EditWarningDialogue::save()
     md_undo_stack->savepoint();
 
     if (!md_record->uuid().isEmpty()) {
-        WarningFilter::query({"warning_uuid", md_record->uuid()}).removeAll();
-        WarningCondition::query({"warning_uuid", md_record->uuid()}).removeAll();
+        WarningFilter::query({{"warning_uuid", md_record->uuid()}}).removeAll();
+        WarningCondition::query({{"warning_uuid", md_record->uuid()}}).removeAll();
     }
 
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {

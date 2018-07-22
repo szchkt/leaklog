@@ -55,7 +55,7 @@ public:
     inline void setArno(const QString &value) { setValue("arno", value); }
 
     static QString tableName();
-    static inline MTRecordQuery<Repair> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Repair>(tableName(), parents); }
+    static inline MTRecordQuery<Repair> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Repair>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

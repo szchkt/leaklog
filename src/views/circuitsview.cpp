@@ -366,7 +366,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
 
 HTMLTable *CircuitsView::circuitCompressorsTable(const QString &circuit_uuid, HTMLTable *table)
 {
-    ListOfVariantMaps compressors = Compressor::query({"circuit_uuid", circuit_uuid}).listAll();
+    ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", circuit_uuid}}).listAll();
     if (compressors.count()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         HTMLTableRow *_tr;

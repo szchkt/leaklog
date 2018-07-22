@@ -73,7 +73,7 @@ public:
     MTRecordQuery<Person> persons() const;
 
     static QString tableName();
-    static inline MTRecordQuery<Customer> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<Customer>(tableName(), parents); }
+    static inline MTRecordQuery<Customer> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Customer>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
     bool remove() const;

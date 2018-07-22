@@ -86,7 +86,7 @@ Style AssemblyRecordType::style()
 
 MTRecordQuery<AssemblyRecordTypeCategory> AssemblyRecordType::typeCategories() const
 {
-    return AssemblyRecordTypeCategory::query({"ar_type_uuid", uuid()});
+    return AssemblyRecordTypeCategory::query({{"ar_type_uuid", uuid()}});
 }
 
 QString AssemblyRecordType::tableName()

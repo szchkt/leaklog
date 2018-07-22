@@ -73,7 +73,7 @@ QString InspectionsView::renderHTML(bool)
         if (units_table) out << "<br>" << units_table->html();
     }
 
-    MTQuery inspections_query = Inspection::query({"circuit_uuid", circuit_uuid});
+    MTQuery inspections_query = Inspection::query({{"circuit_uuid", circuit_uuid}});
     if (!settings->toolBarStack()->isFilterEmpty()) {
         inspections_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -94,7 +94,7 @@ QString InspectionsView::renderHTML(bool)
     }
 
     MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
-    MultiMapOfVariantMaps persons(Person::query({"customer_uuid", customer_uuid}).mapAll("uuid", "name"));
+    MultiMapOfVariantMaps persons(Person::query({{"customer_uuid", customer_uuid}}).mapAll("uuid", "name"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"11\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";

@@ -49,7 +49,7 @@ public:
     MTRecordQuery<WarningCondition> conditions() const;
 
     static QString tableName();
-    static inline MTRecordQuery<WarningRecord> query(const MTDictionary &parents = MTDictionary()) { return MTRecordQuery<WarningRecord>(tableName(), parents); }
+    static inline MTRecordQuery<WarningRecord> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<WarningRecord>(tableName(), parents); }
     static const ColumnList &columns();
     bool remove() const;
 };
