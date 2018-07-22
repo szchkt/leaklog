@@ -59,7 +59,7 @@ EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &customer
     header.append(new EditDialogueTableCell(tr("Serial number"), "sn"));
 
     table = new EditCircuitDialogueTable(tr("Used circuit units"), header, this);
-    QObject::connect(table, SIGNAL(updateCircuit(MTDictionary)), this, SIGNAL(updateCircuit(MTDictionary)));
+    QObject::connect(table, SIGNAL(updateCircuit(const QVariantMap &)), this, SIGNAL(updateCircuit(const QVariantMap &)));
 
     grid->addWidget(table, 0, 1);
 
@@ -200,8 +200,7 @@ EditCircuitDialogueTable::EditCircuitDialogueTable(const QString &name, const QL
 
 void EditCircuitDialogueTable::updateCircuit()
 {
-    MTDictionary circuit_vars;
-    MTDictionary oils = Global::oils();
+    QVariantMap circuit_vars;
     double refr_amount = 0;
     double oil_amount = 0;
 
@@ -210,23 +209,23 @@ void EditCircuitDialogueTable::updateCircuit()
         QVariantMap unit_type = unit_type_record.list();
 
         if (!unit_type.value("refrigerant").toString().isEmpty())
-            circuit_vars.setValue("refrigerant", unit_type.value("refrigerant").toString());
+            circuit_vars.insert("refrigerant", unit_type.value("refrigerant").toString());
         refr_amount += unit_type.value("refrigerant_amount").toDouble();
 
         if (!unit_type.value("oil").toString().isEmpty())
-            circuit_vars.setValue("oil", oils.value(unit_type.value("oil").toString()));
+            circuit_vars.insert("oil", unit_type.value("oil").toString());
         oil_amount += unit_type.value("oil_amount").toDouble();
 
         if (unit_type.value("location").toInt() == CircuitUnitType::External) {
-            circuit_vars.setValue("manufacturer", unit_type.value("manufacturer").toString());
-            circuit_vars.setValue("type", unit_type.value("type").toString());
+            circuit_vars.insert("manufacturer", unit_type.value("manufacturer").toString());
+            circuit_vars.insert("type", unit_type.value("type").toString());
         }
     }
 
-    circuit_vars.setValue("refrigerant_amount", QString::number(refr_amount));
-    circuit_vars.setValue("oil_amount", QString::number(oil_amount));
+    circuit_vars.insert("refrigerant_amount", refr_amount);
+    circuit_vars.insert("oil_amount", oil_amount);
 
-    updateCircuit(circuit_vars);
+    emit updateCircuit(circuit_vars);
 }
 
 void EditCircuitDialogueTreeItem::addClicked()

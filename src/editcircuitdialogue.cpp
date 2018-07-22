@@ -54,19 +54,18 @@ EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack
     addTab(compressors_tab);
 
     EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
-    QObject::connect(units_tab, SIGNAL(updateCircuit(MTDictionary)), this, SLOT(updateCircuit(MTDictionary)));
+    QObject::connect(units_tab, SIGNAL(updateCircuit(const QVariantMap &)), this, SLOT(updateCircuit(const QVariantMap &)));
     addTab(units_tab);
 
     EditCircuitDialogueNotesTab *notes_tab = new EditCircuitDialogueNotesTab(inputWidget("notes"), this);
     addTab(notes_tab);
 }
 
-void EditCircuitDialogue::updateCircuit(MTDictionary dict)
+void EditCircuitDialogue::updateCircuit(const QVariantMap &values)
 {
-    MDAbstractInputWidget *md;
-    for (int i = 0; i < dict.count(); ++i) {
-        md = inputWidget(dict.key(i));
+    for (auto i = values.constBegin(); i != values.constEnd(); ++i) {
+        MDAbstractInputWidget *md = inputWidget(i.key());
         if (md)
-            md->setVariantValue(dict.value(i));
+            md->setVariantValue(i.value());
     }
 }

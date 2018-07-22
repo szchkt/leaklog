@@ -20,6 +20,8 @@
 #ifndef EDIT_CIRCUIT_DIALOGUE_H
 #define EDIT_CIRCUIT_DIALOGUE_H
 
+#include <QVariant>
+
 #include "tabbededitdialogue.h"
 
 class EditCircuitDialogueNotesTab : public EditDialogueTab
@@ -41,7 +43,7 @@ public:
     EditCircuitDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
 private slots:
-    void updateCircuit(MTDictionary);
+    void updateCircuit(const QVariantMap &);
 };
 
 #endif // EDIT_CIRCUIT_DIALOGUE_H
