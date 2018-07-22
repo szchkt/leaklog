@@ -42,6 +42,7 @@ public:
     void setTable(const QString &table) { r_table = table; }
     void addJoin(const QString &join) { r_joins << join; }
     inline MTDictionary &parents() { return r_parents; }
+    inline const MTDictionary &parents() const { return r_parents; }
     inline QString parent(const QString &field) const { return r_parents.value(field); }
     bool exists() const;
     MTSqlQuery select(const QString &fields = "*", const QString &order_by = QString(), int limit = 0) const;
@@ -84,9 +85,27 @@ public:
         }
     }
 
+    T first(const QString &order_by = QString()) const {
+        MTSqlQuery query = select("*", order_by, 1);
+        query.exec();
+        QSqlRecord query_record = query.record();
+        if (query.next()) {
+            QVariantMap values;
+            for (int i = 0; i < query_record.count(); ++i) {
+                values.insert(query_record.fieldName(i), query.value(i));
+            }
+            return T(values.value("uuid").toString(), values);
+        }
+        T record;
+        for (int i = 0; i < parents().count(); ++i) {
+            record.setValue(parents().key(i), parents().value(i));
+        }
+        return record;
+    }
+
     QList<T> all(const QString &order_by = QString()) const {
         QList<T> records;
-        MTSqlQuery query = order_by.isEmpty() ? select() : select("*", order_by);
+        MTSqlQuery query = select("*", order_by);
         query.exec();
         QSqlRecord record = query.record();
         while (query.next()) {

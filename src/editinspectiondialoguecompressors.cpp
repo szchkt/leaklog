@@ -44,12 +44,22 @@ void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid)
 {
     ListOfVariantMaps compressors = Circuit(circuit_uuid).compressors().listAll();
 
-    for (int i = 0; i < compressors.count(); ++i) {
-        InspectionCompressor inspection_compressor;
-        inspection_compressor.setValue("inspection_uuid", inspection_uuid);
-        inspection_compressor.setValue("compressor_uuid", compressors.at(i).value("uuid").toString());
+    if (inspection_uuid.isEmpty()) {
+        for (int i = 0; i < compressors.count(); ++i) {
+            InspectionCompressor inspection_compressor;
+            inspection_compressor.setValue("compressor_uuid", compressors.at(i).value("uuid").toString());
 
-        addTab(inspection_compressor, compressors.at(i).value("name").toString());
+            addTab(inspection_compressor, compressors.at(i).value("name").toString());
+        }
+    } else {
+        for (int i = 0; i < compressors.count(); ++i) {
+            InspectionCompressor inspection_compressor = InspectionCompressor::query({
+                {"inspection_uuid", inspection_uuid},
+                {"compressor_uuid", compressors.at(i).value("uuid").toString()}
+            }).first();
+
+            addTab(inspection_compressor, compressors.at(i).value("name").toString());
+        }
     }
 }
 
