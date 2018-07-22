@@ -41,7 +41,7 @@ public:
     EditCircuitDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
 private slots:
-    void updateCircuit(MTDictionary);
+    void updateCircuit(const QVariantMap &);
 };
 
 #endif // EDIT_CIRCUIT_DIALOGUE_H

@@ -43,7 +43,7 @@ private slots:
     void addToTable(EditCircuitDialogueTreeItem *);
 
 signals:
-    void updateCircuit(MTDictionary);
+    void updateCircuit(const QVariantMap &);
 
 private:
     void loadRows(const QString &circuit_uuid);
@@ -66,7 +66,7 @@ private slots:
     void updateCircuit();
 
 signals:
-    void updateCircuit(MTDictionary);
+    void updateCircuit(const QVariantMap &);
 
 private:
     void addHiddenRow(EditDialogueTableRow *) {}
