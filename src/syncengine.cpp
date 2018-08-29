@@ -508,8 +508,12 @@ void SyncEngine::sendRequest(const QJsonDocument &document)
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
 
     _reply = _network_manager->post(request, document.toJson(QJsonDocument::Compact));
-    connect(_reply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(uploadProgress(qint64, qint64)));
-    connect(_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
+    connect(_reply, &QNetworkReply::uploadProgress, this, [=](qint64 bytesSent, qint64 bytesTotal) {
+        emit syncProgress(bytesSent / (long double)bytesTotal / 2.0);
+    });
+    connect(_reply, &QNetworkReply::downloadProgress, this, [=](qint64 bytesReceived, qint64 bytesTotal) {
+        emit syncProgress(bytesReceived / (long double)bytesTotal / 2.0 + 0.5);
+    });
 }
 
 void SyncEngine::requestFinished(QNetworkReply *reply)
@@ -520,8 +524,9 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
         _reply = NULL;
     }
 
-    QJsonParseError error;
     QByteArray data = reply->readAll();
+
+    QJsonParseError error;
     QJsonDocument response = QJsonDocument::fromJson(data, &error);
     if (response.isNull()) {
         _error = reply->error() != QNetworkReply::NoError ? reply->errorString() : error.errorString();
@@ -542,16 +547,6 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
         bool changed = sync(response);
         emit syncFinished(true, changed);
     }
-}
-
-void SyncEngine::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
-{
-    emit syncProgress(bytesSent / (long double)bytesTotal / 2.0);
-}
-
-void SyncEngine::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
-    emit syncProgress(bytesReceived / (long double)bytesTotal / 2.0 + 0.5);
 }
 
 QJsonValue SyncEngine::jsonValueForVariant(int column_id, const QVariant &variant, int *length)

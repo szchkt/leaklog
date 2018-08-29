@@ -96,8 +96,6 @@ private:
 
 private slots:
     void requestFinished(QNetworkReply *reply);
-    void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
-    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
 private:
     Authenticator *_authenticator;
