@@ -46,23 +46,18 @@ static QString JournalEntryStringID(int operation_id, int column_id, QString rec
 Authenticator::Authenticator(QObject *parent):
     QObject(parent),
     _network_manager(new QNetworkAccessManager(this)),
-    _reply(NULL),
-    _completionHandlers(new QMap<QNetworkReply *, std::function<void(bool, const QJsonDocument &)>>)
+    _login_attempt(0)
 {
     QSettings settings("SZCHKT", "Leaklog");
     _username = settings.value("username").toString();
     _token = settings.value("auth_token").toString();
-
-    connect(_network_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
-}
-
-Authenticator::~Authenticator()
-{
-    delete _completionHandlers;
 }
 
 void Authenticator::logIn(const QString &username, const QString &password)
 {
+    _login_attempt++;
+    int attempt = _login_attempt;
+
     _username = username;
     _token.clear();
 
@@ -79,7 +74,42 @@ void Authenticator::logIn(const QString &username, const QString &password)
     request.setRawHeader("Authorization", authorization);
     request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
-    sendRequest(request, QJsonDocument(QJsonObject()));
+
+    auto reply = _network_manager->post(request, QJsonDocument(QJsonObject()).toJson(QJsonDocument::Compact));
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        reply->deleteLater();
+
+        if (_login_attempt != attempt)
+            return;
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status < 200 || status >= 300) {
+            _error = reply->errorString();
+            emit loginFinished(false);
+            return;
+        }
+
+        QJsonParseError error;
+        QJsonDocument response = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (response.isNull()) {
+            _error = error.errorString();
+            emit loginFinished(false);
+            return;
+        }
+
+        QJsonObject root = response.object();
+
+        _token = root.value("token").toString();
+        _error = root.value("error").toString();
+
+        if (!_token.isEmpty()) {
+            QSettings settings("SZCHKT", "Leaklog");
+            settings.setValue("username", _username);
+            settings.setValue("auth_token", _token);
+        }
+
+        emit loginFinished(!_token.isEmpty());
+    });
 }
 
 void Authenticator::logOut()
@@ -108,57 +138,14 @@ void Authenticator::getDatabases(std::function<void(bool success, const QJsonDoc
     request.setRawHeader("X-Source-UUID", sourceUUID().toUtf8());
     request.setRawHeader("Content-Type", "application/json; charset=utf-8");
 
-    _completionHandlers->insert(_network_manager->get(request), completionHandler);
-}
-
-void Authenticator::sendRequest(const QNetworkRequest &request, const QJsonDocument &document)
-{
-    if (_reply) {
-        _reply->abort();
-        _reply->deleteLater();
-        _reply = NULL;
-    }
-
-    _reply = _network_manager->post(request, document.toJson(QJsonDocument::Compact));
-}
-
-void Authenticator::requestFinished(QNetworkReply *reply)
-{
-    if (_reply == reply) {
-        _reply->deleteLater();
-        _reply = NULL;
-    }
-
-    QJsonParseError error;
-    QJsonDocument response = QJsonDocument::fromJson(reply->readAll(), &error);
-
-    if (_completionHandlers->contains(reply)) {
-        std::function<void(bool, const QJsonDocument &)> completionHandler = _completionHandlers->value(reply);
-        _completionHandlers->remove(reply);
+    auto reply = _network_manager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        QJsonParseError error;
+        QJsonDocument response = QJsonDocument::fromJson(reply->readAll(), &error);
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         completionHandler(status >= 200 && status < 300, response);
         reply->deleteLater();
-        return;
-    }
-
-    if (response.isNull()) {
-        _error = error.errorString();
-        emit loginFinished(false);
-        return;
-    }
-
-    QJsonObject root = response.object();
-
-    _token = root.value("token").toString();
-    _error = root.value("error").toString();
-
-    if (!_token.isEmpty()) {
-        QSettings settings("SZCHKT", "Leaklog");
-        settings.setValue("username", _username);
-        settings.setValue("auth_token", _token);
-    }
-
-    emit loginFinished(!_token.isEmpty());
+    });
 }
 
 SyncEngine::SyncEngine(Authenticator *authenticator, QObject *parent):

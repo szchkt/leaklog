@@ -35,7 +35,6 @@ class Authenticator : public QObject
 
 public:
     Authenticator(QObject *parent = NULL);
-    ~Authenticator();
 
     void logIn(const QString &username, const QString &password);
     void logOut();
@@ -51,18 +50,11 @@ signals:
     void logoutFinished();
 
 private:
-    void sendRequest(const QNetworkRequest &request, const QJsonDocument &document);
-
-private slots:
-    void requestFinished(QNetworkReply *reply);
-
-private:
     QString _username;
     QString _token;
     QString _error;
     QNetworkAccessManager *_network_manager;
-    QNetworkReply *_reply;
-    QMap<QNetworkReply *, std::function<void(bool, const QJsonDocument &)>> *_completionHandlers;
+    int _login_attempt;
 };
 
 class SyncEngine : public QObject
