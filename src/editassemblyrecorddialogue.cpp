@@ -49,18 +49,21 @@ EditAssemblyRecordDialogueTab::EditAssemblyRecordDialogueTab(const QString &ar_t
 
 void EditAssemblyRecordDialogueTab::save(const QString &ar_type_uuid)
 {
-    AssemblyRecordType(ar_type_uuid).typeCategories().removeAll();
-
-    QTreeWidgetItem *item;
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
-        item = tree->topLevelItem(i);
+        QTreeWidgetItem *item = tree->topLevelItem(i);
+        QString ar_item_category_uuid = item->data(0, Qt::UserRole).toString();
+        auto query = AssemblyRecordTypeCategory::query({
+            {"ar_type_uuid", ar_type_uuid},
+            {"ar_item_category_uuid", ar_item_category_uuid}
+        });
 
         if (item->checkState(0) == Qt::Checked) {
-            QString ar_item_category_uuid = item->data(0, Qt::UserRole).toString();
-            int value = ((QSpinBox *) tree->itemWidget(item, 1))->value();
-            AssemblyRecordTypeCategory::query({{"ar_type_uuid", ar_type_uuid}, {"ar_item_category_uuid", ar_item_category_uuid}}).each([value](AssemblyRecordTypeCategory &record) {
-                record.update("position", value);
-            });
+            int value = ((QSpinBox *)tree->itemWidget(item, 1))->value();
+            auto type_category = query.first();
+            type_category.setValue("position", value);
+            type_category.save();
+        } else {
+            query.removeAll();
         }
     }
 }
