@@ -519,7 +519,7 @@ void ToolBarStack::enableTools()
 
         lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(description.join(", ")));
     }
-    widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
+    widget_circuit_unit_type->setVisible(_view == View::CircuitUnitTypes
                                          && _settings->isCircuitUnitTypeSelected());
 
     tbtn_edit_inspector->setEnabled(_settings->isInspectorSelected());
