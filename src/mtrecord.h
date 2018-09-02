@@ -21,7 +21,6 @@
 #define MTRECORD_H
 
 #include "defs.h"
-#include "mtdictionary.h"
 #include "mtsqlquery.h"
 
 #include <QVariant>

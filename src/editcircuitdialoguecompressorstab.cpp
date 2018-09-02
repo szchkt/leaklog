@@ -54,12 +54,12 @@ EditCircuitDialogueCompressorsTab::EditCircuitDialogueCompressorsTab(const QStri
 
 void EditCircuitDialogueCompressorsTab::save(const QString &circuit_uuid)
 {
-    QList<MTDictionary> all_values = compressors_table->allValues();
+    QList<QVariantMap> all_values = compressors_table->allValues();
 
     Compressor compressor;
     for (int i = 0; i < all_values.count(); ++i) {
         if (all_values.at(i).contains("uuid")) {
-            QString uuid = all_values.at(i).value("uuid");
+            QString uuid = all_values.at(i).value("uuid").toString();
             former_ids.removeAll(uuid);
             compressor = Compressor(uuid);
         } else {
@@ -67,10 +67,10 @@ void EditCircuitDialogueCompressorsTab::save(const QString &circuit_uuid)
             compressor.setCircuitUUID(circuit_uuid);
         }
 
-        compressor.setName(all_values.at(i).value("name"));
-        compressor.setManufacturer(all_values.at(i).value("manufacturer"));
-        compressor.setType(all_values.at(i).value("type"));
-        compressor.setSerialNumber(all_values.at(i).value("sn"));
+        compressor.setName(all_values.at(i).value("name").toString());
+        compressor.setManufacturer(all_values.at(i).value("manufacturer").toString());
+        compressor.setType(all_values.at(i).value("type").toString());
+        compressor.setSerialNumber(all_values.at(i).value("sn").toString());
         compressor.save();
     }
 

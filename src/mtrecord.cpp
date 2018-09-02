@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "mtrecord.h"
+#include "mtdictionary.h"
 #include "global.h"
 
 #include <QSqlRecord>

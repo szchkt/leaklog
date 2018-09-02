@@ -166,14 +166,14 @@ void EditCustomerDialogue::save()
 {
     if (!EditDialogue::save(false)) return;
 
-    QList<MTDictionary> all_values = persons_table->allValues();
+    QList<QVariantMap> all_values = persons_table->allValues();
 
     Person person;
     for (int i = 0; i < all_values.count(); ++i) {
-        if (all_values.at(i).value("name").isEmpty()) continue;
+        if (all_values.at(i).value("name").toString().isEmpty()) continue;
 
         if (all_values.at(i).contains("uuid")) {
-            QString uuid = all_values.at(i).value("uuid");
+            QString uuid = all_values.at(i).value("uuid").toString();
             former_ids.removeAll(uuid);
             person = Person(uuid);
         } else {
@@ -181,9 +181,9 @@ void EditCustomerDialogue::save()
             person.setCustomerUUID(md_record->uuid());
         }
 
-        person.setName(all_values.at(i).value("name"));
-        person.setMail(all_values.at(i).value("mail"));
-        person.setPhone(all_values.at(i).value("phone"));
+        person.setName(all_values.at(i).value("name").toString());
+        person.setMail(all_values.at(i).value("mail").toString());
+        person.setPhone(all_values.at(i).value("phone").toString());
         person.setHidden(all_values.at(i).value("hidden", 0).toInt());
         person.save();
     }

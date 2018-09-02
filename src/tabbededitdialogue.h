@@ -21,7 +21,6 @@
 #define TABBED_EDIT_DIALOGUE_H
 
 #include "editdialogue.h"
-#include "mtdictionary.h"
 
 class QTabWidget;
 class QTreeWidget;

@@ -23,8 +23,6 @@
 #include <QString>
 #include <QWidget>
 
-#include "mtdictionary.h"
-
 class QVBoxLayout;
 
 class EditDialogueTableCell;
@@ -43,7 +41,7 @@ public:
     void addItem(const QString &, const QString &, QMap<QString, EditDialogueTableCell *> &, int, bool);
     EditDialogueAdvancedTable *createGroup(const QString &, const QString &, int);
 
-    QList<MTDictionary> allValues();
+    QList<QVariantMap> allValues();
 
     void clear();
 

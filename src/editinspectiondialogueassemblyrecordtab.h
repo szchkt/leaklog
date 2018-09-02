@@ -33,7 +33,7 @@ public:
     EditInspectionDialogueAssemblyRecordTab(int, MDLineEdit *, MDComboBox *, EditInspectionDialogueAccess *, const QString &, const QString &, QWidget * = NULL);
 
     void save(const QString &);
-    QString saveNewItemType(const MTDictionary &);
+    QString saveNewItemType(const QVariantMap &);
 
 private slots:
     void loadItemInputWidgets(bool = false);
@@ -42,7 +42,6 @@ private slots:
 
 private:
     void init();
-    MTDictionary listAssemblyRecordItemTypes();
     const QVariant assemblyRecordType();
     const QVariant assemblyRecordId();
 

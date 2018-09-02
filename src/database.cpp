@@ -1182,8 +1182,8 @@ void MainWindow::editRefrigerants()
 
     refrigerants.clear();
 
-    QList<MTDictionary> updated_refrigerants = table->allValues();
-    foreach (const MTDictionary &updated_refrigerant, updated_refrigerants) {
+    QList<QVariantMap> updated_refrigerants = table->allValues();
+    foreach (const QVariantMap &updated_refrigerant, updated_refrigerants) {
         QVariantMap refrigerant;
         refrigerant.insert("name", updated_refrigerant.value("name"));
         refrigerant.insert("gwp", updated_refrigerant.value("gwp"));

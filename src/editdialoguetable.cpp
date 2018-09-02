@@ -170,13 +170,13 @@ void EditDialogueTable::addNewRow()
     addRow(cells_map, true);
 }
 
-QList<MTDictionary> EditDialogueTable::allValues() const
+QList<QVariantMap> EditDialogueTable::allValues() const
 {
-    QList<MTDictionary> values;
+    QList<QVariantMap> values;
 
     for (int i = 0; i < rows.count(); ++i) {
         if (rows.at(i)->isInTable())
-            values.append(rows.at(i)->dictValues());
+            values.append(rows.at(i)->rowValues());
     }
 
     return values;
@@ -186,8 +186,6 @@ EditDialogueAdvancedTable::EditDialogueAdvancedTable(const QString &name, const 
     EditDialogueTable(name, header, parent),
     category_uuid(category_uuid)
 {
-    smallest_index = -1;
-
     layout->addLayout(addRowControlsLayout());
 }
 
@@ -246,7 +244,7 @@ QList<EditDialogueTableCell *> EditDialogueAdvancedTable::hiddenAttributes()
     EditDialogueTableCell *cell = new EditDialogueTableCell(category_uuid);
     cell->setId("ar_item_category_uuid");
     attrs.append(cell);
-    cell = new EditDialogueTableCell(smallest_index--);
+    cell = new EditDialogueTableCell(QVariant(QVariant::String));
     cell->setId("ar_item_type_uuid");
     attrs.append(cell);
     cell = new EditDialogueTableCell(AssemblyRecordItem::AssemblyRecordItemTypes);
@@ -402,16 +400,16 @@ void EditDialogueTableRow::addWidget(const QString &name, MDTInputWidget *le)
     widgets.insert(name, le);
 }
 
-MTDictionary EditDialogueTableRow::dictValues() const
+QVariantMap EditDialogueTableRow::rowValues() const
 {
-    MTDictionary dict;
+    QVariantMap dict;
     QMapIterator<QString, EditDialogueTableCell *> i(values);
     while (i.hasNext()) {
         i.next();
         if (widgets.contains(i.key())) {
-            dict.setValue(i.key(), widgets.value(i.key())->variantValue().toString());
+            dict.insert(i.key(), widgets.value(i.key())->variantValue());
         } else {
-            dict.setValue(i.key(), i.value()->value().toString());
+            dict.insert(i.key(), i.value()->value());
         }
     }
     return dict;

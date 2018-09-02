@@ -21,7 +21,6 @@
 
 #include "global.h"
 #include "records.h"
-#include "mtdictionary.h"
 #include "inputwidgets.h"
 #include "editcircuitdialoguecompressorstab.h"
 #include "editcircuitdialogueunitstab.h"

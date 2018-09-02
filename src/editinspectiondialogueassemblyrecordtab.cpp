@@ -318,26 +318,26 @@ void EditInspectionDialogueAssemblyRecordTab::save(const QString &)
         inspection.save();
     }
 
-    QList<MTDictionary> record_dicts = groups_layout->allValues();
+    QList<QVariantMap> record_dicts = groups_layout->allValues();
 
     for (int i = 0; i < record_dicts.count(); ++i) {
         AssemblyRecordItem item;
         item.setArno(arno);
-        item.setValue(record_dicts.at(i).value("value"));
-        item.setItemTypeUUID(record_dicts.at(i).value("ar_item_type_uuid").isEmpty()
-                             ? saveNewItemType(record_dicts.at(i)) : record_dicts.at(i).value("ar_item_type_uuid"));
-        item.setItemCategoryUUID(record_dicts.at(i).value("ar_item_category_uuid"));
+        item.setValue(record_dicts.at(i).value("value").toString());
+        item.setItemTypeUUID(record_dicts.at(i).value("ar_item_type_uuid").toString().isEmpty()
+                             ? saveNewItemType(record_dicts.at(i)) : record_dicts.at(i).value("ar_item_type_uuid").toString());
+        item.setItemCategoryUUID(record_dicts.at(i).value("ar_item_category_uuid").toString());
         item.setValue("acquisition_price", record_dicts.at(i).value("acquisition_price"));
         item.setValue("list_price", record_dicts.at(i).value("list_price"));
-        item.setName(record_dicts.at(i).value("name"));
+        item.setName(record_dicts.at(i).value("name").toString());
         item.setValue("source", record_dicts.at(i).value("source"));
-        item.setUnit(record_dicts.at(i).value("unit"));
+        item.setUnit(record_dicts.at(i).value("unit").toString());
         item.setValue("discount", record_dicts.at(i).value("discount"));
         item.save();
     }
 }
 
-QString EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const MTDictionary &dict)
+QString EditInspectionDialogueAssemblyRecordTab::saveNewItemType(const QVariantMap &dict)
 {
     AssemblyRecordItemType item_type;
     item_type.setValue("name", dict.value("name"));

@@ -102,12 +102,12 @@ void EditCircuitDialogueUnitsTab::loadRows(const QString &circuit_uuid)
 
 void EditCircuitDialogueUnitsTab::save(const QString &circuit_uuid)
 {
-    QList<MTDictionary> all_values = table->allValues();
+    QList<QVariantMap> all_values = table->allValues();
 
     CircuitUnit unit;
     for (int i = 0; i < all_values.count(); ++i) {
         if (all_values.at(i).contains("uuid")) {
-            QString uuid = all_values.at(i).value("uuid");
+            QString uuid = all_values.at(i).value("uuid").toString();
             former_ids.removeAll(uuid);
             unit = CircuitUnit(uuid);
         } else {
@@ -115,8 +115,8 @@ void EditCircuitDialogueUnitsTab::save(const QString &circuit_uuid)
             unit.setCircuitUUID(circuit_uuid);
         }
 
-        unit.setUnitTypeUUID(all_values.at(i).value("unit_type_uuid"));
-        unit.setSerialNumber(all_values.at(i).value("sn"));
+        unit.setUnitTypeUUID(all_values.at(i).value("unit_type_uuid").toString());
+        unit.setSerialNumber(all_values.at(i).value("sn").toString());
         unit.save();
     }
 

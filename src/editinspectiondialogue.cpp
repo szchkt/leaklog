@@ -155,16 +155,16 @@ void EditInspectionDialogueImagesTab::loadItemInputWidgets(const QString &inspec
 
 void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
 {
-    QList<MTDictionary> dicts = table->allValues();
+    QList<QVariantMap> dicts = table->allValues();
     auto files = Inspection(inspection_uuid).files().map("uuid");
 
     for (int i = 0; i < dicts.count(); ++i) {
-        QString file_uuid = dicts.at(i).value("file_uuid");
+        QString file_uuid = dicts.at(i).value("file_uuid").toString();
         if (file_uuid.isEmpty())
             continue;
 
         InspectionFile file;
-        QString uuid = dicts.at(i).value("uuid");
+        QString uuid = dicts.at(i).value("uuid").toString();
 
         if (!uuid.isEmpty() && files.contains(uuid)) {
             file = files.value(uuid);
@@ -173,7 +173,7 @@ void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
 
         file.setInspectionUUID(inspection_uuid);
         file.setFileUUID(file_uuid);
-        file.setDescription(dicts.at(i).value("description"));
+        file.setDescription(dicts.at(i).value("description").toString());
         file.save();
     }
 

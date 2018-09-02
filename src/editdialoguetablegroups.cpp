@@ -85,9 +85,9 @@ EditDialogueAdvancedTable *EditDialogueGroupsLayout::createGroup(const QString &
     return group_box;
 }
 
-QList<MTDictionary> EditDialogueGroupsLayout::allValues()
+QList<QVariantMap> EditDialogueGroupsLayout::allValues()
 {
-    QList<MTDictionary> values;
+    QList<QVariantMap> values;
 
     foreach (EditDialogueAdvancedTable *group_box, *groups) {
         values.append(group_box->allValues());
