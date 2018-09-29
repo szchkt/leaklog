@@ -45,5 +45,7 @@
 	<string>Leaklog</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7</string>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<true/>
 </dict>
 </plist>
