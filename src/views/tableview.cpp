@@ -331,7 +331,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
         QString circuit_uuid = circuit.value("uuid").toString();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
-        if (inspection_type < 0) {
+        if (Inspection::showDescriptionForInspectionType(inspection_type)) {
             QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
 
             if (!description.isEmpty()) {

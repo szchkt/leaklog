@@ -34,24 +34,33 @@
 
 using namespace Global;
 
-QString Inspection::titleForInspectionType(Inspection::Type type)
+QString Inspection::titleForInspectionType(Type type)
 {
     switch (type) {
         case RegularInspection:
-            break;
+            return tr("Regular Inspection");
         case NominalInspection:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Nominal Inspection"));
+            return tr("Nominal Inspection");
         case Repair:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Repair"));
+            return tr("Repair");
         case InspectionAfterRepair:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection After Repair"));
+            return tr("Inspection After Repair");
+        case StrengthTightnessTest:
+            return tr("Strength and Tightness Test");
+        case VacuumTest:
+            return tr("Vacuum Test");
         case CircuitMoved:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Circuit Moved"));
+            return tr("Circuit Moved");
         case SkippedInspection:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection Skipped"));
+            return tr("Inspection Skipped");
     }
 
-    return QApplication::translate("MainWindow", "%1:").arg(tr("Regular Inspection"));
+    return tr("Unknown Inspection Type");
+}
+
+bool Inspection::showDescriptionForInspectionType(Inspection::Type type)
+{
+    return type < 0 || type >= StrengthTightnessTest;
 }
 
 QString Inspection::descriptionForInspectionType(Inspection::Type type, const QString &type_data)
@@ -88,7 +97,7 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
             break;
     }
 
-    return QString();
+    return titleForInspectionType(type);
 }
 
 QString Inspection::tableName()

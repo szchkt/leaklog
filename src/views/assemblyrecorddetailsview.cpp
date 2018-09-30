@@ -119,7 +119,7 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
     } else {
         elem = _td;
     }
-    *elem << Inspection::titleForInspectionType(type);
+    *elem << QApplication::translate("MainWindow", "%1:").arg(Inspection::titleForInspectionType(type));
     *elem << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.date());
 
     enum QUERY_RESULTS {

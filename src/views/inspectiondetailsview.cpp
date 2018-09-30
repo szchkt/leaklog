@@ -74,7 +74,7 @@ QString InspectionDetailsView::renderHTML(bool)
     el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")
             ->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
             ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (type == Inspection::Repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
-    *el << Inspection::titleForInspectionType(type);
+    *el << QApplication::translate("MainWindow", "%1:").arg(Inspection::titleForInspectionType(type));
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
     div.newLine();
 

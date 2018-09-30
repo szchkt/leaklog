@@ -39,11 +39,15 @@ public:
         Repair = 2,
         InspectionAfterRepair = 3,
 
+        StrengthTightnessTest = 4,
+        VacuumTest = 5,
+
         CircuitMoved = -1,
         SkippedInspection = -2,
     };
 
     static QString titleForInspectionType(Type type);
+    static bool showDescriptionForInspectionType(Type type);
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();

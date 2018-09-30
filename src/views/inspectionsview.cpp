@@ -123,7 +123,7 @@ QString InspectionsView::renderHTML(bool)
         bool is_outside_interval = inspections.at(i).value("outside_interval").toInt();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
-        if (inspection_type < 0) {
+        if (Inspection::showDescriptionForInspectionType(inspection_type)) {
             QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
 
             if (!description.isEmpty()) {
