@@ -122,7 +122,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
 
     if (all_circuits || circuits_details_visible) {
         thead = new HTMLTableRow();
-        writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, !all_circuits && circuits.count() && circuits.first().value("disused").toInt() != Circuit::Commissioned, thead);
+        writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, !all_circuits && circuits.count() ? circuits.first().value("disused").toInt() : 0, thead);
     }
 
     HTMLTableRow *_tr = table->addRow();
@@ -177,7 +177,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
 
         if (excluded_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, true, thead);
+            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::ExcludedFromAgenda, thead);
         } else {
             thead = NULL;
         }
@@ -207,7 +207,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
 
         if (decommissioned_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, true, thead);
+            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::Decommissioned, thead);
         } else {
             thead = NULL;
         }
@@ -242,7 +242,7 @@ static void addCircuitHeaderCell(const QString &key, const QString &customer_id,
         *(thead->addHeaderCell()) << Circuit::attributes().value(key).split("||").first();
 }
 
-void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, bool disused, HTMLTableRow *thead)
+void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, int disused, HTMLTableRow *thead)
 {
     addCircuitHeaderCell("id", customer_uuid, circuit_uuid, thead);
     addCircuitHeaderCell("name", customer_uuid, circuit_uuid, thead);
@@ -271,10 +271,16 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QStri
     }
     if (columns.oil)
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
-    if (disused) {
-        *(thead->addHeaderCell()) << Circuit::attributes().value("decommissioning");
-    } else {
-        *(thead->addHeaderCell()) << tr("Last inspection");
+    switch (disused) {
+        case Circuit::ExcludedFromAgenda:
+            *(thead->addHeaderCell()) << QApplication::translate("Circuit", "Date excluded");
+            break;
+        case Circuit::Decommissioned:
+            *(thead->addHeaderCell()) << Circuit::attributes().value("decommissioning");
+            break;
+        default:
+            *(thead->addHeaderCell()) << tr("Last inspection");
+            break;
     }
     if (columns.date_updated) {
         if (circuit_uuid.isEmpty())

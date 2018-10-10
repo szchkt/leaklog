@@ -444,6 +444,12 @@ void MDDateEdit::setVariantValue(const QVariant &value)
     setDate(QDate::fromString(value.toString(), DATE_FORMAT));
 }
 
+void MDDateEdit::setEnabled(bool enabled)
+{
+    QDateEdit::setEnabled(enabled);
+    label()->widget()->setEnabled(enabled);
+}
+
 MDAddressEdit::MDAddressEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
 MTAddressEdit(parent),
 MDInputWidget(id, labeltext, parent, this)
@@ -500,6 +506,12 @@ QVariant MDPlainTextEdit::variantValue() const
 void MDPlainTextEdit::setVariantValue(const QVariant &value)
 {
     setPlainText(value.toString());
+}
+
+void MDPlainTextEdit::setEnabled(bool enabled)
+{
+    QPlainTextEdit::setEnabled(enabled);
+    label()->widget()->setEnabled(enabled);
 }
 
 MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString &id, const QString &labeltext, QWidget *parent, int grouped_value):

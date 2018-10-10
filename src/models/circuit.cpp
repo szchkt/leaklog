@@ -75,10 +75,15 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     });
     md->addInputWidget(disused);
     MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), dateOfDecommissioning());
+    decommissioning->label()->setAlternativeText(tr("Date excluded:"));
+    decommissioning->label()->toggleAlternativeText(disused->currentIndex() == 1);
+    QObject::connect(disused, &MDComboBox::currentIndexChanged, decommissioning, [=](MDComboBox *, int index) {
+        decommissioning->label()->toggleAlternativeText(index == 1);
+    });
     decommissioning->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
-    MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason for decommissioning:"), md->widget(), reasonForDecommissioning());
+    MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason:"), md->widget(), reasonForDecommissioning());
     reason->setRowSpan(2);
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
