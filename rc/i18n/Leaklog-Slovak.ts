@@ -685,10 +685,6 @@
         <translation>Vyradený z prevádzky</translation>
     </message>
     <message>
-        <source>Reason for decommissioning:</source>
-        <translation>Dôvod vyradenia:</translation>
-    </message>
-    <message>
         <source>Reason for decommissioning</source>
         <translation>Dôvod vyradenia</translation>
     </message>
@@ -719,6 +715,18 @@
     <message>
         <source>Changing the refrigerant would affect the store.</source>
         <translation>Zmena chladiva by ovplyvnila sklad.</translation>
+    </message>
+    <message>
+        <source>Date excluded:</source>
+        <translation>Vyradenie z agendy:</translation>
+    </message>
+    <message>
+        <source>Reason:</source>
+        <translation>Dôvod:</translation>
+    </message>
+    <message>
+        <source>Date excluded</source>
+        <translation>Vyradenie z agendy</translation>
     </message>
 </context>
 <context>
@@ -1910,6 +1918,18 @@
     <message>
         <source>Inspection Skipped</source>
         <translation>Kontrola vynechaná</translation>
+    </message>
+    <message>
+        <source>Strength and Tightness Test</source>
+        <translation>Skúška pevnosti a tesnosti</translation>
+    </message>
+    <message>
+        <source>Vacuum Test</source>
+        <translation>Vákuovanie</translation>
+    </message>
+    <message>
+        <source>Unknown Inspection Type</source>
+        <translation>Neznámy typ kontroly</translation>
     </message>
 </context>
 <context>
