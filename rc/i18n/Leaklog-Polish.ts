@@ -72,6 +72,10 @@
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Czeski związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
+    <message>
+        <source>about:blank</source>
+        <translation>about:blank</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -146,14 +150,6 @@
         <source>Assembly record No.</source>
         <translation>Numer książki serwisowej</translation>
     </message>
-    <message>
-        <source>Assembly record type ID</source>
-        <translation>ID typu książki serwisowej</translation>
-    </message>
-    <message>
-        <source>Inspector certificate number</source>
-        <translation>Numer certyfikatu kontrolera</translation>
-    </message>
 </context>
 <context>
     <name>AssemblyRecordDetailsView</name>
@@ -219,10 +215,6 @@
 </context>
 <context>
     <name>AssemblyRecordItemCategory</name>
-    <message>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
     <message>
         <source>Name</source>
         <translation>Nazwa</translation>
@@ -317,10 +309,6 @@
     <message>
         <source>Data type:</source>
         <translation>Typ danych:</translation>
-    </message>
-    <message>
-        <source>ID</source>
-        <translation>ID</translation>
     </message>
     <message>
         <source>Name</source>
@@ -441,10 +429,6 @@
         <translation>Styl wizualny:</translation>
     </message>
     <message>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Nazwa</translation>
     </message>
@@ -488,14 +472,6 @@
     <message>
         <source>Assembly record name</source>
         <translation>Nazwa książki serwisowej</translation>
-    </message>
-    <message>
-        <source>Customer</source>
-        <translation>Klient</translation>
-    </message>
-    <message>
-        <source>Circuit</source>
-        <translation>Obieg</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -709,10 +685,6 @@
         <translation>Wyłączony</translation>
     </message>
     <message>
-        <source>Reason for decommissioning:</source>
-        <translation>Powód wyłączenia:</translation>
-    </message>
-    <message>
         <source>Reason for decommissioning</source>
         <translation>Powód wyłączenia</translation>
     </message>
@@ -743,6 +715,18 @@
     <message>
         <source>Changing the refrigerant would affect the store.</source>
         <translation>Zmiana czynnika chłodniczego miałaby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Date excluded:</source>
+        <translation>Data wyłączenia:</translation>
+    </message>
+    <message>
+        <source>Reason:</source>
+        <translation>Powód:</translation>
+    </message>
+    <message>
+        <source>Date excluded</source>
+        <translation>Data wyłączenia</translation>
     </message>
 </context>
 <context>
@@ -882,10 +866,6 @@
     <message>
         <source>Notes</source>
         <translation>Notatki</translation>
-    </message>
-    <message>
-        <source>Content</source>
-        <translation>Zawartość</translation>
     </message>
 </context>
 <context>
@@ -1447,10 +1427,6 @@
         <translation>Anuluj</translation>
     </message>
     <message>
-        <source>%1: %2</source>
-        <translation>%1: %2</translation>
-    </message>
-    <message>
         <source>Save changes</source>
         <translation>Zachowaj zmiany</translation>
     </message>
@@ -1588,14 +1564,6 @@
     <message>
         <source>Conditions:</source>
         <translation>Warunki:</translation>
-    </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Zapisz zmiany</translation>
-    </message>
-    <message>
-        <source>You cannot create more than 1000 warnings.</source>
-        <translation>Nie można utworzyć więcej niż 1000 ostrzeżeń.</translation>
     </message>
 </context>
 <context>
@@ -1860,10 +1828,6 @@
 <context>
     <name>Inspection</name>
     <message>
-        <source>Nominal</source>
-        <translation>Nominalny</translation>
-    </message>
-    <message>
         <source>Repair</source>
         <translation>Naprawa</translation>
     </message>
@@ -1912,10 +1876,6 @@
         <translation>Książka serwisowa nr.</translation>
     </message>
     <message>
-        <source>Assembly record type</source>
-        <translation>Typ książki serwisowej</translation>
-    </message>
-    <message>
         <source>Risks</source>
         <translation>Ryzyko</translation>
     </message>
@@ -1926,10 +1886,6 @@
     <message>
         <source>Inspection carried out by another service company.</source>
         <translation>Kontrola przeprowadzona przez inną firmę serwisową.</translation>
-    </message>
-    <message>
-        <source>Contact person</source>
-        <translation>Osoba kontaktowa</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -1950,6 +1906,30 @@
     <message>
         <source>Type:</source>
         <translation>Typ:</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <source>Circuit Moved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Inspection Skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Strength and Tightness Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vacuum Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Inspection Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2060,16 +2040,8 @@
         <translation>Imię i nazwisko</translation>
     </message>
     <message>
-        <source>Foreign certificate number:</source>
-        <translation>Numer zagranicznego certyfikatu:</translation>
-    </message>
-    <message>
         <source>Country of issue:</source>
         <translation>Kraj wydania:</translation>
-    </message>
-    <message>
-        <source>Foreign certificate number</source>
-        <translation>Numer zagranicznego certyfikatu</translation>
     </message>
     <message>
         <source>Country of issue</source>
@@ -3188,18 +3160,6 @@
         <translation>Ctrl+W</translation>
     </message>
     <message>
-        <source>Find All</source>
-        <translation>Znajdź wszystko</translation>
-    </message>
-    <message>
-        <source>Find all occurrences of the searched word</source>
-        <translation>Znajdź wszystkie wystąpienia szukanego słowa</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+F</source>
-        <translation>Ctrl+Shift+F</translation>
-    </message>
-    <message>
         <source>Auto Save...</source>
         <translation>Autozapis...</translation>
     </message>
@@ -3674,22 +3634,6 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
     <message>
         <source>Remove inspector %1</source>
         <translation>Usuń kontrolera %1</translation>
-    </message>
-    <message>
-        <source>Export customer data - Leaklog</source>
-        <translation>Eksportuj bazę klientów - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export circuit data - Leaklog</source>
-        <translation>Eksportuj bazę obiegów - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export inspection data - Leaklog</source>
-        <translation>Eksportój bazę kontroli - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export data - Leaklog</source>
-        <translation>Eksportuj bazę - Leaklog</translation>
     </message>
     <message>
         <source>Import data - Leaklog</source>
@@ -4312,20 +4256,12 @@ dla ID osoby i firmy</translation>
         <translation>Zobacz dokumentację online</translation>
     </message>
     <message>
-        <source>http://github.com/szchkt/leaklog/wiki</source>
-        <translation>http://github.com/szchkt/leaklog/wiki</translation>
-    </message>
-    <message>
         <source>What&apos;s New</source>
         <translation>Nowości</translation>
     </message>
     <message>
         <source>View the changelog online</source>
         <translation>Zobacz listę zmian online</translation>
-    </message>
-    <message>
-        <source>http://github.com/szchkt/leaklog/releases</source>
-        <translation>http://github.com/szchkt/leaklog/releases</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -4513,6 +4449,98 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Refrigerants</source>
         <translation>Czynniki</translation>
+    </message>
+    <message>
+        <source>Sync...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From Leaklog.org...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download database from Leaklog.org</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No databases found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create a new database or open an existing database, then sync with Leaklog.org.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a database to download:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to connect to Leaklog.org.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sync database - Leaklog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to sync this database with leaklog.org?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do &amp;Not Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sync - Leaklog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to sync with the server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log In - Leaklog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter your szchkt.org username and password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Register</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to log in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Try Again</source>
+        <translation>Spróbuj ponownie</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/wiki</source>
+        <translation>https://github.com/szchkt/leaklog/wiki</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/releases</source>
+        <translation>https://github.com/szchkt/leaklog/releases</translation>
     </message>
 </context>
 <context>
@@ -4828,14 +4856,6 @@ dla ID osoby i firmy</translation>
 </context>
 <context>
     <name>Person</name>
-    <message>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
-    <message>
-        <source>Company ID</source>
-        <translation>NIP firmy</translation>
-    </message>
     <message>
         <source>Name</source>
         <translation>Nazwa</translation>
@@ -5298,6 +5318,14 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Use div elements instead of tables</source>
         <translation>Użyj elementów div zamiast tabel</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nazwa</translation>
+    </message>
+    <message>
+        <source>Content</source>
+        <translation>Zawartość</translation>
     </message>
 </context>
 <context>
@@ -6125,6 +6153,18 @@ dla ID osoby i firmy</translation>
         <source>Colour:</source>
         <translation>Kolor:</translation>
     </message>
+    <message>
+        <source>Save changes</source>
+        <translation>Zachowaj zmiany</translation>
+    </message>
+    <message>
+        <source>Invalid ID.</source>
+        <translation>Nieprawidłowe ID.</translation>
+    </message>
+    <message>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>To ID jest niedostępne. Proszę wybrać inny.</translation>
+    </message>
 </context>
 <context>
     <name>VariableTypes</name>
@@ -6151,6 +6191,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Long Text</source>
         <translation>Długi tekst</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation>UUID</translation>
     </message>
 </context>
 <context>
