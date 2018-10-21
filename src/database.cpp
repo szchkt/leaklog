@@ -915,7 +915,10 @@ void MainWindow::sync(bool force, bool save)
             message.setWindowModality(Qt::WindowModal);
             message.setWindowFlags(message.windowFlags() | Qt::Sheet);
             message.setIcon(QMessageBox::Information);
-            message.setText(tr("Do you want to sync this database with leaklog.org?"));
+            message.setText(tr("Do you want to sync this database with Leaklog.org?"));
+            message.setInformativeText(tr("By using this service, you agree to the <a href=\"https://leaklog.org/terms\">Terms of Service</a>."));
+            message.setTextFormat(Qt::RichText);
+            message.setTextInteractionFlags(Qt::LinksAccessibleByMouse);
             message.addButton(tr("&Sync"), QMessageBox::AcceptRole);
             message.addButton(tr("Do &Not Sync"), QMessageBox::RejectRole);
             switch (message.exec()) {

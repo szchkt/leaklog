@@ -4487,7 +4487,7 @@ dla ID osoby i firmy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you want to sync this database with leaklog.org?</source>
+        <source>Do you want to sync this database with Leaklog.org?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4541,6 +4541,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>https://github.com/szchkt/leaklog/releases</source>
         <translation>https://github.com/szchkt/leaklog/releases</translation>
+    </message>
+    <message>
+        <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

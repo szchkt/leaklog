@@ -4467,8 +4467,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Synchronizovať databázu - Leaklog</translation>
     </message>
     <message>
-        <source>Do you want to sync this database with leaklog.org?</source>
-        <translation>Chcete synchronizovať túto databázu so serverom leaklog.org?</translation>
+        <source>Do you want to sync this database with Leaklog.org?</source>
+        <translation>Chcete synchronizovať túto databázu so serverom Leaklog.org?</translation>
     </message>
     <message>
         <source>&amp;Sync</source>
@@ -4545,6 +4545,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Failed to connect to Leaklog.org.</source>
         <translation>Nepodarilo sa spojiť so serverom Leaklog.org.</translation>
+    </message>
+    <message>
+        <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
+        <translation>Používaním tejto služby súhlasíte s &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;podmienkami služby&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>

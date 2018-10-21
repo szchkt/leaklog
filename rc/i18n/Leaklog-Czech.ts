@@ -4499,8 +4499,8 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <translation>Synchronizovat databázi - Leaklog</translation>
     </message>
     <message>
-        <source>Do you want to sync this database with leaklog.org?</source>
-        <translation>Chcete synchronizovat tuto databázi se serverem leaklog.org?</translation>
+        <source>Do you want to sync this database with Leaklog.org?</source>
+        <translation>Chcete synchronizovat tuto databázi se serverem Leaklog.org?</translation>
     </message>
     <message>
         <source>&amp;Sync</source>
@@ -4553,6 +4553,10 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>https://github.com/szchkt/leaklog/releases</source>
         <translation>https://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
+    </message>
+    <message>
+        <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
+        <translation>Používáním této služby souhlasíte s &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;podmínkami služby&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>

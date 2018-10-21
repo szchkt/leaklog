@@ -1454,6 +1454,12 @@ void MainWindow::logIn()
     password->setEchoMode(QLineEdit::Password);
     layout->addWidget(password, 1, 1);
 
+    QLabel *tos = new QLabel(tr("By using this service, you agree to the <a href=\"https://leaklog.org/terms\">Terms of Service</a>."), w);
+    tos->setTextFormat(Qt::RichText);
+    tos->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    tos->setOpenExternalLinks(true);
+    layout->addWidget(tos, 2, 0, 1, 2);
+
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Reset | QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Log In"));
     if (authenticator->token().isEmpty()) {
@@ -1465,7 +1471,7 @@ void MainWindow::logIn()
     }
     QObject::connect(bb, SIGNAL(accepted()), this, SLOT(doLogIn()));
     QObject::connect(bb, SIGNAL(rejected()), w, SLOT(close()));
-    layout->addWidget(bb, 2, 0, 1, 2);
+    layout->addWidget(bb, 3, 0, 1, 2);
 
     w->show();
 }
