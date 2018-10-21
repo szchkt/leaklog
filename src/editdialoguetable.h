@@ -30,7 +30,6 @@
 #include <QLabel>
 #include <QToolButton>
 
-#include "mtdictionary.h"
 #include "dbfile.h"
 
 class QGridLayout;
@@ -63,7 +62,7 @@ public:
 
     void addRow(const QMap<QString, EditDialogueTableCell *> &values, bool display = true, RowType row_type = Removable);
     virtual void addRow(EditDialogueTableRow *);
-    QList<MTDictionary> allValues() const;
+    QList<QVariantMap> allValues() const;
 
     int rowsCount() const { return rows.count(); }
 
@@ -90,7 +89,7 @@ class EditDialogueAdvancedTable : public EditDialogueTable
     Q_OBJECT
 
 public:
-    EditDialogueAdvancedTable(const QString &, int, const QList<EditDialogueTableCell *> &, QWidget *);
+    EditDialogueAdvancedTable(const QString &, const QString &, const QList<EditDialogueTableCell *> &, QWidget *);
 
 protected slots:
     virtual void activateRow();
@@ -102,8 +101,7 @@ private:
 
     QComboBox *add_row_cb;
 
-    int smallest_index;
-    int category_id;
+    QString category_uuid;
 };
 
 class EditDialogueBasicTable : public EditDialogueTable
@@ -126,7 +124,7 @@ class EditDialogueTableWithAdjustableTotal : public EditDialogueAdvancedTable
     Q_OBJECT
 
 public:
-    EditDialogueTableWithAdjustableTotal(const QString &, int, const QList<EditDialogueTableCell *> &, QWidget *);
+    EditDialogueTableWithAdjustableTotal(const QString &, const QString &, const QList<EditDialogueTableCell *> &, QWidget *);
 
     void addRow(EditDialogueTableRow *);
 
@@ -178,18 +176,18 @@ public:
     ~EditDialogueTableRow();
 
     void addWidget(const QString &, MDTInputWidget *);
-    const MTDictionary dictValues() const;
+    QVariantMap rowValues() const;
     bool isInTable() const { return in_table; }
     void setInTable(bool in_table) { this->in_table = in_table; }
 
-    const QString itemTypeId() const;
-    const QString value(const QString &name) const;
+    QString itemTypeUUID() const;
+    QString value(const QString &name) const;
     const QMap<QString, EditDialogueTableCell *> &valuesMap() const { return values; }
 
     QToolButton *removeButton();
     const QString &name() const { return row_name; }
 
-    bool toBeDeleted() const { return value("item_type_id").toInt() < 0; }
+    bool toBeDeleted() const { return value("ar_item_type_uuid").isNull(); }
 
     double total() const;
     double listPrice() const;
@@ -309,7 +307,7 @@ class MDTFileChooser : public DBFileChooser, public MDTInputWidget
     Q_OBJECT
 
 public:
-    MDTFileChooser(int value, QWidget *parent) : DBFileChooser(parent, value), MDTInputWidget(this) {}
+    MDTFileChooser(const QString &file_uuid, QWidget *parent) : DBFileChooser(file_uuid, parent), MDTInputWidget(this) {}
     virtual ~MDTFileChooser() {}
 
     QVariant variantValue() const { return DBFileChooser::variantValue(); }

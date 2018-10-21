@@ -38,15 +38,14 @@ class EditAssemblyRecordDialogueTab : public EditDialogueTab
     Q_OBJECT
 
 public:
-    EditAssemblyRecordDialogueTab(int, QWidget * = NULL);
+    EditAssemblyRecordDialogueTab(const QString &ar_type_uuid, QWidget * = NULL);
 
-    void save(const QVariant &);
+    void save(const QString &ar_type_uuid);
     QWidget *widget() { return this; }
 
 private:
-    void init();
+    void init(const QString &ar_type_uuid);
 
-    int record_id;
     QTreeWidget *tree;
 };
 

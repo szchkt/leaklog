@@ -18,6 +18,7 @@
 ********************************************************************/
 
 #include "mainwindow.h"
+#include "migrations.h"
 #include "global.h"
 #include "variables.h"
 #include "variableevaluation.h"
@@ -30,7 +31,6 @@
 #include "editcircuitdialogue.h"
 #include "editinspectordialogue.h"
 #include "editdialoguetable.h"
-#include "editdialoguewithautoid.h"
 #include "importdialogue.h"
 #include "importcsvdialogue.h"
 #include "records.h"
@@ -40,6 +40,7 @@
 #include "mtvariant.h"
 #include "undostack.h"
 #include "sha256.h"
+#include "syncengine.h"
 
 #include <QBuffer>
 #include <QMessageBox>
@@ -54,6 +55,11 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QTimer>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+#include <limits>
 
 using namespace Global;
 
@@ -88,13 +94,13 @@ bool MainWindow::saveChangesBeforeProceeding(const QString &title, bool close_)
     return false;
 }
 
-void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool save_on_upgrade)
+bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool save_on_upgrade)
 {
     if (transaction) { database.transaction(); }
 { // (SCOPE)
     MTSqlQuery query(database);
     QStringList tables = database.tables();
-    Variables *variables = Variables::defaultVariables();
+    Variables *variables = NULL;
     for (int i = 0; i < databaseTables().count(); ++i) {
         if (!tables.contains(databaseTables().key(i))) {
             query.exec("CREATE TABLE " + databaseTables().key(i) + " (" + sqlStringForDatabaseType(databaseTables().value(i), database) + ")");
@@ -109,7 +115,9 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
+                    if (!variables)
+                        variables = Variables::defaultVariables();
+                    if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         addColumn(variableNames().key(v) + " " + type, "inspections_compressors", database);
                 }
             }
@@ -127,12 +135,15 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 QString type; bool ok = true;
                 for (int v = 0; v < variableNames().count(); ++v) {
                     type = variableTypeToSqlType(variableType(variableNames().key(v), &ok));
-                    if (ok && (variables->variable(variableNames().key(v)).scope() & Variable::Compressor))
+                    if (!variables)
+                        variables = Variables::defaultVariables();
+                    if (ok && (variables->variableForID(variableNames().key(v)).scope() & Variable::Compressor))
                         all_field_names << variableNames().key(v) + " " + variableTypeToSqlType(variableType(variableNames().key(v)));
                 }
             }
             for (int f = 0; f < all_field_names.count(); ++f) {
-                if (!field_names.contains(all_field_names.at(f).split(" ").first())) {
+                QString field_name = all_field_names.at(f).split(" ").first();
+                if (!field_names.contains(field_name)) {
                     addColumn(all_field_names.at(f), databaseTables().key(i), database);
                 }
             }
@@ -141,6 +152,7 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
     delete variables;
 
     double v = DBInfo::valueForKey("db_version", QString(), database).toDouble();
+
     if (v > 0.902 && v < 0.906) {
         query.exec("UPDATE inspections SET refr_add_am = 0 WHERE refr_add_am IS NULL");
         query.exec("UPDATE inspections SET refr_add_am_recy = 0 WHERE refr_add_am_recy IS NULL");
@@ -153,44 +165,21 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
         query.exec("UPDATE inspections SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
         query.exec("UPDATE repairs SET refr_add_am = refr_add_am + refr_add_am_recy, refr_add_am_recy = 0, refr_reco = refr_reco + refr_reco_cust, refr_reco_cust = 0");
     }
+
     if (v > 0 && v < 0.9061) {
         query.exec("UPDATE inspections SET nominal = 0 WHERE nominal IS NULL");
         query.exec("UPDATE inspections SET repair = 0 WHERE repair IS NULL");
     }
+
     if (v > 0 && v < 0.907) {
         query.exec("UPDATE inspections SET outside_interval = repair");
     }
-    if (v < 0.908) {
-        if (v > 0) {
-            MTSqlQuery subvariables(database);
-            subvariables.exec("SELECT parent, id, name, type, unit, value, compare_nom, tolerance FROM subvariables");
-            while (subvariables.next()) {
-                query.prepare("INSERT INTO variables (parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, date_updated, updated_by) "
-                              "VALUES (:parent_id, :id, :name, :type, :unit, :scope, :value, :compare_nom, :tolerance, :date_updated, :updated_by)");
-                query.bindValue(":parent_id", subvariables.value(0));
-                query.bindValue(":id", subvariables.value(1));
-                query.bindValue(":name", subvariables.value(2));
-                query.bindValue(":type", subvariables.value(3));
-                query.bindValue(":unit", subvariables.value(4));
-                query.bindValue(":scope", Variable::Inspection);
-                query.bindValue(":value", subvariables.value(5));
-                query.bindValue(":compare_nom", subvariables.value(6));
-                query.bindValue(":tolerance", subvariables.value(7));
-                query.bindValue(":date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-                query.bindValue(":updated_by", currentUser());
-                query.exec();
-                query.prepare("UPDATE variables SET type = 'group', date_updated = :date_updated, updated_by = :updated_by WHERE id = :id");
-                query.bindValue(":id", subvariables.value(0));
-                query.bindValue(":date_updated", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-                query.bindValue(":updated_by", currentUser());
-                query.exec();
-            }
 
-            query.exec("DROP TABLE subvariables");
-        }
-        query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(INSPECTORS_CATEGORY_ID).arg(tr("Inspectors")));
-        query.exec(QString("INSERT INTO assembly_record_item_categories (id, name, display_options, display_position) VALUES (%1, '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_ID).arg(tr("Circuit units")));
+    if (v < 0.908) {
+        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, name, display_options, display_position) VALUES ('%1', '%2', 31, 0)").arg(INSPECTORS_CATEGORY_UUID).arg(tr("Inspectors")));
+        query.exec(QString("INSERT INTO assembly_record_item_categories (uuid, name, display_options, display_position) VALUES ('%1', '%2', 31, 0)").arg(CIRCUIT_UNITS_CATEGORY_UUID).arg(tr("Circuit units")));
     }
+
     if (v > 0 && v < 0.9083) {
         MTSqlQuery files(database);
         files.exec("SELECT id, data FROM files");
@@ -219,35 +208,66 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec();
         }
     }
-    if (v > 0 && v < 0.9084) {
-        if (isDatabaseRemote(database)) {
-            query.exec("ALTER TABLE persons ALTER COLUMN id TYPE BIGINT");
-            query.exec("ALTER TABLE compressors ALTER COLUMN id TYPE BIGINT");
-            query.exec("ALTER TABLE inspections_compressors ALTER COLUMN compressor_id TYPE BIGINT");
-        }
+
+    if (v > 0 && v < 1.9) {
+        query.exec("DROP INDEX IF EXISTS index_refrigerant_management_id");
+        query.exec("DROP INDEX IF EXISTS index_circuits_id");
+        query.exec("DROP INDEX IF EXISTS index_inspections_id");
+        query.exec("DROP INDEX IF EXISTS index_repairs_id");
+        query.exec("DROP INDEX IF EXISTS index_tables_id");
+        query.exec("DROP INDEX IF EXISTS index_variables_id");
+        query.exec("DROP INDEX IF EXISTS index_warnings_filters_parent");
+        query.exec("DROP INDEX IF EXISTS index_warnings_conditions_parent");
+        query.exec("DROP INDEX IF EXISTS index_compressors_id");
+        query.exec("DROP INDEX IF EXISTS index_inspections_compressors_id");
+        query.exec("DROP INDEX IF EXISTS index_inspection_images_parent");
+        query.exec("DROP INDEX IF EXISTS index_circuit_units_id");
+        query.exec("DROP INDEX IF EXISTS index_styles_id");
+
+        progress_bar->setVisible(true);
+        migrateV1Database(database, progress_bar);
+        progress_bar->setVisible(false);
     }
+
     if (v < F_DB_VERSION) {
         bool remote = isDatabaseRemote(database);
         QString unique_index = remote ? "CREATE UNIQUE INDEX " : "CREATE UNIQUE INDEX IF NOT EXISTS ";
         QString index = remote ? "CREATE INDEX " : "CREATE INDEX IF NOT EXISTS ";
-        if (!remote || v == 0) {
+
+        if (v == 0) {
             query.exec(unique_index + "index_db_info_id ON db_info (id ASC)");
-            query.exec(unique_index + "index_circuits_id ON circuits (parent ASC, id ASC)");
-            query.exec(unique_index + "index_inspections_id ON inspections (customer ASC, circuit ASC, date ASC)");
-            query.exec(unique_index + "index_repairs_id ON repairs (date ASC)");
-            query.exec(unique_index + "index_variables_id ON variables (id ASC)");
-            query.exec(unique_index + "index_tables_id ON tables (id ASC)");
-            query.exec(index + "index_warnings_filters_parent ON warnings_filters (parent ASC)");
-            query.exec(index + "index_warnings_conditions_parent ON warnings_conditions (parent ASC)");
-            query.exec(unique_index + "index_refrigerant_management_id ON refrigerant_management (date ASC)");
         }
-        if (!remote || v < 0.9082) {
-            query.exec(unique_index + "index_compressors_id ON compressors (customer_id ASC, circuit_id ASC, id ASC)");
-            query.exec(unique_index + "index_inspections_compressors_id ON inspections_compressors (customer_id ASC, circuit_id ASC, date ASC, id ASC)");
-            query.exec(index + "index_inspection_images_parent ON inspection_images (customer ASC, circuit ASC, date ASC)");
+
+        if (v < 0.9082) {
             query.exec(index + "index_assembly_record_items_parent ON assembly_record_items (arno ASC)");
-            query.exec(unique_index + "index_circuit_units_id ON circuit_units (company_id ASC, circuit_id ASC, id ASC)");
-            query.exec(unique_index + "index_styles_id ON styles (id ASC)");
+        }
+
+        if (v < 1.9) {
+            query.exec(index + "index_assembly_record_items_ar_item_type_uuid ON assembly_record_items (ar_item_type_uuid ASC)");
+            query.exec(index + "index_assembly_record_items_ar_item_category_uuid ON assembly_record_items (ar_item_category_uuid ASC)");
+            query.exec(index + "index_assembly_record_item_types_ar_item_category_uuid ON assembly_record_item_types (ar_item_category_uuid ASC)");
+            query.exec(index + "index_assembly_record_type_categories_ar_type_uuid ON assembly_record_type_categories (ar_type_uuid ASC)");
+            query.exec(index + "index_assembly_record_type_categories_ar_item_category_uuid ON assembly_record_type_categories (ar_item_category_uuid ASC)");
+            query.exec(index + "index_circuits_customer_uuid ON circuits (customer_uuid ASC)");
+            query.exec(index + "index_circuit_units_circuit_uuid ON circuit_units (circuit_uuid ASC)");
+            query.exec(index + "index_circuit_units_unit_type_uuid ON circuit_units (unit_type_uuid ASC)");
+            query.exec(index + "index_compressors_circuit_uuid ON compressors (circuit_uuid ASC)");
+            query.exec(index + "index_inspections_customer_uuid ON inspections (customer_uuid ASC)");
+            query.exec(index + "index_inspections_circuit_uuid ON inspections (circuit_uuid ASC)");
+            query.exec(index + "index_inspections_compressors_inspection_uuid ON inspections_compressors (inspection_uuid ASC)");
+            query.exec(index + "index_inspections_compressors_compressor_uuid ON inspections_compressors (compressor_uuid ASC)");
+            query.exec(index + "index_inspections_date ON inspections (date ASC)");
+            query.exec(index + "index_inspections_files_inspection_uuid ON inspections_files (inspection_uuid ASC)");
+            query.exec(index + "index_inspections_files_file_uuid ON inspections_files (file_uuid ASC)");
+            query.exec(index + "index_journal_source_uuid_entry_id ON journal (source_uuid ASC, entry_id ASC)");
+            query.exec(index + "index_persons_customer_uuid ON persons (customer_uuid ASC)");
+            query.exec(index + "index_refrigerant_management_date ON refrigerant_management (date ASC)");
+            query.exec(index + "index_repairs_customer_uuid ON repairs (customer_uuid ASC)");
+            query.exec(index + "index_repairs_date ON repairs (date ASC)");
+            query.exec(index + "index_repairs_inspector_uuid ON repairs (inspector_uuid ASC)");
+            query.exec(index + "index_variables_id ON variables (id ASC)");
+            query.exec(index + "index_warnings_conditions_warning_uuid ON warnings_conditions (warning_uuid ASC)");
+            query.exec(index + "index_warnings_filters_warning_uuid ON warnings_filters (warning_uuid ASC)");
         }
 
         if (save_on_upgrade && !transaction && v > 0) {
@@ -266,11 +286,14 @@ void MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 case 0: // Save
                     saveDatabase(true, false);
                     break;
+                case 1: // Later
+                    return false;
             }
         }
     }
 } // (SCOPE)
     if (transaction) { database.commit(); }
+    return true;
 }
 
 void MainWindow::initTables(bool transaction)
@@ -278,65 +301,55 @@ void MainWindow::initTables(bool transaction)
     QSqlDatabase db = QSqlDatabase::database();
     if (transaction) { db.transaction(); }
 { // (SCOPE)
-    double v = DBInfo::valueForKey("db_version").toDouble();
-    if (v > 0 && v < 0.909) {
-        Table("", "Leakages").remove();
-        Table("", "Pressures and temperatures").remove();
-        Table("", "Electrical parameters").remove();
-        Table("", "Compressors").remove();
-    }
-    if (v > 0 && v < 0.9082) {
-        Table(tr("Leakages")).remove();
-        Table(tr("Pressures and temperatures")).remove();
-        Table(tr("Compressors")).remove();
-    }
+    bool update_tables = false;
     int tables_version = DBInfo::valueForKey("tables_version").toInt();
-    if (tables_version < 1) {
-        DBInfo::setValueForKey("tables_version", "1");
-        Table("", "90").remove();
-        Table("", "70").remove();
-        Table("", "40").remove();
+    if (tables_version < 2) {
+        DBInfo::setValueForKey("tables_version", "2");
+        update_tables = true;
     }
-    QVariantMap set;
-    Table leakages("", "90");
-    if (!leakages.exists()) {
-        set.insert("id", tr("Leakages"));
-        set.insert("highlight_nominal", 0);
-        set.insert("variables", "vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector;operator;risks;rmds;arno");
-        set.insert("sum", "vis_aur_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am");
-        set.insert("scope", QString::number(Variable::Inspection));
-        leakages.update(set);
-        set.clear();
+
+    Table leakages(LEAKAGES_TABLE_UUID);
+    if (update_tables || !leakages.exists()) {
+        leakages.setName(tr("Leakages"));
+        leakages.setPosition(-90);
+        leakages.setHighlightNominal(false);
+        leakages.setVariables("vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector_uuid;person_uuid;risks;rmds;arno");
+        leakages.setSummedVariables("vis_aur_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am");
+        leakages.setScope(Variable::Inspection);
+        leakages.save();
     }
-    Table pressures_and_temperatures("", "70");
-    if (!pressures_and_temperatures.exists()) {
-        set.insert("id", tr("Pressures and temperatures"));
-        set.insert("highlight_nominal", 1);
-        set.insert("variables", "t_sec;p_0;t_0;delta_t_evap;t_evap_out;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;sftsw");
-        set.insert("sum", "");
-        set.insert("scope", QString::number(Variable::Inspection));
-        pressures_and_temperatures.update(set);
-        set.clear();
+
+    Table pressures_and_temperatures(PRESSURES_AND_TEMPERATURES_TABLE_UUID);
+    if (update_tables || !pressures_and_temperatures.exists()) {
+        pressures_and_temperatures.setName(tr("Pressures and temperatures"));
+        pressures_and_temperatures.setPosition(-70);
+        pressures_and_temperatures.setHighlightNominal(true);
+        pressures_and_temperatures.setVariables("t_sec;p_0;t_0;delta_t_evap;t_evap_out;t_sh;p_c;t_c;delta_t_c;t_ev;t_sc;sftsw");
+        pressures_and_temperatures.setSummedVariables("");
+        pressures_and_temperatures.setScope(Variable::Inspection);
+        pressures_and_temperatures.save();
     }
-    Table compressors("", "40");
-    if (!compressors.exists()) {
-        set.insert("id", tr("Compressors"));
-        set.insert("highlight_nominal", 1);
-        set.insert("variables", "t_comp_in;t_comp_out;ep_comp;ec;ev;oil_shortage;noise_vibr_comp;comp_runtime");
-        set.insert("sum", "");
-        set.insert("scope", QString::number(Variable::Compressor));
-        compressors.update(set);
-        //set.clear();
+
+    Table compressors(COMPRESSORS_TABLE_UUID);
+    if (update_tables || !compressors.exists()) {
+        compressors.setName(tr("Compressors"));
+        compressors.setPosition(-40);
+        compressors.setHighlightNominal(true);
+        compressors.setVariables("t_comp_in;t_comp_out;ep_comp;ec;ev;oil_shortage;noise_vibr_comp;comp_runtime");
+        compressors.setSummedVariables("");
+        compressors.setScope(Variable::Compressor);
+        compressors.save();
     }
+
 } // (SCOPE)
     if (transaction) { db.commit(); }
 }
 
-void MainWindow::newDatabase()
+void MainWindow::newDatabase(const QString &uuid, const QString &name)
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
     QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"),
-                                                QDir::home().absoluteFilePath(tr("untitled.lklg")),
+                                                QDir::home().absoluteFilePath(name.isEmpty() ? tr("untitled.lklg") : QString("%1.lklg").arg(name)),
                                                 tr("Leaklog Database (*.lklg)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
@@ -351,10 +364,85 @@ void MainWindow::newDatabase()
     addRecent(path);
     initDatabase(db);
     initTables();
-    db.transaction();
+    ServiceCompany().save();
+    DBInfo::setValueForKey("db_version", QString::number(F_DB_VERSION));
+    DBInfo::setValueForKey("min_leaklog_version", QString::number(F_DB_MIN_LEAKLOG_VERSION));
     DBInfo::setValueForKey("created_with", QString("Leaklog-%1").arg(F_LEAKLOG_VERSION));
     DBInfo::setValueForKey("date_created", QDateTime::currentDateTime().toString(DATE_TIME_FORMAT));
-    openDatabase(QString(), path);
+    if (!uuid.isEmpty()) {
+        DBInfo::setValueForKey("database_uuid", uuid);
+        DBInfo::setValueForKey("sync_server", "leaklog.org");
+    }
+    if (!name.isEmpty()) {
+        DBInfo::setDatabaseName(name);
+    }
+    openDatabase(db, path, uuid.isEmpty());
+}
+
+void MainWindow::downloadDatabase()
+{
+    if (authenticator->token().isEmpty()) {
+        logIn();
+        return;
+    }
+
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(true);
+    setEnabled(false);
+
+    authenticator->getDatabases([this](bool success, const QJsonDocument &document) {
+        setEnabled(true);
+        progress_bar->setVisible(false);
+
+        if (success) {
+            QJsonArray databases = document.object().value("databases").toArray();
+            MTDictionary items;
+
+            foreach (const QJsonValue &value, databases) {
+                QJsonObject database = value.toObject();
+                QString uuid = database.value("uuid").toString();
+                if (uuid.isEmpty())
+                    continue;
+                QString name = database.value("name").toString();
+                if (name.isEmpty())
+                    name = uuid;
+                QString identifier = name;
+                int i = 1;
+                while (items.contains(identifier)) {
+                    i++;
+                    identifier = QString("%1 (%2)").arg(name).arg(i);
+                }
+                items.insert(identifier, uuid);
+            }
+
+            if (items.isEmpty()) {
+                QMessageBox message(this);
+                message.setWindowTitle(tr("Download database from Leaklog.org"));
+                message.setWindowModality(Qt::WindowModal);
+                message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+                message.setIcon(QMessageBox::Information);
+                message.setText(tr("No databases found."));
+                message.setInformativeText(tr("Create a new database or open an existing database, then sync with Leaklog.org."));
+                message.addButton(tr("OK"), QMessageBox::AcceptRole);
+                message.exec();
+            } else {
+                bool ok = false;
+                QString identifier = QInputDialog::getItem(this, tr("Download database from Leaklog.org"), tr("Select a database to download:"), items.keys(), 0, false, &ok, Qt::Sheet);
+                if (ok) {
+                    newDatabase(items.value(identifier), identifier);
+                }
+            }
+        } else {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Download database from Leaklog.org"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("Failed to connect to Leaklog.org."));
+            message.addButton(tr("OK"), QMessageBox::AcceptRole);
+            message.exec();
+        }
+    });
 }
 
 void MainWindow::openRecent(QListWidgetItem *item)
@@ -372,13 +460,11 @@ void MainWindow::openRecent(QListWidgetItem *item)
         db.setDatabaseName(path.at(1));
         db.setUserName(path.at(0).split(":").at(2));
         db.setPassword(password);
-        if (db.open()) {
-            db.transaction();
-            initDatabase(db, false);
-        }
-        openDatabase(QString(), s);
+        openDatabase(db, s);
     } else {
-        openDatabase(s, s);
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(s);
+        openDatabase(db, s);
     }
 }
 
@@ -389,7 +475,9 @@ void MainWindow::open()
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
     addRecent(path);
-    openDatabase(path, path);
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path);
+    openDatabase(db, path);
 }
 
 void MainWindow::openRemote()
@@ -456,11 +544,9 @@ void MainWindow::openRemote()
 
     if (db.open()) {
         addRecent(connection_string);
-        db.transaction();
-        initDatabase(db, false);
     }
 
-    openDatabase(QString(), connection_string);
+    openDatabase(db, connection_string);
 }
 
 static QDate dateForFileName(const QString &file_name)
@@ -493,10 +579,10 @@ void MainWindow::backupDatabase(const QString &path)
 
         QStringList entries = backup_dir.second.entryList(QStringList() << "*.lklg", QDir::Files, QDir::Name);
         while (entries.count() > 10) {
-            int min_diff = INT_MAX;
+            qint64 min_diff = std::numeric_limits<qint64>::max();
             int delete_index = 1;
             for (int i = 0; i + 3 < entries.count(); ++i) {
-                int diff = dateForFileName(entries.at(i)).daysTo(dateForFileName(entries.at(i + 1)));
+                qint64 diff = dateForFileName(entries.at(i)).daysTo(dateForFileName(entries.at(i + 1)));
                 if (min_diff > diff) {
                     min_diff = diff;
                     delete_index = i + 1;
@@ -512,19 +598,23 @@ void MainWindow::backupDatabase(const QString &path)
     }
 }
 
-void MainWindow::openDatabase(QString path, const QString &connection_string)
+void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string, bool show_warnings)
 {
     m_connection_string = connection_string;
 
-    if (path.isEmpty()) {
-        QSqlDatabase db = QSqlDatabase::database();
+    QString path;
+
+    if (isDatabaseRemote(db)) {
         path = db.databaseName();
-        if (!db.isOpen()) {
+
+        if (!db.isOpen() && !db.open()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot open database %1:\n%2.").arg(path).arg(db.lastError().text()));
             clearWindowTitle();
             return;
         }
     } else {
+        path = connection_string;
+
         QFile file(path);
         if (!file.exists()) {
             QMessageBox::critical(this, tr("Open database - Leaklog"), tr("File %1 does not exist.").arg(path));
@@ -532,22 +622,27 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
             return;
         }
 
-        backupDatabase(path);
+        if (!db.isOpen()) {
+            backupDatabase(path);
 
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName(path);
-        if (!db.open()) {
-            QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
-            clearWindowTitle();
-            return;
+            if (!db.open()) {
+                QMessageBox::critical(this, tr("Open database - Leaklog"), tr("Cannot read file %1:\n%2.").arg(path).arg(db.lastError().text()));
+                clearWindowTitle();
+                return;
+            }
         }
-        db.transaction();
-        initDatabase(db, false);
+    }
+
+    db.transaction();
+
+    if (!initDatabase(db, false)) {
+        QMetaObject::invokeMethod(this, "closeDatabase", Qt::QueuedConnection, Q_ARG(bool, false));
+        return;
     }
 
     if (DBInfo::valueForKey("min_leaklog_version", DBInfo::valueForKey("db_version")).toDouble() > F_LEAKLOG_VERSION) {
         QMessageBox::warning(this, tr("Open database - Leaklog"), tr("A newer version of Leaklog is required to open this database."));
-        closeDatabase(false);
+        QMetaObject::invokeMethod(this, "closeDatabase", Qt::QueuedConnection, Q_ARG(bool, false));
         return;
     }
 
@@ -585,9 +680,19 @@ void MainWindow::openDatabase(QString path, const QString &connection_string)
     enableTools();
     stw_main->setCurrentIndex(1);
 
-    MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
-    if (!query.next())
-        QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+    sync_engine = new SyncEngine(authenticator, this);
+    connect(sync_engine, SIGNAL(syncStarted()), this, SLOT(syncStarted()));
+    connect(sync_engine, SIGNAL(syncProgress(double)), this, SLOT(syncProgress(double)));
+    connect(sync_engine, SIGNAL(syncFinished(bool, bool)), this, SLOT(syncFinished(bool, bool)));
+
+    if (show_warnings) {
+        MTSqlQuery query("SELECT date FROM refrigerant_management WHERE purchased > 0 OR purchased_reco > 0");
+        if (!query.next()) {
+            QMessageBox::information(this, tr("Refrigerant management"), tr("You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the \"Add record of refrigerant management\" button."));
+        }
+    }
+
+    sync(false);
 }
 
 void MainWindow::loadDatabase(bool reload)
@@ -604,31 +709,29 @@ void MainWindow::loadDatabase(bool reload)
 
     loadVariables(trw_variables);
 
-    QStringList tables;
+    MTDictionary tables;
 
-    MTSqlQuery query("SELECT id FROM tables ORDER BY uid DESC, id ASC");
+    MTSqlQuery query("SELECT uuid, name FROM tables ORDER BY position ASC, name ASC");
     while (query.next()) {
-        cb_table_edit->addItem(query.value(0).toString());
-        tables << query.value(0).toString();
+        cb_table_edit->addItem(query.value(1).toString(), query.value(0));
+        tables.setValue(query.value(0).toString(), query.value(1).toString());
     }
 
     emit tablesChanged(tables);
-
-    // loadTable(cb_table_edit->currentText());
 
     Warnings warnings;
     while (warnings.next()) {
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(warnings.value("description").toString().isEmpty() ? warnings.value("name").toString() : tr("%1 (%2)").arg(warnings.value("name").toString()).arg(warnings.value("description").toString()));
-        item->setData(Qt::UserRole, warnings.value("id").toString());
+        item->setData(Qt::UserRole, warnings.value("uuid").toString());
         lw_warnings->addItem(item);
     }
 
-    ListOfVariantMaps styles = Style().listAll("id, name");
+    ListOfVariantMaps styles = Style::query().listAll("uuid, name");
     for (int i = 0; i < styles.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(styles.at(i).value("name").toString());
-        item->setData(Qt::UserRole, styles.at(i).value("id"));
+        item->setData(Qt::UserRole, styles.at(i).value("uuid"));
         lw_styles->addItem(item);
     }
 
@@ -648,11 +751,13 @@ void MainWindow::loadDatabase(bool reload)
 void MainWindow::save()
 {
     saveDatabase(false);
+    sync(false, false);
 }
 
 void MainWindow::saveAndCompact()
 {
     saveDatabase(true);
+    sync(false, false);
 }
 
 void MainWindow::saveDatabase(bool compact, bool update_ui)
@@ -695,7 +800,7 @@ void MainWindow::autosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfo::valueForKey("autosave");
+    QString autosave_mode = DBInfo::autosaveMode();
     if (autosave_mode.isEmpty() || autosave_mode == "immediate")
         return;
 
@@ -723,14 +828,21 @@ void MainWindow::autosave()
         }
     }
 
-    if (autosave_mode == "ask" || autosave_mode == "delayed")
+    if (autosave_mode == "ask" || autosave_mode == "delayed") {
         saveDatabase(false);
+        sync(false, false);
+    }
 }
 
 void MainWindow::closeDatabase(bool save)
 {
     if (save && saveChangesBeforeProceeding(tr("Close database - Leaklog"), false))
         return;
+
+    if (sync_engine) {
+        delete sync_engine;
+        sync_engine = NULL;
+    }
 
     QSettings settings("SZCHKT", "Leaklog");
     settings.beginGroup(QString("tabs/%1").arg(sha256(m_connection_string)));
@@ -778,6 +890,106 @@ void MainWindow::closeDatabase(bool save)
     setDatabaseModified(false);
 }
 
+void MainWindow::autosync()
+{
+    if (sync_engine && sync_engine->error().isEmpty() && !isWindowModified() && !hasActiveModalWidget()) {
+        sync(false);
+    }
+}
+
+void MainWindow::sync(bool force, bool save)
+{
+    if (authenticator->token().isEmpty()) {
+        if (force)
+            logIn();
+    } else if (sync_engine) {
+        QString server = DBInfo::valueForKey("sync_server");
+        if (server == "leaklog.org") {
+            if (save) {
+                saveDatabase(false, false);
+            }
+            sync_engine->sync(force);
+        } else if (force || server.isNull() || !server.isEmpty()) {
+            QMessageBox message(this);
+            message.setWindowTitle(tr("Sync database - Leaklog"));
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Information);
+            message.setText(tr("Do you want to sync this database with Leaklog.org?"));
+            message.setInformativeText(tr("By using this service, you agree to the <a href=\"https://leaklog.org/terms\">Terms of Service</a>."));
+            message.setTextFormat(Qt::RichText);
+            message.setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+            message.addButton(tr("&Sync"), QMessageBox::AcceptRole);
+            message.addButton(tr("Do &Not Sync"), QMessageBox::RejectRole);
+            switch (message.exec()) {
+                case 0: // Sync
+                    DBInfo::setValueForKey("sync_server", "leaklog.org");
+                    saveDatabase(false, false);
+                    sync_engine->sync(force);
+                    break;
+                case 1: // Do Not Sync
+                    if (server.isNull()) {
+                        DBInfo::setValueForKey("sync_server", "");
+                        saveDatabase(false, false);
+                    }
+                    break;
+            }
+        }
+    }
+}
+
+void MainWindow::syncStarted()
+{
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(true);
+
+    if (isWindowModified()) {
+        saveDatabase(false, false);
+    }
+}
+
+void MainWindow::syncProgress(double progress)
+{
+    progress_bar->setRange(0, 100);
+    progress_bar->setValue(progress * 100);
+}
+
+void MainWindow::syncFinished(bool success, bool changed)
+{
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(false);
+
+    if (success) {
+        saveDatabase(false, changed);
+    } else {
+        bool has_modal_widget = hasActiveModalWidget();
+
+        if (!has_modal_widget) {
+            QMessageBox message(this);
+#ifdef Q_OS_MAC
+            message.setWindowTitle(tr("Sync"));
+#else
+            message.setWindowTitle(tr("Sync - Leaklog"));
+#endif
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setIcon(QMessageBox::Warning);
+            message.setText(tr("Failed to sync with the server."));
+            message.setInformativeText(sync_engine->error());
+            message.addButton(tr("OK"), QMessageBox::AcceptRole);
+            message.exec();
+        }
+
+        if (sync_engine->action() == "login") {
+            logoutFinished();
+
+            if (!has_modal_widget) {
+                logIn();
+            }
+        }
+    }
+}
+
 void MainWindow::setDatabaseModified(bool modified)
 {
     setWindowModified(modified);
@@ -785,7 +997,7 @@ void MainWindow::setDatabaseModified(bool modified)
     if (modified)
         emit databaseModified();
 
-    if (QSqlDatabase::database().isOpen() && DBInfo::valueForKey("autosave") == "immediate") {
+    if (!QSqlDatabase::database().isOpen() || DBInfo::autosaveMode() == "immediate") {
         actionSave->setVisible(false);
         actionSave_and_compact->setVisible(false);
         actionUndo->setVisible(false);
@@ -811,9 +1023,9 @@ void MainWindow::newTab(bool init)
 
     if (init) {
         if (cb_table_edit->count()) {
-            QStringList tables;
+            MTDictionary tables;
             for (int i = 0; i < cb_table_edit->count(); ++i)
-                tables << cb_table_edit->itemText(i);
+                tables.setValue(cb_table_edit->itemData(i).toString(), cb_table_edit->itemText(i));
             emit tablesChanged(tables);
         }
 
@@ -875,7 +1087,7 @@ bool MainWindow::isOperationPermitted(const QString &operation, const QString &r
     return true;
 }
 
-bool MainWindow::canRemoveCircuit(const QString &customer_id, const QString &circuit_id)
+bool MainWindow::canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid)
 {
     if (superuserModeEnabled())
         return true;
@@ -884,19 +1096,19 @@ bool MainWindow::canRemoveCircuit(const QString &customer_id, const QString &cir
     query.prepare(QString("SELECT date FROM inspections"
                           " WHERE %1 AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
                           " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1")
-                  .arg(circuit_id.isEmpty() ? "customer = :customer" : "customer = :customer AND circuit = :circuit"));
-    query.bindValue(":customer", customer_id);
-    if (!circuit_id.isEmpty())
-        query.bindValue(":circuit", circuit_id);
+                  .arg(circuit_uuid.isEmpty() ? "customer_uuid = :customer_uuid" : "customer_uuid = :customer_uuid AND circuit_uuid = :circuit_uuid"));
+    query.bindValue(":customer_uuid", customer_uuid);
+    if (!circuit_uuid.isEmpty())
+        query.bindValue(":circuit_uuid", circuit_uuid);
 
     if (query.exec() && query.next()) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
         message.setIcon(QMessageBox::Warning);
-        message.setWindowTitle(circuit_id.isEmpty() ? tr("Remove customer - Leaklog") : tr("Remove circuit - Leaklog"));
-        message.setText(circuit_id.isEmpty() ? tr("You cannot remove the selected customer.") : tr("You cannot remove the selected circuit."));
-        message.setInformativeText(circuit_id.isEmpty() ? tr("Removing this customer would affect the store.") : tr("Removing this circuit would affect the store."));
+        message.setWindowTitle(circuit_uuid.isEmpty() ? tr("Remove customer - Leaklog") : tr("Remove circuit - Leaklog"));
+        message.setText(circuit_uuid.isEmpty() ? tr("You cannot remove the selected customer.") : tr("You cannot remove the selected circuit."));
+        message.setInformativeText(circuit_uuid.isEmpty() ? tr("Removing this customer would affect the store.") : tr("Removing this circuit would affect the store."));
         message.addButton(tr("OK"), QMessageBox::AcceptRole);
         message.exec();
         return false;
@@ -973,8 +1185,8 @@ void MainWindow::editRefrigerants()
 
     refrigerants.clear();
 
-    QList<MTDictionary> updated_refrigerants = table->allValues();
-    foreach (const MTDictionary &updated_refrigerant, updated_refrigerants) {
+    QList<QVariantMap> updated_refrigerants = table->allValues();
+    foreach (const QVariantMap &updated_refrigerant, updated_refrigerants) {
         QVariantMap refrigerant;
         refrigerant.insert("name", updated_refrigerant.value("name"));
         refrigerant.insert("gwp", updated_refrigerant.value("gwp"));
@@ -990,11 +1202,10 @@ void MainWindow::editServiceCompany()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("edit_service_company")) { return; }
-    ServiceCompany record(DBInfo::valueForKey("default_service_company"));
+    ServiceCompany record;
     UndoCommand command(m_undo_stack, tr("Edit service company information"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        DBInfo::setValueForKey("default_service_company", record.id());
         setDatabaseModified(true);
         refreshView();
     }
@@ -1007,22 +1218,21 @@ void MainWindow::addRefrigerantRecord()
     editRefrigerantRecord("");
 }
 
-void MainWindow::editRefrigerantRecord(const QString &date)
+void MainWindow::editRefrigerantRecord(const QString &uuid)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!date.isEmpty() && isRecordLocked(date)) { return; }
-    RefrigerantRecord record(date);
-    if (!isOperationPermitted("edit_refrigerant_management", record.stringValue("updated_by"))) { return; }
-    UndoCommand command(m_undo_stack, date.isEmpty()
+    RefrigerantRecord record(uuid);
+    if (record.exists() && isRecordLocked(record.date())) { return; }
+    if (!isOperationPermitted("edit_refrigerant_management", record.updatedBy())) { return; }
+    UndoCommand command(m_undo_stack, uuid.isEmpty()
                         ? tr("Add record of refrigerant management")
-                        : tr("Edit record of refrigerant management %1").arg(m_settings.formatDateTime(date)));
+                        : tr("Edit record of refrigerant management %1").arg(m_settings.formatDateTime(record.date())));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list();
-        if (attributes.value("purchased").toDouble() <= 0.0 && attributes.value("purchased_reco").toDouble() <= 0.0 &&
-            attributes.value("sold").toDouble() <= 0.0 && attributes.value("sold_reco").toDouble() <= 0.0 &&
-            attributes.value("refr_rege").toDouble() <= 0.0 && attributes.value("refr_disp").toDouble() <= 0.0 &&
-            attributes.value("leaked").toDouble() <= 0.0 && attributes.value("leaked_reco").toDouble() <= 0.0) {
+        if (record.purchased() <= 0.0 && record.purchasedRecovered() <= 0.0 &&
+            record.sold() <= 0.0 && record.soldRecovered() <= 0.0 &&
+            record.regenerated() <= 0.0 && record.disposedOf() <= 0.0 &&
+            record.leaked() <= 0.0 && record.leakedRecovered() <= 0.0) {
             record.remove();
         }
         setDatabaseModified(true);
@@ -1034,12 +1244,12 @@ void MainWindow::addCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
-    Customer record("");
+    Customer record;
     UndoCommand command(m_undo_stack, tr("Add customer"));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCustomer(record.id().toInt(), true);
+        m_tab->loadCustomer(record.uuid(), true);
     }
 }
 
@@ -1047,60 +1257,21 @@ void MainWindow::editCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
-    Customer record(m_tab->selectedCustomer());
-    if (!isOperationPermitted("edit_customer", record.stringValue("updated_by"))) { return; }
-    QString old_id = m_tab->selectedCustomer();
-    QString old_company_name = record.stringValue("company");
+    Customer record(m_tab->selectedCustomerUUID());
+    if (!isOperationPermitted("edit_customer", record.updatedBy())) { return; }
+    QString old_company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Edit customer %1%2")
-                        .arg(formatCompanyID(old_id))
+                        .arg(record.companyID())
                         .arg(old_company_name.isEmpty() ? QString() : QString(" (%1)").arg(old_company_name)));
     EditCustomerDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QString company_name = record.stringValue("company");
-        if (old_id != record.id()) {
-            MTSqlQuery update_circuits;
-            update_circuits.prepare("UPDATE circuits SET parent = :new_id WHERE parent = :old_id");
-            update_circuits.bindValue(":old_id", old_id);
-            update_circuits.bindValue(":new_id", record.id());
-            update_circuits.exec();
-            MTSqlQuery update_compressors;
-            update_compressors.prepare("UPDATE compressors SET customer_id = :new_id WHERE customer_id = :old_id");
-            update_compressors.bindValue(":old_id", old_id);
-            update_compressors.bindValue(":new_id", record.id());
-            update_compressors.exec();
-            MTSqlQuery update_circuit_units;
-            update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_id WHERE company_id = :old_id");
-            update_circuit_units.bindValue(":old_id", old_id);
-            update_circuit_units.bindValue(":new_id", record.id());
-            update_circuit_units.exec();
-            MTSqlQuery update_inspections;
-            update_inspections.prepare("UPDATE inspections SET customer = :new_id WHERE customer = :old_id");
-            update_inspections.bindValue(":old_id", old_id);
-            update_inspections.bindValue(":new_id", record.id());
-            update_inspections.exec();
-            MTSqlQuery update_inspections_compressors;
-            update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_id WHERE customer_id = :old_id");
-            update_inspections_compressors.bindValue(":old_id", old_id);
-            update_inspections_compressors.bindValue(":new_id", record.id());
-            update_inspections_compressors.exec();
-            MTSqlQuery update_inspection_images;
-            update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_id WHERE customer = :old_id");
-            update_inspection_images.bindValue(":old_id", old_id);
-            update_inspection_images.bindValue(":new_id", record.id());
-            update_inspection_images.exec();
-            MTSqlQuery update_repairs;
-            update_repairs.prepare("UPDATE repairs SET parent = :new_id, customer = :customer WHERE parent = :old_id");
-            update_repairs.bindValue(":old_id", old_id);
-            update_repairs.bindValue(":new_id", record.id());
-            update_repairs.bindValue(":customer", company_name);
-            update_repairs.exec();
-            m_tab->loadCustomer(record.id().toInt(), false);
-        } else if (old_company_name != company_name) {
-            MTSqlQuery update_repairs;
-            update_repairs.prepare("UPDATE repairs SET customer = :customer WHERE parent = :id");
-            update_repairs.bindValue(":id", record.id());
-            update_repairs.bindValue(":customer", company_name);
-            update_repairs.exec();
+        QString company_name = record.companyName();
+        if (old_company_name != company_name) {
+            auto repairs = record.repairs().all();
+            foreach (auto repair, repairs) {
+                repair.setCustomer(company_name);
+                repair.save();
+            }
             enableTools();
         } else {
             enableTools();
@@ -1115,17 +1286,17 @@ void MainWindow::duplicateCustomer()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
-    Customer record(m_tab->selectedCustomer());
-    record.readValues();
-    record.id().clear();
-    QString company_name = record.stringValue("company");
+    Customer record(m_tab->selectedCustomerUUID());
+    record.refresh();
+    record.uuid().clear();
+    QString company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
-                        .arg(formatCompanyID(m_tab->selectedCustomer()))
+                        .arg(record.companyID())
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCustomer(record.id().toInt(), true);
+        m_tab->loadCustomer(record.uuid(), true);
     }
 }
 
@@ -1133,33 +1304,23 @@ void MainWindow::removeCustomer()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
-    if (!canRemoveCircuit(m_tab->selectedCustomer())) { return; }
-    Customer record(m_tab->selectedCustomer());
-    record.readValues("company, updated_by");
-    if (!isOperationPermitted("remove_customer", record.stringValue("updated_by"))) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomerUUID())) { return; }
+    Customer record(m_tab->selectedCustomerUUID());
+    if (!isOperationPermitted("remove_customer", record.updatedBy())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove customer - Leaklog"),
                                 tr("Are you sure you want to remove the selected customer?\nTo remove all data about the customer \"%1\" type REMOVE and confirm:")
-                                .arg(m_tab->selectedCustomer())) != QDialog::Accepted)
+                                .arg(record.companyID())) != QDialog::Accepted)
         return;
 
-    QString company_name = record.stringValue("company");
+    QString company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Remove customer %1%2")
-                        .arg(formatCompanyID(m_tab->selectedCustomer()))
+                        .arg(record.companyID())
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
     record.remove();
-    Circuit circuits(m_tab->selectedCustomer(), "");
-    circuits.remove();
-    MTRecord inspections("inspections", "date", "", MTDictionary("customer", m_tab->selectedCustomer()));
-    inspections.remove();
-    MTRecord repairs("repairs", "date", "", MTDictionary("parent", m_tab->selectedCustomer()));
-    repairs.remove();
-    m_tab->setSelectedCustomer(-1);
-    m_tab->setSelectedCircuit(-1);
-    m_tab->setSelectedCompressor(-1);
-    m_tab->clearSelectedInspection();
-    m_tab->clearSelectedRepair();
+
+    m_tab->clearSelectedCustomer();
     enableTools();
     setDatabaseModified(true);
     m_tab->setView(View::Customers);
@@ -1171,8 +1332,7 @@ void MainWindow::decommissionAllCircuits()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
-    Customer customer(m_tab->selectedCustomer());
-    customer.readValues("company");
+    Customer customer(m_tab->selectedCustomerUUID());
 
     QDialog d(this);
     d.setWindowTitle(tr("Decommission all circuits - Leaklog"));
@@ -1182,7 +1342,7 @@ void MainWindow::decommissionAllCircuits()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(customer.stringValue("company"), &d), 0, 1);
+    gl->addWidget(new QLabel(customer.companyName(), &d), 0, 1);
 
     QCheckBox *exclude_from_agenda = new QCheckBox(tr("Exclude from Agenda only"), &d);
     gl->addWidget(exclude_from_agenda, 1, 1);
@@ -1196,11 +1356,7 @@ void MainWindow::decommissionAllCircuits()
     date->setDate(QDate::currentDate());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 2, 1);
 
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning_reason")), &d);
@@ -1221,20 +1377,21 @@ void MainWindow::decommissionAllCircuits()
 
     if (d.exec() != QDialog::Accepted) return;
 
-    QString company_name = customer.stringValue("company");
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Decommission all circuits of customer %1%2")
-                        .arg(formatCompanyID(m_tab->selectedCustomer()))
+                        .arg(customer.companyID())
                         .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
-    QVariantMap set;
-    set.insert("disused", exclude_from_agenda->isChecked() ? Circuit::ExcludedFromAgenda : Circuit::Decommissioned);
-    set.insert("decommissioning", date->date().toString(DATE_FORMAT));
-    set.insert("decommissioning_reason", decommissioning_reason->text());
+    QString decommissioning = date->date().toString(DATE_FORMAT);
 
-    Circuit circuits(customer.id(), QString());
-    circuits.parents().insert("disused", QString::number(Circuit::Commissioned));
-    circuits.update(set, false, true);
+    auto circuits = customer.circuits().where(QString("disused = %1").arg(Circuit::Commissioned));
+    foreach (auto circuit, circuits) {
+        circuit.setStatus(exclude_from_agenda->isChecked() ? Circuit::ExcludedFromAgenda : Circuit::Decommissioned);
+        circuit.setDateOfDecommissioning(decommissioning);
+        circuit.setReasonForDecommissioning(decommissioning_reason->text());
+        circuit.save();
+    }
 
     setDatabaseModified(true);
     refreshView();
@@ -1245,12 +1402,13 @@ void MainWindow::addCircuit()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
-    Circuit record(m_tab->selectedCustomer(), "");
+    Circuit record;
+    record.setCustomerUUID(m_tab->selectedCustomerUUID());
     UndoCommand command(m_undo_stack, tr("Add circuit"));
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCircuit(record.id().toInt(), true);
+        m_tab->loadCircuit(record.uuid(), true);
     }
 }
 
@@ -1259,21 +1417,16 @@ void MainWindow::editCircuit()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
-    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    if (!isOperationPermitted("edit_circuit", record.stringValue("updated_by"))) { return; }
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Circuit record(m_tab->selectedCircuitUUID());
+    if (!isOperationPermitted("edit_circuit", record.updatedBy())) { return; }
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Edit circuit %1 (%2)")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
+                        .arg(record.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     EditCircuitDialogue md(&record, m_undo_stack, this);
-    QString old_id = m_tab->selectedCircuit();
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), old_id.toInt(), record.id().toInt());
-            m_tab->loadCircuit(record.id().toInt(), false);
-        } else {
-            enableTools();
-        }
+        enableTools();
         refreshView();
         setDatabaseModified(true);
     }
@@ -1285,41 +1438,34 @@ void MainWindow::duplicateCircuit()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
-    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    record.readValues();
-    record.id().clear();
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Circuit record(m_tab->selectedCircuitUUID());
+    record.refresh();
+    record.uuid().clear();
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
+                        .arg(record.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        ListOfVariantMaps compressors = Compressor(QString(),
-                                                   MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                                QStringList() << m_tab->selectedCustomer()
-                                                                              << m_tab->selectedCircuit())).listAll();
+        ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
 
-        qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
         for (int i = 0; i < compressors.size(); ++i) {
-            compressors[i].insert("id", next_id++);
-            compressors[i].insert("circuit_id", record.id());
+            compressors[i].insert("uuid", createUUID());
+            compressors[i].insert("circuit_uuid", record.uuid());
             Compressor().update(compressors[i]);
         }
 
-        ListOfVariantMaps circuit_units = CircuitUnit(QString(),
-                                                      MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                                                   QStringList() << m_tab->selectedCustomer()
-                                                                                 << m_tab->selectedCircuit())).listAll();
+        ListOfVariantMaps circuit_units = CircuitUnit::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
 
-        next_id = CircuitUnit().max("id");
         for (int i = 0; i < circuit_units.size(); ++i) {
-            circuit_units[i].insert("id", ++next_id);
-            circuit_units[i].insert("circuit_id", record.id());
+            circuit_units[i].insert("uuid", createUUID());
+            circuit_units[i].insert("circuit_uuid", record.uuid());
             CircuitUnit().update(circuit_units[i]);
         }
 
         setDatabaseModified(true);
-        m_tab->loadCircuit(record.id().toInt(), true);
+        m_tab->loadCircuit(record.uuid(), true);
     }
 }
 
@@ -1331,8 +1477,8 @@ void MainWindow::duplicateAndDecommissionCircuit()
     if (!isOperationPermitted("add_circuit")) { return; }
     if (!isOperationPermitted("decommission_circuit")) { return; }
 
-    Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    QVariantMap attributes = circuit.list();
+    Circuit circuit(m_tab->selectedCircuitUUID());
+    QVariantMap attributes = circuit.savedValues();
 
     QDialog d(this);
     d.setWindowTitle(tr("Duplicate and decommission - Leaklog"));
@@ -1342,7 +1488,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+    gl->addWidget(new QLabel(circuit.circuitID(), &d), 0, 1);
 
     lbl = new QLabel(tr("%1:").arg(Circuit::attributes().value("decommissioning")), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -1353,11 +1499,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     date->setDate(QDate::currentDate());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 1, 1);
 
     QRadioButton *set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
@@ -1366,7 +1508,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
-    new_id->setValue((int)Circuit(m_tab->selectedCustomer(), QString()).max("id") + 1);
+    new_id->setValue((int)Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}}).max("id") + 1);
     gl->addWidget(new_id, 2, 1, 2, 1);
 
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
@@ -1380,7 +1522,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QComboBox *old_refrigerant = new QComboBox(&d);
     old_refrigerant->addItems(refrigerants);
-    old_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
+    old_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
     gl->addWidget(old_refrigerant, 4, 1);
 
     lbl = new QLabel(tr("New refrigerant:"), &d);
@@ -1389,7 +1531,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     QComboBox *new_refrigerant = new QComboBox(&d);
     new_refrigerant->addItems(refrigerants);
-    new_refrigerant->setCurrentIndex(refrigerants.indexOf(attributes.value("refrigerant").toString()));
+    new_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
     gl->addWidget(new_refrigerant, 5, 1);
 
     lbl = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
@@ -1419,40 +1561,26 @@ void MainWindow::duplicateAndDecommissionCircuit()
             return;
 
         id = new_id->value();
-    } while (Circuit(m_tab->selectedCustomer(), QString::number(id)).exists());
+    } while (Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}, {"id", QString::number(id)}}).exists());
 
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate and decommission circuit %1 (%2)")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
+                        .arg(circuit.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
-
-    ListOfVariantMaps compressors = Compressor(QString(),
-                                               MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                            QStringList() << m_tab->selectedCustomer()
-                                                                          << m_tab->selectedCircuit())).listAll();
-
-    ListOfVariantMaps circuit_units = CircuitUnit(QString(),
-                                                  MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                                               QStringList() << m_tab->selectedCustomer()
-                                                                             << m_tab->selectedCircuit())).listAll();
 
     QString date_string = date->date().toString(DATE_FORMAT);
 
-    QVariantMap set;
-    set.insert("disused", Circuit::Decommissioned);
-    set.insert("decommissioning", date_string);
-    set.insert("refrigerant", old_refrigerant->currentText());
-    circuit.update(set);
-
-    int duplicate_id;
+    circuit.setStatus(Circuit::Decommissioned);
+    circuit.setDateOfDecommissioning(date_string);
+    circuit.setRefrigerant(old_refrigerant->currentText());
+    circuit.save();
 
     if (set_original_id->isChecked()) {
-        duplicate_id = attributes.value("id").toInt();
-        circuit.update("id", id);
-        Circuit::cascadeIDChange(m_tab->selectedCustomer().toInt(), duplicate_id, id, -1, true);
+        circuit.setCircuitID(id);
+        circuit.save();
     } else {
-        duplicate_id = id;
         attributes.insert("id", id);
     }
 
@@ -1461,24 +1589,26 @@ void MainWindow::duplicateAndDecommissionCircuit()
     attributes.insert("disused", Circuit::Commissioned);
     attributes.insert("commissioning", date_string);
     attributes.remove("decommissioning");
-    Circuit().update(attributes);
+    attributes.insert("uuid", createUUID());
+    Circuit duplicate;
+    duplicate.update(attributes);
 
-    qint64 next_id = qMax(Compressor().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
+    ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
     for (int i = 0; i < compressors.size(); ++i) {
-        compressors[i].insert("id", next_id++);
-        compressors[i].insert("circuit_id", duplicate_id);
+        compressors[i].insert("uuid", createUUID());
+        compressors[i].insert("circuit_uuid", duplicate.uuid());
         Compressor().update(compressors[i]);
     }
 
-    next_id = CircuitUnit().max("id");
+    ListOfVariantMaps circuit_units = CircuitUnit::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}}).listAll();
     for (int i = 0; i < circuit_units.size(); ++i) {
-        circuit_units[i].insert("id", ++next_id);
-        circuit_units[i].insert("circuit_id", duplicate_id);
+        circuit_units[i].insert("uuid", createUUID());
+        circuit_units[i].insert("circuit_uuid", duplicate.uuid());
         CircuitUnit().update(circuit_units[i]);
     }
 
     setDatabaseModified(true);
-    m_tab->loadCircuit(duplicate_id, true);
+    m_tab->loadCircuit(duplicate.uuid(), true);
 }
 
 void MainWindow::moveCircuit()
@@ -1488,10 +1618,10 @@ void MainWindow::moveCircuit()
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
 
-    Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    QVariantMap attributes = circuit.list();
+    Circuit circuit(m_tab->selectedCircuitUUID());
+    QVariantMap attributes = circuit.savedValues();
 
-    if (!isOperationPermitted("remove_circuit", attributes.value("updated_by").toString())) { return; }
+    if (!isOperationPermitted("remove_circuit", circuit.updatedBy())) { return; }
 
     QDialog d(this);
     d.setWindowTitle(tr("Move circuit to another customer - Leaklog"));
@@ -1501,7 +1631,7 @@ void MainWindow::moveCircuit()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+    gl->addWidget(new QLabel(circuit.circuitID(), &d), 0, 1);
 
     lbl = new QLabel(tr("To customer:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -1509,12 +1639,12 @@ void MainWindow::moveCircuit()
 
     QComboBox *cb_customer = new QComboBox(&d);
 
-    int selected_customer = m_tab->selectedCustomer().toInt();
-    ListOfVariantMaps customers = Customer("").listAll("id, company", "company");
+    QString selected_customer_uuid = m_tab->selectedCustomerUUID();
+    ListOfVariantMaps customers = Customer::query().listAll("id, company", "company");
     foreach (const QVariantMap &customer, customers) {
-        QVariant id = customer.value("id");
-        if (id.toInt() != selected_customer)
-            cb_customer->addItem(customer.value("company").toString(), id);
+        QVariant uuid = customer.value("uuid");
+        if (uuid.toString() != selected_customer_uuid)
+            cb_customer->addItem(customer.value("company").toString(), uuid);
     }
 
     QObject::connect(cb_customer, SIGNAL(currentIndexChanged(int)), this, SLOT(customerChangedInMoveCircuitDialogue(int)));
@@ -1554,11 +1684,7 @@ void MainWindow::moveCircuit()
     date->setDateTime(QDateTime::currentDateTime());
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 5, 1);
 
     QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
@@ -1579,65 +1705,61 @@ void MainWindow::moveCircuit()
 
     cb_customer->setCurrentIndex(-1);
 
-    int customer_id = 0;
+    QString customer_uuid = "";
     int circuit_id = 0;
     QString inspection_date;
     bool inspection_date_taken = false;
     do {
-        lbl_id_taken->setVisible(customer_id > 0 && circuit_id != 0 && !inspection_date_taken);
-        lbl_select_customer->setVisible(customer_id < 0);
+        lbl_id_taken->setVisible(!customer_uuid.isEmpty() && circuit_id != 0 && !inspection_date_taken);
+        lbl_select_customer->setVisible(customer_uuid.isNull());
         lbl_date_taken->setVisible(inspection_date_taken);
 
         if (d.exec() != QDialog::Accepted)
             return;
 
-        customer_id = cb_customer->currentIndex() < 0 ? -1 : cb_customer->itemData(cb_customer->currentIndex()).toInt();
+        customer_uuid = cb_customer->currentIndex() < 0 ? QString() : cb_customer->itemData(cb_customer->currentIndex()).toString();
         circuit_id = spb_circuit_id->value();
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
         inspection_date_taken = false;
-    } while (customer_id < 0 || Circuit(QString::number(customer_id), QString::number(circuit_id)).exists() ||
-             (inspection_date_taken = Inspection(m_tab->selectedCustomer(),
-                                                 m_tab->selectedCircuit(),
-                                                 inspection_date).exists()));
+    } while (customer_uuid.isNull() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists() ||
+             (inspection_date_taken = Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists()));
 
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
-    QString new_company_name = Customer(QString::number(customer_id)).stringValue("company");
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
+    Customer new_customer(customer_uuid);
+    QString new_company_name = new_customer.companyName();
     UndoCommand command(m_undo_stack, tr("Move circuit %1 (%2) to customer %3")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
-                        .arg(new_company_name.isEmpty() ? formatCompanyID(customer_id) : new_company_name));
+                        .arg(circuit.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name)
+                        .arg(new_company_name.isEmpty() ? new_customer.companyID() : new_company_name));
     m_undo_stack->savepoint();
 
-    QVariantMap set;
-    set.insert("parent", customer_id);
-    set.insert("id", circuit_id);
-    circuit.update(set);
-    Circuit::cascadeIDChange(selected_customer, m_tab->selectedCircuit().toInt(), circuit_id, customer_id);
+    circuit.setCustomerUUID(customer_uuid);
+    circuit.setCircuitID(circuit_id);
+    circuit.save();
 
     QVariantMap inspection;
-    inspection.insert("customer", customer_id);
-    inspection.insert("circuit", circuit_id);
+    inspection.insert("customer_uuid", customer_uuid);
+    inspection.insert("circuit_uuid", circuit.uuid());
     inspection.insert("date", inspection_date);
-    inspection.insert("nominal", 0);
-    inspection.insert("repair", 0);
+    inspection.insert("inspection_type", Inspection::CircuitMoved);
     inspection.insert("outside_interval", 1);
-    inspection.insert("inspection_type", Inspection::CircuitMovedType);
     QStringList data;
-    data << m_tab->selectedCustomer();
-    data << QString::number(customer_id);
+    data << m_tab->selectedCustomerUUID();
+    data << customer_uuid;
     data << company_name.remove(UNIT_SEPARATOR);
     data << new_company_name.remove(UNIT_SEPARATOR);
     inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
     inspection.insert("rmds", QApplication::translate("Inspection", "Circuit moved from customer %1 to %2.")
-                      .arg(QString("%1 (%2)").arg(company_name).arg(selected_customer, 8, 10, QChar('0')))
-                      .arg(QString("%1 (%2)").arg(new_company_name).arg(customer_id, 8, 10, QChar('0')))
+                      .arg(QString("%1 (%2)").arg(company_name).arg(customer.companyID()))
+                      .arg(QString("%1 (%2)").arg(new_company_name).arg(new_customer.companyID()))
                       .append("\n\n")
                       .append(tr("DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.")));
     Inspection().update(inspection);
 
     setDatabaseModified(true);
-    m_tab->setSelectedCustomer(customer_id);
-    m_tab->loadCircuit(circuit_id, true);
+    m_tab->setSelectedCustomerUUID(customer_uuid);
+    m_tab->loadCircuit(circuit.uuid(), true);
 }
 
 void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
@@ -1654,12 +1776,11 @@ void MainWindow::customerChangedInMoveCircuitDialogue(int customer_index)
     if (!spb_circuit_id)
         return;
 
-    int customer_id = customer_index < 0 ? 0 : cb_customer->itemData(customer_index).toInt();
+    QString customer_uuid = customer_index < 0 ? QString() : cb_customer->itemData(customer_index).toString();
+    QString circuit_id = QString::number(spb_circuit_id->value());
 
-    if (customer_id && Circuit(QString::number(customer_id), m_tab->selectedCircuit()).exists()) {
-        spb_circuit_id->setValue((int)Circuit(QString::number(customer_id), QString()).max("id") + 1);
-    } else {
-        spb_circuit_id->setValue(m_tab->selectedCircuit().toInt());
+    if (!customer_uuid.isEmpty() && Circuit::query({{"customer_uuid", customer_uuid}, {"id", circuit_id}}).exists()) {
+        spb_circuit_id->setValue((int)Circuit::query({{"customer_uuid", customer_uuid}}).max("id") + 1);
     }
 }
 
@@ -1668,31 +1789,23 @@ void MainWindow::removeCircuit()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
-    if (!canRemoveCircuit(m_tab->selectedCustomer(), m_tab->selectedCircuit())) { return; }
-    Circuit record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    if (!isOperationPermitted("remove_circuit", record.stringValue("updated_by"))) { return; }
+    if (!canRemoveCircuit(m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID())) { return; }
+    Circuit record(m_tab->selectedCircuitUUID());
+    if (!isOperationPermitted("remove_circuit", record.updatedBy())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove circuit - Leaklog"),
                                 tr("Are you sure you want to remove the selected circuit?\nTo remove all data about the circuit \"%1\" type REMOVE and confirm:")
-                                .arg(m_tab->selectedCircuit())) != QDialog::Accepted)
+                                .arg(record.circuitID())) != QDialog::Accepted)
         return;
 
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Remove circuit %1 (%2)")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
+                        .arg(record.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
     record.remove();
-    MTDictionary parents(QStringList() << "customer_id" << "circuit_id",
-                         QStringList() << m_tab->selectedCustomer() << m_tab->selectedCircuit());
-    Compressor("", parents).remove();
-    CircuitUnit("", MTDictionary(QStringList() << "company_id" << "circuit_id",
-                                 QStringList() << m_tab->selectedCustomer() << m_tab->selectedCircuit())).remove();
-    Inspection(m_tab->selectedCustomer(), m_tab->selectedCircuit(), "").remove();
-    InspectionsCompressor("", parents).remove();
-    MTRecord("inspection_images", "", "", MTDictionary(QStringList() << "customer" << "circuit",
-                                                       QStringList() << m_tab->selectedCustomer()
-                                                                     << m_tab->selectedCircuit())).remove();
+
     m_tab->clearSelectedCircuit();
     enableTools();
     setDatabaseModified(true);
@@ -1705,15 +1818,17 @@ void MainWindow::addInspection()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
-    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), "");
+    Inspection record;
+    record.setValue("customer_uuid", m_tab->selectedCustomerUUID());
+    record.setValue("circuit_uuid", m_tab->selectedCircuitUUID());
     if (m_tab->isInspectorSelected()) {
-        record.setValue("inspector", m_tab->selectedInspector());
+        record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
     }
     UndoCommand command(m_undo_stack, tr("Add inspection"));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), true);
+        m_tab->loadInspection(record.uuid(), true);
     }
 }
 
@@ -1723,18 +1838,19 @@ void MainWindow::editInspection()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
     if (!m_tab->isInspectionSelected()) { return; }
-    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
-    if (!isOperationPermitted("edit_inspection", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(m_tab->selectedInspection())) { return; }
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Inspection record(m_tab->selectedInspectionUUID());
+    if (!isOperationPermitted("edit_inspection", record.updatedBy())) { return; }
+    if (isRecordLocked(record.date())) { return; }
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Edit inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
+                        .arg(m_settings.formatDateTime(record.date()))
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name)
+                        .arg(record.circuit().circuitID()));
     EditInspectionDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), false);
+        m_tab->loadInspection(record.uuid(), false);
         refreshView();
     }
 }
@@ -1746,55 +1862,51 @@ void MainWindow::duplicateInspection()
     if (!m_tab->isCircuitSelected()) { return; }
     if (!m_tab->isInspectionSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
-    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), m_tab->selectedInspection());
-    record.readValues();
-    record.id().clear();
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Inspection record(m_tab->selectedInspectionUUID());
+    record.refresh();
+    record.uuid().clear();
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(m_tab->selectedInspection()))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
-    EditInspectionDialogue md(&record, m_undo_stack, this, m_tab->selectedInspection());
+                        .arg(m_settings.formatDateTime(record.date()))
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name)
+                        .arg(record.circuit().circuitID()));
+    EditInspectionDialogue md(&record, m_undo_stack, this, m_tab->selectedInspectionUUID());
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspection(record.id(), true);
+        m_tab->loadInspection(record.uuid(), true);
     }
 }
 
-void MainWindow::removeInspection(const QString &date)
+void MainWindow::removeInspection(const QString &uuid)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
     if (!m_tab->isCircuitSelected()) { return; }
-    QString inspection_date = date;
-    if (inspection_date.isEmpty()) {
+    QString inspection_uuid = uuid;
+    if (inspection_uuid.isEmpty()) {
         if (!m_tab->isInspectionSelected()) { return; }
 
-        inspection_date = m_tab->selectedInspection();
+        inspection_uuid = m_tab->selectedInspectionUUID();
     }
-    Inspection record(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date);
-    if (!isOperationPermitted("remove_inspection", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(inspection_date)) { return; }
+    Inspection record(inspection_uuid);
+    if (!isOperationPermitted("remove_inspection", record.updatedBy())) { return; }
+    if (isRecordLocked(record.date())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove inspection - Leaklog"),
                                 tr("Are you sure you want to remove the selected inspection?\nTo remove all data about the inspection \"%1\" type REMOVE and confirm:")
-                                .arg(m_settings.formatDateTime(inspection_date))) != QDialog::Accepted)
+                                .arg(m_settings.formatDateTime(record.date()))) != QDialog::Accepted)
         return;
 
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Remove inspection %1 (%2, circuit %3)")
-                        .arg(m_settings.formatDateTime(inspection_date))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name)
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0')));
+                        .arg(m_settings.formatDateTime(record.date()))
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name)
+                        .arg(record.circuit().circuitID()));
     m_undo_stack->savepoint();
 
     record.remove();
-    MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date",
-                         QStringList() << m_tab->selectedCustomer()
-                                       << m_tab->selectedCircuit()
-                                       << inspection_date);
-    InspectionsCompressor("", parents).remove();
-    InspectionImage(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date).remove();
-    if (m_tab->selectedInspection() == inspection_date)
+    if (m_tab->selectedInspectionUUID() == inspection_uuid)
         m_tab->clearSelectedInspection();
     enableTools();
     setDatabaseModified(true);
@@ -1810,14 +1922,13 @@ void MainWindow::skipInspection()
 
     QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
 
-    Circuit circuit_record(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-    circuit_record.addJoin("LEFT JOIN (SELECT customer, circuit, MAX(date) AS date FROM inspections"
-                           " WHERE outside_interval = 0 GROUP BY customer, circuit) AS ins"
-                           " ON ins.customer = circuits.parent AND ins.circuit = circuits.id");
+    MTQuery circuit_record = Circuit::query({{"uuid", m_tab->selectedCircuitUUID()}});
+    circuit_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
+                           " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
+                           " ON ins.circuit_uuid = circuits.uuid");
     MTSqlQuery circuit_query = circuit_record.select("circuits.hermetic, circuits.leak_detector, circuits.inspection_interval, "
                                                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
                                                      "circuits.refrigerant, " + circuitRefrigerantAmountQuery());
-    circuit_query.setForwardOnly(true);
     circuit_query.exec();
     if (circuit_query.next()) {
         int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.stringValue("refrigerant"),
@@ -1835,6 +1946,8 @@ void MainWindow::skipInspection()
         }
     }
 
+    Circuit circuit(m_tab->selectedCircuitUUID());
+
     QDialog d(this);
     d.setWindowTitle(tr("Skip inspection - Leaklog"));
     QGridLayout *gl = new QGridLayout(&d);
@@ -1843,7 +1956,7 @@ void MainWindow::skipInspection()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(m_tab->selectedCircuit().rightJustified(5, '0'), &d), 0, 1);
+    gl->addWidget(new QLabel(circuit.circuitID(), &d), 0, 1);
 
     lbl = new QLabel(tr("Date of skipped inspection:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -1854,11 +1967,7 @@ void MainWindow::skipInspection()
     date->setDateTime(next_regular_inspection_date);
     date->setCalendarPopup(true);
     date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
     gl->addWidget(date, 1, 1);
 
     QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
@@ -1896,22 +2005,21 @@ void MainWindow::skipInspection()
             return;
 
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
-    } while (Inspection(m_tab->selectedCustomer(), m_tab->selectedCircuit(), inspection_date).exists());
+    } while (Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists());
 
-    QString company_name = Customer(m_tab->selectedCustomer()).stringValue("company");
+    Customer customer(m_tab->selectedCustomerUUID());
+    QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Skip inspection of circuit %1 (%2)")
-                        .arg(m_tab->selectedCircuit().rightJustified(5, '0'))
-                        .arg(company_name.isEmpty() ? formatCompanyID(m_tab->selectedCustomer()) : company_name));
+                        .arg(circuit.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
     QVariantMap inspection;
-    inspection.insert("customer", m_tab->selectedCustomer().toInt());
-    inspection.insert("circuit", m_tab->selectedCircuit().toInt());
+    inspection.insert("customer_uuid", m_tab->selectedCustomerUUID());
+    inspection.insert("circuit_uuid", m_tab->selectedCircuitUUID());
     inspection.insert("date", inspection_date);
-    inspection.insert("nominal", 0);
-    inspection.insert("repair", 0);
+    inspection.insert("inspection_type", Inspection::SkippedInspection);
     inspection.insert("outside_interval", 0);
-    inspection.insert("inspection_type", Inspection::InspectionSkippedType);
     QStringList data;
     data << reason->text().remove(UNIT_SEPARATOR);
     inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
@@ -1927,19 +2035,19 @@ void MainWindow::addRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
-    Repair record("");
+    Repair record;
     if (m_tab->isCustomerSelected()) {
-        record.setValue("parent", m_tab->selectedCustomer());
-        record.setValue("customer", Customer(m_tab->selectedCustomer()).stringValue("company"));
+        record.setValue("customer_uuid", m_tab->selectedCustomerUUID());
+        record.setValue("customer", Customer(m_tab->selectedCustomerUUID()).stringValue("company"));
     }
     if (m_tab->isInspectorSelected()) {
-        record.setValue("repairman", m_tab->selectedInspector());
+        record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
     }
     UndoCommand command(m_undo_stack, tr("Add repair"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1947,18 +2055,17 @@ void MainWindow::editRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isRepairSelected()) { return; }
-    Repair record(m_tab->selectedRepair());
-    record.readValues();
-    if (!isOperationPermitted("edit_repair", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(m_tab->selectedRepair())) { return; }
-    QString company_name = record.stringValue("customer");
+    Repair record(m_tab->selectedRepairUUID());
+    if (!isOperationPermitted("edit_repair", record.updatedBy())) { return; }
+    if (isRecordLocked(record.date())) { return; }
+    QString company_name = record.customer();
     UndoCommand command(m_undo_stack, tr("Edit repair %1%2")
-                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
+                        .arg(m_settings.formatDateTime(record.date()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1967,20 +2074,20 @@ void MainWindow::duplicateRepair()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isRepairSelected()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
-    Repair record(m_tab->selectedRepair());
-    record.readValues();
-    record.id().clear();
-    if (!record.stringValue("parent").isEmpty()) {
-        record.parents().insert("parent", record.stringValue("parent"));
+    Repair record(m_tab->selectedRepairUUID());
+    record.refresh();
+    record.uuid().clear();
+    if (!record.customerUUID().isEmpty()) {
+        record.setCustomerUUID(record.customerUUID());
     }
-    QString company_name = record.stringValue("customer");
+    QString company_name = record.customer();
     UndoCommand command(m_undo_stack, tr("Duplicate repair %1%2")
-                        .arg(m_settings.formatDateTime(m_tab->selectedRepair()))
+                        .arg(m_settings.formatDateTime(record.date()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadRepair(record.id(), true);
+        m_tab->loadRepair(record.uuid(), true);
     }
 }
 
@@ -1988,19 +2095,17 @@ void MainWindow::removeRepair()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isRepairSelected()) { return; }
-    QString repair = m_tab->selectedRepair();
-    Repair record(repair);
-    record.readValues("updated_by, customer");
-    if (!isOperationPermitted("remove_repair", record.stringValue("updated_by"))) { return; }
-    if (isRecordLocked(repair)) { return; }
+    Repair record(m_tab->selectedRepairUUID());
+    if (!isOperationPermitted("remove_repair", record.updatedBy())) { return; }
+    if (isRecordLocked(record.date())) { return; }
     if (RemoveDialogue::confirm(this, tr("Remove repair - Leaklog"),
                                 tr("Are you sure you want to remove the selected repair?\nTo remove all data about the repair \"%1\" type REMOVE and confirm:")
-                                .arg(m_settings.formatDateTime(repair))) != QDialog::Accepted)
+                                .arg(m_settings.formatDateTime(record.date()))) != QDialog::Accepted)
         return;
 
-    QString company_name = record.stringValue("customer");
+    QString company_name = record.customer();
     UndoCommand command(m_undo_stack, tr("Remove repair %1%2")
-                        .arg(m_settings.formatDateTime(repair))
+                        .arg(m_settings.formatDateTime(record.date()))
                         .arg(company_name.isEmpty() ? "" : QString(" (%1)").arg(company_name)));
     m_undo_stack->savepoint();
 
@@ -2016,26 +2121,27 @@ void MainWindow::loadVariables(QTreeWidget *trw, QSqlDatabase database)
     Variables variables(database);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.uuid(), NULL);
         if (!item) {
-            if (variables.parentID().isEmpty())
+            if (variables.parentUUID().isEmpty())
                 item = new QTreeWidgetItem(trw);
             else
                 item = new QTreeWidgetItem;
-            variable_items.insert(variables.id(), item);
+            variable_items.insert(variables.uuid(), item);
         }
 
-        if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
+        if (!variables.parentUUID().isEmpty()) {
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentUUID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(trw);
-                variable_items.insert(variables.parentID(), parent_item);
+                variable_items.insert(variables.parentUUID(), parent_item);
             }
             parent_item->addChild(item);
         }
 
         item->setText(0, variables.name());
         item->setText(1, variables.id());
+        item->setData(1, Qt::UserRole, variables.uuid());
         item->setText(2, variables.unit());
         item->setText(3, variables.value(Variable::Tolerance).toString());
     }
@@ -2050,34 +2156,35 @@ void MainWindow::addVariable(bool subvar)
     QSqlDatabase db = QSqlDatabase::database();
     if (!db.isOpen()) { return; }
     if (!isOperationPermitted("add_variable")) { return; }
-    QString parent_id;
+    QString parent_uuid;
     if (subvar) {
         if (trw_variables->currentItem()->parent() != NULL)
             return;
-        parent_id = trw_variables->currentItem()->text(1);
+        parent_uuid = trw_variables->currentItem()->data(1, Qt::UserRole).toString();
     }
-    VariableRecord record("", parent_id);
+    VariableRecord record;
+    record.setParentUUID(parent_uuid);
     UndoCommand command(m_undo_stack, tr("Add variable"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, unit, scope, tolerance");
         QTreeWidgetItem *item = NULL;
         if (subvar) {
             item = new QTreeWidgetItem(trw_variables->currentItem());
-            VariableRecord(parent_id).update("type", "group");
+            VariableRecord(parent_uuid).update("type", "group");
         } else {
             item = new QTreeWidgetItem(trw_variables);
         }
-        item->setText(0, attributes.value("name").toString());
-        item->setText(1, record.id());
-        item->setText(2, attributes.value("unit").toString());
-        item->setText(3, attributes.value("tolerance").toString());
+        item->setText(0, record.name());
+        item->setText(1, record.variableID());
+        item->setData(1, Qt::UserRole, record.uuid());
+        item->setText(2, record.unit());
+        item->setText(3, record.stringValue("tolerance"));
 
-        int scope = attributes.value("scope").toInt();
+        int scope = record.scope();
         if (scope & Variable::Inspection)
-            addColumn(record.id(), "inspections", db);
+            addColumn(record.variableID(), "inspections", db);
         if (scope & Variable::Compressor)
-            addColumn(record.id(), "inspections_compressors", db);
+            addColumn(record.variableID(), "inspections_compressors", db);
         setDatabaseModified(true);
         refreshView();
     }
@@ -2092,29 +2199,14 @@ void MainWindow::editVariable()
 
     QTreeWidgetItem *item = trw_variables->currentItem();
     QString id = item->text(1);
-    VariableRecord record(id);
+    VariableRecord record(item->data(1, Qt::UserRole).toString(), {{"id", id}});
     UndoCommand command(m_undo_stack, tr("Edit variable %1").arg(id));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, unit, scope, tolerance");
-        item->setText(0, attributes.value("name").toString());
-        item->setText(1, record.id());
-        item->setText(2, attributes.value("unit").toString());
-        item->setText(3, attributes.value("tolerance").toString());
+        item->setText(0, record.name());
+        item->setText(2, record.unit());
+        item->setText(3, record.stringValue("tolerance"));
 
-        if (id != record.id()) {
-            int scope = attributes.value("scope").toInt();
-            if (scope & Variable::Inspection)
-                renameColumn(id, record.id(), "inspections", db);
-            if (scope & Variable::Compressor)
-                renameColumn(id, record.id(), "inspections_compressors", db);
-
-            MTSqlQuery update_subvariables;
-            update_subvariables.prepare("UPDATE variables SET parent_id = :new_id WHERE parent_id = :old_id");
-            update_subvariables.bindValue(":old_id", id);
-            update_subvariables.bindValue(":new_id", record.id());
-            update_subvariables.exec();
-        }
         setDatabaseModified(true);
         refreshView();
     }
@@ -2130,6 +2222,7 @@ void MainWindow::removeVariable()
     if (variableNames().contains(item->text(1))) { return; }
     bool subvar = item->parent() != NULL;
     QString id = item->text(1);
+    QString uuid = item->data(1, Qt::UserRole).toString();
     if (RemoveDialogue::confirm(this, subvar ? tr("Remove subvariable - Leaklog") : tr("Remove variable - Leaklog"),
                                 tr("Are you sure you want to remove the selected variable?\nTo remove the variable \"%1\" type REMOVE and confirm:")
                                 .arg(id)) != QDialog::Accepted)
@@ -2138,8 +2231,8 @@ void MainWindow::removeVariable()
     UndoCommand command(m_undo_stack, tr("Remove variable %1").arg(id));
     m_undo_stack->savepoint();
 
-    MTRecord("variables", "id", "", MTDictionary("parent_id", id)).remove();
-    MTRecord("variables", "id", id, MTDictionary()).remove();
+    VariableRecord::query({{"parent_uuid", uuid}}).removeAll();
+    MTRecord("variables", uuid).remove();
     delete item;
     dropColumn(id, "inspections", db);
     dropColumn(id, "inspections_compressors", db);
@@ -2156,8 +2249,8 @@ void MainWindow::addTable()
     UndoCommand command(m_undo_stack, tr("Add table"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        emit tableAdded(-1, record.id());
-        cb_table_edit->addItem(record.id());
+        emit tableAdded(-1, record.uuid(), record.name());
+        cb_table_edit->addItem(record.name(), record.uuid());
         setDatabaseModified(true);
         refreshView();
     }
@@ -2168,15 +2261,15 @@ void MainWindow::editTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
-    Table record(cb_table_edit->currentText());
+    Table record(cb_table_edit->itemData(cb_table_edit->currentIndex()).toString());
     UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         int i = cb_table_edit->currentIndex();
-        emit tableRemoved(cb_table_edit->currentText());
+        emit tableRemoved(record.uuid());
         cb_table_edit->removeItem(i);
-        emit tableAdded(i, record.id());
-        cb_table_edit->insertItem(i, record.id());
+        emit tableAdded(i, record.uuid(), record.name());
+        cb_table_edit->insertItem(i, record.name(), record.uuid());
         cb_table_edit->setCurrentIndex(i);
         setDatabaseModified(true);
         refreshView();
@@ -2196,8 +2289,9 @@ void MainWindow::removeTable()
     UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    emit tableRemoved(cb_table_edit->currentText());
-    Table record(cb_table_edit->currentText());
+    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    emit tableRemoved(uuid);
+    Table record(uuid);
     record.remove();
     int i = cb_table_edit->currentIndex();
     cb_table_edit->removeItem(i);
@@ -2211,11 +2305,10 @@ void MainWindow::loadTable(const QString &)
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     trw_table_variables->clear();
-    Table record(cb_table_edit->currentText());
-    QVariantMap attributes = record.list("variables, sum, avg");
-    QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
-    QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
-    QStringList avg = attributes.value("avg").toString().split(";", QString::SkipEmptyParts);
+    Table record(cb_table_edit->itemData(cb_table_edit->currentIndex()).toString());
+    QStringList variables = record.variables();
+    QStringList sum = record.summedVariables();
+    QStringList avg = record.averagedVariables();
     for (int i = 0; i < variables.count(); ++i) {
         Variable variable(variables.at(i));
         QTreeWidgetItem *item = new QTreeWidgetItem(trw_table_variables);
@@ -2238,10 +2331,11 @@ void MainWindow::saveTable()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
-    if (!isOperationPermitted("edit_table")) { loadTable(cb_table_edit->currentText()); return; }
+    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    if (!isOperationPermitted("edit_table")) { loadTable(uuid); return; }
     UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
-    Table record(cb_table_edit->currentText());
+    Table table(uuid);
     QStringList variables, sum, avg; QString value;
     for (int i = 0; i < trw_table_variables->topLevelItemCount(); ++i) {
         variables << trw_table_variables->topLevelItem(i)->text(1);
@@ -2249,11 +2343,10 @@ void MainWindow::saveTable()
         if (value == tr("Sum")) { sum << trw_table_variables->topLevelItem(i)->text(1); }
         else if (value == tr("Average")) { avg << trw_table_variables->topLevelItem(i)->text(1); }
     }
-    QVariantMap set;
-    set.insert("variables", variables.join(";"));
-    set.insert("sum", sum.join(";"));
-    set.insert("avg", avg.join(";"));
-    record.update(set);
+    table.setVariables(variables);
+    table.setSummedVariables(sum);
+    table.setAveragedVariables(avg);
+    table.save();
     setDatabaseModified(true);
     refreshView();
 }
@@ -2308,11 +2401,13 @@ void MainWindow::addTableVariable()
                             .arg(cb_table_edit->currentText()));
         m_undo_stack->savepoint();
 
-        Table record(cb_table_edit->currentText());
-        QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
+        QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+        Table table(uuid);
+        QStringList variables = table.variables();
         variables << lw->currentItem()->data(Qt::UserRole).toString();
-        record.update("variables", variables.join(";"));
-        loadTable(cb_table_edit->currentText());
+        table.setVariables(variables);
+        table.save();
+        loadTable(uuid);
         setDatabaseModified(true);
         refreshView();
     }
@@ -2338,19 +2433,24 @@ void MainWindow::removeTableVariable()
                         .arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    Table record(cb_table_edit->currentText());
-    QVariantMap attributes = record.list("variables, sum");
-    QStringList variables = attributes.value("variables").toString().split(";", QString::SkipEmptyParts);
-    QStringList sum = attributes.value("sum").toString().split(";", QString::SkipEmptyParts);
-    QStringList avg = attributes.value("avg").toString().split(";", QString::SkipEmptyParts);
+    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    Table table(uuid);
+
+    QStringList variables = table.variables();
     variables.removeAll(item->text(1));
+    table.setVariables(variables);
+
+    QStringList sum = table.summedVariables();
     sum.removeAll(item->text(1));
-    QVariantMap set;
-    set.insert("variables", variables.join(";"));
-    set.insert("sum", sum.join(";"));
-    set.insert("avg", avg.join(";"));
-    record.update(set);
-    loadTable(cb_table_edit->currentText());
+    table.setSummedVariables(sum);
+
+    QStringList avg = table.averagedVariables();
+    avg.removeAll(item->text(1));
+    table.setAveragedVariables(avg);
+
+    table.save();
+
+    loadTable(uuid);
     setDatabaseModified(true);
     refreshView();
 }
@@ -2380,8 +2480,9 @@ void MainWindow::moveTableVariable(bool up)
                         .arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    Table record(cb_table_edit->currentText());
-    QStringList variables = record.stringValue("variables").split(";", QString::SkipEmptyParts);
+    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    Table table(uuid);
+    QStringList variables = table.stringValue("variables").split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);
     if (up) {
         if (i != 0) { i--; } else { i = variables.count(); }
@@ -2389,8 +2490,9 @@ void MainWindow::moveTableVariable(bool up)
         if (i != variables.count()) { i++; } else { i = 0; }
     }
     variables.insert(i, variable);
-    record.update("variables", variables.join(";"));
-    loadTable(cb_table_edit->currentText());
+    table.setVariables(variables);
+    table.save();
+    loadTable(uuid);
     trw_table_variables->setCurrentItem(trw_table_variables->topLevelItem(i));
     setDatabaseModified(true);
     refreshView();
@@ -2400,16 +2502,15 @@ void MainWindow::addWarning()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_warning")) { return; }
-    WarningRecord record("");
+    WarningRecord record;
     UndoCommand command(m_undo_stack, tr("Add warning"));
     EditWarningDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, description");
-        QString name = attributes.value("name").toString();
-        QString description = attributes.value("description").toString();
+        QString name = record.name();
+        QString description = record.description();
         QListWidgetItem *item = new QListWidgetItem;
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
-        item->setData(Qt::UserRole, record.id());
+        item->setData(Qt::UserRole, record.uuid());
         lw_warnings->addItem(item);
         setDatabaseModified(true);
         refreshView();
@@ -2426,11 +2527,10 @@ void MainWindow::editWarning()
     UndoCommand command(m_undo_stack, tr("Edit warning %1").arg(record.stringValue("name")));
     EditWarningDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("name, description");
-        QString name = attributes.value("name").toString();
-        QString description = attributes.value("description").toString();
+        QString name = record.name();
+        QString description = record.description();
         item->setText(description.isEmpty() ? name : tr("%1 (%2)").arg(name).arg(description));
-        item->setData(Qt::UserRole, record.id());
+        item->setData(Qt::UserRole, record.uuid());
         setDatabaseModified(true);
         refreshView();
     }
@@ -2452,10 +2552,6 @@ void MainWindow::removeWarning()
 
     WarningRecord record(item->data(Qt::UserRole).toString());
     record.remove();
-    MTRecord filters("warnings_filters", "", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
-    filters.remove();
-    MTRecord conditions("warnings_conditions", "", "", MTDictionary("parent", item->data(Qt::UserRole).toString()));
-    conditions.remove();
     delete item;
     enableTools();
     setDatabaseModified(true);
@@ -2466,12 +2562,12 @@ void MainWindow::addInspector()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
-    Inspector record("");
+    Inspector record;
     UndoCommand command(m_undo_stack, tr("Add inspector"));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadInspector(record.id().toInt(), true);
+        m_tab->loadInspector(record.uuid(), true);
     }
 }
 
@@ -2480,32 +2576,11 @@ void MainWindow::editInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isInspectorSelected()) { return; }
     if (!isOperationPermitted("edit_inspector")) { return; }
-    QString old_id = m_tab->selectedInspector();
-    Inspector record(old_id);
-    UndoCommand command(m_undo_stack, tr("Edit inspector %1").arg(record.stringValue("person")));
+    Inspector record(m_tab->selectedInspectorUUID());
+    UndoCommand command(m_undo_stack, tr("Edit inspector %1").arg(record.personName()));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            MTSqlQuery update_inspections;
-            update_inspections.prepare("UPDATE inspections SET inspector = :new_id WHERE inspector = :old_id");
-            update_inspections.bindValue(":old_id", old_id);
-            update_inspections.bindValue(":new_id", record.id());
-            update_inspections.exec();
-            MTSqlQuery update_repairs;
-            update_repairs.prepare("UPDATE repairs SET repairman = :new_id WHERE repairman = :old_id");
-            update_repairs.bindValue(":old_id", old_id);
-            update_repairs.bindValue(":new_id", record.id());
-            update_repairs.exec();
-            MTSqlQuery update_assembly_record_items;
-            update_assembly_record_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
-                                                 .arg(AssemblyRecordItem::Inspectors));
-            update_assembly_record_items.bindValue(":old_id", old_id);
-            update_assembly_record_items.bindValue(":new_id", record.id());
-            update_assembly_record_items.exec();
-            m_tab->loadInspector(record.id().toInt(), false);
-        } else {
-            enableTools();
-        }
+        enableTools();
         refreshView();
         setDatabaseModified(true);
     }
@@ -2516,14 +2591,15 @@ void MainWindow::removeInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isInspectorSelected()) { return; }
     if (!isOperationPermitted("remove_inspector")) { return; }
+
+    Inspector record(m_tab->selectedInspectorUUID());
+
     if (RemoveDialogue::confirm(this, tr("Remove inspector - Leaklog"),
                                 tr("Are you sure you want to remove the selected inspector?\nTo remove all data about the inspector \"%1\" type REMOVE and confirm:")
-                                .arg(m_tab->selectedInspector())) != QDialog::Accepted)
+                                .arg(record.personName())) != QDialog::Accepted)
         return;
 
-    Inspector record(m_tab->selectedInspector());
-
-    UndoCommand command(m_undo_stack, tr("Remove inspector %1").arg(record.stringValue("person")));
+    UndoCommand command(m_undo_stack, tr("Remove inspector %1").arg(record.personName()));
     m_undo_stack->savepoint();
 
     record.remove();
@@ -2533,118 +2609,6 @@ void MainWindow::removeInspector()
     m_tab->setView(View::Inspectors);
 }
 
-void MainWindow::exportCustomerData()
-{
-    exportData("customer");
-}
-
-void MainWindow::exportCircuitData()
-{
-    if (!m_tab->isCircuitSelected()) { return; }
-    exportData("circuit");
-}
-
-void MainWindow::exportInspectionData()
-{
-    if (!m_tab->isCircuitSelected()) { return; }
-    if (!m_tab->isInspectionSelected()) { return; }
-    exportData("inspection");
-}
-
-void MainWindow::exportData(const QString &type)
-{
-    QSqlDatabase db = QSqlDatabase::database();
-    if (!db.isOpen()) { return; }
-    if (!m_tab->isCustomerSelected()) { return; }
-
-    QString title;
-    if (type == "customer") { title = tr("Export customer data - Leaklog"); }
-    else if (type == "circuit") { title = tr("Export circuit data - Leaklog"); }
-    else if (type == "inspection") { title = tr("Export inspection data - Leaklog"); }
-    else { title = tr("Export data - Leaklog"); }
-
-    QString path = QFileDialog::getSaveFileName(this, title,
-                                                QDir::home().absoluteFilePath(tr("untitled.lklg")),
-                                                tr("Leaklog Database (*.lklg)"));
-	if (path.isEmpty()) { return; }
-    if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
-
-    QFile file(path); if (file.exists()) { file.remove(); }
-
-    { // BEGIN EXPORT (SCOPE)
-        QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "exportData");
-        data.setDatabaseName(path);
-        if (!data.open()) {
-            QMessageBox::critical(this, title, tr("Cannot write file %1:\n%2.").arg(path).arg(data.lastError().text()));
-            return;
-        }
-
-        initDatabase(data);
-        data.transaction();
-
-        copyTable("service_companies", db, data);
-        copyTable("refrigerant_management", db, data);
-        copyTable("inspectors", db, data);
-        copyTable("variables", db, data);
-        copyTable("tables", db, data);
-        copyTable("assembly_record_types", db, data);
-        copyTable("assembly_record_item_types", db, data);
-        copyTable("assembly_record_type_categories", db, data);
-        copyTable("assembly_record_item_categories", db, data);
-        copyTable("circuit_unit_types", db, data);
-        copyTable("customers", db, data, QString("id = %1").arg(m_tab->selectedCustomer()));
-
-        if (type == "customer") {
-            copyTable("repairs", db, data, QString("parent IS NOT NULL AND parent = %1").arg(m_tab->selectedCustomer()));
-            copyTable("circuits", db, data, QString("parent = %1").arg(m_tab->selectedCustomer()));
-            copyTable("compressors", db, data, QString("customer_id = %1").arg(m_tab->selectedCustomer()));
-            copyTable("circuit_units", db, data, QString("company_id = %1").arg(m_tab->selectedCustomer()));
-            copyTable("inspections", db, data, QString("customer = %1").arg(m_tab->selectedCustomer()));
-            copyTable("inspections_compressors", db, data, QString("customer_id = %1").arg(m_tab->selectedCustomer()));
-            copyTable("inspection_images", db, data, QString("customer = %1").arg(m_tab->selectedCustomer()));
-            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1)"
-                                                 " OR id IN (SELECT image FROM service_companies)")
-                      .arg(m_tab->selectedCustomer()));
-            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1)")
-                      .arg(m_tab->selectedCustomer()));
-        } else if (type == "circuit") {
-            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("circuit_units", db, data, QString("company_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("inspections_compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("inspection_images", db, data, QString("customer = %1 AND circuit = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1 AND circuit = %2)"
-                                                 " OR id IN (SELECT image FROM service_companies)")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1 AND circuit = %2)")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-        } else if (type == "inspection") {
-            copyTable("circuits", db, data, QString("parent = %1 AND id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("compressors", db, data, QString("customer_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("circuit_units", db, data, QString("company_id = %1 AND circuit_id = %2").arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()));
-            copyTable("inspections", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
-            copyTable("inspections_compressors", db, data, QString("customer_id = %1 AND circuit_id = %2 AND date = '%3'")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
-            copyTable("inspection_images", db, data, QString("customer = %1 AND circuit = %2 AND date = '%3'")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
-            copyTable("files", db, data, QString("id IN (SELECT file_id FROM inspection_images WHERE customer = %1 AND circuit = %2 AND date = '%3')"
-                                                 " OR id IN (SELECT image FROM service_companies)")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
-            copyTable("assembly_record_items", db, data, QString("arno IN (SELECT arno FROM inspections WHERE customer = %1 AND circuit = %2 AND date = '%3')")
-                      .arg(m_tab->selectedCustomer()).arg(m_tab->selectedCircuit()).arg(m_tab->selectedInspection()));
-        }
-
-        DBInfo::setValueForKey("default_service_company", DBInfo::valueForKey("default_service_company"), data);
-
-        data.commit();
-        data.close();
-    } // END EXPORT (SCOPE)
-
-    QSqlDatabase::removeDatabase("exportData");
-}
-
 void MainWindow::importData()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
@@ -2652,6 +2616,7 @@ void MainWindow::importData()
     QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), QDir::homePath(),
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
+
 { // BEGIN IMPORT (SCOPE)
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
     data.setDatabaseName(path);
@@ -2663,26 +2628,22 @@ void MainWindow::importData()
     MTSqlQuery query(data);
     initDatabase(data, false, false);
     ImportDialogue *id = new ImportDialogue(this);
-    QVariantMap attributes;
-    QVariant attribute;
-    bool modified, attribute_modified;
 
     // Customers
     query.exec("SELECT * FROM customers ORDER BY company");
     while (query.next()) {
-        QString company_id_justified = formatCompanyID(query.stringValue("id"));
-        Customer customer(query.stringValue("id"));
+        QString customer_uuid = query.stringValue("uuid");
+        Customer customer(customer_uuid);
         if (customer.exists()) {
-            attributes = customer.list();
-            modified = false;
+            bool modified = false;
 
             MTDictionary columns(true);
-            columns.insert(company_id_justified, "0");
 
-            for (int i = 1; i < Customer::attributes().count(); ++i) {
-                attribute = query.value(Customer::attributes().key(i));
-                attribute_modified = attribute != attributes.value(Customer::attributes().key(i));
+            for (int i = 0; i < Customer::attributes().count(); ++i) {
+                QVariant attribute = query.value(Customer::attributes().key(i));
+                bool attribute_modified = attribute != customer.value(Customer::attributes().key(i));
                 if (attribute_modified) modified = true;
+
                 if (Customer::attributes().key(i) == "operator_id") {
                     switch (attribute.toInt()) {
                     case -1:
@@ -2691,7 +2652,7 @@ void MainWindow::importData()
                     case 0:
                         columns.insert(QApplication::translate("Customer", "Customer"), attribute_modified ? "1" : "0");
                     default:
-                        columns.insert(formatCompanyID(attribute), attribute_modified ? "1" : "0");
+                        columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
                     }
                 } else {
                     columns.insert(MTVariant(attribute, Customer::attributes().key(i)).toString(),
@@ -2707,38 +2668,37 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > customer.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, query.value("id"));
+                item->setData(0, Qt::UserRole, customer_uuid);
             }
         } else {
             QTreeWidgetItem *item = new QTreeWidgetItem(id->newCustomers());
-            item->setText(0, company_id_justified);
-            for (int i = 1; i < Customer::attributes().count(); ++i) {
+            for (int i = 0; i < Customer::attributes().count(); ++i) {
                 item->setText(i, MTVariant(query.value(Customer::attributes().key(i)),
                                            Customer::attributes().key(i)).toString());
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, query.value("id"));
+            item->setData(0, Qt::UserRole, customer_uuid);
         }
     }
 
     // Contact persons
-    query.exec("SELECT persons.*, customers.company FROM persons LEFT JOIN customers ON persons.company_id = customers.id"
+    query.exec("SELECT persons.*, customers.company FROM persons LEFT JOIN customers ON persons.customer_uuid = customers.uuid"
                " ORDER BY customers.company, persons.name");
     while (query.next()) {
-        Person person(query.stringValue("id"));
+        QString person_uuid = query.stringValue("uuid");
+        Person person(person_uuid);
         if (person.exists()) {
-            attributes = person.list();
-            modified = false;
+            bool modified = false;
 
             MTDictionary columns(true);
-            columns.insert(query.stringValue("company"), query.value("company_id") != attributes.value("company_id") ? "1" : "0");
+            columns.insert(query.stringValue("company"), query.value("customer_uuid") != person.customerUUID() ? "1" : "0");
 
-            for (int i = 2; i < Person::attributes().count(); ++i) {
-                attribute = query.value(Person::attributes().key(i));
-                attribute_modified = attribute != attributes.value(Person::attributes().key(i));
+            for (int i = 0; i < Person::attributes().count(); ++i) {
+                QVariant attribute = query.value(Person::attributes().key(i));
+                bool attribute_modified = attribute != person.value(Person::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
             }
@@ -2751,19 +2711,19 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > person.stringValue("date_updated") ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, query.value("id"));
+                item->setData(0, Qt::UserRole, person_uuid);
             }
         } else {
             QTreeWidgetItem *item = new QTreeWidgetItem(id->newPersons());
             item->setText(0, query.stringValue("company"));
-            for (int i = 2; i < Person::attributes().count(); ++i) {
-                item->setText(i - 1, query.stringValue(Person::attributes().key(i)));
+            for (int i = 0; i < Person::attributes().count(); ++i) {
+                item->setText(i + 1, query.stringValue(Person::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, query.value("id"));
+            item->setData(0, Qt::UserRole, person_uuid);
         }
     }
 
@@ -2779,31 +2739,30 @@ void MainWindow::importData()
         return QString("compressors.%1 AS compressor_%1").arg(column.name());
     });
     query.exec(QString("SELECT customers.company, circuits.*, %1 FROM circuits"
-                       " LEFT JOIN customers ON circuits.parent = customers.id"
-                       " LEFT JOIN compressors ON compressors.customer_id = circuits.parent AND compressors.circuit_id = circuits.id"
-                       " ORDER BY customers.company, circuits.id, compressors.id").arg(compressors_columns.join(", ")));
-    QString last_id;
+                       " LEFT JOIN customers ON circuits.customer_uuid = customers.uuid"
+                       " LEFT JOIN compressors ON compressors.circuit_uuid = circuits.uuid"
+                       " ORDER BY customers.company, circuits.id, compressors.name").arg(compressors_columns.join(", ")));
+    QString last_uuid;
     QTreeWidgetItem *last_item = NULL;
     while (query.next()) {
-        QString current_id = QString("%1:%2").arg(query.stringValue("parent")).arg(query.stringValue("id"));
-        if (last_id != current_id) {
+        QString circuit_uuid = query.stringValue("uuid");
+        if (last_uuid != circuit_uuid) {
             if (last_item && last_item->treeWidget() == NULL)
                 delete last_item;
-            last_id = current_id;
+            last_uuid = circuit_uuid;
 
             QString circuit_id_justified = query.stringValue("id").rightJustified(5, '0');
-            Circuit circuit(query.stringValue("parent"), query.stringValue("id"));
+            Circuit circuit(circuit_uuid);
             if (circuit.exists()) {
-                attributes = circuit.list();
-                modified = false;
+                bool modified = false;
 
                 MTDictionary columns(true);
-                columns.insert(query.stringValue("company"), "0");
-                columns.insert(circuit_id_justified, "0");
+                columns.insert(query.stringValue("company"), query.value("customer_uuid") != circuit.customerUUID() ? "1" : "0");
+                columns.insert(circuit_id_justified, query.value("id") != circuit.value("id") ? "1" : "0");
 
                 for (int i = 1; i < Circuit::attributes().count(); ++i) {
-                    attribute = query.value(Circuit::attributes().key(i));
-                    attribute_modified = attribute != attributes.value(Circuit::attributes().key(i));
+                    QVariant attribute = query.value(Circuit::attributes().key(i));
+                    bool attribute_modified = attribute != circuit.value(Circuit::attributes().key(i));
                     if (attribute_modified) {
                         modified = true;
                         shown_sections << i + 1;
@@ -2818,11 +2777,9 @@ void MainWindow::importData()
                         last_item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                last_item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                last_item->setCheckState(0, query.stringValue("date_updated") > circuit.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (last_item->checkState(0) == Qt::Unchecked)
                     last_item->setToolTip(0, tr("This record is older than the current record in your database"));
-                last_item->setData(0, Qt::UserRole, query.value("parent"));
-                last_item->setData(1, Qt::UserRole, query.value("id"));
             } else {
                 last_item = new QTreeWidgetItem(id->newCircuits());
                 last_item->setText(0, query.stringValue("company"));
@@ -2831,22 +2788,22 @@ void MainWindow::importData()
                     last_item->setText(i + 1, query.stringValue(Circuit::attributes().key(i)));
                 }
                 last_item->setCheckState(0, Qt::Checked);
-                last_item->setData(0, Qt::UserRole, query.value("parent"));
-                last_item->setData(1, Qt::UserRole, query.value("id"));
             }
+
+            last_item->setData(0, Qt::UserRole, circuit_uuid);
         }
 
-        if (last_item && query.longLongValue("compressor_id")) {
-            Compressor compressor(query.stringValue("compressor_id"));
+        QString compressor_uuid = query.stringValue("compressor_uuid");
+        if (last_item && !compressor_uuid.isEmpty()) {
+            Compressor compressor(compressor_uuid);
             if (compressor.exists()) {
-                attributes = compressor.list();
-                modified = false;
+                bool modified = false;
 
                 MTDictionary columns(true);
                 QMapIterator<int, QString> i(compressor_attributes);
                 while (i.hasNext()) { i.next();
-                    attribute = query.value("compressor_" + i.value());
-                    attribute_modified = attribute != attributes.value(i.value());
+                    QVariant attribute = query.value("compressor_" + i.value());
+                    bool attribute_modified = attribute != compressor.value(i.value());
                     if (attribute_modified) {
                         modified = true;
                         shown_sections << i.key();
@@ -2854,7 +2811,7 @@ void MainWindow::importData()
                     columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
                 }
 
-                if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
+                if (modified && query.stringValue("compressor_date_updated") > compressor.stringValue("date_updated")) {
                     QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
                     int c = 0;
                     i.toFront();
@@ -2866,13 +2823,13 @@ void MainWindow::importData()
                         }
                         c++;
                     }
-                    item->setData(0, Qt::UserRole, query.value("compressor_id"));
+                    item->setData(0, Qt::UserRole, compressor_uuid);
                     if (last_item->treeWidget() == NULL)
                         id->modifiedCircuits()->addTopLevelItem(last_item);
                 }
             } else {
                 QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
-                item->setData(0, Qt::UserRole, query.value("compressor_id"));
+                item->setData(0, Qt::UserRole, compressor_uuid);
                 QMapIterator<int, QString> i(compressor_attributes);
                 while (i.hasNext()) { i.next();
                     item->setText(i.key(), query.stringValue("compressor_" + i.value()));
@@ -2882,6 +2839,7 @@ void MainWindow::importData()
             }
         }
     }
+
     for (int i = 0; i < id->modifiedCircuits()->columnCount(); ++i) {
         if (!shown_sections.contains(i))
             id->modifiedCircuits()->header()->hideSection(i);
@@ -2892,31 +2850,30 @@ void MainWindow::importData()
     variable_scopes << QApplication::translate("VariableRecord", "Inspection");
     variable_scopes << QApplication::translate("VariableRecord", "Compressor");
     MTDictionary variable_names;
-    variable_names.insert("nominal", QApplication::translate("Inspection", "Nominal"));
-    variable_names.insert("repair", QApplication::translate("Inspection", "Repair"));
+    variable_names.insert("inspection_type", QApplication::translate("Inspection", "Type"));
     QStringList compressor_variable_names;
     Variables variables(data);
     QMap<QString, QTreeWidgetItem *> variable_items;
     while (variables.next()) {
-        QTreeWidgetItem *item = variable_items.value(variables.id(), NULL);
+        QTreeWidgetItem *item = variable_items.value(variables.uuid(), NULL);
         if (!item) {
-            if (variables.parentID().isEmpty())
+            if (variables.parentUUID().isEmpty())
                 item = new QTreeWidgetItem(id->variables());
             else
                 item = new QTreeWidgetItem;
-            variable_items.insert(variables.id(), item);
+            variable_items.insert(variables.uuid(), item);
         }
 
-        if (!variables.parentID().isEmpty()) {
-            QTreeWidgetItem *parent_item = variable_items.value(variables.parentID(), NULL);
+        if (!variables.parentUUID().isEmpty()) {
+            QTreeWidgetItem *parent_item = variable_items.value(variables.parentUUID(), NULL);
             if (!parent_item) {
                 parent_item = new QTreeWidgetItem(id->variables());
-                variable_items.insert(variables.parentID(), parent_item);
+                variable_items.insert(variables.parentUUID(), parent_item);
             }
             parent_item->addChild(item);
             parent_item->setExpanded(true);
 
-            variable_names.remove(variables.parentID());
+            variable_names.remove(variables.parentUUID());
             if (variables.valueExpression().isEmpty() && variables.type() != "group") {
                 variable_names.insert(variables.id(),
                                       tr("%1: %2")
@@ -2933,6 +2890,7 @@ void MainWindow::importData()
 
         item->setText(0, variables.name());
         item->setText(1, variables.id());
+        item->setData(1, Qt::UserRole, variables.uuid());
         item->setText(2, variables.unit());
         item->setText(3, variableTypes().value(variables.type()));
         item->setData(3, Qt::UserRole, variables.type());
@@ -3027,48 +2985,44 @@ void MainWindow::importData()
     foreach (const QString &variable_name, variable_names.keys())
         inspections_columns << QString("inspections.%1").arg(variable_name);
 
-    QStringList inspections_compressors_columns = InspectionsCompressor::columns().toStringList([](const Column &column) {
+    QStringList inspections_compressors_columns = InspectionCompressor::columns().toStringList([](const Column &column) {
         return QString("inspections_compressors.%1 AS compressor_%1").arg(column.name());
     });
     foreach (const QString &variable_name, compressor_variable_names)
         inspections_compressors_columns << QString("inspections_compressors.%1 AS compressor_%1").arg(variable_name);
 
-    query.exec(QString("SELECT customers.company, %1, %2, compressors.name AS compressor_name"
-                       " FROM inspections LEFT JOIN customers ON inspections.customer = customers.id"
-                       " LEFT JOIN inspections_compressors ON inspections_compressors.customer_id = inspections.customer"
-                       " AND inspections_compressors.circuit_id = inspections.circuit"
-                       " AND inspections_compressors.date = inspections.date"
-                       " LEFT JOIN compressors ON inspections_compressors.compressor_id = compressors.id"
-                       " ORDER BY inspections.date, inspections_compressors.compressor_id")
+    query.exec(QString("SELECT customers.company, %1, %2, circuits.id AS circuit_id, compressors.name AS compressor_name"
+                       " FROM inspections LEFT JOIN customers ON inspections.customer_uuid = customers.uuid"
+                       " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
+                       " LEFT JOIN inspections_compressors ON inspections_compressors.inspection_uuid = inspections.uuid"
+                       " LEFT JOIN compressors ON inspections_compressors.compressor_uuid = compressors.uuid"
+                       " ORDER BY inspections.date, compressors.name")
                .arg(inspections_columns.join(", "))
                .arg(inspections_compressors_columns.join(", ")));
-    last_id.clear();
+    last_uuid.clear();
     last_item = NULL;
+    QSqlRecord record = query.record();
     while (query.next()) {
-        QString current_id = QString("%1:%2:%3")
-                .arg(query.stringValue("customer"))
-                .arg(query.stringValue("circuit"))
-                .arg(query.stringValue("date"));
-        if (last_id != current_id) {
+        QString inspection_uuid = query.stringValue("uuid");
+        if (last_uuid != inspection_uuid) {
             if (last_item && last_item->treeWidget() == NULL)
                 delete last_item;
-            last_id = current_id;
+            last_uuid = inspection_uuid;
 
-            QString circuit_id_justified = query.stringValue("circuit").rightJustified(5, '0');
+            QString circuit_id_justified = query.stringValue("circuit_id").rightJustified(5, '0');
             record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
-            Inspection inspection(query.stringValue("customer"), query.stringValue("circuit"), query.stringValue("date"));
+            Inspection inspection(inspection_uuid);
             if (inspection.exists()) {
-                attributes = inspection.list();
-                modified = false;
+                bool modified = false;
 
                 MTDictionary columns(true);
-                columns.insert(query.stringValue("company"), "0");
-                columns.insert(circuit_id_justified, "0");
-                columns.insert(query.stringValue("date"), "0");
+                columns.insert(query.stringValue("company"), query.value("customer_uuid") != inspection.customerUUID() ? "1" : "0");
+                columns.insert(circuit_id_justified, query.value("circuit_uuid") != inspection.circuitUUID() ? "1" : "0");
+                columns.insert(query.stringValue("date"), query.value("date") != inspection.date() ? "1" : "0");
 
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    attribute = query.value(variable_names.key(i));
-                    attribute_modified = attribute != attributes.value(variable_names.key(i));
+                    QVariant attribute = query.value(variable_names.key(i));
+                    bool attribute_modified = attribute != inspection.value(variable_names.key(i));
                     if (attribute_modified) {
                         modified = true;
                         shown_sections << i + 3;
@@ -3083,7 +3037,7 @@ void MainWindow::importData()
                         last_item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                last_item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                last_item->setCheckState(0, query.stringValue("date_updated") > inspection.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (last_item->checkState(0) == Qt::Unchecked)
                     last_item->setToolTip(0, tr("This record is older than the current record in your database"));
             } else {
@@ -3096,25 +3050,21 @@ void MainWindow::importData()
                 }
                 last_item->setCheckState(0, Qt::Checked);
             }
+
             if (record_locked) {
                 last_item->setCheckState(0, Qt::Unchecked);
                 last_item->setDisabled(true);
                 last_item->setIcon(2, QIcon(":/images/images/locked16.png"));
             } else {
-                last_item->setData(0, Qt::UserRole, query.value("customer"));
-                last_item->setData(1, Qt::UserRole, query.value("circuit"));
-                last_item->setData(2, Qt::UserRole, query.value("date"));
+                last_item->setData(0, Qt::UserRole, inspection_uuid);
             }
         }
 
-        if (last_item && query.intValue("compressor_id")) {
-            MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                                                        QStringList() << query.stringValue("customer") << query.stringValue("circuit")
-                                                        << query.stringValue("date") << query.stringValue("compressor_compressor_id"));
-            InspectionsCompressor inspections_compressor(QString(), inspections_compressor_parents);
-            if (inspections_compressor.exists()) {
-                attributes = inspections_compressor.list();
-                modified = false;
+        QString compressor_uuid = query.stringValue("compressor_uuid");
+        if (last_item && !compressor_uuid.isEmpty()) {
+            InspectionCompressor inspection_compressor(compressor_uuid);
+            if (inspection_compressor.exists()) {
+                bool modified = false;
 
                 MTDictionary columns(true);
                 columns.insert(QString(), "0");
@@ -3122,12 +3072,12 @@ void MainWindow::importData()
                 columns.insert(QString(), "0");
 
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    if (!query.record().contains("compressor_" + variable_names.key(i))) {
+                    if (!record.contains("compressor_" + variable_names.key(i))) {
                         columns.insert(QString(), "0");
                         continue;
                     }
-                    attribute = query.value("compressor_" + variable_names.key(i));
-                    attribute_modified = attribute != attributes.value(variable_names.key(i));
+                    QVariant attribute = query.value("compressor_" + variable_names.key(i));
+                    bool attribute_modified = attribute != inspection_compressor.value(variable_names.key(i));
                     if (attribute_modified) {
                         modified = true;
                         shown_sections << i + 3;
@@ -3135,7 +3085,7 @@ void MainWindow::importData()
                     columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
                 }
 
-                if (modified && query.stringValue("compressor_date_updated") > attributes.value("date_updated").toString()) {
+                if (modified && query.stringValue("compressor_date_updated") > inspection_compressor.stringValue("date_updated")) {
                     QTreeWidgetItem *item = new QTreeWidgetItem(last_item, columns.keys());
                     for (int i = 0; i < columns.count(); ++i) {
                         if (columns.value(i).toInt()) {
@@ -3143,16 +3093,16 @@ void MainWindow::importData()
                             item->setForeground(i, QBrush(Qt::white));
                         }
                     }
-                    item->setData(0, Qt::UserRole, query.value("compressor_compressor_id"));
+                    item->setData(0, Qt::UserRole, compressor_uuid);
                     if (last_item->treeWidget() == NULL)
                         id->modifiedInspections()->addTopLevelItem(last_item);
                 }
             } else {
                 QTreeWidgetItem *item = new QTreeWidgetItem(last_item);
-                item->setData(0, Qt::UserRole, query.value("compressor_compressor_id"));
+                item->setData(0, Qt::UserRole, compressor_uuid);
                 item->setText(1, query.stringValue("compressor_name"));
                 for (int i = 0; i < variable_names.count(); ++i) {
-                    if (!query.record().contains("compressor_" + variable_names.key(i)))
+                    if (!record.contains("compressor_" + variable_names.key(i)))
                         continue;
                     shown_sections << i + 3;
                     item->setText(i + 3, query.stringValue("compressor_" + variable_names.key(i)));
@@ -3162,6 +3112,7 @@ void MainWindow::importData()
             }
         }
     }
+
     for (int i = 0; i < id->modifiedInspections()->columnCount(); ++i) {
         if (!shown_sections.contains(i))
             id->modifiedInspections()->header()->hideSection(i);
@@ -3172,17 +3123,16 @@ void MainWindow::importData()
     while (query.next()) {
         record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem *item = NULL;
-        Repair repair(query.stringValue("date"));
+        QString repair_uuid = query.stringValue("uuid");
+        Repair repair(repair_uuid);
         if (repair.exists()) {
-            attributes = repair.list();
-            modified = false;
+            bool modified = false;
 
             MTDictionary columns(true);
-            columns.insert(query.stringValue("date"), "0");
 
-            for (int i = 1; i < Repair::attributes().count(); ++i) {
-                attribute = query.value(Repair::attributes().key(i));
-                attribute_modified = attribute != attributes.value(Repair::attributes().key(i));
+            for (int i = 0; i < Repair::attributes().count(); ++i) {
+                QVariant attribute = query.value(Repair::attributes().key(i));
+                bool attribute_modified = attribute != repair.value(Repair::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
             }
@@ -3195,25 +3145,25 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > repair.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRepairs());
-            item->setText(0, query.stringValue("date"));
-            for (int i = 1; i < Repair::attributes().count(); ++i) {
+            for (int i = 0; i < Repair::attributes().count(); ++i) {
                 item->setText(i, query.stringValue(Repair::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
         }
+
         if (item) {
             if (record_locked) {
                 item->setCheckState(0, Qt::Unchecked);
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setData(0, Qt::UserRole, query.value("date"));
+                item->setData(0, Qt::UserRole, repair_uuid);
             }
         }
     }
@@ -3223,17 +3173,16 @@ void MainWindow::importData()
     while (query.next()) {
         record_locked = DBInfo::isRecordLocked(query.stringValue("date"));
         QTreeWidgetItem *item = NULL;
-        RefrigerantRecord record(query.stringValue("date"));
+        QString record_uuid = query.stringValue("uuid");
+        RefrigerantRecord record(record_uuid);
         if (record.exists()) {
-            attributes = record.list();
-            modified = false;
+            bool modified = false;
 
             MTDictionary columns(true);
-            columns.insert(query.stringValue("date"), "0");
 
-            for (int i = 1; i < RefrigerantRecord::attributes().count(); ++i) {
-                attribute = query.value(RefrigerantRecord::attributes().key(i));
-                attribute_modified = attribute != attributes.value(RefrigerantRecord::attributes().key(i));
+            for (int i = 0; i < RefrigerantRecord::attributes().count(); ++i) {
+                QVariant attribute = query.value(RefrigerantRecord::attributes().key(i));
+                bool attribute_modified = attribute != record.value(RefrigerantRecord::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
             }
@@ -3246,25 +3195,25 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > record.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
             }
         } else {
             item = new QTreeWidgetItem(id->newRefrigerantManagement());
-            item->setText(0, query.stringValue("date"));
-            for (int i = 1; i < RefrigerantRecord::attributes().count(); ++i) {
+            for (int i = 0; i < RefrigerantRecord::attributes().count(); ++i) {
                 item->setText(i, query.stringValue(RefrigerantRecord::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
         }
+
         if (item) {
             if (record_locked) {
                 item->setCheckState(0, Qt::Unchecked);
                 item->setDisabled(true);
                 item->setIcon(0, QIcon(":/images/images/locked16.png"));
             } else {
-                item->setData(0, Qt::UserRole, query.value("date"));
+                item->setData(0, Qt::UserRole, record_uuid);
             }
         }
     }
@@ -3272,17 +3221,16 @@ void MainWindow::importData()
     // Inspectors
     query.exec("SELECT * FROM inspectors ORDER BY person");
     while (query.next()) {
-        Inspector inspector(query.stringValue("id"));
+        QString inspector_uuid = query.stringValue("uuid");
+        Inspector inspector(inspector_uuid);
         if (inspector.exists()) {
-            attributes = inspector.list();
-            modified = false;
+            bool modified = false;
 
             MTDictionary columns(true);
-            columns.insert(query.stringValue("id").rightJustified(4, '0'), "0");
 
-            for (int i = 1; i < Inspector::attributes().count(); ++i) {
-                attribute = query.value(Inspector::attributes().key(i));
-                attribute_modified = attribute != attributes.value(Inspector::attributes().key(i));
+            for (int i = 0; i < Inspector::attributes().count(); ++i) {
+                QVariant attribute = query.value(Inspector::attributes().key(i));
+                bool attribute_modified = attribute != inspector.value(Inspector::attributes().key(i));
                 if (attribute_modified) modified = true;
                 columns.insert(attribute.toString(), attribute_modified ? "1" : "0");
             }
@@ -3295,21 +3243,21 @@ void MainWindow::importData()
                         item->setForeground(i, QBrush(Qt::white));
                     }
                 }
-                item->setCheckState(0, query.stringValue("date_updated") > attributes.value("date_updated").toString() ? Qt::Checked : Qt::Unchecked);
+                item->setCheckState(0, query.stringValue("date_updated") > inspector.dateUpdated() ? Qt::Checked : Qt::Unchecked);
                 if (item->checkState(0) == Qt::Unchecked)
                     item->setToolTip(0, tr("This record is older than the current record in your database"));
-                item->setData(0, Qt::UserRole, query.value("id"));
+                item->setData(0, Qt::UserRole, inspector_uuid);
             }
         } else {
             QTreeWidgetItem *item = new QTreeWidgetItem(id->newInspectors());
-            item->setText(0, query.stringValue("id").rightJustified(4, '0'));
-            for (int i = 1; i < Inspector::attributes().count(); ++i) {
+            for (int i = 0; i < Inspector::attributes().count(); ++i) {
                 item->setText(i, query.stringValue(Inspector::attributes().key(i)));
             }
             item->setCheckState(0, Qt::Checked);
-            item->setData(0, Qt::UserRole, query.value("id"));
+            item->setData(0, Qt::UserRole, inspector_uuid);
         }
     }
+
     if (id->exec() == QDialog::Accepted) { // BEGIN IMPORT
         UndoCommand command(m_undo_stack, tr("Import database %1").arg(QFileInfo(path).completeBaseName()));
         m_undo_stack->savepoint();
@@ -3325,16 +3273,17 @@ void MainWindow::importData()
             for (int c = 0; c < trw[w]->topLevelItemCount(); ++c) {
                 if (trw[w]->topLevelItem(c)->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString c_id = trw[w]->topLevelItem(c)->data(0, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM customers WHERE id = :id");
-                query.bindValue(":id", c_id);
+                QString customer_uuid = trw[w]->topLevelItem(c)->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM customers WHERE uuid = :uuid");
+                query.bindValue(":uuid", customer_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
-                    Customer(c_id).update(set);
+                    Customer(customer_uuid).update(set);
                 }
             }
         }
@@ -3347,16 +3296,17 @@ void MainWindow::importData()
             for (int p = 0; p < trw[w]->topLevelItemCount(); ++p) {
                 if (trw[w]->topLevelItem(p)->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString p_id = trw[w]->topLevelItem(p)->data(0, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM persons WHERE id = :id");
-                query.bindValue(":id", p_id);
+                QString person_uuid = trw[w]->topLevelItem(p)->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM persons WHERE uuid = :uuid");
+                query.bindValue(":uuid", person_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
-                    Person(p_id).update(set);
+                    Person(person_uuid).update(set);
                 }
             }
         }
@@ -3371,33 +3321,32 @@ void MainWindow::importData()
                 QTreeWidgetItem *item = trw[w]->topLevelItem(cc);
                 if (item->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString cc_parent = item->data(0, Qt::UserRole).toString();
-                QString cc_id = item->data(1, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM circuits WHERE parent = :parent AND id = :id");
-                query.bindValue(":parent", cc_parent);
-                query.bindValue(":id", cc_id);
+                QString circuit_uuid = item->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM circuits WHERE uuid = :uuid");
+                query.bindValue(":uuid", circuit_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
-                    set.remove("parent");
-                    Circuit(cc_parent, cc_id).update(set);
+                    Circuit(circuit_uuid).update(set);
                 }
 
                 for (int c = 0; c < item->childCount(); ++c) {
                     set.clear();
-                    QString c_id = item->child(c)->data(0, Qt::UserRole).toString();
-                    query.prepare("SELECT * FROM compressors WHERE id = :id");
-                    query.bindValue(":id", c_id);
+                    QString compressor_uuid = item->child(c)->data(0, Qt::UserRole).toString();
+                    query.prepare("SELECT * FROM compressors WHERE uuid = :uuid");
+                    query.bindValue(":uuid", compressor_uuid);
                     query.exec();
+                    QSqlRecord record = query.record();
                     if (query.next()) {
-                        for (int f = 0; f < query.record().count(); ++f) {
-                            if (compressors_fields.contains(query.record().fieldName(f)))
-                                set.insert(query.record().fieldName(f), query.value(f));
+                        for (int f = 0; f < record.count(); ++f) {
+                            if (compressors_fields.contains(record.fieldName(f)))
+                                set.insert(record.fieldName(f), query.value(f));
                         }
-                        Compressor(c_id).update(set);
+                        Compressor(compressor_uuid).update(set);
                     }
                 }
             }
@@ -3415,12 +3364,13 @@ void MainWindow::importData()
                 inspections_skip_columns << item->text(1);
                 skip_parent = true;
             } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                VariableRecord record(item->text(1));
+                VariableRecord record(item->data(1, Qt::UserRole).toString());
                 Variable variable(item->text(1));
                 if (!variable.next()) {
                     new_item = new QTreeWidgetItem(trw_variables);
                     new_item->setText(0, item->text(0));
                     new_item->setText(1, item->text(1));
+                    new_item->setData(1, Qt::UserRole, item->data(1, Qt::UserRole));
                     new_item->setText(2, item->text(2));
                     new_item->setText(3, item->text(7));
                 }
@@ -3442,18 +3392,19 @@ void MainWindow::importData()
                 if (skip_parent || current_text == tr("Do not import")) {
                     inspections_skip_columns << subitem->text(1);
                 } else if (current_text == tr("Import") || current_text == tr("Overwrite and import")) {
-                    VariableRecord record(subitem->text(1));
+                    VariableRecord record(subitem->data(1, Qt::UserRole).toString());
                     Variable subvariable(subitem->text(1));
                     if (new_item != NULL && !subvariable.next()) {
                         QTreeWidgetItem *new_subitem = new QTreeWidgetItem(new_item);
                         new_subitem->setText(0, subitem->text(0));
                         new_subitem->setText(1, subitem->text(1));
+                        new_subitem->setData(1, Qt::UserRole, subitem->data(1, Qt::UserRole));
                         new_subitem->setText(2, subitem->text(2));
                         new_subitem->setText(3, subitem->text(7));
                     }
                     set.clear();
                     set.insert("name", subitem->text(0));
-                    set.insert("parent_id", item->text(1));
+                    set.insert("parent_uuid", item->data(1, Qt::UserRole).toString());
                     set.insert("id", subitem->text(1));
                     set.insert("unit", subitem->text(2));
                     set.insert("type", subitem->data(3, Qt::UserRole));
@@ -3465,62 +3416,49 @@ void MainWindow::importData()
                 }
             }
         }
-        inspections_skip_columns << "customer" << "circuit" << "inspection_type";
+        inspections_skip_columns << "inspection_type";
 
         // Import inspections
         trw[0] = id->newInspections();
         trw[1] = id->modifiedInspections();
-        QSet<QString> inspections_compressors_fields = InspectionsCompressor::columns().columnNameSet();
+        QSet<QString> inspections_compressors_fields = InspectionCompressor::columns().columnNameSet();
         inspections_compressors_fields.unite(QSet<QString>::fromList(compressor_variable_names));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0, j = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 QTreeWidgetItem *item = trw[w]->topLevelItem(i);
                 if (item->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString i_customer = item->data(0, Qt::UserRole).toString();
-                QString i_circuit = item->data(1, Qt::UserRole).toString();
-                QString i_date = item->data(2, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM inspections WHERE customer = :customer AND circuit = :circuit AND date = :date");
-                query.bindValue(":customer", i_customer);
-                query.bindValue(":circuit", i_circuit);
-                query.bindValue(":date", i_date);
+                QString inspection_uuid = item->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM inspections WHERE uuid = :uuid");
+                query.bindValue(":uuid", inspection_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    set.insert("inspection_type", query.value(query.record().indexOf("inspection_type")).toInt()); // NOT NULL
+                    set.insert("inspection_type", query.value(record.indexOf("inspection_type")).toInt()); // NOT NULL
 
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (!inspections_skip_columns.contains(query.record().fieldName(f))) {
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (!inspections_skip_columns.contains(record.fieldName(f))) {
+                            set.insert(record.fieldName(f), query.value(f));
                         }
                     }
                 }
-                Inspection(i_customer, i_circuit, i_date).update(set, j == 0);
+                Inspection(inspection_uuid).update(set, j == 0);
                 j++;
 
                 for (int c = 0; c < item->childCount(); ++c) {
                     set.clear();
-                    QString c_id = item->child(c)->data(0, Qt::UserRole).toString();
-                    query.prepare("SELECT * FROM inspections_compressors WHERE customer_id = :customer_id AND circuit_id = :circuit_id AND date = :date AND compressor_id = :compressor_id");
-                    query.bindValue(":customer_id", i_customer);
-                    query.bindValue(":circuit_id", i_circuit);
-                    query.bindValue(":date", i_date);
-                    query.bindValue(":compressor_id", c_id);
+                    QString compressor_uuid = item->child(c)->data(0, Qt::UserRole).toString();
+                    query.prepare("SELECT * FROM inspections_compressors WHERE uuid = :uuid");
+                    query.bindValue(":uuid", compressor_uuid);
                     query.exec();
+                    QSqlRecord record = query.record();
                     if (query.next()) {
-                        for (int f = 0; f < query.record().count(); ++f) {
-                            if (inspections_compressors_fields.contains(query.record().fieldName(f))
-                                && !inspections_skip_columns.contains(query.record().fieldName(f)))
-                                set.insert(query.record().fieldName(f), query.value(f));
+                        for (int f = 0; f < record.count(); ++f) {
+                            if (inspections_compressors_fields.contains(record.fieldName(f))
+                                && !inspections_skip_columns.contains(record.fieldName(f)))
+                                set.insert(record.fieldName(f), query.value(f));
                         }
-                        set.remove("id");
-                        set.remove("customer_id");
-                        set.remove("circuit_id");
-                        set.remove("date");
-                        set.remove("compressor_id");
-                        MTDictionary inspections_compressor_parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                                                                    QStringList() << i_customer << i_circuit << i_date << c_id);
-                        InspectionsCompressor inspections_compressor(QString(), inspections_compressor_parents);
-                        inspections_compressor.update(set, false, inspections_compressor.exists());
+                        InspectionCompressor(compressor_uuid).update(set);
                     }
                 }
             }
@@ -3534,17 +3472,18 @@ void MainWindow::importData()
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString r_date = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM repairs WHERE date = :date");
-                query.bindValue(":date", r_date);
+                QString repair_uuid = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM repairs WHERE uuid = :uuid");
+                query.bindValue(":uuid", repair_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
-                Repair(r_date).update(set);
+                Repair(repair_uuid).update(set);
             }
         }
 
@@ -3556,17 +3495,18 @@ void MainWindow::importData()
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString r_date = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM refrigerant_management WHERE date = :date");
-                query.bindValue(":date", r_date);
+                QString record_uuid = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM refrigerant_management WHERE uuid = :uuid");
+                query.bindValue(":uuid", record_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
-                RefrigerantRecord(r_date).update(set);
+                RefrigerantRecord(record_uuid).update(set);
             }
         }
 
@@ -3578,17 +3518,18 @@ void MainWindow::importData()
             for (int i = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 if (trw[w]->topLevelItem(i)->checkState(0) == Qt::Unchecked) { continue; }
                 set.clear();
-                QString i_id = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
-                query.prepare("SELECT * FROM inspectors WHERE id = :id");
-                query.bindValue(":id", i_id);
+                QString inspector_uuid = trw[w]->topLevelItem(i)->data(0, Qt::UserRole).toString();
+                query.prepare("SELECT * FROM inspectors WHERE uuid = :uuid");
+                query.bindValue(":uuid", inspector_uuid);
                 query.exec();
+                QSqlRecord record = query.record();
                 if (query.next()) {
-                    for (int f = 0; f < query.record().count(); ++f) {
-                        if (fields.contains(query.record().fieldName(f)))
-                            set.insert(query.record().fieldName(f), query.value(f));
+                    for (int f = 0; f < record.count(); ++f) {
+                        if (fields.contains(record.fieldName(f)))
+                            set.insert(record.fieldName(f), query.value(f));
                     }
                 }
-                Inspector(i_id).update(set);
+                Inspector(inspector_uuid).update(set);
             }
         }
         setDatabaseModified(true);
@@ -3613,7 +3554,8 @@ void MainWindow::importCSV()
 
     QList<ImportDialogueTable *> tables;
     ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Company"), "company", ImportDialogueTableColumn::Text);
     table->addColumn(tr("E-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Phone"), "phone", ImportDialogueTableColumn::Text);
@@ -3622,14 +3564,14 @@ void MainWindow::importCSV()
     table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
     tables.append(table);
 
-    table = table->addChildTableTemplate(tr("Contact persons"), "persons", MTDictionary("id", "company_id"), true);
+    table = table->addChildTableTemplate(tr("Contact persons"), "persons", {"uuid", "customer_uuid"});
     table->addColumn(tr("Contact person name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
     ImportDialogueTable *circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
     circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
-    circuits_table->addForeignKeyColumn(tr("Customer ID"), "parent", "id", "customers");
+    circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "customers");
     circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
@@ -3666,20 +3608,18 @@ void MainWindow::importCSV()
         col->addSelectValue(string_value.toLower(), string_value);
     tables.append(circuits_table);
 
-    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors",
-        MTDictionary(QStringList() << "parent" << "id", QStringList() << "customer_id" << "circuit_id"), true);
+    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", {"uuid", "circuit_uuid"});
     table->addColumn(tr("Compressor name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
 
-    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units",
-        MTDictionary(QStringList() << "parent" << "id", QStringList() << "company_id" << "circuit_id"), true);
-    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_id", "id", "circuit_unit_types");
+    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", {"uuid", "circuit_uuid"});
+    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_uuid", "circuit_unit_types");
     table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
@@ -3705,7 +3645,7 @@ void MainWindow::importCSV()
     tables.append(table);
 
     table = new ImportDialogueTable(tr("Assembly record item types"), "assembly_record_item_types");
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Unit"), "unit", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
@@ -3719,7 +3659,7 @@ void MainWindow::importCSV()
     col->addSelectValue(tr("long text"), QString::number(Global::Text));
     col->addSelectValue(tr("boolean"), QString::number(Global::Boolean));
     table->addColumn(tr("Automatically add to assembly record"), "auto_show", ImportDialogueTableColumn::Boolean);
-    table->addForeignKeyColumn(tr("Category ID"), "category_id", "id", "assembly_record_item_categories");
+    table->addForeignKeyColumn(tr("Category ID"), "ar_item_category_uuid", "assembly_record_item_categories");
     tables.append(table);
 
     ImportCsvDialogue id(path, tables, this);
@@ -3747,7 +3687,7 @@ void MainWindow::addAssemblyRecordType()
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordType(record.uuid(), true);
     }
 }
 
@@ -3755,20 +3695,12 @@ void MainWindow::editAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordTypeSelected()) { return; }
-    QString old_id = m_tab->selectedAssemblyRecordType();
-    AssemblyRecordType record(old_id);
+    AssemblyRecordType record(m_tab->selectedAssemblyRecordTypeUUID());
     UndoCommand command(m_undo_stack, tr("Edit assembly record type %1").arg(record.stringValue("name")));
     EditAssemblyRecordDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            MTSqlQuery update_ar_type;
-            update_ar_type.prepare("UPDATE inspections SET ar_type = :new_id WHERE ar_type = :old_id");
-            update_ar_type.bindValue(":old_id", old_id);
-            update_ar_type.bindValue(":new_id", record.id());
-            update_ar_type.exec();
-        }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordType(record.id().toInt(), false);
+        m_tab->loadAssemblyRecordType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3777,13 +3709,11 @@ void MainWindow::removeAssemblyRecordType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordTypeSelected()) { return; }
-    QString sel_record = m_tab->selectedAssemblyRecordType();
+    AssemblyRecordType record(m_tab->selectedAssemblyRecordTypeUUID());
     if (RemoveDialogue::confirm(this, tr("Remove assembly record type - Leaklog"),
                                 tr("Are you sure you want to remove the selected assembly record type?\nTo remove all data about the record \"%1\" type REMOVE and confirm:")
-                                .arg(sel_record)) != QDialog::Accepted)
+                                .arg(record.name())) != QDialog::Accepted)
         return;
-
-    AssemblyRecordType record(sel_record);
 
     UndoCommand command(m_undo_stack, tr("Remove assembly record type %1").arg(record.stringValue("name")));
     m_undo_stack->savepoint();
@@ -3798,14 +3728,15 @@ void MainWindow::removeAssemblyRecordType()
 void MainWindow::addAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!m_tab->isAssemblyRecordItemCategorySelected() || m_tab->selectedAssemblyRecordItemCategory().toInt() >= 1000) { return; }
-    AssemblyRecordItemType record("");
-    record.setValue("category_id", m_tab->selectedAssemblyRecordItemCategory().toInt());
+    if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
+    if (AssemblyRecordItemCategory::isPredefined(m_tab->selectedAssemblyRecordItemCategoryUUID())) { return; }
+    AssemblyRecordItemType record;
+    record.setValue("ar_item_category_uuid", m_tab->selectedAssemblyRecordItemCategoryUUID());
     UndoCommand command(m_undo_stack, tr("Add assembly record item type"));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemType(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemType(record.uuid(), true);
     }
 }
 
@@ -3813,21 +3744,12 @@ void MainWindow::editAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
-    QString old_id = m_tab->selectedAssemblyRecordItemType();
-    AssemblyRecordItemType record(old_id);
+    AssemblyRecordItemType record(m_tab->selectedAssemblyRecordItemTypeUUID());
     UndoCommand command(m_undo_stack, tr("Edit assembly record item type %1").arg(record.stringValue("name")));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            MTSqlQuery update_ar_items;
-            update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
-                                    .arg(AssemblyRecordItem::AssemblyRecordItemTypes));
-            update_ar_items.bindValue(":old_id", old_id);
-            update_ar_items.bindValue(":new_id", record.id());
-            update_ar_items.exec();
-        }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemType(record.id().toInt(), false);
+        m_tab->loadAssemblyRecordItemType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3836,13 +3758,11 @@ void MainWindow::removeAssemblyRecordItemType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemTypeSelected()) { return; }
-    QString sel_record = m_tab->selectedAssemblyRecordItemType();
+    AssemblyRecordItemType record(m_tab->selectedAssemblyRecordItemTypeUUID());
     if (RemoveDialogue::confirm(this, tr("Remove assembly record item type - Leaklog"),
                                 tr("Are you sure you want to remove the selected assembly record item type?\nTo remove all data about the record item \"%1\" type REMOVE and confirm:")
-                                .arg(sel_record)) != QDialog::Accepted)
+                                .arg(record.name())) != QDialog::Accepted)
         return;
-
-    AssemblyRecordItemType record(sel_record);
 
     UndoCommand command(m_undo_stack, tr("Remove assembly record item type %1").arg(record.stringValue("name")));
     m_undo_stack->savepoint();
@@ -3857,12 +3777,12 @@ void MainWindow::removeAssemblyRecordItemType()
 void MainWindow::addAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    AssemblyRecordItemCategory record("");
+    AssemblyRecordItemCategory record;
     UndoCommand command(m_undo_stack, tr("Add assembly record item category"));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), true);
+        m_tab->loadAssemblyRecordItemCategory(record.uuid(), true);
     }
 }
 
@@ -3870,30 +3790,12 @@ void MainWindow::editAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
-    QString old_id = m_tab->selectedAssemblyRecordItemCategory();
-    AssemblyRecordItemCategory record(old_id);
-    UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.stringValue("name")));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this, 1000);
+    AssemblyRecordItemCategory record(m_tab->selectedAssemblyRecordItemCategoryUUID());
+    UndoCommand command(m_undo_stack, tr("Edit assembly record item category %1").arg(record.name()));
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            MTSqlQuery update_ar_item_types;
-            update_ar_item_types.prepare("UPDATE assembly_record_item_types SET category_id = :new_id WHERE category_id = :old_id");
-            update_ar_item_types.bindValue(":old_id", old_id);
-            update_ar_item_types.bindValue(":new_id", record.id());
-            update_ar_item_types.exec();
-            MTSqlQuery update_ar_type_categories;
-            update_ar_type_categories.prepare("UPDATE assembly_record_type_categories SET record_category_id = :new_id WHERE record_category_id = :old_id");
-            update_ar_type_categories.bindValue(":old_id", old_id);
-            update_ar_type_categories.bindValue(":new_id", record.id());
-            update_ar_type_categories.exec();
-            MTSqlQuery update_ar_items;
-            update_ar_items.prepare("UPDATE assembly_record_items SET category_id = :new_id WHERE category_id = :old_id");
-            update_ar_items.bindValue(":old_id", old_id);
-            update_ar_items.bindValue(":new_id", record.id());
-            update_ar_items.exec();
-        }
         setDatabaseModified(true);
-        m_tab->loadAssemblyRecordItemCategory(record.id().toInt(), false);
+        m_tab->loadAssemblyRecordItemCategory(record.uuid(), false);
         refreshView();
     }
 }
@@ -3902,15 +3804,15 @@ void MainWindow::removeAssemblyRecordItemCategory()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isAssemblyRecordItemCategorySelected()) { return; }
-    QString sel_category = m_tab->selectedAssemblyRecordItemCategory();
+
+    AssemblyRecordItemCategory category(m_tab->selectedAssemblyRecordItemCategoryUUID());
+
     if (RemoveDialogue::confirm(this, tr("Remove assembly record item category - Leaklog"),
                                 tr("Are you sure you want to remove the selected assembly record item category?\nTo remove all data about the item category \"%1\" type REMOVE and confirm:")
-                                .arg(sel_category)) != QDialog::Accepted)
+                                .arg(category.name())) != QDialog::Accepted)
         return;
 
-    AssemblyRecordItemCategory category(sel_category);
-
-    UndoCommand command(m_undo_stack, tr("Remove assembly record item category %1").arg(category.stringValue("name")));
+    UndoCommand command(m_undo_stack, tr("Remove assembly record item category %1").arg(category.name()));
     m_undo_stack->savepoint();
 
     category.remove();
@@ -3923,12 +3825,12 @@ void MainWindow::removeAssemblyRecordItemCategory()
 void MainWindow::addCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    CircuitUnitType unit_type("");
+    CircuitUnitType unit_type;
     UndoCommand command(m_undo_stack, tr("Add circuit unit type"));
-    EditDialogueWithAutoId md(&unit_type, m_undo_stack, this);
+    EditDialogue md(&unit_type, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
-        m_tab->loadCircuitUnitType(unit_type.id().toInt(), true);
+        m_tab->loadCircuitUnitType(unit_type.uuid(), true);
     }
 }
 
@@ -3936,26 +3838,12 @@ void MainWindow::editCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCircuitUnitTypeSelected()) { return; }
-    QString old_id = m_tab->selectedCircuitUnitType();
-    CircuitUnitType record(old_id);
+    CircuitUnitType record(m_tab->selectedCircuitUnitTypeUUID());
     UndoCommand command(m_undo_stack, tr("Edit circuit unit type %1").arg(record.stringValue("type")));
-    EditDialogueWithAutoId md(&record, m_undo_stack, this);
+    EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        if (old_id != record.id()) {
-            MTSqlQuery update_circuit_units;
-            update_circuit_units.prepare("UPDATE circuit_units SET unit_type_id = :new_id WHERE unit_type_id = :old_id");
-            update_circuit_units.bindValue(":old_id", old_id);
-            update_circuit_units.bindValue(":new_id", record.id());
-            update_circuit_units.exec();
-            MTSqlQuery update_ar_items;
-            update_ar_items.prepare(QString("UPDATE assembly_record_items SET item_type_id = :new_id WHERE item_type_id = :old_id AND source = %1")
-                                    .arg(AssemblyRecordItem::CircuitUnitTypes));
-            update_ar_items.bindValue(":old_id", old_id);
-            update_ar_items.bindValue(":new_id", record.id());
-            update_ar_items.exec();
-        }
         setDatabaseModified(true);
-        m_tab->loadCircuitUnitType(record.id().toInt(), false);
+        m_tab->loadCircuitUnitType(record.uuid(), false);
         refreshView();
     }
 }
@@ -3964,13 +3852,13 @@ void MainWindow::removeCircuitUnitType()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCircuitUnitTypeSelected()) { return; }
-    QString sel_unit_type = m_tab->selectedCircuitUnitType();
+
+    CircuitUnitType unit_type(m_tab->selectedCircuitUnitTypeUUID());
+
     if (RemoveDialogue::confirm(this, tr("Remove circuit unit type - Leaklog"),
                                 tr("Are you sure you want to remove the selected circuit unit type?\nTo remove all data about the unit type \"%1\" type REMOVE and confirm:")
-                                .arg(sel_unit_type)) != QDialog::Accepted)
+                                .arg(unit_type.stringValue("type"))) != QDialog::Accepted)
         return;
-
-    CircuitUnitType unit_type(sel_unit_type);
 
     UndoCommand command(m_undo_stack, tr("Remove circuit unit type %1").arg(unit_type.stringValue("type")));
     m_undo_stack->savepoint();
@@ -3987,19 +3875,13 @@ void MainWindow::addStyle()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_style")) { return; }
 
-    MTSqlQuery query("SELECT MAX(id) FROM styles");
-    if (!query.last()) return;
-
-    int id = query.value(0).toInt() + 1;
-
-    Style record(QString::number(id));
+    Style record;
     UndoCommand command(m_undo_stack, tr("Add style"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("id, name");
         QListWidgetItem *item = new QListWidgetItem;
-        item->setText(attributes.value("name").toString());
-        item->setData(Qt::UserRole, attributes.value("id"));
+        item->setText(record.name());
+        item->setData(Qt::UserRole, record.uuid());
         lw_styles->addItem(item);
         setDatabaseModified(true);
         refreshView();
@@ -4013,12 +3895,10 @@ void MainWindow::editStyle()
     if (!isOperationPermitted("edit_style")) { return; }
     QListWidgetItem *item = lw_styles->currentItem();
     Style record(item->data(Qt::UserRole).toString());
-    UndoCommand command(m_undo_stack, tr("Edit style %1").arg(record.stringValue("name")));
+    UndoCommand command(m_undo_stack, tr("Edit style %1").arg(record.name()));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
-        QVariantMap attributes = record.list("id, name");
-        item->setText(attributes.value("name").toString());
-        item->setData(Qt::UserRole, attributes.value("id"));
+        item->setText(record.name());
         setDatabaseModified(true);
         refreshView();
     }

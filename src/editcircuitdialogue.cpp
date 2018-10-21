@@ -21,7 +21,6 @@
 
 #include "global.h"
 #include "records.h"
-#include "mtdictionary.h"
 #include "inputwidgets.h"
 #include "editcircuitdialoguecompressorstab.h"
 #include "editcircuitdialogueunitstab.h"
@@ -41,7 +40,7 @@ EditCircuitDialogueNotesTab::EditCircuitDialogueNotesTab(MDAbstractInputWidget *
     layout->addWidget(notes->widget());
 }
 
-void EditCircuitDialogueNotesTab::save(const QVariant &)
+void EditCircuitDialogueNotesTab::save(const QString &)
 {
 }
 
@@ -50,10 +49,10 @@ EditCircuitDialogue::EditCircuitDialogue(DBRecord *record, UndoStack *undo_stack
 {
     main_tabw->setTabText(0, tr("Cooling circuit"));
 
-    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueCompressorsTab *compressors_tab = new EditCircuitDialogueCompressorsTab(md_record->uuid(), this);
     addTab(compressors_tab);
 
-    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->parent("parent"), idFieldValue().toString(), this);
+    EditCircuitDialogueUnitsTab *units_tab = new EditCircuitDialogueUnitsTab(md_record->uuid(), this);
     QObject::connect(units_tab, SIGNAL(updateCircuit(const QVariantMap &)), this, SLOT(updateCircuit(const QVariantMap &)));
     addTab(units_tab);
 

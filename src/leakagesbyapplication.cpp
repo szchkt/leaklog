@@ -35,9 +35,8 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
     Q_ASSERT(tables.count() == TableCount);
 
     MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
-                           " FROM inspections LEFT JOIN circuits ON inspections.circuit = circuits.id"
-                           " AND inspections.customer = circuits.parent"
-                           " WHERE (inspections.nominal <> 1 OR inspections.nominal IS NULL)");
+                           " FROM inspections LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
+                           " WHERE inspections.inspection_type <> 1");
 
     int current_year = QDate::currentDate().year();
 
@@ -64,13 +63,12 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
         addToValues(Key(year), RefrigerantAddition, refr_add_am);
     }
 
-    MTDictionary nominal_inspection_parents("nominal", "1");
+    QVariantMap nominal_inspection_parents = {{"inspection_type", Inspection::NominalInspection}};
 
-    MTSqlQuery circuits("SELECT parent, id, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
+    MTSqlQuery circuits("SELECT uuid, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
 
     while (circuits.next()) {
-        QString customer_id = circuits.stringValue("parent");
-        QString circuit_id = circuits.stringValue("id");
+        QString circuit_uuid = circuits.stringValue("uuid");
         QString refrigerant = circuits.stringValue("refrigerant");
         QString field = circuits.stringValue("field");
         double refrigerant_amount = circuits.doubleValue("refrigerant_amount");
@@ -92,9 +90,8 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
         for (int year = qMax(commissioning_year, min_year); year <= max_year; ++year)
             refrigerant_amounts[year - min_year] = refrigerant_amount;
 
-        nominal_inspection_parents.insert("customer", customer_id);
-        nominal_inspection_parents.insert("circuit", circuit_id);
-        ListOfVariantMaps nominal_inspections = MTRecord("inspections", "date", "", nominal_inspection_parents)
+        nominal_inspection_parents.insert("circuit_uuid", circuit_uuid);
+        ListOfVariantMaps nominal_inspections = Inspection::query(nominal_inspection_parents)
                 .listAll("date, refr_add_am, refr_reco", "date ASC");
 
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {

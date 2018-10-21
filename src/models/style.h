@@ -27,11 +27,19 @@ class Style : public DBRecord
     Q_OBJECT
 
 public:
-    Style(const QString & = QString());
+    Style(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    inline QString content() { return stringValue("content"); }
+    inline void setContent(const QString &value) { setValue("content", value); }
+    inline bool usesDivElements() { return intValue("div_tables"); }
+    inline void setUsesDivElements(bool value) { setValue("div_tables", (int)value); }
+
     static QString tableName();
+    static inline MTRecordQuery<Style> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Style>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

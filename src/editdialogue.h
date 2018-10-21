@@ -52,8 +52,6 @@ protected:
     void init(DBRecord *);
     virtual void addMainGridLayout(QVBoxLayout *);
 
-    virtual const QVariant idFieldValue();
-
     DBRecord *md_record;
     UndoStack *md_undo_stack;
     QGridLayout *md_grid_main;

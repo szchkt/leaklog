@@ -131,17 +131,23 @@ void ToolBarStack::scaleFactorChanged()
 {
     QString style;
 #ifdef Q_OS_MAC
-    bool isYosemite = macVersion() >= QSysInfo::MV_10_0 + 10;
-    style += QString(".QWidget { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 %1, stop: 1 %2);"
-                                "color: white; border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px; }"
-                     "QToolButton { border-color: %3; border-style: solid; border-width: 1px; border-radius: 3px; min-height: 16px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, %4); }"
-                     "QToolButton:pressed { color: white; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, %5); %6}")
-                     .arg(isYosemite ? "#F6F6F6" : "#F5F5F5")
-                     .arg(isYosemite ? "#E2E2E2" : "#CDCDCD")
-                     .arg(isYosemite ? "#ACACAC" : "#888888")
-                     .arg(isYosemite ? "stop: 0 #FFFFFF, stop: 1 #F0F0F0" : "stop: 0 #F9F9F9, stop: 1 #D6D6D6")
-                     .arg(isYosemite ? "stop: 0 #4A96FD, stop: 1 #0867E4" : "stop: 0 #6F6F6F, stop: 1 #9C9C9C")
-                     .arg(isYosemite ? "border-color: #125FEE; " : "");
+    style += R"(
+        .QWidget {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F6F6F6, stop: 1 #E2E2E2);
+            color: white;
+            border-color: #A9A9A9; border-style: solid; border-width: 0px 0px 1px 0px;
+        }
+        QToolButton {
+            border-color: #ACACAC; border-style: solid; border-width: 1px; border-radius: 3px;
+            min-height: 16px;
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0);
+        }
+        QToolButton:pressed {
+            color: white;
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4A96FD, stop: 1 #0867E4);
+            border-color: #125FEE;
+        }
+    )";
 #else
     double scale = scaleFactor();
     style += QString(".QWidget { background-color: #F0F0F0; color: white; border-color: #A0A0A0; border-style: solid; border-width: 0px 0px 1px 1px; }");
@@ -238,12 +244,10 @@ void ToolBarStack::viewChanged(View::ViewID view)
         case View::Inspections:
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("Inspection", "Contact person"), "operator");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Risks"), "risks");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Remedies"), "rmds");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Notes"), "notes");
             cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record No."), "arno");
-            cb_filter_column->addItem(QApplication::translate("Inspection", "Assembly record type"), "ar_type");
             break;
         case View::Repairs:
             filter_since_visible = true;
@@ -270,7 +274,6 @@ void ToolBarStack::viewChanged(View::ViewID view)
             filter_all_circuits_visible = true;
             break;
         case View::Agenda:
-            cb_filter_column->addItem(QApplication::translate("Customer", "ID"), "parent");
             goto updateView_ListOfCircuits_CircuitAttributes;
             break;
         case View::OperatorReport:
@@ -300,9 +303,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
         case View::AssemblyRecords:
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Inspector certificate number"), "inspector");
             cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record No."), "arno");
-            cb_filter_column->addItem(QApplication::translate("AssemblyRecord", "Assembly record type ID"), "ar_type");
             break;
         case View::AssemblyRecordDetails:
             assembly_record_widgets_visible = true;
@@ -393,28 +394,26 @@ void ToolBarStack::monthUntilChanged(int value)
 void ToolBarStack::enableTools()
 {
     if (_settings->isInspectorSelected()) {
-        Inspector inspector(_settings->selectedInspector());
-        inspector.readValues("person");
+        Inspector inspector(_settings->selectedInspectorUUID());
 
         QStringList description;
-        description << _settings->selectedInspector().rightJustified(4, '0');
-        if (!inspector.stringValue("person").isEmpty())
-            description << QString("<b>%1</b>").arg(escapeString(inspector.stringValue("person")));
+        description << inspector.certificateNumber();
+        if (!inspector.personName().isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(inspector.personName()));
 
         lbl_inspector->setText(tr("Inspector: %1").arg(description.join(", ")));
     }
     widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails || _view == View::OperatorReport) && _settings->isInspectorSelected());
 
     if (_settings->isCustomerSelected()) {
-        Customer customer(_settings->selectedCustomer());
-        customer.readValues("company, address");
+        Customer customer(_settings->selectedCustomerUUID());
 
         QStringList description;
-        description << formatCompanyID(_settings->selectedCustomer());
-        if (!customer.stringValue("company").isEmpty())
-            description << QString("<b>%1</b>").arg(escapeString(customer.stringValue("company")));
+        description << customer.companyID();
+        if (!customer.companyName().isEmpty())
+            description << QString("<b>%1</b>").arg(escapeString(customer.companyName()));
 
-        MTAddress address(customer.stringValue("address"));
+        MTAddress address(customer.address());
         if (!address.isEmpty())
             description << address.toHtml();
 
@@ -430,31 +429,32 @@ void ToolBarStack::enableTools()
                                  _view == View::AssemblyRecordDetails) &&
                                 _settings->isCustomerSelected());
 
-    if (_settings->isRepairSelected())
-        lbl_repair->setText(tr("Repair: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(_settings->selectedRepair())));
+    if (_settings->isRepairSelected()) {
+        Repair repair(_settings->selectedRepairUUID());
+        lbl_repair->setText(tr("Repair: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(repair.date())));
+    }
     widget_repair->setVisible(_view == View::Repairs && _settings->isRepairSelected());
 
     if (_settings->isCircuitSelected()) {
         QStringList attributes;
         attributes << "name" << "operation" << "building" << "device";
 
-        Circuit circuit(_settings->selectedCustomer(), _settings->selectedCircuit());
-        circuit.readValues(attributes.join(", ") + ", field, refrigerant, " + circuitRefrigerantAmountQuery());
+        QVariantMap circuit = Circuit(_settings->selectedCircuitUUID()).list(attributes.join(", ") + ", id, field, refrigerant, " + circuitRefrigerantAmountQuery());
 
         QStringList description;
-        description << _settings->selectedCircuit().rightJustified(5, '0');
+        description << circuit.value("id").toString().rightJustified(5, '0');
 
         foreach (const QString &attribute, attributes)
-            if (!circuit.stringValue(attribute).isEmpty())
-                description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.stringValue(attribute)));
+            if (!circuit.value(attribute).toString().isEmpty())
+                description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.value(attribute).toString()));
 
-        if (attributeValues().contains("field::" + circuit.stringValue("field")))
-            description << attributeValues().value("field::" + circuit.stringValue("field"));
+        if (attributeValues().contains("field::" + circuit.value("field").toString()))
+            description << attributeValues().value("field::" + circuit.value("field").toString());
 
         description << QString("%L1 %2 %3")
-                       .arg(FLOAT_ARG(circuit.doubleValue("refrigerant_amount")))
+                       .arg(FLOAT_ARG(circuit.value("refrigerant_amount").toDouble()))
                        .arg(QApplication::translate("Units", "kg"))
-                       .arg(circuit.stringValue("refrigerant"));
+                       .arg(circuit.value("refrigerant").toString());
 
         lbl_circuit->setText(tr("Circuit: %1").arg(description.join(", ")));
     }
@@ -466,8 +466,10 @@ void ToolBarStack::enableTools()
                                 _view == View::AssemblyRecordDetails) &&
                                _settings->isCircuitSelected());
 
-    if (_settings->isInspectionSelected())
-        lbl_inspection->setText(tr("Inspection: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(_settings->selectedInspection())));
+    if (_settings->isInspectionSelected()) {
+        Inspection inspection(_settings->selectedInspectionUUID());
+        lbl_inspection->setText(tr("Inspection: <b>%1</b>").arg(_settings->mainWindowSettings().formatDateTime(inspection.date())));
+    }
     widget_inspection->setVisible((_view == View::Inspections ||
                                    _view == View::InspectionDetails ||
                                    _view == View::InspectionImages ||
@@ -476,53 +478,35 @@ void ToolBarStack::enableTools()
                                   _settings->isInspectionSelected());
 
     if (_settings->isAssemblyRecordTypeSelected()) {
-        AssemblyRecordType type(_settings->selectedAssemblyRecordType());
-        type.readValues("name");
+        AssemblyRecordType type(_settings->selectedAssemblyRecordTypeUUID());
 
-        QStringList description;
-        description << _settings->selectedAssemblyRecordType();
-        if (!type.stringValue("name").isEmpty())
-            description << QString("<b>%1</b>").arg(escapeString(type.stringValue("name")));
-
-        lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(description.join(", ")));
+        lbl_ar_type->setText(tr("Assembly Record Type: %1").arg(QString("<b>%1</b>").arg(escapeString(type.name()))));
     }
     widget_ar_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                && _settings->isAssemblyRecordTypeSelected());
 
+    bool selectedItemCategoryIsPredefined = false;
     if (_settings->isAssemblyRecordItemCategorySelected()) {
-        AssemblyRecordItemCategory category(_settings->selectedAssemblyRecordItemCategory());
-        category.readValues("name");
+        AssemblyRecordItemCategory category(_settings->selectedAssemblyRecordItemCategoryUUID());
+        selectedItemCategoryIsPredefined = category.isPredefined();
 
-        QStringList description;
-        description << _settings->selectedAssemblyRecordItemCategory();
-        if (!category.stringValue("name").isEmpty())
-            description << QString("<b>%1</b>").arg(escapeString(category.stringValue("name")));
-
-        lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(description.join(", ")));
+        lbl_ar_item_category->setText(tr("Assembly Record Item Category: %1").arg(QString("<b>%1</b>").arg(escapeString(category.name()))));
     }
     widget_ar_item_category->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                         && _settings->isAssemblyRecordItemCategorySelected());
 
     if (_settings->isAssemblyRecordItemTypeSelected()) {
-        AssemblyRecordItemType item_type(_settings->selectedAssemblyRecordItemType());
-        item_type.readValues("name");
+        AssemblyRecordItemType item_type(_settings->selectedAssemblyRecordItemTypeUUID());
 
-        QStringList description;
-        description << _settings->selectedAssemblyRecordItemType();
-        if (!item_type.stringValue("name").isEmpty())
-            description << QString("<b>%1</b>").arg(escapeString(item_type.stringValue("name")));
-
-        lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(description.join(", ")));
+        lbl_ar_item_type->setText(tr("Assembly Record Item Type: %1").arg(QString("<b>%1</b>").arg(escapeString(item_type.name()))));
     }
     widget_ar_item_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
                                     && _settings->isAssemblyRecordItemTypeSelected());
 
     if (_settings->isCircuitUnitTypeSelected()) {
-        CircuitUnitType unit_type(_settings->selectedCircuitUnitType());
-        unit_type.readValues("manufacturer, type, refrigerant, refrigerant_amount");
+        CircuitUnitType unit_type(_settings->selectedCircuitUnitTypeUUID());
 
         QStringList description;
-        description << _settings->selectedCircuitUnitType();
         if (!unit_type.stringValue("manufacturer").isEmpty())
             description << QString("<b>%1</b>").arg(escapeString(unit_type.stringValue("manufacturer")));
         if (!unit_type.stringValue("type").isEmpty())
@@ -535,7 +519,7 @@ void ToolBarStack::enableTools()
 
         lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(description.join(", ")));
     }
-    widget_circuit_unit_type->setVisible(_view >= View::AssemblyRecordsRelated && _view <= View::AssemblyRecordsRelatedEnd
+    widget_circuit_unit_type->setVisible(_view == View::CircuitUnitTypes
                                          && _settings->isCircuitUnitTypeSelected());
 
     tbtn_edit_inspector->setEnabled(_settings->isInspectorSelected());
@@ -550,7 +534,7 @@ void ToolBarStack::enableTools()
     tbtn_remove_inspection->setEnabled(_settings->isInspectionSelected());
     tbtn_edit_assembly_record_type->setEnabled(_settings->isAssemblyRecordTypeSelected());
     tbtn_remove_assembly_record_type->setEnabled(_settings->isAssemblyRecordTypeSelected());
-    tbtn_add_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemCategorySelected() && _settings->selectedAssemblyRecordItemCategory().toInt() < 1000);
+    tbtn_add_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemCategorySelected() && !selectedItemCategoryIsPredefined);
     tbtn_edit_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemTypeSelected());
     tbtn_remove_assembly_record_item_type->setEnabled(_settings->isAssemblyRecordItemTypeSelected());
     tbtn_edit_assembly_record_item_category->setEnabled(_settings->isAssemblyRecordItemCategorySelected());

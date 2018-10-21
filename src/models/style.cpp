@@ -24,30 +24,16 @@
 
 #include <QApplication>
 
-Style::Style(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+Style::Style(const QString &uuid):
+    DBRecord(tableName(), uuid)
 {}
 
 void Style::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Style"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), attributes.value("content").toString()));
-    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), attributes.value("div_tables").toBool()));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM styles" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDPlainTextEdit("content", tr("Style:"), md->widget(), content()));
+    md->addInputWidget(new MDCheckBox("div_tables", tr("Use div elements instead of tables"), md->widget(), usesDivElements()));
 }
 
 QString Style::tableName()
@@ -59,11 +45,11 @@ class StyleColumns
 {
 public:
     StyleColumns() {
-        columns << Column("id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("name", "TEXT");
         columns << Column("content", "TEXT");
-        columns << Column("date_updated", "TEXT");
         columns << Column("div_tables", "INTEGER");
+        columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
 
@@ -80,8 +66,8 @@ class StyleAttributes
 {
 public:
     StyleAttributes() {
-        dict.insert("name", QApplication::translate("CircuitUnitType", "ID"));
-        dict.insert("content", QApplication::translate("CircuitUnitType", "Content"));
+        dict.insert("name", QApplication::translate("Style", "Name"));
+        dict.insert("content", QApplication::translate("Style", "Content"));
     }
 
     MTDictionary dict;

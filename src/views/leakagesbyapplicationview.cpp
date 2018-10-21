@@ -37,7 +37,7 @@ LeakagesByApplicationView::LeakagesByApplicationView(ViewTabSettings *settings):
 {
 }
 
-QString LeakagesByApplicationView::renderHTML()
+QString LeakagesByApplicationView::renderHTML(bool)
 {
     QString html; MTTextStream out(&html);
 

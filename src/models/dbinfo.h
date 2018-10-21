@@ -22,16 +22,20 @@
 
 #include "dbrecord.h"
 
-class DBInfo : public DBRecord
+class DBInfo
 {
-    Q_OBJECT
+private:
+    DBInfo() {}
 
 public:
-    DBInfo(const QString &key);
-
     static QString valueForKey(const QString &, const QString & = QString(), const QSqlDatabase & = QSqlDatabase::database());
     static QSqlError setValueForKey(const QString &, const QString &, const QSqlDatabase & = QSqlDatabase::database());
 
+    static QString databaseUUID(const QSqlDatabase & = QSqlDatabase::database());
+    static QString databaseName(const QSqlDatabase & = QSqlDatabase::database());
+    static void setDatabaseName(const QString &database_name, const QSqlDatabase & = QSqlDatabase::database());
+    static QString autosaveMode();
+    static void setAutosaveMode(const QString &autosave_mode);
     static bool isCurrentUserAdmin();
     static int isDatabaseLocked();
     static bool isRecordLocked(const QString &);

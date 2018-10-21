@@ -34,29 +34,29 @@ CircuitsView::CircuitsView(ViewTabSettings *settings):
 {
 }
 
-QString CircuitsView::renderHTML()
+QString CircuitsView::renderHTML(bool)
 {
-    QString customer_id = settings->selectedCustomer();
+    QString customer_uuid = settings->selectedCustomerUUID();
     HTMLMain main;
     writeServiceCompany(main);
-    main << writeCustomersTable(customer_id);
+    main << writeCustomersTable(customer_uuid);
     if (settings->mainWindowSettings().customerDetailsVisible()) {
         main.newLine();
-        main << customerContactPersons(customer_id);
+        main << customerContactPersons(customer_uuid);
     }
     main.newLine();
-    main << writeCircuitsTable(customer_id);
+    main << writeCircuitsTable(customer_uuid);
     return viewTemplate("customer").arg(main.html());
 }
 
-void CircuitsView::writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id, int cols_in_row)
+void CircuitsView::writeCircuitsTable(MTTextStream &out, const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row)
 {
-    HTMLDiv *div = writeCircuitsTable(customer_id, circuit_id, cols_in_row);
+    HTMLDiv *div = writeCircuitsTable(customer_uuid, circuit_uuid, cols_in_row);
     out << div->html();
     delete div;
 }
 
-HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QString &circuit_id, int cols_in_row, HTMLTable *table)
+HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, HTMLTable *table)
 {
     bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool circuits_details_visible = settings->mainWindowSettings().circuitDetailsVisible() || disable_hiding_details;
@@ -66,7 +66,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
     CircuitsColumns columns;
     columns.date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
     columns.owner = settings->isShowOwnerChecked() && !disable_hiding_details;
-    bool all_circuits = circuit_id.isEmpty();
+    bool all_circuits = circuit_uuid.isEmpty();
     columns.notes = settings->isShowNotesChecked() && !all_circuits && cols_in_row > 0;
     columns.operation = cols_in_row > 0 || settings->isShowPlaceOfOperationChecked();
     columns.building = cols_in_row > 0 || settings->isShowBuildingChecked();
@@ -79,18 +79,21 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
     columns.field = cols_in_row > 0 || settings->isShowFieldOfApplicationChecked();
     columns.oil = cols_in_row > 0 || settings->isShowOilChecked();
 
-    Circuit circuits_record(customer_id, circuit_id);
+    MTQuery circuits_query = Circuit::query();
+    circuits_query.parents().insert("customer_uuid", customer_uuid);
+    if (!all_circuits)
+        circuits_query.parents().insert("uuid", circuit_uuid);
     if (all_circuits && !settings->toolBarStack()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    QString circuits_query_select = "circuits.*, (SELECT date FROM inspections"
-            " WHERE inspections.customer = circuits.parent AND inspections.circuit = circuits.id"
-            " ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
+    QString circuits_query_select = "circuits.*, (SELECT uuid FROM inspections"
+        " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection_uuid, (SELECT date FROM inspections"
+        " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::Customer);
     if (order_by.isEmpty())
         order_by = "id";
-    ListOfVariantMaps circuits = circuits_record.listAll(circuits_query_select,
-                                                         all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
+    ListOfVariantMaps circuits = circuits_query.listAll(circuits_query_select,
+                                                        all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
 
     if (columns.notes && (circuits.isEmpty() || circuits.first().value("notes").toString().isEmpty()))
         columns.notes = false;
@@ -119,7 +122,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
     if (all_circuits || circuits_details_visible) {
         thead = new HTMLTableRow();
-        writeCircuitsHeader(customer_id, circuit_id, cols_in_row, columns, !all_circuits && circuits.count() && circuits.first().value("disused").toInt() != Circuit::Commissioned, thead);
+        writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, !all_circuits && circuits.count() ? circuits.first().value("disused").toInt() : 0, thead);
     }
 
     HTMLTableRow *_tr = table->addRow();
@@ -158,7 +161,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         foreach (const QVariantMap &circuit, circuits) {
             if (all_circuits && circuit.value("disused").toInt() != Circuit::Commissioned) continue;
-            writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, columns, table);
+            writeCircuitRow(circuit, customer_uuid, circuit_uuid, cols_in_row, columns, table);
         }
     }
 
@@ -174,7 +177,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         if (excluded_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, columns, true, thead);
+            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::ExcludedFromAgenda, thead);
         } else {
             thead = NULL;
         }
@@ -191,7 +194,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         if (excluded_circuits_visible) {
             foreach (const QVariantMap &circuit, circuits) {
                 if (circuit.value("disused").toInt() > Circuit::ExcludedFromAgenda) continue;
-                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, columns, table);
+                writeCircuitRow(circuit, customer_uuid, circuit_uuid, cols_in_row, columns, table);
             }
         }
         *div << table;
@@ -204,7 +207,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
 
         if (decommissioned_circuits_visible) {
             thead = table->addRow();
-            writeCircuitsHeader(customer_id, circuit_id, cols_in_row, columns, true, thead);
+            writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::Decommissioned, thead);
         } else {
             thead = NULL;
         }
@@ -221,7 +224,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_id, const QStr
         if (decommissioned_circuits_visible) {
             foreach (const QVariantMap &circuit, circuits) {
                 if (circuit.value("disused").toInt() < Circuit::Decommissioned) continue;
-                writeCircuitRow(circuit, customer_id, circuit_id, cols_in_row, columns, table);
+                writeCircuitRow(circuit, customer_uuid, circuit_uuid, cols_in_row, columns, table);
             }
         }
         *div << table;
@@ -239,28 +242,28 @@ static void addCircuitHeaderCell(const QString &key, const QString &customer_id,
         *(thead->addHeaderCell()) << Circuit::attributes().value(key).split("||").first();
 }
 
-void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, bool disused, HTMLTableRow *thead)
+void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, int disused, HTMLTableRow *thead)
 {
-    addCircuitHeaderCell("id", customer_id, circuit_id, thead);
-    addCircuitHeaderCell("name", customer_id, circuit_id, thead);
+    addCircuitHeaderCell("id", customer_uuid, circuit_uuid, thead);
+    addCircuitHeaderCell("name", customer_uuid, circuit_uuid, thead);
     if (columns.operation)
-        addCircuitHeaderCell("operation", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("operation", customer_uuid, circuit_uuid, thead);
     if (columns.building)
-        addCircuitHeaderCell("building", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("building", customer_uuid, circuit_uuid, thead);
     if (columns.device)
-        addCircuitHeaderCell("device", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("device", customer_uuid, circuit_uuid, thead);
     if (columns.manufacturer)
-        addCircuitHeaderCell("manufacturer", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("manufacturer", customer_uuid, circuit_uuid, thead);
     if (columns.type)
-        addCircuitHeaderCell("type", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("type", customer_uuid, circuit_uuid, thead);
     if (columns.sn)
-        addCircuitHeaderCell("sn", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("sn", customer_uuid, circuit_uuid, thead);
     if (columns.year)
-        addCircuitHeaderCell("year", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("year", customer_uuid, circuit_uuid, thead);
     if (columns.commissioning)
-        addCircuitHeaderCell("commissioning", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("commissioning", customer_uuid, circuit_uuid, thead);
     if (columns.field)
-        addCircuitHeaderCell("field", customer_id, circuit_id, thead);
+        addCircuitHeaderCell("field", customer_uuid, circuit_uuid, thead);
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
     *(thead->addHeaderCell()) << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent"));
     if (cols_in_row >= 0) {
@@ -268,20 +271,26 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString
     }
     if (columns.oil)
         *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
-    if (disused) {
-        *(thead->addHeaderCell()) << Circuit::attributes().value("decommissioning");
-    } else {
-        *(thead->addHeaderCell()) << tr("Last inspection");
+    switch (disused) {
+        case Circuit::ExcludedFromAgenda:
+            *(thead->addHeaderCell()) << QApplication::translate("Circuit", "Date excluded");
+            break;
+        case Circuit::Decommissioned:
+            *(thead->addHeaderCell()) << Circuit::attributes().value("decommissioning");
+            break;
+        default:
+            *(thead->addHeaderCell()) << tr("Last inspection");
+            break;
     }
     if (columns.date_updated) {
-        if (circuit_id.isEmpty())
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
+        if (circuit_uuid.isEmpty())
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_uuid << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
         else
             *(thead->addHeaderCell()) << tr("Date Updated");
     }
     if (columns.owner) {
-        if (circuit_id.isEmpty())
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:updated_by\">" << tr("Author") << "</a>";
+        if (circuit_uuid.isEmpty())
+            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_uuid << "/order_by:updated_by\">" << tr("Author") << "</a>";
         else
             *(thead->addHeaderCell()) << tr("Author");
     }
@@ -290,17 +299,18 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_id, const QString
     }
 }
 
-void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, HTMLTable *table)
+void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, HTMLTable *table)
 {
-    QString id = circuit.value("id").toString();
+    QString uuid = circuit.value("uuid").toString();
+    QString id = circuit.value("id").toString().rightJustified(5, '0');
     QString tr_attr;
-    if (circuit_id.isEmpty()) {
-        tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_id).arg("circuit:" + id);
-        if (id == settings->selectedCircuit())
+    if (circuit_uuid.isEmpty()) {
+        tr_attr = QString("id=\"%2\" onclick=\"window.location = 'customer:%1/%2'\" style=\"cursor: pointer;\"").arg(customer_uuid).arg("circuit:" + uuid);
+        if (uuid == settings->selectedCircuitUUID())
             tr_attr.append(" class=\"selected\"");
     }
     HTMLTableRow *_tr = table->addRow(tr_attr);
-    *(_tr->addCell()) << toolTipLink("customer/circuit", id.rightJustified(5, '0'), customer_id, id);
+    *(_tr->addCell()) << toolTipLink("customer/circuit", id, customer_uuid, uuid);
     *(_tr->addCell()) << escapeString(circuit.value("name").toString());
     if (columns.operation)
         *(_tr->addCell()) << escapeString(circuit.value("operation").toString());
@@ -344,10 +354,10 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
     }
     if (circuit.value("disused").toInt() == Circuit::Commissioned) {
         *(_tr->addCell()->link(QString("customer:%1/circuit:%2/inspection:%3")
-                               .arg(customer_id)
-                               .arg(id)
-                               .arg(circuit.value("last_inspection").toString())))
-        << settings->mainWindowSettings().formatDate(circuit.value("last_inspection").toString().split('-').first());
+                               .arg(customer_uuid)
+                               .arg(uuid)
+                               .arg(circuit.value("last_inspection_uuid").toString())))
+            << settings->mainWindowSettings().formatDate(circuit.value("last_inspection").toString().split('-').first());
     } else {
         *(_tr->addCell()) << settings->mainWindowSettings().formatDate(circuit.value("decommissioning"));
     }
@@ -360,11 +370,9 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
         *(_tr->addCell(QString("colspan=\"%1\"").arg(cols_in_row > 0 ? cols_in_row : 1))) << escapeString(circuit.value("notes").toString(), false, true);
 }
 
-HTMLTable *CircuitsView::circuitCompressorsTable(const QString &customer_id, const QString &circuit_id, HTMLTable *table)
+HTMLTable *CircuitsView::circuitCompressorsTable(const QString &circuit_uuid, HTMLTable *table)
 {
-    Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                       QStringList() << customer_id << circuit_id));
-    ListOfVariantMaps compressors = compressors_rec.listAll();
+    ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", circuit_uuid}}).listAll();
     if (compressors.count()) {
         if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
         HTMLTableRow *_tr;
@@ -388,24 +396,22 @@ HTMLTable *CircuitsView::circuitCompressorsTable(const QString &customer_id, con
     return NULL;
 }
 
-HTMLTable *CircuitsView::circuitUnitsTable(const QString &customer_id, const QString &circuit_id, HTMLTable *table)
+HTMLTable *CircuitsView::circuitUnitsTable(const QString &circuit_uuid, HTMLTable *table)
 {
-    enum QUERY_RESULTS
-    {
-        SN = 0,
-        MANUFACTURER = 1,
-        TYPE = 2,
-        LOCATION = 3,
-        UNIT_TYPE_ID = 4
+    enum QUERY_RESULTS {
+        SN,
+        MANUFACTURER,
+        TYPE,
+        LOCATION
     };
+
     MTSqlQuery query;
     query.prepare("SELECT circuit_units.sn, circuit_unit_types.manufacturer,"
-                  " circuit_unit_types.type, circuit_unit_types.location, circuit_unit_types.id"
+                  " circuit_unit_types.type, circuit_unit_types.location"
                   " FROM circuit_units"
-                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                  " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id");
-    query.bindValue(":customer_id", customer_id.toInt());
-    query.bindValue(":circuit_id", circuit_id.toInt());
+                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_uuid = circuit_unit_types.uuid"
+                  " WHERE circuit_units.circuit_uuid = :circuit_uuid");
+    query.bindValue(":circuit_uuid", circuit_uuid);
     query.exec();
 
     if (query.next()) {
@@ -434,5 +440,5 @@ HTMLTable *CircuitsView::circuitUnitsTable(const QString &customer_id, const QSt
 
 QString CircuitsView::title() const
 {
-    return tr("Circuits") + " - " + Customer(settings->selectedCustomer()).stringValue("company");
+    return tr("Circuits") + " - " + Customer(settings->selectedCustomerUUID()).companyName();
 }

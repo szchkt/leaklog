@@ -27,11 +27,35 @@ class Repair : public DBRecord
     Q_OBJECT
 
 public:
-    Repair(const QString &);
+    Repair(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline QString customerUUID() { return stringValue("customer_uuid"); }
+    inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline QString inspectorUUID() { return stringValue("inspector_uuid"); }
+    inline void setInspectorUUID(const QString &value) { setValue("inspector_uuid", value); }
+    inline QString date() { return stringValue("date"); }
+    inline void setDate(const QString &value) { setValue("date", value); }
+    inline QString customer() { return stringValue("customer"); }
+    inline void setCustomer(const QString &value) { setValue("customer", value); }
+    inline QString device() { return stringValue("device"); }
+    inline void setDevice(const QString &value) { setValue("device", value); }
+    inline QString field() { return stringValue("field"); }
+    inline void setField(const QString &value) { setValue("field", value); }
+    inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline void setRefrigerant(const QString &value) { setValue("refrigerant", value); }
+    inline double refrigerantAmount() { return doubleValue("refrigerant_amount"); }
+    inline void setRefrigerantAmount(double value) { setValue("refrigerant_amount", value); }
+    inline double refrigerantAddition() { return doubleValue("refr_add_am"); }
+    inline void setRefrigerantAddition(double value) { setValue("refr_add_am", value); }
+    inline double refrigerantRecovery() { return doubleValue("refr_reco"); }
+    inline void setRefrigerantRecovery(double value) { setValue("refr_reco", value); }
+    inline QString arno() { return stringValue("arno"); }
+    inline void setArno(const QString &value) { setValue("arno", value); }
+
     static QString tableName();
+    static inline MTRecordQuery<Repair> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Repair>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

@@ -24,28 +24,43 @@
 #include "global.h"
 #include "customer.h"
 #include "circuit.h"
+#include "inspectionfile.h"
 #include "variables.h"
 
 #include <QApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMessageBox>
 
 using namespace Global;
 
-QString Inspection::titleForInspection(bool nominal, Repair repair)
+QString Inspection::titleForInspectionType(Type type)
 {
-    if (nominal)
-        return QApplication::translate("MainWindow", "%1:").arg(tr("Nominal Inspection"));
-
-    switch (repair) {
-        case Inspection::IsNotRepair:
-            break;
-        case Inspection::IsRepair:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Repair"));
-        case Inspection::IsAfterRepair:
-            return QApplication::translate("MainWindow", "%1:").arg(tr("Inspection After Repair"));
+    switch (type) {
+        case RegularInspection:
+            return tr("Regular Inspection");
+        case NominalInspection:
+            return tr("Nominal Inspection");
+        case Repair:
+            return tr("Repair");
+        case InspectionAfterRepair:
+            return tr("Inspection After Repair");
+        case StrengthTightnessTest:
+            return tr("Strength and Tightness Test");
+        case VacuumTest:
+            return tr("Vacuum Test");
+        case CircuitMoved:
+            return tr("Circuit Moved");
+        case SkippedInspection:
+            return tr("Inspection Skipped");
     }
 
-    return QApplication::translate("MainWindow", "%1:").arg(tr("Regular Inspection"));
+    return tr("Unknown Inspection Type");
+}
+
+bool Inspection::showDescriptionForInspectionType(Inspection::Type type)
+{
+    return type < 0 || type >= StrengthTightnessTest;
 }
 
 QString Inspection::descriptionForInspectionType(Inspection::Type type, const QString &type_data)
@@ -53,32 +68,36 @@ QString Inspection::descriptionForInspectionType(Inspection::Type type, const QS
     QStringList data = type_data.split(UNIT_SEPARATOR);
 
     switch (type) {
-        case Inspection::CircuitMovedType: {
-            int from_id = data.value(0).toInt();
-            QString from = from_id ? Customer(QString::number(from_id)).stringValue("company") : QString();
+        case CircuitMoved: {
+            QString from_id = data.value(0);
+            QVariantMap from_values = from_id.isEmpty() ? QVariantMap() : Customer(from_id).list("id, company");
+            QString from = from_values.value("company").toString();
             if (from.isEmpty())
                 from = data.value(2);
 
-            from.append(QString(" (%1)").arg(formatCompanyID(from_id)));
+            if (!from_values.value("id").toString().isEmpty())
+                from.append(QString(" (%1)").arg(from_values.value("id").toString()));
 
-            int to_id = data.value(1).toInt();
-            QString to = to_id ? Customer(QString::number(to_id)).stringValue("company") : QString();
+            QString to_id = data.value(1);
+            QVariantMap to_values = to_id.isEmpty() ? QVariantMap() : Customer(to_id).list("id, company");
+            QString to = to_values.value("company").toString();
             if (to.isEmpty())
                 to = data.value(3);
 
-            to.append(QString(" (%1)").arg(formatCompanyID(to_id)));
+            if (!to_values.value("id").toString().isEmpty())
+                to.append(QString(" (%1)").arg(to_values.value("id").toString()));
 
             return tr("Circuit moved from customer %1 to %2.").arg(from).arg(to);
         }
 
-        case Inspection::InspectionSkippedType:
+        case SkippedInspection:
             return data.value(0);
 
         default:
             break;
     }
 
-    return QString();
+    return titleForInspectionType(type);
 }
 
 QString Inspection::tableName()
@@ -86,18 +105,25 @@ QString Inspection::tableName()
     return "inspections";
 }
 
+MTQuery Inspection::queryByInspector(const QString &inspector_uuid)
+{
+    return MTQuery("inspections LEFT JOIN customers ON inspections.customer_uuid = customers.uuid"
+                   " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid",
+                   {{"inspector_uuid", inspector_uuid}});
+}
+
 class InspectionColumns
 {
 public:
     InspectionColumns() {
-        columns << Column("customer", "INTEGER");
-        columns << Column("circuit", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
+        columns << Column("circuit_uuid", "UUID");
         columns << Column("date", "TEXT");
-        columns << Column("nominal", "INTEGER");
-        columns << Column("repair", "INTEGER");
-        columns << Column("outside_interval", "INTEGER");
-        columns << Column("inspection_type", "INTEGER DEFAULT 0 NOT NULL");
+        columns << Column("inspection_type", "INTEGER NOT NULL DEFAULT 0");
         columns << Column("inspection_type_data", "TEXT");
+        columns << Column("outside_interval", "INTEGER");
+        columns << Column("inspection_data", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -111,100 +137,99 @@ const ColumnList &Inspection::columns()
     return columns.columns;
 }
 
-Inspection::Inspection():
-    DBRecord(tableName(), "date", "", MTDictionary()),
-    m_scope(Variable::Inspection)
-{}
-
-Inspection::Inspection(const QString &customer, const QString &circuit, const QString &date):
-    DBRecord(tableName(), "date", date, MTDictionary(QStringList() << "customer" << "circuit", QStringList() << customer << circuit)),
-    m_scope(Variable::Inspection)
-{}
-
-Inspection::Inspection(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
-    DBRecord(table, id_column, id, parents),
+Inspection::Inspection(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), uuid, savedValues),
     m_scope(Variable::Inspection)
 {}
 
 void Inspection::initEditDialogue(EditDialogueWidgets *md)
 {
-    QString customer = Customer(parent("customer")).stringValue("company");
-    if (customer.isEmpty())
-        customer = formatCompanyID(parent("customer"));
-    QString circuit = Circuit(parent("customer"), parent("circuit")).stringValue("name");
-    if (circuit.isEmpty())
-        circuit = parent("circuit").rightJustified(5, '0');
-    md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle()).arg(customer).arg(circuit));
+    Customer customer_record(customer());
+    Circuit circuit_record(circuit());
+
+    md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle())
+                       .arg(customer_record.companyName().isEmpty() ? customer_record.companyID() : customer_record.companyName())
+                       .arg(circuit_record.circuitName().isEmpty() ? circuit_record.circuitID() : circuit_record.circuitName()));
     md->setMaximumRowCount(10);
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    }
+
     bool nominal_found = false;
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date, nominal FROM inspections WHERE customer = :customer AND circuit = :circuit" + QString(id().isEmpty() ? "" : " AND date <> :date"));
-    query_used_ids.bindValue(":customer", parent("customer"));
-    query_used_ids.bindValue(":circuit", parent("circuit"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
+    query_used_ids.prepare("SELECT date, inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
+    query_used_ids.bindValue(":circuit_uuid", circuit_record.uuid());
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":date", date()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
-            if (!nominal_found && query_used_ids.value(1).toInt())
+            if (!nominal_found && query_used_ids.value(1).toInt() == Inspection::NominalInspection)
                 nominal_found = true;
         }
     }
     md->setUsedIds(used_ids);
-    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
+
+    MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked()) {
-        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
+        date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
-    md->addInputWidget(date);
+    md->addInputWidget(date_edit);
 
-    QString type = attributes.value("nominal").toInt() || (id().isEmpty() && used_ids.isEmpty()) ? "-1" : QString::number(attributes.value("repair").toInt());
+    QString inspection_type = isNominal() || (uuid().isEmpty() && used_ids.isEmpty()) ? QString::number(NominalInspection) : QString::number(type());
     MTDictionary types;
-    types.insert("-1", tr("Nominal Inspection"));
-    types.insert("0", tr("Regular Inspection"));
-    types.insert("1", tr("Repair"));
-    types.insert("2", tr("Inspection After Repair"));
+    types.insert(QString::number(NominalInspection), tr("Nominal Inspection"));
+    types.insert(QString::number(RegularInspection), tr("Regular Inspection"));
+    types.insert(QString::number(Repair), tr("Repair"));
+    types.insert(QString::number(InspectionAfterRepair), tr("Inspection After Repair"));
 
-    MDComboBox *cb_repair = new MDComboBox("repair", tr("Type:"), md->widget(), type, types);
-    cb_repair->setSkipSave(true);
+    MDComboBox *cb_repair = new MDComboBox("inspection_type", tr("Type:"), md->widget(), inspection_type, types);
     if (nominal_found)
         QObject::connect(cb_repair, SIGNAL(currentIndexChanged(MDComboBox *, int)), this, SLOT(showSecondNominalInspectionWarning(MDComboBox *, int)));
     md->addInputWidget(cb_repair);
 
-    md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), attributes.value("outside_interval").toInt()));
+    md->addInputWidget(new MDCheckBox("outside_interval", tr("Outside the inspection interval"), md->widget(), isOutsideInterval()));
 
-    if (!id().isEmpty()) {
-        MTDictionary parents("customer_id", parent("customer"));
-        parents.insert("circuit_id", parent("circuit"));
-        parents.insert("date", id());
-        if (!InspectionsCompressor(QString(), parents).exists()) {
-            m_scope |= Variable::Compressor;
-            md->setMaximumRowCount(14);
-        }
+    if (!uuid().isEmpty() && !compressors().exists()) {
+        m_scope |= Variable::Compressor;
+        md->setMaximumRowCount(14);
     }
 
     Variables query(QSqlDatabase(), m_scope);
-    query.initEditDialogueWidgets(md, attributes, this, date->variantValue().toDateTime(), cb_repair);
+    query.initEditDialogueWidgets(md, savedValues(), this, date_edit->variantValue().toDateTime(), cb_repair);
 }
 
-bool Inspection::checkValues(QVariantMap &values, QWidget *parentWidget)
+Customer Inspection::customer()
 {
-    EditDialogueWidgets *dialogue = dynamic_cast<EditDialogueWidgets *>(parentWidget);
-    if (dialogue) {
-        MDAbstractInputWidget *cb_repair = dialogue->inputWidget("repair");
-        int value = cb_repair->variantValue().toInt();
-        if (value < 0) {
-            values.insert("nominal", 1);
-            values.insert("repair", 0);
-        } else {
-            values.insert("nominal", 0);
-            values.insert("repair", value);
-        }
-    }
-    return true;
+    return customerUUID();
+}
+
+Circuit Inspection::circuit()
+{
+    return circuitUUID();
+}
+
+QJsonObject Inspection::data()
+{
+    return QJsonDocument::fromJson(stringValue("inspection_data").toUtf8()).object();
+}
+
+void Inspection::setData(const QJsonObject &value)
+{
+    setValue("inspection_data", QJsonDocument(value).toJson(QJsonDocument::Compact));
+}
+
+MTRecordQuery<InspectionCompressor> Inspection::compressors() const
+{
+    return InspectionCompressor::query({{"inspection_uuid", uuid()}});
+}
+
+MTRecordQuery<InspectionFile> Inspection::files() const
+{
+    return InspectionFile::query({{"inspection_uuid", uuid()}});
+}
+
+bool Inspection::remove() const
+{
+    compressors().removeAll();
+    files().removeAll();
+    return MTRecord::remove();
 }
 
 void Inspection::showSecondNominalInspectionWarning(MDComboBox *combobox, int index)
@@ -228,10 +253,3 @@ void Inspection::showSecondNominalInspectionWarning(MDComboBox *combobox, int in
         }
     }
 }
-
-InspectionByInspector::InspectionByInspector(const QString &inspector_id):
-    Inspection("inspections LEFT JOIN customers ON inspections.customer = customers.id"
-               " LEFT JOIN circuits ON inspections.circuit = circuits.id"
-               " AND circuits.parent = inspections.customer",
-               "date", "", MTDictionary("inspector", inspector_id))
-{}

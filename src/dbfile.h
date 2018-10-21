@@ -22,15 +22,25 @@
 
 #include "records.h"
 
+#include <QWebEngineUrlSchemeHandler>
 #include <QWidget>
 
+class QBuffer;
 class QPixmap;
 class QLabel;
+
+class DBFileUrlSchemeHandler : public QWebEngineUrlSchemeHandler
+{
+    Q_OBJECT
+
+public:
+    void requestStarted(QWebEngineUrlRequestJob *job);
+};
 
 class DBFile : public File
 {
 public:
-    DBFile(int = -1);
+    DBFile(const QString &file_uuid = QString());
 
     QByteArray data();
     bool saveData(const QString &);
@@ -40,10 +50,9 @@ public:
     void setImage(const QString &);
     void setImage(QImage &);
 
-    int save();
+    void save();
 
 private:
-    int file_id;
     QString file_name;
     QByteArray file_data;
 };
@@ -53,7 +62,8 @@ class DBFileChooser : public QWidget
     Q_OBJECT
 
 public:
-    DBFileChooser(QWidget *, int);
+    DBFileChooser(const QString &file_uuid, QWidget *parent);
+    ~DBFileChooser();
 
     virtual QVariant variantValue() const;
 

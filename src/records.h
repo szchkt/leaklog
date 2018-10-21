@@ -27,7 +27,7 @@
 #include "compressor.h"
 #include "inspection.h"
 #include "inspectioncompressor.h"
-#include "inspectionimage.h"
+#include "inspectionfile.h"
 #include "repair.h"
 #include "inspector.h"
 #include "variable.h"
@@ -46,5 +46,6 @@
 #include "circuitunit.h"
 #include "dbinfo.h"
 #include "style.h"
+#include "journalentry.h"
 
 #endif // RECORDS_H

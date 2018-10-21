@@ -27,11 +27,20 @@ class Inspector : public DBRecord
     Q_OBJECT
 
 public:
-    Inspector(const QString &);
+    Inspector(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    QString certificateNumber();
+    QString certificateCountry();
+    QString personName();
+    QString mail();
+    QString phone();
+    double listPrice();
+    double acquisitionPrice();
+
     static QString tableName();
+    static inline MTRecordQuery<Inspector> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Inspector>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

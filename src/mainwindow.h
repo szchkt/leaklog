@@ -30,6 +30,8 @@
 #include <QSqlDatabase>
 
 class UndoStack;
+class Authenticator;
+class SyncEngine;
 class Warnings;
 class MTTextStream;
 class HTMLTable;
@@ -42,7 +44,7 @@ class QPainter;
 class QPrinter;
 class QNetworkReply;
 class QNetworkAccessManager;
-class QWebView;
+class QWebEngineView;
 namespace VariableEvaluation {
     class Variable;
     class EvaluationContext;
@@ -85,9 +87,9 @@ public:
 
 signals:
     void databaseModified();
-    void tablesChanged(const QStringList &);
-    void tableAdded(int index, const QString &);
-    void tableRemoved(const QString &);
+    void tablesChanged(const MTDictionary &);
+    void tableAdded(int index, const QString &uuid, const QString &name);
+    void tableRemoved(const QString &uuid);
 
 public slots:
     void enableTools();
@@ -99,7 +101,7 @@ public slots:
 
     void editServiceCompany();
     void addRefrigerantRecord();
-    void editRefrigerantRecord(const QString &);
+    void editRefrigerantRecord(const QString &uuid);
 
     void addCustomer();
     void editCustomer();
@@ -117,7 +119,7 @@ public slots:
     void addInspection();
     void editInspection();
     void duplicateInspection();
-    void removeInspection(const QString &date = QString());
+    void removeInspection(const QString &uuid = QString());
     void skipInspection();
 
     void addRepair();
@@ -148,10 +150,6 @@ public slots:
     void addInspector();
     void editInspector();
     void removeInspector();
-
-    void exportCustomerData();
-    void exportCircuitData();
-    void exportInspectionData();
 
     void importData();
     void importCSV();
@@ -184,6 +182,7 @@ private slots:
     void openDocumentation();
     void openReleaseNotes();
     void printPreview();
+    void printPreview(QPrinter *printer);
     void print();
     void print(QPrinter *printer);
     void exportPDFPortrait();
@@ -202,19 +201,26 @@ private slots:
     void configureAutosave();
     void openBackupDirectory();
     void find();
-    void findAll();
     void findNext();
     void findPrevious();
     void refreshView();
     void changeLanguage();
     void languageChanged();
+    void logIn();
+    void doLogIn();
+    void doLogOut(QAbstractButton *);
+    void doSignUp(QAbstractButton *);
+    void loginFinished(bool);
+    void loginFinished(QAbstractButton *button);
+    void logoutFinished();
     void checkForUpdates(bool silent = false);
     void httpRequestFinished(QNetworkReply *reply);
     void httpRequestFailed(bool silent);
     void customerChangedInMoveCircuitDialogue(int customer_index);
     // DATABASE
     void openRecent(QListWidgetItem *);
-    void newDatabase();
+    void newDatabase(const QString &uuid = QString(), const QString &name = QString());
+    void downloadDatabase();
     void open();
     void openRemote();
     void loadDatabase(bool reload = true);
@@ -222,6 +228,11 @@ private slots:
     void saveAndCompact();
     void autosave();
     void closeDatabase(bool = true);
+    void autosync();
+    void sync(bool force = true, bool save = true);
+    void syncStarted();
+    void syncProgress(double progress);
+    void syncFinished(bool success, bool changed);
     void setDatabaseModified(bool modified);
     // TABS
     void newTab(bool init = true);
@@ -234,8 +245,6 @@ private:
     // UI
 #ifdef Q_OS_MAC
     void macInitUI();
-    bool isFullScreen() const;
-    void showFullScreen();
 #endif
     bool hasActiveModalWidget();
     void clearWindowTitle();
@@ -252,18 +261,17 @@ private:
     void saveSettings();
     // DATABASE
     bool saveChangesBeforeProceeding(const QString &, bool);
-    void initDatabase(QSqlDatabase &database, bool transaction = true, bool save_on_upgrade = true);
+    bool initDatabase(QSqlDatabase &database, bool transaction = true, bool save_on_upgrade = true);
     void initTables(bool = true);
     void backupDatabase(const QString &path);
-    void openDatabase(QString path, const QString &connection_string);
+    void openDatabase(QSqlDatabase &database, const QString &connection_string, bool show_warnings = true);
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
-    bool canRemoveCircuit(const QString &customer_id, const QString &circuit_id = QString());
+    bool canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid = QString());
     bool isRecordLocked(const QString &);
     void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());
     void addVariable(bool);
     void moveTableVariable(bool);
-    void exportData(const QString &);
 
     QAction *actionShow_icons_only;
     QToolButton *tbtn_open;
@@ -283,6 +291,9 @@ private:
     ViewTab *m_tab;
     QString m_connection_string;
     double m_current_scale;
+    Authenticator *authenticator;
+    SyncEngine *sync_engine;
+    QProgressBar *progress_bar;
 };
 
 #endif // MAINWINDOW_H

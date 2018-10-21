@@ -43,24 +43,26 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int>
 
 ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_field, const QSet<QString> &refrigerants_by_field)
 {
-    QVector<double> *sum_list; int year = 0; QString date, refrigerant;
-    QVariant purchased, purchased_reco, sold, sold_reco, new_charge, refr_add_am, refr_reco, refr_rege, refr_disp, leaked, leaked_reco;
-    RefrigerantRecord refr_man_record("");
+    QVector<double> *sum_list;
+
+    MTQuery refrigerant_query = RefrigerantRecord::query();
+
     if (!filter_refrigerant.isEmpty())
-        refr_man_record.parents().insert("refrigerant", filter_refrigerant);
-    ListOfVariantMaps refr_man(refr_man_record.listAll());
-    for (int i = 0; i < refr_man.count(); ++i) {
-        refrigerant = refr_man.at(i).value("refrigerant").toString();
-        purchased = refr_man.at(i).value("purchased");
-        purchased_reco = refr_man.at(i).value("purchased_reco");
-        sold = refr_man.at(i).value("sold");
-        sold_reco = refr_man.at(i).value("sold_reco");
-        refr_rege = refr_man.at(i).value("refr_rege");
-        refr_disp = refr_man.at(i).value("refr_disp");
-        leaked = refr_man.at(i).value("leaked");
-        leaked_reco = refr_man.at(i).value("leaked_reco");
-        date = refr_man.at(i).value("date").toString();
-        year = date.left(4).toInt();
+        refrigerant_query.parents().insert("refrigerant", filter_refrigerant);
+
+    foreach (const QVariantMap &refr_man, refrigerant_query.listAll()) {
+        QString refrigerant = refr_man.value("refrigerant").toString();
+        QVariant purchased = refr_man.value("purchased");
+        QVariant purchased_reco = refr_man.value("purchased_reco");
+        QVariant sold = refr_man.value("sold");
+        QVariant sold_reco = refr_man.value("sold_reco");
+        QVariant refr_rege = refr_man.value("refr_rege");
+        QVariant refr_disp = refr_man.value("refr_disp");
+        QVariant leaked = refr_man.value("leaked");
+        QVariant leaked_reco = refr_man.value("leaked_reco");
+        QString date = refr_man.value("date").toString();
+        QString uuid = refr_man.value("uuid").toString();
+        int year = date.left(4).toInt();
 
         addToStore(store, store_years, year, refrigerant, purchased.toDouble() - sold.toDouble() - leaked.toDouble());
         addToStore(store_recovered, store_recovered_years, year, refrigerant, purchased_reco.toDouble() - sold_reco.toDouble() - refr_rege.toDouble() - refr_disp.toDouble() - leaked_reco.toDouble());
@@ -69,10 +71,9 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
         if (year < since) { continue; }
 
         QVector<QString> entries_list(ENTRIES::COUNT);
-        entries_list[ENTRIES::LINK] = QString("refrigerantrecord:%1/edit").arg(date);
-        entries_list[ENTRIES::COMPANY] = refr_man.at(i).value("partner").toString();
-        int company_id = refr_man.at(i).value("partner_id").toInt();
-        entries_list[ENTRIES::COMPANY_ID] = company_id ? Global::formatCompanyID(company_id) : QString();
+        entries_list[ENTRIES::LINK] = QString("refrigerantrecord:%1/edit").arg(uuid);
+        entries_list[ENTRIES::COMPANY] = refr_man.value("partner").toString();
+        entries_list[ENTRIES::COMPANY_ID] = refr_man.value("partner_id").toString();
         entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_list[ENTRIES::PURCHASED] = purchased.toString();
         entries_list[ENTRIES::PURCHASED_RECO] = purchased_reco.toString();
@@ -87,12 +88,16 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
         if (by_field)
             refrigerant += ":0";
 
-        if (!sums_map.contains(QString::number(year))) { sums_map.insert(QString::number(year), NULL); }
-        if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
+        if (!sums_map.contains(QString::number(year))) {
+            sums_map.insert(QString::number(year), NULL);
+        }
+
+        QString year_refrigerant = QString("%1::%2").arg(year).arg(refrigerant);
+        if (!sums_map.contains(year_refrigerant)) {
             sum_list = new QVector<double>(SUMS::COUNT);
-            sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
+            sums_map.insert(year_refrigerant, sum_list);
         } else {
-            sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
+            sum_list = sums_map.value(year_refrigerant);
         }
 
         (*sum_list)[SUMS::PURCHASED] += purchased.toDouble();
@@ -105,46 +110,48 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
         (*sum_list)[SUMS::LEAKED_RECO] += leaked_reco.toDouble();
     }
 
-    MTRecord inspections_record("inspections", "date", "", MTDictionary());
-    inspections_record.addJoin("LEFT JOIN customers ON customer = customers.id");
-    inspections_record.addJoin("LEFT JOIN circuits ON customer = circuits.parent AND circuit = circuits.id");
-    QString fields = "inspections.customer, inspections.circuit, inspections.date, "
-                     "inspections.nominal, inspections.refr_add_am, inspections.refr_reco, "
-                     "customers.company, circuits.refrigerant";
+    MTQuery inspections_query = Inspection::query();
+    inspections_query.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
+    inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
+    QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, "
+                     "inspections.inspection_type, inspections.refr_add_am, inspections.refr_reco, "
+                     "customers.company, customers.id AS company_id, circuits.refrigerant";
     if (by_field)
         fields += ", circuits.field";
     if (!filter_refrigerant.isEmpty())
-        inspections_record.addFilter("circuits.refrigerant = ?", filter_refrigerant);
-    ListOfVariantMaps inspections(inspections_record.listAll(fields));
+        inspections_query.addFilter("circuits.refrigerant = ?", filter_refrigerant);
+    ListOfVariantMaps inspections(inspections_query.listAll(fields));
 
-    Repair repairs_rec("");
-    repairs_rec.addJoin("LEFT JOIN customers ON parent = customers.id");
-    fields = "COALESCE(customers.company, repairs.customer) AS company, repairs.parent AS customer, repairs.date, "
+    MTQuery repairs_query = Repair::query();
+    repairs_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
+    fields = "COALESCE(customers.company, repairs.customer) AS company, customers.id AS company_id, "
+             "repairs.customer_uuid, repairs.uuid, repairs.date, "
              "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
     if (!filter_refrigerant.isEmpty())
-        repairs_rec.parents().insert("refrigerant", filter_refrigerant);
-    inspections << repairs_rec.listAll(fields);
+        repairs_query.parents().insert("refrigerant", filter_refrigerant);
+    inspections << repairs_query.listAll(fields);
 
-    for (int i = 0; i < inspections.count(); ++i) {
-        refr_add_am = inspections.at(i).value("refr_add_am");
-        refr_reco = inspections.at(i).value("refr_reco");
+    foreach (const QVariantMap &inspection, inspections) {
+        QVariant refr_add_am = inspection.value("refr_add_am");
+        QVariant refr_reco = inspection.value("refr_reco");
         if (refr_add_am.toDouble() == 0.0 &&
             refr_reco.toDouble() == 0.0) continue;
 
-        refrigerant = inspections.at(i).value("refrigerant").toString();
-        date = inspections.at(i).value("date").toString();
-        year = date.left(4).toInt();
+        QString uuid = inspection.value("uuid").toString();
+        QString date = inspection.value("date").toString();
+        int year = date.left(4).toInt();
+        QString refrigerant = inspection.value("refrigerant").toString();
         QVector<QString> entries_list(ENTRIES::COUNT);
-        if (inspections.at(i).contains("circuit")) {
+        if (inspection.contains("circuit_uuid")) {
             entries_list[ENTRIES::LINK] = QString("customer:%1/circuit:%2/%3:%4")
-                                        .arg(inspections.at(i).value("customer").toString())
-                                        .arg(inspections.at(i).value("circuit").toString())
-                                        .arg(inspections.at(i).value("nominal").toInt() ? "nominalinspection" : "inspection")
-                                        .arg(date);
+                                        .arg(inspection.value("customer_uuid").toString())
+                                        .arg(inspection.value("circuit_uuid").toString())
+                                        .arg(inspection.value("inspection_type").toInt() == Inspection::NominalInspection ? "nominalinspection" : "inspection")
+                                        .arg(uuid);
         } else {
-            entries_list[ENTRIES::LINK] = QString("repair:%1/edit").arg(date);
+            entries_list[ENTRIES::LINK] = QString("repair:%1/edit").arg(uuid);
         }
 
         addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());
@@ -152,12 +159,11 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
 
         if (year < since) { continue; }
 
-        entries_list[ENTRIES::COMPANY] = inspections.at(i).value("company").toString();
-        int company_id = inspections.at(i).value("customer").toInt();
-        entries_list[ENTRIES::COMPANY_ID] = company_id ? Global::formatCompanyID(company_id) : QString();
+        entries_list[ENTRIES::COMPANY] = inspection.value("company").toString();
+        entries_list[ENTRIES::COMPANY_ID] = inspection.value("company_id").toString();
 
-        new_charge = 0.0;
-        if (inspections.at(i).contains("nominal") && inspections.at(i).value("nominal").toInt()) {
+        QVariant new_charge = 0.0;
+        if (inspection.value("inspection_type").toInt() == Inspection::NominalInspection) {
             new_charge = refr_add_am;
             refr_add_am = 0.0;
         }
@@ -168,7 +174,7 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
 
         if (by_field) {
             if (refrigerants_by_field.isEmpty() || refrigerants_by_field.contains(refrigerant))
-                refrigerant += QString(":%1").arg(Global::fieldOfApplicationToId(inspections.at(i).value("field").toString()));
+                refrigerant += QString(":%1").arg(Global::fieldOfApplicationToId(inspection.value("field").toString()));
             else
                 refrigerant += ":0";
         }
@@ -176,12 +182,16 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
         entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_map.insert(date, entries_list);
 
-        if (!sums_map.contains(QString::number(year))) { sums_map.insert(QString::number(year), NULL); }
-        if (!sums_map.contains(QString("%1::%2").arg(year).arg(refrigerant))) {
+        if (!sums_map.contains(QString::number(year))) {
+            sums_map.insert(QString::number(year), NULL);
+        }
+
+        QString year_refrigerant = QString("%1::%2").arg(year).arg(refrigerant);
+        if (!sums_map.contains(year_refrigerant)) {
             sum_list = new QVector<double>(SUMS::COUNT);
-            sums_map.insert(QString("%1::%2").arg(year).arg(refrigerant), sum_list);
+            sums_map.insert(year_refrigerant, sum_list);
         } else {
-            sum_list = sums_map.value(QString("%1::%2").arg(year).arg(refrigerant));
+            sum_list = sums_map.value(year_refrigerant);
         }
 
         (*sum_list)[SUMS::NEW_CHARGE] += new_charge.toDouble();

@@ -17,28 +17,38 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  ********************************************************************/
 
-#include "inspectionimage.h"
+#include "inspectionfile.h"
 
-InspectionImage::InspectionImage(const QString &customer_id, const QString &circuit_id, const QString &inspection_id):
-    MTRecord(tableName(), "", "",
-             MTDictionary(QStringList() << "customer" << "circuit" << "date",
-                          QStringList() << customer_id << circuit_id << inspection_id))
+#include "inspection.h"
+#include "file.h"
+
+InspectionFile::InspectionFile(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
-QString InspectionImage::tableName()
+Inspection InspectionFile::inspection()
 {
-    return "inspection_images";
+    return inspectionUUID();
 }
 
-class InspectionImageColumns
+File InspectionFile::file()
+{
+    return fileUUID();
+}
+
+QString InspectionFile::tableName()
+{
+    return "inspections_files";
+}
+
+class InspectionFileColumns
 {
 public:
-    InspectionImageColumns() {
-        columns << Column("customer", "INTEGER");
-        columns << Column("circuit", "INTEGER");
-        columns << Column("date", "TEXT");
+    InspectionFileColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("inspection_uuid", "UUID");
+        columns << Column("file_uuid", "UUID");
         columns << Column("description", "TEXT");
-        columns << Column("file_id", "INTEGER");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -46,8 +56,8 @@ public:
     ColumnList columns;
 };
 
-const ColumnList &InspectionImage::columns()
+const ColumnList &InspectionFile::columns()
 {
-    static InspectionImageColumns columns;
+    static InspectionFileColumns columns;
     return columns.columns;
 }

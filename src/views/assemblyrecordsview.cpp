@@ -34,10 +34,10 @@ AssemblyRecordsView::AssemblyRecordsView(ViewTabSettings *settings):
 {
 }
 
-QString AssemblyRecordsView::renderHTML()
+QString AssemblyRecordsView::renderHTML(bool)
 {
-    QString customer_id = settings->selectedCustomer();
-    QString circuit_id = settings->selectedCircuit();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->selectedCircuitUUID();
     int year = settings->toolBarStack()->filterSinceValue();
 
     bool show_date_updated = settings->isShowDateUpdatedChecked();
@@ -48,7 +48,8 @@ QString AssemblyRecordsView::renderHTML()
     HTMLTableRow *_tr;
     HTMLTableCell *_td;
 
-    bool customer_given = customer_id.toInt() >= 0, circuit_given = circuit_id.toInt() >= 0;
+    bool customer_selected = !customer_uuid.isEmpty();
+    bool circuit_selected = !circuit_uuid.isEmpty();
 
     MTDictionary inspectors = Global::listInspectors();
 
@@ -56,12 +57,12 @@ QString AssemblyRecordsView::renderHTML()
 
     writeServiceCompany(out);
 
-    if (customer_given) {
-        writeCustomersTable(out, customer_id);
+    if (customer_selected) {
+        writeCustomersTable(out, customer_uuid);
         out << "<br>";
     }
-    if (circuit_given) {
-        writeCircuitsTable(out, customer_id, circuit_id);
+    if (circuit_selected) {
+        writeCircuitsTable(out, customer_uuid, circuit_uuid);
         out << "<br>";
     }
 
@@ -75,54 +76,49 @@ QString AssemblyRecordsView::renderHTML()
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:date")) << tr("Date");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:arno")) << tr("Assembly record number");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:record_name")) << tr("Assembly record name");
-    if (!customer_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:customer")) << tr("Customer");
-    if (!circuit_given) *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:circuit")) << tr("Circuit");
-    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspector")) << tr("Inspector");
-    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:operator")) << tr("Contact person");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspector_uuid")) << tr("Inspector");
+    *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:person_uuid")) << tr("Contact person");
     if (show_date_updated)
         *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.date_updated")) << tr("Date Updated");
     if (show_owner)
         *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:inspections.updated_by")) << tr("Author");
 
-    MTDictionary parents;
-    if (customer_id.toInt() >= 0) parents.insert("customer", customer_id);
-    if (circuit_id.toInt() >= 0) parents.insert("circuit", circuit_id);
-    MTRecord record("inspections LEFT JOIN assembly_record_types ON inspections.ar_type = assembly_record_types.id"
-                    " LEFT JOIN customers ON customers.id = inspections.customer"
-                    " LEFT JOIN persons ON inspections.operator = CAST(persons.id AS text)",
-                    "inspections.date", "", parents);
-    record.setCustomWhere("arno IS NOT NULL AND arno <> '' AND ar_type IS NOT NULL AND ar_type > 0");
+    QVariantMap parents;
+    if (!circuit_uuid.isEmpty()) parents.insert("circuit_uuid", circuit_uuid);
+    MTQuery query("inspections LEFT JOIN assembly_record_types ON inspections.ar_type_uuid = assembly_record_types.uuid"
+                  " LEFT JOIN customers ON customers.uuid = inspections.customer_uuid"
+                  " LEFT JOIN persons ON inspections.person_uuid = persons.uuid",
+                  parents);
+    query.setPredicate("arno IS NOT NULL AND arno <> '' AND ar_type_uuid IS NOT NULL");
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecords);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps items = record.listAll("inspections.customer, inspections.circuit,"
-                                             " inspections.date, inspections.arno,"
-                                             " assembly_record_types.name AS record_name,"
-                                             " inspections.inspector, customers.company,"
-                                             " persons.name AS operator,"
-                                             " inspections.date_updated, inspections.updated_by",
-                                             settings->appendDefaultOrderToColumn(order_by));
+    ListOfVariantMaps items = query.listAll("inspections.customer_uuid, inspections.circuit_uuid,"
+                                            " inspections.uuid, inspections.date, inspections.arno,"
+                                            " assembly_record_types.name AS record_name,"
+                                            " inspections.inspector_uuid, customers.company,"
+                                            " persons.name AS operator,"
+                                            " inspections.date_updated, inspections.updated_by",
+                                            settings->appendDefaultOrderToColumn(order_by));
 
-    for (int i = 0; i < items.count(); ++i) {
-        if (year && items.at(i).value("date").toString().split(".").first().toInt() < year) continue;
+    foreach (const QVariantMap &item, items) {
+        if (year && item.value("date").toString().split(".").first().toInt() < year) continue;
         _tr = table->addRow(QString("onclick=\"window.location = 'customer:%1/circuit:%2/inspection:%3/assemblyrecord'\" style=\"cursor: pointer;\"")
-                            .arg(items.at(i).value("customer").toString())
-                            .arg(items.at(i).value("circuit").toString())
-                            .arg(items.at(i).value("date").toString()));
-        *(_tr->addCell()) << settings->mainWindowSettings().formatDateTime(items.at(i).value("date"));
-        *(_tr->addCell()) << escapeString(items.at(i).value("arno"));
-        *(_tr->addCell()) << escapeString(items.at(i).value("record_name"));
-        if (!customer_given) *(_tr->addCell()) << escapeString(items.at(i).value("company"));
-        if (!circuit_given) *(_tr->addCell()) << escapeString(items.at(i).value("circuit").toString().rightJustified(5, '0'));
-        *(_tr->addCell()) << escapeString(inspectors.value(items.at(i).value("inspector").toString()));
-        *(_tr->addCell()) << escapeString(items.at(i).value("operator"));
+                            .arg(item.value("customer_uuid").toString())
+                            .arg(item.value("circuit_uuid").toString())
+                            .arg(item.value("uuid").toString()));
+        *(_tr->addCell()) << settings->mainWindowSettings().formatDateTime(item.value("date"));
+        *(_tr->addCell()) << escapeString(item.value("arno"));
+        *(_tr->addCell()) << escapeString(item.value("record_name"));
+        *(_tr->addCell()) << escapeString(inspectors.value(item.value("inspector_uuid").toString()));
+        *(_tr->addCell()) << escapeString(item.value("operator"));
         if (show_date_updated)
-            *(_tr->addCell()) << settings->mainWindowSettings().formatDateTime(items.at(i).value("date_updated"));
+            *(_tr->addCell()) << settings->mainWindowSettings().formatDateTime(item.value("date_updated"));
         if (show_owner)
-            *(_tr->addCell()) << escapeString(items.at(i).value("updated_by"));
+            *(_tr->addCell()) << escapeString(item.value("updated_by"));
     }
     div << table;
 

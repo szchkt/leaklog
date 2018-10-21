@@ -29,7 +29,7 @@ class AssemblyRecordsView : public CircuitsView
 public:
     AssemblyRecordsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

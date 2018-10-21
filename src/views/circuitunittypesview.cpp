@@ -34,15 +34,15 @@ CircuitUnitTypesView::CircuitUnitTypesView(ViewTabSettings *settings):
 {
 }
 
-QString CircuitUnitTypesView::renderHTML()
+QString CircuitUnitTypesView::renderHTML(bool)
 {
-    QString highlighted_id = settings->selectedCircuitUnitType();
+    QString highlighted_uuid = settings->selectedCircuitUnitTypeUUID();
 
     QString html; MTTextStream out(&html);
 
     writeServiceCompany(out);
 
-    CircuitUnitType all_items("");
+    MTQuery all_items = CircuitUnitType::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         all_items.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -50,7 +50,7 @@ QString CircuitUnitTypesView::renderHTML()
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     QString thead = "<tr>"; int thead_colspan = 2;
-    for (int n = 0; n < CircuitUnitType::attributes().count(); ++n) {
+    for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
         thead.append("<th><a href=\"allcircuitunittypes:/order_by:"
                      + CircuitUnitType::attributes().key(n) + "\">"
                      + CircuitUnitType::attributes().value(n) + "</a></th>");
@@ -59,13 +59,13 @@ QString CircuitUnitTypesView::renderHTML()
     thead.append("</tr>");
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("Circuit Unit Types") << "</th></tr>";
     out << thead;
-    QString id;
+
     for (int i = 0; i < items.count(); ++i) {
-        id = items.at(i).value("id").toString();
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("circuitunittype:" + id);
-        if (highlighted_id == id)
+        QString uuid = items.at(i).value("uuid").toString();
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("circuitunittype:" + uuid);
+        if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << id << "</td>";
+        out << " style=\"cursor: pointer;\">";
         for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
             out << "<td>";
             QString key = CircuitUnitType::attributes().key(n);

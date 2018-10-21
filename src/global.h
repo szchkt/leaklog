@@ -23,13 +23,13 @@
 #include "defs.h"
 
 #include <QSqlDatabase>
+#include <QStringList>
 
 template <class T1, class T2>
 struct QPair;
 
 class MTDictionary;
 class QDir;
-class QStringList;
 class QColor;
 
 namespace Global {
@@ -48,6 +48,9 @@ namespace Global {
     QString delta();
     QString longMonthName(int);
     QColor textColourForBaseColour(const QColor &);
+    QString createUUID();
+    QString createUUIDv5(const QString &ns, const QString &name);
+    QString sourceUUID();
     QString sqlStringForDatabaseType(QString, const QSqlDatabase & = QSqlDatabase::database());
     QString variantTypeToSqlType(int);
     QString variableTypeToSqlType(const QString &);
@@ -56,6 +59,12 @@ namespace Global {
     void addColumn(const QString &, const QString &, const QSqlDatabase &);
     void renameColumn(const QString &, const QString &, const QString &, const QSqlDatabase &);
     void dropColumn(const QString &, const QString &, const QSqlDatabase &);
+    bool journalInsertion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalInsertion(int table_id, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalUpdate(const QString &table_name, const QString &record_uuid, const QString &column_name, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalUpdate(int table_id, const QString &record_uuid, int column_id, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalDeletion(const QString &table_name, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
+    bool journalDeletion(int table_id, const QString &record_uuid, const QSqlDatabase &database = QSqlDatabase::database());
     QPair<bool, QDir> backupDirectoryForDatabasePath(const QString &path);
     bool superuserModeEnabled();
     QString currentUser(const QSqlDatabase & = QSqlDatabase::database());
@@ -71,7 +80,7 @@ namespace Global {
     CompanyIDFormat companyIDFormat();
     QString formatCompanyID(int company_id);
     QString formatCompanyID(const QVariant &company_id);
-    QString formatCompanyID(const QString &company_id);
+    QString formatCompanyID(const QString &company_id, CompanyIDFormat format = companyIDFormat());
     enum ToolTipLinkItem {
         ToolTipLinkItemView = 1 << 0,
         ToolTipLinkItemEdit = 1 << 1,
@@ -99,12 +108,12 @@ namespace Global {
     MTDictionary listAssemblyRecordTypes();
     MTDictionary listAllVariables();
     MTDictionary listDataTypes();
-    MTDictionary listOperators(const QString &);
+    MTDictionary listOperators(const QString &customer_uuid);
     MTDictionary listStyles();
     QStringList listVariableIds(bool = false);
     QStringList listSupportedFunctions();
     // Data types
-    enum DataTypes {
+    enum DataType {
         String = 0,
         Integer = 1,
         Numeric = 2,
@@ -112,6 +121,33 @@ namespace Global {
         Text = 4,
         File = 5
     };
+
+    template <typename SourceType, typename ReturnType>
+    QList<ReturnType> map(const QList<SourceType> &list, std::function<ReturnType(const SourceType &)> function)
+    {
+        QList<ReturnType> result;
+        result.reserve(list.count());
+        foreach (const SourceType &i, list) {
+            result << function(i);
+        }
+        return result;
+    }
+
+    template <typename SourceType>
+    QStringList map(const QList<SourceType> &list, std::function<QString(const SourceType &)> function)
+    {
+        QStringList result;
+        result.reserve(list.count());
+        foreach (const SourceType &i, list) {
+            result << function(i);
+        }
+        return result;
+    }
+
+    inline QStringList map(const QStringList &list, std::function<QString(const QString &)> function)
+    {
+        return map<QString>(list, function);
+    }
 }
 
 #endif // GLOBAL_H

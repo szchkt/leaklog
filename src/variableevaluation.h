@@ -33,15 +33,15 @@ namespace VariableEvaluation {
     {
     public:
         EvaluationContext(int = 0);
-        EvaluationContext(const QString &, const QString &, int = 0);
+        EvaluationContext(const QString &customer_uuid, const QString &circuit_uuid, int vars_scope = 0);
         ~EvaluationContext();
 
         void setNominalInspection(const QVariantMap &nominal_ins) { this->nominal_ins = nominal_ins; }
         QVariantMap &nominalInspection() { return nominal_ins; }
 
-        Variable *variable(const QString &name) const { return vars_map.value(name); }
-        QString evaluate(Variable *, QVariantMap &, QString &);
-        QString evaluate(const QString &, QVariantMap &, QString &);
+        Variable *variable(const QString &name) const;
+        QString evaluate(Variable *, const QVariantMap &, QString &);
+        QString evaluate(const QString &, const QVariantMap &, QString &);
 
         QList<Variable *> listVariables() const { return vars_list; }
 
@@ -59,6 +59,7 @@ namespace VariableEvaluation {
         int vars_scope;
         MultiMapOfVariantMaps persons;
         MultiMapOfVariantMaps inspectors;
+        MultiMapOfVariantMaps ar_types;
 
         friend class Variable;
     };
@@ -82,14 +83,16 @@ namespace VariableEvaluation {
         QString value() const { return _value; }
         void setID(const QString &id) { _id = id; }
         QString id() const { return _id; }
-        void setParentID(const QString &parent_id) { _parent_id = parent_id; }
-        QString parentID() const { return _parent_id; }
+        void setUUID(const QString &uuid) { _uuid = uuid; }
+        QString uuid() const { return _uuid; }
+        void setParentUUID(const QString &parent_uuid) { _parent_uuid = parent_uuid; }
+        QString parentUUID() const { return _parent_uuid; }
 
         void addSubvariable(Variable *var) { subvars.append(var); }
         QList<Variable *> subvariables() const { return subvars; }
         int countSubvariables() const { return subvars.count(); }
 
-        QString evaluate(EvaluationContext &, QVariantMap &, QString &);
+        QString evaluate(EvaluationContext &, const QVariantMap &, QString &);
 
     private:
         QString _name;
@@ -100,7 +103,8 @@ namespace VariableEvaluation {
         double _tolerance;
         QString _value;
         QString _id;
-        QString _parent_id;
+        QString _uuid;
+        QString _parent_uuid;
 
         QList<Variable *> subvars;
     };

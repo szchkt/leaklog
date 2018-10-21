@@ -19,8 +19,8 @@
 
 #include "warningfilter.h"
 
-WarningFilter::WarningFilter(const QString &parent):
-    DBRecord(tableName(), "", "", MTDictionary("parent", parent))
+WarningFilter::WarningFilter(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 QString WarningFilter::tableName()
@@ -32,10 +32,13 @@ class WarningFilterColumns
 {
 public:
     WarningFilterColumns() {
-        columns << Column("parent", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("warning_uuid", "UUID");
         columns << Column("circuit_attribute", "TEXT");
         columns << Column("function", "TEXT");
         columns << Column("value", "TEXT");
+        columns << Column("date_updated", "TEXT");
+        columns << Column("updated_by", "TEXT");
     }
 
     ColumnList columns;

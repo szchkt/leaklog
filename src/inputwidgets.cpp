@@ -125,7 +125,8 @@ MDAbstractInputWidget(id, widget)
 
 MDLineEdit::MDLineEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value, int maxintvalue, const QString &colour, bool enabled):
 QLineEdit(parent),
-MDInputWidget(id, labeltext, parent, this)
+MDInputWidget(id, labeltext, parent, this),
+nullvalue(QVariant::String)
 {
     if (!colour.isEmpty()) { setPalette(paletteForColour(colour)); }
     setMinimumSize(150, sizeHint().height());
@@ -280,7 +281,7 @@ MDNullableInputWidget(id, labeltext, parent, this)
 
 QVariant MDNullableDoubleSpinBox::variantValue() const
 {
-    return label()->wasChanged() ? value() : QVariant();
+    return label()->wasChanged() ? value() : QVariant(QVariant::String);
 }
 
 void MDNullableDoubleSpinBox::setVariantValue(const QVariant &value)
@@ -306,7 +307,8 @@ MDComboBox::MDComboBox(const QString &id, const QString &labeltext, QWidget *par
 #endif
     , bool enabled):
 QComboBox(parent),
-MDInputWidget(id, labeltext, parent, this)
+MDInputWidget(id, labeltext, parent, this),
+nullvalue(QVariant::String)
 {
     installEventFilter(new WheelEventEater(this));
 #ifndef Q_OS_MAC
@@ -403,11 +405,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDateTime(value.isEmpty() ? QDateTime::currentDateTime() : QDateTime::fromString(value, DATE_TIME_FORMAT));
     setCalendarPopup(true);
     calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
 }
 
 QVariant MDDateTimeEdit::variantValue() const
@@ -433,11 +431,7 @@ MDInputWidget(id, labeltext, parent, this)
     setDate(value.isEmpty() ? QDate::currentDate() : QDate::fromString(value, DATE_FORMAT));
     setCalendarPopup(true);
     calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-    calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
     calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
 }
 
 QVariant MDDateEdit::variantValue() const
@@ -448,6 +442,12 @@ QVariant MDDateEdit::variantValue() const
 void MDDateEdit::setVariantValue(const QVariant &value)
 {
     setDate(QDate::fromString(value.toString(), DATE_FORMAT));
+}
+
+void MDDateEdit::setEnabled(bool enabled)
+{
+    QDateEdit::setEnabled(enabled);
+    label()->widget()->setEnabled(enabled);
 }
 
 MDAddressEdit::MDAddressEdit(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
@@ -508,6 +508,12 @@ void MDPlainTextEdit::setVariantValue(const QVariant &value)
     setPlainText(value.toString());
 }
 
+void MDPlainTextEdit::setEnabled(bool enabled)
+{
+    QPlainTextEdit::setEnabled(enabled);
+    label()->widget()->setEnabled(enabled);
+}
+
 MDGroupedCheckBoxes::MDGroupedCheckBoxes(const QString &id, const QString &labeltext, QWidget *parent, int grouped_value):
 QGroupBox(" ", parent),
 MDInputWidget(id, labeltext, parent, this)
@@ -545,8 +551,8 @@ QVariant MDGroupedCheckBoxes::variantValue() const
     return QVariant(value);
 }
 
-MDFileChooser::MDFileChooser(const QString &id, const QString &labeltext, QWidget *parent, int file_id):
-DBFileChooser(parent, file_id),
+MDFileChooser::MDFileChooser(const QString &id, const QString &labeltext, QWidget *parent, const QString &file_uuid):
+DBFileChooser(file_uuid, parent),
 MDInputWidget(id, labeltext, parent, this)
 {
 }
@@ -596,7 +602,7 @@ QVariant MDRadioButtonGroup::variantValue() const
         if (i.key()->isChecked())
             return i.value();
     }
-    return QVariant();
+    return QVariant(QVariant::String);
 }
 
 MDHiddenIdField::MDHiddenIdField(const QString &id, QWidget *parent, const QVariant &value):

@@ -19,9 +19,22 @@
 
 #include "circuitunit.h"
 
-CircuitUnit::CircuitUnit(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
+#include "circuit.h"
+#include "circuitunittype.h"
+
+CircuitUnit::CircuitUnit(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
 {}
+
+Circuit CircuitUnit::circuit()
+{
+    return circuitUUID();
+}
+
+CircuitUnitType CircuitUnit::unitType()
+{
+    return unitTypeUUID();
+}
 
 QString CircuitUnit::tableName()
 {
@@ -32,10 +45,9 @@ class CircuitUnitColumns
 {
 public:
     CircuitUnitColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
-        columns << Column("company_id", "INTEGER");
-        columns << Column("circuit_id", "INTEGER");
-        columns << Column("unit_type_id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("circuit_uuid", "UUID");
+        columns << Column("unit_type_uuid", "UUID");
         columns << Column("sn", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");

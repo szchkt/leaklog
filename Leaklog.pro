@@ -22,7 +22,6 @@ HEADERS       += src/aboutwidget.h \
                  src/editdialoguetable.h \
                  src/editdialoguetablegroups.h \
                  src/editdialoguewidgets.h \
-                 src/editdialoguewithautoid.h \
                  src/editinspectiondialogue.h \
                  src/editinspectiondialogueaccess.h \
                  src/editinspectiondialogueassemblyrecordtab.h \
@@ -43,6 +42,7 @@ HEADERS       += src/aboutwidget.h \
                  src/main.h \
                  src/mainwindow.h \
                  src/mainwindowsettings.h \
+                 src/migrations.h \
                  src/models/servicecompany.h \
                  src/models/customer.h \
                  src/models/person.h \
@@ -50,7 +50,7 @@ HEADERS       += src/aboutwidget.h \
                  src/models/compressor.h \
                  src/models/inspection.h \
                  src/models/inspectioncompressor.h \
-                 src/models/inspectionimage.h \
+                 src/models/inspectionfile.h \
                  src/models/repair.h \
                  src/models/inspector.h \
                  src/models/variable.h \
@@ -69,11 +69,13 @@ HEADERS       += src/aboutwidget.h \
                  src/models/circuitunit.h \
                  src/models/dbinfo.h \
                  src/models/style.h \
+                 src/models/journalentry.h \
                  src/mtaddress.h \
                  src/mtcheckboxgroup.h \
                  src/mtcolourcombobox.h \
                  src/mtdictionary.h \
                  src/mtlistwidget.h \
+                 src/mtquery.h \
                  src/mtrecord.h \
                  src/mtsqlquery.h \
                  src/mtsqlqueryresult.h \
@@ -91,6 +93,7 @@ HEADERS       += src/aboutwidget.h \
                  src/reportdata.h \
                  src/reportdatacontroller.h \
                  src/sha256.h \
+                 src/syncengine.h \
                  src/tabbededitdialogue.h \
                  src/toolbarstack.h \
                  src/undostack.h \
@@ -138,7 +141,6 @@ SOURCES       += src/aboutwidget.cpp \
                  src/editdialoguetable.cpp \
                  src/editdialoguetablegroups.cpp \
                  src/editdialoguewidgets.cpp \
-                 src/editdialoguewithautoid.cpp \
                  src/editinspectiondialogue.cpp \
                  src/editinspectiondialogueaccess.cpp \
                  src/editinspectiondialogueassemblyrecordtab.cpp \
@@ -158,6 +160,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/main.cpp \
                  src/mainwindow.cpp \
                  src/mainwindowsettings.cpp \
+                 src/migrations.cpp \
                  src/models/servicecompany.cpp \
                  src/models/customer.cpp \
                  src/models/person.cpp \
@@ -165,7 +168,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/models/compressor.cpp \
                  src/models/inspection.cpp \
                  src/models/inspectioncompressor.cpp \
-                 src/models/inspectionimage.cpp \
+                 src/models/inspectionfile.cpp \
                  src/models/repair.cpp \
                  src/models/inspector.cpp \
                  src/models/variable.cpp \
@@ -184,7 +187,9 @@ SOURCES       += src/aboutwidget.cpp \
                  src/models/circuitunit.cpp \
                  src/models/dbinfo.cpp \
                  src/models/style.cpp \
+                 src/models/journalentry.cpp \
                  src/mtaddress.cpp \
+                 src/mtquery.cpp \
                  src/mtrecord.cpp \
                  src/mtsqlquery.cpp \
                  src/mtsqlqueryresult.cpp \
@@ -198,6 +203,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/reportdata.cpp \
                  src/reportdatacontroller.cpp \
                  src/sha256.cpp \
+                 src/syncengine.cpp \
                  src/tabbededitdialogue.cpp \
                  src/toolbarstack.cpp \
                  src/undostack.cpp \
@@ -227,12 +233,8 @@ SOURCES       += src/aboutwidget.cpp \
                  src/viewtabsettings.cpp \
                  src/warnings.cpp
 
-lessThan(QT_MAJOR_VERSION, 5) {
-    QT            += network webkit sql
-    CONFIG        += depend_includepath
-} else {
-    QT            += widgets network webkitwidgets sql printsupport
-}
+QT                += widgets network webengine webenginewidgets sql printsupport
+CONFIG            += c++11
 
 # fparser
 HEADERS           += include/fparser/fparser_gmpint.hh include/fparser/fparser_mpfr.hh include/fparser/fparser.hh include/fparser/fpconfig.hh
@@ -246,14 +248,16 @@ SOURCES           += include/csvparser/mtcsvparser.cpp
 
 DESTDIR            = bin
 INCLUDEPATH       += src src/models src/views include
-UI_HEADERS_DIR     = ui/include
-UI_SOURCES_DIR     = ui
+UI_DIR             = ui/include
 
 win32 {
     RC_FILE        = rc/leaklog.rc
     OBJECTS_DIR    = build/win32
     MOC_DIR        = build/win32
     RCC_DIR        = build/win32
+}
+
+win32-g++ {
     LIBS          += C:\MinGW\lib\libgdi32.a
 }
 
@@ -266,7 +270,7 @@ macx {
     icons.files    = rc/images/lklg.icns
     QMAKE_BUNDLE_DATA += icons
     CONFIG        += x86_64
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
     QMAKE_CC       = clang
     QMAKE_CXX      = clang++
     QMAKE_LINK     = clang++
@@ -274,7 +278,11 @@ macx {
     QMAKE_LFLAGS   += -stdlib=libc++
 }
 
-QMAKE_CXXFLAGS    += -std=c++0x
+win32-msvc* {
+    QMAKE_CXXFLAGS += /std:c++14
+} else {
+    QMAKE_CXXFLAGS += -std=c++0x
+}
 
 unix {
     OBJECTS_DIR    = build/unix

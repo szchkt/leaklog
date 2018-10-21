@@ -21,6 +21,7 @@
 #include "defs.h"
 #include "global.h"
 #include "htmlbuilder.h"
+#include "mtwebpage.h"
 
 #include <QBuffer>
 #include <QDesktopServices>
@@ -29,15 +30,18 @@
 AboutWidget::AboutWidget()
 {
     setupUi(this);
+
+    MTWebPage *page = new MTWebPage(webv_about);
+    page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);
+    webv_about->setPage(page);
+
     QObject::connect(btn_about_qt, SIGNAL(clicked()), qApp, SLOT(aboutQt()));
 #ifdef Q_OS_MAC
     QObject::connect(btn_about_qt, SIGNAL(clicked()), this, SLOT(close()));
 #endif
     QObject::connect(btn_acknowledgements, SIGNAL(clicked(bool)), this, SLOT(showAcknowledgements(bool)));
     QObject::connect(btn_licence, SIGNAL(clicked()), this, SLOT(showLicence()));
-    QObject::connect(webv_about, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
-
-    webv_about->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 
     lbl_version->setText(lbl_version->text().arg(QString(LEAKLOG_VERSION) + (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "")));
 

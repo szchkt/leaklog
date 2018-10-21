@@ -20,17 +20,32 @@
 #ifndef MTWEBPAGE_H
 #define MTWEBPAGE_H
 
-#include <QWebPage>
+#include <QtWebEngineWidgets/QWebEnginePage>
 
-class MTWebPage : public QWebPage
+class MTWebPage : public QWebEnginePage
 {
     Q_OBJECT
 
 public:
-    MTWebPage(QObject *parent = 0): QWebPage(parent) {}
+    enum LinkDelegationPolicy {
+        DontDelegateLinks,
+        DelegateExternalLinks,
+        DelegateAllLinks
+    };
+
+    MTWebPage(QObject *parent = 0): QWebEnginePage(parent) {}
+
+    void setLinkDelegationPolicy(LinkDelegationPolicy policy);
+    LinkDelegationPolicy linkDelegationPolicy() const;
+
+signals:
+    void linkClicked(const QUrl &url);
 
 protected:
-    bool acceptNavigationRequest(QWebFrame *, const QNetworkRequest &, NavigationType);
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
+
+private:
+    LinkDelegationPolicy _linkDelegationPolicy;
 };
 
 #endif // MTWEBPAGE_H

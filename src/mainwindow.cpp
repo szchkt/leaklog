@@ -28,6 +28,7 @@
 #include "aboutwidget.h"
 #include "permissionsdialogue.h"
 #include "sha256.h"
+#include "syncengine.h"
 #include "undostack.h"
 #include "viewtab.h"
 
@@ -63,7 +64,8 @@ using namespace Global;
 
 MainWindow::MainWindow():
     m_tab(NULL),
-    m_current_scale(1.0)
+    m_current_scale(1.0),
+    sync_engine(NULL)
 {
     // i18n
     QTranslator translator; translator.load(":/i18n/Leaklog-i18n.qm");
@@ -80,6 +82,11 @@ MainWindow::MainWindow():
     scaleFactorChanged();
 
     network_access_manager = new QNetworkAccessManager(this);
+    authenticator = new Authenticator(this);
+    QObject::connect(authenticator, SIGNAL(loginFinished(bool)), this, SLOT(loginFinished(bool)));
+    QObject::connect(authenticator, SIGNAL(logoutFinished()), this, SLOT(logoutFinished()));
+
+    loginFinished(!authenticator->token().isEmpty());
 
     // Dock widgets
     dw_variables->setVisible(false);
@@ -111,29 +118,42 @@ MainWindow::MainWindow():
     dict_action_time_format.insert(actionTime_hmm, MainWindowSettings::hmm);
 
 #ifdef Q_OS_MAC
-    bool isYosemite = macVersion() >= QSysInfo::MV_10_0 + 10;
-
     // Tab bar
 
-    if (isYosemite) {
-        tabw_main->setDocumentMode(false);
-        tabw_main->setStyleSheet("QTabWidget::pane { border-top: 1px solid #ACACAC; }"
-                                 "QTabWidget::tab-bar { alignment: left; }"
-                                 "QTabBar::tab { background-color: #C7C6C7; border-right: 1px solid #ACACAC; padding: 3px 10px; }"
-                                 "QTabBar::tab:!active { background-color: #ECECEC; border-right: 1px solid #DBDBDB; }"
-                                 "QTabBar::tab:selected { background-color: #D8D8D8; }"
-                                 "QTabBar::tab:!active:selected { background-color: #F6F6F6; }"
-                                 "QTabBar::tab:!selected:hover { background-color: #BEBEBE; border-right: 1px solid #9B9A9B; }"
-                                 "QTabBar::tab:!selected:pressed { background-color: #9C9E9C; border-right: 1px solid #7C7A7C; }"
-                                 "QTabBar::tab:!active:!selected:hover { background-color: #E3E3E3; border-right: 1px solid #DBDBDB; }");
-    }
+    tabw_main->setDocumentMode(false);
+    tabw_main->setStyleSheet(R"(
+        QTabWidget::pane { border-top: 1px solid #ACACAC; }
+        QTabWidget::tab-bar { alignment: left; }
+        QTabBar::tab {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #BDBDBD, stop: 1 #B4B4B4);
+            border-right: 1px solid #ACACAC; padding: 3px 10px;
+        }
+        QTabBar::tab:!active { background-color: #E7E7E7; border-right: 1px solid #DBDBDB; }
+        QTabBar::tab:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #D9D9D9, stop: 1 #D0D0D0); }
+        QTabBar::tab:!active:selected { background-color: #F4F4F4; }
+        QTabBar::tab:!selected:hover { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #B4B4B4, stop: 1 #ABABAB); }
+        QTabBar::tab:!selected:pressed { background-color: #9C9E9C; border-right: 1px solid #7C7A7C; }
+        QTabBar::tab:!active:!selected:hover { background-color: #DEDEDE; border-right: 1px solid #DBDBDB; }
+        QTabBar::close-button { image: url(:/images/images/tab_close.svg); }
+        QTabBar::close-button:hover { image: url(:/images/images/tab_close_hover.svg); }
+    )");
 
     // Status bar
 
-    if (isYosemite) {
-        statusbar->setStyleSheet("QStatusBar { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ECECEC, stop: 1 #D5D5D5); border-top: 1px solid #ACACAC; }");
-    }
+    statusbar->setStyleSheet(R"(
+        QStatusBar {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ECECEC, stop: 1 #D5D5D5);
+            border-top: 1px solid #ACACAC;
+        }
+    )");
 #endif
+
+    progress_bar = new QProgressBar(statusbar);
+    progress_bar->setRange(0, 0);
+    progress_bar->setVisible(false);
+    progress_bar->setMaximumSize(150, 16);
+    statusbar->addPermanentWidget(progress_bar);
+    statusbar->setMaximumHeight(20);
 
     // Toolbar
     tbtn_open = new QToolButton(this);
@@ -163,11 +183,10 @@ MainWindow::MainWindow():
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->insertWidget(actionLock, spacer);
 
-    QString search_style = "QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }";
 #ifdef Q_OS_MAC
-    if (isYosemite) {
-        search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0); }";
-    }
+    QString search_style = "QLineEdit { border-bottom: 1px solid #BABABA; border-radius: 4px; background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0); }";
+#else
+    QString search_style = "QLineEdit { border: 1px solid #9F9F9F; border-radius: 10px; }";
 #endif
     le_search = new SearchLineEdit(this, true, search_style);
     le_search->setMaximumWidth(200);
@@ -196,6 +215,7 @@ MainWindow::MainWindow():
     lw_recent_docs->setContextMenuPolicy(Qt::CustomContextMenu);
 
     setAllEnabled(false);
+    setDatabaseModified(false);
 
     QObject::connect(actionShow_icons_only, SIGNAL(toggled(bool)), this, SLOT(showIconsOnly(bool)));
     QObject::connect(actionAbout_Leaklog, SIGNAL(triggered()), this, SLOT(about()));
@@ -204,6 +224,7 @@ MainWindow::MainWindow():
     QObject::connect(actionNew, SIGNAL(triggered()), this, SLOT(newDatabase()));
     QObject::connect(actionLocal_database, SIGNAL(triggered()), this, SLOT(open()));
     QObject::connect(actionRemote_database, SIGNAL(triggered()), this, SLOT(openRemote()));
+    QObject::connect(actionServer_database, SIGNAL(triggered()), this, SLOT(downloadDatabase()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
     QObject::connect(actionSave_and_compact, SIGNAL(triggered()), this, SLOT(saveAndCompact()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeDatabase()));
@@ -218,10 +239,11 @@ MainWindow::MainWindow():
     QObject::connect(actionHTML, SIGNAL(triggered()), this, SLOT(exportHTML()));
     QObject::connect(le_search, SIGNAL(textChanged(QString)), this, SLOT(find()));
     QObject::connect(actionFind, SIGNAL(triggered()), le_search, SLOT(setFocus()));
-    QObject::connect(actionFind_All, SIGNAL(triggered()), this, SLOT(findAll()));
+    QObject::connect(actionFind, SIGNAL(triggered()), le_search, SLOT(selectAll()));
     QObject::connect(actionFind_next, SIGNAL(triggered()), this, SLOT(findNext()));
     QObject::connect(actionFind_previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
     QObject::connect(actionChange_language, SIGNAL(triggered()), this, SLOT(changeLanguage()));
+    QObject::connect(actionLog_In, SIGNAL(triggered()), this, SLOT(logIn()));
     QObject::connect(actionReporting, SIGNAL(triggered(bool)), this, SLOT(reportData(bool)));
     QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged()), this, SLOT(serviceCompanyInformationVisibilityChanged()));
     QObject::connect(actionPrint_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationPrinted(bool)));
@@ -247,6 +269,7 @@ MainWindow::MainWindow():
     QObject::connect(actionShow_Field_of_application, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Oil, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionMost_recent_first, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionSync, SIGNAL(triggered()), this, SLOT(sync()));
     QObject::connect(actionLock, SIGNAL(triggered()), this, SLOT(toggleLocked()));
     QObject::connect(actionConfigure_permissions, SIGNAL(triggered()), this, SLOT(configurePermissions()));
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
@@ -293,9 +316,6 @@ MainWindow::MainWindow():
     QObject::connect(actionAdd_inspector, SIGNAL(triggered()), this, SLOT(addInspector()));
     QObject::connect(actionEdit_inspector, SIGNAL(triggered()), this, SLOT(editInspector()));
     QObject::connect(actionRemove_inspector, SIGNAL(triggered()), this, SLOT(removeInspector()));
-    QObject::connect(actionExport_customer_data, SIGNAL(triggered()), this, SLOT(exportCustomerData()));
-    QObject::connect(actionExport_circuit_data, SIGNAL(triggered()), this, SLOT(exportCircuitData()));
-    QObject::connect(actionExport_inspection_data, SIGNAL(triggered()), this, SLOT(exportInspectionData()));
     QObject::connect(actionImport_data, SIGNAL(triggered()), this, SLOT(importData()));
     QObject::connect(actionImport_CSV, SIGNAL(triggered()), this, SLOT(importCSV()));
     QObject::connect(actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdates()));
@@ -376,7 +396,9 @@ void MainWindow::openFile(const QString &file)
     QFileInfo file_info(file);
     if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
         addRecent(file_info.absoluteFilePath());
-        openDatabase(file_info.absoluteFilePath(), file_info.absoluteFilePath());
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(file_info.absoluteFilePath());
+        openDatabase(db, file_info.absoluteFilePath());
     }
 }
 
@@ -421,28 +443,35 @@ void MainWindow::showIconsOnly(bool show)
 void MainWindow::printPreview()
 {
     QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(print(QPrinter *)));
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(printPreview(QPrinter *)));
     d.exec();
+}
+
+void MainWindow::printPreview(QPrinter *printer)
+{
+    bool printing = true;
+    m_tab->webView()->page()->print(printer, [&printing](bool) {
+        printing = false;
+    });
+    while (printing) {
+        QApplication::processEvents();
+    }
 }
 
 void MainWindow::print()
 {
-    QPrinter printer(QPrinter::HighResolution);
-    QPrintDialog d(&printer, this);
+    QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+    QPrintDialog d(printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    print(&printer);
+    print(printer);
 }
 
 void MainWindow::print(QPrinter *printer)
 {
-#ifdef Q_OS_MAC
-    m_tab->webView()->setZoomFactor(0.75);
-#endif
-    m_tab->webView()->print(printer);
-#ifdef Q_OS_MAC
-    m_tab->webView()->setZoomFactor(Global::scaleFactor());
-#endif
+    m_tab->webView()->page()->print(printer, [printer](bool) {
+        delete printer;
+    });
 }
 
 QString MainWindow::fileNameForCurrentView()
@@ -461,12 +490,12 @@ QString MainWindow::fileNameForCurrentView()
 
 void MainWindow::exportPDFPortrait()
 {
-    exportPDF(QPrinter::Portrait);
+    exportPDF(QPageLayout::Portrait);
 }
 
 void MainWindow::exportPDFLandscape()
 {
-    exportPDF(QPrinter::Landscape);
+    exportPDF(QPageLayout::Landscape);
 }
 
 void MainWindow::exportPDF(int orientation)
@@ -476,11 +505,10 @@ void MainWindow::exportPDF(int orientation)
                                                 tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
-    QPrinter printer(QPrinter::HighResolution);
-    printer.setOrientation((QPrinter::Orientation)orientation);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(path);
-    print(&printer);
+    m_tab->webView()->page()->printToPdf(path, QPageLayout(QPageSize(QPageSize::A4),
+                                                           (QPageLayout::Orientation)orientation,
+                                                           QMarginsF(10, 10, 10, 10),
+                                                           QPageLayout::Millimeter));
 }
 
 void MainWindow::exportHTML()
@@ -499,7 +527,7 @@ void MainWindow::exportHTML()
     if (m_tab->currentView() == View::ViewCount)
         return;
 
-    QString html = m_tab->view(m_tab->currentView())->renderHTML();
+    QString html = m_tab->view(m_tab->currentView())->renderHTML(true);
     if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -578,24 +606,25 @@ void MainWindow::printLabel(bool detailed)
     }
     if (!ok) { return; }
 
-    QString selected_inspector = m_tab->selectedInspector();
+    QString selected_inspector_uuid = m_tab->selectedInspectorUUID();
     QVariantMap attributes;
     if (detailed) {
-        attributes.insert("circuit_id", formatCompanyID(m_tab->selectedCustomer()) + "." + m_tab->selectedCircuit().rightJustified(5, '0'));
-        Circuit circuit(m_tab->selectedCustomer(), m_tab->selectedCircuit());
-        attributes.unite(circuit.list("refrigerant, " + circuitRefrigerantAmountQuery()
+        Customer customer(m_tab->selectedCustomerUUID());
+        Circuit circuit(m_tab->selectedCircuitUUID());
+        attributes.unite(circuit.list("id, refrigerant, " + circuitRefrigerantAmountQuery()
                                       + ", hermetic, leak_detector, inspection_interval"));
+        attributes.insert("circuit_id", customer.companyID() + "." + attributes.value("id").toString().rightJustified(5, '0'));
 
         MTSqlQuery query;
-        query.prepare("SELECT * FROM inspections WHERE customer = :customer_id AND circuit = :circuit_id"
-                      " AND (nominal <> 1 OR nominal IS NULL) AND outside_interval = 0 ORDER BY date DESC");
-        query.bindValue(":customer_id", m_tab->selectedCustomer());
-        query.bindValue(":circuit_id", m_tab->selectedCircuit());
+        query.prepare("SELECT * FROM inspections WHERE circuit_uuid = :circuit_uuid"
+                      " AND inspection_type <> 1 AND outside_interval = 0 ORDER BY date DESC");
+        query.bindValue(":circuit_uuid", m_tab->selectedCircuitUUID());
         query.exec();
+        QSqlRecord record = query.record();
         if (query.next()) {
             QVariantMap inspection;
-            for (int i = 0; i < query.record().count(); ++i)
-                inspection.insert(query.record().fieldName(i), query.value(i));
+            for (int i = 0; i < record.count(); ++i)
+                inspection.insert(record.fieldName(i), query.value(i));
 
             attributes.insert("date", inspection.value("date").toString());
 
@@ -610,28 +639,26 @@ void MainWindow::printLabel(bool detailed)
                                   QDate::fromString(inspection.value("date").toString().split("-").first(), DATE_FORMAT)
                                   .addDays(inspection_interval).toString(DATE_FORMAT));
 
-            selected_inspector = inspection.value("inspector").toString();
+            selected_inspector_uuid = inspection.value("inspector").toString();
 
             Variable refr_add_per("refr_add_per");
             refr_add_per.next();
             QString unparsed_expression = refr_add_per.valueExpression();
             if (!unparsed_expression.isEmpty()) {
-                attributes.insert("refr_add_per", Expression(unparsed_expression).evaluate(inspection, m_tab->selectedCustomer(), m_tab->selectedCircuit()));
+                attributes.insert("refr_add_per", Expression(unparsed_expression).evaluate(inspection, m_tab->selectedCustomerUUID(), m_tab->selectedCircuitUUID()));
             }
         }
     }
 
-    Inspector inspector(selected_inspector);
+    Inspector inspector(selected_inspector_uuid);
     if (inspector.exists()) {
-        attributes.insert("inspector", selected_inspector.rightJustified(4, '0'));
-        attributes.unite(inspector.list("person"));
+        attributes.unite(inspector.list("certificate_number, person"));
     }
 
-    QString default_service_company = DBInfo::valueForKey("default_service_company");
-    ServiceCompany service_company(default_service_company);
+    ServiceCompany service_company;
     if (service_company.exists()) {
-        attributes.insert("id", formatCompanyID(default_service_company));
-        attributes.unite(service_company.list("name, address, mail, phone"));
+        attributes.unite(service_company.list("id, name, address, mail, phone"));
+        attributes.insert("id", attributes.value("id").toString());
     }
 
     QApplication::processEvents();
@@ -717,7 +744,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawLine(x + (w / 3), y + title_h + (4 * h / 7), x + (2 * w / 3), y + title_h + (4 * h / 7));
     painter.drawLine(x + (w / 3), y + title_h + (5 * h / 7), x + (2 * w / 3), y + title_h + (5 * h / 7));
 
-    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("inspector").toString());
+    painter.drawText(m + x + (w / 3), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("certificate_number").toString());
     painter.drawLine(x + (w / 2), y + title_h + (5 * h / 7), x + (w / 2), y + h);
     painter.drawText(m + x + (w / 2), y + title_h + (5 * h / 7), w / 6 - dm, h / 14, Qt::AlignCenter, attributes.value("id").toString());
 
@@ -825,15 +852,7 @@ void MainWindow::reportDataFinished()
 void MainWindow::find()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
-    m_tab->webView()->findText(le_search->text(), QWebPage::FindWrapsAroundDocument);
-}
-
-void MainWindow::findAll()
-{
-    if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(QString(), QWebPage::HighlightAllOccurrences);
-    m_tab->webView()->findText(le_search->text(), QWebPage::HighlightAllOccurrences);
+    m_tab->webView()->findText(le_search->text());
 }
 
 void MainWindow::findNext()
@@ -845,7 +864,7 @@ void MainWindow::findNext()
 void MainWindow::findPrevious()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    m_tab->webView()->findText(le_search->text(), QWebPage::FindBackward);
+    m_tab->webView()->findText(le_search->text(), QWebEnginePage::FindBackward);
 }
 
 void MainWindow::refreshView()
@@ -905,7 +924,6 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionReporting->setEnabled(enable);
 
     actionFind->setEnabled(enable || everything);
-    actionFind_All->setEnabled(enable || everything);
     actionFind_next->setEnabled(enable || everything);
     actionFind_previous->setEnabled(enable || everything);
 
@@ -1010,6 +1028,8 @@ void MainWindow::enableTools()
     tabw_main->setTabsClosable(tabw_main->count() > 1);
     actionClose_Tab->setEnabled(tabw_main->count() > 1);
 
+    actionSync->setEnabled(m_tab);
+
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
@@ -1049,7 +1069,7 @@ void MainWindow::enableTools()
     tbtn_table_move_down->setEnabled(trw_table_variables->currentIndex().isValid());
 
     tbtn_edit_warning->setEnabled(lw_warnings->currentIndex().isValid());
-    tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && lw_warnings->currentItem()->data(Qt::UserRole).toInt() < 1000);
+    tbtn_remove_warning->setEnabled(lw_warnings->currentIndex().isValid() && !Warnings::isPredefined(lw_warnings->currentItem()->data(Qt::UserRole).toString()));
 
     actionEdit_inspector->setEnabled(inspector_selected);
     actionRemove_inspector->setEnabled(inspector_selected);
@@ -1088,11 +1108,7 @@ void MainWindow::toggleLocked()
         date->setDate(last_date.isEmpty() ? QDate::currentDate() : QDate::fromString(last_date, DATE_FORMAT));
         date->setCalendarPopup(true);
         date->calendarWidget()->setLocale(QLocale());
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-        date->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-#else
         date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
-#endif
         gl->addWidget(date, r, 1);
 
         r++;
@@ -1206,7 +1222,7 @@ void MainWindow::configureAutosave()
     if (!QSqlDatabase::database().isOpen())
         return;
 
-    QString autosave_mode = DBInfo::valueForKey("autosave");
+    QString autosave_mode = DBInfo::autosaveMode();
 
     QDialog *d = new QDialog(this);
     d->setWindowTitle(tr("Configure Auto Save - Leaklog"));
@@ -1262,8 +1278,8 @@ void MainWindow::configureAutosave()
         else
             autosave_mode.clear();
 
-        if (DBInfo::valueForKey("autosave") != autosave_mode) {
-            DBInfo::setValueForKey("autosave", autosave_mode);
+        if (DBInfo::autosaveMode() != autosave_mode) {
+            DBInfo::setAutosaveMode(autosave_mode);
             setDatabaseModified(true);
         }
     }
@@ -1415,9 +1431,131 @@ void MainWindow::languageChanged()
     cb_lang = NULL;
 }
 
+void MainWindow::logIn()
+{
+    QWidget *w = new QWidget(this, Qt::Dialog);
+    w->setWindowModality(Qt::WindowModal);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MAC
+    w->setWindowTitle(tr("Log In"));
+#else
+    w->setWindowTitle(tr("Log In - Leaklog"));
+#endif
+
+    QGridLayout *layout = new QGridLayout(w);
+    layout->addWidget(new QLabel(tr("Enter your szchkt.org username and password:"), w), 0, 0, 1, 2);
+
+    QLineEdit *username = new QLineEdit(authenticator->username(), w);
+    username->setObjectName("username");
+    layout->addWidget(username, 1, 0);
+
+    QLineEdit *password = new QLineEdit(w);
+    password->setObjectName("password");
+    password->setEchoMode(QLineEdit::Password);
+    layout->addWidget(password, 1, 1);
+
+    QLabel *tos = new QLabel(tr("By using this service, you agree to the <a href=\"https://leaklog.org/terms\">Terms of Service</a>."), w);
+    tos->setTextFormat(Qt::RichText);
+    tos->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    tos->setOpenExternalLinks(true);
+    layout->addWidget(tos, 2, 0, 1, 2);
+
+    QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Reset | QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Log In"));
+    if (authenticator->token().isEmpty()) {
+        bb->button(QDialogButtonBox::Reset)->setText(tr("Register"));
+        QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doSignUp(QAbstractButton *)));
+    } else {
+        bb->button(QDialogButtonBox::Reset)->setText(tr("Log Out"));
+        QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doLogOut(QAbstractButton *)));
+    }
+    QObject::connect(bb, SIGNAL(accepted()), this, SLOT(doLogIn()));
+    QObject::connect(bb, SIGNAL(rejected()), w, SLOT(close()));
+    layout->addWidget(bb, 3, 0, 1, 2);
+
+    w->show();
+}
+
+void MainWindow::doLogIn()
+{
+    QWidget *button = qobject_cast<QWidget *>(sender());
+    if (!button)
+        return;
+
+    QWidget *w = button->window();
+    QString username = w->findChild<QLineEdit *>("username")->text();
+    QString password = w->findChild<QLineEdit *>("password")->text();
+
+    w->close();
+
+    if (!username.isEmpty() && !password.isEmpty()) {
+        authenticator->logIn(username, password);
+    } else {
+        logIn();
+    }
+}
+
+void MainWindow::doLogOut(QAbstractButton *sender)
+{
+    if (qobject_cast<QDialogButtonBox *>(sender->parent())->buttonRole(sender) != QDialogButtonBox::ResetRole)
+        return;
+
+    sender->window()->close();
+
+    authenticator->logOut();
+}
+
+void MainWindow::doSignUp(QAbstractButton *sender)
+{
+    if (qobject_cast<QDialogButtonBox *>(sender->parent())->buttonRole(sender) != QDialogButtonBox::ResetRole)
+        return;
+
+    sender->window()->close();
+
+    QDesktopServices::openUrl(QUrl("https://leaklog.org"));
+}
+
+void MainWindow::loginFinished(bool success)
+{
+    actionLog_In->setText(success ? authenticator->username() : tr("Log In"));
+
+    if (success) {
+        sync();
+    } else if (!authenticator->error().isEmpty()) {
+        QMessageBox message(this);
+#ifdef Q_OS_MAC
+        message.setWindowTitle(tr("Log In"));
+#else
+        message.setWindowTitle(tr("Log In - Leaklog"));
+#endif
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setText(tr("Failed to log in."));
+        message.setInformativeText(authenticator->error());
+        message.addButton(tr("Cancel"), QMessageBox::AcceptRole);
+        message.setDefaultButton(message.addButton(tr("Try Again"), QMessageBox::ActionRole));
+        QObject::connect(&message, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(loginFinished(QAbstractButton *)));
+        message.exec();
+    }
+}
+
+void MainWindow::loginFinished(QAbstractButton *button)
+{
+    if (qobject_cast<QDialogButtonBox *>(button->parent())->buttonRole(button) != QDialogButtonBox::ActionRole)
+        return;
+
+    logIn();
+}
+
+void MainWindow::logoutFinished()
+{
+    actionLog_In->setText(tr("Log In"));
+}
+
 void MainWindow::checkForUpdates(bool silent)
 {
-    QNetworkRequest request(QString("http://leaklog.org/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5&debug=%6&automatic=%7")
+    QNetworkRequest request(QString("https://leaklog.org/current-version.php?version=%1&preview=%2&lang=%3&os=%4&os_version=%5&debug=%6&automatic=%7")
               .arg(F_LEAKLOG_VERSION)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
@@ -1524,10 +1662,10 @@ void MainWindow::about()
 
 void MainWindow::openDocumentation()
 {
-    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/wiki"));
+    QDesktopServices::openUrl(tr("https://github.com/szchkt/leaklog/wiki"));
 }
 
 void MainWindow::openReleaseNotes()
 {
-    QDesktopServices::openUrl(tr("http://github.com/szchkt/leaklog/releases"));
+    QDesktopServices::openUrl(tr("https://github.com/szchkt/leaklog/releases"));
 }

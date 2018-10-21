@@ -34,26 +34,29 @@ InspectorsView::InspectorsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectorsView::renderHTML()
+QString InspectorsView::renderHTML(bool)
 {
-    QString highlighted_id = settings->selectedInspector();
+    QString highlighted_uuid = settings->selectedInspectorUUID();
     HTMLDiv div;
 
     writeServiceCompany(div);
 
-    div << writeInspectorsTable(highlighted_id);
+    div << writeInspectorsTable(highlighted_uuid);
     return viewTemplate("inspectors").arg(div.html());
 }
 
-HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, const QString &inspector_id)
+HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid, const QString &inspector_uuid)
 {
-    Inspector inspectors_record(inspector_id);
-    if (!settings->toolBarStack()->isFilterEmpty()) {
-        inspectors_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    MTQuery inspectors_query = Inspector::query();
+    if (!inspector_uuid.isEmpty()) {
+        inspectors_query.parents().insert("uuid", inspector_uuid);
     }
-    ListOfVariantMaps inspectors(inspectors_record.listAll("*,"
-       " (SELECT COUNT(date) FROM inspections WHERE inspector = CAST(inspectors.id AS text)) AS inspections_count,"
-       " (SELECT COUNT(date) FROM repairs WHERE repairman = CAST(inspectors.id AS text)) AS repairs_count"));
+    if (!settings->toolBarStack()->isFilterEmpty()) {
+        inspectors_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    }
+    ListOfVariantMaps inspectors(inspectors_query.listAll("*,"
+       " (SELECT COUNT(date) FROM inspections WHERE inspector_uuid = inspectors.uuid) AS inspections_count,"
+       " (SELECT COUNT(date) FROM repairs WHERE inspector_uuid = inspectors.uuid) AS repairs_count"));
 
     HTMLTable *table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("highlight");
@@ -69,20 +72,20 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_id, c
     *(_tr->addHeaderCell()) << tr("Number of repairs");
 
     *(table->addRow()->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead_colspan)))
-            << (inspector_id.isEmpty() ? tr("Inspectors") : tr("Inspector"));
+        << (inspector_uuid.isEmpty() ? tr("Inspectors") : tr("Inspector"));
     *table << _tr;
     for (int i = 0; i < inspectors.count(); ++i) {
-        QString id = inspectors.at(i).value("id").toString();
+        QString uuid = inspectors.at(i).value("uuid").toString();
         QString tr_attr;
-        if (inspector_id.isEmpty()) {
-            tr_attr = QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("inspector:" + id);
-            if (highlighted_id == id)
+        if (inspector_uuid.isEmpty()) {
+            tr_attr = QString("id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("inspector:" + uuid);
+            if (highlighted_uuid == uuid)
                 tr_attr.append(" class=\"selected\"");
             tr_attr.append(" style=\"cursor: pointer;\"");
         }
         _tr = table->addRow(tr_attr);
         *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector activity") + "')\" onmouseout=\"UnTip()\"")
-                ->link("inspectorreport:" + id)) << id.rightJustified(4, '0');
+                ->link("inspectorreport:" + uuid)) << inspectors.at(i).value("certificate_number").toString();
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
             QString key = Inspector::attributes().key(n);
             *(_tr->addCell()) << MTVariant(inspectors.at(i).value(key).toString(), key);

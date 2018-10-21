@@ -32,9 +32,10 @@ Variables::Variables(QSqlDatabase db, int scope):
     m_scope(scope)
 {
     initVariables();
-    exec(QString("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg,"
-                 " (SELECT COUNT(v.id) FROM variables AS v WHERE variables.id = v.parent_id) AS count_children"
-                 " FROM variables WHERE variables.scope & %1 > 0 ORDER BY parent_id, id").arg(scope > 0 ? scope : 0xFFFF));
+    exec(QString("SELECT v.parent_uuid, v.uuid, v.id, v.name, v.type, v.unit, v.scope, v.value, v.compare_nom, v.tolerance, v.col_bg,"
+                 " (SELECT COUNT(c.uuid) FROM variables AS c WHERE v.uuid = c.parent_uuid) AS count_children"
+                 " FROM variables AS v LEFT JOIN variables AS p ON v.parent_uuid = p.uuid"
+                 " WHERE v.scope & %1 > 0 ORDER BY COALESCE(p.id, v.id), v.id").arg(scope > 0 ? scope : 0xFFFF));
 }
 
 Variables *Variables::defaultVariables(int scope)
@@ -57,9 +58,14 @@ Variables::Variables(QSqlDatabase db, const QString &filter, int scope):
     initVariables();
 }
 
-VariableContract Variables::variable(const QString &id)
+VariableContract Variables::variableForID(const QString &id)
 {
-    int index = var_indices.value(id, -1);
+    return variableForUUID(createUUIDv5(ns, id));
+}
+
+VariableContract Variables::variableForUUID(const QString &uuid)
+{
+    int index = var_indices.value(uuid, -1);
     if (index >= 0)
         return VariableContract(result()->at(index));
     return VariableContract();
@@ -69,7 +75,7 @@ void Variables::saveResult()
 {
     *pos() = -1;
     while (query()->next()) {
-        int index = var_indices.value(query()->value(Variable::ID).toString(), -1);
+        int index = var_indices.value(query()->value(Variable::UUID).toString(), -1);
         if (index >= 0) {
             bool insert = false;
             QMap<int, QVariant> row = result()->at(index);
@@ -88,13 +94,15 @@ void Variables::saveResult()
             for (int i = 0; i < Variable::FieldCount; ++i)
                 row.insert(i, query()->value(i));
             *result() << row;
-            var_indices.insert(query()->value(Variable::ID).toString(), result()->count() - 1);
+            var_indices.insert(query()->value(Variable::UUID).toString(), result()->count() - 1);
         }
     }
 }
 
 void Variables::initVariables()
 {
+    ns = DBInfo::databaseUUID();
+
     initVariable("t_sec", Variable::Inspection, "mintcream");
     initSubvariable("t_sec", Variable::Inspection, "mintcream", "t_sec_evap_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
     initSubvariable("t_sec", Variable::Inspection, "mintcream", "t_sec_cond_in", QApplication::translate("Units", "%1C").arg(degreeSign()), "", true, 0.0);
@@ -137,7 +145,7 @@ void Variables::initVariables()
     initVariable("rmds", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("notes", Variable::Inspection, "", "", false, 0.0, "");
     initVariable("arno", Variable::Inspection, "", "", false, 0.0, "");
-    initVariable("ar_type", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("ar_type_uuid", Variable::Inspection, "", "", false, 0.0, "");
 
     initVariable("vis_aur_chk", Variable::Inspection, "");
     initSubvariable("vis_aur_chk", Variable::Inspection, "", "corr_def", "", "", false, 0.0);
@@ -160,8 +168,8 @@ void Variables::initVariables()
 
     initVariable("oil_leak_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "");
 
-    initVariable("inspector", Variable::Inspection, "", "", false, 0.0, "");
-    initVariable("operator", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("inspector_uuid", Variable::Inspection, "", "", false, 0.0, "");
+    initVariable("person_uuid", Variable::Inspection, "", "", false, 0.0, "");
 }
 
 void Variables::initVariable(const QString &id, int scope, const QString &unit, const QString &value, bool compare_nom, double tolerance, const QString &col_bg)
@@ -169,6 +177,8 @@ void Variables::initVariable(const QString &id, int scope, const QString &unit, 
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
     QMap<int, QVariant> row;
+    QString uuid = createUUIDv5(ns, id);
+    row.insert(Variable::UUID, uuid);
     row.insert(Variable::ID, id);
     row.insert(Variable::Name, variableNames().value(id));
     row.insert(Variable::Type, variableType(id));
@@ -179,7 +189,7 @@ void Variables::initVariable(const QString &id, int scope, const QString &unit, 
     row.insert(Variable::Tolerance, tolerance);
     row.insert(Variable::ColBg, col_bg);
     *result() << row;
-    var_indices.insert(id, result()->count() - 1);
+    var_indices.insert(uuid, result()->count() - 1);
 }
 
 void Variables::initVariable(const QString &id, int scope, const QString &col_bg)
@@ -187,13 +197,15 @@ void Variables::initVariable(const QString &id, int scope, const QString &col_bg
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
     QMap<int, QVariant> row;
+    QString uuid = createUUIDv5(ns, id);
+    row.insert(Variable::UUID, uuid);
     row.insert(Variable::ID, id);
     row.insert(Variable::Name, variableNames().value(id));
     row.insert(Variable::Type, "group");
     row.insert(Variable::ScopeValue, scope);
     row.insert(Variable::ColBg, col_bg);
     *result() << row;
-    var_indices.insert(id, result()->count() - 1);
+    var_indices.insert(uuid, result()->count() - 1);
 }
 
 void Variables::initSubvariable(const QString &parent, int scope, const QString &col_bg, const QString &id, const QString &unit, const QString &value, bool compare_nom, double tolerance)
@@ -201,7 +213,9 @@ void Variables::initSubvariable(const QString &parent, int scope, const QString 
     if (m_scope > 0 && !(scope & m_scope)) { return; }
     if (!m_filter.isEmpty() && m_filter != id) { return; }
     QMap<int, QVariant> row;
-    row.insert(Variable::ParentID, parent);
+    row.insert(Variable::ParentUUID, createUUIDv5(ns, parent));
+    QString uuid = createUUIDv5(ns, id);
+    row.insert(Variable::UUID, uuid);
     row.insert(Variable::ID, id);
     row.insert(Variable::Name, variableNames().value(id));
     row.insert(Variable::Type, variableType(id));
@@ -212,10 +226,10 @@ void Variables::initSubvariable(const QString &parent, int scope, const QString 
     row.insert(Variable::Tolerance, tolerance);
     row.insert(Variable::ColBg, col_bg);
     *result() << row;
-    var_indices.insert(id, result()->count() - 1);
+    var_indices.insert(uuid, result()->count() - 1);
 }
 
-void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, MTRecord *mt_record,
+void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, Inspection *inspection,
                                         const QDateTime &date, MDComboBox *cb_nominal)
 {
     while (next()) {
@@ -224,22 +238,22 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         if (!valueExpression().isEmpty() || var_type == "group")
             continue;
 
-        QString parent_id = parentID();
+        QString parent_uuid = parentUUID();
         VariableContract parent;
         QString var_id = id();
         QString var_name = QApplication::translate("MainWindow", "%1:").arg(name());
         QString col_bg;
-        if (parent_id.isEmpty()) {
+        if (parent_uuid.isEmpty()) {
             col_bg = colBg();
         } else {
-            parent = variable(parent_id);
-            md->addInputWidgetGroup(parent_id, parent.name());
+            parent = variableForUUID(parent_uuid);
+            md->addInputWidgetGroup(parent_uuid, parent.name());
             col_bg = parent.colBg();
         }
 
         MDAbstractInputWidget *iw = NULL;
 
-        if (var_id == "inspector") {
+        if (var_id == "inspector_uuid") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listInspectors(), col_bg);
             md->addInputWidget(iw);
@@ -248,13 +262,13 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                                      attributes.value(var_id).toString(), col_bg);
             iw->setRowSpan(0);
             md->addInputWidget(iw);
-        } else if (var_id == "operator") {
-            if (mt_record) {
+        } else if (var_id == "person_uuid") {
+            if (inspection) {
                 iw = new MDComboBox(var_id, var_name, md->widget(),
-                                    attributes.value(var_id).toString(), listOperators(mt_record->parent("customer")), col_bg);
+                                    attributes.value(var_id).toString(), listOperators(inspection->customerUUID()), col_bg);
                 md->addInputWidget(iw);
             }
-        } else if (var_id == "ar_type") {
+        } else if (var_id == "ar_type_uuid") {
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listAssemblyRecordTypes(), col_bg);
             iw->setRowSpan(0);
@@ -278,13 +292,13 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw = new MDLineEdit(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {
-                if (mt_record && mt_record->id().isEmpty()) {
-                    Inspection other_inspections(mt_record->parent("customer"), mt_record->parent("circuit"), "");
+                if (inspection && inspection->uuid().isEmpty()) {
+                    MTQuery other_inspections = Inspection::query({{"circuit_uuid", inspection->circuitUUID()}});
                     other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
                     int count = other_inspections.list("COUNT(date) AS count", QString()).value("count").toInt();
                     iw->setVariantValue(QString("%1-%2-%3%4")
-                                        .arg(mt_record->parent("customer"))
-                                        .arg(mt_record->parent("circuit"))
+                                        .arg(inspection->customer().companyID())
+                                        .arg(inspection->circuit().circuitID())
                                         .arg(date.toString("yyMMdd"))
                                         .arg(count ? QString("-%1").arg(count + 1) : ""));
                 }
@@ -303,18 +317,19 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
         }
 
         if (iw) {
-            iw->setGroupId(parent_id);
+            iw->setGroupId(parent_uuid);
             iw->setColour(col_bg);
         }
     }
 }
 
 Variable::Variable(const QString &id, QSqlDatabase db):
-    Variables(db, id),
-    var_id(id)
+    Variables(db, id)
 {
-    prepare("SELECT parent_id, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg FROM variables" + QString(id.isEmpty() ? "" : " WHERE id = :id"));
-    if (!id.isEmpty()) { bindValue(":id", var_id); }
+    prepare("SELECT parent_uuid, uuid, id, name, type, unit, scope, value, compare_nom, tolerance, col_bg FROM variables" + QString(id.isEmpty() ? "" : " WHERE id = :id"));
+    if (!id.isEmpty()) {
+        bindValue(":id", id);
+    }
     exec();
 }
 
@@ -322,7 +337,7 @@ void Variable::saveResult()
 {
     *pos() = -1;
     while (query()->next()) {
-        int index = var_indices.value(query()->value(Variable::ID).toString(), -1);
+        int index = var_indices.value(query()->value(Variable::UUID).toString(), -1);
         if (index >= 0) {
             bool insert = false;
             QMap<int, QVariant> row = result()->at(index);
@@ -341,7 +356,7 @@ void Variable::saveResult()
             for (int i = 0; i < Variable::FieldCount; ++i)
                 row.insert(i, query()->value(i));
             *result() << row;
-            var_indices.insert(query()->value(Variable::ID).toString(), result()->count() - 1);
+            var_indices.insert(query()->value(Variable::UUID).toString(), result()->count() - 1);
         }
     }
 }

@@ -29,7 +29,7 @@ class AssemblyRecordTypesView : public View
 public:
     AssemblyRecordTypesView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

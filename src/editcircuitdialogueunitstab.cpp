@@ -25,11 +25,10 @@
 #include <QToolButton>
 #include <QHeaderView>
 
-EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &customer_id, const QString &circuit_id, QWidget *parent)
+EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &circuit_uuid, QWidget *parent)
     : EditDialogueTab(parent)
 {
     setName(tr("Units"));
-    this->customer_id = customer_id;
 
     QGridLayout *grid = new QGridLayout(this);
     grid->setContentsMargins(9, 9, 9, 9);
@@ -64,75 +63,65 @@ EditCircuitDialogueUnitsTab::EditCircuitDialogueUnitsTab(const QString &customer
     grid->addWidget(table, 0, 1);
 
     loadManufacturers();
-    loadRows(customer_id, circuit_id);
+    loadRows(circuit_uuid);
 }
 
-void EditCircuitDialogueUnitsTab::loadRows(const QString &customer_id, const QString &circuit_id)
+void EditCircuitDialogueUnitsTab::loadRows(const QString &circuit_uuid)
 {
     QMap<QString, EditDialogueTableCell *> cells;
 
-    enum QUERY_RESULTS
-    {
-        SN = 0,
-        MANUFACTURER = 1,
-        TYPE = 2,
-        LOCATION = 3,
-        UNIT_TYPE_ID = 4,
-        UNIT_ID = 5
+    enum QUERY_RESULTS {
+        SN,
+        MANUFACTURER,
+        TYPE,
+        LOCATION,
+        UNIT_TYPE_UUID,
+        UNIT_UUID
     };
+
     MTSqlQuery query;
     query.prepare("SELECT circuit_units.sn, circuit_unit_types.manufacturer, circuit_unit_types.type,"
-                  " circuit_unit_types.location, circuit_unit_types.id, circuit_units.id AS unit_id"
+                  " circuit_unit_types.location, circuit_unit_types.uuid, circuit_units.uuid AS unit_uuid"
                   " FROM circuit_units"
-                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_id = circuit_unit_types.id"
-                  " WHERE circuit_units.company_id = :customer_id AND circuit_units.circuit_id = :circuit_id");
-    query.bindValue(":customer_id", customer_id.toInt());
-    query.bindValue(":circuit_id", circuit_id.toInt());
+                  " LEFT JOIN circuit_unit_types ON circuit_units.unit_type_uuid = circuit_unit_types.uuid"
+                  " WHERE circuit_units.circuit_uuid = :circuit_uuid");
+    query.bindValue(":circuit_uuid", circuit_uuid);
     query.exec();
 
     while (query.next()) {
-        former_ids.append(query.value(UNIT_ID).toInt());
+        former_ids.append(query.value(UNIT_UUID).toString());
         cells.insert("manufacturer", new EditDialogueTableCell(query.value(MANUFACTURER), "manufacturer"));
         cells.insert("type", new EditDialogueTableCell(query.value(TYPE), "type"));
-        cells.insert("unit_type_id", new EditDialogueTableCell(query.value(UNIT_TYPE_ID), "unit_type_id"));
+        cells.insert("unit_type_uuid", new EditDialogueTableCell(query.value(UNIT_TYPE_UUID), "unit_type_uuid"));
         cells.insert("location", new EditDialogueTableCell(CircuitUnitType::locationToString(query.value(LOCATION).toInt()), "location"));
         cells.insert("sn", new EditDialogueTableCell(query.value(SN), "sn", Global::String));
-        cells.insert("id", new EditDialogueTableCell(query.value(UNIT_ID), "id"));
+        cells.insert("uuid", new EditDialogueTableCell(query.value(UNIT_UUID), "uuid"));
         table->addRow(cells);
     }
 }
 
-void EditCircuitDialogueUnitsTab::save(const QVariant &circuit_id)
+void EditCircuitDialogueUnitsTab::save(const QString &circuit_uuid)
 {
-    QList<MTDictionary> all_values = table->allValues();
-
-    int next_id = -1;
+    QList<QVariantMap> all_values = table->allValues();
 
     CircuitUnit unit;
     for (int i = 0; i < all_values.count(); ++i) {
-        QVariantMap map;
-
-        if (all_values.at(i).contains("id")) {
-            unit = CircuitUnit(all_values.at(i).value("id"));
-            if (former_ids.contains(all_values.at(i).value("id").toInt()))
-                former_ids.removeAll(all_values.at(i).value("id").toInt());
+        if (all_values.at(i).contains("uuid")) {
+            QString uuid = all_values.at(i).value("uuid").toString();
+            former_ids.removeAll(uuid);
+            unit = CircuitUnit(uuid);
         } else {
-            if (next_id < 0)
-                next_id = (int)CircuitUnit().max("id");
-
             unit = CircuitUnit();
-            map.insert("id", QString::number(++next_id));
+            unit.setCircuitUUID(circuit_uuid);
         }
 
-        map.insert("company_id", customer_id);
-        map.insert("circuit_id", circuit_id);
-        map.insert("unit_type_id", all_values.at(i).value("unit_type_id"));
-        map.insert("sn", all_values.at(i).value("sn"));
-        unit.update(map);
+        unit.setUnitTypeUUID(all_values.at(i).value("unit_type_uuid").toString());
+        unit.setSerialNumber(all_values.at(i).value("sn").toString());
+        unit.save();
     }
 
     for (int i = 0; i < former_ids.count(); ++i)
-        CircuitUnit(QString::number(former_ids.at(i))).remove();
+        CircuitUnit(former_ids.at(i)).remove();
 }
 
 void EditCircuitDialogueUnitsTab::loadManufacturers()
@@ -154,7 +143,7 @@ void EditCircuitDialogueUnitsTab::manufacturerItemExpanded(QTreeWidgetItem *qite
     if (parent_item->isType() || parent_item->childCount()) return;
 
     MTSqlQuery query;
-    query.prepare("SELECT id, type, location FROM circuit_unit_types WHERE manufacturer = :manufacturer ORDER BY type");
+    query.prepare("SELECT uuid, type, location FROM circuit_unit_types WHERE manufacturer = :manufacturer ORDER BY type");
     query.bindValue(":manufacturer", parent_item->text(0));
     query.exec();
 
@@ -178,7 +167,7 @@ void EditCircuitDialogueUnitsTab::addToTable(EditCircuitDialogueTreeItem *item)
     QMap<QString, EditDialogueTableCell *> cells;
     cells.insert("manufacturer", new EditDialogueTableCell(item->manufacturer(), "manufacturer"));
     cells.insert("type", new EditDialogueTableCell(item->text(0), "type"));
-    cells.insert("unit_type_id", new EditDialogueTableCell(item->unitType(), "unit_type_id"));
+    cells.insert("unit_type_uuid", new EditDialogueTableCell(item->unitType(), "unit_type_uuid"));
     cells.insert("location", new EditDialogueTableCell(CircuitUnitType::locationToString(item->location()), "location"));
     cells.insert("sn", new EditDialogueTableCell(QString(), "sn", Global::String));
     table->addRow(cells);
@@ -205,20 +194,19 @@ void EditCircuitDialogueTable::updateCircuit()
     double oil_amount = 0;
 
     for (int i = 0; i < rows.count(); ++i) {
-        CircuitUnitType unit_type_record(rows.at(i)->value("unit_type_id"));
-        QVariantMap unit_type = unit_type_record.list();
+        CircuitUnitType unit_type(rows.at(i)->value("unit_type_uuid"));
 
-        if (!unit_type.value("refrigerant").toString().isEmpty())
-            circuit_vars.insert("refrigerant", unit_type.value("refrigerant").toString());
-        refr_amount += unit_type.value("refrigerant_amount").toDouble();
+        if (!unit_type.refrigerant().isEmpty())
+            circuit_vars.insert("refrigerant", unit_type.refrigerant());
+        refr_amount += unit_type.refrigerantAmount();
 
-        if (!unit_type.value("oil").toString().isEmpty())
-            circuit_vars.insert("oil", unit_type.value("oil").toString());
-        oil_amount += unit_type.value("oil_amount").toDouble();
+        if (!unit_type.oil().isEmpty())
+            circuit_vars.insert("oil", unit_type.oil());
+        oil_amount += unit_type.oilAmount();
 
-        if (unit_type.value("location").toInt() == CircuitUnitType::External) {
-            circuit_vars.insert("manufacturer", unit_type.value("manufacturer").toString());
-            circuit_vars.insert("type", unit_type.value("type").toString());
+        if (unit_type.location() == CircuitUnitType::External) {
+            circuit_vars.insert("manufacturer", unit_type.manufacturer());
+            circuit_vars.insert("type", unit_type.type());
         }
     }
 

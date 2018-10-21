@@ -1,5 +1,8 @@
 bin
 build
+Debug
+Release
+.qmake.stash
 *.pro.user*
 Makefile*
 object_script.*

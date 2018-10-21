@@ -20,7 +20,7 @@
 #include "mtsqlquery.h"
 
 #include <QDebug>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
@@ -32,18 +32,26 @@ MTSqlQuery::MTSqlQuery(QSqlResult *result):
     QSqlQuery(result)
 {}
 
-MTSqlQuery::MTSqlQuery(const QString &query, QSqlDatabase db):
-    QSqlQuery(query, db)
+MTSqlQuery::MTSqlQuery(const QString &query, QSqlDatabase db, bool forward):
+    QSqlQuery(db)
 {
+    setForwardOnly(forward);
+
     if (!query.isEmpty())
-        printLastError();
+        exec(query);
 }
 
-MTSqlQuery::MTSqlQuery(QSqlDatabase db):
+MTSqlQuery::MTSqlQuery(QSqlDatabase db, bool forward):
     QSqlQuery(db)
-{}
+{
+    setForwardOnly(forward);
+}
 
 MTSqlQuery::MTSqlQuery(const QSqlQuery &other):
+    QSqlQuery(other)
+{}
+
+MTSqlQuery::MTSqlQuery(const MTSqlQuery &other):
     QSqlQuery(other)
 {}
 
@@ -69,7 +77,9 @@ void MTSqlQuery::printLastError() const
         qDebug() << lastQuery();
         qDebug() << error.text();
 #else
-        QFile file(QDir(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation)).absoluteFilePath("Leaklog-errors.log"));
+        QDir desktop(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+        QFile file(desktop.absoluteFilePath("Leaklog-errors.log"));
         file.open(QIODevice::Append | QIODevice::Text);
         QTextStream output(&file);
         output.setCodec("UTF-8");
@@ -114,4 +124,9 @@ double MTSqlQuery::doubleValue(const QString &field) const
 QString MTSqlQuery::stringValue(const QString &field) const
 {
     return MTSqlQuery::value(record().indexOf(field)).toString();
+}
+
+QVariant MTSqlQuery::nextValue(int index)
+{
+    return next() ? value(index) : QVariant(QVariant::String);
 }

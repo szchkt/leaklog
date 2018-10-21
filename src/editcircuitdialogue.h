@@ -20,8 +20,6 @@
 #ifndef EDIT_CIRCUIT_DIALOGUE_H
 #define EDIT_CIRCUIT_DIALOGUE_H
 
-#include <QVariant>
-
 #include "tabbededitdialogue.h"
 
 class EditCircuitDialogueNotesTab : public EditDialogueTab
@@ -31,7 +29,7 @@ class EditCircuitDialogueNotesTab : public EditDialogueTab
 public:
     EditCircuitDialogueNotesTab(MDAbstractInputWidget *notes, QWidget * = NULL);
 
-    void save(const QVariant &);
+    void save(const QString &uuid);
     QWidget *widget() { return this; }
 };
 

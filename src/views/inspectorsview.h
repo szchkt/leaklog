@@ -31,12 +31,12 @@ class InspectorsView : public View
 public:
     InspectorsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 
 protected:
-    HTMLTable *writeInspectorsTable(const QString &, const QString & = QString());
+    HTMLTable *writeInspectorsTable(const QString &highlighted_uuid, const QString &inspector_uuid = QString());
 };
 
 #endif // INSPECTORSVIEW_H

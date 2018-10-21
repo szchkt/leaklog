@@ -24,29 +24,28 @@
 #include "variables.h"
 
 #include <QApplication>
+#include <QUuid>
 
-Table::Table(const QString &id, const QString &uid, const MTDictionary &parents):
-    DBRecord(tableName(), uid.isEmpty() ? "id" : "uid", uid.isEmpty() ? id : uid, parents)
+static const QUuid tables_namespace("76fe7a5f-7c6b-46a6-9ec5-b4ae83e4d957");
+
+Table::Table(const QString &uuid):
+    DBRecord(tableName(), uuid)
 {}
 
 void Table::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setWindowTitle(tr("Table"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("id", tr("Name:"), md->widget(), attributes.value("id").toString()));
-    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), attributes.value("highlight_nominal").toInt()));
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(),
-                                      MTDictionary(QStringList()
-                                                   << QString::number(Variable::Inspection)
-                                                   << QString::number(Variable::Compressor),
-                                                   QStringList() << tr("Inspection") << tr("Compressor"))));
+
+    md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
+    md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), highlightNominal()));
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), stringValue("scope"), {
+        {QString::number(Variable::Inspection), tr("Inspection")},
+        {QString::number(Variable::Compressor), tr("Compressor")}
+    }));
+
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM tables" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    query_used_ids.prepare("SELECT name FROM tables" + QString(name().isEmpty() ? "" : " WHERE name <> :name"));
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":name", name()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
@@ -60,14 +59,25 @@ QString Table::tableName()
     return "tables";
 }
 
+QString Table::predefinedUUID(int uid)
+{
+    return QUuid::createUuidV5(tables_namespace, QString::number(uid)).toString().mid(1, 36);
+}
+
+bool Table::isPredefined(const QString &uuid)
+{
+    return QUuid(uuid).version() == QUuid::Sha1;
+}
+
 class TableColumns
 {
 public:
     TableColumns() {
-        columns << Column("uid", "TEXT");
-        columns << Column("id", "TEXT");
-        columns << Column("highlight_nominal", "INTEGER");
-        columns << Column("scope", "INTEGER DEFAULT 1 NOT NULL");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("name", "TEXT");
+        columns << Column("position", "INTEGER NOT NULL DEFAULT 0");
+        columns << Column("highlight_nominal", "INTEGER NOT NULL DEFAULT 0");
+        columns << Column("scope", "INTEGER NOT NULL DEFAULT 1");
         columns << Column("variables", "TEXT");
         columns << Column("sum", "TEXT");
         columns << Column("avg", "TEXT");

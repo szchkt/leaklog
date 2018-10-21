@@ -22,14 +22,13 @@
 
 #include "dbrecord.h"
 
-class WarningCondition : public DBRecord
+class WarningCondition : public MTRecord
 {
-    Q_OBJECT
-
 public:
-    WarningCondition(const QString &parent);
+    WarningCondition(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     static QString tableName();
+    static inline MTRecordQuery<WarningCondition> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<WarningCondition>(tableName(), parents); }
     static const ColumnList &columns();
 };
 

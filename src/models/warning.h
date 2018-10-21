@@ -22,17 +22,36 @@
 
 #include "dbrecord.h"
 
+class WarningFilter;
+class WarningCondition;
+
 class WarningRecord : public DBRecord
 {
     Q_OBJECT
 
 public:
-    WarningRecord(const QString &);
+    WarningRecord(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline int scope() { return intValue("scope"); }
+    inline void setScope(int value) { setValue("scope", value); }
+    inline bool enabled() { return intValue("enabled"); }
+    inline void setEnabled(bool value) { setValue("enabled", (int)value); }
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    inline QString description() { return stringValue("description"); }
+    inline void setDescription(const QString &value) { setValue("description", value); }
+    inline int delay() { return intValue("delay"); }
+    inline void setDelay(int value) { setValue("delay", value); }
+
+    MTRecordQuery<WarningFilter> filters() const;
+    MTRecordQuery<WarningCondition> conditions() const;
+
     static QString tableName();
+    static inline MTRecordQuery<WarningRecord> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<WarningRecord>(tableName(), parents); }
     static const ColumnList &columns();
+    bool remove() const;
 };
 
 #endif // WARNING_H

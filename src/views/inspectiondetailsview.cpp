@@ -37,28 +37,26 @@ InspectionDetailsView::InspectionDetailsView(ViewTabSettings *settings):
 {
 }
 
-QString InspectionDetailsView::renderHTML()
+QString InspectionDetailsView::renderHTML(bool)
 {
-    QString customer_id = settings->selectedCustomer();
-    QString circuit_id = settings->selectedCircuit();
-    QString inspection_date = settings->selectedInspection();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->selectedCircuitUUID();
+    QString inspection_uuid = settings->selectedInspectionUUID();
 
     QString html; MTTextStream out(&html);
 
     writeServiceCompany(out);
 
-    writeCustomersTable(out, customer_id);
+    writeCustomersTable(out, customer_uuid);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id, 8);
+    writeCircuitsTable(out, customer_uuid, circuit_uuid, 8);
 
-    QVariantMap circuit = Circuit(customer_id, circuit_id).list("*, " + circuitRefrigerantAmountQuery());
+    QVariantMap circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
 
-    Inspection inspection_record(customer_id, circuit_id, inspection_date);
-    QVariantMap inspection = inspection_record.list();
-    bool nominal = inspection.value("nominal").toInt();
-    Inspection::Repair repair = (Inspection::Repair)inspection.value("repair").toInt();
-    Inspection nom_inspection_record(customer_id, circuit_id, "");
-    nom_inspection_record.parents().insert("nominal", "1");
+    Inspection inspection(inspection_uuid);
+    QString inspection_date = inspection.date();
+    Inspection::Type type = inspection.type();
+    MTQuery nom_inspection_record = Inspection::query({{"circuit_uuid", circuit_uuid}, {"inspection_type", "1"}});
     nom_inspection_record.addFilter("date <= ?", inspection_date);
     QVariantMap nominal_ins = nom_inspection_record.list("*", "date DESC");
 
@@ -75,26 +73,24 @@ QString InspectionDetailsView::renderHTML()
 
     el = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"")
             ->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-            ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
-    *el << Inspection::titleForInspection(nominal, repair);
+            ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (type == Inspection::Repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
+    *el << QApplication::translate("MainWindow", "%1:").arg(Inspection::titleForInspectionType(type));
     *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
     div.newLine();
 
-    VariableEvaluation::EvaluationContext var_evaluation(customer_id, circuit_id);
+    VariableEvaluation::EvaluationContext var_evaluation(customer_uuid, circuit_uuid);
     VariableEvaluation::Variable *variable = NULL;
 
     var_evaluation.setNominalInspection(nominal_ins);
 
-    Table tables_record("", QString(), MTDictionary("scope", "1"));
-    MTSqlQuery tables = tables_record.select("id, variables", Qt::DescendingOrder);
-    tables.setForwardOnly(true);
+    MTSqlQuery tables = Table::query({{"scope", Variable::Inspection}}).select("name, variables", "position");
     tables.exec();
 
     QSet<QString> all_variables;
 
     Variables vars;
     while (vars.next()) {
-        if (vars.parentID().isEmpty())
+        if (vars.parentUUID().isEmpty())
             all_variables << vars.id();
     }
 
@@ -107,7 +103,7 @@ QString InspectionDetailsView::renderHTML()
         if (tables.isValid()) {
             table_vars = tables.stringValue("variables").split(";");
             all_variables.subtract(table_vars.toSet());
-            *cell << tables.stringValue("id");
+            *cell << tables.stringValue("name");
         }
         else {
             table_vars = all_variables.toList();
@@ -120,16 +116,15 @@ QString InspectionDetailsView::renderHTML()
         for (int n = 0; n < table_vars.count(); ++n) {
             variable = var_evaluation.variable(table_vars.at(n));
             if (!variable) continue;
-            showVariableInInspectionTable(variable, var_evaluation, inspection, _table);
+            showVariableInInspectionTable(variable, var_evaluation, inspection.savedValues(), _table);
         }
     }
     div << table->customHtml(2);
 
-    InspectionsCompressor inspections_compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "date",
-                                                                             QStringList() << customer_id << circuit_id << inspection_date));
-    ListOfVariantMaps inspections_compressors = inspections_compressor_rec.listAll();
+    MTQuery inspections_compressor_query = InspectionCompressor::query({{"inspection_uuid", inspection_uuid}});
+    ListOfVariantMaps inspections_compressors = inspections_compressor_query.listAll();
     if (inspections_compressors.count()) {
-        VariableEvaluation::EvaluationContext compressor_var_evaluation = VariableEvaluation::EvaluationContext(customer_id, circuit_id, Variable::Compressor);
+        VariableEvaluation::EvaluationContext compressor_var_evaluation = VariableEvaluation::EvaluationContext(customer_uuid, circuit_uuid, Variable::Compressor);
         QList<VariableEvaluation::Variable *> compressor_vars = compressor_var_evaluation.listVariables();
 
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
@@ -142,7 +137,7 @@ QString InspectionDetailsView::renderHTML()
             *(header_row->addHeaderCell("width=\"50%\"")) << compressor.value("name").toString();
             _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
             for (int n = 0; n < compressor_vars.count(); ++n) {
-                if (compressor_vars[n]->parentID().isEmpty())
+                if (compressor_vars[n]->parentUUID().isEmpty())
                     showVariableInInspectionTable(compressor_vars[n], compressor_var_evaluation, inspections_compressors[i], _table);
             }
         }
@@ -155,7 +150,7 @@ QString InspectionDetailsView::renderHTML()
 
 //*** Warnings ***
     Warnings warnings(settings->toolBarStack()->isCO2EquivalentChecked(), true, circuit);
-    QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection);
+    QStringList warnings_list = listWarnings(warnings, circuit, nominal_ins, inspection.savedValues());
     if (warnings_list.count()) {
         div.newLine();
         _table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
@@ -167,13 +162,13 @@ QString InspectionDetailsView::renderHTML()
 
 void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Variable *variable,
                                                           VariableEvaluation::EvaluationContext &var_evaluation,
-                                                          QVariantMap &inspection, HTMLTable *_table)
+                                                          const QVariantMap &inspection, HTMLTable *_table)
 {
     bool compare_nom = false; QString ins_value; QString nom_value;
     VariableEvaluation::Variable *subvariable = NULL;
     QList<VariableEvaluation::Variable *> subvariables = variable->subvariables();
     if (!subvariables.count()) subvariables.append(variable);
-    bool nominal = inspection.value("nominal").toInt();
+    bool nominal = inspection.value("inspection_type").toInt() == Inspection::NominalInspection;
 
     MTDictionary subvar_values;
 
@@ -227,20 +222,20 @@ QStringList InspectionDetailsView::listWarnings(Warnings &warnings, const QVaria
 
 bool InspectionDetailsView::checkWarningConditions(Warnings &warnings, const QVariantMap &circuit_attributes, const QVariantMap &nominal_ins, const QVariantMap &inspection)
 {
-    int id = warnings.value("id").toInt();
-    int num_conditions = warnings.warningConditionFunctionCount(id);
+    QString uuid = warnings.value("uuid").toString();
+    int num_conditions = warnings.warningConditionFunctionCount(uuid);
     for (int i = 0; i < num_conditions; ++i) {
         bool ok = true;
 
-        double ins_value = warnings.warningConditionValueIns(id, i).evaluate(inspection, circuit_attributes, &ok);
+        double ins_value = warnings.warningConditionValueIns(uuid, i).evaluate(inspection, circuit_attributes, &ok);
         if (!ok)
             return false;
 
-        double nom_value = warnings.warningConditionValueNom(id, i).evaluate(nominal_ins, circuit_attributes, &ok);
+        double nom_value = warnings.warningConditionValueNom(uuid, i).evaluate(nominal_ins, circuit_attributes, &ok);
         if (!ok)
             return false;
 
-        QString function = warnings.warningConditionFunction(id, i);
+        QString function = warnings.warningConditionFunction(uuid, i);
         if (function == "=" && ins_value == nom_value) {}
         else if (function == "!=" && ins_value != nom_value) {}
         else if (function == ">" && ins_value > nom_value) {}
@@ -273,8 +268,9 @@ QString InspectionDetailsView::tableVarValue(const QString &var_type, const QStr
 
 QString InspectionDetailsView::title() const
 {
-    QString title = Circuit(settings->selectedCustomer(), settings->selectedCircuit()).stringValue("name");
-    return Customer(settings->selectedCustomer()).stringValue("company")
-            + " - " + QString(title.isEmpty() ? settings->selectedCircuit().rightJustified(5, '0') : title)
-            + " - " + settings->selectedInspection();
+    Circuit circuit(settings->selectedCircuitUUID());
+    QString title = circuit.circuitName();
+    return Customer(settings->selectedCustomerUUID()).companyName()
+            + " - " + QString(title.isEmpty() ? circuit.circuitID() : title)
+            + " - " + Inspection(settings->selectedInspectionUUID()).date();
 }

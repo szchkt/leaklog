@@ -20,6 +20,7 @@
 #ifndef DBRECORD_H
 #define DBRECORD_H
 
+#include "mtquery.h"
 #include "mtrecord.h"
 
 #include <functional>
@@ -58,7 +59,7 @@ public:
     virtual ~Modifiable() {}
 
     virtual void initEditDialogue(EditDialogueWidgets *) = 0;
-    virtual bool checkValues(QVariantMap &, QWidget * = 0) { return true; }
+    virtual bool checkValues(QWidget * = 0) { return true; }
 };
 
 class DBRecord : public QObject, public MTRecord, public Modifiable
@@ -67,9 +68,12 @@ class DBRecord : public QObject, public MTRecord, public Modifiable
 
 public:
     DBRecord();
-    DBRecord(const QString &, const QString &, const QString &, const MTDictionary &);
+    DBRecord(const QString &type, const QString &uuid, const QVariantMap &savedValues = QVariantMap());
+    DBRecord(const DBRecord &other): MTRecord(other) {}
+    DBRecord &operator=(const DBRecord &other) { MTRecord::operator=(other); return *this; };
 
-    QString parent(const QString &field) const { return MTRecord::parent(field); }
+    QString dateUpdated();
+    QString updatedBy();
 };
 
 #endif // DBRECORD_H

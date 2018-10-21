@@ -27,11 +27,29 @@ class RefrigerantRecord : public DBRecord
     Q_OBJECT
 
 public:
-    RefrigerantRecord(const QString &);
+    RefrigerantRecord(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline QString date() { return stringValue("date"); }
+    inline QString partner() { return stringValue("partner"); }
+    inline QString partnerID() { return stringValue("partner_id"); }
+    inline QString refrigerant() { return stringValue("refrigerant"); }
+    inline QString batchNumber() { return stringValue("batch_number"); }
+    inline void setBatchNumber(const QString &value) { setValue("batch_number", value); }
+    inline double purchased() { return doubleValue("purchased"); }
+    inline double purchasedRecovered() { return doubleValue("purchased_reco"); }
+    inline double sold() { return doubleValue("sold"); }
+    inline double soldRecovered() { return doubleValue("sold_reco"); }
+    inline double regenerated() { return doubleValue("refr_rege"); }
+    inline double disposedOf() { return doubleValue("refr_disp"); }
+    inline double leaked() { return doubleValue("leaked"); }
+    inline double leakedRecovered() { return doubleValue("leaked_reco"); }
+    inline QString notes() { return stringValue("notes"); }
+    inline void setNotes(const QString &value) { setValue("notes", value); }
+
     static QString tableName();
+    static inline MTRecordQuery<RefrigerantRecord> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<RefrigerantRecord>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

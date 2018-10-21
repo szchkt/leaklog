@@ -29,7 +29,7 @@ class RefrigerantManagementView : public View
 public:
     RefrigerantManagementView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

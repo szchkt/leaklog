@@ -27,7 +27,7 @@
 
 class ToolBarStack;
 class QTreeWidgetItem;
-class QWebView;
+class QWebEngineView;
 class QUrl;
 
 namespace Ui {
@@ -52,12 +52,12 @@ public:
     MainWindowSettings &mainWindowSettings();
 
     ToolBarStack *toolBarStack() const;
-    QWebView *webView() const;
+    QWebEngineView *webView() const;
 
     View *view(View::ViewID view) { return views[view]; }
     View::ViewID currentView() const;
     QString currentViewTitle() const;
-    QString currentTable() const;
+    QString currentTableUUID() const;
 
     bool isShowDateUpdatedChecked() const;
     bool isShowOwnerChecked() const;
@@ -96,9 +96,9 @@ signals:
 private slots:
     void setNeedsRefresh();
 
-    void reloadTables(const QStringList &tables);
-    void addTable(int index, const QString &table);
-    void removeTable(const QString &table);
+    void reloadTables(const MTDictionary &tables);
+    void addTable(int index, const QString &uuid, const QString &name);
+    void removeTable(const QString &uuid);
 
     void viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 

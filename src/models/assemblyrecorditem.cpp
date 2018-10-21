@@ -24,12 +24,8 @@
 
 #include <QApplication>
 
-AssemblyRecordItem::AssemblyRecordItem(const QString &record_id):
-    MTRecord(tableName(), "", "", MTDictionary("arno", record_id))
-{}
-
-AssemblyRecordItem::AssemblyRecordItem(const QString &table, const QString &id_column, const QString &id, const MTDictionary &parents):
-    MTRecord(table, id_column, id, parents)
+AssemblyRecordItem::AssemblyRecordItem(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
 {}
 
 QString AssemblyRecordItem::tableName()
@@ -37,18 +33,27 @@ QString AssemblyRecordItem::tableName()
     return "assembly_record_items";
 }
 
+MTQuery AssemblyRecordItem::queryByInspector(const QString &inspector_uuid)
+{
+    return MTQuery("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno"
+                   " LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
+                   " LEFT JOIN customers ON inspections.customer_uuid = customers.uuid",
+                   {{"ar_item_type_uuid", inspector_uuid}, {"source", QString::number(AssemblyRecordItem::Inspectors)}});
+}
+
 class AssemblyRecordItemColumns
 {
 public:
     AssemblyRecordItemColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("ar_item_type_uuid", "UUID");
+        columns << Column("ar_item_category_uuid", "UUID");
         columns << Column("arno", "TEXT");
-        columns << Column("item_type_id", "INTEGER");
         columns << Column("value", "TEXT");
         columns << Column("acquisition_price", "NUMERIC");
         columns << Column("list_price", "NUMERIC");
-        columns << Column("source", "INTEGER");
+        columns << Column("source", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("name", "TEXT");
-        columns << Column("category_id", "INTEGER");
         columns << Column("unit", "TEXT");
         columns << Column("discount", "NUMERIC");
         columns << Column("date_updated", "TEXT");
@@ -69,7 +74,7 @@ class AssemblyRecordItemAttributes
 public:
     AssemblyRecordItemAttributes() {
         dict.insert("arno", QApplication::translate("AssemblyRecordItem", "Assembly record number"));
-        dict.insert("item_type_id", QApplication::translate("AssemblyRecordItem", "Record item type ID"));
+        dict.insert("ar_item_type_uuid", QApplication::translate("AssemblyRecordItem", "Record item type ID"));
         dict.insert("value", QApplication::translate("AssemblyRecordItem", "Value"));
         dict.insert("acquisition_price", QApplication::translate("AssemblyRecordItem", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("AssemblyRecordItem", "List price"));
@@ -83,9 +88,3 @@ const MTDictionary &AssemblyRecordItem::attributes()
     static AssemblyRecordItemAttributes dict;
     return dict.dict;
 }
-
-AssemblyRecordItemByInspector::AssemblyRecordItemByInspector(const QString &inspector_id):
-    AssemblyRecordItem("assembly_record_items LEFT JOIN inspections ON assembly_record_items.arno = inspections.arno", "", "",
-                       MTDictionary(QStringList() << "item_type_id" << "source",
-                                    QStringList() << inspector_id << QString::number(AssemblyRecordItem::Inspectors)))
-{}

@@ -25,6 +25,7 @@
 class EditDialogueBasicTable;
 class EditDialogueGroupsLayout;
 class EditInspectionDialogueCompressors;
+class Inspection;
 
 class QSplitter;
 
@@ -33,13 +34,12 @@ class EditInspectionDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectionDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *parent = NULL, const QString &duplicate_from = QString());
+    EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent = NULL, const QString &duplicate_from = QString());
     virtual ~EditInspectionDialogue();
 
 protected:
     bool saveOther();
 
-    const QVariant idFieldValue();
     EditInspectionDialogueCompressors *compressors;
     QSplitter *splitter;
 };
@@ -49,17 +49,12 @@ class EditInspectionDialogueImagesTab : public EditDialogueTab
     Q_OBJECT
 
 public:
-    EditInspectionDialogueImagesTab(const QString &, const QString &, const QString &);
+    EditInspectionDialogueImagesTab(const QString &inspection_uuid);
 
-    void save(const QVariant &);
+    void save(const QString &inspection_uuid);
 
 private:
-    void init(const QString &);
-    void loadItemInputWidgets(const QString &);
-
-    QString customer_id;
-    QString circuit_id;
-    QString original_inspection_id;
+    void loadItemInputWidgets(const QString &inspection_uuid);
 
     EditDialogueBasicTable *table;
 };

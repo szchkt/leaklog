@@ -25,13 +25,15 @@
 #include <QDateTime>
 
 class EditDialogueWidgets;
+class Inspection;
 class MDComboBox;
 
 class VariableContractBase
 {
 public:
     enum Fields {
-        ParentID,
+        ParentUUID,
+        UUID,
         ID,
         Name,
         Type,
@@ -44,8 +46,12 @@ public:
         FieldCount
     };
 
-    QString parentID() const {
-        return variantValue(ParentID).toString();
+    QString parentUUID() const {
+        return variantValue(ParentUUID).toString();
+    }
+
+    QString uuid() const {
+        return variantValue(UUID).toString();
     }
 
     QString id() const {
@@ -106,12 +112,13 @@ public:
     Variables(QSqlDatabase = QSqlDatabase(), int = 0xFFFF);
     static Variables *defaultVariables(int = 0xFFFF);
 
-    VariableContract variable(const QString &);
+    VariableContract variableForID(const QString &id);
+    VariableContract variableForUUID(const QString &uuid);
     inline VariableContract parentVariable() {
-        return variable(parentID());
+        return variableForUUID(parentUUID());
     }
 
-    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, MTRecord * = NULL, const QDateTime & = QDateTime(), MDComboBox * = NULL);
+    void initEditDialogueWidgets(EditDialogueWidgets *, const QVariantMap &, Inspection * = NULL, const QDateTime & = QDateTime(), MDComboBox * = NULL);
 
 protected:
     Variables(int);
@@ -128,6 +135,7 @@ protected:
         return MTSqlQueryResultBase<int>::value(i);
     }
 
+    QString ns;
     QMap<QString, int> var_indices;
     int m_scope;
     QString m_filter;
@@ -145,9 +153,6 @@ public:
 
 protected:
     void saveResult();
-
-private:
-    QString var_id;
 };
 
 #endif // VARIABLES_H

@@ -36,24 +36,22 @@ InspectionImagesView::InspectionImagesView(ViewTabSettings *settings):
 {
 }
 
-QString InspectionImagesView::renderHTML()
+QString InspectionImagesView::renderHTML(bool for_export)
 {
-    QString customer_id = settings->selectedCustomer();
-    QString circuit_id = settings->selectedCircuit();
-    QString inspection_date = settings->selectedInspection();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString circuit_uuid = settings->selectedCircuitUUID();
+    QString inspection_uuid = settings->selectedInspectionUUID();
 
     QString html; MTTextStream out(&html);
 
     writeServiceCompany(out);
 
-    writeCustomersTable(out, customer_id);
+    writeCustomersTable(out, customer_uuid);
     out << "<br>";
-    writeCircuitsTable(out, customer_id, circuit_id, 8);
+    writeCircuitsTable(out, customer_uuid, circuit_uuid, 8);
 
-    Inspection inspection_record(customer_id, circuit_id, inspection_date);
-    QVariantMap inspection = inspection_record.list();
-    bool nominal = inspection.value("nominal").toInt();
-    Inspection::Repair repair = (Inspection::Repair)inspection.value("repair").toInt();
+    Inspection inspection(inspection_uuid);
+    Inspection::Type type = inspection.type();
 
     HTMLParentElement *el;
     HTMLDiv div;
@@ -63,19 +61,23 @@ QString InspectionImagesView::renderHTML()
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");
     el = table->addRow()->addHeaderCell("colspan=\"2\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\"")
-        ->link("customer:" + customer_id + "/circuit:" + circuit_id + (repair == Inspection::IsRepair ? "/repair:" : "/inspection:") + inspection_date + "/edit");
-    *el << Inspection::titleForInspection(nominal, repair);
-    *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection_date);
+         ->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + (type == Inspection::Repair ? "/repair:" : "/inspection:") + inspection_uuid + "/edit");
+    *el << QApplication::translate("MainWindow", "%1:").arg(Inspection::titleForInspectionType(type));
+    *el << "&nbsp;" << settings->mainWindowSettings().formatDateTime(inspection.date());
 
-    InspectionImage images_record(customer_id, circuit_id, inspection_date);
-    ListOfVariantMaps images = images_record.listAll("*", "file_id");
+    ListOfVariantMaps files = inspection.files().listAll("*", "file_uuid");
 
-    for (int i = 0; i < images.count(); ++i) {
-        QByteArray byte_array = DBFile(images.at(i).value("file_id").toInt()).data().toBase64();
-        if (!byte_array.isNull()) {
-            *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
+    for (int i = 0; i < files.count(); ++i) {
+        QString uuid = files.at(i).value("file_uuid").toString();
+        if (for_export) {
+            QByteArray byte_array = DBFile(uuid).data().toBase64();
+            if (!byte_array.isNull()) {
+                *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"data:image/jpeg;base64," << byte_array << "\">";
+            }
+        } else {
+            *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"dbfile://" << uuid << "\">";
         }
-        *(table->addRow()->addCell()) << images.at(i).value("description").toString();
+        *(table->addRow()->addCell()) << files.at(i).value("description").toString();
     }
 
     return viewTemplate("inspection_images").arg(div.html());

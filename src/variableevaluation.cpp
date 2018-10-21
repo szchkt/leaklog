@@ -32,14 +32,15 @@ VariableEvaluation::EvaluationContext::EvaluationContext(int vars_scope):
     init();
 }
 
-VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_id, const QString &circuit_id, int vars_scope):
-    customer_id(customer_id),
-    circuit_id(circuit_id),
+VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_uuid, const QString &circuit_uuid, int vars_scope):
+    customer_id(customer_uuid),
+    circuit_id(circuit_uuid),
     vars_scope(vars_scope)
 {
-    circuit = MTRecord("circuits", "id", circuit_id, MTDictionary("parent", customer_id)).list("*, " + circuitRefrigerantAmountQuery());
-    persons = Person("", customer_id).mapAll("id", "name");
-    inspectors = Inspector("").mapAll("id", "certificate_number, person");
+    circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
+    persons = Customer(customer_uuid).persons().mapAll("uuid", "name");
+    inspectors = Inspector::query().mapAll("uuid", "certificate_number, person");
+    ar_types = AssemblyRecordType::query().mapAll("uuid", "name");
 
     init();
 }
@@ -59,14 +60,15 @@ void VariableEvaluation::EvaluationContext::init()
     VariableEvaluation::Variable *parent_var, *var;
 
     while (vars.next()) {
-        var = vars_map.value(vars.id(), NULL);
+        var = vars_map.value(vars.uuid(), NULL);
         if (!var) {
             var = new VariableEvaluation::Variable;
-            vars_map.insert(vars.id(), var);
+            vars_map.insert(vars.uuid(), var);
             vars_list.append(var);
         }
 
-        var->setParentID(vars.parentID());
+        var->setParentUUID(vars.parentUUID());
+        var->setUUID(vars.uuid());
         var->setID(vars.id());
         var->setName(vars.name());
         var->setType(vars.type());
@@ -76,11 +78,11 @@ void VariableEvaluation::EvaluationContext::init()
         var->setColBg(vars.colBg());
         var->setTolerance(vars.tolerance());
 
-        if (!vars.parentID().isEmpty()) {
-            parent_var = vars_map.value(vars.parentID(), NULL);
+        if (!vars.parentUUID().isEmpty()) {
+            parent_var = vars_map.value(vars.parentUUID(), NULL);
             if (!parent_var) {
                 parent_var = new VariableEvaluation::Variable;
-                vars_map.insert(vars.parentID(), parent_var);
+                vars_map.insert(vars.parentUUID(), parent_var);
             }
 
             parent_var->addSubvariable(var);
@@ -96,35 +98,45 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool 
     return var->name();
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, QVariantMap &inspection, QString &nom_value)
+VariableEvaluation::Variable *VariableEvaluation::EvaluationContext::variable(const QString &name) const
 {
-    VariableEvaluation::Variable *var = vars_map.value(var_name);
+    return vars_map.value(createUUIDv5(DBInfo::databaseUUID(), name));
+}
+
+QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, const QVariantMap &inspection, QString &nom_value)
+{
+    VariableEvaluation::Variable *var = vars_map.value(createUUIDv5(DBInfo::databaseUUID(), var_name));
     if (!var) return QString();
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable *var, QVariantMap &inspection, QString &nom_value)
+QString VariableEvaluation::EvaluationContext::evaluate(VariableEvaluation::Variable *var, const QVariantMap &inspection, QString &nom_value)
 {
     return var->evaluate(*this, inspection, nom_value);
 }
 
-QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, QVariantMap &inspection, QString &nom_value)
+QString VariableEvaluation::Variable::evaluate(EvaluationContext &context, const QVariantMap &inspection, QString &nom_value)
 {
     QString ins_value = inspection.value(id()).toString();
 
     if (value().isEmpty()) {
-        if (!ins_value.isEmpty() && ins_value.toInt()) {
-            if (id() == "inspector") {
+        if (!ins_value.isEmpty()) {
+            if (id() == "inspector_uuid") {
                 QVariantMap inspector = context.inspectors.value(ins_value);
                 if (inspector.isEmpty()) {
-                    ins_value = ins_value.rightJustified(4, '0');
+                    ins_value.clear();
                 } else {
                     QString certificate_number = inspector.value("certificate_number").toString();
-                    ins_value = QString("%1 (%2)").arg(inspector.value("person").toString())
-                                .arg(certificate_number.isEmpty() ? ins_value.rightJustified(4, '0') : certificate_number);
+                    if (certificate_number.isEmpty()) {
+                        ins_value = inspector.value("person").toString();
+                    } else {
+                        ins_value = QString("%1 (%2)").arg(inspector.value("person").toString()).arg(certificate_number);
+                    }
                 }
-            } else if (id() == "operator") {
-                ins_value = context.persons.value(ins_value).value("name", ins_value).toString();
+            } else if (id() == "person_uuid") {
+                ins_value = context.persons.value(ins_value).value("name").toString();
+            } else if (id() == "ar_type_uuid") {
+                ins_value = context.ar_types.value(ins_value).value("name").toString();
             }
         }
 

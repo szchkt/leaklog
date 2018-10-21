@@ -29,7 +29,7 @@ class CircuitUnitTypesView : public View
 public:
     CircuitUnitTypesView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

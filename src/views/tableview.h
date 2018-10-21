@@ -24,6 +24,7 @@
 #include "defs.h"
 
 class HTMLTableCell;
+class Table;
 
 class TableView : public InspectionDetailsView
 {
@@ -32,12 +33,12 @@ class TableView : public InspectionDetailsView
 public:
     TableView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 
 protected:
-    HTMLTable *writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
+    HTMLTable *writeInspectionsTable(const QVariantMap &, Table &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
     QStringList listDelayedWarnings(Warnings &, const QVariantMap &, QVariantMap &, const QString &, const QString &, int * = NULL);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     HTMLTableCell *writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);

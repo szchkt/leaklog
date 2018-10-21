@@ -23,55 +23,73 @@
 #include "dbrecord.h"
 
 class MDComboBox;
+class Customer;
+class Circuit;
+class InspectionCompressor;
+class InspectionFile;
 
 class Inspection : public DBRecord
 {
     Q_OBJECT
 
 public:
-    enum Repair {
-        IsNotRepair = 0,
-        IsRepair = 1,
-        IsAfterRepair = 2,
-    };
     enum Type {
-        DefaultType = 0,
-        CircuitMovedType = 1,
-        InspectionSkippedType = 2
+        RegularInspection = 0,
+        NominalInspection = 1,
+        Repair = 2,
+        InspectionAfterRepair = 3,
+
+        StrengthTightnessTest = 4,
+        VacuumTest = 5,
+
+        CircuitMoved = -1,
+        SkippedInspection = -2,
     };
 
-    inline bool nominal() { return value("nominal").toInt() != 0; }
-    inline Repair repair() { return (Repair)value("repair").toInt(); }
-    inline Type inspectionType() { return (Type)value("inspection_type").toInt(); }
-
-    static QString titleForInspection(bool nominal, Repair repair);
+    static QString titleForInspectionType(Type type);
+    static bool showDescriptionForInspectionType(Type type);
     static QString descriptionForInspectionType(Type type, const QString &type_data);
 
     static QString tableName();
+    static inline MTRecordQuery<Inspection> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Inspection>(tableName(), parents); }
+    static MTQuery queryByInspector(const QString &inspector_uuid);
     static const ColumnList &columns();
 
-    Inspection();
-    Inspection(const QString &, const QString &, const QString &);
-    Inspection(const QString &, const QString &, const QString &, const MTDictionary &);
+    Inspection(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
-    bool checkValues(QVariantMap &, QWidget * = 0);
 
     int scope() { return m_scope; }
+
+    inline QString customerUUID() { return stringValue("customer_uuid"); }
+    inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    Customer customer();
+    inline QString circuitUUID() { return stringValue("circuit_uuid"); }
+    inline void setCircuitUUID(const QString &value) { setValue("circuit_uuid", value); }
+    Circuit circuit();
+    inline QString date() { return stringValue("date"); }
+    inline void setDate(const QString &value) { setValue("date", value); }
+    inline bool isNominal() { return intValue("inspection_type") == NominalInspection; }
+    inline bool isRepair() { return intValue("inspection_type") == Repair; }
+    inline bool isOutsideInterval() { return intValue("outside_interval"); }
+    inline void setOutsideInterval(bool value) { setValue("outside_interval", (int)value); }
+    inline Type type() { return (Type)intValue("inspection_type"); }
+    inline void setType(Type value) { setValue("inspection_type", (int)value); }
+    inline QString typeData() { return stringValue("inspection_type_data"); }
+    inline void setTypeData(const QString &value) { setValue("inspection_type_data", value); }
+    QJsonObject data();
+    void setData(const QJsonObject &value);
+
+    MTRecordQuery<InspectionCompressor> compressors() const;
+    MTRecordQuery<InspectionFile> files() const;
+
+    bool remove() const;
 
 public slots:
     void showSecondNominalInspectionWarning(MDComboBox *, int);
 
 private:
     int m_scope;
-};
-
-class InspectionByInspector : public Inspection
-{
-    Q_OBJECT
-
-public:
-    InspectionByInspector(const QString &);
 };
 
 #endif // INSPECTION_H

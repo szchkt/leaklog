@@ -20,12 +20,12 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define LEAKLOG_VERSION "1.2.1"
-#define F_LEAKLOG_VERSION 1.0201
+#define LEAKLOG_VERSION "2.0.0"
+#define F_LEAKLOG_VERSION 2.0000
 #define LEAKLOG_PREVIEW_VERSION 0
-#define DB_VERSION "0.9.9"
-#define F_DB_VERSION 0.909
-#define F_DB_MIN_LEAKLOG_VERSION 0.9083
+#define DB_VERSION "2.0"
+#define F_DB_VERSION 2.0
+#define F_DB_MIN_LEAKLOG_VERSION 2.0000
 
 #define REAL_NUMBER_PRECISION 2
 #define REAL_NUMBER_PRECISION_EXP 100.0L
@@ -34,8 +34,12 @@
 #define FLOAT_ROUND(f) (double)(roundl((f) * 1000.0L) / 1000.0L)
 #define FLOAT_ARG(f) FLOAT_ROUND(f), 0, FLOAT_FORMAT, FLOAT_PRECISION, QLatin1Char(' ')
 
-#define INSPECTORS_CATEGORY_ID 1000
-#define CIRCUIT_UNITS_CATEGORY_ID 1001
+#define INSPECTORS_CATEGORY_UUID "9aaa2a1c-1b5e-507a-81a6-bd82079f430d"
+#define CIRCUIT_UNITS_CATEGORY_UUID "d27baba8-10b4-5dfa-bbcd-d825095b3386"
+
+#define LEAKAGES_TABLE_UUID "61da71bc-c08d-529f-bd97-17d9012fbe35"
+#define PRESSURES_AND_TEMPERATURES_TABLE_UUID "cd582385-b81f-5826-8820-85870c3f9bd2"
+#define COMPRESSORS_TABLE_UUID "129ff63b-150f-5dbe-950b-07a7698c3029"
 
 #define JPEG_QUALITY 90
 
@@ -50,20 +54,19 @@ class QVariant;
 template<class Key, class T>
 class QMap;
 template<class Key, class T>
+class QMapIterator;
+template<class Key, class T>
 class QMultiMap;
 template<class T>
 class QList;
 
 typedef QMap<QString, QVariant> QVariantMap;
+typedef QMapIterator<QString, QVariant> QVariantMapIterator;
 typedef QList<QVariantMap> ListOfVariantMaps;
 typedef QMap<QString, QVariantMap> MapOfVariantMaps;
 typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
 
 #include <QtGlobal>
 #include <QDebug>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define setSectionResizeMode setResizeMode
-#endif
 
 #endif // DEFS_H

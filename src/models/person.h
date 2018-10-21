@@ -25,10 +25,21 @@
 class Person : public MTRecord
 {
 public:
-    Person(const QString & = QString());
-    Person(const QString &, const QString &);
+    Person(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+
+    inline QString customerUUID() { return stringValue("customer_uuid"); }
+    inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    inline QString mail() { return stringValue("mail"); }
+    inline void setMail(const QString &value) { setValue("mail", value); }
+    inline QString phone() { return stringValue("phone"); }
+    inline void setPhone(const QString &value) { setValue("phone", value); }
+    inline bool isHidden() { return intValue("hidden"); }
+    inline void setHidden(bool value) { setValue("hidden", (int)value); }
 
     static QString tableName();
+    static inline MTRecordQuery<Person> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Person>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

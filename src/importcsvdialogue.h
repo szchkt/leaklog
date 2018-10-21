@@ -61,8 +61,8 @@ private:
 class ImportDialogueTable
 {
 public:
-    ImportDialogueTable(const QString &t_name, const QString &t_id, bool generate_id = false) {
-        this->t_name = t_name; this->t_id = t_id; this->generate_id = generate_id;
+    ImportDialogueTable(const QString &t_name, const QString &t_id) {
+        this->t_name = t_name; this->t_id = t_id;
     }
     ~ImportDialogueTable();
 
@@ -70,9 +70,9 @@ public:
     const QString &id() { return t_id; }
 
     ImportDialogueTableColumn *addColumn(const QString &, const QString &, int);
-    ImportDialogueTableColumn *addForeignKeyColumn(const QString &, const QString &, const QString &, const QString &);
+    ImportDialogueTableColumn *addForeignKeyColumn(const QString &, const QString &, const QString &);
     void addColumn(ImportDialogueTableColumn *);
-    ImportDialogueTableTemplate *addChildTableTemplate(const QString &, const QString &, const MTDictionary &, bool = false);
+    ImportDialogueTableTemplate *addChildTableTemplate(const QString &, const QString &, const MTDictionary &);
     ImportDialogueTable *addChildTable(int);
 
     void addParentColumn(const QString &, const QString &);
@@ -93,7 +93,6 @@ public:
 protected:
     QString t_name;
     QString t_id;
-    bool generate_id;
 
     QList<ImportDialogueTableColumn *> columns;
     MTDictionary parent_columns;
@@ -124,7 +123,7 @@ public:
     ImportDialogueTableColumn(ImportDialogueTableColumn *other) {
         this->c_name = other->name(); this->c_id = other->id();
         this->c_type = other->type(); this->select_vals = other->selectValues();
-        this->foreign_key_column = other->foreignKeyColumn(); this->foreign_key_table = other->foreignKeyTable();
+        this->foreign_key_table = other->foreignKeyTable();
     }
 
     const QString &name() { return c_name; }
@@ -137,15 +136,12 @@ public:
 
     void setForeignKeyTable(const QString &table) { this->foreign_key_table = table; }
     const QString &foreignKeyTable() { return foreign_key_table; }
-    void setForeignKeyColumn(const QString &column) { this->foreign_key_column = column; }
-    const QString &foreignKeyColumn() { return foreign_key_column; }
 
 private:
     QString c_name;
     QString c_id;
 
     QString foreign_key_table;
-    QString foreign_key_column;
 
     QMap<QString, QString> select_vals;
 
@@ -167,8 +163,8 @@ private:
 class ImportDialogueTableTemplate : public ImportDialogueTable
 {
 public:
-    ImportDialogueTableTemplate(const QString &t_name, const QString &t_id, bool generate_id = false)
-        : ImportDialogueTable(t_name, t_id, generate_id) {}
+    ImportDialogueTableTemplate(const QString &t_name, const QString &t_id)
+        : ImportDialogueTable(t_name, t_id) {}
 
     ImportDialogueTable *table();
 };

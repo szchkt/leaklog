@@ -58,6 +58,6 @@ void EditInspectorDialogueTab::init()
     setLayout(grid);
 }
 
-void EditInspectorDialogueTab::save(const QVariant &)
+void EditInspectorDialogueTab::save(const QString &)
 {
 }

@@ -34,7 +34,7 @@ RefrigerantManagementView::RefrigerantManagementView(ViewTabSettings *settings):
 {
 }
 
-QString RefrigerantManagementView::renderHTML()
+QString RefrigerantManagementView::renderHTML(bool)
 {
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
@@ -75,7 +75,7 @@ QString RefrigerantManagementView::renderHTML()
         out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     }
     out << "</tr>";
-    RefrigerantRecord records("");
+    MTQuery records = RefrigerantRecord::query();
     if (!settings->toolBarStack()->isFilterEmpty()) {
         records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -83,7 +83,6 @@ QString RefrigerantManagementView::renderHTML()
     if (order_by.isEmpty())
         order_by = "date";
     MTSqlQuery query = records.select("*", settings->appendDefaultOrderToColumn(order_by));
-    query.setForwardOnly(true);
     query.exec();
     QString date;
     while (query.next()) {
@@ -93,14 +92,12 @@ QString RefrigerantManagementView::renderHTML()
 
         QString notes = query.stringValue("notes");
 
-        out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
+        out << "<tr onclick=\"window.location = 'refrigerantrecord:" << query.stringValue("uuid") << "/edit'\" style=\"cursor: pointer;\">";
         out << (show_notes && !notes.isEmpty() ? "<td rowspan=\"2\" style=\"vertical-align: top;\">" : "<td>");
         out << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
-            if (key == "partner_id") {
-                out << "<td>" << formatCompanyID(query.value(key)) << "</td>";
-            } else if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
+            if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
                 out << "<td>" << query.doubleValue(key) << "</td>";
             } else if (key.startsWith("leaked")) {
                 if (show_leaked) {

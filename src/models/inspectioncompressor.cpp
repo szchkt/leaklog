@@ -19,26 +19,22 @@
 
 #include "inspectioncompressor.h"
 
-InspectionsCompressor::InspectionsCompressor(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
-{
-    setSerialId(true);
-}
+InspectionCompressor::InspectionCompressor(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
+{}
 
-QString InspectionsCompressor::tableName()
+QString InspectionCompressor::tableName()
 {
     return "inspections_compressors";
 }
 
-class InspectionsCompressorColumns
+class InspectionCompressorColumns
 {
 public:
-    InspectionsCompressorColumns() {
-        columns << Column("id", "SERIAL NOT NULL");
-        columns << Column("customer_id", "INTEGER");
-        columns << Column("circuit_id", "INTEGER");
-        columns << Column("date", "TEXT");
-        columns << Column("compressor_id", "BIGINT");
+    InspectionCompressorColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("inspection_uuid", "UUID");
+        columns << Column("compressor_uuid", "UUID");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -46,8 +42,8 @@ public:
     ColumnList columns;
 };
 
-const ColumnList &InspectionsCompressor::columns()
+const ColumnList &InspectionCompressor::columns()
 {
-    static InspectionsCompressorColumns columns;
+    static InspectionCompressorColumns columns;
     return columns.columns;
 }

@@ -55,14 +55,14 @@ public:
         AssemblyRecords,              CircuitRequiredEnd = AssemblyRecords,
                                       CustomerRequiredEnd = AssemblyRecords,
         AssemblyRecordTypes,          AssemblyRecordsRelated = AssemblyRecordTypes,
-        AssemblyRecordItems,
-        CircuitUnitTypes,             AssemblyRecordsRelatedEnd = CircuitUnitTypes,
+        AssemblyRecordItems,          AssemblyRecordsRelatedEnd = AssemblyRecordItems,
+        CircuitUnitTypes,
         ViewCount
     };
 
     View(ViewTabSettings *settings);
 
-    virtual QString renderHTML() = 0;
+    virtual QString renderHTML(bool for_export = false) = 0;
 
     virtual QString title() const = 0;
 

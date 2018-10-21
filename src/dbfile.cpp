@@ -28,13 +28,38 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QLabel>
+#include <QWebEngineUrlRequestJob>
 
-#define IMAGE_MAX_SIZE 800
+#define IMAGE_MAX_SIZE 1600
 
-DBFile::DBFile(int file_id):
-File(QString::number(file_id))
+class DBFileBuffer : public QBuffer
 {
-    this->file_id = file_id;
+public:
+    DBFileBuffer(QByteArray *buf, QObject *parent): QBuffer(buf, parent), _buffer(buf) {}
+
+    ~DBFileBuffer() {
+        delete _buffer;
+    }
+
+private:
+    QByteArray *_buffer;
+};
+
+void DBFileUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
+{
+    QByteArray *byte_array = new QByteArray(DBFile(job->requestUrl().host()).data());
+    if (byte_array->isNull()) {
+        delete byte_array;
+        job->fail(QWebEngineUrlRequestJob::UrlNotFound);
+    } else {
+        DBFileBuffer *buffer = new DBFileBuffer(byte_array, job);
+        job->reply(QString("image/jpeg").toUtf8(), buffer);
+    }
+}
+
+DBFile::DBFile(const QString &file_uuid):
+    File(file_uuid)
+{
 }
 
 void DBFile::setData(const QByteArray &file_data)
@@ -92,47 +117,33 @@ bool DBFile::saveData(const QString &file_name)
     return true;
 }
 
-int DBFile::save()
+void DBFile::save()
 {
-    if (file_id <= 0) {
-        file_id = (int)File("").max("id") + 1;
-        File::setId(QString::number(file_id));
-    }
-
     QVariantMap update_map;
-    if (Global::isDatabaseRemote())
-        update_map.insert("data", file_data.toBase64());
-    else
-        update_map.insert("data", file_data);
+    update_map.insert("data", file_data);
     update_map.insert("name", file_name);
 
     update(update_map);
-
-    return file_id;
 }
 
 QByteArray DBFile::data()
 {
-    if (!file_data.isNull() || file_id < 0)
+    if (!file_data.isNull() || uuid().isEmpty())
         return file_data;
 
-    if (Global::isDatabaseRemote())
-        file_data = QByteArray::fromBase64(list("data").value("data").toByteArray());
-    else
-        file_data = list("data").value("data").toByteArray();
-
+    file_data = list("data").value("data").toByteArray();
     return file_data;
 }
 
-DBFileChooser::DBFileChooser(QWidget *parent, int file_id):
+DBFileChooser::DBFileChooser(const QString &file_uuid, QWidget *parent):
 QWidget(parent)
 {
-    db_file = new DBFile(file_id);
+    db_file = new DBFile(file_uuid);
     changed = false;
 
     QHBoxLayout *layout = new QHBoxLayout(this);
 
-    if (file_id) {
+    if (!file_uuid.isEmpty()) {
         name_lbl = new QLabel(this);
         QPixmap pixmap;
         pixmap.loadFromData(db_file->data());
@@ -142,11 +153,16 @@ QWidget(parent)
     }
     layout->addWidget(name_lbl);
 
-    QPushButton *browse_btn = new QPushButton(file_id ? tr("Replace") : tr("Browse"), this);
+    QPushButton *browse_btn = new QPushButton(file_uuid.isEmpty() ? tr("Browse") : tr("Replace"), this);
     QObject::connect(browse_btn, SIGNAL(clicked()), this, SLOT(browse()));
     layout->addWidget(browse_btn);
 
     setLayout(layout);
+}
+
+DBFileChooser::~DBFileChooser()
+{
+    delete db_file;
 }
 
 void DBFileChooser::browse()
@@ -164,7 +180,7 @@ void DBFileChooser::browse()
 QVariant DBFileChooser::variantValue() const
 {
     if (changed)
-        return db_file->save();
-    else
-        return db_file->id().toInt();
+        db_file->save();
+
+    return db_file->uuid();
 }

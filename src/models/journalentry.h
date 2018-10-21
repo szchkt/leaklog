@@ -17,18 +17,35 @@
  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  ********************************************************************/
 
-#ifndef INSPECTIONIMAGE_H
-#define INSPECTIONIMAGE_H
+#ifndef JOURNALENTRY_H
+#define JOURNALENTRY_H
 
 #include "dbrecord.h"
 
-class InspectionImage : public MTRecord
+class JournalEntry
 {
+private:
+    JournalEntry() {}
+
 public:
-    InspectionImage(const QString &, const QString &, const QString &);
+    enum {
+        Version = 0,
+    };
+
+    enum Operation {
+        Insertion = 1,
+        Update = 2,
+        Deletion = 3
+    };
 
     static QString tableName();
     static const ColumnList &columns();
+
+    static int tableIDForName(const QString &name);
+    static QString tableNameForID(int id, const QString &default_value = QString());
+
+    static int columnIDForName(const QString &name);
+    static QString columnNameForID(int id, const QString &default_value = QString());
 };
 
-#endif // INSPECTIONIMAGE_H
+#endif // JOURNALENTRY_H

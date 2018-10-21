@@ -28,48 +28,44 @@
 #include <QTabWidget>
 #include <QVariantMap>
 
-EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_id, const QString &circuit_id, const QString &inspection_date, QWidget *parent)
+EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_uuid, const QString &circuit_uuid, const QString &inspection_uuid, QWidget *parent)
     : QWidget(parent),
-      customer_id(customer_id),
-      circuit_id(circuit_id),
-      original_inspection_date(inspection_date)
+      customer_uuid(customer_uuid),
+      circuit_uuid(circuit_uuid)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     tab_w = new QTabWidget(this);
     layout->addWidget(tab_w);
 
-    loadTabs(inspection_date);
+    loadTabs(inspection_uuid);
 }
 
-void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_date)
+void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid)
 {
-    Compressor compressors_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id",
-                                                       QStringList() << customer_id << circuit_id));
-    ListOfVariantMaps compressors = compressors_rec.listAll();
+    ListOfVariantMaps compressors = Circuit(circuit_uuid).compressors().listAll();
 
-    for (int i = 0; i < compressors.count(); ++i) {
-        InspectionCompressorTab *tab = addTab(compressors.at(i).value("id").toInt(), compressors.at(i).value("name").toString());
+    if (inspection_uuid.isEmpty()) {
+        for (int i = 0; i < compressors.count(); ++i) {
+            InspectionCompressor inspection_compressor;
+            inspection_compressor.setValue("compressor_uuid", compressors.at(i).value("uuid").toString());
 
-        if (!inspection_date.isEmpty()) {
-            InspectionsCompressor inspection_compressor_rec(QString(), MTDictionary(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                QStringList() << customer_id << circuit_id << inspection_date << compressors.at(i).value("id").toString()));
-            QVariantMap inspection_compressor = inspection_compressor_rec.list();
-            if (!inspection_compressor.isEmpty()) {
-                tab->setRecordId(inspection_compressor.value("id").toInt());
-                former_ids.append(inspection_compressor.value("id").toInt());
-                tab->init(inspection_compressor);
-            } else {
-                tab->init();
-            }
-        } else {
-            tab->init();
+            addTab(inspection_compressor, compressors.at(i).value("name").toString());
+        }
+    } else {
+        for (int i = 0; i < compressors.count(); ++i) {
+            InspectionCompressor inspection_compressor = InspectionCompressor::query({
+                {"inspection_uuid", inspection_uuid},
+                {"compressor_uuid", compressors.at(i).value("uuid").toString()}
+            }).first();
+
+            addTab(inspection_compressor, compressors.at(i).value("name").toString());
         }
     }
 }
 
-InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(int tab_id, const QString &tab_name)
+InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(const InspectionCompressor &inspection_compressor, const QString &tab_name)
 {
-    InspectionCompressorTab *tab = new InspectionCompressorTab(tab_id, this);
+    InspectionCompressorTab *tab = new InspectionCompressorTab(inspection_compressor, this);
     tabs.append(tab);
 
     tab_w->addTab(tab, tab_name);
@@ -77,23 +73,19 @@ InspectionCompressorTab *EditInspectionDialogueCompressors::addTab(int tab_id, c
     return tab;
 }
 
-void EditInspectionDialogueCompressors::save(const QVariant &inspection_date)
+void EditInspectionDialogueCompressors::save(const QString &inspection_uuid)
 {
     for (int i = 0; i < tabs.count(); ++i) {
-        tabs.at(i)->save(customer_id, circuit_id, original_inspection_date, inspection_date.toString());
-        if (tabs.at(i)->recordId() >= 0)
-            former_ids.removeAll(tabs.at(i)->recordId());
+        tabs.at(i)->save(inspection_uuid);
     }
-    for (int i = 0; i < former_ids.count(); ++i)
-        InspectionsCompressor(QString::number(former_ids.at(i))).remove();
 }
 
-InspectionCompressorTab::InspectionCompressorTab(int id, QWidget *parent)
+InspectionCompressorTab::InspectionCompressorTab(const InspectionCompressor &inspection_compressor, QWidget *parent)
     : QWidget(parent),
       EditDialogueWidgets(),
-      m_id(id),
-      m_record_id(-1)
+      inspection_compressor(inspection_compressor)
 {
+    init(this->inspection_compressor.savedValues());
 }
 
 void InspectionCompressorTab::init(const QVariantMap &var_values)
@@ -106,20 +98,13 @@ void InspectionCompressorTab::init(const QVariantMap &var_values)
     EditInspectionDialogueLayout(&md_inputwidgets, &md_groups, layout).layout();
 }
 
-bool InspectionCompressorTab::save(const QString &customer_id, const QString &circuit_id,
-                                   const QString &original_inspection_date, const QString &inspection_date)
+bool InspectionCompressorTab::save(const QString &inspection_uuid)
 {
-    MTDictionary parents(QStringList() << "customer_id" << "circuit_id" << "date" << "compressor_id",
-                         QStringList() << customer_id << circuit_id << original_inspection_date << QString::number(m_id));
-    InspectionsCompressor record(m_record_id > 0 ? QString::number(m_record_id) : QString(), parents);
-
-    QVariantMap values;
-    if (inspection_date != original_inspection_date)
-        values.insert("date", inspection_date);
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave())
             continue;
-        values.insert((*i)->id(), (*i)->variantValue());
+        inspection_compressor.setValue((*i)->id(), (*i)->variantValue());
     }
-    return record.update(values, true, record.exists());
+    inspection_compressor.setValue("inspection_uuid", inspection_uuid);
+    return inspection_compressor.save(true);
 }

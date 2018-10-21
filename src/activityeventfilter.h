@@ -33,12 +33,18 @@ public:
 
 signals:
     void timeout();
+    void performPeriodicTasks();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
+protected slots:
+    void taskTimerTimeout();
+
 private:
     QTimer *timer;
+    QTimer *task_timer;
+    qint64 last_activity_time;
 };
 
 #endif // ACTIVITYEVENTFILTER_H

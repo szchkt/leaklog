@@ -25,8 +25,8 @@
 
 #include <QApplication>
 
-Inspector::Inspector(const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary())
+Inspector::Inspector(const QString &uuid):
+    DBRecord(tableName(), uuid)
 {}
 
 void Inspector::initEditDialogue(EditDialogueWidgets *md)
@@ -34,32 +34,52 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Inspector"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    md->addInputWidget(new MDLineEdit("id", tr("Certificate number:"), md->widget(), attributes.value("id").toString(), 99999));
-    md->addInputWidget(new MDLineEdit("certificate_number", tr("Foreign certificate number:"), md->widget(), attributes.value("certificate_number").toString()));
-    md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), attributes.value("certificate_country").toString(), Global::countries()));
-    md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), attributes.value("person").toString()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
-    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
-    MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, attributes.value("acquisition_price").toDouble(), currency);
+    md->addInputWidget(new MDLineEdit("certificate_number", tr("Certificate number:"), md->widget(), certificateNumber()));
+    md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), certificateCountry(), Global::countries()));
+    md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), personName()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
+    md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency);
     iw->setRowSpan(0);
     md->addInputWidget(iw);
-    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, attributes.value("list_price").toDouble(), currency);
+    iw = new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency);
     iw->setRowSpan(0);
     md->addInputWidget(iw);
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT id FROM inspectors" + QString(id().isEmpty() ? "" : " WHERE id <> :id"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+}
+
+QString Inspector::certificateNumber()
+{
+    return stringValue("certificate_number");
+}
+
+QString Inspector::certificateCountry()
+{
+    return stringValue("certificate_country");
+}
+
+QString Inspector::personName()
+{
+    return stringValue("person");
+}
+
+QString Inspector::mail()
+{
+    return stringValue("mail");
+}
+
+QString Inspector::phone()
+{
+    return stringValue("phone");
+}
+
+double Inspector::listPrice()
+{
+    return doubleValue("list_price");
+}
+
+double Inspector::acquisitionPrice()
+{
+    return doubleValue("acquisition_price");
 }
 
 QString Inspector::tableName()
@@ -71,7 +91,7 @@ class InspectorColumns
 {
 public:
     InspectorColumns() {
-        columns << Column("id", "INTEGER PRIMARY KEY");
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("certificate_number", "TEXT");
         columns << Column("certificate_country", "TEXT");
         columns << Column("person", "TEXT");
@@ -96,8 +116,7 @@ class InspectorAttributes
 {
 public:
     InspectorAttributes() {
-        dict.insert("id", QApplication::translate("Inspector", "Certificate number"));
-        dict.insert("certificate_number", QApplication::translate("Inspector", "Foreign certificate number"));
+        dict.insert("certificate_number", QApplication::translate("Inspector", "Certificate number"));
         dict.insert("certificate_country", QApplication::translate("Inspector", "Country of issue"));
         dict.insert("person", QApplication::translate("Inspector", "Full name"));
         dict.insert("mail", QApplication::translate("Inspector", "E-mail"));

@@ -29,7 +29,7 @@ class InspectorDetailsView : public InspectorsView
 public:
     InspectorDetailsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 };

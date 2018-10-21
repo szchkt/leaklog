@@ -23,106 +23,98 @@
 
 #include <QSettings>
 
-ViewTabSettings::ViewTabSettings():
-    m_customer(-1),
-    m_circuit(-1),
-    m_compressor(-1),
-    m_inspector(-1),
-    m_assembly_record_type(-1),
-    m_assembly_record_item_type(-1),
-    m_assembly_record_item_category(-1),
-    m_circuit_unit_type(-1)
+ViewTabSettings::ViewTabSettings()
 {
 }
 
 void ViewTabSettings::saveSettings(QSettings &settings) const
 {
     if (isCustomerSelected())
-        settings.setValue("selected_customer", m_customer);
+        settings.setValue("selected_customer_uuid", _customer_uuid);
     if (isCircuitSelected())
-        settings.setValue("selected_circuit", m_circuit);
+        settings.setValue("selected_circuit_uuid", _circuit_uuid);
     if (isCompressorSelected())
-        settings.setValue("selected_compressor", m_compressor);
+        settings.setValue("selected_compressor_uuid", _compressor_uuid);
     if (isInspectionSelected())
-        settings.setValue("selected_inspection", m_inspection);
+        settings.setValue("selected_inspection_uuid", _inspection_uuid);
     if (isRepairSelected())
-        settings.setValue("selected_repair", m_repair);
+        settings.setValue("selected_repair_uuid", _repair_uuid);
     if (isInspectorSelected())
-        settings.setValue("selected_inspector", m_inspector);
+        settings.setValue("selected_inspector_uuid", _inspector_uuid);
     if (isAssemblyRecordTypeSelected())
-        settings.setValue("selected_assembly_record_type", m_assembly_record_type);
+        settings.setValue("selected_ar_type_uuid", _ar_type_uuid);
     if (isAssemblyRecordItemTypeSelected())
-        settings.setValue("selected_assembly_record_item_type", m_assembly_record_item_type);
+        settings.setValue("selected_ar_item_type_uuid", _ar_item_type_uuid);
     if (isAssemblyRecordItemCategorySelected())
-        settings.setValue("selected_assembly_record_item_category", m_assembly_record_item_category);
+        settings.setValue("selected_ar_item_category_uuid", _ar_item_category_uuid);
     if (isCircuitUnitTypeSelected())
-        settings.setValue("selected_circuit_unit_type", m_circuit_unit_type);
+        settings.setValue("selected_circuit_unit_type_uuid", _circuit_unit_type_uuid);
 
     settings.setValue("current_view", currentView());
-    if (!currentTable().isEmpty())
-        settings.setValue("current_table", currentTable());
+    if (!currentTableUUID().isEmpty())
+        settings.setValue("current_table_uuid", currentTableUUID());
 }
 
 void ViewTabSettings::restoreSettings(QSettings &settings)
 {
-    m_customer = settings.value("selected_customer", -1).toInt();
-    m_circuit = settings.value("selected_circuit", -1).toInt();
-    m_inspection = settings.value("selected_inspection").toString();
-    m_compressor = settings.value("selected_compressor", -1).toInt();
-    m_repair = settings.value("selected_repair").toString();
-    m_inspector = settings.value("selected_inspector", -1).toInt();
-    m_assembly_record_type = settings.value("selected_assembly_record_type", -1).toInt();
-    m_assembly_record_item_type = settings.value("selected_assembly_record_item_type", -1).toInt();
-    m_assembly_record_item_category = settings.value("selected_assembly_record_item_category", -1).toInt();
-    m_circuit_unit_type = settings.value("selected_circuit_unit_type", -1).toInt();
+    _customer_uuid = settings.value("selected_customer_uuid").toString();
+    _circuit_uuid = settings.value("selected_circuit_uuid").toString();
+    _inspection_uuid = settings.value("selected_inspection_uuid").toString();
+    _compressor_uuid = settings.value("selected_compressor_uuid").toString();
+    _repair_uuid = settings.value("selected_repair_uuid").toString();
+    _inspector_uuid = settings.value("selected_inspector_uuid").toString();
+    _ar_type_uuid = settings.value("selected_ar_type_uuid").toString();
+    _ar_item_type_uuid = settings.value("selected_ar_item_type_uuid").toString();
+    _ar_item_category_uuid = settings.value("selected_ar_item_category_uuid").toString();
+    _circuit_unit_type_uuid = settings.value("selected_circuit_unit_type_uuid").toString();
 
     validateSelection();
 
     QMetaObject::invokeMethod(object(), "setView", Qt::QueuedConnection,
                               Q_ARG(int, settings.value("current_view").toInt()),
-                              Q_ARG(QString, settings.value("current_table").toString()));
+                              Q_ARG(QString, settings.value("current_table_uuid").toString()));
 }
 
 void ViewTabSettings::validateSelection()
 {
-    if (isCustomerSelected() && !Customer(selectedCustomer()).exists()) {
+    if (isCustomerSelected() && !Customer(selectedCustomerUUID()).exists()) {
         clearSelectedCustomer();
     }
-    if (isCircuitSelected() && !Circuit(selectedCustomer(), selectedCircuit()).exists()) {
+    if (isCircuitSelected() && !Circuit(selectedCircuitUUID()).exists()) {
         clearSelectedCircuit();
     }
-    if (isInspectionSelected() && !Inspection(selectedCustomer(), selectedCircuit(), selectedInspection()).exists()) {
+    if (isInspectionSelected() && !Inspection(selectedInspectionUUID()).exists()) {
         clearSelectedInspection();
     }
-    if (isCompressorSelected() && !Compressor(selectedCompressor()).exists()) {
+    if (isCompressorSelected() && !Compressor(selectedCompressorUUID()).exists()) {
         clearSelectedCompressor();
     }
-    if (isRepairSelected() && !Repair(selectedRepair()).exists()) {
+    if (isRepairSelected() && !Repair(selectedRepairUUID()).exists()) {
         clearSelectedRepair();
     }
-    if (isInspectorSelected() && !Inspector(selectedInspector()).exists()) {
+    if (isInspectorSelected() && !Inspector(selectedInspectorUUID()).exists()) {
         clearSelectedInspector();
     }
-    if (isAssemblyRecordTypeSelected() && !AssemblyRecordType(selectedAssemblyRecordType()).exists()) {
+    if (isAssemblyRecordTypeSelected() && !AssemblyRecordType(selectedAssemblyRecordTypeUUID()).exists()) {
         clearSelectedAssemblyRecordType();
     }
-    if (isAssemblyRecordItemTypeSelected() && !AssemblyRecordItemType(selectedAssemblyRecordItemType()).exists()) {
+    if (isAssemblyRecordItemTypeSelected() && !AssemblyRecordItemType(selectedAssemblyRecordItemTypeUUID()).exists()) {
         clearSelectedAssemblyRecordItemType();
     }
-    if (isAssemblyRecordItemCategorySelected() && !AssemblyRecordItemCategory(selectedAssemblyRecordItemCategory()).exists()) {
+    if (isAssemblyRecordItemCategorySelected() && !AssemblyRecordItemCategory(selectedAssemblyRecordItemCategoryUUID()).exists()) {
         clearSelectedAssemblyRecordItemCategory();
     }
-    if (isCircuitUnitTypeSelected() && !CircuitUnitType(selectedCircuitUnitType()).exists()) {
+    if (isCircuitUnitTypeSelected() && !CircuitUnitType(selectedCircuitUnitTypeUUID()).exists()) {
         clearSelectedCircuitUnitType();
     }
 }
 
-void ViewTabSettings::loadCustomer(int customer, bool refresh)
+void ViewTabSettings::loadCustomer(const QString &customer_uuid, bool refresh)
 {
-    if (customer < 0) { return; }
-    setSelectedCustomer(customer);
-    setSelectedCircuit(-1);
-    setSelectedCompressor(-1);
+    if (customer_uuid.isEmpty()) { return; }
+    setSelectedCustomerUUID(customer_uuid);
+    clearSelectedCircuit();
+    clearSelectedCompressor();
     clearSelectedInspection();
     enableAllTools();
     if (refresh) {
@@ -130,23 +122,23 @@ void ViewTabSettings::loadCustomer(int customer, bool refresh)
     }
 }
 
-void ViewTabSettings::loadCircuit(int circuit, bool refresh)
+void ViewTabSettings::loadCircuit(const QString &circuit_uuid, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
-    if (circuit < 0) { return; }
-    setSelectedCircuit(circuit);
+    if (circuit_uuid.isEmpty()) { return; }
+    setSelectedCircuitUUID(circuit_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::Inspections);
     }
 }
 
-void ViewTabSettings::loadInspection(const QString &inspection, bool refresh)
+void ViewTabSettings::loadInspection(const QString &inspection_uuid, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
-    if (inspection.isEmpty()) { return; }
-    if (Inspection(selectedCustomer(), selectedCircuit(), inspection).intValue("inspection_type") != Inspection::DefaultType) {
+    if (inspection_uuid.isEmpty()) { return; }
+    if (Inspection(inspection_uuid).intValue("inspection_type") < 0) {
         clearSelectedInspection();
         enableAllTools();
         if (refresh) {
@@ -154,89 +146,89 @@ void ViewTabSettings::loadInspection(const QString &inspection, bool refresh)
         }
         return;
     }
-    setSelectedInspection(inspection);
+    setSelectedInspectionUUID(inspection_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::InspectionDetails);
     }
 }
 
-void ViewTabSettings::loadRepair(const QString &date, bool refresh)
+void ViewTabSettings::loadRepair(const QString &repair_uuid, bool refresh)
 {
-    if (date.isEmpty()) { return; }
-    setSelectedRepair(date);
+    if (repair_uuid.isEmpty()) { return; }
+    setSelectedRepairUUID(repair_uuid);
     enableAllTools();
     if (refresh) {
         refreshView();
     }
 }
 
-void ViewTabSettings::loadInspector(int inspector, bool refresh)
+void ViewTabSettings::loadInspector(const QString &inspector_uuid, bool refresh)
 {
-    if (inspector < 0) { return; }
-    setSelectedInspector(inspector);
+    if (inspector_uuid < 0) { return; }
+    setSelectedInspectorUUID(inspector_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::Inspectors);
     }
 }
 
-void ViewTabSettings::loadInspectorReport(int inspector, bool refresh)
+void ViewTabSettings::loadInspectorReport(const QString &inspector_uuid, bool refresh)
 {
-    if (inspector < 0) { return; }
-    setSelectedInspector(inspector);
+    if (inspector_uuid.isEmpty()) { return; }
+    setSelectedInspectorUUID(inspector_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::InspectorDetails);
     }
 }
 
-void ViewTabSettings::loadAssemblyRecordType(int assembly_record, bool refresh)
+void ViewTabSettings::loadAssemblyRecordType(const QString &ar_type_uuid, bool refresh)
 {
-    if (assembly_record < 0) { return; }
-    setSelectedAssemblyRecordType(assembly_record);
+    if (ar_type_uuid.isEmpty()) { return; }
+    setSelectedAssemblyRecordTypeUUID(ar_type_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordTypes);
     }
 }
 
-void ViewTabSettings::loadAssemblyRecordItemType(int assembly_record_item, bool refresh)
+void ViewTabSettings::loadAssemblyRecordItemType(const QString &ar_item_type_uuid, bool refresh)
 {
-    if (assembly_record_item < 0) { return; }
-    setSelectedAssemblyRecordItemType(assembly_record_item);
+    if (ar_item_type_uuid.isEmpty()) { return; }
+    setSelectedAssemblyRecordItemTypeUUID(ar_item_type_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordItems);
     }
 }
 
-void ViewTabSettings::loadAssemblyRecordItemCategory(int assembly_record_item_category, bool refresh)
+void ViewTabSettings::loadAssemblyRecordItemCategory(const QString &ar_item_category_uuid, bool refresh)
 {
-    if (assembly_record_item_category < 0) { return; }
-    setSelectedAssemblyRecordItemCategory(assembly_record_item_category);
+    if (ar_item_category_uuid.isEmpty()) { return; }
+    setSelectedAssemblyRecordItemCategoryUUID(ar_item_category_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordItems);
     }
 }
 
-void ViewTabSettings::loadAssemblyRecord(const QString &inspection, bool refresh)
+void ViewTabSettings::loadAssemblyRecord(const QString &inspection_uuid, bool refresh)
 {
     if (!isCustomerSelected()) { return; }
     if (!isCircuitSelected()) { return; }
-    if (inspection.isEmpty()) { return; }
-    setSelectedInspection(inspection);
+    if (inspection_uuid.isEmpty()) { return; }
+    setSelectedInspectionUUID(inspection_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::AssemblyRecordDetails);
     }
 }
 
-void ViewTabSettings::loadCircuitUnitType(int circuit_unit_type, bool refresh)
+void ViewTabSettings::loadCircuitUnitType(const QString &circuit_unit_type_uuid, bool refresh)
 {
-    if (circuit_unit_type < 0) { return; }
-    setSelectedCircuitUnitType(circuit_unit_type);
+    if (circuit_unit_type_uuid < 0) { return; }
+    setSelectedCircuitUnitTypeUUID(circuit_unit_type_uuid);
     enableAllTools();
     if (refresh) {
         setView(View::CircuitUnitTypes);

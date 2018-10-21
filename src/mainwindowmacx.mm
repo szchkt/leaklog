@@ -34,34 +34,6 @@ void MainWindow::macInitUI()
 #endif
 }
 
-bool MainWindow::isFullScreen() const
-{
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (QSysInfo::MacintoshVersion <= QSysInfo::MV_10_6)
-        return QWidget::isFullScreen();
-    NSView *view = (NSView *)winId();
-    return ([[view window] styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen;
-#else
-    return QWidget::isFullScreen();
-#endif
-}
-
-void MainWindow::showFullScreen()
-{
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (QSysInfo::MacintoshVersion <= QSysInfo::MV_10_6) {
-        QWidget::showFullScreen();
-        return;
-    }
-    if (!isVisible())
-        show();
-    NSView *view = (NSView *)winId();
-    [[view window] toggleFullScreen:nil];
-#else
-    QWidget::showFullScreen();
-#endif
-}
-
 int Global::macVersion()
 {
     static int version = 0;

@@ -51,17 +51,17 @@ class CircuitsView : public CustomersView
 public:
     CircuitsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 
 protected:
-    void writeCircuitsTable(MTTextStream &out, const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1);
-    HTMLDiv *writeCircuitsTable(const QString &customer_id, const QString &circuit_id = QString(), int cols_in_row = -1, HTMLTable *table = NULL);
-    void writeCircuitsHeader(const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, bool disused, HTMLTableRow *thead);
-    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_id, const QString &circuit_id, int cols_in_row, CircuitsColumns columns, HTMLTable *table);
-    HTMLTable *circuitCompressorsTable(const QString &, const QString &, HTMLTable * = NULL);
-    HTMLTable *circuitUnitsTable(const QString &, const QString &, HTMLTable * = NULL);
+    void writeCircuitsTable(MTTextStream &out, const QString &customer_uuid, const QString &circuit_uuid = QString(), int cols_in_row = -1);
+    HTMLDiv *writeCircuitsTable(const QString &customer_uuid, const QString &circuit_uuid = QString(), int cols_in_row = -1, HTMLTable *table = NULL);
+    void writeCircuitsHeader(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, int disused, HTMLTableRow *thead);
+    void writeCircuitRow(const QVariantMap &circuit, const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, HTMLTable *table);
+    HTMLTable *circuitCompressorsTable(const QString &circuit_uuid, HTMLTable * = NULL);
+    HTMLTable *circuitUnitsTable(const QString &circuit_uuid, HTMLTable * = NULL);
 };
 
 #endif // CIRCUITSVIEW_H

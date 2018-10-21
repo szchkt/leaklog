@@ -32,8 +32,7 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt:
     trw_customers_modified->setHeaderItem(new QTreeWidgetItem(Customer::attributes().values()));
     trw_customers_modified->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     QStringList persons_header_items = Person::attributes().values();
-    persons_header_items.removeFirst();
-    persons_header_items.replace(0, QApplication::translate("Customer", "Customer"));
+    persons_header_items.prepend(QApplication::translate("Customer", "Customer"));
     trw_persons_new->setColumnCount(Person::attributes().count());
     trw_persons_new->setHeaderItem(new QTreeWidgetItem(persons_header_items));
     trw_persons_new->header()->setSectionResizeMode(QHeaderView::ResizeToContents);

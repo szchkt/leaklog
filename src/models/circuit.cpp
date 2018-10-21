@@ -29,79 +29,74 @@
 
 using namespace Global;
 
-Circuit::Circuit():
-    DBRecord(tableName(), "id", "", MTDictionary())
-{}
-
-Circuit::Circuit(const QString &parent, const QString &id):
-    DBRecord(tableName(), "id", id, MTDictionary("parent", parent))
+Circuit::Circuit(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), uuid, savedValues)
 {}
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
     MTDictionary refrigerants(listRefrigerants());
 
-    QString customer = Customer(parent("parent")).stringValue("company");
-    if (customer.isEmpty())
-        customer = formatCompanyID(parent("parent"));
-    md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle()).arg(customer));
-    QVariantMap attributes;
-    if (!id().isEmpty() || !values().isEmpty()) {
-        attributes = list();
-    } else {
-        attributes.insert("year", QDate::currentDate().year());
+    Customer customer(customerUUID());
+    md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())
+                       .arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
+    if (!year()) {
+        setValue("year", QDate::currentDate().year());
     }
-    MDLineEdit *id_edit = new MDLineEdit("id", tr("ID:"), md->widget(), id(), 99999);
+
+    QString id = stringValue("id");
+    MDLineEdit *id_edit = new MDLineEdit("id", tr("ID:"), md->widget(), id, 99999);
     md->addInputWidget(id_edit);
-    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), attributes.value("name").toString()));
-    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), attributes.value("operation").toString()));
-    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), attributes.value("building").toString()));
-    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
-    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), attributes.value("manufacturer").toString()));
-    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), attributes.value("type").toString()));
-    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), attributes.value("sn").toString()));
-    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, attributes.value("year").toInt()));
-    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), attributes.value("commissioning").toString()));
-    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), attributes.value("hermetic").toInt()));
-    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), attributes.value("leak_detector").toInt()));
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), attributes.value("oil", "poe").toString(), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, attributes.value("oil_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, attributes.value("runtime").toDouble(), QApplication::translate("Units", "hours")));
-    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, attributes.value("utilisation").toDouble(), QApplication::translate("Units", "%")));
-    MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, attributes.value("inspection_interval").toInt(), QApplication::translate("Units", "days"));
+    md->addInputWidget(new MDLineEdit("name", tr("Circuit name:"), md->widget(), circuitName()));
+    md->addInputWidget(new MDLineEdit("operation", tr("Place of operation:"), md->widget(), placeOfOperation()));
+    md->addInputWidget(new MDLineEdit("building", tr("Building:"), md->widget(), building()));
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
+    md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), manufacturer()));
+    md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
+    md->addInputWidget(new MDLineEdit("sn", tr("Serial number:"), md->widget(), serialNumber()));
+    md->addInputWidget(new MDSpinBox("year", tr("Year of purchase:"), md->widget(), 1900, 2999, year()));
+    md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), dateOfCommissioning()));
+    md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), hermetic()));
+    md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), leakDetectorInstalled()));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, runtime(), QApplication::translate("Units", "hours")));
+    md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, utilisation(), QApplication::translate("Units", "%")));
+    MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
-    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), attributes.value("disused").toString(),
-                                         MTDictionary(QStringList()
-                                                      << QString::number(Circuit::Commissioned)
-                                                      << QString::number(Circuit::ExcludedFromAgenda)
-                                                      << QString::number(Circuit::Decommissioned),
-                                                      QStringList()
-                                                      << tr("Commissioned")
-                                                      << tr("Excluded from Agenda")
-                                                      << tr("Decommissioned")));
+    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), stringValue("disused"), {
+        {QString::number(Circuit::Commissioned), tr("Commissioned")},
+        {QString::number(Circuit::ExcludedFromAgenda), tr("Excluded from Agenda")},
+        {QString::number(Circuit::Decommissioned), tr("Decommissioned")}
+    });
     md->addInputWidget(disused);
-    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), attributes.value("decommissioning").toString());
+    MDDateEdit *decommissioning = new MDDateEdit("decommissioning", tr("Date of decommissioning:"), md->widget(), dateOfDecommissioning());
+    decommissioning->label()->setAlternativeText(tr("Date excluded:"));
+    decommissioning->label()->toggleAlternativeText(disused->currentIndex() == 1);
+    QObject::connect(disused, &MDComboBox::currentIndexChanged, decommissioning, [=](MDComboBox *, int index) {
+        decommissioning->label()->toggleAlternativeText(index == 1);
+    });
     decommissioning->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
-    MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason for decommissioning:"), md->widget(), attributes.value("decommissioning_reason").toString());
+    MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason:"), md->widget(), reasonForDecommissioning());
     reason->setRowSpan(2);
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
-    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
     notes->setRowSpan(0);
     md->addInputWidget(notes);
+
     int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE parent = :parent%1 ORDER BY id ASC").arg(id().isEmpty() ? "" : " AND id <> :id"));
-    query_used_ids.bindValue(":parent", parent("parent"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":id", id()); }
+    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 ORDER BY id ASC").arg(QString(id.isEmpty() ? "" : " AND id <> :id")));
+    query_used_ids.bindValue(":customer_uuid", customerUUID());
+    if (!id.isEmpty()) { query_used_ids.bindValue(":id", id); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
@@ -111,24 +106,23 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
         }
     }
     md->setUsedIds(used_ids);
-    if (id().isEmpty()) {
+    if (id.isEmpty()) {
         id_edit->setVariantValue(min_available_id);
     }
 }
 
-bool Circuit::checkValues(QVariantMap &values, QWidget *parentWidget)
+bool Circuit::checkValues(QWidget *parent)
 {
-    if (!id().isEmpty() && values.value("refrigerant") != stringValue("refrigerant") && !superuserModeEnabled()) {
+    if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant") && !superuserModeEnabled()) {
         MTSqlQuery query;
         query.prepare("SELECT date FROM inspections"
-                      " WHERE customer = :customer AND circuit = :circuit"
+                      " WHERE circuit_uuid = :circuit_uuid"
                       " AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
                       " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1");
-        query.bindValue(":customer", parent("parent"));
-        query.bindValue(":circuit", id());
+        query.bindValue(":circuit_uuid", uuid());
 
         if (query.exec() && query.next()) {
-            QMessageBox message(parentWidget);
+            QMessageBox message(parent);
             message.setWindowTitle(tr("Edit circuit - Leaklog"));
             message.setWindowModality(Qt::WindowModal);
             message.setWindowFlags(message.windowFlags() | Qt::Sheet);
@@ -143,65 +137,24 @@ bool Circuit::checkValues(QVariantMap &values, QWidget *parentWidget)
     return true;
 }
 
-void Circuit::cascadeIDChange(int customer_id, int old_id, int new_id, int new_customer_id, bool compressors_and_units)
+Customer Circuit::customer()
 {
-    MTSqlQuery update_inspections;
-    if (new_customer_id < 0) {
-        update_inspections.prepare("UPDATE inspections SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-    } else {
-        update_inspections.prepare("UPDATE inspections SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-        update_inspections.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspections.bindValue(":customer_id", customer_id);
-    update_inspections.bindValue(":old_id", old_id);
-    update_inspections.bindValue(":new_id", new_id);
-    update_inspections.exec();
-    MTSqlQuery update_inspections_compressors;
-    if (new_customer_id < 0) {
-        update_inspections_compressors.prepare("UPDATE inspections_compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-    } else {
-        update_inspections_compressors.prepare("UPDATE inspections_compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-        update_inspections_compressors.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspections_compressors.bindValue(":customer_id", customer_id);
-    update_inspections_compressors.bindValue(":old_id", old_id);
-    update_inspections_compressors.bindValue(":new_id", new_id);
-    update_inspections_compressors.exec();
-    MTSqlQuery update_inspection_images;
-    if (new_customer_id < 0) {
-        update_inspection_images.prepare("UPDATE inspection_images SET circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-    } else {
-        update_inspection_images.prepare("UPDATE inspection_images SET customer = :new_customer_id, circuit = :new_id WHERE customer = :customer_id AND circuit = :old_id");
-        update_inspection_images.bindValue(":new_customer_id", new_customer_id);
-    }
-    update_inspection_images.bindValue(":customer_id", customer_id);
-    update_inspection_images.bindValue(":old_id", old_id);
-    update_inspection_images.bindValue(":new_id", new_id);
-    update_inspection_images.exec();
-    if (compressors_and_units || new_customer_id >= 0) {
-        MTSqlQuery update_compressors;
-        if (new_customer_id < 0) {
-            update_compressors.prepare("UPDATE compressors SET circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-        } else {
-            update_compressors.prepare("UPDATE compressors SET customer_id = :new_customer_id, circuit_id = :new_id WHERE customer_id = :customer_id AND circuit_id = :old_id");
-            update_compressors.bindValue(":new_customer_id", new_customer_id);
-        }
-        update_compressors.bindValue(":customer_id", customer_id);
-        update_compressors.bindValue(":old_id", old_id);
-        update_compressors.bindValue(":new_id", new_id);
-        update_compressors.exec();
-        MTSqlQuery update_circuit_units;
-        if (new_customer_id < 0) {
-            update_circuit_units.prepare("UPDATE circuit_units SET circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
-        } else {
-            update_circuit_units.prepare("UPDATE circuit_units SET company_id = :new_customer_id, circuit_id = :new_id WHERE company_id = :customer_id AND circuit_id = :old_id");
-            update_circuit_units.bindValue(":new_customer_id", new_customer_id);
-        }
-        update_circuit_units.bindValue(":customer_id", customer_id);
-        update_circuit_units.bindValue(":old_id", old_id);
-        update_circuit_units.bindValue(":new_id", new_id);
-        update_circuit_units.exec();
-    }
+    return Customer(customerUUID());
+}
+
+MTRecordQuery<Compressor> Circuit::compressors() const
+{
+    return Compressor::query({{"circuit_uuid", uuid()}});
+}
+
+MTRecordQuery<CircuitUnit> Circuit::units() const
+{
+    return CircuitUnit::query({{"circuit_uuid", uuid()}});
+}
+
+MTRecordQuery<Inspection> Circuit::inspections() const
+{
+    return Inspection::query({{"circuit_uuid", uuid()}});
 }
 
 QString Circuit::tableName()
@@ -213,7 +166,9 @@ class CircuitColumns
 {
 public:
     CircuitColumns() {
-        columns << Column("parent", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
+        columns << Column("starred", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("id", "INTEGER");
         columns << Column("name", "TEXT");
         columns << Column("disused", "INTEGER");
@@ -238,6 +193,7 @@ public:
         columns << Column("utilisation", "NUMERIC");
         columns << Column("inspection_interval", "INTEGER");
         columns << Column("notes", "TEXT");
+        columns << Column("operator_link", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }
@@ -287,4 +243,12 @@ const MTDictionary &Circuit::attributes()
 {
     static CircuitAttributes dict;
     return dict.dict;
+}
+
+bool Circuit::remove() const
+{
+    compressors().removeAll();
+    units().removeAll();
+    inspections().removeAll();
+    return MTRecord::remove();
 }

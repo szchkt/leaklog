@@ -27,8 +27,8 @@
 
 using namespace Global;
 
-Repair::Repair(const QString &date):
-    DBRecord(tableName(), "date", date, MTDictionary())
+Repair::Repair(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), uuid, savedValues)
 {}
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
@@ -36,29 +36,27 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Repair"));
-    QVariantMap attributes = values();
-    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), id());
+    MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked())
-        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
-    md->addInputWidget(date);
-    MDLineEdit *customer = new MDLineEdit("customer", tr("Customer:"), md->widget(), attributes.value("customer").toString());
-    if (!attributes.value("parent").toString().isEmpty())
-        customer->setEnabled(false);
-    md->addInputWidget(customer);
-    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), attributes.value("device").toString()));
-    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    MDComboBox *repairman = new MDComboBox("repairman", tr("Inspector:"), md->widget(), attributes.value("repairman").toString(), listInspectors());
+        date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
+    md->addInputWidget(date_edit);
+    MDLineEdit *customer_edit = new MDLineEdit("customer", tr("Customer:"), md->widget(), customer());
+    if (!customerUUID().isEmpty())
+        customer_edit->setEnabled(false);
+    md->addInputWidget(customer_edit);
+    md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
+    md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    MDComboBox *repairman = new MDComboBox("inspector_uuid", tr("Inspector:"), md->widget(), inspectorUUID(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
-    md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), attributes.value("arno").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_add_am").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, attributes.value("refr_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), arno()));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
     QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date FROM repairs" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
+    query_used_ids.prepare("SELECT date FROM repairs" + QString(uuid().isEmpty() ? "" : " WHERE uuid <> :uuid"));
+    if (!uuid().isEmpty()) { query_used_ids.bindValue(":uuid", uuid()); }
     if (query_used_ids.exec()) {
         while (query_used_ids.next()) {
             used_ids << query_used_ids.value(0).toString();
@@ -76,8 +74,10 @@ class RepairColumns
 {
 public:
     RepairColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("customer_uuid", "UUID");
+        columns << Column("inspector_uuid", "UUID");
         columns << Column("date", "TEXT");
-        columns << Column("parent", "INTEGER");
         columns << Column("customer", "TEXT");
         columns << Column("device", "TEXT");
         columns << Column("field", "TEXT");
@@ -85,7 +85,6 @@ public:
         columns << Column("refrigerant_amount", "NUMERIC");
         columns << Column("refr_add_am", "NUMERIC");
         columns << Column("refr_reco", "NUMERIC");
-        columns << Column("repairman", "TEXT");
         columns << Column("arno", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
@@ -112,7 +111,7 @@ public:
         dict.insert("refrigerant_amount", QApplication::translate("Repair", "Amount of refrigerant"));
         dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
         dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
-        dict.insert("repairman", QApplication::translate("Repair", "Inspector"));
+        dict.insert("inspector_uuid", QApplication::translate("Repair", "Inspector"));
         dict.insert("arno", QApplication::translate("Repair", "Assembly record No."));
     }
 

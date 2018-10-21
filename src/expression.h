@@ -33,7 +33,7 @@ public:
 
     inline bool isValid() const { return var_names != NULL; }
 
-    double evaluate(const QVariantMap &inspection, const QString &customer_id, const QString &circuit_id, bool *ok = NULL, bool *null_var = NULL) const;
+    double evaluate(const QVariantMap &inspection, const QString &customer_uuid, const QString &circuit_uuid, bool *ok = NULL, bool *null_var = NULL) const;
     double evaluate(const QVariantMap &inspection, const QVariantMap &circuit_attributes, bool *ok = NULL, bool *null_var = NULL) const;
 
 private:

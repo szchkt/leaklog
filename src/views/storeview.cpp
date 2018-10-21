@@ -34,14 +34,13 @@ StoreView::StoreView(ViewTabSettings *settings):
 {
 }
 
-QString StoreView::renderHTML()
+QString StoreView::renderHTML(bool)
 {
     QString html; MTTextStream out(&html);
-    ServiceCompany serv_company_record(DBInfo::valueForKey("default_service_company"));
-    QVariantMap serv_company = serv_company_record.list();
+    ServiceCompany serv_company;
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
-    out << "<a href=\"servicecompany:" << serv_company.value("id").toString() << "/edit\">";
+    out << "<a href=\"servicecompany:" << serv_company.companyID() << "/edit\">";
     out << tr("Service Company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int num_valid = 0;
@@ -50,11 +49,7 @@ QString StoreView::renderHTML()
         if (serv_company.value(key).toString().isEmpty()) continue;
         out << "<num_attr>" << num_valid << "</num_attr>";
         out << "<tr><td style=\"text-align: right; width:50%;\">" << ServiceCompany::attributes().value(n) << "&nbsp;</td>";
-        if (key == "id") {
-            out << "<td>" << formatCompanyID(serv_company.value(key)) << "</td></tr>";
-        } else {
-            out << "<td>" << MTVariant(serv_company.value(key), key) << "</td></tr>";
-        }
+        out << "<td>" << MTVariant(serv_company.value(key), key) << "</td></tr>";
         num_valid++;
     }
     if (num_valid != 0) {

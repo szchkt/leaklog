@@ -21,7 +21,6 @@
 #define TABBED_EDIT_DIALOGUE_H
 
 #include "editdialogue.h"
-#include "mtdictionary.h"
 
 class QTabWidget;
 class QTreeWidget;
@@ -58,7 +57,7 @@ protected:
 class EditDialogueArea
 {
 public:
-    virtual void save(const QVariant &) = 0;
+    virtual void save(const QString &uuid) = 0;
 };
 
 class EditDialogueTab : public QWidget, public EditDialogueArea
@@ -71,7 +70,7 @@ public:
     void setLayout(QLayout *);
 
     const QString &name() { return tab_name; }
-    virtual void save(const QVariant &) = 0;
+    virtual void save(const QString &uuid) = 0;
 
     virtual QWidget *widget();
     QScrollArea *createScrollArea();

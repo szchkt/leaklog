@@ -37,12 +37,12 @@ class InspectionDetailsView : public CircuitsView
 public:
     InspectionDetailsView(ViewTabSettings *settings);
 
-    QString renderHTML();
+    QString renderHTML(bool for_export = false);
 
     QString title() const;
 
 protected:
-    void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, QVariantMap &, HTMLTable *);
+    void showVariableInInspectionTable(VariableEvaluation::Variable *, VariableEvaluation::EvaluationContext &, const QVariantMap &, HTMLTable *);
     QStringList listWarnings(Warnings &, const QVariantMap &, const QVariantMap &, const QVariantMap &);
     bool checkWarningConditions(Warnings &warnings, const QVariantMap &circuit_attributes, const QVariantMap &nominal_ins, const QVariantMap &inspection);
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);

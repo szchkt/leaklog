@@ -23,6 +23,8 @@
 #include "refprop.h"
 #include "mtsqlquery.h"
 #include "mtrecord.h"
+#include "circuit.h"
+#include "inspection.h"
 
 #include <QRegExp>
 #include <QStringList>
@@ -66,9 +68,9 @@ fparser(new FunctionParser)
 
 Expression::~Expression() {}
 
-double Expression::evaluate(const QVariantMap &inspection, const QString &customer_id, const QString &circuit_id, bool *ok, bool *null_var) const
+double Expression::evaluate(const QVariantMap &inspection, const QString &customer_uuid, const QString &circuit_uuid, bool *ok, bool *null_var) const
 {
-    MTRecord circuit("circuits", "id", circuit_id, MTDictionary("parent", customer_id));
+    MTQuery circuit = Circuit::query({{"customer_uuid", customer_uuid}, {"uuid", circuit_uuid}});
     QVariantMap circuit_attributes = circuit.list("*, " + circuitRefrigerantAmountQuery());
     return evaluate(inspection, circuit_attributes, ok, null_var);
 }
@@ -76,8 +78,8 @@ double Expression::evaluate(const QVariantMap &inspection, const QString &custom
 double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &circuit_attributes, bool *ok, bool *null_var) const
 {
     static const QString sum_query("SELECT SUM(CAST(%1 AS numeric)) FROM inspections"
-                                   " WHERE date LIKE '%2%' AND customer = :customer_id AND circuit = :circuit_id"
-                                   " AND (nominal <> 1 OR nominal IS NULL)");
+                                   " WHERE date LIKE '%2%' AND circuit_uuid = :circuit_uuid"
+                                   " AND inspection_type <> 1");
 
     if (null_var) *null_var = false;
 
@@ -102,8 +104,7 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
             var_name.remove(0, 6);
             MTSqlQuery sum_ins;
             sum_ins.prepare(sum_query.arg(var_name).arg(inspection_date.left(4)));
-            sum_ins.bindValue(":customer_id", circuit_attributes.value("parent"));
-            sum_ins.bindValue(":circuit_id", circuit_attributes.value("id"));
+            sum_ins.bindValue(":circuit_uuid", circuit_attributes.value("uuid"));
             if (sum_ins.exec() && sum_ins.next())
                 values[i] = sum_ins.value(0).toDouble();
         } else if (inspection.contains(var_name)) {
@@ -114,6 +115,10 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
             QVariant value = circuit_attributes.value(var_name);
             values[i] = value.toDouble();
             if (null_var && value.isNull()) *null_var = true;
+        } else if (var_name == "nominal") {
+            values[i] = inspection.value("inspection_type").toInt() == Inspection::NominalInspection;
+        } else if (var_name == "repair") {
+            values[i] = inspection.value("inspection_type").toInt() == Inspection::Repair;
         } else if (var_name == "gwp") {
             values[i] = Global::refrigerantGWP(refrigerant);
         } else if (var_name == "co2_equivalent") {

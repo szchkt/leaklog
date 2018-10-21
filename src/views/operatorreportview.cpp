@@ -37,9 +37,9 @@ OperatorReportView::OperatorReportView(ViewTabSettings *settings):
 {
 }
 
-QString OperatorReportView::renderHTML()
+QString OperatorReportView::renderHTML(bool)
 {
-    QString customer_id = settings->selectedCustomer();
+    QString customer_uuid = settings->selectedCustomerUUID();
     int year = settings->toolBarStack()->filterSinceValue();
     int month_from = settings->toolBarStack()->filterMonthFromValue();
     int month_until = settings->toolBarStack()->filterMonthUntilValue();
@@ -66,7 +66,7 @@ QString OperatorReportView::renderHTML()
 
     writeServiceCompany(out);
 
-    Customer customer(customer_id);
+    Customer customer(customer_uuid);
     customer.readOperatorValues();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><th style=\"font-size: medium; background-color: floralwhite;\">";
@@ -77,7 +77,7 @@ QString OperatorReportView::renderHTML()
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
-    out << "<td>" << toolTipLink("customer", formatCompanyID(customer_id), customer_id) << "</td>";
+    out << "<td>" << toolTipLink("customer", customer.companyID(), customer_uuid) << "</td>";
     out << "<td>" << MTVariant(customer.value("company")) << "</td>";
     out << "<td>" << MTVariant(customer.value("address"), MTVariant::Address) << "</td>";
     out << "</tr><tr><th colspan=\"3\">" << tr("Operator information") << "</th></tr><tr>";
@@ -85,7 +85,7 @@ QString OperatorReportView::renderHTML()
     out << "<th>" << Customer::attributes().value("company") << "</th>";
     out << "<th>" << Customer::attributes().value("address") << "</th>";
     out << "</tr><tr>";
-    out << "<td>" << formatCompanyID(customer.stringValue("operator_id")) << "</td>";
+    out << "<td>" << customer.stringValue("operator_id") << "</td>";
     out << "<td>" << MTVariant(customer.value("operator_company")) << "</td>";
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";
@@ -114,8 +114,8 @@ QString OperatorReportView::renderHTML()
                           tr("At the end of the year")) << "</th>";
     out << "</tr>";
 
-    MTRecord inspections("inspections", "date", "", MTDictionary("customer", customer_id));
-    inspections.parents().insert("nominal", "0");
+    MTQuery inspections = Inspection::query();
+    inspections.addFilter("inspection_type <> ?", QString::number(Inspection::NominalInspection));
     if (month_from > 1)
         inspections.addFilter("date >= ?", date_from);
     if (month_until < 12)
@@ -123,27 +123,25 @@ QString OperatorReportView::renderHTML()
     if (month_from <= 1 || month_until >= 12)
         inspections.addFilter("date", QString("%1%").arg(year));
 
-    MTDictionary nominal_inspection_parents("customer", customer_id);
-    nominal_inspection_parents.insert("nominal", "1");
+    QVariantMap nominal_inspection_parents = {{"inspection_type", Inspection::NominalInspection}};
 
     QVariantMap sums;
     ListOfVariantMaps nominal_inspections;
     QString nominal_inspection_date, commissioning_date, decommissioning_date;
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
-    QString circuit_id;
 
-    Circuit circuits_record(customer_id, "");
+    MTQuery circuits_query = Circuit::query({{"customer_uuid", customer_uuid}});
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        circuits_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
 
-    MTSqlQuery circuits = circuits_record.select("id, name, refrigerant, refrigerant_amount, field, operation, disused, hermetic, commissioning, decommissioning");
-    circuits.setForwardOnly(true);
+    MTSqlQuery circuits = circuits_query.select("uuid, id, name, refrigerant, refrigerant_amount, field, operation, disused, hermetic, commissioning, decommissioning");
     circuits.exec();
     while (circuits.next()) {
-        circuit_id = circuits.stringValue("id");
+        QString circuit_uuid = circuits.stringValue("uuid");
+        QString circuit_id = circuits.stringValue("id");
 
-        inspections.parents().insert("circuit", circuit_id);
+        inspections.parents().insert("circuit_uuid", circuit_uuid);
         sums = inspections.sumAll("refr_add_am, refr_reco");
 
         commissioning_date = circuits.stringValue("commissioning").left(7);
@@ -162,8 +160,8 @@ QString OperatorReportView::renderHTML()
         if (commissioning_date < date_from)
             refrigerant_amount_begin += refrigerant_amount;
 
-        nominal_inspection_parents.insert("circuit", circuit_id);
-        nominal_inspections = MTRecord("inspections", "date", "", nominal_inspection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
+        nominal_inspection_parents.insert("circuit_uuid", circuit_uuid);
+        nominal_inspections = Inspection::query(nominal_inspection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
             if (nominal_inspection_date < date_from)
@@ -186,9 +184,9 @@ QString OperatorReportView::renderHTML()
                 continue;
         }
 
-        out << "<tr onclick=\"window.location = 'customer:" << customer_id
-            << "/circuit:" << circuit_id << "'\" style=\"cursor: pointer;\">";
-        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_id, circuit_id) << "</td>";
+        out << "<tr onclick=\"window.location = 'customer:" << customer_uuid
+            << "/circuit:" << circuit_uuid << "'\" style=\"cursor: pointer;\">";
+        out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_uuid, circuit_uuid) << "</td>";
         if (show_circuit_name) {
             out << "<td>" << MTVariant(circuits.stringValue("name")) << "</td>";
         }
@@ -208,7 +206,7 @@ QString OperatorReportView::renderHTML()
 
     QVariantMap inspector;
     if (settings->isInspectorSelected())
-        inspector = Inspector(settings->selectedInspector()).list("person, mail, phone");
+        inspector = Inspector(settings->selectedInspectorUUID()).list("person, mail, phone");
 
     HTMLTable compiled_by;
     HTMLTableRow *row = compiled_by.addRow();
@@ -230,5 +228,5 @@ QString OperatorReportView::renderHTML()
 
 QString OperatorReportView::title() const
 {
-    return tr("Operator Report") + " - " + Customer(settings->selectedCustomer()).stringValue("company");
+    return tr("Operator Report") + " - " + Customer(settings->selectedCustomerUUID()).companyName();
 }

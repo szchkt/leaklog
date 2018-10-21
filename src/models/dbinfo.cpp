@@ -22,14 +22,12 @@
 #include "mtsqlquery.h"
 #include "global.h"
 
+#include <QDataStream>
 #include <QDate>
+#include <QFileInfo>
 #include <QSqlError>
 
 using namespace Global;
-
-DBInfo::DBInfo(const QString &key):
-    DBRecord(tableName(), "id", key, MTDictionary())
-{}
 
 QString DBInfo::valueForKey(const QString &key, const QString &default_value, const QSqlDatabase &database)
 {
@@ -45,6 +43,40 @@ QSqlError DBInfo::setValueForKey(const QString &key, const QString &value, const
     if (query.next())
         return MTSqlQuery(QString("UPDATE db_info SET value = '%1' WHERE id = '%2'").arg(value).arg(key), database).lastError();
     return MTSqlQuery(QString("INSERT INTO db_info (id, value) VALUES ('%1', '%2')").arg(key).arg(value), database).lastError();
+}
+
+QString DBInfo::databaseUUID(const QSqlDatabase &database)
+{
+    QString database_uuid = valueForKey("database_uuid", QString(), database);
+    if (database_uuid.isEmpty()) {
+        database_uuid = createUUID();
+        setValueForKey("database_uuid", database_uuid, database);
+    }
+    return database_uuid;
+}
+
+QString DBInfo::databaseName(const QSqlDatabase &database)
+{
+    QString database_name = valueForKey("database_name", QString(), database);
+    if (database_name.isEmpty()) {
+        database_name = QFileInfo(database.databaseName()).completeBaseName();
+    }
+    return database_name;
+}
+
+void DBInfo::setDatabaseName(const QString &database_name, const QSqlDatabase &database)
+{
+    setValueForKey("database_name", database_name, database);
+}
+
+QString DBInfo::autosaveMode()
+{
+    return valueForKey("autosave", "immediate");
+}
+
+void DBInfo::setAutosaveMode(const QString &autosave_mode)
+{
+    setValueForKey("autosave", autosave_mode);
 }
 
 bool DBInfo::isCurrentUserAdmin()

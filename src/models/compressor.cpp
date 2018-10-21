@@ -18,13 +18,17 @@
  ********************************************************************/
 
 #include "compressor.h"
+#include "circuit.h"
 
 #include <QApplication>
 
-Compressor::Compressor(const QString &id, const MTDictionary &dict):
-    MTRecord(tableName(), "id", id, dict)
+Compressor::Compressor(const QString &uuid, const QVariantMap &savedValues):
+    MTRecord(tableName(), uuid, savedValues)
+{}
+
+Circuit Compressor::circuit()
 {
-    setSerialId(true);
+    return circuitUUID();
 }
 
 QString Compressor::tableName()
@@ -36,9 +40,8 @@ class CompressorColumns
 {
 public:
     CompressorColumns() {
-        columns << Column("id", "BIGINT NOT NULL");
-        columns << Column("customer_id", "INTEGER");
-        columns << Column("circuit_id", "INTEGER");
+        columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("circuit_uuid", "UUID");
         columns << Column("name", "TEXT");
         columns << Column("manufacturer", "TEXT");
         columns << Column("type", "TEXT");
@@ -60,7 +63,7 @@ class CompressorAttributes
 {
 public:
     CompressorAttributes() {
-        dict.insert("id", QApplication::translate("Compressor", "ID"));
+        dict.insert("uuid", QApplication::translate("Compressor", "ID"));
         dict.insert("name", QApplication::translate("Compressor", "Compressor name"));
         dict.insert("manufacturer", QApplication::translate("Compressor", "Manufacturer"));
         dict.insert("type", QApplication::translate("Compressor", "Type"));

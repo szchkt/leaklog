@@ -322,6 +322,9 @@ public:
 
     QVariant variantValue() const;
     void setVariantValue(const QVariant &);
+
+public slots:
+    void setEnabled(bool);
 };
 
 class MDAddressEdit : public MTAddressEdit, public MDInputWidget
@@ -355,6 +358,9 @@ public:
 
     QVariant variantValue() const;
     void setVariantValue(const QVariant &);
+
+public slots:
+    void setEnabled(bool);
 };
 
 class MDGroupedCheckBoxes : public QGroupBox, public MDInputWidget
@@ -380,7 +386,7 @@ class MDFileChooser : public DBFileChooser, public MDInputWidget
     Q_OBJECT
 
 public:
-    MDFileChooser(const QString &, const QString &, QWidget *, int);
+    MDFileChooser(const QString &, const QString &, QWidget *, const QString &);
 
     QVariant variantValue() const;
     void setVariantValue(const QVariant &) {}
@@ -395,7 +401,7 @@ public:
 
     void addWidget(MDAbstractInputWidget *);
 
-    QVariant variantValue() const { return QVariant(); }
+    QVariant variantValue() const { return QVariant(QVariant::String); }
     void setVariantValue(const QVariant &) {}
 
 protected:

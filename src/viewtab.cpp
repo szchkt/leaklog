@@ -43,9 +43,10 @@
 #include "mtwebpage.h"
 #include "reportdatacontroller.h"
 #include "records.h"
+#include "dbfile.h"
 #include "global.h"
 
-#include <QWebFrame>
+#include <QWebEngineProfile>
 
 ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
@@ -54,16 +55,14 @@ ViewTab::ViewTab(QWidget *parent):
 {
     ui->setupUi(this);
 
-    QObject::connect(parentWindow(), SIGNAL(tablesChanged(const QStringList &)), this, SLOT(reloadTables(const QStringList &)));
-    QObject::connect(parentWindow(), SIGNAL(tableAdded(int, const QString &)), this, SLOT(addTable(int, const QString &)));
+    QObject::connect(parentWindow(), SIGNAL(tablesChanged(const MTDictionary &)), this, SLOT(reloadTables(const MTDictionary &)));
+    QObject::connect(parentWindow(), SIGNAL(tableAdded(int, const QString &, const QString &)), this, SLOT(addTable(int, const QString &, const QString &)));
     QObject::connect(parentWindow(), SIGNAL(tableRemoved(const QString &)), this, SLOT(removeTable(const QString &)));
     QObject::connect(ui->trw_navigation, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
                      this, SLOT(viewChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     QObject::connect(this, SIGNAL(viewChanged(View::ViewID)),
                      ui->toolbarstack, SLOT(viewChanged(View::ViewID)));
-
-    QObject::connect(ui->wv_main, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 
     setDefaultWebPage();
 
@@ -95,25 +94,18 @@ void ViewTab::scaleFactorChanged()
 
     QString style = QString("QTreeWidget::item { padding-top: %1px; padding-bottom: %1px; }").arg(2 * scale);
 #ifdef Q_OS_MAC
-    bool isYosemite = Global::macVersion() >= QSysInfo::MV_10_0 + 10;
-    style += QString("QTreeWidget { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
-    style += QString("QTreeWidget:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
-    if (isYosemite) {
-        style += QString("QTreeWidget::item:!has-children:!selected:!disabled { color: #3D3D50; }");
-        style += QString("QTreeWidget::item:!has-children:!selected:disabled { color: #777777; }");
-    }
-    style += QString("QTreeWidget::item:selected { background-color: %1; color: %2; %3}")
-                     .arg(isYosemite ? "#CECECE" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #77BBE7, stop: 1 #3E8ACF)")
-                     .arg(isYosemite ? "#281C28" : "white")
-                     .arg(isYosemite ? "" : "border-color: #62A6DC; border-style: solid; border-width: 1px 0px 1px 0px; ");
-    style += QString("QTreeWidget::item:selected:!active { background-color: %1; color: %2; %3}")
-                     .arg(isYosemite ? "#CDCDCD" : "qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C4CDDF, stop: 1 #94A1B8)")
-                     .arg(isYosemite ? "#281C28" : "white")
-                     .arg(isYosemite ? "" : "border-color: #BCC6D6; border-style: solid; border-width: 1px 0px 0px 0px; ");
-    style += QString("QTreeWidget::item:!selected { background-color: %1; }").arg(isYosemite ? "#EEEEEE" : "#E7EBF0");
-    style += QString("QTreeWidget::item:!selected:!active { background-color: %1; }").arg(isYosemite ? "#F6F6F6" : "#F0F0F0");
-    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: %1; }").arg(isYosemite ? "#777777" : "#717E8B");
-    style += QString("QTreeWidget::item:has-children:!active { color: %1; }").arg(isYosemite ? "#777777" : "#868B92");
+    style += R"(
+        QTreeWidget { background-color: #EEEEEE; }
+        QTreeWidget:!active { background-color: #F6F6F6; }
+        QTreeWidget::item:!has-children:!selected:!disabled { color: #3D3D50; }
+        QTreeWidget::item:!has-children:!selected:disabled { color: #777777; }
+        QTreeWidget::item:selected { background-color: #CECECE; color: #281C28; }
+        QTreeWidget::item:selected:!active { background-color: #CDCDCD; color: #281C28; }
+        QTreeWidget::item:!selected { background-color: transparent; }
+        QTreeWidget::item:!selected:!active { background-color: transparent; }
+        QTreeWidget::item:has-children { padding-left: 3px; color: #777777; }
+        QTreeWidget::item:has-children:!active { color: #777777; }
+    )";
 #else
     style += QString("QTreeWidget { background-color: white; }");
     style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
@@ -298,9 +290,7 @@ void ViewTab::formatGroupItem(QTreeWidgetItem *item)
     QFont font = item->font(0);
 #ifdef Q_OS_MAC
     font.setBold(true);
-    if (Global::macVersion() < QSysInfo::MV_10_0 + 10) {
-        font.setCapitalization(QFont::AllUppercase);
-    } else if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
+    if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
     }
     font.setPointSize(font.pointSize() - 1);
@@ -317,20 +307,22 @@ void ViewTab::setNeedsRefresh()
         needs_refresh = true;
 }
 
-void ViewTab::reloadTables(const QStringList &tables)
+void ViewTab::reloadTables(const MTDictionary &tables)
 {
     foreach (QTreeWidgetItem *item, group_tables->takeChildren())
         delete item;
 
-    foreach (const QString &table, tables)
-        addTable(-1, table);
+    for (int i = 0; i < tables.count(); ++i) {
+        addTable(-1, tables.key(i), tables.value(i));
+    }
 }
 
-void ViewTab::addTable(int index, const QString &table)
+void ViewTab::addTable(int index, const QString &uuid, const QString &name)
 {
     QTreeWidgetItem *item_table = new QTreeWidgetItem;
-    item_table->setText(0, table);
+    item_table->setText(0, name);
     item_table->setData(0, Qt::UserRole, View::TableOfInspections);
+    item_table->setData(1, Qt::UserRole, uuid);
     item_table->setIcon(0, QIcon(":/images/images/table_view.png"));
     if (index < 0)
         group_tables->addChild(item_table);
@@ -338,11 +330,11 @@ void ViewTab::addTable(int index, const QString &table)
         group_tables->insertChild(index, item_table);
 }
 
-void ViewTab::removeTable(const QString &table)
+void ViewTab::removeTable(const QString &uuid)
 {
     for (int i = 0; i < group_tables->childCount(); ++i) {
         QTreeWidgetItem *item = group_tables->child(i);
-        if (item->text(0) == table) {
+        if (item->data(1, Qt::UserRole).toString() == uuid) {
             delete item;
             break;
         }
@@ -391,12 +383,12 @@ ToolBarStack *ViewTab::toolBarStack() const
     return ui->toolbarstack;
 }
 
-QWebView *ViewTab::webView() const
+QWebEngineView *ViewTab::webView() const
 {
     return ui->wv_main;
 }
 
-void ViewTab::setView(View::ViewID view, const QString &table)
+void ViewTab::setView(View::ViewID view, const QString &table_uuid)
 {
     if (view < 0 || view >= View::ViewCount)
         view = View::Store;
@@ -416,14 +408,14 @@ void ViewTab::setView(View::ViewID view, const QString &table)
         if (!group_tables->childCount())
             return;
 
-        if (item && item->parent() == group_tables && (table.isEmpty() || item->text(0) == table)) {
+        if (item && item->parent() == group_tables && (table_uuid.isEmpty() || item->data(1, Qt::UserRole) == table_uuid)) {
             refreshView();
             return;
         }
 
         int i = 0;
         for (int j = 0; j < group_tables->childCount(); ++j) {
-            if (group_tables->child(j)->text(0) == table) {
+            if (group_tables->child(j)->data(1, Qt::UserRole) == table_uuid) {
                 i = j;
                 break;
             }
@@ -471,12 +463,12 @@ QString ViewTab::currentViewTitle() const
     return QString();
 }
 
-QString ViewTab::currentTable() const
+QString ViewTab::currentTableUUID() const
 {
     QTreeWidgetItem *item = ui->trw_navigation->currentItem();
 
     if (item && item->parent() == group_tables)
-        return item->text(0);
+        return item->data(1, Qt::UserRole).toString();
 
     return QString();
 }
@@ -576,25 +568,8 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     if (current == previous)
         return;
 
-#ifdef Q_OS_MAC
-    bool isYosemite = Global::macVersion() >= QSysInfo::MV_10_0 + 10;
-    if (!isYosemite && previous && previous->parent()) {
-        QFont font = previous->font(0);
-        font.setBold(false);
-        previous->setFont(0, font);
-    }
-#endif
-
     if (!current || !current->parent())
         return;
-
-#ifdef Q_OS_MAC
-    if (!isYosemite) {
-        QFont font = current->font(0);
-        font.setBold(true);
-        current->setFont(0, font);
-    }
-#endif
 
     View::ViewID view = (View::ViewID)current->data(0, Qt::UserRole).toInt();
 
@@ -616,10 +591,8 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 
     QString tabText = current->text(0);
     if (isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
-        QString customer = Customer(selectedCustomer()).stringValue("company");
-        if (customer.isEmpty())
-            customer = Global::formatCompanyID(selectedCustomer());
-        tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer));
+        Customer customer(selectedCustomerUUID());
+        tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
     }
     emit tabTextChanged(this, tabText);
 
@@ -643,7 +616,6 @@ void ViewTab::executeLink(Link *link)
         mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
 
     QString id;
-    bool ok = false;
 
     bool select_with_javascript = false;
     bool view_changed = link->viewId() != currentView();
@@ -667,8 +639,8 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::Customer:
         select_with_javascript = !view_changed;
         id = link->idValue("customer");
-        if (id != selectedCustomer()) {
-            loadCustomer(id.toInt(), view_changed && link->countViews() <= 1 && link->action() == Link::View);
+        if (id != selectedCustomerUUID()) {
+            loadCustomer(id, view_changed && link->countViews() <= 1 && link->action() == Link::View);
         } else if (link->countViews() <= 1 && link->action() == Link::View) {
             setView(View::Circuits);
         }
@@ -697,13 +669,13 @@ void ViewTab::executeLink(Link *link)
 
     case LinkParser::Inspector:
         select_with_javascript = !view_changed;
-        loadInspector(link->idValue("inspector").toInt(), view_changed && link->action() == Link::View);
+        loadInspector(link->idValue("inspector"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editInspector();
         break;
 
     case LinkParser::InspectorReport:
-        loadInspectorReport(link->idValue("inspectorreport").toInt(), link->action() == Link::View);
+        loadInspectorReport(link->idValue("inspectorreport"), link->action() == Link::View);
         break;
 
     case LinkParser::AllCustomers:
@@ -714,7 +686,7 @@ void ViewTab::executeLink(Link *link)
         id = link->idValue("toggledetailedview");
         ((StoreView *)views[View::Store])->toggleYear(id.toInt());
         refreshView();
-        ui->wv_main->page()->mainFrame()->evaluateJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
+        ui->wv_main->page()->runJavaScript(QString("document.getElementById('%1').scrollIntoView(true);").arg(id));
         break;
 
     case LinkParser::RefrigerantManagement:
@@ -736,28 +708,28 @@ void ViewTab::executeLink(Link *link)
 
     case LinkParser::AssemblyRecordType:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordType(link->idValue("assemblyrecordtype").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordType(link->idValue("assemblyrecordtype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordType();
         break;
 
     case LinkParser::AssemblyRecordItemType:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordItemType(link->idValue("assemblyrecorditemtype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordItemType();
         break;
 
     case LinkParser::AssemblyRecordCategory:
         select_with_javascript = !view_changed;
-        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory").toInt(), view_changed && link->action() == Link::View);
+        loadAssemblyRecordItemCategory(link->idValue("assemblyrecorditemcategory"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editAssemblyRecordItemCategory();
         break;
 
     case LinkParser::CircuitUnitType:
         select_with_javascript = !view_changed;
-        loadCircuitUnitType(link->idValue("circuitunittype").toInt(), view_changed && link->action() == Link::View);
+        loadCircuitUnitType(link->idValue("circuitunittype"), view_changed && link->action() == Link::View);
         if (link->action() == Link::Edit)
             parentWindow()->editCircuitUnitType();
         break;
@@ -789,8 +761,8 @@ void ViewTab::executeLink(Link *link)
 
     switch (link->viewAt(1)) {
     case LinkParser::Circuit:
-        if (link->idValue("circuit") != selectedCircuit())
-            loadCircuit(link->idValue("circuit").toInt(), link->countViews() <= 2 && link->action() == Link::View);
+        if (link->idValue("circuit") != selectedCircuitUUID())
+            loadCircuit(link->idValue("circuit"), link->countViews() <= 2 && link->action() == Link::View);
         else if (link->countViews() <= 2 && link->action() == Link::View)
             setView(View::Inspections);
 
@@ -820,7 +792,7 @@ void ViewTab::executeLink(Link *link)
             break;
         }
 
-        if (link->idValue("inspection") != selectedInspection())
+        if (link->idValue("inspection") != selectedInspectionUUID())
             loadInspection(link->idValue("inspection"), link->countViews() <= 3 && link->action() == Link::View);
         else if (link->countViews() <= 3 && link->action() == Link::View)
             setView(View::InspectionDetails);
@@ -834,7 +806,7 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::AssemblyRecord:
         id = link->lastIdValue();
         id.remove(0, id.indexOf(":") + 1);
-        if (id != selectedInspection())
+        if (id != selectedInspectionUUID())
             loadAssemblyRecord(id, link->action() == Link::View);
         else if (link->action() == Link::View)
             setView(View::AssemblyRecordDetails);
@@ -845,9 +817,11 @@ void ViewTab::executeLink(Link *link)
         break;
 
     case LinkParser::Compressor:
-        ok = false;
-        setSelectedCompressor(link->idValue("compressor").toInt(&ok));
-        if (!ok) setSelectedCompressor(-1);
+        id = link->idValue("compressor");
+        if (id.isEmpty())
+            clearSelectedCompressor();
+        else
+            setSelectedCompressorUUID(id);
         break;
 
     case LinkParser::AllAssemblyRecords:
@@ -872,16 +846,22 @@ void ViewTab::executeLink(Link *link)
     if (!link->countIds())
         select_with_javascript = false;
     if (select_with_javascript) {
-        ui->wv_main->page()->mainFrame()->evaluateJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
+        ui->wv_main->page()->runJavaScript(QString("select('%1:%2');").arg(link->lastIdKey()).arg(link->lastIdValue()));
     }
 }
 
 void ViewTab::setDefaultWebPage()
 {
     MTWebPage *page = new MTWebPage(ui->wv_main);
-    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
     ui->wv_main->setZoomFactor(Global::scaleFactor());
+
+    QByteArray scheme = QString("dbfile").toUtf8();
+    if (!page->profile()->urlSchemeHandler(scheme))
+        page->profile()->installUrlSchemeHandler(scheme, new DBFileUrlSchemeHandler);
+
+    QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 }
 
 void ViewTab::reportData()

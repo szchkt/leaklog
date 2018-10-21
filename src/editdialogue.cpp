@@ -70,11 +70,7 @@ EditDialogue::EditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *par
 
 void EditDialogue::setWindowTitle(const QString &title)
 {
-    if (!md_record->id().isEmpty()) {
-        this->QDialog::setWindowTitle(tr("%1: %2").arg(title).arg(md_record->id()));
-    } else {
-        this->QDialog::setWindowTitle(title);
-    }
+    this->QDialog::setWindowTitle(title);
 }
 
 void EditDialogue::save()
@@ -84,43 +80,29 @@ void EditDialogue::save()
 
 bool EditDialogue::save(bool call_accept)
 {
-    QVariantMap values = md_record->values();
     for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
         if ((*i)->skipSave()) continue;
         QString id = (*i)->id();
         QVariant value = (*i)->variantValue();
-        if (id == md_record->idField()) {
+        if (id == "uuid") {
             if (value.toString().isEmpty()) {
                 QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
                 return false;
             } else if (md_used_ids.contains(value.toString())) {
-                if (id == "date") {
-                    QMessageBox::information(NULL, tr("Save changes"), tr("This date is not available. Please choose a different date."));
-                } else {
-                    QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
-                }
+                QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
                 return false;
             }
         }
-        values.insert(id, value);
+        md_record->setValue(id, value);
     }
-    if (!md_record->checkValues(values, this))
+
+    if (!md_record->checkValues(this))
         return false;
 
     md_undo_stack->savepoint();
 
-    md_record->update(values, true);
+    md_record->save(true);
 
     if (call_accept) accept();
     return true;
-}
-
-const QVariant EditDialogue::idFieldValue()
-{
-    for (int i = 0; i < md_inputwidgets.count(); ++i) {
-        if (md_inputwidgets.at(i)->id() == "id") {
-            return md_inputwidgets.at(i)->variantValue();
-        }
-    }
-    return QVariant();
 }

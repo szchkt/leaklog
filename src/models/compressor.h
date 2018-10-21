@@ -22,12 +22,27 @@
 
 #include "dbrecord.h"
 
+class Circuit;
+
 class Compressor : public MTRecord
 {
 public:
-    Compressor(const QString & = QString(), const MTDictionary & = MTDictionary());
+    Compressor(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
+
+    inline QString circuitUUID() { return stringValue("circuit_uuid"); }
+    inline void setCircuitUUID(const QString &value) { setValue("circuit_uuid", value); }
+    Circuit circuit();
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    inline QString manufacturer() { return stringValue("manufacturer"); }
+    inline void setManufacturer(const QString &value) { setValue("manufacturer", value); }
+    inline QString type() { return stringValue("type"); }
+    inline void setType(const QString &value) { setValue("type", value); }
+    inline QString serialNumber() { return stringValue("sn"); }
+    inline void setSerialNumber(const QString &value) { setValue("sn", value); }
 
     static QString tableName();
+    static inline MTRecordQuery<Compressor> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Compressor>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

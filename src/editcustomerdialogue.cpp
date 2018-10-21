@@ -31,7 +31,7 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget 
     MDGroupedInputWidgets(QApplication::translate("Customer", "Operator:"), parent)
 {
     setSkipSave(false);
-    setId("operator_id");
+    setId("operator_type");
 
     operator_choice = new QButtonGroup(this);
 
@@ -47,23 +47,23 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget 
 
     QObject::connect(operator_choice, SIGNAL(buttonClicked(int)), this, SLOT(operatorChoiceChanged(int)));
 
-    operator_id = new MDCompanyIDEdit("operator_id", QApplication::translate("Customer", "ID:"), this, QString());
-    operator_id->setRowSpan(0);
-    operator_id->setVisible(false);
-    addWidget(operator_id);
-
+    input_widgets << new MDCompanyIDEdit("operator_id", QApplication::translate("Customer", "ID:"), this, attributes.value("operator_id").toString());
     input_widgets << new MDLineEdit("operator_company", QApplication::translate("Customer", "Company:"), this, attributes.value("operator_company").toString());
     input_widgets << new MDAddressEdit("operator_address", QApplication::translate("Customer", "Address:"), this, attributes.value("operator_address").toString());
     input_widgets << new MDLineEdit("operator_mail", QApplication::translate("Customer", "E-mail:"), this, attributes.value("operator_mail").toString());
     input_widgets << new MDLineEdit("operator_phone", QApplication::translate("Customer", "Phone:"), this, attributes.value("operator_phone").toString());
 
     foreach (MDAbstractInputWidget *widget, input_widgets) {
+        MDLineEdit *line_edit = dynamic_cast<MDLineEdit *>(widget);
+        if (line_edit)
+            line_edit->setNullValue(QString());
+
         widget->setRowSpan(0);
         widget->setVisible(false);
         addWidget(widget);
     }
 
-    setVariantValue(attributes.value("operator_id"));
+    setVariantValue(attributes.value("operator_type"));
 }
 
 QVariant OperatorInputWidget::variantValue() const
@@ -72,7 +72,7 @@ QVariant OperatorInputWidget::variantValue() const
     case 1:
         return -1;
     case 2:
-        return operator_id->variantValue();
+        return 1;
     }
     return 0;
 }
@@ -90,7 +90,6 @@ void OperatorInputWidget::setVariantValue(const QVariant &value)
         break;
     default:
         operator_choice->button(2)->setChecked(true);
-        operator_id->setVariantValue(value);
         operatorChoiceChanged(2);
         break;
     }
@@ -106,8 +105,6 @@ void OperatorInputWidget::addToEditDialogue(EditDialogueWidgets &md)
 
 void OperatorInputWidget::operatorChoiceChanged(int id)
 {
-    operator_id->setVisible(id == 2);
-
     foreach (MDAbstractInputWidget *widget, input_widgets)
         widget->setVisible(id == 2);
 
@@ -116,8 +113,7 @@ void OperatorInputWidget::operatorChoiceChanged(int id)
 }
 
 EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_stack, QWidget *parent):
-    EditDialogue(record, undo_stack, parent),
-    original_customer_id(idFieldValue().toString())
+    EditDialogue(record, undo_stack, parent)
 {
     QList<EditDialogueTableCell *> cells;
     EditDialogueTableCell *cell = new EditDialogueTableCell(tr("Name"), Global::String);
@@ -136,11 +132,12 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
     md_grid_main->addWidget(persons_table, 0, 2, row_span, 1);
     persons_table->setMinimumWidth(500);
 
-    ListOfVariantMaps persons = Person("", original_customer_id).listAll();
+    ListOfVariantMaps persons = Customer(md_record->uuid()).persons().listAll();
     QMap<QString, EditDialogueTableCell *> person_data;
 
     for (int i = 0; i < persons.count(); ++i) {
-        former_ids.append(persons.at(i).value("id").toInt());
+        QString uuid = persons.at(i).value("uuid").toString();
+        former_ids.append(uuid);
 
         cell = new EditDialogueTableCell(persons.at(i).value("name"), Global::String);
         cell->setId("name");
@@ -151,12 +148,10 @@ EditCustomerDialogue::EditCustomerDialogue(Customer *record, UndoStack *undo_sta
         cell = new EditDialogueTableCell(persons.at(i).value("phone"), Global::String);
         cell->setId("phone");
         person_data.insert("phone", cell);
-        person_data.insert("id", new EditDialogueTableCell(persons.at(i).value("id"), "id"));
+        person_data.insert("uuid", new EditDialogueTableCell(persons.at(i).value("uuid"), "uuid"));
         person_data.insert("hidden", new EditDialogueTableCell(persons.at(i).value("hidden"), "hidden"));
 
-        MTRecord inspections("inspections", "date", QString(), MTDictionary("operator", persons.at(i).value("id").toString()));
-
-        persons_table->addRow(person_data, true, inspections.exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
+        persons_table->addRow(person_data, true, Inspection::query({{"person_uuid", uuid}}).exists() ? EditDialogueTable::Hidable : EditDialogueTable::Removable);
     }
 
     if (!persons.count()) persons_table->addNewRow();
@@ -171,38 +166,30 @@ void EditCustomerDialogue::save()
 {
     if (!EditDialogue::save(false)) return;
 
-    qint64 next_id = -1;
-
-    QList<MTDictionary> all_values = persons_table->allValues();
+    QList<QVariantMap> all_values = persons_table->allValues();
 
     Person person;
     for (int i = 0; i < all_values.count(); ++i) {
-        if (all_values.at(i).value("name").isEmpty()) continue;
-        QVariantMap map;
+        if (all_values.at(i).value("name").toString().isEmpty()) continue;
 
-        if (all_values.at(i).contains("id")) {
-            person = Person(all_values.at(i).value("id"));
-            if (former_ids.contains(all_values.at(i).value("id").toInt()))
-                former_ids.removeAll(all_values.at(i).value("id").toInt());
+        if (all_values.at(i).contains("uuid")) {
+            QString uuid = all_values.at(i).value("uuid").toString();
+            former_ids.removeAll(uuid);
+            person = Person(uuid);
         } else {
-            if (next_id < 0)
-                next_id = qMax(Person().max("id") + (qint64)1, (qint64)QDateTime::currentDateTime().toTime_t());
-            else
-                next_id++;
-
             person = Person();
-            map.insert("id", QString::number(next_id));
+            person.setCustomerUUID(md_record->uuid());
         }
 
-        map.insert("company_id", idFieldValue());
-        map.insert("name", all_values.at(i).value("name"));
-        map.insert("mail", all_values.at(i).value("mail"));
-        map.insert("phone", all_values.at(i).value("phone"));
-        map.insert("hidden", all_values.at(i).value("hidden", 0).toInt());
-        person.update(map);
+        person.setName(all_values.at(i).value("name").toString());
+        person.setMail(all_values.at(i).value("mail").toString());
+        person.setPhone(all_values.at(i).value("phone").toString());
+        person.setHidden(all_values.at(i).value("hidden", 0).toInt());
+        person.save();
     }
+
     for (int i = 0; i < former_ids.count(); ++i)
-        Person(QString::number(former_ids.at(i))).remove();
+        Person(former_ids.at(i)).remove();
 
     accept();
 }

@@ -34,10 +34,10 @@ RepairsView::RepairsView(ViewTabSettings *settings):
 {
 }
 
-QString RepairsView::renderHTML()
+QString RepairsView::renderHTML(bool)
 {
-    QString customer_id = settings->selectedCustomer();
-    QString highlighted_id = settings->selectedRepair();
+    QString customer_uuid = settings->selectedCustomerUUID();
+    QString highlighted_uuid = settings->selectedRepairUUID();
     int year = settings->toolBarStack()->filterSinceValue();
 
     bool show_date_updated = settings->isShowDateUpdatedChecked();
@@ -47,13 +47,13 @@ QString RepairsView::renderHTML()
 
     writeServiceCompany(out);
 
-    MTDictionary parent;
-    if (!customer_id.isEmpty()) {
-        parent.insert("parent", customer_id);
-        writeCustomersTable(out, customer_id);
+    QVariantMap parent;
+    if (!customer_uuid.isEmpty()) {
+        parent.insert("customer_uuid", customer_uuid);
+        writeCustomersTable(out, customer_uuid);
         out << "<br>";
     }
-    MTRecord repairs_record("repairs", "date", "", parent);
+    MTQuery repairs_record = Repair::query(parent);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         repairs_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -61,7 +61,6 @@ QString RepairsView::renderHTML()
     if (order_by.isEmpty())
         order_by = "date";
     MTSqlQuery repairs = repairs_record.select("*", settings->appendDefaultOrderToColumn(order_by));
-    repairs.setForwardOnly(true);
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"14\" style=\"font-size: medium;\">" << tr("Repairs") << "</th></tr><tr>";
@@ -73,14 +72,15 @@ QString RepairsView::renderHTML()
     if (show_owner)
         out << "<th><a href=\"allrepairs:/order_by:updated_by\">" << tr("Author") << "</a></th>";
     out << "</tr>";
-    MultiMapOfVariantMaps inspectors(Inspector("").mapAll("id", "person"));
+    MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
     while (repairs.next()) {
-        QString id = repairs.stringValue("date");
-        if (id.split(".").first().toInt() < year) continue;
-        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + id);
-        if (highlighted_id == id)
+        QString uuid = repairs.stringValue("uuid");
+        QString date = repairs.stringValue("date");
+        if (date.split(".").first().toInt() < year) continue;
+        out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + uuid);
+        if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(id) << "</td>";
+        out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
         for (int n = 1; n < Repair::attributes().count(); ++n) {
             QString key = Repair::attributes().key(n);
             out << "<td>";
@@ -92,7 +92,7 @@ QString RepairsView::renderHTML()
                     if (attributeValues().contains("field::" + attr_value)) {
                         attr_value = attributeValues().value("field::" + attr_value);
                     }
-                } else if (key == "repairman") {
+                } else if (key == "inspector_uuid") {
                     attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
                 }
                 out << escapeString(attr_value);

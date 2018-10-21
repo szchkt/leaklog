@@ -22,16 +22,35 @@
 
 #include "dbrecord.h"
 
+class MTAddress;
+
 class ServiceCompany : public DBRecord
 {
     Q_OBJECT
 
 public:
-    ServiceCompany(const QString &);
+    ServiceCompany(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline QString imageFileUUID() { return stringValue("image_file_uuid"); }
+    inline void setImageFileUUID(const QString &value) { setValue("image_file_uuid", value); }
+    inline QString companyID() { return stringValue("id"); }
+    inline void setCompanyID(const QString &value) { setValue("id", value); }
+    inline QString name() { return stringValue("name"); }
+    inline void setName(const QString &value) { setValue("name", value); }
+    MTAddress address();
+    void setAddress(const MTAddress &value);
+    inline void setAddress(const QString &value) { setValue("address", value); }
+    inline QString mail() { return stringValue("mail"); }
+    inline void setMail(const QString &value) { setValue("mail", value); }
+    inline QString phone() { return stringValue("phone"); }
+    inline void setPhone(const QString &value) { setValue("phone", value); }
+    inline QString website() { return stringValue("website"); }
+    inline void setWebsite(const QString &value) { setValue("website", value); }
+
     static QString tableName();
+    static inline MTRecordQuery<ServiceCompany> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<ServiceCompany>(tableName(), parents); }
     static const ColumnList &columns();
     static const MTDictionary &attributes();
 };

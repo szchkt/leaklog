@@ -23,10 +23,6 @@
 #include <QSettings>
 #include <QTranslator>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QTextCodec>
-#endif
-
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_MAC
@@ -38,10 +34,6 @@ int main(int argc, char *argv[])
     MTApplication app(argc, argv);
     app.setApplicationName("Leaklog");
     app.setApplicationVersion(LEAKLOG_VERSION);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-#endif
 
 #ifdef Q_OS_WIN32
     if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
@@ -63,13 +55,16 @@ int main(int argc, char *argv[])
         translator->load(QString(":/i18n/Leaklog-%1.qm").arg(lang.replace(" ", "_")));
         app.installTranslator(translator);
     }
-    QLocale::setDefault(QApplication::translate("MainWindow", "en_GB"));
+    QLocale locale(QApplication::translate("MainWindow", "en_GB"));
+    locale.setNumberOptions(QLocale::OmitGroupSeparator);
+    QLocale::setDefault(locale);
 
     MainWindow *window = new MainWindow;
     app.setAppMainWindow(window);
 
     ActivityEventFilter *filter = new ActivityEventFilter(&app);
     QObject::connect(filter, SIGNAL(timeout()), window, SLOT(autosave()));
+    QObject::connect(filter, SIGNAL(performPeriodicTasks()), window, SLOT(autosync()));
     app.installEventFilter(filter);
 
     return app.exec();

@@ -28,8 +28,8 @@
 
 using namespace Global;
 
-RefrigerantRecord::RefrigerantRecord(const QString &date):
-    DBRecord(tableName(), "date", date, MTDictionary())
+RefrigerantRecord::RefrigerantRecord(const QString &uuid):
+    DBRecord(tableName(), uuid)
 {}
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
@@ -37,43 +37,29 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Record of Refrigerant Management"));
-    QVariantMap attributes;
-    if (!id().isEmpty()) {
-        attributes = list();
-    }
-    MDDateTimeEdit *date = new MDDateTimeEdit("date", tr("Date:"), md->widget(), attributes.value("date").toString());
+    MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked()) {
-        date->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
+        date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     }
-    md->addInputWidget(date);
+    md->addInputWidget(date_edit);
 
-    PartnerWidgets *partner_widgets = new PartnerWidgets(attributes.value("partner").toString(), attributes.value("partner_id").toString(), md->widget());
+    PartnerWidgets *partner_widgets = new PartnerWidgets(partner(), partnerID(), md->widget());
     md->addInputWidget(partner_widgets->partnersWidget());
     md->addInputWidget(partner_widgets->partnerNameWidget());
     md->addInputWidget(partner_widgets->partnerIdWidget());
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
-    md->addInputWidget(new MDLineEdit("batch_number", tr("Batch number:"), md->widget(), attributes.value("batch_number").toString()));
-    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("purchased_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, attributes.value("sold").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("sold_reco").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_rege").toDouble(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, attributes.value("refr_disp").toDouble(), QApplication::translate("Units", "kg")));
-    if (attributes.value("leaked").toDouble() != 0.0 || attributes.value("leaked_reco").toDouble() != 0.0) {
-        md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked").toDouble(), QApplication::translate("Units", "kg")));
-        md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, attributes.value("leaked_reco").toDouble(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDLineEdit("batch_number", tr("Batch number:"), md->widget(), batchNumber()));
+    md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, purchased(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, purchasedRecovered(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, sold(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, soldRecovered(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, regenerated(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, disposedOf(), QApplication::translate("Units", "kg")));
+    if (leaked() != 0.0 || leakedRecovered() != 0.0) {
+        md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
+        md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
     }
-    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString()));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.setForwardOnly(true);
-    query_used_ids.prepare("SELECT date FROM refrigerant_management" + QString(id().isEmpty() ? "" : " WHERE date <> :date"));
-    if (!id().isEmpty()) { query_used_ids.bindValue(":date", id()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
+    md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
 }
 
 QString RefrigerantRecord::tableName()
@@ -85,9 +71,10 @@ class RefrigerantManagementColumns
 {
 public:
     RefrigerantManagementColumns() {
+        columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("date", "TEXT");
         columns << Column("partner", "TEXT");
-        columns << Column("partner_id", "INTEGER");
+        columns << Column("partner_id", "TEXT");
         columns << Column("refrigerant", "TEXT");
         columns << Column("batch_number", "TEXT");
         columns << Column("purchased", "NUMERIC");

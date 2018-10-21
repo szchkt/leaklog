@@ -25,9 +25,10 @@
 class File : public MTRecord
 {
 public:
-    File(const QString &);
+    File(const QString &uuid = QString());
 
     static QString tableName();
+    static inline MTRecordQuery<File> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<File>(tableName(), parents); }
     static const ColumnList &columns();
 };
 
