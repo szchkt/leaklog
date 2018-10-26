@@ -151,9 +151,13 @@ bool MTRecord::save(bool add_columns)
 
     QString journal_uuid = r_uuid;
 
-    if (!has_uuid && !r_current_values.contains("uuid")) {
-        journal_uuid = createUUID();
-        r_current_values.insert("uuid", journal_uuid);
+    if (!has_uuid) {
+        if (r_current_values.contains("uuid")) {
+            journal_uuid = r_current_values.value("uuid").toString();
+        } else {
+            journal_uuid = createUUID();
+            r_current_values.insert("uuid", journal_uuid);
+        }
     }
 
     if (!r_current_values.contains("date_updated"))
