@@ -728,6 +728,10 @@
         <source>Date excluded</source>
         <translation>Data wyłączenia</translation>
     </message>
+    <message>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>To ID jest niedostępne. Proszę wybrać inny.</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -1415,28 +1419,12 @@
 <context>
     <name>EditDialogue</name>
     <message>
-        <source>This ID is not available. Please choose a different ID.</source>
-        <translation>To ID jest niedostępne. Proszę wybrać inny.</translation>
-    </message>
-    <message>
         <source>Save</source>
         <translation>Zapisz</translation>
     </message>
     <message>
         <source>Cancel</source>
         <translation>Anuluj</translation>
-    </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Zachowaj zmiany</translation>
-    </message>
-    <message>
-        <source>Invalid ID.</source>
-        <translation>Nieprawidłowe ID.</translation>
-    </message>
-    <message>
-        <source>This date is not available. Please choose a different date.</source>
-        <translation>Ta data jest niedostępna. Proszę wybrać inną datę.</translation>
     </message>
     <message>
         <source>Select a customer first.</source>

@@ -152,19 +152,22 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
                        .arg(circuit_record.circuitName().isEmpty() ? circuit_record.circuitID() : circuit_record.circuitName()));
     md->setMaximumRowCount(10);
 
+    bool has_inspection = false;
     bool nominal_found = false;
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.prepare("SELECT date, inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND date <> :date"));
-    query_used_ids.bindValue(":circuit_uuid", circuit_record.uuid());
-    if (!uuid().isEmpty()) { query_used_ids.bindValue(":date", date()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-            if (!nominal_found && query_used_ids.value(1).toInt() == Inspection::NominalInspection)
+    MTSqlQuery inspections_query;
+    inspections_query.prepare("SELECT inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND uuid <> :uuid"));
+    inspections_query.bindValue(":circuit_uuid", circuit_record.uuid());
+    if (!uuid().isEmpty())
+        inspections_query.bindValue(":uuid", uuid());
+    if (inspections_query.exec()) {
+        while (inspections_query.next()) {
+            has_inspection = true;
+            if (inspections_query.value(0).toInt() == Inspection::NominalInspection) {
                 nominal_found = true;
+                break;
+            }
         }
     }
-    md->setUsedIds(used_ids);
 
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked()) {
@@ -172,7 +175,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     }
     md->addInputWidget(date_edit);
 
-    QString inspection_type = isNominal() || (uuid().isEmpty() && used_ids.isEmpty()) ? QString::number(NominalInspection) : QString::number(type());
+    QString inspection_type = isNominal() || (uuid().isEmpty() && !has_inspection) ? QString::number(NominalInspection) : QString::number(type());
     MTDictionary types;
     types.insert(QString::number(NominalInspection), tr("Nominal Inspection"));
     types.insert(QString::number(RegularInspection), tr("Regular Inspection"));

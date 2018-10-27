@@ -21,13 +21,10 @@
 
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
-#include "global.h"
 #include "variables.h"
 #include "warnings.h"
 
 #include <QApplication>
-
-using namespace Global;
 
 WarningRecord::WarningRecord(const QString &uuid):
     DBRecord(tableName(), uuid)
@@ -58,11 +55,6 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
     }, QString(), enable_all));
-    QStringList used_ids;
-    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
-    used_ids << listSupportedFunctions();
-    used_ids << listVariableIds();
-    md->setUsedIds(used_ids);
 }
 
 MTRecordQuery<WarningFilter> WarningRecord::filters() const

@@ -1534,7 +1534,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     new_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
     gl->addWidget(new_refrigerant, 5, 1);
 
-    lbl = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
+    lbl = new QLabel(QApplication::translate("Circuit", "This ID is not available. Please choose a different ID."), &d);
     QFont bold;
     bold.setBold(true);
     lbl->setFont(bold);
@@ -1668,7 +1668,7 @@ void MainWindow::moveCircuit()
     spb_circuit_id->setRange(1, 99999);
     gl->addWidget(spb_circuit_id, 3, 1);
 
-    QLabel *lbl_id_taken = new QLabel(QApplication::translate("EditDialogue", "This ID is not available. Please choose a different ID."), &d);
+    QLabel *lbl_id_taken = new QLabel(QApplication::translate("Circuit", "This ID is not available. Please choose a different ID."), &d);
     lbl_id_taken->setFont(bold);
     lbl_id_taken->setWordWrap(true);
     lbl_id_taken->setAlignment(Qt::AlignCenter);
@@ -1687,13 +1687,6 @@ void MainWindow::moveCircuit()
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
     gl->addWidget(date, 5, 1);
 
-    QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
-    lbl_date_taken->setFont(bold);
-    lbl_date_taken->setWordWrap(true);
-    lbl_date_taken->setAlignment(Qt::AlignCenter);
-    lbl_date_taken->setVisible(false);
-    gl->addWidget(lbl_date_taken, 6, 0, 1, 2);
-
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Move"));
@@ -1701,18 +1694,16 @@ void MainWindow::moveCircuit()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 7, 0, 1, 2);
+    gl->addWidget(bb, 6, 0, 1, 2);
 
     cb_customer->setCurrentIndex(-1);
 
     QString customer_uuid = "";
     int circuit_id = 0;
     QString inspection_date;
-    bool inspection_date_taken = false;
     do {
-        lbl_id_taken->setVisible(!customer_uuid.isEmpty() && circuit_id != 0 && !inspection_date_taken);
+        lbl_id_taken->setVisible(!customer_uuid.isEmpty() && circuit_id != 0);
         lbl_select_customer->setVisible(customer_uuid.isNull());
-        lbl_date_taken->setVisible(inspection_date_taken);
 
         if (d.exec() != QDialog::Accepted)
             return;
@@ -1720,9 +1711,7 @@ void MainWindow::moveCircuit()
         customer_uuid = cb_customer->currentIndex() < 0 ? QString() : cb_customer->itemData(cb_customer->currentIndex()).toString();
         circuit_id = spb_circuit_id->value();
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
-        inspection_date_taken = false;
-    } while (customer_uuid.isNull() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists() ||
-             (inspection_date_taken = Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists()));
+    } while (customer_uuid.isNull() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists());
 
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
@@ -1970,23 +1959,14 @@ void MainWindow::skipInspection()
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
     gl->addWidget(date, 1, 1);
 
-    QLabel *lbl_date_taken = new QLabel(QApplication::translate("EditDialogue", "This date is not available. Please choose a different date."), &d);
-    QFont bold;
-    bold.setBold(true);
-    lbl_date_taken->setFont(bold);
-    lbl_date_taken->setWordWrap(true);
-    lbl_date_taken->setAlignment(Qt::AlignCenter);
-    lbl_date_taken->setVisible(false);
-    gl->addWidget(lbl_date_taken, 2, 0, 1, 2);
-
     lbl = new QLabel(tr("Reason:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 3, 0);
+    gl->addWidget(lbl, 2, 0);
 
     QLineEdit *reason = new QLineEdit(&d);
     reason->setText(QApplication::translate("Inspection", "Inspection carried out by another service company."));
     reason->setMinimumWidth(360);
-    gl->addWidget(reason, 3, 1);
+    gl->addWidget(reason, 2, 1);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1995,17 +1975,12 @@ void MainWindow::skipInspection()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 4, 0, 1, 2);
+    gl->addWidget(bb, 3, 0, 1, 2);
 
-    QString inspection_date;
-    do {
-        lbl_date_taken->setVisible(!inspection_date.isEmpty());
+    if (d.exec() != QDialog::Accepted)
+        return;
 
-        if (d.exec() != QDialog::Accepted)
-            return;
-
-        inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
-    } while (Inspection::query({{"circuit_uuid", m_tab->selectedCircuitUUID()}, {"date", inspection_date}}).exists());
+    QString inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
 
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();

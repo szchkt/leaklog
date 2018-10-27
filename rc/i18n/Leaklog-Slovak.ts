@@ -728,6 +728,10 @@
         <source>Date excluded</source>
         <translation>Vyradenie z agendy</translation>
     </message>
+    <message>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>Toto IČ nie je voľné. Prosím zvoľte iné IČ.</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -1421,22 +1425,6 @@
     <message>
         <source>Cancel</source>
         <translation>Zrušiť</translation>
-    </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Uložiť zmeny</translation>
-    </message>
-    <message>
-        <source>Invalid ID.</source>
-        <translation>Neplatné IČ.</translation>
-    </message>
-    <message>
-        <source>This date is not available. Please choose a different date.</source>
-        <translation>Tento dátum nie je voľný. Prosím zvoľte iný dátum.</translation>
-    </message>
-    <message>
-        <source>This ID is not available. Please choose a different ID.</source>
-        <translation>Toto IČ nie je voľné. Prosím zvoľte iné IČ.</translation>
     </message>
     <message>
         <source>Select a customer first.</source>

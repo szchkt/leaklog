@@ -84,15 +84,6 @@ bool EditDialogue::save(bool call_accept)
         if ((*i)->skipSave()) continue;
         QString id = (*i)->id();
         QVariant value = (*i)->variantValue();
-        if (id == "uuid") {
-            if (value.toString().isEmpty()) {
-                QMessageBox::information(NULL, tr("Save changes"), tr("Invalid ID."));
-                return false;
-            } else if (md_used_ids.contains(value.toString())) {
-                QMessageBox::information(NULL, tr("Save changes"), tr("This ID is not available. Please choose a different ID."));
-                return false;
-            }
-        }
         md_record->setValue(id, value);
     }
 

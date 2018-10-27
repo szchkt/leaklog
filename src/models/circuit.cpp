@@ -92,27 +92,42 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     notes->setRowSpan(0);
     md->addInputWidget(notes);
 
-    int min_available_id = 1;
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 ORDER BY id ASC").arg(QString(id.isEmpty() ? "" : " AND id <> :id")));
-    query_used_ids.bindValue(":customer_uuid", customerUUID());
-    if (!id.isEmpty()) { query_used_ids.bindValue(":id", id); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-            if (min_available_id == query_used_ids.value(0).toInt()) {
-                min_available_id++;
+    if (id.isEmpty()) {
+        int min_available_id = 1;
+        MTSqlQuery query;
+        query.prepare("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid ORDER BY id ASC");
+        query.bindValue(":customer_uuid", customerUUID());
+        if (query.exec()) {
+            while (query.next()) {
+                if (min_available_id == query.value(0).toInt()) {
+                    min_available_id++;
+                }
             }
         }
-    }
-    md->setUsedIds(used_ids);
-    if (id.isEmpty()) {
         id_edit->setVariantValue(min_available_id);
     }
 }
 
 bool Circuit::checkValues(QWidget *parent)
 {
+    MTSqlQuery query_used_ids;
+    query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 AND id = :id").arg(QString(uuid().isEmpty() ? "" : " AND uuid <> :uuid")));
+    query_used_ids.bindValue(":customer_uuid", customerUUID());
+    if (!uuid().isEmpty())
+        query_used_ids.bindValue(":uuid", uuid());
+    query_used_ids.bindValue(":id", value("id").toInt());
+    if (query_used_ids.exec() && query_used_ids.next()) {
+        QMessageBox message(parent);
+        message.setWindowTitle(tr("Edit circuit - Leaklog"));
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setText(tr("This ID is not available. Please choose a different ID."));
+        message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return false;
+    }
+
     if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant") && !superuserModeEnabled()) {
         MTSqlQuery query;
         query.prepare("SELECT date FROM inspections"
@@ -134,6 +149,7 @@ bool Circuit::checkValues(QWidget *parent)
             return false;
         }
     }
+
     return true;
 }
 

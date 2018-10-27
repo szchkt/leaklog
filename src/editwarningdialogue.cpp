@@ -229,7 +229,12 @@ EditDialogue(undo_stack, parent)
     tbtn_add_condition->setDisabled(disable_input);
     tbtn_add_condition->setIcon(QIcon(QString::fromUtf8(":/images/images/add16.png")));
     md_layout.addWidget(tbtn_add_condition, r + 2, 3);
-    md_conditions = new Conditions(md_used_ids, this);
+
+    QStringList used_ids;
+    used_ids << "refrigerant_amount" << "oil_amount" << "sum" << "p_to_t" << "p_to_t_vap" << "gwp" << "co2_equivalent";
+    used_ids << Global::listSupportedFunctions();
+    used_ids << Global::listVariableIds();
+    md_conditions = new Conditions(used_ids, this);
     md_conditions->setDisabled(disable_input);
     QObject::connect(tbtn_add_condition, SIGNAL(clicked()), md_conditions, SLOT(add()));
     md_layout.addWidget(md_conditions, r + 3, 0, 1, 4);

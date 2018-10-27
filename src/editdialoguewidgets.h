@@ -40,8 +40,6 @@ public:
     }
     void addGroupedInputWidgets(const QString &, const QList<MDAbstractInputWidget *> &);
 
-    void setUsedIds(const QStringList &ids) { md_used_ids = ids; }
-
     virtual void setWindowTitle(const QString &) = 0;
 
     virtual QWidget *widget() = 0;
@@ -49,7 +47,6 @@ public:
     void setMaximumRowCount(int rows_in_column) { md_rows_in_column = rows_in_column; }
 
 protected:
-    QStringList md_used_ids;
     QList<MDAbstractInputWidget *> md_inputwidgets;
     QMap<QString, QString> md_groups;
     int md_rows_in_column;

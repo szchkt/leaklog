@@ -54,15 +54,6 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
-    QStringList used_ids; MTSqlQuery query_used_ids;
-    query_used_ids.prepare("SELECT date FROM repairs" + QString(uuid().isEmpty() ? "" : " WHERE uuid <> :uuid"));
-    if (!uuid().isEmpty()) { query_used_ids.bindValue(":uuid", uuid()); }
-    if (query_used_ids.exec()) {
-        while (query_used_ids.next()) {
-            used_ids << query_used_ids.value(0).toString();
-        }
-    }
-    md->setUsedIds(used_ids);
 }
 
 QString Repair::tableName()
