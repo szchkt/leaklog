@@ -64,6 +64,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDateEdit("commissioning", tr("Date of commissioning:"), md->widget(), attributes.value("commissioning").toString()));
     md->addInputWidget(new MDCheckBox("hermetic", tr("Hermetically sealed"), md->widget(), attributes.value("hermetic").toInt()));
     md->addInputWidget(new MDCheckBox("leak_detector", tr("Fixed leakage detector installed"), md->widget(), attributes.value("leak_detector").toInt()));
+    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
+    notes->setRowSpan(2);
+    md->addInputWidget(notes);
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), attributes.value("field").toString(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), attributes.value("refrigerant").toString(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, attributes.value("refrigerant_amount").toDouble(), QApplication::translate("Units", "kg")));
@@ -93,9 +96,6 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);
-    MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
-    notes->setRowSpan(0);
-    md->addInputWidget(notes);
     int min_available_id = 1;
     QStringList used_ids; MTSqlQuery query_used_ids;
     query_used_ids.setForwardOnly(true);
