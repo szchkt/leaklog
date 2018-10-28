@@ -121,6 +121,7 @@ QString TableView::renderHTML(bool)
         out << "</th><th>" << QApplication::translate("Circuit", "Year of purchase");
         out << "</th><th>" << QApplication::translate("Circuit", "Commissioned on");
         out << "</th><th>" << QApplication::translate("Circuit", "Refrigerant");
+        out << "</th><th>" << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent"));
         out << "</th><th>" << QApplication::translate("Circuit", "Oil");
         out << "</th></tr><tr>";
         out << "<td>" << toolTipLink("customer/circuit", circuit_id.rightJustified(5, '0'), customer_uuid, circuit_uuid) << "</td>";
@@ -130,9 +131,13 @@ QString TableView::renderHTML(bool)
         out << "<td>" << MTVariant(circuit.value("type")) << "</td>";
         out << "<td>" << circuit.value("year").toString() << "</td>";
         out << "<td>" << settings->mainWindowSettings().formatDate(circuit.value("commissioning")) << "</td>";
-        out << "<td>" << circuit.value("refrigerant_amount").toDouble()
+        QString refrigerant = circuit.value("refrigerant").toString();
+        double refrigerant_amount = circuit.value("refrigerant_amount").toDouble();
+        out << "<td>" << refrigerant_amount
             << "&nbsp;" << QApplication::translate("Units", "kg") << " "
-            << circuit.value("refrigerant").toString() << "</td>";
+            << refrigerant << "</td>";
+        out << "<td>" << CO2Equivalent(refrigerant, refrigerant_amount)
+            << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
         out << "<td>" << circuit.value("oil_amount").toDouble()
             << "&nbsp;" << QApplication::translate("Units", "kg") << " ";
         if (attributeValues().contains("oil::" + circuit.value("oil").toString())) {
