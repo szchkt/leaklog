@@ -8,7 +8,7 @@ the percentage of leakage.
 
 ### Supported platforms
 
-* Mac OS X
+* macOS
 * Windows
 * Linux and various UNIX-based platforms
 
@@ -25,12 +25,12 @@ the percentage of leakage.
 Installation
 ------------
 
-Binaries are available for **Mac OS X** and **Windows** on
+Binaries are available for **macOS** and **Windows** on
 [GitHub][GH].
 
 [GH]: http://github.com/szchkt/leaklog/releases
 
-To build Leaklog from source, you will need Qt 4.6 or a newer,
+To build Leaklog from source, you will need Qt 5.6 or a newer,
 compatible version.
 
 Use the `lrelease` tool to compile translations as follows:
@@ -38,9 +38,9 @@ Use the `lrelease` tool to compile translations as follows:
 	lrelease Leaklog.pro
 	lrelease rc/i18n/Leaklog-i18n.ts
 
-If you're running Mac OS X, use:
+If you're running macOS, use:
 
-	qmake -spec macx-llvm -config release
+	qmake -spec macx-clang -config release
 
 Otherwise, the following will do:
 
@@ -49,6 +49,3 @@ Otherwise, the following will do:
 And finally:
 
 	make
-
-(You can also use any other maketool, such as `mingw32-make`, `gmake`
-or `nmake`, depending on your platform.)
