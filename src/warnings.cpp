@@ -113,7 +113,7 @@ void Warnings::saveResult()
     int n = query()->record().count();
     *pos() = -1;
     result()->clear();
-    initWarnings(result(), 0, QString(), enabled_only, m_scope);
+    initWarnings(result(), 0, QString(), CO2_equivalent, enabled_only, m_scope);
     QVariantMap row;
     while (query()->next()) {
         if (isPredefined(query()->value(0).toString()))
