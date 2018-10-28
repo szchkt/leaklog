@@ -1502,37 +1502,40 @@ void MainWindow::duplicateAndDecommissionCircuit()
     date->calendarWidget()->setFirstDayOfWeek(QLocale().firstDayOfWeek());
     gl->addWidget(date, 1, 1);
 
+    QRadioButton *keep_id = new QRadioButton(tr("Keep ID"), &d);
+    keep_id->setChecked(true);
+    gl->addWidget(keep_id, 2, 0);
+
     QRadioButton *set_original_id = new QRadioButton(tr("Change ID of the original to:"), &d);
-    set_original_id->setChecked(true);
-    gl->addWidget(set_original_id, 2, 0);
+    gl->addWidget(set_original_id, 3, 0);
 
     QSpinBox *new_id = new QSpinBox(&d);
     new_id->setRange(1, 99999);
     new_id->setValue((int)Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}}).max("id") + 1);
-    gl->addWidget(new_id, 2, 1, 2, 1);
+    gl->addWidget(new_id, 3, 1, 2, 1);
 
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
-    gl->addWidget(set_duplicate_id, 3, 0);
+    gl->addWidget(set_duplicate_id, 4, 0);
 
     QStringList refrigerants = listRefrigerants();
 
     lbl = new QLabel(tr("Previous refrigerant:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 4, 0);
+    gl->addWidget(lbl, 5, 0);
 
     QComboBox *old_refrigerant = new QComboBox(&d);
     old_refrigerant->addItems(refrigerants);
     old_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
-    gl->addWidget(old_refrigerant, 4, 1);
+    gl->addWidget(old_refrigerant, 5, 1);
 
     lbl = new QLabel(tr("New refrigerant:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 5, 0);
+    gl->addWidget(lbl, 6, 0);
 
     QComboBox *new_refrigerant = new QComboBox(&d);
     new_refrigerant->addItems(refrigerants);
     new_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
-    gl->addWidget(new_refrigerant, 5, 1);
+    gl->addWidget(new_refrigerant, 6, 1);
 
     lbl = new QLabel(QApplication::translate("Circuit", "This ID is not available. Please choose a different ID."), &d);
     QFont bold;
@@ -1541,7 +1544,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     lbl->setWordWrap(true);
     lbl->setAlignment(Qt::AlignCenter);
     lbl->setVisible(false);
-    gl->addWidget(lbl, 6, 0, 1, 2);
+    gl->addWidget(lbl, 7, 0, 1, 2);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1550,7 +1553,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
     bb->button(QDialogButtonBox::Cancel)->setFocus();
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
-    gl->addWidget(bb, 7, 0, 1, 2);
+    gl->addWidget(bb, 8, 0, 1, 2);
 
     int id = 0;
     do {
@@ -1559,6 +1562,11 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
         if (d.exec() != QDialog::Accepted)
             return;
+
+        if (keep_id->isChecked()) {
+            id = circuit.intValue("id");
+            break;
+        }
 
         id = new_id->value();
     } while (Circuit::query({{"customer_uuid", m_tab->selectedCustomerUUID()}, {"id", QString::number(id)}}).exists());
@@ -1575,14 +1583,14 @@ void MainWindow::duplicateAndDecommissionCircuit()
     circuit.setStatus(Circuit::Decommissioned);
     circuit.setDateOfDecommissioning(date_string);
     circuit.setRefrigerant(old_refrigerant->currentText());
-    circuit.save();
 
     if (set_original_id->isChecked()) {
         circuit.setCircuitID(id);
-        circuit.save();
     } else {
         attributes.insert("id", id);
     }
+
+    circuit.save();
 
     attributes.insert("refrigerant", new_refrigerant->currentText());
     attributes.insert("refrigerant_amount", 0.0);

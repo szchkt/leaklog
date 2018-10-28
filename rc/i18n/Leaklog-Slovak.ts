@@ -4538,6 +4538,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
         <translation>Používaním tejto služby súhlasíte s &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;podmienkami služby&lt;/a&gt;.</translation>
     </message>
+    <message>
+        <source>Keep ID</source>
+        <translation>Ponechať IČ</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

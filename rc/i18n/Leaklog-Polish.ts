@@ -4534,6 +4534,10 @@ dla ID osoby i firmy</translation>
         <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Keep ID</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
