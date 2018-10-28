@@ -65,7 +65,7 @@ void AboutWidget::showAcknowledgements(bool show)
         HTMLParentElement *body = html_doc.body();
 
         HTMLParagraph *p = body->paragraph();
-        *p << "Copyright &copy; 2008&ndash;2018 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
+        *p << "&copy; 2008&nbsp;&ndash;&nbsp;2018 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
         p->newLine();
         *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
