@@ -30,7 +30,7 @@ Binaries are available for **macOS** and **Windows** on
 
 [GH]: http://github.com/szchkt/leaklog/releases
 
-To build Leaklog from source, you will need Qt 5.6 or a newer,
+To build Leaklog from source, you will need Qt 5.9 or a newer,
 compatible version.
 
 Use the `lrelease` tool to compile translations as follows:
