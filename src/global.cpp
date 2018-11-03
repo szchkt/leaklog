@@ -88,14 +88,6 @@ QString Global::escapeString(QString s, bool escape_backslash, bool insert_lineb
     return s;
 }
 
-QString Global::replaceUnsupportedCharacters(QString s)
-{
-#ifdef Q_OS_WIN32
-    s.replace(QString::fromUtf8("\342\202\202"), "2");
-#endif
-    return s;
-}
-
 QString Global::elideRight(const QString &s, int n)
 {
     QString result = s.trimmed();

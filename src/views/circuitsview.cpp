@@ -265,7 +265,7 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QStri
     if (columns.field)
         addCircuitHeaderCell("field", customer_uuid, circuit_uuid, thead);
     *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
-    *(thead->addHeaderCell()) << replaceUnsupportedCharacters(QApplication::translate("MainWindow", "CO\342\202\202 equivalent"));
+    *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "CO\342\202\202 equivalent");
     if (cols_in_row >= 0) {
         *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "GWP");
     }

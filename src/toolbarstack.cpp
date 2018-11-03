@@ -35,11 +35,6 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 {
     setupUi(this);
 
-#ifdef Q_OS_WIN32
-    chb_CO2_equivalent->setText(replaceUnsupportedCharacters(chb_CO2_equivalent->text()));
-    chb_min_5tCO2->setText(replaceUnsupportedCharacters(chb_min_5tCO2->text()));
-#endif
-
     scaleFactorChanged();
 
     cb_refrigerant->addItem(tr("All"), QString());

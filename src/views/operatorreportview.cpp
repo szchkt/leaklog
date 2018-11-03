@@ -100,7 +100,7 @@ QString OperatorReportView::renderHTML(bool)
     if (CO2_equivalent)
         out << "<th rowspan=\"2\">" << QApplication::translate("MainWindow", "GWP") << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
-    QString unit = CO2_equivalent ? replaceUnsupportedCharacters(QApplication::translate("Units", "t of CO\342\202\202 equivalent")) : QApplication::translate("Units", "kg");
+    QString unit = CO2_equivalent ? QApplication::translate("Units", "t of CO\342\202\202 equivalent") : QApplication::translate("Units", "kg");
     out << "<th colspan=\"4\">" << QString("%1 (%2)").arg(QApplication::translate("Circuit", "Amount of refrigerant")).arg(unit) << "</th>";
     out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "</tr><tr>";

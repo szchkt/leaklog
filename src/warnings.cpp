@@ -134,7 +134,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("5 - 50 t of CO\342\202\202 equivalent, before 2011"))
+                            CO2_equivalent ? tr("5 - 50 t of CO\342\202\202 equivalent, before 2011")
                                            : tr("3 - 10 kg, before 2011"),
                             0, enabled_only);
             } else if (type == 1) {
@@ -155,7 +155,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("5 - 50 t of CO\342\202\202 equivalent, after 2011"))
+                            CO2_equivalent ? tr("5 - 50 t of CO\342\202\202 equivalent, after 2011")
                                            : tr("3 - 10 kg, after 2011"),
                             0, enabled_only);
             } else if (type == 1) {
@@ -176,7 +176,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("50 - 500 t of CO\342\202\202 equivalent, before 2011"))
+                            CO2_equivalent ? tr("50 - 500 t of CO\342\202\202 equivalent, before 2011")
                                            : tr("10 - 100 kg, before 2011"),
                             0, enabled_only);
             } else if (type == 1) {
@@ -197,7 +197,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("50 - 500 t of CO\342\202\202 equivalent, after 2011"))
+                            CO2_equivalent ? tr("50 - 500 t of CO\342\202\202 equivalent, after 2011")
                                            : tr("10 - 100 kg, after 2011"),
                             0, enabled_only);
             } else if (type == 1) {
@@ -218,7 +218,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("above 500 t of CO\342\202\202 equivalent, before 2011"))
+                            CO2_equivalent ? tr("above 500 t of CO\342\202\202 equivalent, before 2011")
                                            : tr("above 100 kg, before 2011"),
                             0, enabled_only);
             } else if (type == 1) {
@@ -237,7 +237,7 @@ void Warnings::initWarnings(ListOfVariantMaps *map, int type, const QString &id,
         if (id.isEmpty() || id == w) {
             if (type == 0) {
                 initWarning(map, w, tr("Refrigerant leakage above limit"),
-                            CO2_equivalent ? replaceUnsupportedCharacters(tr("above 500 t of CO\342\202\202 equivalent, after 2011"))
+                            CO2_equivalent ? tr("above 500 t of CO\342\202\202 equivalent, after 2011")
                                            : tr("above 100 kg, after 2011"),
                             0, enabled_only);
             } else if (type == 1) {
