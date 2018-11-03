@@ -42,26 +42,17 @@ View::View(ViewTabSettings *settings):
 QString View::viewTemplate(const QString &view_template)
 {
     if (!view_templates.contains(view_template)) {
-#ifdef Q_OS_MAC
         QString style = R"(
             body, td, th {
-                font-family: "Lucida Grande", "Lucida Sans Unicode";
+                font-family: "Lucida Grande", "Segoe UI", "Lucida Sans Unicode", sans-serif;
                 font-size: 9pt;
             }
             @media print {
                 body {
-                    zoom: 0.75;
+                    zoom: 0.7;
                 }
             }
         )";
-#else
-        QString style = R"(
-            body, td, th {
-                font-family: "MS Shell Dlg 2", "MS Shell Dlg", "Lucida Grande", "Lucida Sans Unicode", verdana, lucida, sans-serif;
-                font-size: small;
-            }
-        )";
-#endif
         QFile file;
         QTextStream in(&file);
         in.setCodec("UTF-8");
