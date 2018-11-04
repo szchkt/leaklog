@@ -151,7 +151,8 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
             *(row->addCell()) << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
             *(row->addCell()) << escapeString(list.at(i).value("company"));
             *(row->addCell()) << MTVariant(list.at(i).value("address"), MTVariant::Address);
-            *(row->addCell()) << escapeString(list.at(i).value("mail"));
+            QString mail = escapeString(list.at(i).value("mail"));
+            *(row->addCell()) << "<a href=\"mailto:" << mail << "\">" << mail << "</a>";
             *(row->addCell()) << escapeString(list.at(i).value("phone"));
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
@@ -191,7 +192,8 @@ HTMLTable *CustomersView::customerContactPersons(const QString &customer_uuid, H
     for (int i = 0; i < persons.count(); ++i) {
         _tr = table->addRow();
         *(_tr->addCell()) << persons.at(i).value("name").toString();
-        *(_tr->addCell()) << persons.at(i).value("mail").toString();
+        QString mail = persons.at(i).value("mail").toString();
+        *(_tr->addCell()) << "<a href=\"mailto:" << mail << "\">" << mail << "</a>";
         *(_tr->addCell()) << persons.at(i).value("phone").toString();
     }
 

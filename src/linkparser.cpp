@@ -19,6 +19,9 @@
 
 #include "linkparser.h"
 
+#include <QDesktopServices>
+#include <QUrl>
+
 #include <cstdlib>
 
 LinkParser::LinkParser()
@@ -70,6 +73,11 @@ Link *LinkParser::parse(const QString &url)
 {
     if (url == "qrc:/html/")
         return NULL;
+
+    if (url.startsWith("mailto:")) {
+        QDesktopServices::openUrl(QUrl(url));
+        return NULL;
+    }
 
     QStringList split_url = url.split("/");
     UrlEntity *url_entity = new UrlEntity;
