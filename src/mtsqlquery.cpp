@@ -98,32 +98,32 @@ QVariant MTSqlQuery::value(int index) const
 
 QVariant MTSqlQuery::value(const QString &field) const
 {
-    return MTSqlQuery::value(record().indexOf(field));
+    return isNull(field) ? QVariant(QVariant::String) : QSqlQuery::value(field);
 }
 
 bool MTSqlQuery::boolValue(const QString &field) const
 {
-    return QSqlQuery::value(record().indexOf(field)).toInt();
+    return QSqlQuery::value(field).toInt();
 }
 
 int MTSqlQuery::intValue(const QString &field) const
 {
-    return QSqlQuery::value(record().indexOf(field)).toInt();
+    return QSqlQuery::value(field).toInt();
 }
 
 qlonglong MTSqlQuery::longLongValue(const QString &field) const
 {
-    return QSqlQuery::value(record().indexOf(field)).toLongLong();
+    return QSqlQuery::value(field).toLongLong();
 }
 
 double MTSqlQuery::doubleValue(const QString &field) const
 {
-    return QSqlQuery::value(record().indexOf(field)).toDouble();
+    return QSqlQuery::value(field).toDouble();
 }
 
 QString MTSqlQuery::stringValue(const QString &field) const
 {
-    return MTSqlQuery::value(record().indexOf(field)).toString();
+    return isNull(field) ? QString() : QSqlQuery::value(field).toString();
 }
 
 QVariant MTSqlQuery::nextValue(int index)
