@@ -211,11 +211,11 @@ QString TableView::renderHTML(bool)
         //*** Warnings ***
         if (!(table.value("scope").toInt() & Variable::Compressor) || !compressor_uuid.isEmpty()) {
             Warnings warnings(CO2_equivalent, true, circuit, table.value("scope").toInt());
-            QString warnings_html, inspection_date;
-            QStringList last_warnings_list, warnings_list, backup_warnings;
+            QString warnings_html;
+            QStringList last_warnings_list, backup_warnings;
             for (int i = 0; i < inspections.count(); ++i) {
-                inspection_date = inspections.at(i).value("date").toString();
-                warnings_list = listWarnings(warnings, circuit, var_evaluation.nominalInspection(), inspections[i]);
+                QString inspection_date = inspections.at(i).value("date").toString();
+                QStringList warnings_list = listWarnings(warnings, circuit, var_evaluation.nominalInspection(), inspections[i]);
                 backup_warnings = warnings_list;
                 for (int n = 0; n < warnings_list.count(); ++n) {
                     if (last_warnings_list.contains(warnings_list.at(n))) {
@@ -226,7 +226,7 @@ QString TableView::renderHTML(bool)
                 if (warnings_list.count()) {
                     warnings_html.append("<tr><td><a href=\"customer:" + customer_uuid + "/circuit:" + circuit_uuid);
                     warnings_html.append(inspections.at(i).value("inspection_type").toInt() == Inspection::Repair ? "/repair:" : "/inspection:");
-                    warnings_html.append(inspection_date + "\">");
+                    warnings_html.append(inspections.at(i).value("uuid").toString() + "\">");
                     warnings_html.append(settings->mainWindowSettings().formatDateTime(inspection_date) + "</a>");
                     warnings_html.append("</td><td>");
                     warnings_html.append(warnings_list.join(", "));
@@ -334,6 +334,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
         QString inspection_date = inspections.at(i).value("date").toString();
         QString customer_uuid = circuit.value("customer_uuid").toString();
         QString circuit_uuid = circuit.value("uuid").toString();
+        QString inspection_uuid = inspections.at(i).value("uuid").toString();
         Inspection::Type inspection_type = (Inspection::Type)inspections.at(i).value("inspection_type").toInt();
 
         if (Inspection::showDescriptionForInspectionType(inspection_type)) {
@@ -343,7 +344,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                 row = tbody->addRow();
                 *row->addCell() << toolTipLink("customer/circuit/inspection",
                                                settings->mainWindowSettings().formatDateTime(inspection_date),
-                                               customer_uuid, circuit_uuid, inspection_date, ToolTipLinkItemRemove);
+                                               customer_uuid, circuit_uuid, inspection_uuid, ToolTipLinkItemRemove);
                 *row->addCell(QString("colspan=\"%1\"").arg(column_count)) << escapeString(description);
                 continue;
             }
@@ -369,7 +370,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
         }
         *el << toolTipLink(inspection_type == Inspection::Repair ? "customer/circuit/repair" : "customer/circuit/inspection",
                            settings->mainWindowSettings().formatDateTime(inspection_date),
-                           customer_uuid, circuit_uuid, inspection_date);
+                           customer_uuid, circuit_uuid, inspection_uuid);
         if (is_outside_interval) { *el << "*"; }
 
         for (int n = 0; n < table_vars.count(); ++n) {

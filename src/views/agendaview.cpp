@@ -64,7 +64,9 @@ QString AgendaView::renderHTML(bool)
                                                 + circuitRefrigerantAmountQuery()
                                                 + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
+                                                " ins.uuid AS last_regular_inspection_uuid,"
                                                 " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
+                                                " all_ins.uuid AS last_inspection_uuid,"
                                                 " all_ins.inspection_type, all_ins.refr_add_am");
     circuits.exec();
     while (circuits.next()) {
@@ -89,26 +91,28 @@ QString AgendaView::renderHTML(bool)
                     circuits.doubleValue("refr_add_am") > 0.0)
                     next_inspections_map.insert(next_inspection_date,
                                                 QList<QVariant>()
-                                                    << circuits.stringValue("customer_uuid")
-                                                    << circuits.stringValue("uuid")
-                                                    << circuits.stringValue("id")
-                                                    << circuits.stringValue("name")
-                                                    << circuits.stringValue("operation")
+                                                    << circuits.value("customer_uuid")
+                                                    << circuits.value("uuid")
+                                                    << circuits.value("id")
+                                                    << circuits.value("name")
+                                                    << circuits.value("operation")
                                                     << refrigerant
                                                     << refrigerant_amount
                                                     << last_inspection_date
+                                                    << circuits.value("last_inspection_uuid")
                                                     << true);
             }
             next_inspections_map.insert(next_regular_inspection_date,
                                         QList<QVariant>()
-                                            << circuits.stringValue("customer_uuid")
-                                            << circuits.stringValue("uuid")
-                                            << circuits.stringValue("id")
-                                            << circuits.stringValue("name")
-                                            << circuits.stringValue("operation")
+                                            << circuits.value("customer_uuid")
+                                            << circuits.value("uuid")
+                                            << circuits.value("id")
+                                            << circuits.value("name")
+                                            << circuits.value("operation")
                                             << refrigerant
                                             << refrigerant_amount
                                             << last_regular_inspection_date
+                                            << circuits.value("last_regular_inspection_uuid")
                                             << false);
         }
     }
@@ -131,7 +135,8 @@ QString AgendaView::renderHTML(bool)
         QString refrigerant = i.value().value(5).toString();
         double refrigerant_amount = i.value().value(6).toDouble();
         QString last_inspection_date = i.value().value(7).toString();
-        bool reinspection = i.value().value(8).toBool();
+        QString last_inspection_uuid = i.value().value(8).toString();
+        bool reinspection = i.value().value(9).toBool();
         qint64 days_to = QDate::currentDate().daysTo(QDate::fromString(i.key(), DATE_FORMAT));
         QString next_inspection;
         switch (days_to) {
@@ -168,9 +173,9 @@ QString AgendaView::renderHTML(bool)
         out << "<td style=\"" << style << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)
             << "&nbsp;" << QApplication::translate("Units", "t") << "</td>";
         out << "<td style=\"" << style << "\">";
-        if (last_inspection_date.contains("-"))
+        if (!last_inspection_uuid.isEmpty())
             out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/inspection:"
-                << last_inspection_date << "\">" << settings->mainWindowSettings().formatDateTime(last_inspection_date) << "</a>";
+                << last_inspection_uuid << "\">" << settings->mainWindowSettings().formatDateTime(last_inspection_date) << "</a>";
         else
             out << settings->mainWindowSettings().formatDate(last_inspection_date);
         out << "</td></tr>";
