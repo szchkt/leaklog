@@ -118,12 +118,20 @@ QString AgendaView::renderHTML(bool)
     }
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
-    out << "<th colspan=\"7\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
-    out << "<tr><th>" << tr("Next inspection") << "</th><th>" << tr("Customer") << "</th>";
-    out << "<th>" << tr("Circuit") << "</th><th>" << QApplication::translate("Circuit", "Place of operation") << "</th>";
-    out << "<th>" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
-    out << "<th>" << QApplication::translate("MainWindow", "CO\342\202\202 equivalent") << "</th>";
-    out << "<th>" << tr("Last inspection") << "</th></tr>";
+    out << "<th colspan=\"9\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
+    out << "<tr><th rowspan=\"2\">" << tr("Next inspection") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Customer") << "</th>";
+    out << "<th colspan=\"2\">" << tr("Circuit") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
+    out << "<th rowspan=\"2\">" << QApplication::translate("MainWindow", "CO\342\202\202 equivalent") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Last inspection") << "</th>";
+    out << "</tr><tr>";
+    out << "<th>" << QApplication::translate("Customer", "ID") << "</th>";
+    out << "<th>" << QApplication::translate("Customer", "Company") << "</th>";
+    out << "<th>" << QApplication::translate("Circuit", "ID") << "</th>";
+    out << "<th>" << QApplication::translate("Circuit", "Name") << "</th>";
+    out << "</tr>";
 
     QMapIterator<QString, QList<QVariant> > i(next_inspections_map);
     while (i.hasNext()) { i.next();
@@ -159,15 +167,12 @@ QString AgendaView::renderHTML(bool)
         if (reinspection)
             out << "*</i>";
         out << "</td><td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "\">";
-        out << escapeString(customers.value(customer_uuid).value("id").toString());
-        out << " (" << escapeString(customers.value(customer_uuid).value("company").toString()) << ")</a></td>";
+        out << escapeString(customers.value(customer_uuid).value("id").toString()) << "</a></td>";
+        out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(customers.value(customer_uuid).value("company").toString()) << "</td>";
         out << "<td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
-        out << circuit_id.rightJustified(5, '0');
-        if (!circuit_name.isEmpty()) {
-            out << " (" << escapeString(circuit_name) << ")";
-        }
-        out << "</a></td>";
-        out << "<td style=\"" << style << "\">" << escapeString(operation) << "</td>";
+        out << circuit_id.rightJustified(5, '0') << "</a></td>";
+        out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(circuit_name) << "</td>";
+        out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(operation) << "</td>";
         out << "<td style=\"" << style << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
             << " " << escapeString(refrigerant) << "</td>";
         out << "<td style=\"" << style << "\">" << CO2Equivalent(refrigerant, refrigerant_amount)

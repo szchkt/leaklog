@@ -88,7 +88,7 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid,
                 ->link("inspectorreport:" + uuid)) << inspectors.at(i).value("certificate_number").toString();
         for (int n = 1; n < Inspector::attributes().count(); ++n) {
             QString key = Inspector::attributes().key(n);
-            *(_tr->addCell()) << MTVariant(inspectors.at(i).value(key).toString(), key);
+            *(_tr->addCell("class=\"wrap\"")) << ellipsis(MTVariant(inspectors.at(i).value(key).toString(), key));
         }
         *(_tr->addCell()) << inspectors.at(i).value("inspections_count").toString();
         *(_tr->addCell()) << inspectors.at(i).value("repairs_count").toString();

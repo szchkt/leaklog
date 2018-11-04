@@ -262,6 +262,8 @@ QString AssemblyRecordDetailsView::renderHTML(bool)
                 item_value = tableVarValue(variable->type(), item_value, QString(), QString(), false, 0.0, true);
             }
             _td = _tr->addCell(colspan.arg(colspans[i]));
+            if (variable->type() == "text")
+                _td->addClass("wrap");
             *_td << item_value << " " << categories_query.value(UNIT).toString();
             _td->setId(QString("item_%1_value").arg(item_type_uuid));
         }

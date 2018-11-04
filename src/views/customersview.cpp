@@ -149,8 +149,8 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
             }
             row = table->addRow(row_attrs);
             *(row->addCell()) << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
-            *(row->addCell()) << escapeString(list.at(i).value("company"));
-            *(row->addCell()) << MTVariant(list.at(i).value("address"), MTVariant::Address);
+            *(row->addCell("class=\"wrap\"")) << ellipsis(list.at(i).value("company"));
+            *(row->addCell("class=\"wrap\"")) << ellipsis(MTVariant(list.at(i).value("address"), MTVariant::Address));
             QString mail = escapeString(list.at(i).value("mail"));
             *(row->addCell()) << "<a href=\"mailto:" << mail << "\">" << mail << "</a>";
             *(row->addCell()) << escapeString(list.at(i).value("phone"));

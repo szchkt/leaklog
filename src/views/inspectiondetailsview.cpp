@@ -200,7 +200,7 @@ void InspectionDetailsView::showVariableInInspectionTable(VariableEvaluation::Va
         if (!_tr) _tr = _table->addRow();
 
         if (subvar_values.key(i) != var_evaluation.variableName(variable, nominal)) *(_tr->addCell()) << subvar_values.key(i);
-        *(_tr->addCell()) << subvar_values.value(i);
+        *(_tr->addCell("class=\"wrap\"")) << subvar_values.value(i);
 
         _tr = NULL;
     }
@@ -252,7 +252,7 @@ QString InspectionDetailsView::tableVarValue(const QString &var_type, const QStr
 {
     if (var_type == "text") {
         if (expand_text) return escapeString(ins_value, false, true);
-        return escapeString(elideRight(ins_value, 20));
+        return escapeString(ins_value);
     } else if (var_type == "string") {
         return escapeString(ins_value);
     } else if (var_type == "bool") {

@@ -62,7 +62,20 @@ a:active {
 	color: inherit;
 	text-decoration: none;
 }
-warning {
-	font-size: xx-small;
-	color: #FFFFFF;
+td:not(.wrap) {
+	white-space: nowrap;
+}
+div.container {
+	position: relative;
+}
+div.content {
+	position: absolute;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+div.spacer {
+	height: 0;
+	overflow: hidden;
 }

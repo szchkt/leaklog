@@ -160,15 +160,17 @@ QString InspectionsView::renderHTML(bool)
                                       .value("person", inspections.at(i).value("inspector_uuid")).toString()) << "</td>";
         out << "<td>" << escapeString(persons.value(inspections.at(i).value("person_uuid").toString())
                                       .value("name", inspections.at(i).value("person_uuid")).toString()) << "</td>";
-        if (!inspections.at(i).value("risks").toString().isEmpty()) {
-            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("risks").toString()), true, true);
-            out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("risks").toString(), 50)) << "</td>";
+        QString risks = inspections.at(i).value("risks").toString();
+        if (!risks.isEmpty()) {
+            out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(risks), true, true);
+            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(risks) << "</td>";
         } else {
             out << "<td></td>";
         }
-        if (!inspections.at(i).value("rmds").toString().isEmpty()) {
-            out << "<td onmouseover=\"Tip('" << escapeString(escapeString(inspections.at(i).value("rmds").toString()), true, true);
-            out << "')\" onmouseout=\"UnTip()\">" << escapeString(elideRight(inspections.at(i).value("rmds").toString(), 50)) << "</td>";
+        QString rmds = inspections.at(i).value("rmds").toString();
+        if (!rmds.isEmpty()) {
+            out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(rmds), true, true);
+            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(rmds) << "</td>";
         } else {
             out << "<td></td>";
         }

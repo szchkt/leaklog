@@ -64,6 +64,21 @@ QString View::viewTemplate(const QString &view_template)
     return view_templates.value(view_template);
 }
 
+QString View::ellipsis(const QString &text)
+{
+    return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(escapeString(text));
+}
+
+QString View::ellipsis(const QVariant &text)
+{
+    return ellipsis(text.toString());
+}
+
+QString View::ellipsis(const MTVariant &text)
+{
+    return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(text.toHtml());
+}
+
 HTMLTable *View::writeServiceCompany(HTMLTable *table)
 {
     ServiceCompany serv_company;

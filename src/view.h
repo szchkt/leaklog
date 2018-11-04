@@ -26,6 +26,7 @@
 class HTMLParent;
 class HTMLTable;
 class MTTextStream;
+class MTVariant;
 class ViewTabSettings;
 
 class QString;
@@ -68,6 +69,10 @@ public:
 
 protected:
     static QString viewTemplate(const QString &view_template);
+
+    static QString ellipsis(const QString &text);
+    static QString ellipsis(const QVariant &text);
+    static QString ellipsis(const MTVariant &text);
 
     HTMLTable *writeServiceCompany(HTMLTable *table = NULL);
     void writeServiceCompany(MTTextStream &out);

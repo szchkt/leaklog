@@ -551,13 +551,31 @@ void TableView::writeTableVarCell(MTTextStream &out, const QString &var_type, co
 HTMLTableCell *TableView::writeTableVarCell(const QString &var_type, const QString &ins_value, const QString &nom_value,
                                             const QString &bg_class, bool compare_nom, int rowspan, double tolerance)
 {
-    QString args = QString("class=\"%1\" rowspan=\"%2\"").arg(bg_class).arg(rowspan);
+    QString args = QString("rowspan=\"%1\"").arg(rowspan);
     if (var_type == "text" && !ins_value.isEmpty()) {
         args.append(QString("onmouseover=\"Tip('%1')\" onmouseout=\"UnTip()\"")
                     .arg(escapeString(escapeString(ins_value), true, true)));
     }
     HTMLTableCell *cell = new HTMLTableCell(args);
-    *cell << tableVarValue(var_type, ins_value, nom_value, bg_class, compare_nom, tolerance);
+    if (!bg_class.isEmpty())
+        cell->addClass(bg_class);
+    QString value = tableVarValue(var_type, ins_value, nom_value, bg_class, compare_nom, tolerance);
+    if (var_type == "text") {
+        cell->addClass("wrap");
+        HTMLDiv *container = new HTMLDiv;
+        container->addClass("container");
+        HTMLDiv *content = new HTMLDiv;
+        content->addClass("content");
+        *content << value;
+        HTMLDiv *spacer = new HTMLDiv;
+        spacer->addClass("spacer");
+        *spacer << value;
+        *container << content;
+        *container << spacer;
+        *cell << container;
+    } else {
+        *cell << value;
+    }
     return cell;
 }
 
@@ -566,7 +584,7 @@ QString TableView::tableVarValue(const QString &var_type, const QString &ins_val
 {
     if (var_type == "text") {
         if (expand_text) return escapeString(ins_value, false, true);
-        return escapeString(elideRight(ins_value, 20));
+        return escapeString(ins_value);
     } else if (var_type == "string") {
         return escapeString(ins_value);
     } else if (var_type == "bool") {
