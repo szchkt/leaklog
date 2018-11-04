@@ -75,7 +75,7 @@ QString InspectionImagesView::renderHTML()
         if (!byte_array.isNull()) {
             *(table->addRow()->addCell()) << "<img src=\"data:image/jpeg;base64," << byte_array << "\">";
         }
-        *(table->addRow()->addCell()) << images.at(i).value("description").toString();
+        *(table->addRow()->addCell()) << escapeString(images.at(i).value("description").toString(), false, true);
     }
 
     return viewTemplate("inspection_images").arg(div.html());
