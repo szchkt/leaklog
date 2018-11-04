@@ -572,6 +572,7 @@ HTMLTableCell *TableView::writeTableVarCell(const QString &var_type, const QStri
         *spacer << value;
         *container << content;
         *container << spacer;
+        *container << "<span>&nbsp;</span>";
         *cell << container;
     } else {
         *cell << value;
