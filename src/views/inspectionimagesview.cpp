@@ -77,7 +77,7 @@ QString InspectionImagesView::renderHTML(bool for_export)
         } else {
             *(table->addRow()->addCell()) << "<img style=\"max-width: 100%;\" src=\"dbfile://" << uuid << "\">";
         }
-        *(table->addRow()->addCell()) << files.at(i).value("description").toString();
+        *(table->addRow()->addCell()) << escapeString(files.at(i).value("description").toString(), false, true);
     }
 
     return viewTemplate("inspection_images").arg(div.html());
