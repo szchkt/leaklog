@@ -1901,23 +1901,23 @@
     </message>
     <message>
         <source>Circuit Moved</source>
-        <translation type="unfinished"></translation>
+        <translation>Obieg przeniesiony</translation>
     </message>
     <message>
         <source>Inspection Skipped</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrola pominięta</translation>
     </message>
     <message>
         <source>Strength and Tightness Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Próba wytrzymałości i szczelności</translation>
     </message>
     <message>
         <source>Vacuum Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Próba próżniowa</translation>
     </message>
     <message>
         <source>Unknown Inspection Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany typ kontroli</translation>
     </message>
 </context>
 <context>
@@ -4440,83 +4440,83 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>Sync...</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuj...</translation>
     </message>
     <message>
         <source>Log In</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaloguj się</translation>
     </message>
     <message>
         <source>From Leaklog.org...</source>
-        <translation type="unfinished"></translation>
+        <translation>Z Leaklog.org...</translation>
     </message>
     <message>
         <source>Download database from Leaklog.org</source>
-        <translation type="unfinished"></translation>
+        <translation>Pobierz bazę danych z Leaklog.org</translation>
     </message>
     <message>
         <source>No databases found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie znaleziono żadnych baz danych.</translation>
     </message>
     <message>
         <source>Create a new database or open an existing database, then sync with Leaklog.org.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz nową bazę danych lub otwórz istniejącą bazę danych, a następnie zsynchronizuj ją z Leaklog.org.</translation>
     </message>
     <message>
         <source>Select a database to download:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz bazę danych do pobrania:</translation>
     </message>
     <message>
         <source>Failed to connect to Leaklog.org.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie można połączyć się z Leaklog.org.</translation>
     </message>
     <message>
         <source>Sync database - Leaklog</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuj bazę danych - Leaklog</translation>
     </message>
     <message>
         <source>Do you want to sync this database with Leaklog.org?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy chcesz zsynchronizować tę bazę danych z Leaklog.org?</translation>
     </message>
     <message>
         <source>&amp;Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Synchronizuj</translation>
     </message>
     <message>
         <source>Do &amp;Not Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nie synchronizuj</translation>
     </message>
     <message>
         <source>Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuj</translation>
     </message>
     <message>
         <source>Sync - Leaklog</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizuj - Leaklog</translation>
     </message>
     <message>
         <source>Failed to sync with the server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się zsynchronizować z serwerem.</translation>
     </message>
     <message>
         <source>Log In - Leaklog</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaloguj się - Leaklog</translation>
     </message>
     <message>
         <source>Enter your szchkt.org username and password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wprowadź swoją nazwę użytkownika i hasło z szchkt.org:</translation>
     </message>
     <message>
         <source>Register</source>
-        <translation type="unfinished"></translation>
+        <translation>Zarejestruj się</translation>
     </message>
     <message>
         <source>Log Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyloguj się</translation>
     </message>
     <message>
         <source>Failed to log in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się zalogować.</translation>
     </message>
     <message>
         <source>Try Again</source>
@@ -4532,11 +4532,11 @@ dla ID osoby i firmy</translation>
     </message>
     <message>
         <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Korzystając z tej usługi, akceptujesz &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Warunki korzystania z usługi&lt;/a&gt;.</translation>
     </message>
     <message>
         <source>Keep ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Zachowaj ID</translation>
     </message>
 </context>
 <context>
