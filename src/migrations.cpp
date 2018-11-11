@@ -191,6 +191,8 @@ static void migrateV1Inspectors(QSqlDatabase &database)
 
         journalInsertion(inspectors_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_inspectors");
 }
 
 static void migrateV1Customers(QSqlDatabase &database)
@@ -249,6 +251,8 @@ static void migrateV1Customers(QSqlDatabase &database)
 
         journalInsertion(customers_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_customers");
 }
 
 static void migrateV1Persons(QSqlDatabase &database)
@@ -283,6 +287,8 @@ static void migrateV1Persons(QSqlDatabase &database)
 
         journalInsertion(persons_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_persons");
 }
 
 static void migrateV1Circuits(QSqlDatabase &database, std::function<void(int, int)> progress)
@@ -327,6 +333,8 @@ static void migrateV1Circuits(QSqlDatabase &database, std::function<void(int, in
             current++;
         }
     }
+
+    query.exec("DROP TABLE v1_circuits");
 }
 
 static void migrateV1Compressors(QSqlDatabase &database, std::function<void(int, int)> progress)
@@ -369,6 +377,8 @@ static void migrateV1Compressors(QSqlDatabase &database, std::function<void(int,
             current++;
         }
     }
+
+    query.exec("DROP TABLE v1_compressors");
 }
 
 static QString inspectionTypeDataFromV1Data(Inspection::Type type, const QString &type_data)
@@ -573,6 +583,9 @@ static void migrateV1InspectionFiles(const QMap<int, QString> &file_uuids, QSqlD
 
         journalInsertion(inspections_files_table_id, uuid, database);
     }
+
+    MTSqlQuery query(database);
+    query.exec("DROP TABLE inspection_images");
 }
 
 static void migrateV1Repairs(QSqlDatabase &database)
@@ -609,6 +622,8 @@ static void migrateV1Repairs(QSqlDatabase &database)
 
         journalInsertion(repairs_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_repairs");
 }
 
 static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSqlDatabase &database)
@@ -645,6 +660,8 @@ static void migrateV1ServiceCompanies(const QMap<int, QString> &file_uuids, QSql
 
         journalInsertion(service_companies_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_service_companies");
 }
 
 static void migrateV1Tables(QSqlDatabase &database)
@@ -682,6 +699,8 @@ static void migrateV1Tables(QSqlDatabase &database)
 
         journalInsertion(tables_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_tables");
 }
 
 static QMap<int, QString> migrateV1Warnings(QSqlDatabase &database)
@@ -719,6 +738,8 @@ static QMap<int, QString> migrateV1Warnings(QSqlDatabase &database)
         journalInsertion(warnings_table_id, uuid, database);
     }
 
+    query.exec("DROP TABLE v1_warnings");
+
     return warning_uuids;
 }
 
@@ -754,6 +775,8 @@ static void migrateV1WarningFilters(const QMap<int, QString> &warning_uuids, QSq
 
         journalInsertion(warnings_filters_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_warnings_filters");
 }
 
 static void migrateV1WarningConditions(const QMap<int, QString> &warning_uuids, QSqlDatabase &database)
@@ -788,6 +811,8 @@ static void migrateV1WarningConditions(const QMap<int, QString> &warning_uuids, 
 
         journalInsertion(warnings_conditions_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_warnings_conditions");
 }
 
 static void migrateV1RefrigerantManagement(QSqlDatabase &database)
@@ -822,6 +847,8 @@ static void migrateV1RefrigerantManagement(QSqlDatabase &database)
 
         journalInsertion(refrigerant_management_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_refrigerant_management");
 }
 
 static QMap<int, QString> migrateV1AssemblyRecordTypes(const QMap<int, QString> &style_uuids, QSqlDatabase &database)
@@ -860,6 +887,8 @@ static QMap<int, QString> migrateV1AssemblyRecordTypes(const QMap<int, QString> 
         journalInsertion(assembly_record_types_table_id, uuid, database);
     }
 
+    query.exec("DROP TABLE v1_assembly_record_types");
+
     return assembly_record_type_uuids;
 }
 
@@ -897,6 +926,8 @@ static QMap<int, QString> migrateV1AssemblyRecordItemCategories(QSqlDatabase &da
 
         journalInsertion(assembly_record_item_categories_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_assembly_record_item_categories");
 
     return assembly_record_item_category_uuids;
 }
@@ -937,6 +968,8 @@ static QMap<int, QString> migrateV1AssemblyRecordItemTypes(const QMap<int, QStri
         journalInsertion(assembly_record_item_types_table_id, uuid, database);
     }
 
+    query.exec("DROP TABLE v1_assembly_record_item_types");
+
     return assembly_record_item_type_uuids;
 }
 
@@ -976,6 +1009,8 @@ static void migrateV1AssemblyRecordTypeCategories(const QMap<int, QString> &asse
 
         journalInsertion(assembly_record_type_categories_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_assembly_record_type_categories");
 }
 
 static void migrateV1AssemblyRecordItems(const QMap<int, QString> &assembly_record_item_category_uuids,
@@ -1027,6 +1062,8 @@ static void migrateV1AssemblyRecordItems(const QMap<int, QString> &assembly_reco
 
         journalInsertion(assembly_record_items_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_assembly_record_items");
 }
 
 static QMap<int, QString> migrateV1CircuitUnitTypes(QSqlDatabase &database)
@@ -1062,6 +1099,8 @@ static QMap<int, QString> migrateV1CircuitUnitTypes(QSqlDatabase &database)
 
         journalInsertion(circuit_unit_types_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_circuit_unit_types");
 
     return circuit_unit_type_uuids;
 }
@@ -1101,6 +1140,8 @@ static void migrateV1CircuitUnits(const QMap<int, QString> &circuit_unit_type_uu
 
         journalInsertion(circuit_units_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_circuit_units");
 }
 
 static QMap<int, QString> migrateV1Styles(QSqlDatabase &database)
@@ -1136,6 +1177,8 @@ static QMap<int, QString> migrateV1Styles(QSqlDatabase &database)
 
         journalInsertion(styles_table_id, uuid, database);
     }
+
+    query.exec("DROP TABLE v1_styles");
 
     return style_uuids;
 }
