@@ -507,6 +507,18 @@ QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap
                                            QVariantMap &nominal_ins, const QString &last_entry_uuid,
                                            const QString &last_inspection_uuid)
 {
+    static const QSet<QString> inspection_interval_warnings = QSet<QString>()
+        << Warnings::predefinedUUID(1200)
+        << Warnings::predefinedUUID(1202)
+        << Warnings::predefinedUUID(1204)
+        << Warnings::predefinedUUID(1205)
+        << Warnings::predefinedUUID(1206)
+        << Warnings::predefinedUUID(1207)
+        << Warnings::predefinedUUID(1210)
+        << Warnings::predefinedUUID(1211)
+        << Warnings::predefinedUUID(1212)
+        << Warnings::predefinedUUID(1213);
+
     QStringList warnings_list;
     QVariantMap last_entry = Inspection(last_entry_uuid).list();
     QVariantMap last_inspection;
@@ -521,9 +533,8 @@ QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap
         if (!delay)
             continue;
 
-        int id = warnings.value("id").toInt();
         QVariantMap *entry;
-        if (id >= 1200 && id < 1300) {
+        if (inspection_interval_warnings.contains(warnings.value("uuid").toString())) {
             entry = &last_inspection;
             int interval = circuit_attributes.value("inspection_interval").toInt();
             if (interval)
