@@ -38,7 +38,7 @@ public:
 
 protected:
     HTMLTable *writeInspectionsTable(const QVariantMap &, const QVariantMap &, ListOfVariantMaps &, VariableEvaluation::EvaluationContext &);
-    QStringList listDelayedWarnings(Warnings &, const QVariantMap &, QVariantMap &, const QString &, const QString &, int * = NULL);
+    QStringList listDelayedWarnings(Warnings &, const QVariantMap &, QVariantMap &, const QString &, const QString &);
     void writeTableVarCell(MTTextStream &, const QString &, const QString &, const QString &, const QString &, bool, int, double);
     HTMLTableCell *writeTableVarCell(const QString &, const QString &, const QString &, const QString &, bool, int, double);
     QString tableVarValue(const QString &, const QString &, const QString &, const QString &, bool, double, bool = false);

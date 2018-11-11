@@ -505,7 +505,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, const QV
 
 QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap &circuit_attributes,
                                            QVariantMap &nominal_ins, const QString &last_entry_date,
-                                           const QString &last_inspection_date, int *delay_out)
+                                           const QString &last_inspection_date)
 {
     QString customer_id = circuit_attributes.value("parent").toString();
     QString circuit_id = circuit_attributes.value("id").toString();
@@ -517,30 +517,32 @@ QStringList TableView::listDelayedWarnings(Warnings &warnings, const QVariantMap
     } else {
         last_inspection = Inspection(customer_id, circuit_id, last_inspection_date).list();
     }
-    QVariantMap *entry;
-    bool show_warning;
-    int id, delay, interval;
+
     while (warnings.next()) {
-        show_warning = true;
-        delay = warnings.value("delay").toInt();
-        if (!delay) { continue; }
-        id = warnings.value("id").toInt();
+        int delay = warnings.value("delay").toInt();
+        if (!delay)
+            continue;
+
+        int id = warnings.value("id").toInt();
+        QVariantMap *entry;
         if (id >= 1200 && id < 1300) {
             entry = &last_inspection;
-            interval = circuit_attributes.value("inspection_interval").toInt();
-            if (interval) { delay = interval; }
-            if (delay_out) { *delay_out = delay; }
-        } else { entry = &last_entry; }
+            int interval = circuit_attributes.value("inspection_interval").toInt();
+            if (interval)
+                delay = interval;
+        } else {
+            entry = &last_entry;
+        }
+
         if (QDate::fromString(entry->value("date").toString().split("-").first(), DATE_FORMAT).daysTo(QDate::currentDate()) < delay) {
             continue;
         }
-        if (!nominal_ins.isEmpty()) {
-            show_warning = checkWarningConditions(warnings, circuit_attributes, nominal_ins, *entry);
-        }
-        if (show_warning) {
+
+        if (checkWarningConditions(warnings, circuit_attributes, nominal_ins, *entry)) {
             warnings_list << warnings.value("name").toString();
         }
     }
+
     return warnings_list;
 }
 
