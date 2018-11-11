@@ -311,19 +311,19 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
     }
     HTMLTableRow *_tr = table->addRow(tr_attr);
     *(_tr->addCell()) << toolTipLink("customer/circuit", id, customer_uuid, uuid);
-    *(_tr->addCell()) << escapeString(circuit.value("name").toString());
+    *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("name"));
     if (columns.operation)
-        *(_tr->addCell()) << escapeString(circuit.value("operation").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("operation"));
     if (columns.building)
-        *(_tr->addCell()) << escapeString(circuit.value("building").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("building"));
     if (columns.device)
-        *(_tr->addCell()) << escapeString(circuit.value("device").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("device"));
     if (columns.manufacturer)
-        *(_tr->addCell()) << escapeString(circuit.value("manufacturer").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("manufacturer"));
     if (columns.type)
-        *(_tr->addCell()) << escapeString(circuit.value("type").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("type"));
     if (columns.sn)
-        *(_tr->addCell()) << escapeString(circuit.value("sn").toString());
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("sn"));
     if (columns.year)
         *(_tr->addCell()) << escapeString(circuit.value("year").toString());
     if (columns.commissioning)
@@ -333,7 +333,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
         if (attributeValues().contains("field::" + attr_value)) {
             attr_value = attributeValues().value("field::" + attr_value);
         }
-        *(_tr->addCell()) << escapeString(attr_value);
+        *(_tr->addCell("class=\"wrap\"")) << ellipsis(attr_value);
     }
     HTMLTableCell *_td = _tr->addCell();
     *_td << circuit.value("refrigerant_amount").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg");
