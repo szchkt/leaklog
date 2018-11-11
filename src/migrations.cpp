@@ -54,57 +54,57 @@ static QString insertQuery(const QString &table_name, const QStringList &columns
 
 static inline QString inspectorUUID(int id)
 {
-    return id ? createUUIDv5(migration_namespace, QString("inspector:%1").arg(id)) : QString();
+    return createUUIDv5(migration_namespace, QString("inspector:%1").arg(id));
 }
 
 static inline QString customerUUID(int id)
 {
-    return id ? createUUIDv5(migration_namespace, QString("customer:%1").arg(id)) : QString();
+    return createUUIDv5(migration_namespace, QString("customer:%1").arg(id));
 }
 
 static inline QString personUUID(qlonglong id)
 {
-    return id ? createUUIDv5(migration_namespace, QString("person:%1").arg(id)) : QString();
+    return createUUIDv5(migration_namespace, QString("person:%1").arg(id));
 }
 
 static inline QString circuitUUID(int customer, int circuit)
 {
-    return customer && circuit ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2").arg(customer).arg(circuit)) : QString();
+    return createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2").arg(customer).arg(circuit));
 }
 
 static inline QString compressorUUID(qlonglong id)
 {
-    return id ? createUUIDv5(migration_namespace, QString("compressor:%1").arg(id)) : QString();
+    return createUUIDv5(migration_namespace, QString("compressor:%1").arg(id));
 }
 
 static inline QString inspectionUUID(int customer, int circuit, const QString &date)
 {
-    return customer && circuit && !date.isEmpty() ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3").arg(customer).arg(circuit).arg(date)) : QString();
+    return createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3").arg(customer).arg(circuit).arg(date));
 }
 
 static inline QString inspectionCompressorUUID(int customer, int circuit, const QString &date, qlonglong compressor)
 {
-    return customer && circuit && !date.isEmpty() && compressor ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/compressor:%4").arg(customer).arg(circuit).arg(date).arg(compressor)) : QString();
+    return createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/compressor:%4").arg(customer).arg(circuit).arg(date).arg(compressor));
 }
 
 static inline QString inspectionFileUUID(int customer, int circuit, const QString &date, const QString &file_uuid)
 {
-    return customer && circuit && !date.isEmpty() && !file_uuid.isEmpty() ? createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/file:%4").arg(customer).arg(circuit).arg(date).arg(file_uuid)) : QString();
+    return createUUIDv5(migration_namespace, QString("customer:%1/circuit:%2/inspection:%3/file:%4").arg(customer).arg(circuit).arg(date).arg(file_uuid));
 }
 
 static inline QString repairUUID(const QString &date)
 {
-    return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("repair:%1").arg(date)) : QString();
+    return createUUIDv5(migration_namespace, QString("repair:%1").arg(date));
 }
 
 static inline QString serviceCompanyUUID(int id)
 {
-    return id ? createUUIDv5(migration_namespace, QString("servicecompany:%1").arg(id)) : QString();
+    return createUUIDv5(migration_namespace, QString("servicecompany:%1").arg(id));
 }
 
 static inline QString refrigerantRecordUUID(const QString &date)
 {
-    return !date.isEmpty() ? createUUIDv5(migration_namespace, QString("refrigerantrecord:%1").arg(date)) : QString();
+    return createUUIDv5(migration_namespace, QString("refrigerantrecord:%1").arg(date));
 }
 
 static inline QString tableUUID(int uid)
@@ -404,8 +404,6 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
         int circuit = inspections.intValue("circuit");
         QString date = inspections.stringValue("date");
         QString uuid = inspectionUUID(customer, circuit, date);
-        int inspector = inspections.intValue("inspector");
-        qlonglong operator_id = inspections.longLongValue("operator");
         int ar_type = inspections.intValue("ar_type");
         Inspection::Type inspection_type = (Inspection::Type)(inspections.intValue("inspection_type") * -1);
         QString inspection_type_data = inspections.stringValue("inspection_type_data");
@@ -426,8 +424,8 @@ static void migrateV1Inspections(const QMap<int, QString> &assembly_record_type_
         inspection.bindValue(":uuid", uuid);
         inspection.bindValue(":customer_uuid", customerUUID(customer));
         inspection.bindValue(":circuit_uuid", circuitUUID(customer, circuit));
-        inspection.bindValue(":inspector_uuid", inspectorUUID(inspector));
-        inspection.bindValue(":person_uuid", personUUID(operator_id));
+        inspection.bindValue(":inspector_uuid", inspections.isNull("inspector") ? QString() : inspectorUUID(inspections.intValue("inspector")));
+        inspection.bindValue(":person_uuid", inspections.isNull("operator") ? QString() : personUUID(inspections.longLongValue("operator")));
         inspection.bindValue(":ar_type_uuid", assembly_record_type_uuids.value(ar_type));
         inspection.bindValue(":inspection_type", (int)inspection_type);
         inspection.bindValue(":inspection_type_data", inspectionTypeDataFromV1Data(inspection_type, inspection_type_data));
@@ -603,9 +601,9 @@ static void migrateV1Repairs(QSqlDatabase &database)
             if (column == "uuid") {
                 repair.bindValue(pos, uuid);
             } else if (column == "customer_uuid") {
-                repair.bindValue(pos, customerUUID(repairs.intValue("parent")));
+                repair.bindValue(pos, repairs.isNull("parent") ? QString() : customerUUID(repairs.intValue("parent")));
             } else if (column == "inspector_uuid") {
-                repair.bindValue(pos, inspectorUUID(repairs.intValue("repairman")));
+                repair.bindValue(pos, repairs.isNull("repairman") ? QString() : inspectorUUID(repairs.intValue("repairman")));
             } else {
                 repair.bindValue(pos, repairs.value(column));
             }
