@@ -516,8 +516,20 @@ void SyncEngine::requestFinished(QNetworkReply *reply)
     QJsonParseError error;
     QJsonDocument response = QJsonDocument::fromJson(data, &error);
     if (response.isNull()) {
-        _error = reply->error() != QNetworkReply::NoError ? reply->errorString() : error.errorString();
-        emit syncFinished(false, false);
+        switch (reply->error()) {
+            case QNetworkReply::NoError:
+                _error = error.errorString();
+                emit syncFinished(false, false);
+                break;
+
+            case QNetworkReply::OperationCanceledError:
+                break;
+
+            default:
+                _error = reply->errorString();
+                emit syncFinished(false, false);
+                break;
+        }
         return;
     }
 
