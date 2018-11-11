@@ -540,15 +540,11 @@ static QMap<int, QString> migrateV1Files(QSqlDatabase &database)
 
 static void migrateV1InspectionFiles(const QMap<int, QString> &file_uuids, QSqlDatabase &database)
 {
-    MTSqlQuery query(database);
-    query.exec(renameV1TableQuery("inspection_images"));
-    query.exec(createTableQuery(InspectionFile::tableName(), InspectionFile::columns(), database));
-
     QStringList columns = QStringList() << "uuid" << "inspection_uuid" << "file_uuid" << "description" << "date_updated" << "updated_by";
     QString insert_query = insertQuery(InspectionFile::tableName(), columns);
     int inspections_files_table_id = JournalEntry::tableIDForName(InspectionFile::tableName());
 
-    MTSqlQuery inspection_images("SELECT * FROM v1_inspection_images", database);
+    MTSqlQuery inspection_images("SELECT * FROM inspection_images", database);
     while (inspection_images.next()) {
         int customer = inspection_images.intValue("customer");
         int circuit = inspection_images.intValue("circuit");
