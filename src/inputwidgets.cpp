@@ -338,7 +338,7 @@ nullvalue(QVariant::String)
 
 QVariant MDComboBox::variantValue() const
 {
-    QString value = itemData(currentIndex()).toString();
+    QString value = currentData().toString();
     return value.isEmpty() ? nullvalue : value;
 }
 

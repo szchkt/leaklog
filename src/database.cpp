@@ -1646,7 +1646,7 @@ void MainWindow::moveCircuit()
     QComboBox *cb_customer = new QComboBox(&d);
 
     QString selected_customer_uuid = m_tab->selectedCustomerUUID();
-    ListOfVariantMaps customers = Customer::query().listAll("id, company", "company");
+    ListOfVariantMaps customers = Customer::query().listAll("uuid, company", "company");
     foreach (const QVariantMap &customer, customers) {
         QVariant uuid = customer.value("uuid");
         if (uuid.toString() != selected_customer_uuid)
@@ -1672,6 +1672,7 @@ void MainWindow::moveCircuit()
     QSpinBox *spb_circuit_id = new QSpinBox(&d);
     spb_circuit_id->setObjectName("spb_circuit_id");
     spb_circuit_id->setRange(1, 99999);
+    spb_circuit_id->setValue(circuit.circuitID().toInt());
     gl->addWidget(spb_circuit_id, 3, 1);
 
     QLabel *lbl_id_taken = new QLabel(QApplication::translate("Circuit", "This ID is not available. Please choose a different ID."), &d);
@@ -1714,12 +1715,12 @@ void MainWindow::moveCircuit()
         if (d.exec() != QDialog::Accepted)
             return;
 
-        customer_uuid = cb_customer->currentIndex() < 0 ? QString() : cb_customer->itemData(cb_customer->currentIndex()).toString();
+        customer_uuid = cb_customer->currentData().toString();
         circuit_id = spb_circuit_id->value();
         inspection_date = date->dateTime().toString(DATE_TIME_FORMAT);
-    } while (customer_uuid.isNull() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists());
+    } while (customer_uuid.isEmpty() || Circuit::query({{"customer_uuid", customer_uuid}, {"id", QString::number(circuit_id)}}).exists());
 
-    Customer customer(m_tab->selectedCustomerUUID());
+    Customer customer(selected_customer_uuid);
     QString company_name = customer.companyName();
     Customer new_customer(customer_uuid);
     QString new_company_name = new_customer.companyName();
@@ -1740,7 +1741,7 @@ void MainWindow::moveCircuit()
     inspection.insert("inspection_type", Inspection::CircuitMoved);
     inspection.insert("outside_interval", 1);
     QStringList data;
-    data << m_tab->selectedCustomerUUID();
+    data << selected_customer_uuid;
     data << customer_uuid;
     data << company_name.remove(UNIT_SEPARATOR);
     data << new_company_name.remove(UNIT_SEPARATOR);
@@ -2240,7 +2241,7 @@ void MainWindow::editTable()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
     if (!isOperationPermitted("edit_table")) { return; }
-    Table record(cb_table_edit->itemData(cb_table_edit->currentIndex()).toString());
+    Table record(cb_table_edit->currentData().toString());
     UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -2268,7 +2269,7 @@ void MainWindow::removeTable()
     UndoCommand command(m_undo_stack, tr("Remove table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    QString uuid = cb_table_edit->currentData().toString();
     emit tableRemoved(uuid);
     Table record(uuid);
     record.remove();
@@ -2284,7 +2285,7 @@ void MainWindow::loadTable(const QString &)
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { enableTools(); return; }
     trw_table_variables->clear();
-    Table record(cb_table_edit->itemData(cb_table_edit->currentIndex()).toString());
+    Table record(cb_table_edit->currentData().toString());
     QStringList variables = record.variables();
     QStringList sum = record.summedVariables();
     QStringList avg = record.averagedVariables();
@@ -2310,7 +2311,7 @@ void MainWindow::saveTable()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (cb_table_edit->currentIndex() < 0) { return; }
-    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    QString uuid = cb_table_edit->currentData().toString();
     if (!isOperationPermitted("edit_table")) { loadTable(uuid); return; }
     UndoCommand command(m_undo_stack, tr("Edit table %1").arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
@@ -2380,7 +2381,7 @@ void MainWindow::addTableVariable()
                             .arg(cb_table_edit->currentText()));
         m_undo_stack->savepoint();
 
-        QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+        QString uuid = cb_table_edit->currentData().toString();
         Table table(uuid);
         QStringList variables = table.variables();
         variables << lw->currentItem()->data(Qt::UserRole).toString();
@@ -2412,7 +2413,7 @@ void MainWindow::removeTableVariable()
                         .arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    QString uuid = cb_table_edit->currentData().toString();
     Table table(uuid);
 
     QStringList variables = table.variables();
@@ -2459,7 +2460,7 @@ void MainWindow::moveTableVariable(bool up)
                         .arg(cb_table_edit->currentText()));
     m_undo_stack->savepoint();
 
-    QString uuid = cb_table_edit->itemData(cb_table_edit->currentIndex()).toString();
+    QString uuid = cb_table_edit->currentData().toString();
     Table table(uuid);
     QStringList variables = table.stringValue("variables").split(";", QString::SkipEmptyParts);
     QString variable = variables.takeAt(i);

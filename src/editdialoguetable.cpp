@@ -223,7 +223,7 @@ void EditDialogueAdvancedTable::addHiddenRow(EditDialogueTableRow *row)
 void EditDialogueAdvancedTable::activateRow()
 {
     EditDialogueTableRow *row = NULL;
-    QString item_type_uuid = add_row_cb->itemData(add_row_cb->currentIndex()).toString();
+    QString item_type_uuid = add_row_cb->currentData().toString();
 
     for (int i = 0; i < rows.count(); ++i) {
         if (!rows.at(i)->isInTable() && rows.at(i)->value("ar_item_type_uuid") == item_type_uuid) {

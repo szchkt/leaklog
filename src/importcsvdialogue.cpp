@@ -69,7 +69,7 @@ ImportCsvDialogue::~ImportCsvDialogue()
 
 void ImportCsvDialogue::load()
 {
-    QString encoding = cb_encoding->itemData(cb_encoding->currentIndex(), Qt::UserRole).toString();
+    QString encoding = cb_encoding->currentData().toString();
     QTextCodec *codec = NULL;
     if (encoding != "System") {
         codec = QTextCodec::codecForName(encoding.toUtf8());
@@ -89,7 +89,7 @@ void ImportCsvDialogue::load()
 
     MTCSVParser parser(&in);
     parser.setSkipLines(spb_skip_lines->value());
-    parser.setFieldSeparator(cb_separator->itemData(cb_separator->currentIndex(), Qt::UserRole).toChar());
+    parser.setFieldSeparator(cb_separator->currentData().toChar());
 
     file_content.clear();
     int num_columns = 0, num_rows = 0;

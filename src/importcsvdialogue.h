@@ -39,7 +39,7 @@ public:
     ~ImportCsvDialogue();
 
     inline QList<QStringList> &fileContent() { return file_content; }
-    inline QString table() const { return cb_table->itemData(cb_table->currentIndex(), Qt::UserRole).toString(); }
+    inline QString table() const { return cb_table->currentData().toString(); }
     QMap<QString, int> columnIndexMap();
     int save();
 
