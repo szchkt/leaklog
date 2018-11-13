@@ -39,7 +39,6 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
     MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
-    notes->setRowSpan(0);
     md->addInputWidget(notes);
     (new OperatorInputWidget(values(), md->widget()))->addToEditDialogue(*md);
 }
