@@ -43,7 +43,6 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), attributes.value("mail").toString()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), attributes.value("phone").toString()));
     MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), attributes.value("notes").toString());
-    notes->setRowSpan(0);
     md->addInputWidget(notes);
     (new OperatorInputWidget(attributes, md->widget()))->addToEditDialogue(*md);
     QStringList used_ids; MTSqlQuery query_used_ids;
