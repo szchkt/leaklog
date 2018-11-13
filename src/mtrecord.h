@@ -36,7 +36,6 @@ public:
     MTRecord &operator=(const MTRecord &other);
     inline QString table() const { return r_table; }
     inline QString uuid() const { return r_uuid; }
-    inline QString &uuid() { return r_uuid; }
     bool exists() const;
     MTSqlQuery select(const QString &fields = "*", Qt::SortOrder order = Qt::AscendingOrder) const;
     MTSqlQuery select(const QString &fields, const QString &order_by) const;
@@ -45,6 +44,8 @@ public:
     QVariantMap list(const QString &fields, const QString &order_by) const;
     void refresh(bool reset = true);
     void reset();
+    void resetValue(const QString &field);
+    void duplicate();
     void setValue(const QString &field, const QVariant &value);
     inline QVariantMap values() {
         return savedValues().unite(currentValues());

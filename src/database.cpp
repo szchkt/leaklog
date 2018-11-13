@@ -1287,8 +1287,7 @@ void MainWindow::duplicateCustomer()
     if (!m_tab->isCustomerSelected()) { return; }
     if (!isOperationPermitted("add_customer")) { return; }
     Customer record(m_tab->selectedCustomerUUID());
-    record.refresh();
-    record.uuid().clear();
+    record.duplicate();
     QString company_name = record.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate customer %1%2")
                         .arg(record.companyID())
@@ -1439,8 +1438,7 @@ void MainWindow::duplicateCircuit()
     if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record(m_tab->selectedCircuitUUID());
-    record.refresh();
-    record.uuid().clear();
+    record.duplicate();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate circuit %1 (%2)")
@@ -1860,8 +1858,7 @@ void MainWindow::duplicateInspection()
     if (!m_tab->isInspectionSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
     Inspection record(m_tab->selectedInspectionUUID());
-    record.refresh();
-    record.uuid().clear();
+    record.duplicate();
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Duplicate inspection %1 (%2, circuit %3)")
@@ -2058,8 +2055,7 @@ void MainWindow::duplicateRepair()
     if (!m_tab->isRepairSelected()) { return; }
     if (!isOperationPermitted("add_repair")) { return; }
     Repair record(m_tab->selectedRepairUUID());
-    record.refresh();
-    record.uuid().clear();
+    record.duplicate();
     if (!record.customerUUID().isEmpty()) {
         record.setCustomerUUID(record.customerUUID());
     }

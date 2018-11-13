@@ -195,7 +195,7 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     }
 
     Variables query(QSqlDatabase(), m_scope);
-    query.initEditDialogueWidgets(md, savedValues(), this, date_edit->variantValue().toDateTime(), cb_repair);
+    query.initEditDialogueWidgets(md, values(), this, date_edit->variantValue().toDateTime(), cb_repair);
 }
 
 Customer Inspection::customer()

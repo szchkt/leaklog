@@ -41,7 +41,7 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
     notes->setRowSpan(0);
     md->addInputWidget(notes);
-    (new OperatorInputWidget(savedValues(), md->widget()))->addToEditDialogue(*md);
+    (new OperatorInputWidget(values(), md->widget()))->addToEditDialogue(*md);
 }
 
 void Customer::readOperatorValues()

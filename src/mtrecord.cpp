@@ -115,6 +115,19 @@ void MTRecord::reset()
     r_current_values.clear();
 }
 
+void MTRecord::resetValue(const QString &field)
+{
+    r_current_values.remove(field);
+}
+
+void MTRecord::duplicate()
+{
+    r_saved_values.clear();
+    r_current_values = list();
+    r_current_values.remove("uuid");
+    r_uuid.clear();
+}
+
 void MTRecord::setValue(const QString &field, const QVariant &value)
 {
     if (r_saved_values.isEmpty() && !r_uuid.isEmpty())

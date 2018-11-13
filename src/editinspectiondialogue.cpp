@@ -77,7 +77,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
 
     if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->uuid() : duplicate_from;
-        compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, this);
+        compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, !duplicate_from.isEmpty(), this);
         compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         splitter->addWidget(compressors);
         tabs.append(compressors);

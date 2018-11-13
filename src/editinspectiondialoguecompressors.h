@@ -37,13 +37,13 @@ class EditInspectionDialogueCompressors : public QWidget, public EditDialogueAre
     Q_OBJECT
 
 public:
-    EditInspectionDialogueCompressors(const QString &, const QString &, const QString &, QWidget *);
+    EditInspectionDialogueCompressors(const QString &customer_uuid, const QString &circuit_uuid, const QString &inspection_uuid, bool duplicate, QWidget *parent);
 
     void save(const QString &inspection_uuid);
 
 private:
     InspectionCompressorTab *addTab(const InspectionCompressor &inspection_compressor, const QString &name);
-    void loadTabs(const QString &inspection_uuid);
+    void loadTabs(const QString &inspection_uuid, bool duplicate);
 
     QString customer_uuid;
     QString circuit_uuid;

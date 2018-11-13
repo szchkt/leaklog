@@ -28,7 +28,7 @@
 #include <QTabWidget>
 #include <QVariantMap>
 
-EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_uuid, const QString &circuit_uuid, const QString &inspection_uuid, QWidget *parent)
+EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QString &customer_uuid, const QString &circuit_uuid, const QString &inspection_uuid, bool duplicate, QWidget *parent)
     : QWidget(parent),
       customer_uuid(customer_uuid),
       circuit_uuid(circuit_uuid)
@@ -37,10 +37,10 @@ EditInspectionDialogueCompressors::EditInspectionDialogueCompressors(const QStri
     tab_w = new QTabWidget(this);
     layout->addWidget(tab_w);
 
-    loadTabs(inspection_uuid);
+    loadTabs(inspection_uuid, duplicate);
 }
 
-void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid)
+void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid, bool duplicate)
 {
     ListOfVariantMaps compressors = Circuit(circuit_uuid).compressors().listAll();
 
@@ -57,6 +57,11 @@ void EditInspectionDialogueCompressors::loadTabs(const QString &inspection_uuid)
                 {"inspection_uuid", inspection_uuid},
                 {"compressor_uuid", compressors.at(i).value("uuid").toString()}
             }).first();
+
+            if (duplicate) {
+                inspection_compressor.duplicate();
+                inspection_compressor.resetValue("id");
+            }
 
             addTab(inspection_compressor, compressors.at(i).value("name").toString());
         }
@@ -85,7 +90,7 @@ InspectionCompressorTab::InspectionCompressorTab(const InspectionCompressor &ins
       EditDialogueWidgets(),
       inspection_compressor(inspection_compressor)
 {
-    init(this->inspection_compressor.savedValues());
+    init(this->inspection_compressor.values());
 }
 
 void InspectionCompressorTab::init(const QVariantMap &var_values)
