@@ -460,7 +460,12 @@ void MainWindow::printPreview(QPrinter *printer)
 
 void MainWindow::print()
 {
+#ifdef Q_OS_WIN32
+    // QPrinter::HighResolution crashes on Windows
+    QPrinter *printer = new QPrinter;
+#else
     QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+#endif
     QPrintDialog d(printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
