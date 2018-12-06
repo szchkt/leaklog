@@ -644,7 +644,7 @@ void MainWindow::printLabel(bool detailed)
                                   QDate::fromString(inspection.value("date").toString().split("-").first(), DATE_FORMAT)
                                   .addDays(inspection_interval).toString(DATE_FORMAT));
 
-            selected_inspector_uuid = inspection.value("inspector").toString();
+            selected_inspector_uuid = inspection.value("inspector_uuid").toString();
 
             Variable refr_add_per("refr_add_per");
             refr_add_per.next();
