@@ -137,7 +137,6 @@ void ReportDataController::reportData(int year)
     ReportData data(year, QString(), true, refrigerants_by_field);
     QMap<QString, QVector<double> *>::const_iterator sums_iterator = data.sums_map.constFind(QString::number(year));
     QVector<double> *sum_list = NULL;
-    QString refrigerant;
 
     MTDictionary refr_man_fieldnames;
     refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED), "purchased");
@@ -154,9 +153,10 @@ void ReportDataController::reportData(int year)
     refr_use_fieldnames.insert(QString::number(SUMS::REFR_ADD_AM), "refr_add_am");
     refr_use_fieldnames.insert(QString::number(SUMS::REFR_RECO), "refr_reco");
 
-    if (++sums_iterator != data.sums_map.constEnd()) {
+    if (sums_iterator != data.sums_map.constEnd()) {
+        sums_iterator++;
         while (sums_iterator != data.sums_map.constEnd() && (sum_list = sums_iterator.value())) {
-            refrigerant = sums_iterator.key().split("::").last();
+            QString refrigerant = sums_iterator.key().split("::").last();
             if (!refrigerant.isEmpty()) {
                 bool add = false;
                 for (int j = 0; j < refr_man_fieldnames.count(); ++j) {
