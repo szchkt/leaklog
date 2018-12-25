@@ -126,9 +126,9 @@ void ReportDataController::reportData(int year)
     QString js; QTextStream out(&js);
     out << "clearAll();" << endl;
 
-    ListOfVariantMaps inspectors(Inspector::query().listAll("id"));
+    ListOfVariantMaps inspectors(Inspector::query().listAll("certificate_number"));
     for (ListOfVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
-        out << "addEmployee({ \"certification_num\": \"" << i->value("id").toString().rightJustified(4, '0') << "\" });" << endl;
+        out << "addEmployee({ \"certification_num\": \"" << i->value("certificate_number").toString().rightJustified(4, '0') << "\" });" << endl;
     }
 
     QSet<QString> refrigerants_by_field;
