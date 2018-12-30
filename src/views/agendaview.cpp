@@ -53,12 +53,15 @@ QString AgendaView::renderHTML(bool)
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
-    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, MAX(date) AS date FROM inspections"
-                           " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
+    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
+                           " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
+                           " WHERE circuit_uuid = i.circuit_uuid AND outside_interval = 0 ORDER BY date DESC LIMIT 1)"
+                           " FROM inspections AS i WHERE outside_interval = 0 GROUP BY circuit_uuid)) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
-    circuits_query.addJoin("LEFT JOIN (SELECT i.circuit_uuid, i.uuid, i.date, i.inspection_type, i.refr_add_am FROM inspections AS i"
-                           " LEFT JOIN inspections AS j ON i.circuit_uuid = j.circuit_uuid"
-                           " AND i.date < j.date WHERE j.date IS NULL) AS all_ins"
+    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date, inspection_type, refr_add_am FROM inspections"
+                           " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
+                           " WHERE circuit_uuid = i.circuit_uuid ORDER BY date DESC LIMIT 1)"
+                           " FROM inspections AS i GROUP BY circuit_uuid)) AS all_ins"
                            " ON all_ins.circuit_uuid = circuits.uuid");
     MTSqlQuery circuits = circuits_query.select("circuits.customer_uuid, circuits.uuid, circuits.id, circuits.name, circuits.operation, circuits.refrigerant, "
                                                 + circuitRefrigerantAmountQuery()
