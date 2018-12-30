@@ -393,7 +393,12 @@ bool Global::superuserModeEnabled()
 
 QString Global::currentUser(const QSqlDatabase &database)
 {
-    return database.userName();
+    QString username = database.userName();
+    if (username.isEmpty()) {
+        QSettings settings("SZCHKT", "Leaklog");
+        username = settings.value("username").toString();
+    }
+    return username;
 }
 
 bool Global::isDatabaseRemote(const QSqlDatabase &database)
