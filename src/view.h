@@ -70,9 +70,9 @@ public:
 protected:
     static QString viewTemplate(const QString &view_template);
 
-    static QString ellipsis(const QString &text);
-    static QString ellipsis(const QVariant &text);
-    static QString ellipsis(const MTVariant &text);
+    static QString ellipsis(const QString &text, bool force = false);
+    static QString ellipsis(const QVariant &text, bool force = false);
+    static QString ellipsis(const MTVariant &text, bool force = false);
 
     HTMLTable *writeServiceCompany(HTMLTable *table = NULL);
     void writeServiceCompany(MTTextStream &out);

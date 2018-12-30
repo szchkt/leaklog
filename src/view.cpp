@@ -29,6 +29,8 @@
 
 #include <QFile>
 
+#define ELLIPSIS_ENABLED 0
+
 using namespace Global;
 
 QMap<QString, QString> View::view_templates;
@@ -64,19 +66,23 @@ QString View::viewTemplate(const QString &view_template)
     return view_templates.value(view_template);
 }
 
-QString View::ellipsis(const QString &text)
+QString View::ellipsis(const QString &text, bool force)
 {
-    return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(escapeString(text));
+    if (ELLIPSIS_ENABLED || force)
+        return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(escapeString(text));
+    return escapeString(text);
 }
 
-QString View::ellipsis(const QVariant &text)
+QString View::ellipsis(const QVariant &text, bool force)
 {
-    return ellipsis(text.toString());
+    return ellipsis(text.toString(), force);
 }
 
-QString View::ellipsis(const MTVariant &text)
+QString View::ellipsis(const MTVariant &text, bool force)
 {
-    return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(text.toHtml());
+    if (ELLIPSIS_ENABLED || force)
+        return QString("<div class=\"container\"><div class=\"content\">%1</div><div class=\"spacer\">%1</div><span>&nbsp;</span></div>").arg(text.toHtml());
+    return text.toHtml();
 }
 
 HTMLTable *View::writeServiceCompany(HTMLTable *table)

@@ -163,14 +163,14 @@ QString InspectionsView::renderHTML(bool)
         QString risks = inspections.at(i).value("risks").toString();
         if (!risks.isEmpty()) {
             out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(risks), true, true);
-            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(risks) << "</td>";
+            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(risks, true) << "</td>";
         } else {
             out << "<td></td>";
         }
         QString rmds = inspections.at(i).value("rmds").toString();
         if (!rmds.isEmpty()) {
             out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(rmds), true, true);
-            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(rmds) << "</td>";
+            out << "')\" onmouseout=\"UnTip()\">" << ellipsis(rmds, true) << "</td>";
         } else {
             out << "<td></td>";
         }
