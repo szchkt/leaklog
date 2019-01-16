@@ -2771,6 +2771,7 @@ void MainWindow::importData()
             }
 
             last_item->setData(0, Qt::UserRole, circuit_uuid);
+            last_item->setData(1, Qt::UserRole, query.value("customer_uuid"));
         }
 
         QString compressor_uuid = query.stringValue("compressor_uuid");
@@ -3037,6 +3038,8 @@ void MainWindow::importData()
                 last_item->setIcon(2, QIcon(":/images/images/locked16.png"));
             } else {
                 last_item->setData(0, Qt::UserRole, inspection_uuid);
+                last_item->setData(1, Qt::UserRole, query.value("customer_uuid"));
+                last_item->setData(2, Qt::UserRole, query.value("circuit_uuid"));
             }
         }
 

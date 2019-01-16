@@ -126,7 +126,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem *item, int column)
 {
     if (column) return;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    int id = item->data(0, Qt::UserRole).toInt();
+    QString uuid = item->data(0, Qt::UserRole).toString();
     Qt::CheckState checked = item->checkState(0);
     bool modified = item->treeWidget() == trw_customers_modified;
     QList<QTreeWidget *> trws;
@@ -136,7 +136,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem *item, int column)
     foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
-            if (item->data(0, Qt::UserRole).toInt() == id) {
+            if (item->data(1, Qt::UserRole).toString() == uuid) {
                 item->setCheckState(0, checked);
                 item->setDisabled(!modified && checked == Qt::Unchecked);
             }
@@ -149,7 +149,7 @@ void ImportDialogue::customerChanged(QTreeWidgetItem *item, int column)
     foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
-            if (item->data(0, Qt::UserRole).toInt() == id) {
+            if (item->data(1, Qt::UserRole).toString() == uuid) {
                 item->setCheckState(0, checked);
                 item->setDisabled(!modified && checked == Qt::Unchecked);
             }
@@ -162,8 +162,7 @@ void ImportDialogue::circuitChanged(QTreeWidgetItem *item, int column)
 {
     if (column) return;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    int customer_id = item->data(0, Qt::UserRole).toInt();
-    int id = item->data(1, Qt::UserRole).toInt();
+    QString uuid = item->data(0, Qt::UserRole).toString();
     Qt::CheckState checked = item->checkState(0);
     bool modified = item->treeWidget() == trw_circuits_modified;
     QList<QTreeWidget *> trws;
@@ -173,8 +172,7 @@ void ImportDialogue::circuitChanged(QTreeWidgetItem *item, int column)
     foreach (QTreeWidget *trw, trws) {
         for (int i = 0; i < trw->topLevelItemCount(); ++i) {
             item = trw->topLevelItem(i);
-            if (item->data(0, Qt::UserRole).toInt() == customer_id &&
-                item->data(1, Qt::UserRole).toInt() == id) {
+            if (item->data(2, Qt::UserRole).toString() == uuid) {
                 item->setCheckState(0, checked);
                 item->setDisabled(!modified && checked == Qt::Unchecked);
             }
