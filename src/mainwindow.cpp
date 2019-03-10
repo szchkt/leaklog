@@ -505,10 +505,15 @@ void MainWindow::exportPDFLandscape()
 
 void MainWindow::exportPDF(int orientation)
 {
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
     QString path = QFileDialog::getSaveFileName(this, tr("Export PDF - Leaklog"),
-                                                QDir::home().absoluteFilePath(QString("%1.pdf").arg(fileNameForCurrentView())),
+                                                dir.absoluteFilePath(QString("%1.pdf").arg(fileNameForCurrentView())),
                                                 tr("Adobe PDF (*.pdf)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
     if (!path.endsWith(".pdf", Qt::CaseInsensitive)) { path.append(".pdf"); }
     m_tab->webView()->page()->printToPdf(path, QPageLayout(QPageSize(QPageSize::A4),
                                                            (QPageLayout::Orientation)orientation,
@@ -518,10 +523,15 @@ void MainWindow::exportPDF(int orientation)
 
 void MainWindow::exportHTML()
 {
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
     QString path = QFileDialog::getSaveFileName(this, tr("Export HTML - Leaklog"),
-                                                QDir::home().absoluteFilePath(QString("%1.html").arg(fileNameForCurrentView())),
+                                                dir.absoluteFilePath(QString("%1.html").arg(fileNameForCurrentView())),
                                                 tr("Webpage (*.html)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
     if (!path.endsWith(".html", Qt::CaseInsensitive)) { path.append(".html"); }
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {

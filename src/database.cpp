@@ -348,10 +348,16 @@ void MainWindow::initTables(bool transaction)
 void MainWindow::newDatabase(const QString &uuid, const QString &name)
 {
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
     QString path = QFileDialog::getSaveFileName(this, tr("New database - Leaklog"),
-                                                QDir::home().absoluteFilePath(name.isEmpty() ? tr("untitled.lklg") : QString("%1.lklg").arg(name)),
+                                                dir.absoluteFilePath(name.isEmpty() ? tr("untitled.lklg") : QString("%1.lklg").arg(name)),
                                                 tr("Leaklog Database (*.lklg)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
+
     if (!path.endsWith(".lklg", Qt::CaseInsensitive)) { path.append(".lklg"); }
     QFile file(path); if (file.exists()) { file.remove(); }
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -471,9 +477,14 @@ void MainWindow::openRecent(QListWidgetItem *item)
 void MainWindow::open()
 {
     if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), QDir::homePath(),
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
+    QString path = QFileDialog::getOpenFileName(this, tr("Open database - Leaklog"), dir.absolutePath(),
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
     addRecent(path);
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path);
@@ -2593,9 +2604,14 @@ void MainWindow::importData()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), QDir::homePath(),
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
+    QString path = QFileDialog::getOpenFileName(this, tr("Import data - Leaklog"), dir.absolutePath(),
                                                 tr("Leaklog Databases (*.lklg);;All files (*.*)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
 
 { // BEGIN IMPORT (SCOPE)
     QSqlDatabase data = QSqlDatabase::addDatabase("QSQLITE", "importData");
@@ -3528,9 +3544,14 @@ void MainWindow::importCSV()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("import_data")) { return; }
-    QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), QDir::homePath(),
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
+    QString path = QFileDialog::getOpenFileName(this, tr("Import CSV - Leaklog"), dir.absolutePath(),
                                                 tr("CSV files (*.csv);;All files (*.*)"));
     if (path.isEmpty()) { return; }
+    dir.setPath(path);
+    dir.cdUp();
+    settings.setValue("file_dialog_dir", dir.absolutePath());
 
     QString string_value;
     QStringList refrigerants(listRefrigerants());

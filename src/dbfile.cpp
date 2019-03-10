@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QLabel>
+#include <QSettings>
 #include <QWebEngineUrlRequestJob>
 
 #define IMAGE_MAX_SIZE 1600
@@ -167,10 +168,15 @@ DBFileChooser::~DBFileChooser()
 
 void DBFileChooser::browse()
 {
+    QSettings settings("SZCHKT", "Leaklog");
+    QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
     QString file_name = QFileDialog::getOpenFileName(parentWidget(), tr("Open File"),
-                                                     QDir::homePath(),
+                                                     dir.absolutePath(),
                                                      "Images (*.png *.jpg)");
     if (!file_name.isNull()) {
+        dir.setPath(file_name);
+        dir.cdUp();
+        settings.setValue("file_dialog_dir", dir.absolutePath());
         name_lbl->setPixmap(QPixmap(file_name).scaled(215, 160, Qt::KeepAspectRatio));
         db_file->setImage(file_name);
         changed = true;
