@@ -49,14 +49,14 @@ QString CircuitsView::renderHTML(bool)
     return viewTemplate("customer").arg(main.html());
 }
 
-void CircuitsView::writeCircuitsTable(MTTextStream &out, const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row)
+void CircuitsView::writeCircuitsTable(MTTextStream &out, const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, bool title)
 {
-    HTMLDiv *div = writeCircuitsTable(customer_uuid, circuit_uuid, cols_in_row);
+    HTMLDiv *div = writeCircuitsTable(customer_uuid, circuit_uuid, cols_in_row, title);
     out << div->html();
     delete div;
 }
 
-HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, HTMLTable *table)
+HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, bool title, HTMLTable *table)
 {
     bool disable_hiding_details = settings->currentView() == View::AssemblyRecordDetails;
     bool circuits_details_visible = settings->mainWindowSettings().circuitDetailsVisible() || disable_hiding_details;
@@ -64,10 +64,10 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     bool excluded_circuits_visible = settings->mainWindowSettings().excludedCircuitsVisible();
     bool decommissioned_circuits_visible = settings->mainWindowSettings().decommissionedCircuitsVisible();
     CircuitsColumns columns;
-    columns.date_updated = settings->isShowDateUpdatedChecked() && !disable_hiding_details;
-    columns.owner = settings->isShowOwnerChecked() && !disable_hiding_details;
+    columns.date_updated = title && settings->isShowDateUpdatedChecked() && !disable_hiding_details;
+    columns.owner = title && settings->isShowOwnerChecked() && !disable_hiding_details;
     bool all_circuits = circuit_uuid.isEmpty();
-    columns.notes = settings->isShowNotesChecked() && !all_circuits && cols_in_row > 0;
+    columns.notes = title && settings->isShowNotesChecked() && !all_circuits && cols_in_row > 0;
     columns.operation = cols_in_row > 0 || settings->isShowPlaceOfOperationChecked();
     columns.building = cols_in_row > 0 || settings->isShowBuildingChecked();
     columns.device = cols_in_row > 0 || settings->isShowDeviceChecked();
@@ -113,7 +113,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
 
     HTMLDiv *div = new HTMLDiv();
-    if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
+    if (!table) table = new HTMLTable(title ? "cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"" : QString());
     table->addClass("circuits");
     if (all_circuits)
         table->addClass("highlight");
@@ -126,34 +126,36 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
 
     HTMLTableRow *_tr = table->addRow();
-    HTMLTableCell *_td = _tr->addHeaderCell("colspan=\"" + QString::number(thead ? thead->childCount() : 1) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
+    if (title) {
+        HTMLTableCell *_td = _tr->addHeaderCell("colspan=\"" + QString::number(thead ? thead->childCount() : 1) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
 
-    if (all_circuits) {
-        *_td << "<a href=\"toggledetailsvisible:circuits\">";
-        if (circuits_visible) {
-            *_td << tr("Circuits");
-        } else {
-            *_td << tr("Circuits (%1)").arg(commissioned_count);
-        }
-        *_td << "</a>";
-    } else {
-        if (!disable_hiding_details)
-            *_td << "<a href=\"toggledetailsvisible:circuit\">";
-        if (circuits_details_visible || !circuits.count()) {
-            *_td << tr("Circuit");
-        } else {
-            QVariantMap circuit = circuits.first();
-            QString name = circuit.value("name").toString().trimmed();
-            if (name.isEmpty())
-                name = circuit.value("device").toString().trimmed();
-            if (name.isEmpty())
-                name = QString("%1 %2").arg(circuit.value("manufacturer").toString()).arg(circuit.value("type").toString()).trimmed();
-            if (!name.isEmpty())
-                name = QString("(%1)").arg(name);
-            *_td << escapeString(tr("Circuit: %1 %2").arg(circuit.value("id").toString().rightJustified(5, '0')).arg(name));
-        }
-        if (!disable_hiding_details)
+        if (all_circuits) {
+            *_td << "<a href=\"toggledetailsvisible:circuits\">";
+            if (circuits_visible) {
+                *_td << tr("Circuits");
+            } else {
+                *_td << tr("Circuits (%1)").arg(commissioned_count);
+            }
             *_td << "</a>";
+        } else {
+            if (!disable_hiding_details)
+                *_td << "<a href=\"toggledetailsvisible:circuit\">";
+            if (circuits_details_visible || !circuits.count()) {
+                *_td << tr("Circuit");
+            } else {
+                QVariantMap circuit = circuits.first();
+                QString name = circuit.value("name").toString().trimmed();
+                if (name.isEmpty())
+                    name = circuit.value("device").toString().trimmed();
+                if (name.isEmpty())
+                    name = QString("%1 %2").arg(circuit.value("manufacturer").toString()).arg(circuit.value("type").toString()).trimmed();
+                if (!name.isEmpty())
+                    name = QString("(%1)").arg(name);
+                *_td << escapeString(tr("Circuit: %1 %2").arg(circuit.value("id").toString().rightJustified(5, '0')).arg(name));
+            }
+            if (!disable_hiding_details)
+                *_td << "</a>";
+        }
     }
 
     if (all_circuits ? circuits_visible : circuits_details_visible) {
@@ -182,7 +184,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
             thead = NULL;
         }
 
-        _td = _tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead ? thead->childCount() : 1));
+        HTMLTableCell *_td = _tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead ? thead->childCount() : 1));
         *_td << "<a href=\"toggledetailsvisible:excludedcircuits\">";
         if (excluded_circuits_visible) {
             *_td << tr("Circuits Excluded from Agenda");
@@ -212,7 +214,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
             thead = NULL;
         }
 
-        _td = _tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead ? thead->childCount() : 1));
+        HTMLTableCell *_td = _tr->addHeaderCell(QString("colspan=\"%1\" style=\"font-size: medium;\"").arg(thead ? thead->childCount() : 1));
         *_td << "<a href=\"toggledetailsvisible:decommissionedcircuits\">";
         if (decommissioned_circuits_visible) {
             *_td << tr("Decommissioned Circuits");
