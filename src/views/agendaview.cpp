@@ -171,10 +171,12 @@ QString AgendaView::renderHTML(bool)
             out << "*</i>";
         out << "</td><td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "\">";
         out << escapeString(customers.value(customer_uuid).value("id").toString()) << "</a></td>";
-        out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(customers.value(customer_uuid).value("company").toString()) << "</td>";
+        out << "<td class=\"wrap\" style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "\">";
+        out << escapeString(customers.value(customer_uuid).value("company").toString()) << "</a></td>";
         out << "<td style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
         out << circuit_id.rightJustified(5, '0') << "</a></td>";
-        out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(circuit_name) << "</td>";
+        out << "<td class=\"wrap\" style=\"" << style << "\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "\">";
+        out << escapeString(circuit_name) << "</a></td>";
         out << "<td class=\"wrap\" style=\"" << style << "\">" << ellipsis(operation) << "</td>";
         out << "<td style=\"" << style << "\">" << refrigerant_amount << "&nbsp;" << QApplication::translate("Units", "kg")
             << " " << escapeString(refrigerant) << "</td>";
