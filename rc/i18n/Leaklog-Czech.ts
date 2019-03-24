@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.0" language="cs_CZ" sourcelanguage="en_GB">
-<defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -667,10 +666,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Commissioned on</source>
-        <translation>Uvedení do provozu</translation>
-    </message>
-    <message>
         <source>Circuit ID</source>
         <translation>IČ okruhu</translation>
     </message>
@@ -733,6 +728,18 @@
     <message>
         <source>This ID is not available. Please choose a different ID.</source>
         <translation>Toto IČ není volné. Prosím zvolte jiné IČ.</translation>
+    </message>
+    <message>
+        <source>Add circuit - Leaklog</source>
+        <translation>Přidat okruh - Leaklog</translation>
+    </message>
+    <message>
+        <source>Select a refrigerant.</source>
+        <translation>Vyberte chladivo.</translation>
+    </message>
+    <message>
+        <source>Select a field of application.</source>
+        <translation>Vyberte typ použití.</translation>
     </message>
 </context>
 <context>
@@ -874,6 +881,10 @@
     <message>
         <source>Output:</source>
         <translation>Výkon:</translation>
+    </message>
+    <message>
+        <source>Add circuit unit type - Leaklog</source>
+        <translation>Přidat typ jednotky okruhu - Leaklog</translation>
     </message>
 </context>
 <context>
@@ -2321,7 +2332,7 @@
     </message>
     <message>
         <source>You should add a record of purchase for every kind of refrigerant you have in store. You can do so by clicking the &quot;Add record of refrigerant management&quot; button.</source>
-        <translation>Měli byste přidat záznam o každém nákupu chladiva do skladu. Můžete to provést kliknutím na „Přídat záznam o nakládaní s chladivem“.</translation>
+        <translation>Měli byste přidat záznam o každém nákupu chladiva do skladu. Můžete to provést kliknutím na „Přídat záznam o nakládání s chladivem“.</translation>
     </message>
     <message>
         <source>Permission denied - Leaklog</source>
@@ -3501,7 +3512,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Add record of refrigerant management</source>
-        <translation>Přidat záznam o nakládaní s chladivem</translation>
+        <translation>Přidat záznam o nakládání s chladivem</translation>
     </message>
     <message>
         <source>Average</source>
@@ -5081,6 +5092,10 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Add record of refrigerant management - Leaklog</source>
+        <translation>Přidat záznam o nakládání s chladivem - Leaklog</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5174,6 +5189,10 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>Inspector</source>
         <translation>Certifikovaná osoba</translation>
+    </message>
+    <message>
+        <source>Add repair - Leaklog</source>
+        <translation>Přidat opravu - Leaklog</translation>
     </message>
 </context>
 <context>
@@ -5419,7 +5438,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <name>ToolBarStack</name>
     <message>
         <source>Add record of refrigerant management</source>
-        <translation>Přidat záznam o nakládaní s chladivem</translation>
+        <translation>Přidat záznam o nakládání s chladivem</translation>
     </message>
     <message>
         <source>Add a new inspector</source>

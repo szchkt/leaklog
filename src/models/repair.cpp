@@ -56,6 +56,17 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
 }
 
+bool Repair::checkValues(QWidget *parent)
+{
+    if (refrigerant().isEmpty())
+        return showErrorMessage(parent, tr("Add repair - Leaklog"), QApplication::translate("Circuit", "Select a refrigerant."));
+
+    if (field().isEmpty())
+        return showErrorMessage(parent, tr("Add repair - Leaklog"), QApplication::translate("Circuit", "Select a field of application."));
+
+    return true;
+}
+
 QString Repair::tableName()
 {
     return "repairs";

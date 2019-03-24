@@ -62,6 +62,14 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
 }
 
+bool RefrigerantRecord::checkValues(QWidget *parent)
+{
+    if (refrigerant().isEmpty())
+        return showErrorMessage(parent, tr("Add record of refrigerant management - Leaklog"), QApplication::translate("Circuit", "Select a refrigerant."));
+
+    return true;
+}
+
 QString RefrigerantRecord::tableName()
 {
     return "refrigerant_management";

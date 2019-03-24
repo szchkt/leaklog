@@ -38,7 +38,7 @@ void Table::initEditDialogue(EditDialogueWidgets *md)
 
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), name()));
     md->addInputWidget(new MDCheckBox("highlight_nominal", tr("Highlight nominal inspections"), md->widget(), highlightNominal()));
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), stringValue("scope"), {
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), stringValue("scope", QString::number(Variable::Inspection)), {
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
     }));

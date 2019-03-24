@@ -19,6 +19,9 @@
 
 #include "dbrecord.h"
 
+#include <QApplication>
+#include <QMessageBox>
+
 Column::Column(const QString &name, const QString &type):
     _name(name),
     _type(type)
@@ -100,4 +103,19 @@ QString DBRecord::dateUpdated()
 QString DBRecord::updatedBy()
 {
     return stringValue("updated_by");
+}
+
+bool DBRecord::showErrorMessage(QWidget *parent, const QString &title, const QString &text, const QString &informativeText) const
+{
+    QMessageBox message(parent);
+    message.setWindowTitle(title);
+    message.setWindowModality(Qt::WindowModal);
+    message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+    message.setIcon(QMessageBox::Warning);
+    message.setText(text);
+    if (!informativeText.isEmpty())
+        message.setInformativeText(informativeText);
+    message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
+    message.exec();
+    return false;
 }

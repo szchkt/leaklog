@@ -51,7 +51,7 @@ void WarningRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("description", tr("Description:"), md->widget(), attributes.value("description").toString(), 0, "", enable_all));
     md->addInputWidget(new MDSpinBox("delay", tr("Delay:"), md->widget(), 0, 999999, attributes.value("delay").toInt(), tr("days"), "", enable_all));
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(), {
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope", QString::number(Variable::Inspection)).toString(), {
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
     }, QString(), enable_all));

@@ -30,6 +30,7 @@ public:
     Repair(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QWidget * = 0);
 
     inline QString customerUUID() { return stringValue("customer_uuid"); }
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }

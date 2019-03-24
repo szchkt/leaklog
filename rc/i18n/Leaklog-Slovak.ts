@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk_SK" sourcelanguage="en_GB">
-<defaultcodec>UTF-8</defaultcodec>
+<TS version="2.1" language="sk_SK" sourcelanguage="en_GB">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -665,10 +664,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Commissioned on</source>
-        <translation>Uvedenie do prevádzky</translation>
-    </message>
-    <message>
         <source>Circuit ID</source>
         <translation>IČ okruhu</translation>
     </message>
@@ -731,6 +726,18 @@
     <message>
         <source>This ID is not available. Please choose a different ID.</source>
         <translation>Toto IČ nie je voľné. Prosím zvoľte iné IČ.</translation>
+    </message>
+    <message>
+        <source>Add circuit - Leaklog</source>
+        <translation>Pridať okruh - Leaklog</translation>
+    </message>
+    <message>
+        <source>Select a refrigerant.</source>
+        <translation>Vyberte chladivo.</translation>
+    </message>
+    <message>
+        <source>Select a field of application.</source>
+        <translation>Vyberte druh nasadenia.</translation>
     </message>
 </context>
 <context>
@@ -870,6 +877,10 @@
     <message>
         <source>Output:</source>
         <translation>Výkon:</translation>
+    </message>
+    <message>
+        <source>Add circuit unit type - Leaklog</source>
+        <translation>Pridať typ jednotky okruhu - Leaklog</translation>
     </message>
 </context>
 <context>
@@ -5074,6 +5085,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Add record of refrigerant management - Leaklog</source>
+        <translation>Pridať záznam o nakladaní s chladivom - Leaklog</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5167,6 +5182,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Inspector</source>
         <translation>Kontrolór</translation>
+    </message>
+    <message>
+        <source>Add repair - Leaklog</source>
+        <translation>Pridať opravu - Leaklog</translation>
     </message>
 </context>
 <context>

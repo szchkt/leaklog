@@ -73,11 +73,11 @@ void VariableRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("id", tr("ID:"), md->widget(), attributes.value("id").toString(), 0, "", enable_id));
     md->addInputWidget(new MDLineEdit("name", tr("Name:"), md->widget(), attributes.value("name").toString(), 0, "", enable_all));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit:"), md->widget(), attributes.value("unit").toString(), 0, "", enable_all));
-    MDComboBox *cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type").toString(), variableTypes(), "", enable_all);
+    MDComboBox *cb_type = new MDComboBox("type", tr("Type:"), md->widget(), attributes.value("type", "float").toString(), variableTypes(), "", enable_all);
     if (attributes.value("type").toString() == "group")
         cb_type->setEnabled(false);
     md->addInputWidget(cb_type);
-    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope").toString(), {
+    md->addInputWidget(new MDComboBox("scope", tr("Scope:"), md->widget(), attributes.value("scope", QString::number(Variable::Inspection)).toString(), {
         {QString::number(Variable::Inspection), tr("Inspection")},
         {QString::number(Variable::Compressor), tr("Compressor")}
     }, "", uuid().isEmpty()));

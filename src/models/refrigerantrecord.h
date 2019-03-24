@@ -30,6 +30,7 @@ public:
     RefrigerantRecord(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QWidget * = 0);
 
     inline QString date() { return stringValue("date"); }
     inline QString partner() { return stringValue("partner"); }

@@ -74,6 +74,9 @@ public:
 
     QString dateUpdated();
     QString updatedBy();
+
+protected:
+    bool showErrorMessage(QWidget *parent, const QString &title, const QString &text, const QString &informativeText = QString()) const;
 };
 
 #endif // DBRECORD_H

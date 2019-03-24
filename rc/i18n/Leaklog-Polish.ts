@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.0" language="pl_PL" sourcelanguage="en_GB">
-<defaultcodec>UTF-8</defaultcodec>
 <context>
     <name>AboutWidget</name>
     <message>
@@ -669,10 +668,6 @@
         <translation>Nazwa</translation>
     </message>
     <message>
-        <source>Commissioned on</source>
-        <translation>Uruchomiony dnia</translation>
-    </message>
-    <message>
         <source>Commissioned</source>
         <translation>Uruchomiony</translation>
     </message>
@@ -731,6 +726,18 @@
     <message>
         <source>This ID is not available. Please choose a different ID.</source>
         <translation>To ID jest niedostępne. Proszę wybrać inny.</translation>
+    </message>
+    <message>
+        <source>Add circuit - Leaklog</source>
+        <translation>Dodaj obieg - Leaklog</translation>
+    </message>
+    <message>
+        <source>Select a refrigerant.</source>
+        <translation>Wybierz czynnik.</translation>
+    </message>
+    <message>
+        <source>Select a field of application.</source>
+        <translation>Wybierz zakres stosowania.</translation>
     </message>
 </context>
 <context>
@@ -870,6 +877,10 @@
     <message>
         <source>Notes</source>
         <translation>Notatki</translation>
+    </message>
+    <message>
+        <source>Add circuit unit type - Leaklog</source>
+        <translation>Dodaj typ jednostki obiegu - Leaklog</translation>
     </message>
 </context>
 <context>
@@ -1428,7 +1439,7 @@
     </message>
     <message>
         <source>Select a customer first.</source>
-        <translation>Najpierw wybież klienta.</translation>
+        <translation>Najpierw wybierz klienta.</translation>
     </message>
 </context>
 <context>
@@ -5069,6 +5080,10 @@ dla ID osoby i firmy</translation>
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
+    <message>
+        <source>Add record of refrigerant management - Leaklog</source>
+        <translation>Dodaj pozycję w zarządzaniu czynnikiem - Leaklog</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5162,6 +5177,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Inspector</source>
         <translation>Kontroler</translation>
+    </message>
+    <message>
+        <source>Add repair - Leaklog</source>
+        <translation>Dodaj naprawę - Leaklog</translation>
     </message>
 </context>
 <context>

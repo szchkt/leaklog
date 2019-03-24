@@ -35,6 +35,7 @@ public:
     CircuitUnitType(const QString &uuid = QString());
 
     void initEditDialogue(EditDialogueWidgets *);
+    bool checkValues(QWidget * = 0);
     static const QString locationToString(int);
 
     inline QString manufacturer() { return stringValue("manufacturer"); }

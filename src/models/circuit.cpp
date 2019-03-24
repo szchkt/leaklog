@@ -25,7 +25,6 @@
 #include "customer.h"
 
 #include <QApplication>
-#include <QMessageBox>
 
 using namespace Global;
 
@@ -71,7 +70,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
-    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), stringValue("disused"), {
+    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), stringValue("disused", QString::number(Circuit::Commissioned)), {
         {QString::number(Circuit::Commissioned), tr("Commissioned")},
         {QString::number(Circuit::ExcludedFromAgenda), tr("Excluded from Agenda")},
         {QString::number(Circuit::Decommissioned), tr("Decommissioned")}
@@ -110,6 +109,12 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 
 bool Circuit::checkValues(QWidget *parent)
 {
+    if (refrigerant().isEmpty())
+        return showErrorMessage(parent, tr("Add circuit - Leaklog"), tr("Select a refrigerant."));
+
+    if (field().isEmpty())
+        return showErrorMessage(parent, tr("Add circuit - Leaklog"), tr("Select a field of application."));
+
     MTSqlQuery query_used_ids;
     query_used_ids.prepare(QString("SELECT id FROM circuits WHERE customer_uuid = :customer_uuid%1 AND id = :id").arg(QString(uuid().isEmpty() ? "" : " AND uuid <> :uuid")));
     query_used_ids.bindValue(":customer_uuid", customerUUID());
@@ -117,15 +122,7 @@ bool Circuit::checkValues(QWidget *parent)
         query_used_ids.bindValue(":uuid", uuid());
     query_used_ids.bindValue(":id", value("id").toInt());
     if (query_used_ids.exec() && query_used_ids.next()) {
-        QMessageBox message(parent);
-        message.setWindowTitle(tr("Edit circuit - Leaklog"));
-        message.setWindowModality(Qt::WindowModal);
-        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
-        message.setIcon(QMessageBox::Warning);
-        message.setText(tr("This ID is not available. Please choose a different ID."));
-        message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
-        message.exec();
-        return false;
+        return showErrorMessage(parent, tr("Edit circuit - Leaklog"), tr("This ID is not available. Please choose a different ID."));
     }
 
     if (!uuid().isEmpty() && value("refrigerant") != savedValue("refrigerant") && !superuserModeEnabled()) {
@@ -137,16 +134,9 @@ bool Circuit::checkValues(QWidget *parent)
         query.bindValue(":circuit_uuid", uuid());
 
         if (query.exec() && query.next()) {
-            QMessageBox message(parent);
-            message.setWindowTitle(tr("Edit circuit - Leaklog"));
-            message.setWindowModality(Qt::WindowModal);
-            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
-            message.setIcon(QMessageBox::Warning);
-            message.setText(tr("You cannot change the refrigerant in this circuit."));
-            message.setInformativeText(tr("Changing the refrigerant would affect the store."));
-            message.addButton(QApplication::translate("MainWindow", "OK"), QMessageBox::AcceptRole);
-            message.exec();
-            return false;
+            return showErrorMessage(parent, tr("Edit circuit - Leaklog"),
+                                    tr("You cannot change the refrigerant in this circuit."),
+                                    tr("Changing the refrigerant would affect the store."));
         }
     }
 

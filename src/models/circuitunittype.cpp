@@ -48,19 +48,27 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), oil(), oils()));
+    md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
     md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency));
     md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, discount(), "%"));
-    md->addInputWidget(new MDComboBox("location", tr("Location:"), md->widget(), stringValue("location"), locations));
+    md->addInputWidget(new MDComboBox("location", tr("Location:"), md->widget(), stringValue("location", QString::number(CircuitUnitType::External)), locations));
     md->addInputWidget(new MDLineEdit("unit", tr("Unit of measure:"), md->widget(), unit()));
     QList<MDAbstractInputWidget *> gw_list;
     gw_list.append(new MDDoubleSpinBox("output", tr("Value:"), md->widget(), 0.0, 999999.9, output()));
-    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), outputUnit(), output_units));
+    gw_list.append(new MDComboBox("output_unit", tr("Unit:"), md->widget(), stringValue("output_unit", "kW"), output_units));
     gw_list.append(new MDDoubleSpinBox("output_t0_tc", tr("At t0/tc:"), md->widget(), 0.0, 999999.9, outputT0Tc()));
     md->addGroupedInputWidgets(tr("Output:"), gw_list);
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
+}
+
+bool CircuitUnitType::checkValues(QWidget *parent)
+{
+    if (refrigerant().isEmpty())
+        return showErrorMessage(parent, tr("Add circuit unit type - Leaklog"), QApplication::translate("Circuit", "Select a refrigerant."));
+
+    return true;
 }
 
 QString CircuitUnitType::tableName()

@@ -325,9 +325,7 @@ nullvalue(QVariant::String)
             n = list.indexOf(items.value(i));
     }
     if (n < 0) {
-        if (value.isEmpty()) {
-            n = 0;
-        } else {
+        if (!value.isEmpty()) {
             addItem(tr("Unknown value (%1)").arg(value), value);
             n = count() - 1;
         }
