@@ -132,9 +132,9 @@ QString InspectionDetailsView::renderHTML(bool)
         table_row = table->addRow();
 
         for (int i = 0; i < inspections_compressors.count(); ++i) {
-            QVariantMap compressor = Compressor(inspections_compressors.at(i).value("compressor_id").toString()).list();
+            Compressor compressor(inspections_compressors.at(i).value("compressor_uuid").toString());
 
-            *(header_row->addHeaderCell("width=\"50%\"")) << compressor.value("name").toString();
+            *(header_row->addHeaderCell("width=\"50%\"")) << compressor.name();
             _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
             for (int n = 0; n < compressor_vars.count(); ++n) {
                 if (compressor_vars[n]->parentUUID().isEmpty())
