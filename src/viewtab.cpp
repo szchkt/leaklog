@@ -817,6 +817,7 @@ void ViewTab::executeLink(Link *link)
         break;
 
     case LinkParser::Compressor:
+        select_with_javascript = false;
         id = link->idValue("compressor");
         if (id.isEmpty())
             clearSelectedCompressor();

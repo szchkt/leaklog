@@ -161,8 +161,10 @@ QString StoreView::renderHTML(bool)
                     if (row_count) { out << "</tr><tr>"; }
                     refrigerant = sums_iterator.key().split("::").last();
                     out << "<th>" << refrigerant.split(':').first() << "</th>";
-                    if (by_field)
-                        out << "<th>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</th>";
+                    if (by_field) {
+                        QString field = idToFieldOfApplication(refrigerant.split(':').last().toInt());
+                        out << "<th>" << fieldsOfApplication().value(field, field) << "</th>";
+                    }
                     if (show_partner)
                         out << "<th>&nbsp;</th><th>&nbsp;</th>";
                     for (int n = 0; n < sum_list->count(); ++n) {
@@ -194,8 +196,10 @@ QString StoreView::renderHTML(bool)
             else if (it) out << " style=\"font-style: italic;\"";
             refrigerant = i.value().at(1);
             out << ">" << refrigerant.split(':').first() << "</td>";
-            if (by_field)
-                out << "<td>" << fieldsOfApplication().value(idToFieldOfApplication(refrigerant.split(':').last().toInt())) << "</td>";
+            if (by_field) {
+                QString field = idToFieldOfApplication(refrigerant.split(':').last().toInt());
+                out << "<td>" << fieldsOfApplication().value(field, field) << "</td>";
+            }
             if (show_partner) {
                 out << "<td>" << escapeString(i.value().at(2)) << "</td>";
                 out << "<td>" << escapeString(i.value().at(3)) << "</td>";

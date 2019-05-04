@@ -332,9 +332,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
         *(_tr->addCell()) << settings->mainWindowSettings().formatDate(circuit.value("commissioning").toString());
     if (columns.field) {
         QString attr_value = circuit.value("field").toString();
-        if (attributeValues().contains("field::" + attr_value)) {
-            attr_value = attributeValues().value("field::" + attr_value);
-        }
+        attr_value = attributeValues().value("field::" + attr_value, attr_value);
         *(_tr->addCell("class=\"wrap\"")) << ellipsis(attr_value);
     }
     HTMLTableCell *_td = _tr->addCell();

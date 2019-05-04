@@ -126,7 +126,7 @@ QString TableView::renderHTML(bool)
                 cell = compressors_table_row->addHeaderCell();
             else
                 cell = compressors_table_row->addCell("style=\"text-align: center;\"");
-            *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + "/compressor:-1/table"))
+            *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid + "/compressor:/table"))
                     << tr("All compressors");
 
             ListOfVariantMaps compressors = Compressor::query({{"circuit_uuid", circuit_uuid}}).listAll();
@@ -136,7 +136,7 @@ QString TableView::renderHTML(bool)
                 else
                     cell = compressors_table_row->addCell("style=\"text-align: center;\"");
                 *(cell->link("customer:" + customer_uuid + "/circuit:" + circuit_uuid
-                             + "/compressor:" + compressors.at(i).value("id").toString() + "/table"))
+                             + "/compressor:" + compressors.at(i).value("uuid").toString() + "/table"))
                         << compressors.at(i).value("name").toString();
             }
             out << "<br>" << compressors_table->html();

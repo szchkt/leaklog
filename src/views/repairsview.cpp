@@ -89,9 +89,7 @@ QString RepairsView::renderHTML(bool)
             } else {
                 QString attr_value = repairs.stringValue(key);
                 if (key == "field") {
-                    if (attributeValues().contains("field::" + attr_value)) {
-                        attr_value = attributeValues().value("field::" + attr_value);
-                    }
+                    attr_value = attributeValues().value("field::" + attr_value, attr_value);
                 } else if (key == "inspector_uuid") {
                     attr_value = inspectors.value(attr_value).value("person", attr_value).toString();
                 }

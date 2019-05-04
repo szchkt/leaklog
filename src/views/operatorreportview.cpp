@@ -194,7 +194,8 @@ QString OperatorReportView::renderHTML(bool)
         double multiplier = CO2_equivalent ? (GWP / 1000.0) : 1.0;
         if (CO2_equivalent)
             out << "<td>" << GWP << "</td>";
-        out << "<td>" << fieldsOfApplication().value(circuits.stringValue("field")) << "</td>";
+        QString field = circuits.stringValue("field");
+        out << "<td>" << fieldsOfApplication().value(field, field) << "</td>";
         out << "<td>" << refrigerant_amount_begin * multiplier << "</td>";
         out << "<td>" << sums.value("refr_add_am").toDouble() * multiplier << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() * multiplier << "</td>";

@@ -443,8 +443,9 @@ void ToolBarStack::enableTools()
             if (!circuit.value(attribute).toString().isEmpty())
                 description << QString(attribute == "name" ? "<b>%1</b>" : "%1").arg(escapeString(circuit.value(attribute).toString()));
 
-        if (attributeValues().contains("field::" + circuit.value("field").toString()))
-            description << attributeValues().value("field::" + circuit.value("field").toString());
+        QString value = circuit.value("field").toString();
+        if (attributeValues().contains("field::" + value))
+            description << attributeValues().value("field::" + value, value);
 
         description << QString("%L1 %2 %3")
                        .arg(FLOAT_ARG(circuit.value("refrigerant_amount").toDouble()))

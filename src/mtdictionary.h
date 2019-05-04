@@ -90,7 +90,7 @@ public:
     }
     inline QString firstKey(const QString &value) const {
         int index = dict_values.indexOf(value);
-        return index < 0 ? value : dict_keys.at(index);
+        return index < 0 ? QString() : dict_keys.at(index);
     }
     inline const QString &lastKey() const {
         return dict_keys.last();
@@ -108,9 +108,9 @@ public:
         if (i >= 0 && i < dict_keys.count()) return dict_values.at(i);
         else return default_value;
     }
-    inline const QString &value(const QString &key) const {
+    inline QString value(const QString &key) const {
         int index = dict_keys.indexOf(key);
-        return index < 0 ? key : dict_values.at(index);
+        return index < 0 ? QString() : dict_values.at(index);
     }
     inline const QString &value(const QString &key, const QString &default_value) const {
         int index = dict_keys.indexOf(key);

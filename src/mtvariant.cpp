@@ -34,19 +34,21 @@ MTVariant::MTVariant(const QVariant &v, const QString &t):
 }
 
 QString MTVariant::toString() const {
+    QString value = v_value.toString();
     switch (v_type) {
-        case Address: return MTAddress(v_value.toString()).toPlainText(); break;
-        case Country: return Global::countries().value(v_value.toString()); break;
+        case Address: return MTAddress(value).toPlainText(); break;
+        case Country: return Global::countries().value(value, value); break;
         case Default: break;
     }
-    return v_value.toString();
+    return value;
 }
 
 QString MTVariant::toHtml() const {
+    QString value = v_value.toString();
     switch (v_type) {
-        case Address: return MTAddress(v_value.toString()).toHtml(); break;
-        case Country: return Global::countries().value(v_value.toString()); break;
+        case Address: return MTAddress(value).toHtml(); break;
+        case Country: return Global::countries().value(value, value); break;
         case Default: break;
     }
-    return Global::escapeString(v_value.toString());
+    return Global::escapeString(value);
 }
