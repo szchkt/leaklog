@@ -133,8 +133,10 @@ QString InspectionDetailsView::renderHTML(bool)
 
         for (int i = 0; i < inspections_compressors.count(); ++i) {
             Compressor compressor(inspections_compressors.at(i).value("compressor_uuid").toString());
+            QString name = compressor.name();
+            QString sn = compressor.serialNumber();
 
-            *(header_row->addHeaderCell("width=\"50%\"")) << compressor.name();
+            *(header_row->addHeaderCell("width=\"50%\"")) << (sn.isEmpty() ? name : QString("%1 (%2)").arg(name).arg(sn));
             _table = table_row->addCell("style=\"vertical-align: top;\"")->table();
             for (int n = 0; n < compressor_vars.count(); ++n) {
                 if (compressor_vars[n]->parentUUID().isEmpty())
