@@ -157,7 +157,7 @@ QString TableView::renderHTML(bool)
                 else
                     inspections_compressors_query.setPredicate("inspections.date > '" + QString::number(year) + "'");
 
-                ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.inspection_type", "date ASC");
+                ListOfVariantMaps inspections_compressors = inspections_compressors_query.listAll("inspections_compressors.*, inspections.date, inspections.inspection_type", "inspections.date ASC");
 
                 if (compressor_uuids.count() > 1) {
                     for (int n = 0; n < compressors.count(); ++n) {
