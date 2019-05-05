@@ -49,6 +49,8 @@ public:
 
     inline QString customerUUID() { return stringValue("customer_uuid"); }
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline QString externalUUID() { return stringValue("external_uuid"); }
+    inline void setExternalUUID(const QString &value) { setValue("external_uuid", value); }
     inline bool isStarred() { return intValue("starred"); }
     inline void setStarred(bool value) { setValue("starred", (int)value); }
     inline QString circuitID() { return stringValue("id").rightJustified(5, '0'); }

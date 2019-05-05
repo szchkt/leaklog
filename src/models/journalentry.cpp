@@ -260,6 +260,7 @@ public:
         column_names.insert(157, "inspection_data");
         column_names.insert(158, "verified_identifier");
         column_names.insert(159, "date_verified");
+        column_names.insert(160, "external_uuid");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
