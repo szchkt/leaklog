@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="cs_CZ" sourcelanguage="en_GB">
+<TS version="2.1" language="cs_CZ" sourcelanguage="en_GB">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -550,15 +550,11 @@
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Množství chladiva:</translation>
-    </message>
-    <message>
         <source>Oil:</source>
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Množství oleje:</translation>
     </message>
     <message>
@@ -634,7 +630,7 @@
         <translation>Chladivo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množství chladiva</translation>
     </message>
     <message>
@@ -642,7 +638,7 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množství oleje</translation>
     </message>
     <message>
@@ -741,6 +737,10 @@
         <source>Select a field of application.</source>
         <translation>Vyberte typ použití.</translation>
     </message>
+    <message>
+        <source>Refrigerant amount precharged:</source>
+        <translation>Předplněné množství chladiva:</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -765,7 +765,7 @@
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
+        <source>Refrigerant amount:</source>
         <translation>Množství chladiva:</translation>
     </message>
     <message>
@@ -773,7 +773,7 @@
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Množství oleje:</translation>
     </message>
     <message>
@@ -835,7 +835,7 @@
         <translation>Chladivo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množství chladiva</translation>
     </message>
     <message>
@@ -843,7 +843,7 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množství oleje</translation>
     </message>
     <message>
@@ -2457,11 +2457,11 @@ Pro odstranění všech údajů o zákazníkovi „%1“ napište ODSTRANIT a po
         <translation>Sériové číslo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množství chladiva</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množství oleje</translation>
     </message>
     <message>
@@ -5135,10 +5135,6 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <translation>Číslo ML:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Množství chladiva:</translation>
-    </message>
-    <message>
         <source>Refrigerant addition:</source>
         <translation>Doplnění chladiva:</translation>
     </message>
@@ -5155,7 +5151,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
         <translation>Typ použití</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množství chladiva</translation>
     </message>
     <message>
@@ -5193,6 +5189,10 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>Add repair - Leaklog</source>
         <translation>Přidat opravu - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount total:</source>
+        <translation>Celkové množství chladiva:</translation>
     </message>
 </context>
 <context>

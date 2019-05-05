@@ -124,7 +124,7 @@ QString InspectionDetailsView::renderHTML(bool)
     MTQuery inspections_compressor_query = InspectionCompressor::query({{"inspection_uuid", inspection_uuid}});
     ListOfVariantMaps inspections_compressors = inspections_compressor_query.listAll();
     if (inspections_compressors.count()) {
-        VariableEvaluation::EvaluationContext compressor_var_evaluation = VariableEvaluation::EvaluationContext(customer_uuid, circuit_uuid, Variable::Compressor);
+        VariableEvaluation::EvaluationContext compressor_var_evaluation(customer_uuid, circuit_uuid, Variable::Compressor);
         QList<VariableEvaluation::Variable *> compressor_vars = compressor_var_evaluation.listVariables();
 
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"no_border\"");

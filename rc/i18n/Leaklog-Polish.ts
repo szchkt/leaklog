@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="pl_PL" sourcelanguage="en_GB">
+<TS version="2.1" language="pl_PL" sourcelanguage="en_GB">
 <context>
     <name>AboutWidget</name>
     <message>
@@ -504,11 +504,11 @@
         <translation>Data uruchomienia</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Napełnienie początkowe</translation>
+        <source>Refrigerant amount</source>
+        <translation>Ilość czynnika</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Ilość oleju</translation>
     </message>
     <message>
@@ -588,15 +588,11 @@
         <translation>Czynnik:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Napełnienie początkowe:</translation>
-    </message>
-    <message>
         <source>Oil:</source>
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Ilość oleju:</translation>
     </message>
     <message>
@@ -739,6 +735,10 @@
         <source>Select a field of application.</source>
         <translation>Wybierz zakres stosowania.</translation>
     </message>
+    <message>
+        <source>Refrigerant amount precharged:</source>
+        <translation>Napełnienie początkowe:</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -767,7 +767,7 @@
         <translation>Czynnik:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
+        <source>Refrigerant amount:</source>
         <translation>Ilość czynnika:</translation>
     </message>
     <message>
@@ -775,7 +775,7 @@
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Ilość oleju:</translation>
     </message>
     <message>
@@ -835,7 +835,7 @@
         <translation>Czynnik</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Ilość czynnika</translation>
     </message>
     <message>
@@ -843,7 +843,7 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Ilość oleju</translation>
     </message>
     <message>
@@ -3755,11 +3755,11 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
         <translation>Numer seryjny</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Wartość czynnika</translation>
+        <source>Refrigerant amount</source>
+        <translation>Ilość czynnika</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Wartość oleju</translation>
     </message>
     <message>
@@ -5123,10 +5123,6 @@ dla ID osoby i firmy</translation>
         <translation>Książka serwisowa nr.:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Napełnienie początkowe:</translation>
-    </message>
-    <message>
         <source>Refrigerant addition:</source>
         <translation>Dopełnienie czynnika:</translation>
     </message>
@@ -5155,8 +5151,8 @@ dla ID osoby i firmy</translation>
         <translation>Czynnik</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Napełnienie początkowe</translation>
+        <source>Refrigerant amount</source>
+        <translation>Ilość czynnika</translation>
     </message>
     <message>
         <source>Refrigerant addition</source>
@@ -5181,6 +5177,10 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Add repair - Leaklog</source>
         <translation>Dodaj naprawę - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount total:</source>
+        <translation>Całkowita ilość czynnika:</translation>
     </message>
 </context>
 <context>

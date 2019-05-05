@@ -61,10 +61,10 @@ QWidget(parent)
     af_attributes.insert("year", QApplication::translate("Circuit", "Year of purchase"));
     af_attributes.insert("commissioning", QApplication::translate("Circuit", "Date of commissioning"));
     af_attributes.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
-    af_attributes.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant"));
+    af_attributes.insert("refrigerant_amount", QApplication::translate("Circuit", "Refrigerant amount"));
     af_attributes.insert("co2_equivalent", QApplication::translate("MainWindow", "CO\342\202\202 equivalent"));
     af_attributes.insert("gwp", QApplication::translate("MainWindow", "GWP"));
-    af_attributes.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil"));
+    af_attributes.insert("oil_amount", QApplication::translate("Circuit", "Oil amount"));
     af_attributes.insert("leak_detector", QApplication::translate("Circuit", "Fixed leakage detector installed"));
     af_attributes.insert("runtime", QApplication::translate("Circuit", "Run-time per day"));
     af_attributes.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation"));

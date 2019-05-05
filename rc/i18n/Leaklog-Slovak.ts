@@ -548,15 +548,11 @@
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Množstvo chladiva:</translation>
-    </message>
-    <message>
         <source>Oil:</source>
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Množstvo oleja:</translation>
     </message>
     <message>
@@ -632,7 +628,7 @@
         <translation>Chladivo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
@@ -640,7 +636,7 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
@@ -739,6 +735,10 @@
         <source>Select a field of application.</source>
         <translation>Vyberte druh nasadenia.</translation>
     </message>
+    <message>
+        <source>Refrigerant amount precharged:</source>
+        <translation>Predplnené množstvo chladiva:</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -763,7 +763,7 @@
         <translation>Chladivo:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
+        <source>Refrigerant amount:</source>
         <translation>Množstvo chladiva:</translation>
     </message>
     <message>
@@ -771,7 +771,7 @@
         <translation>Olej:</translation>
     </message>
     <message>
-        <source>Amount of oil:</source>
+        <source>Oil amount:</source>
         <translation>Množstvo oleja:</translation>
     </message>
     <message>
@@ -831,7 +831,7 @@
         <translation>Chladivo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
@@ -839,7 +839,7 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
@@ -2449,11 +2449,11 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
         <translation>Sériové číslo</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
-        <source>Amount of oil</source>
+        <source>Oil amount</source>
         <translation>Množstvo oleja</translation>
     </message>
     <message>
@@ -5128,10 +5128,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Číslo ML:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Množstvo chladiva:</translation>
-    </message>
-    <message>
         <source>Refrigerant addition:</source>
         <translation>Doplnenie chladiva:</translation>
     </message>
@@ -5148,7 +5144,7 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Druh nasadenia</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
+        <source>Refrigerant amount</source>
         <translation>Množstvo chladiva</translation>
     </message>
     <message>
@@ -5186,6 +5182,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Add repair - Leaklog</source>
         <translation>Pridať opravu - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount total:</source>
+        <translation>Celkové množstvo chladiva:</translation>
     </message>
 </context>
 <context>

@@ -47,9 +47,9 @@ void CircuitUnitType::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("manufacturer", tr("Manufacturer:"), md->widget(), manufacturer()));
     md->addInputWidget(new MDLineEdit("type", tr("Type:"), md->widget(), type()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Oil amount:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency));
     md->addInputWidget(new MDDoubleSpinBox("list_price", tr("List price:"), md->widget(), 0.0, 999999999.9, listPrice(), currency));
     md->addInputWidget(new MDDoubleSpinBox("discount", tr("Discount:"), md->widget(), 0.0, 100.0, discount(), "%"));
@@ -117,9 +117,9 @@ public:
         dict.insert("manufacturer", QApplication::translate("CircuitUnitType", "Manufacturer"));
         dict.insert("type", QApplication::translate("CircuitUnitType", "Type"));
         dict.insert("refrigerant", QApplication::translate("CircuitUnitType", "Refrigerant"));
-        dict.insert("refrigerant_amount", QApplication::translate("CircuitUnitType", "Amount of refrigerant"));
+        dict.insert("refrigerant_amount", QApplication::translate("CircuitUnitType", "Refrigerant amount"));
         dict.insert("oil", QApplication::translate("CircuitUnitType", "Oil"));
-        dict.insert("oil_amount", QApplication::translate("CircuitUnitType", "Amount of oil"));
+        dict.insert("oil_amount", QApplication::translate("CircuitUnitType", "Oil amount"));
         dict.insert("acquisition_price", QApplication::translate("CircuitUnitType", "Acquisition price"));
         dict.insert("list_price", QApplication::translate("CircuitUnitType", "List price"));
         dict.insert("discount", QApplication::translate("CircuitUnitType", "Discount"));

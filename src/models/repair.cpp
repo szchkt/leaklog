@@ -51,7 +51,7 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), arno()));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount total:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
 }
@@ -110,7 +110,7 @@ public:
         dict.insert("device", QApplication::translate("Repair", "Device"));
         dict.insert("field", QApplication::translate("Repair", "Field of application"));
         dict.insert("refrigerant", QApplication::translate("Repair", "Refrigerant"));
-        dict.insert("refrigerant_amount", QApplication::translate("Repair", "Amount of refrigerant"));
+        dict.insert("refrigerant_amount", QApplication::translate("Repair", "Refrigerant amount"));
         dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
         dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
         dict.insert("inspector_uuid", QApplication::translate("Repair", "Inspector"));

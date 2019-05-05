@@ -62,9 +62,9 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(notes);
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
-    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Amount of refrigerant:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount precharged:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
-    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Amount of oil:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Oil amount:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("runtime", tr("Run-time per day:"), md->widget(), 0.0, 24.0, runtime(), QApplication::translate("Units", "hours")));
     md->addInputWidget(new MDDoubleSpinBox("utilisation", tr("Rate of utilisation:"), md->widget(), 0.0, 100.0, utilisation(), QApplication::translate("Units", "%")));
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
@@ -234,9 +234,9 @@ public:
         dict.insert("decommissioning", QApplication::translate("Circuit", "Date of decommissioning"));
         dict.insert("decommissioning_reason", QApplication::translate("Circuit", "Reason for decommissioning"));
         dict.insert("refrigerant", QApplication::translate("Circuit", "Refrigerant"));
-        dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Amount of refrigerant") + "||" + QApplication::translate("Units", "kg"));
+        dict.insert("refrigerant_amount", QApplication::translate("Circuit", "Refrigerant amount") + "||" + QApplication::translate("Units", "kg"));
         dict.insert("oil", QApplication::translate("Circuit", "Oil"));
-        dict.insert("oil_amount", QApplication::translate("Circuit", "Amount of oil") + "||" + QApplication::translate("Units", "kg"));
+        dict.insert("oil_amount", QApplication::translate("Circuit", "Oil amount") + "||" + QApplication::translate("Units", "kg"));
         dict.insert("runtime", QApplication::translate("Circuit", "Run-time per day") + "||" + QApplication::translate("Units", "hours"));
         dict.insert("utilisation", QApplication::translate("Circuit", "Rate of utilisation") + "||%");
         dict.insert("inspection_interval", QApplication::translate("Circuit", "Inspection interval") + "||" + QApplication::translate("Units", "days"));

@@ -3583,8 +3583,8 @@ void MainWindow::importCSV()
     circuits_table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
     circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
     ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Status"), "disused", ImportDialogueTableColumn::Select);
@@ -3624,8 +3624,8 @@ void MainWindow::importCSV()
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
     table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("Amount of refrigerant"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Amount of oil"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("List price"), "list_price", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
