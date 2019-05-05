@@ -48,6 +48,10 @@ public:
     inline void setPhone(const QString &value) { setValue("phone", value); }
     inline QString website() { return stringValue("website"); }
     inline void setWebsite(const QString &value) { setValue("website", value); }
+    inline QString verifiedIdentifier() { return stringValue("verified_identifier"); }
+    inline void setVerifiedIdentifier(const QString &value) { setValue("verified_identifier", value); }
+    inline QString dateVerified() { return stringValue("date_verified"); }
+    inline void setDateVerified(const QString &value) { setValue("date_verified", value); }
 
     static QString tableName();
     static inline MTRecordQuery<ServiceCompany> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<ServiceCompany>(tableName(), parents); }

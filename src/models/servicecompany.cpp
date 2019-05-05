@@ -67,6 +67,8 @@ public:
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
         columns << Column("website", "TEXT");
+        columns << Column("verified_identifier", "TEXT");
+        columns << Column("date_verified", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
     }

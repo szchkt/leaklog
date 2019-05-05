@@ -258,6 +258,8 @@ public:
         column_names.insert(155, "starred");
         column_names.insert(156, "operator_link");
         column_names.insert(157, "inspection_data");
+        column_names.insert(158, "verified_identifier");
+        column_names.insert(159, "date_verified");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
