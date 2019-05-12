@@ -253,7 +253,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Repair", "Assembly record No."), "arno");
             break;
         case View::Inspectors:
-            cb_filter_column->addItem(QApplication::translate("Inspector", "Certificate number"), "id");
+            cb_filter_column->addItem(QApplication::translate("Inspector", "Certificate number"), "certificate_number");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Full name"), "person");
             cb_filter_column->addItem(QApplication::translate("Inspector", "E-mail"), "mail");
             cb_filter_column->addItem(QApplication::translate("Inspector", "Phone"), "phone");
@@ -261,14 +261,18 @@ void ToolBarStack::viewChanged(View::ViewID view)
         case View::InspectorDetails:
             filter_since_visible = true;
             cb_filter_column->addItem(QApplication::translate("Inspection", "Date"), "date");
-            cb_filter_column->addItem(QApplication::translate("Inspector", "Customer ID"), "customer");
-            cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit ID"), "circuit");
+            cb_filter_column->addItem(QApplication::translate("MainWindow", "Customer ID"), "customers.id");
+            cb_filter_column->addItem(QApplication::translate("Customer", "Company"), "customers.company");
+            cb_filter_column->addItem(QApplication::translate("MainWindow", "Circuit ID"), "circuits.id");
+            cb_filter_column->addItem(QApplication::translate("Circuit", "Circuit name"), "circuits.name");
             break;
         case View::TableOfInspections:
             filter_since_visible = true;
             filter_all_circuits_visible = true;
             break;
         case View::Agenda:
+            cb_filter_column->addItem(QApplication::translate("MainWindow", "Customer ID"), "customers.id");
+            cb_filter_column->addItem(QApplication::translate("Customer", "Company"), "customers.company");
             goto updateView_ListOfCircuits_CircuitAttributes;
             break;
         case View::OperatorReport:

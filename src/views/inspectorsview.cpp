@@ -50,8 +50,7 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid,
     MTQuery inspectors_query = Inspector::query();
     if (!inspector_uuid.isEmpty()) {
         inspectors_query.parents().insert("uuid", inspector_uuid);
-    }
-    if (!settings->toolBarStack()->isFilterEmpty()) {
+    } else if (!settings->toolBarStack()->isFilterEmpty()) {
         inspectors_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
     ListOfVariantMaps inspectors(inspectors_query.listAll("*,"

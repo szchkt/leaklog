@@ -56,9 +56,6 @@ QString InspectorDetailsView::renderHTML(bool)
     double absolute_total = 0.0, total = 0.0, acquisition_total = 0.0;
 
     MTQuery ar_item_record = AssemblyRecordItem::queryByInspector(inspector_uuid);
-    if (!settings->toolBarStack()->isFilterEmpty()) {
-        ar_item_record.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
-    }
     ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid AS inspection_uuid, inspections.date, customers.id AS customer_id, circuits.id AS circuit_id, assembly_record_items.*"));
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");

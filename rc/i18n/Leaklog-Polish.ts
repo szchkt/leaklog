@@ -656,10 +656,6 @@
         <translation>Olej</translation>
     </message>
     <message>
-        <source>Circuit ID</source>
-        <translation>Numer obiegu</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Nazwa</translation>
     </message>
@@ -2013,10 +2009,6 @@
     <message>
         <source>Phone</source>
         <translation>Telefon</translation>
-    </message>
-    <message>
-        <source>Customer ID</source>
-        <translation>NIP klienta</translation>
     </message>
     <message>
         <source>E-mail:</source>

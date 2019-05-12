@@ -47,11 +47,25 @@ QString AgendaView::renderHTML(bool)
 
     QMultiMap<QString, QList<QVariant> > next_inspections_map;
 
-    MultiMapOfVariantMaps customers(Customer::query().mapAll("uuid", "id, company"));
+    bool filter = !settings->toolBarStack()->isFilterEmpty();
+    bool filter_customers = filter && settings->toolBarStack()->filterColumn().startsWith("customers.");
+
+    MTQuery customers_query = Customer::query();
+    if (filter_customers) {
+        customers_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    }
+    MultiMapOfVariantMaps customers(customers_query.mapAll("uuid", "id, company"));
 
     MTQuery circuits_query = Circuit::query({{"disused", Circuit::Commissioned}});
-    if (!settings->toolBarStack()->isFilterEmpty()) {
-        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    if (filter) {
+        if (filter_customers) {
+            circuits_query.addFilter(QString("customer_uuid IN (SELECT uuid FROM customers WHERE %1%2 LIKE ?)")
+                                     .arg(settings->toolBarStack()->filterColumn())
+                                     .arg(isDatabaseRemote() ? "::text" : ""),
+                                     settings->toolBarStack()->filterKeyword());
+        } else {
+            circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        }
     }
     circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
                            " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"

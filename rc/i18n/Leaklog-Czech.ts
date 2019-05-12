@@ -662,10 +662,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Circuit ID</source>
-        <translation>IČ okruhu</translation>
-    </message>
-    <message>
         <source>Commissioned</source>
         <translation>V provozu</translation>
     </message>
@@ -2027,10 +2023,6 @@
         <translation>Telefon</translation>
     </message>
     <message>
-        <source>Customer ID</source>
-        <translation>IČO zákazníka</translation>
-    </message>
-    <message>
         <source>Certificate number:</source>
         <translation>Číslo certifikátu:</translation>
     </message>
@@ -2071,7 +2063,7 @@
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zařízení</translation>
+        <translation>IČ okruhu</translation>
     </message>
     <message>
         <source>Assembly record</source>
@@ -3317,7 +3309,7 @@ Pro odstranění všech údajů o certifikované osobě „%1“ napište ODSTRA
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zařízení</translation>
+        <translation>IČ okruhu</translation>
     </message>
     <message>
         <source>3(6) - &lt;30 kg</source>

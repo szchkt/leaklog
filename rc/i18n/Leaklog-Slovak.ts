@@ -660,10 +660,6 @@
         <translation>Zákazník: %2 %1 Okruh</translation>
     </message>
     <message>
-        <source>Circuit ID</source>
-        <translation>IČ okruhu</translation>
-    </message>
-    <message>
         <source>Commissioned</source>
         <translation>V prevádzke</translation>
     </message>
@@ -2019,10 +2015,6 @@
         <translation>Telefón</translation>
     </message>
     <message>
-        <source>Customer ID</source>
-        <translation>IČO zákazníka</translation>
-    </message>
-    <message>
         <source>Certificate number:</source>
         <translation>Číslo osvedčenia:</translation>
     </message>
@@ -2063,7 +2055,7 @@
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zariadenia</translation>
+        <translation>IČ okruhu</translation>
     </message>
     <message>
         <source>Assembly record</source>
@@ -3308,7 +3300,7 @@ Na odstránenie všetkých údajov o kontrolórovi „%1“ napíšte ODSTRÁNI�
     </message>
     <message>
         <source>Circuit ID</source>
-        <translation>Číslo zariadenia</translation>
+        <translation>IČ okruhu</translation>
     </message>
     <message>
         <source>3(6) - &lt;30 kg</source>
