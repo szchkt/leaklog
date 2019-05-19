@@ -82,7 +82,7 @@ QString AgendaView::renderHTML(bool)
                                                 + ", circuits.hermetic, circuits.leak_detector, circuits.inspection_interval,"
                                                 " COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection,"
                                                 " ins.uuid AS last_regular_inspection_uuid,"
-                                                " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection,"
+                                                " COALESCE(all_ins.date, circuits.commissioning) AS last_inspection_date,"
                                                 " all_ins.uuid AS last_inspection_uuid,"
                                                 " all_ins.inspection_type, all_ins.refr_add_am");
     circuits.exec();
@@ -99,7 +99,7 @@ QString AgendaView::renderHTML(bool)
                 continue;
             QString next_regular_inspection_date = QDate::fromString(last_regular_inspection_date.split("-").first(), DATE_FORMAT)
                     .addDays(inspection_interval).toString(DATE_FORMAT);
-            QString last_inspection_date = circuits.stringValue("last_inspection");
+            QString last_inspection_date = circuits.stringValue("last_inspection_date");
             if (!last_inspection_date.isEmpty()) {
                 QString next_inspection_date = QDate::fromString(last_inspection_date.split("-").first(), DATE_FORMAT)
                         .addDays(30).toString(DATE_FORMAT);

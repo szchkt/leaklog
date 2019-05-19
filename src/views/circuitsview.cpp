@@ -88,10 +88,14 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
     QString circuits_query_select = "circuits.*, (SELECT uuid FROM inspections"
         " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection_uuid, (SELECT date FROM inspections"
-        " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection, " + circuitRefrigerantAmountQuery();
+        " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection_date, " + circuitRefrigerantAmountQuery();
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::Customer);
     if (order_by.isEmpty())
         order_by = "id";
+    else if (order_by == "refrigerant")
+        order_by = settings->appendDefaultOrderToColumn(order_by) + ", refrigerant_amount";
+    else if (order_by == "oil")
+        order_by = settings->appendDefaultOrderToColumn(order_by) + ", oil_amount";
     ListOfVariantMaps circuits = circuits_query.listAll(circuits_query_select,
                                                         all_circuits ? settings->appendDefaultOrderToColumn(order_by) : QString());
 
@@ -235,13 +239,18 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     return div;
 }
 
-static void addCircuitHeaderCell(const QString &key, const QString &customer_id, const QString &circuit_id, HTMLTableRow *thead)
+static void addCircuitHeaderCell(const QString &key, const QString &title, const QString &customer_uuid, const QString &circuit_uuid, HTMLTableRow *thead)
 {
-    if (circuit_id.isEmpty())
-        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_id << "/order_by:"
-                                  << key << "\">" << Circuit::attributes().value(key).split("||").first() << "</a>";
+    if (circuit_uuid.isEmpty())
+        *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_uuid << "/order_by:"
+                                  << key << "\">" << title << "</a>";
     else
-        *(thead->addHeaderCell()) << Circuit::attributes().value(key).split("||").first();
+        *(thead->addHeaderCell()) << title;
+}
+
+static void addCircuitHeaderCell(const QString &key, const QString &customer_uuid, const QString &circuit_uuid, HTMLTableRow *thead)
+{
+    addCircuitHeaderCell(key, Circuit::attributes().value(key).split("||").first(), customer_uuid, circuit_uuid, thead);
 }
 
 void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QString &circuit_uuid, int cols_in_row, CircuitsColumns columns, int disused, HTMLTableRow *thead)
@@ -266,35 +275,29 @@ void CircuitsView::writeCircuitsHeader(const QString &customer_uuid, const QStri
         addCircuitHeaderCell("commissioning", customer_uuid, circuit_uuid, thead);
     if (columns.field)
         addCircuitHeaderCell("field", customer_uuid, circuit_uuid, thead);
-    *(thead->addHeaderCell()) << Circuit::attributes().value("refrigerant");
+    addCircuitHeaderCell("refrigerant", customer_uuid, circuit_uuid, thead);
     *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "CO\342\202\202 equivalent");
     if (cols_in_row >= 0) {
         *(thead->addHeaderCell()) << QApplication::translate("MainWindow", "GWP");
     }
     if (columns.oil)
-        *(thead->addHeaderCell()) << Circuit::attributes().value("oil");
+        addCircuitHeaderCell("oil", customer_uuid, circuit_uuid, thead);
     switch (disused) {
         case Circuit::ExcludedFromAgenda:
-            *(thead->addHeaderCell()) << QApplication::translate("Circuit", "Date excluded");
+            addCircuitHeaderCell("decommissioning", QApplication::translate("Circuit", "Date excluded"), customer_uuid, circuit_uuid, thead);
             break;
         case Circuit::Decommissioned:
-            *(thead->addHeaderCell()) << Circuit::attributes().value("decommissioning");
+            addCircuitHeaderCell("decommissioning", Circuit::attributes().value("decommissioning"), customer_uuid, circuit_uuid, thead);
             break;
         default:
-            *(thead->addHeaderCell()) << tr("Last inspection");
+            addCircuitHeaderCell("last_inspection_date", tr("Last inspection"), customer_uuid, circuit_uuid, thead);
             break;
     }
     if (columns.date_updated) {
-        if (circuit_uuid.isEmpty())
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_uuid << "/order_by:date_updated\">" << tr("Date Updated") << "</a>";
-        else
-            *(thead->addHeaderCell()) << tr("Date Updated");
+        addCircuitHeaderCell("date_updated", tr("Date Updated"), customer_uuid, circuit_uuid, thead);
     }
     if (columns.owner) {
-        if (circuit_uuid.isEmpty())
-            *(thead->addHeaderCell()) << "<a href=\"customer:" << customer_uuid << "/order_by:updated_by\">" << tr("Author") << "</a>";
-        else
-            *(thead->addHeaderCell()) << tr("Author");
+        addCircuitHeaderCell("updated_by", tr("Author"), customer_uuid, circuit_uuid, thead);
     }
     if (columns.notes) {
         *(thead->addHeaderCell(QString("colspan=\"%1\"").arg(cols_in_row > 0 ? cols_in_row : 1))) << tr("Notes");
@@ -357,7 +360,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
                                .arg(customer_uuid)
                                .arg(uuid)
                                .arg(circuit.value("last_inspection_uuid").toString())))
-            << settings->mainWindowSettings().formatDate(circuit.value("last_inspection").toString().split('-').first());
+            << settings->mainWindowSettings().formatDate(circuit.value("last_inspection_date").toString().split('-').first());
     } else {
         *(_tr->addCell()) << settings->mainWindowSettings().formatDate(circuit.value("decommissioning"));
     }

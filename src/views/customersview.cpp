@@ -42,12 +42,17 @@ QString CustomersView::renderHTML(bool)
     return viewTemplate("customers").arg(html);
 }
 
-static void addCustomerHeaderCell(const QString &key, const QString &customer_uuid, HTMLTableRow *row)
+static void addCustomerHeaderCell(const QString &key, const QString &title, const QString &customer_uuid, HTMLTableRow *row)
 {
     if (customer_uuid.isEmpty())
-        *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << key << "\">" << Customer::attributes().value(key) << "</a>";
+        *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:" << key << "\">" << title << "</a>";
     else
-        *(row->addHeaderCell()) << Customer::attributes().value(key);
+        *(row->addHeaderCell()) << title;
+}
+
+static void addCustomerHeaderCell(const QString &key, const QString &customer_uuid, HTMLTableRow *row)
+{
+    addCustomerHeaderCell(key, Customer::attributes().value(key), customer_uuid, row);
 }
 
 void CustomersView::writeCustomersTable(MTTextStream &out, const QString &customer_id)
@@ -98,8 +103,8 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
         addCustomerHeaderCell("address", customer_uuid, row);
         addCustomerHeaderCell("mail", customer_uuid, row);
         addCustomerHeaderCell("phone", customer_uuid, row);
-        *(row->addHeaderCell()) << tr("Number of circuits");
-        *(row->addHeaderCell()) << tr("Total number of inspections");
+        addCustomerHeaderCell("circuits_count", tr("Number of circuits"), customer_uuid, row);
+        addCustomerHeaderCell("inspections_count", tr("Total number of inspections"), customer_uuid, row);
         if (show_date_updated) {
             if (customer_uuid.isEmpty())
                 *(row->addHeaderCell()) << "<a href=\"allcustomers:/order_by:date_updated\">" << tr("Date Updated") << "</a>";

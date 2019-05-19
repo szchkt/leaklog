@@ -3942,8 +3942,8 @@ QString MainWindow::appendDefaultOrderToColumn(const QString &column)
 
     int order = Qt::AscendingOrder;
 
-    if ((actionMost_recent_first->isChecked() && column_name == "date") ||
-        column_name == "date_updated")
+    if ((actionMost_recent_first->isChecked() && (column_name.contains("date") || column_name.contains("commissioning"))) ||
+        column_name.endsWith("_count"))
         order = Qt::DescendingOrder;
 
     return QString("%1 %2").arg(column).arg(order == Qt::AscendingOrder ? "ASC" : "DESC");

@@ -612,8 +612,11 @@ void ViewTab::executeLink(const QUrl &url)
 
 void ViewTab::executeLink(Link *link)
 {
-    if (!link->orderBy().isEmpty())
+    if (!link->orderBy().isEmpty()) {
         mainWindowSettings().setOrderByForView(link->views(), link->orderBy());
+        refreshView();
+        return;
+    }
 
     QString id;
 
