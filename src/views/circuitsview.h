@@ -42,6 +42,7 @@ struct CircuitsColumns
     int commissioning : 1;
     int field : 1;
     int oil : 1;
+    int star : 1;
 };
 
 class CircuitsView : public CustomersView

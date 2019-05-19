@@ -111,6 +111,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(tbtn_add_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(addCircuitUnitType()));
     QObject::connect(tbtn_remove_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(removeCircuitUnitType()));
     QObject::connect(tbtn_edit_circuit_unit_type, SIGNAL(clicked()), receiver, SLOT(editCircuitUnitType()));
+    QObject::connect(tbtn_star, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_by_field, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_show_partner, SIGNAL(clicked()), receiver, SLOT(refreshView()));
     QObject::connect(chb_show_circuit_name, SIGNAL(clicked()), receiver, SLOT(refreshView()));
@@ -137,7 +138,7 @@ void ToolBarStack::scaleFactorChanged()
             min-height: 16px;
             background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFFFFF, stop: 1 #F0F0F0);
         }
-        QToolButton:pressed {
+        QToolButton:pressed, QToolButton:checked {
             color: white;
             background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4A96FD, stop: 1 #0867E4);
             border-color: #125FEE;
@@ -313,6 +314,8 @@ void ToolBarStack::viewChanged(View::ViewID view)
         default:
             break;
     }
+
+    tbtn_star->setVisible(view == View::Customers || view == View::Circuits);
 
     chb_by_field->setVisible(filter_by_field_visible);
     chb_show_partner->setVisible(view == View::Store);

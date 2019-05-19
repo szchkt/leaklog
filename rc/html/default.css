@@ -26,6 +26,11 @@ td {
 		display: none;
 	}
 }
+@media print {
+	.screen_only {
+		display: none;
+	}
+}
 th {
 	background-color: #F3F3F3;
 }
@@ -61,6 +66,9 @@ a:hover {
 a:active {
 	color: inherit;
 	text-decoration: none;
+}
+a.no_underline {
+	text-decoration: none !important;
 }
 td:not(.wrap) {
 	white-space: nowrap;

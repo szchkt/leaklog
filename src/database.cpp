@@ -1338,6 +1338,21 @@ void MainWindow::removeCustomer()
     m_tab->setView(View::Customers);
 }
 
+void MainWindow::starCustomer(const QString &uuid)
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    Customer record(uuid);
+    if (!isOperationPermitted("edit_customer", record.updatedBy())) { return; }
+    QString company_name = record.companyName();
+    UndoCommand command(m_undo_stack, tr("Edit customer %1%2")
+                        .arg(record.companyID())
+                        .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
+    record.setStarred(!record.isStarred());
+    record.save();
+    refreshView();
+    setDatabaseModified(true);
+}
+
 void MainWindow::decommissionAllCircuits()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
@@ -1819,6 +1834,22 @@ void MainWindow::removeCircuit()
     enableTools();
     setDatabaseModified(true);
     m_tab->setView(View::Circuits);
+}
+
+void MainWindow::starCircuit(const QString &customer_uuid, const QString &uuid)
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    Circuit record(uuid);
+    if (!isOperationPermitted("edit_circuit", record.updatedBy())) { return; }
+    Customer customer(customer_uuid);
+    QString company_name = customer.companyName();
+    UndoCommand command(m_undo_stack, tr("Edit circuit %1 (%2)")
+                        .arg(record.circuitID())
+                        .arg(company_name.isEmpty() ? customer.companyID() : company_name));
+    record.setStarred(!record.isStarred());
+    record.save();
+    refreshView();
+    setDatabaseModified(true);
 }
 
 void MainWindow::addInspection()

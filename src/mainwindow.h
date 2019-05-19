@@ -107,6 +107,7 @@ public slots:
     void editCustomer();
     void duplicateCustomer();
     void removeCustomer();
+    void starCustomer(const QString &uuid);
 
     void decommissionAllCircuits();
     void addCircuit();
@@ -115,6 +116,7 @@ public slots:
     void duplicateAndDecommissionCircuit();
     void moveCircuit();
     void removeCircuit();
+    void starCircuit(const QString &customer_uuid, const QString &uuid);
 
     void addInspection();
     void editInspection();

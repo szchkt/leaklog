@@ -148,6 +148,8 @@ void LinkEntity::parse(UrlEntity *url, Link *link)
             link->setAction(Link::Edit);
         } else if (url->name() == "remove") {
             link->setAction(Link::Remove);
+        } else if (url->name() == "star") {
+            link->setAction(Link::Star);
         } else if (url->name() == "order_by" && url->countAttributes() > 1) {
             QStringList subargs = url->attributeAt(1).split(":");
             link->setOrderBy(subargs.takeFirst());

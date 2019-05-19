@@ -78,13 +78,19 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     columns.commissioning = cols_in_row > 0 || settings->isShowDateOfCommissioningChecked();
     columns.field = cols_in_row > 0 || settings->isShowFieldOfApplicationChecked();
     columns.oil = cols_in_row > 0 || settings->isShowOilChecked();
+    columns.star = settings->currentView() != View::TableOfInspections;
 
     MTQuery circuits_query = Circuit::query();
     circuits_query.parents().insert("customer_uuid", customer_uuid);
-    if (!all_circuits)
+    if (!all_circuits) {
         circuits_query.parents().insert("uuid", circuit_uuid);
-    if (all_circuits && !settings->toolBarStack()->isFilterEmpty()) {
-        circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    } else {
+        if (!settings->toolBarStack()->isFilterEmpty()) {
+            circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        }
+        if (settings->toolBarStack()->starredOnly()) {
+            circuits_query.addFilter("starred <> ?", "0");
+        }
     }
     QString circuits_query_select = "circuits.*, (SELECT uuid FROM inspections"
         " WHERE inspections.circuit_uuid = circuits.uuid ORDER BY date DESC LIMIT 1) AS last_inspection_uuid, (SELECT date FROM inspections"
@@ -315,7 +321,13 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
             tr_attr.append(" class=\"selected\"");
     }
     HTMLTableRow *_tr = table->addRow(tr_attr);
-    *(_tr->addCell()) << toolTipLink("customer/circuit", id, customer_uuid, uuid);
+    HTMLTableCell *_td = _tr->addCell();
+    if (columns.star) {
+        *_td << QString("<span class=\"screen_only\"><a href=\"customer:%1/circuit:%2/star\" class=\"no_underline\">%3</a>&nbsp;</span>")
+            .arg(customer_uuid).arg(uuid)
+            .arg(QChar(circuit.value("starred").toInt() ? 0x2605 : 0x2606));
+    }
+    *_td << toolTipLink("customer/circuit", id, customer_uuid, uuid);
     *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("name"));
     if (columns.operation)
         *(_tr->addCell("class=\"wrap\"")) << ellipsis(circuit.value("operation"));
@@ -338,7 +350,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
         attr_value = attributeValues().value("field::" + attr_value, attr_value);
         *(_tr->addCell("class=\"wrap\"")) << ellipsis(attr_value);
     }
-    HTMLTableCell *_td = _tr->addCell();
+    _td = _tr->addCell();
     *_td << circuit.value("refrigerant_amount").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg");
     QString refrigerant = circuit.value("refrigerant").toString();
     *_td << " " << refrigerant;

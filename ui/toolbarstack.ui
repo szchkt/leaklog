@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2177</width>
+    <width>2214</width>
     <height>403</height>
    </rect>
   </property>
@@ -1921,6 +1921,16 @@
       <property name="bottomMargin">
        <number>4</number>
       </property>
+      <item>
+       <widget class="QToolButton" name="tbtn_star">
+        <property name="text">
+         <string notr="true">★</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QComboBox" name="cb_filter_column">
         <property name="sizePolicy">

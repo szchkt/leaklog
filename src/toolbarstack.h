@@ -50,6 +50,7 @@ public:
     inline QString filterColumn() const { return cb_filter_column->currentData().toString(); }
     inline bool isFilterEmpty() const { return le_filter->text().isEmpty() && !filterColumn().contains('?'); }
     QString filterKeyword() const;
+    inline bool starredOnly() const { return tbtn_star->isChecked(); }
 
     bool isAssemblyRecordListPriceChecked() const { return chb_assembly_record_list_price->isChecked(); }
     bool isAssemblyRecordAcquisitionPriceChecked() const { return chb_assembly_record_acquisition_price->isChecked(); }

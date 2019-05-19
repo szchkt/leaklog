@@ -642,7 +642,11 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::Customer:
         select_with_javascript = !view_changed;
         id = link->idValue("customer");
-        if (id != selectedCustomerUUID()) {
+        if (link->action() == Link::Star) {
+            if (link->countViews() <= 1) {
+                parentWindow()->starCustomer(id);
+            }
+        } else if (id != selectedCustomerUUID()) {
             loadCustomer(id, view_changed && link->countViews() <= 1 && link->action() == Link::View);
         } else if (link->countViews() <= 1 && link->action() == Link::View) {
             setView(View::Circuits);
@@ -764,10 +768,15 @@ void ViewTab::executeLink(Link *link)
 
     switch (link->viewAt(1)) {
     case LinkParser::Circuit:
-        if (link->idValue("circuit") != selectedCircuitUUID())
+        if (link->action() == Link::Star) {
+            if (link->countViews() <= 2) {
+                parentWindow()->starCircuit(link->idValue("customer"), link->idValue("circuit"));
+            }
+        } else if (link->idValue("circuit") != selectedCircuitUUID()) {
             loadCircuit(link->idValue("circuit"), link->countViews() <= 2 && link->action() == Link::View);
-        else if (link->countViews() <= 2 && link->action() == Link::View)
+        } else if (link->countViews() <= 2 && link->action() == Link::View) {
             setView(View::Inspections);
+        }
 
         if (link->countViews() <= 2 && link->action() == Link::Edit) {
             select_with_javascript = true;

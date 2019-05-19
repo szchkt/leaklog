@@ -73,8 +73,13 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     MTQuery all_customers = Customer::query();
     if (!customer_uuid.isEmpty()) {
         all_customers.parents().insert("uuid", customer_uuid);
-    } else if (!settings->toolBarStack()->isFilterEmpty()) {
-        all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    } else {
+        if (!settings->toolBarStack()->isFilterEmpty()) {
+            all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        }
+        if (settings->toolBarStack()->starredOnly()) {
+            all_customers.addFilter("starred <> ?", "0");
+        }
     }
     QString order_by;
     if (!customer_uuid.isEmpty() || settings->mainWindowSettings().orderByForView(LinkParser::AllCustomers).isEmpty())
@@ -153,7 +158,11 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
                     row_attrs.append(" class=\"selected\"");
             }
             row = table->addRow(row_attrs);
-            *(row->addCell()) << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
+            *(row->addCell())
+                << QString("<span class=\"screen_only\"><a href=\"customer:%1/star\" class=\"no_underline\">%2</a>&nbsp;</span>")
+                    .arg(uuid)
+                    .arg(QChar(list.at(i).value("starred").toInt() ? 0x2605 : 0x2606))
+                << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
             *(row->addCell("class=\"wrap\"")) << ellipsis(list.at(i).value("company"));
             *(row->addCell("class=\"wrap\"")) << ellipsis(MTVariant(list.at(i).value("address"), MTVariant::Address));
             QString mail = escapeString(list.at(i).value("mail"));
