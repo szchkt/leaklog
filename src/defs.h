@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2018 Matus & Michal Tomlein
+ Copyright (C) 2008-2019 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
@@ -20,8 +20,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define LEAKLOG_VERSION "2.0.3"
-#define F_LEAKLOG_VERSION 2.0003
+#define LEAKLOG_VERSION "2.0.4"
+#define F_LEAKLOG_VERSION 2.0004
 #define LEAKLOG_PREVIEW_VERSION 0
 #define DB_VERSION "2.0"
 #define F_DB_VERSION 2.0
