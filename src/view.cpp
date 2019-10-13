@@ -105,19 +105,20 @@ HTMLTable *View::writeServiceCompany(HTMLTable *table)
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (ServiceCompany::attributes().key(n) == "name")
             continue;
-        if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty()) continue;
+        if (serv_company.value(ServiceCompany::attributes().key(n)).toString().isEmpty())
+            continue;
         _td = _tr->addHeaderCell();
         QString attr = ServiceCompany::attributes().value(n);
         attr.chop(1);
         *_td << attr;
     }
-    QString attr_value;
     _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (ServiceCompany::attributes().key(n) == "name")
             continue;
-        attr_value = ServiceCompany::attributes().key(n);
-        if (serv_company.value(attr_value).toString().isEmpty()) continue;
+        QString attr_value = ServiceCompany::attributes().key(n);
+        if (serv_company.value(attr_value).toString().isEmpty())
+            continue;
         _td = _tr->addCell();
         *_td << MTVariant(serv_company.value(attr_value), attr_value);
     }

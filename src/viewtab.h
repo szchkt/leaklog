@@ -25,10 +25,25 @@
 #include "mtwidget.h"
 #include "linkparser.h"
 
+#include <QWebEngineUrlSchemeHandler>
+
 class ToolBarStack;
 class QTreeWidgetItem;
 class QWebEngineView;
 class QUrl;
+
+class ViewUrlSchemeHandler : public QWebEngineUrlSchemeHandler
+{
+    Q_OBJECT
+
+public:
+    ViewUrlSchemeHandler(View *views[View::ViewCount], QObject *parent);
+
+    void requestStarted(QWebEngineUrlRequestJob *job);
+
+private:
+    View *views[View::ViewCount];
+};
 
 namespace Ui {
 class ViewTab;
@@ -113,6 +128,7 @@ private:
 
     Ui::ViewTab *ui;
     View *views[View::ViewCount];
+    ViewUrlSchemeHandler *view_handler;
     QTreeWidgetItem *group_tables;
     QTreeWidgetItem *view_items[View::ViewCount];
     bool needs_refresh;

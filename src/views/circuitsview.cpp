@@ -135,8 +135,8 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
         writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, !all_circuits && circuits.count() ? circuits.first().value("disused").toInt() : 0, thead);
     }
 
-    HTMLTableRow *_tr = table->addRow();
     if (title) {
+        HTMLTableRow *_tr = table->addRow();
         HTMLTableCell *_td = _tr->addHeaderCell("colspan=\"" + QString::number(thead ? thead->childCount() : 1) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
 
         if (all_circuits) {
@@ -185,7 +185,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     if (all_circuits && excluded_count) {
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-        _tr = table->addRow();
+        HTMLTableRow *_tr = table->addRow();
 
         if (excluded_circuits_visible) {
             thead = table->addRow();
@@ -215,7 +215,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     if (all_circuits && decommissioned_count) {
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-        _tr = table->addRow();
+        HTMLTableRow *_tr = table->addRow();
 
         if (decommissioned_circuits_visible) {
             thead = table->addRow();

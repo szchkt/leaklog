@@ -46,7 +46,42 @@
 #include "dbfile.h"
 #include "global.h"
 
+#include <QBuffer>
 #include <QWebEngineProfile>
+#include <QWebEngineUrlRequestJob>
+
+class ViewBuffer : public QBuffer
+{
+public:
+    ViewBuffer(QByteArray *buf, QObject *parent): QBuffer(buf, parent), _buffer(buf) {}
+
+    ~ViewBuffer() {
+        delete _buffer;
+    }
+
+private:
+    QByteArray *_buffer;
+};
+
+ViewUrlSchemeHandler::ViewUrlSchemeHandler(View *views[View::ViewCount], QObject *parent):
+    QWebEngineUrlSchemeHandler(parent)
+{
+    for (int i = 0; i < View::ViewCount; ++i) {
+        this->views[i] = views[i];
+    }
+}
+
+void ViewUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
+{
+    int view = job->requestUrl().host().mid(1).toInt();
+    if (view >= 0 && view < View::ViewCount) {
+        QByteArray *byte_array = new QByteArray(views[view]->renderHTML().toUtf8());
+        ViewBuffer *buffer = new ViewBuffer(byte_array, job);
+        job->reply(QString("text/html").toUtf8(), buffer);
+    } else {
+        job->fail(QWebEngineUrlRequestJob::UrlNotFound);
+    }
+}
 
 ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
@@ -64,13 +99,12 @@ ViewTab::ViewTab(QWidget *parent):
     QObject::connect(this, SIGNAL(viewChanged(View::ViewID)),
                      ui->toolbarstack, SLOT(viewChanged(View::ViewID)));
 
-    setDefaultWebPage();
-
     ui->splitter->setStyleSheet("QSplitter { background-color: #B8B8B8; }");
 
     ui->trw_navigation->setIconSize(QSize(20, 20));
 
     createViewItems();
+    setDefaultWebPage();
 
     scaleFactorChanged();
 
@@ -154,6 +188,8 @@ void ViewTab::createViewItems()
     views[View::AssemblyRecordTypes] = new AssemblyRecordTypesView(this);
     views[View::AssemblyRecordItems] = new AssemblyRecordItemsView(this);
     views[View::CircuitUnitTypes] = new CircuitUnitTypesView(this);
+
+    view_handler = new ViewUrlSchemeHandler(views, this);
 
     QTreeWidgetItem *group_service_company = new QTreeWidgetItem(ui->trw_navigation);
     group_service_company->setText(0, tr("Service Company"));
@@ -597,7 +633,7 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     emit tabTextChanged(this, tabText);
 
     if (parentWindow()->currentTab() == this)
-        ui->wv_main->setHtml(views[view]->renderHTML(), QUrl("qrc:/html/"));
+        ui->wv_main->setUrl(QUrl(QString("view://v%1").arg(view)));
     else
         setNeedsRefresh();
 }
@@ -873,6 +909,10 @@ void ViewTab::setDefaultWebPage()
     QByteArray scheme = QString("dbfile").toUtf8();
     if (!page->profile()->urlSchemeHandler(scheme))
         page->profile()->installUrlSchemeHandler(scheme, new DBFileUrlSchemeHandler);
+
+    scheme = QString("view").toUtf8();
+    if (!page->profile()->urlSchemeHandler(scheme))
+        page->profile()->installUrlSchemeHandler(scheme, view_handler);
 
     QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 }
