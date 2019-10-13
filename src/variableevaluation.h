@@ -50,6 +50,7 @@ namespace VariableEvaluation {
     private:
         void init();
 
+        QString ns;
         QMap<QString, Variable *> vars_map;
         QList<Variable *> vars_list;
         QString customer_id;

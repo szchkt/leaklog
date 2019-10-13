@@ -27,12 +27,14 @@
 using namespace Global;
 
 VariableEvaluation::EvaluationContext::EvaluationContext(int vars_scope):
+    ns(DBInfo::databaseUUID()),
     vars_scope(vars_scope)
 {
     init();
 }
 
 VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer_uuid, const QString &circuit_uuid, int vars_scope):
+    ns(DBInfo::databaseUUID()),
     customer_id(customer_uuid),
     circuit_id(circuit_uuid),
     vars_scope(vars_scope)
@@ -100,12 +102,12 @@ QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool 
 
 VariableEvaluation::Variable *VariableEvaluation::EvaluationContext::variable(const QString &name) const
 {
-    return vars_map.value(createUUIDv5(DBInfo::databaseUUID(), name));
+    return vars_map.value(createUUIDv5(ns, name));
 }
 
 QString VariableEvaluation::EvaluationContext::evaluate(const QString &var_name, const QVariantMap &inspection, QString &nom_value)
 {
-    VariableEvaluation::Variable *var = vars_map.value(createUUIDv5(DBInfo::databaseUUID(), var_name));
+    VariableEvaluation::Variable *var = vars_map.value(createUUIDv5(ns, var_name));
     if (!var) return QString();
     return var->evaluate(*this, inspection, nom_value);
 }
