@@ -147,24 +147,27 @@ QVariantMap MTQuery::sumAll(const QString &fields) const
 MultiMapOfVariantMaps MTQuery::mapAll(const QString &map_to, const QString &fields) const
 {
     MultiMapOfVariantMaps map;
-    QStringList list_map_to = map_to.split("::");
-    MTSqlQuery query = select(fields == "*" ? fields : (fields + ", " + list_map_to.join(", ")));
+    MTSqlQuery query = select(fields == "*" ? fields : (fields + ", " + map_to));
     query.exec();
     QSqlRecord record = query.record();
-    QList<int> indices;
-    for (int i = 0; i < list_map_to.count(); ++i) {
-        indices << record.indexOf(list_map_to.at(i));
-        if (indices.last() < 0) { return map; }
+
+    int index = map_to.lastIndexOf('.');
+    if (index < 0) {
+        index = record.indexOf(map_to);
+    } else {
+        index = record.indexOf(map_to.mid(index + 1));
     }
+
+    if (index < 0)
+        return map;
+
     while (query.next()) {
-        QVariantMap row_map; QStringList list_key;
+        QVariantMap row_map;
         for (int i = 0; i < record.count(); ++i) {
             row_map.insert(record.fieldName(i), query.value(i));
         }
-        for (int i = 0; i < indices.count(); ++i) {
-            list_key << query.value(indices.at(i)).toString();
-        }
-        map.insert(list_key.join("::"), row_map);
+        map.insert(query.value(index).toString(), row_map);
     }
+
     return map;
 }
