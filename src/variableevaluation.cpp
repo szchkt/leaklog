@@ -40,7 +40,7 @@ VariableEvaluation::EvaluationContext::EvaluationContext(const QString &customer
     vars_scope(vars_scope)
 {
     circuit = Circuit(circuit_uuid).list("*, " + circuitRefrigerantAmountQuery());
-    persons = Customer(customer_uuid).persons().mapAll("uuid", "name");
+    persons = Person::query().mapAll("uuid", "name");
     inspectors = Inspector::query().mapAll("uuid", "certificate_number, person");
     ar_types = AssemblyRecordType::query().mapAll("uuid", "name");
 

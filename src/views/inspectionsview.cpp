@@ -94,7 +94,9 @@ QString InspectionsView::renderHTML(bool)
     }
 
     MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
-    MultiMapOfVariantMaps persons(Person::query({{"customer_uuid", customer_uuid}}).mapAll("uuid", "name"));
+    auto persons_query = Person::query();
+    persons_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
+    MultiMapOfVariantMaps persons(persons_query.mapAll("persons.uuid", "customer_uuid, name, company"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"11\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";
@@ -156,10 +158,19 @@ QString InspectionsView::renderHTML(bool)
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
-        out << "<td>" << escapeString(inspectors.value(inspections.at(i).value("inspector_uuid").toString())
-                                      .value("person", inspections.at(i).value("inspector_uuid")).toString()) << "</td>";
-        out << "<td>" << escapeString(persons.value(inspections.at(i).value("person_uuid").toString())
-                                      .value("name", inspections.at(i).value("person_uuid")).toString()) << "</td>";
+        auto inspector_uuid = inspections.at(i).value("inspector_uuid").toString();
+        auto inspector = inspectors.value(inspector_uuid);
+        out << "<td>" << escapeString(inspector.value("person", inspector_uuid).toString()) << "</td>";
+        auto person_uuid = inspections.at(i).value("person_uuid").toString();
+        auto person = persons.value(person_uuid);
+        out << "<td>" << escapeString(person.value("name", person_uuid).toString());
+        if (person.value("customer_uuid", customer_uuid).toString() != customer_uuid) {
+            auto company = person.value("company").toString();
+            if (!company.isEmpty()) {
+                out << " (" << escapeString(company) << ")";
+            }
+        }
+        out << "</td>";
         QString risks = inspections.at(i).value("risks").toString();
         if (!risks.isEmpty()) {
             out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(risks), true, true);
