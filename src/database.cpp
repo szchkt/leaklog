@@ -1762,6 +1762,11 @@ void MainWindow::moveCircuit()
     circuit.setCircuitID(circuit_id);
     circuit.save();
 
+    circuit.inspections().each([=](Inspection &inspection) {
+        inspection.setCustomerUUID(customer_uuid);
+        inspection.save();
+    });
+
     QVariantMap inspection;
     inspection.insert("customer_uuid", customer_uuid);
     inspection.insert("circuit_uuid", circuit.uuid());
