@@ -21,6 +21,7 @@
 #define MTWEBPAGE_H
 
 #include <QtWebEngineWidgets/QWebEnginePage>
+#include <QtWebEngineWidgets/QWebEngineProfile>
 
 class MTWebPage : public QWebEnginePage
 {
@@ -33,7 +34,7 @@ public:
         DelegateAllLinks
     };
 
-    MTWebPage(QObject *parent = 0): QWebEnginePage(parent) {}
+    MTWebPage(QObject *parent = 0): QWebEnginePage(new QWebEngineProfile(parent), parent) {}
 
     void setLinkDelegationPolicy(LinkDelegationPolicy policy);
     LinkDelegationPolicy linkDelegationPolicy() const;

@@ -906,13 +906,8 @@ void ViewTab::setDefaultWebPage()
     ui->wv_main->setPage(page);
     ui->wv_main->setZoomFactor(Global::scaleFactor());
 
-    QByteArray scheme = QString("dbfile").toUtf8();
-    if (!page->profile()->urlSchemeHandler(scheme))
-        page->profile()->installUrlSchemeHandler(scheme, new DBFileUrlSchemeHandler);
-
-    scheme = QString("view").toUtf8();
-    if (!page->profile()->urlSchemeHandler(scheme))
-        page->profile()->installUrlSchemeHandler(scheme, view_handler);
+    page->profile()->installUrlSchemeHandler(QString("dbfile").toUtf8(), new DBFileUrlSchemeHandler);
+    page->profile()->installUrlSchemeHandler(QString("view").toUtf8(), view_handler);
 
     QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
 }
