@@ -83,6 +83,9 @@ public slots:
 
     void viewChanged(View::ViewID view);
 
+private:
+    void enableStarredOnly();
+
 private slots:
     void toggleCO2Equivalent();
     void toggleTableForAllCircuits();

@@ -55,8 +55,13 @@ QString TableView::renderHTML(bool)
     Customer customer(customer_uuid);
 
     MTQuery circuits_query = customer.circuits();
-    if (!circuit_uuid.isEmpty())
+    if (!circuit_uuid.isEmpty()) {
         circuits_query.parents().insert("uuid", circuit_uuid);
+    } else {
+        if (settings->toolBarStack()->starredOnly()) {
+            circuits_query.addFilter("starred <> ?", "0");
+        }
+    }
     if (settings->toolBarStack()->isTableForAllCircuitsExceptDecommissionedChecked()) {
         circuits_query.setPredicate(QString("(disused = %1 OR decommissioning >= '%2')").arg(Circuit::Commissioned).arg(settings->toolBarStack()->minimumDecommissioningDateForTableOfAllCircuits().toString(DATE_FORMAT)));
     }

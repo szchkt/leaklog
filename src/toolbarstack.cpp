@@ -315,7 +315,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             break;
     }
 
-    tbtn_star->setVisible(view == View::Customers || view == View::Circuits);
+    tbtn_star->setVisible(view == View::Customers || view == View::Circuits || view == View::TableOfInspections);
 
     chb_by_field->setVisible(filter_by_field_visible);
     chb_show_partner->setVisible(view == View::Store);
@@ -365,6 +365,7 @@ void ToolBarStack::toggleCO2Equivalent()
 
 void ToolBarStack::toggleTableForAllCircuits()
 {
+    enableStarredOnly();
     _settings->refreshView();
 }
 
@@ -546,6 +547,7 @@ void ToolBarStack::enableTools()
     tbtn_remove_circuit_unit_type->setEnabled(_settings->isCircuitUnitTypeSelected());
     chb_table_all_circuits->setEnabled(_settings->isCircuitSelected());
     chb_table_all_circuits->setChecked(!_settings->isCircuitSelected());
+    enableStarredOnly();
 
     bool enabled = DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0;
     chb_assembly_record_acquisition_price->setEnabled(enabled);
@@ -558,6 +560,15 @@ void ToolBarStack::enableTools()
 
     chb_assembly_record_total->setEnabled(enabled);
     chb_assembly_record_total->setChecked(enabled);
+}
+
+void ToolBarStack::enableStarredOnly()
+{
+    bool enabled = _view != View::TableOfInspections || chb_table_all_circuits->isChecked();
+    tbtn_star->setEnabled(enabled);
+    if (!enabled) {
+        tbtn_star->setChecked(false);
+    }
 }
 
 void ToolBarStack::clearInspector()
