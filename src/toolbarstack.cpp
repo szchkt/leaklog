@@ -625,25 +625,13 @@ void ToolBarStack::clearCircuitUnitType()
 
 void ToolBarStack::setReportDataGroupBoxVisible(bool visible)
 {
-    if (visible) {
-        widget_inspector->setVisible(false);
-        widget_customer->setVisible(false);
-        widget_repair->setVisible(false);
-        widget_circuit->setVisible(false);
-        widget_inspection->setVisible(false);
-        widget_ar_type->setVisible(false);
-        widget_ar_item_category->setVisible(false);
-        widget_ar_item_type->setVisible(false);
-        widget_circuit_unit_type->setVisible(false);
+    widget_toolbars->setVisible(!visible);
+    widget_report_data->setVisible(visible);
 
-        widget_filter->setVisible(false);
-    } else {
+    if (!visible) {
         _settings->enableAllTools();
         _settings->refreshView();
     }
-
-    widget_view->setVisible(!visible);
-    widget_report_data->setVisible(visible);
 }
 
 QString ToolBarStack::filterKeyword() const
