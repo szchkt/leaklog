@@ -315,7 +315,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
             break;
     }
 
-    tbtn_star->setVisible(view == View::Customers || view == View::Circuits || view == View::TableOfInspections);
+    tbtn_star->setVisible(view == View::Customers || view == View::Circuits || view == View::TableOfInspections || view == View::OperatorReport);
 
     chb_by_field->setVisible(filter_by_field_visible);
     chb_show_partner->setVisible(view == View::Store);

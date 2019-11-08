@@ -134,6 +134,9 @@ QString OperatorReportView::renderHTML(bool)
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
+    if (settings->toolBarStack()->starredOnly()) {
+        circuits_query.addFilter("starred <> ?", "0");
+    }
 
     MTSqlQuery circuits = circuits_query.select("uuid, id, name, refrigerant, refrigerant_amount, field, operation, disused, hermetic, commissioning, decommissioning", "id, name");
     circuits.exec();
