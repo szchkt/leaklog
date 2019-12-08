@@ -360,12 +360,15 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                     compare_nom = subvariable->compareNom() > 0;
                     if (subvariable->value().contains("sum")) {
                         QString i_year = inspection_date.split(".").first();
-                        if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year) {
+                        if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year &&
+                            !Inspection::showDescriptionForInspectionType((Inspection::Type)inspections.at(i - 1).value("inspection_type").toInt())) {
                             continue;
                         } else {
                             int in = i;
                             for (; in < inspections.count(); ++in) {
                                 if (inspections.at(in).value("date").toString().split(".").first() != i_year)
+                                    break;
+                                if (Inspection::showDescriptionForInspectionType((Inspection::Type)inspections.at(in).value("inspection_type").toInt()))
                                     break;
                             }
                             rowspan = in - i;
@@ -380,12 +383,15 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                 compare_nom = variable->compareNom() > 0;
                 if (variable->value().contains("sum")) {
                     QString i_year = inspection_date.split(".").first();
-                    if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year) {
+                    if (i > 0 && inspections.at(i - 1).value("date").toString().split(".").first() == i_year &&
+                        !Inspection::showDescriptionForInspectionType((Inspection::Type)inspections.at(i - 1).value("inspection_type").toInt())) {
                         continue;
                     } else {
                         int in = i;
                         for (; in < inspections.count(); ++in) {
                             if (inspections.at(in).value("date").toString().split(".").first() != i_year)
+                                break;
+                            if (Inspection::showDescriptionForInspectionType((Inspection::Type)inspections.at(in).value("inspection_type").toInt()))
                                 break;
                         }
                         rowspan = in - i;
