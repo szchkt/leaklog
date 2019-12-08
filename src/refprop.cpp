@@ -101,7 +101,7 @@ static INTEGER setupForRefrigerant(const QString &refrigerant)
 double RefProp::pressureToTemperature(const QString &refrigerant, double pressure, RefProp::Phase phase)
 {
     if (setupForRefrigerant(refrigerant))
-        return -273.15;
+        return qQNaN();
 
     INTEGER ierr = 0;
     setString(herr, "", errormessagelength);
@@ -152,7 +152,7 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
         _open = database.open();
 
         if (!_open)
-            return -273.15;
+            return qQNaN();
 
         QSqlQuery limits(database);
         limits.setForwardOnly(true);
@@ -163,7 +163,7 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
     }
 
     if (_limits.isEmpty() || !_limits.contains(refrigerant))
-        return -273.15;
+        return qQNaN();
 
     QPair<double, double> limit = _limits.value(refrigerant);
     if (pressure < limit.first)
@@ -242,7 +242,7 @@ double RefPropDatabase::pressureToTemperature(const QString &refrigerant, double
         }
 
         if (!count)
-            return -273.15;
+            return qQNaN();
     }
 
     if (pressure_min == pressure_max)

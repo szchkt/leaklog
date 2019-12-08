@@ -129,10 +129,13 @@ double Expression::evaluate(const QVariantMap &inspection, const QVariantMap &ci
         }
     }
 
-    long double result = fparser->Eval(values);
+    double result = fparser->Eval(values);
     delete[] values;
 
+    if (ok && qIsNaN(result))
+        *ok = false;
+
     if (round(result) == result)
-        return (double)result;
+        return result;
     return (double)(round(result * REAL_NUMBER_PRECISION_EXP) / REAL_NUMBER_PRECISION_EXP);
 }

@@ -259,11 +259,13 @@ QString InspectionDetailsView::tableVarValue(const QString &var_type, const QStr
         return escapeString(ins_value);
     } else if (var_type == "bool") {
         return (ins_value.toInt() ? tr("Yes") : tr("No"));
-    } else if (compare_nom && settings->isCompareValuesChecked() && !nom_value.isEmpty() && !ins_value.isEmpty()) {
-        double double_value = ins_value.toDouble();
-        return compareValues(nom_value.toDouble(), double_value, tolerance, bg_class).arg(FLOAT_ARG(double_value));
-    } else if (var_type == "float") {
-        return QLocale().toString(FLOAT_ROUND(ins_value.toDouble()), FLOAT_FORMAT, FLOAT_PRECISION);
+    } else if (!ins_value.isEmpty()) {
+        if (compare_nom && settings->isCompareValuesChecked() && !nom_value.isEmpty()) {
+            double double_value = ins_value.toDouble();
+            return compareValues(nom_value.toDouble(), double_value, tolerance, bg_class).arg(FLOAT_ARG(double_value));
+        } else if (var_type == "float") {
+            return QLocale().toString(FLOAT_ROUND(ins_value.toDouble()), FLOAT_FORMAT, FLOAT_PRECISION);
+        }
     }
     return ins_value;
 }
