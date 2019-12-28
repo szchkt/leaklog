@@ -235,7 +235,7 @@ const QString HTMLTable::customHtml(int cols_in_row)
     QTextStream out(&str);
 
     out << "<" << tag_name << " " << args << ">";
-    bool cols_left = true;
+    bool cols_left = children.count() > 0;
     int n = 0;
     while (cols_left) {
         for (int i = 0; i < children.count(); ++i) {
@@ -304,10 +304,10 @@ const QString HTMLTableRow::customHtml(int n, int cols_in_row, bool &cols_left)
 {
     QString str;
     QTextStream out(&str);
-    int i;
+    int i = n;
 
     out << "<" << tag_name << " " << args << ">";
-    for (i = n; i < n + cols_in_row && i < children.count(); ++i) {
+    for (; i < n + cols_in_row && i < children.count(); ++i) {
         out << children.at(i)->html();
     }
     cols_left = i < children.count();
