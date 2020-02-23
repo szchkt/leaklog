@@ -89,13 +89,7 @@
         <widget class="ToolBarStack" name="toolbarstack" native="true"/>
        </item>
        <item>
-        <widget class="QWebEngineView" name="wv_main">
-         <property name="url">
-          <url>
-           <string>about:blank</string>
-          </url>
-         </property>
-        </widget>
+        <widget class="QWebEngineView" name="wv_main"/>
        </item>
       </layout>
      </widget>

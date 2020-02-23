@@ -33,7 +33,7 @@ MTWebPage::LinkDelegationPolicy MTWebPage::linkDelegationPolicy() const
 
 bool MTWebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool /*isMainFrame*/)
 {
-    if (type == NavigationTypeLinkClicked || type == NavigationTypeOther) {
+    if (type != NavigationTypeTyped) {
         switch (linkDelegationPolicy()) {
             case DontDelegateLinks:
                 break;

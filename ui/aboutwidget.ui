@@ -169,13 +169,7 @@
     </layout>
    </item>
    <item row="1" column="1">
-    <widget class="QWebEngineView" name="webv_about">
-     <property name="url">
-      <url>
-       <string>about:blank</string>
-      </url>
-     </property>
-    </widget>
+    <widget class="QWebEngineView" name="webv_about"/>
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QWidget" name="widget" native="true">
