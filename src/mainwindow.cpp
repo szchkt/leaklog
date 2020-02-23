@@ -1049,7 +1049,6 @@ void MainWindow::enableTools()
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionDecommission_all_circuits->setEnabled(customer_selected);
-    actionExport_customer_data->setEnabled(customer_selected);
 
     actionAdd_circuit->setEnabled(customer_selected);
     actionEdit_circuit->setEnabled(circuit_selected);
@@ -1057,7 +1056,6 @@ void MainWindow::enableTools()
     actionDuplicate_and_decommission_circuit->setEnabled(circuit_selected);
     actionMove_Circuit_to_Another_Customer->setEnabled(circuit_selected);
     actionRemove_circuit->setEnabled(circuit_selected);
-    actionExport_circuit_data->setEnabled(circuit_selected);
 
     actionAdd_inspection->setEnabled(circuit_selected);
     actionEdit_inspection->setEnabled(inspection_selected);
@@ -1070,7 +1068,6 @@ void MainWindow::enableTools()
     actionRemove_repair->setEnabled(repair_selected);
     actionPrint_detailed_label->setEnabled(circuit_selected);
     actionPrint_label->setEnabled(inspector_selected);
-    actionExport_inspection_data->setEnabled(inspection_selected);
 
     actionNew_subvariable->setEnabled(trw_variables->currentIndex().isValid() && trw_variables->currentItem()->parent() == NULL && !variableNames().contains(trw_variables->currentItem()->text(1)));
     tbtn_edit_variable->setEnabled(trw_variables->currentIndex().isValid());

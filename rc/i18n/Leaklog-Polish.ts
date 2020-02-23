@@ -71,10 +71,6 @@
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Czeski związek ds. chłodnictwa i klimatyzacji</translation>
     </message>
-    <message>
-        <source>about:blank</source>
-        <translation>about:blank</translation>
-    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -2575,14 +2571,6 @@
         <translation>Ctrl+Shift+-</translation>
     </message>
     <message>
-        <source>Show browser</source>
-        <translation>Pokaż przeglądarkę</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+B</source>
-        <translation>Ctrl+Alt+B</translation>
-    </message>
-    <message>
         <source>Show Variables</source>
         <translation>Pokaż zmienne</translation>
     </message>
@@ -2661,42 +2649,6 @@
     <message>
         <source>Display a print preview of the current view</source>
         <translation>Wyświetl podgląd bieżącego obrazu</translation>
-    </message>
-    <message>
-        <source>Export Customer Data...</source>
-        <translation>Eksportuj dane klienta...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected customer</source>
-        <translation>Eksportuj wszystkie dane wybranego klienta</translation>
-    </message>
-    <message>
-        <source>Ctrl+E</source>
-        <translation>Ctrl+E</translation>
-    </message>
-    <message>
-        <source>Export Circuit Data...</source>
-        <translation>Eksportuj dane obiegu...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected circuit</source>
-        <translation>Eksportuj wszystkie dane wybranego obiegu</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+E</source>
-        <translation>Ctrl+Alt+E</translation>
-    </message>
-    <message>
-        <source>Export Inspection Data...</source>
-        <translation>Eksportuj dane kontroli...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected inspection</source>
-        <translation>Eksportuj wszystkie dane wybranej kontroli</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
         <source>Another Database...</source>
@@ -2789,14 +2741,6 @@
     <message>
         <source>Change the interface language</source>
         <translation>Zmiana języka interfejsu</translation>
-    </message>
-    <message>
-        <source>Show inspectors</source>
-        <translation>Pokaż kontrolerów</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+I</source>
-        <translation>Ctrl+Alt+I</translation>
     </message>
     <message>
         <source>Add Inspector...</source>
@@ -6213,10 +6157,6 @@ dla ID osoby i firmy</translation>
 </context>
 <context>
     <name>ViewTab</name>
-    <message>
-        <source>about:blank</source>
-        <translation>about:blank</translation>
-    </message>
     <message>
         <source>Service Company</source>
         <translation>Firma serwisowa</translation>

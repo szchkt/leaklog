@@ -72,10 +72,6 @@
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Svaz chladicí a klimatizační techniky</translation>
     </message>
-    <message>
-        <source>about:blank</source>
-        <translation>about:blank</translation>
-    </message>
 </context>
 <context>
     <name>AgendaView</name>
@@ -2917,14 +2913,6 @@ Pro odstranění upozornění „%1“ napište ODSTRANIT a potvrďte:</translat
         <translation>Ctrl+Shift+-</translation>
     </message>
     <message>
-        <source>Show browser</source>
-        <translation>Zobrazit přehled</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+B</source>
-        <translation>Ctrl+Alt+P</translation>
-    </message>
-    <message>
         <source>Ctrl+Alt+V</source>
         <translation>Ctrl+Alt+V</translation>
     </message>
@@ -2947,30 +2935,6 @@ Pro odstranění upozornění „%1“ napište ODSTRANIT a potvrďte:</translat
     <message>
         <source>Display a print preview of the current view</source>
         <translation>Zobrazit tiskový náhled aktuálního pohledu</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected customer</source>
-        <translation>Exportovat všechny údaje o vybraném zákazníkovi</translation>
-    </message>
-    <message>
-        <source>Ctrl+E</source>
-        <translation>Ctrl+E</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected circuit</source>
-        <translation>Exportovat všechny údaje o vybraném okruhu</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+E</source>
-        <translation>Ctrl+Alt+E</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected inspection</source>
-        <translation>Exportovat všechny údaje o vybrané kontrole</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
         <source>Import data from another database file</source>
@@ -3250,14 +3214,6 @@ Pro odstranění všech údajů o certifikované osobě „%1“ napište ODSTRA
     <message>
         <source>Inspector</source>
         <translation>Certifikovaná osoba</translation>
-    </message>
-    <message>
-        <source>Show inspectors</source>
-        <translation>Zobrazit certifikované osoby</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+I</source>
-        <translation>Ctrl+Alt+K</translation>
     </message>
     <message>
         <source>Ctrl+Alt+Shift++</source>
@@ -3645,18 +3601,6 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     <message>
         <source>Print Preview...</source>
         <translation>Náhled tisku...</translation>
-    </message>
-    <message>
-        <source>Export Customer Data...</source>
-        <translation>Exportovat údaje o zákazníkovi...</translation>
-    </message>
-    <message>
-        <source>Export Circuit Data...</source>
-        <translation>Exportovat údaje o okruhu...</translation>
-    </message>
-    <message>
-        <source>Export Inspection Data...</source>
-        <translation>Exportovat údaje o kontrole...</translation>
     </message>
     <message>
         <source>Another Database...</source>
@@ -6225,10 +6169,6 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
 </context>
 <context>
     <name>ViewTab</name>
-    <message>
-        <source>about:blank</source>
-        <translation>about:blank</translation>
-    </message>
     <message>
         <source>Service Company</source>
         <translation>Servisní organizace</translation>

@@ -1211,17 +1211,6 @@
     <string>Ctrl+Shift+-</string>
    </property>
   </action>
-  <action name="actionShow_browser">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show browser</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+B</string>
-   </property>
-  </action>
   <action name="actionShow_variables">
    <property name="checkable">
     <bool>true</bool>
@@ -1339,60 +1328,6 @@
    </property>
    <property name="statusTip">
     <string>Display a print preview of the current view</string>
-   </property>
-  </action>
-  <action name="actionExport_customer_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
-   </property>
-   <property name="text">
-    <string>Export Customer Data...</string>
-   </property>
-   <property name="statusTip">
-    <string>Export all data of the selected customer</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+E</string>
-   </property>
-  </action>
-  <action name="actionExport_circuit_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
-   </property>
-   <property name="text">
-    <string>Export Circuit Data...</string>
-   </property>
-   <property name="statusTip">
-    <string>Export all data of the selected circuit</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+E</string>
-   </property>
-  </action>
-  <action name="actionExport_inspection_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/export.png</normaloff>:/images/images/export.png</iconset>
-   </property>
-   <property name="text">
-    <string>Export Inspection Data...</string>
-   </property>
-   <property name="statusTip">
-    <string>Export all data of the selected inspection</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+E</string>
    </property>
   </action>
   <action name="actionImport_data">
@@ -1529,17 +1464,6 @@
    </property>
    <property name="statusTip">
     <string>Change the interface language</string>
-   </property>
-  </action>
-  <action name="actionShow_inspectors">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show inspectors</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Alt+I</string>
    </property>
   </action>
   <action name="actionAdd_inspector">
@@ -1700,33 +1624,6 @@
    </property>
    <property name="statusTip">
     <string>Add record of refrigerant management</string>
-   </property>
-  </action>
-  <action name="actionAdd">
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/add.png</normaloff>:/images/images/add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add</string>
-   </property>
-  </action>
-  <action name="actionView">
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/view.png</normaloff>:/images/images/view.png</iconset>
-   </property>
-   <property name="text">
-    <string>View</string>
-   </property>
-  </action>
-  <action name="actionEdit">
-   <property name="icon">
-    <iconset resource="../rc/resources.qrc">
-     <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
-   </property>
-   <property name="text">
-    <string>Edit</string>
    </property>
   </action>
   <action name="actionPDF_Portrait">
