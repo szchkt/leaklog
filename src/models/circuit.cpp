@@ -174,6 +174,7 @@ public:
     CircuitColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("customer_uuid", "UUID");
+        columns << Column("service_company_uuid", "UUID");
         columns << Column("external_uuid", "UUID");
         columns << Column("starred", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("id", "INTEGER");

@@ -170,9 +170,9 @@ QJsonObject SyncEngine::journalState() const
 {
     QJsonObject journal;
 
-    MTSqlQuery query("SELECT source_uuid, MAX(entry_id) FROM journal GROUP BY source_uuid");
+    MTSqlQuery query("SELECT source_uuid, version, MAX(entry_id) FROM journal GROUP BY source_uuid, version");
     while (query.next()) {
-        journal.insert(query.value(0).toString() + ":0", query.value(1).toInt());
+        journal.insert(query.value(0).toString() + ":" + QString::number(query.value(1).toInt()), query.value(2).toInt());
     }
 
     return journal;
@@ -229,13 +229,14 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
             foreach (const QJsonValue &source_uuid, local_journal_state_keys) {
                 QStringList components = source_uuid.toString().split(':');
 
-                predicates << QString("(source_uuid = ? AND entry_id > ?)");
+                predicates << QString("(source_uuid = ? AND version = ? AND entry_id > ?)");
                 values << components.first();
+                values << components.value(1).toInt();
                 values << server_journal_state.value(source_uuid.toString()).toInt();
             }
 
             MTSqlQuery query;
-            query.prepare(QString("SELECT source_uuid, entry_id, operation_id, table_id, record_uuid, column_id, date_created FROM journal WHERE %1 ORDER BY date_created, source_uuid, entry_id LIMIT 1000").arg(predicates.join(" OR ")));
+            query.prepare(QString("SELECT source_uuid, version, entry_id, operation_id, table_id, record_uuid, column_id, date_created FROM journal WHERE %1 ORDER BY date_created, source_uuid, entry_id LIMIT 1000").arg(predicates.join(" OR ")));
 
             foreach (const QVariant &value, values) {
                 query.addBindValue(value);
@@ -245,12 +246,13 @@ bool SyncEngine::sync(const QJsonDocument &response_document)
                 while (query.next()) {
                     QJsonObject entry = {
                         {"s", query.value(0).toString()},
-                        {"e", query.value(1).toInt()},
-                        {"o", query.value(2).toInt()},
-                        {"t", query.value(3).toInt()},
-                        {"r", query.value(4).toString()},
-                        {"c", query.value(5).toInt()},
-                        {"d", query.value(6).toString()},
+                        {"v", query.value(1).toInt()},
+                        {"e", query.value(2).toInt()},
+                        {"o", query.value(3).toInt()},
+                        {"t", query.value(4).toInt()},
+                        {"r", query.value(5).toString()},
+                        {"c", query.value(6).toInt()},
+                        {"d", query.value(7).toString()},
                     };
                     entries << entry;
                 }
@@ -342,9 +344,10 @@ bool SyncEngine::applyJournalEntries(const QJsonArray &journal_entries, const QJ
         QJsonObject entry = value.toObject();
 
         QString source_uuid = entry.value("s").toString();
+        int version = entry.value("v").toInt();
         int entry_id = entry.value("e").toInt();
 
-        if (entry_id <= journal_state.value(source_uuid + ":0").toInt())
+        if (entry_id <= journal_state.value(source_uuid + ":" + QString::number(version)).toInt())
             continue;
 
         int table_id = entry.value("t").toInt();

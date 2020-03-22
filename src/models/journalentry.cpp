@@ -30,6 +30,7 @@ public:
     JournalEntryColumns() {
         columns << Column("id", "SERIAL PRIMARY KEY");
         columns << Column("source_uuid", "UUID NOT NULL");
+        columns << Column("version", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("entry_id", "INTEGER NOT NULL");
         columns << Column("operation_id", "SMALLINT NOT NULL DEFAULT 1");
         columns << Column("table_id", "SMALLINT NOT NULL");
@@ -262,6 +263,8 @@ public:
         column_names.insert(159, "date_verified");
         column_names.insert(160, "external_uuid");
         column_names.insert(161, "decommissioning_reason");
+        // Version 1
+        column_names.insert(162, "service_company_uuid");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -281,4 +284,11 @@ int JournalEntry::columnIDForName(const QString &name)
 QString JournalEntry::columnNameForID(int id, const QString &default_value)
 {
     return column_ids.column_names.value(id, default_value);
+}
+
+int JournalEntry::versionForColumnID(int column_id)
+{
+    if (column_id >= 162)
+        return 1;
+    return 0;
 }

@@ -79,6 +79,7 @@ public:
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("customer_uuid", "UUID");
         columns << Column("inspector_uuid", "UUID");
+        columns << Column("service_company_uuid", "UUID");
         columns << Column("date", "TEXT");
         columns << Column("customer", "TEXT");
         columns << Column("device", "TEXT");

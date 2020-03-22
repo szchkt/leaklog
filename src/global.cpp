@@ -349,8 +349,9 @@ bool Global::journalUpdate(const QString &table_name, const QString &record_uuid
 bool Global::journalUpdate(int table_id, const QString &record_uuid, int column_id, const QSqlDatabase &database)
 {
     MTSqlQuery query(database);
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
+    query.prepare("INSERT INTO journal (source_uuid, version, entry_id, operation_id, table_id, record_uuid, column_id) VALUES (:source_uuid, :version, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid, :column_id)");
     query.bindValue(":source_uuid", sourceUUID());
+    query.bindValue(":version", JournalEntry::versionForColumnID(column_id));
     query.bindValue(":operation_id", JournalEntry::Update);
     query.bindValue(":table_id", table_id);
     query.bindValue(":record_uuid", record_uuid);

@@ -270,6 +270,12 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec(index + "index_warnings_filters_warning_uuid ON warnings_filters (warning_uuid ASC)");
         }
 
+        if (v < 2.1) {
+            query.exec("DROP INDEX IF EXISTS index_journal_source_uuid_entry_id");
+            query.exec("DELETE FROM journal WHERE id NOT IN (SELECT MIN(id) FROM journal GROUP BY source_uuid, entry_id)");
+            query.exec(unique_index + "index_journal_source_uuid_version_entry_id ON journal (source_uuid ASC, version ASC, entry_id ASC)");
+        }
+
         if (save_on_upgrade && !transaction && v > 0) {
             QMessageBox message(this);
             message.setWindowTitle(tr("Database upgraded - Leaklog"));

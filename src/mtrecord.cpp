@@ -20,6 +20,7 @@
 #include "mtrecord.h"
 #include "mtdictionary.h"
 #include "global.h"
+#include "journalentry.h"
 
 #include <QSqlRecord>
 #include <QDateTime>
@@ -183,6 +184,8 @@ bool MTRecord::save(bool add_columns)
     }
 
     if (isJournaled()) {
+        int table_id = JournalEntry::tableIDForName(r_table);
+
         if (has_uuid) {
             QStringList columns; {
                 QVariantMapIterator i(r_current_values);
@@ -212,12 +215,19 @@ bool MTRecord::save(bool add_columns)
 
             QVariantMapIterator i(r_current_values);
             while (i.hasNext()) { i.next();
-                if (!journalUpdate(r_table, r_uuid, i.key()))
+                if (!journalUpdate(table_id, r_uuid, JournalEntry::columnIDForName(i.key())))
                     return false;
             }
         } else {
-            if (!journalInsertion(r_table, journal_uuid))
+            if (!journalInsertion(table_id, journal_uuid))
                 return false;
+
+            QVariantMapIterator i(r_current_values);
+            while (i.hasNext()) { i.next();
+                int column_id = JournalEntry::columnIDForName(i.key());
+                if (JournalEntry::versionForColumnID(column_id) && !journalUpdate(table_id, journal_uuid, column_id))
+                    return false;
+            }
         }
     }
 

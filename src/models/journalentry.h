@@ -46,6 +46,7 @@ public:
 
     static int columnIDForName(const QString &name);
     static QString columnNameForID(int id, const QString &default_value = QString());
+    static int versionForColumnID(int column_id);
 };
 
 #endif // JOURNALENTRY_H
