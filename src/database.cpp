@@ -1171,7 +1171,7 @@ void MainWindow::editRefrigerants()
     EditDialogueBasicTable *table = new EditDialogueBasicTable(tr("Refrigerants"), cells, this);
     gl->addWidget(table, 0, 0);
 
-    QSet<QString> predefined_refrigerants = listRefrigerants(false).toSet();
+    QSet<QString> predefined_refrigerants = refrigerantSet(false);
     QSet<QString> used_refrigerants;
     MTSqlQuery query("SELECT refrigerant FROM circuits UNION SELECT refrigerant FROM repairs UNION SELECT refrigerant FROM refrigerant_management");
     while (query.next()) {
@@ -3465,7 +3465,7 @@ void MainWindow::importData()
         trw[0] = id->newInspections();
         trw[1] = id->modifiedInspections();
         QSet<QString> inspections_compressors_fields = InspectionCompressor::columns().columnNameSet();
-        inspections_compressors_fields.unite(QSet<QString>::fromList(compressor_variable_names));
+        inspections_compressors_fields.unite(QSet<QString>(compressor_variable_names.begin(), compressor_variable_names.end()));
         for (int w = 0; w < 2; ++w) {
             for (int i = 0, j = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 QTreeWidgetItem *item = trw[w]->topLevelItem(i);

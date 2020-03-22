@@ -326,7 +326,7 @@ void ViewTab::formatGroupItem(QTreeWidgetItem *item)
     QFont font = item->font(0);
 #ifdef Q_OS_MAC
     font.setBold(true);
-    if (Global::macVersion() == QSysInfo::MV_10_0 + 10) {
+    if (Global::macVersion() == Q_MV_OSX(10, 10)) {
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
     }
     font.setPointSize(font.pointSize() - 1);

@@ -27,7 +27,7 @@
 void MainWindow::macInitUI()
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (QSysInfo::MacintoshVersion > QSysInfo::MV_10_6) {
+    if (QSysInfo::MacintoshVersion > Q_MV_OSX(10, 6)) {
         NSView *view = (NSView *)winId();
         [[view window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
@@ -41,7 +41,7 @@ int Global::macVersion()
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         NSDictionary *systemVersion = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
         NSArray *productVersion = [[systemVersion objectForKey:@"ProductVersion"] componentsSeparatedByString:@"."];
-        version = [[productVersion objectAtIndex:1] intValue] + QSysInfo::MV_10_0;
+        version = [[productVersion objectAtIndex:1] intValue] + Q_MV_OSX(10, 0);
         [pool release];
     }
     return version;

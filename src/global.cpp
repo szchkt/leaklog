@@ -1154,6 +1154,12 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
     return refrigerants;
 }
 
+QSet<QString> Global::refrigerantSet(bool include_user_refrigerants)
+{
+    QStringList refrigerants = listRefrigerants(include_user_refrigerants);
+    return QSet<QString>(refrigerants.begin(), refrigerants.end());
+}
+
 MTDictionary Global::listInspectors()
 {
     MTDictionary inspectors(true);
