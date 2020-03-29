@@ -41,12 +41,14 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int>
     }
 }
 
-ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_field, const QSet<QString> &refrigerants_by_field)
+ReportData::ReportData(const QString &service_company_uuid, int since, const QString &filter_refrigerant, bool by_field, const QSet<QString> &refrigerants_by_field)
 {
     QVector<double> *sum_list;
 
     MTQuery refrigerant_query = RefrigerantRecord::query();
 
+    if (!service_company_uuid.isEmpty())
+        refrigerant_query.parents().insert("service_company_uuid", service_company_uuid);
     if (!filter_refrigerant.isEmpty())
         refrigerant_query.parents().insert("refrigerant", filter_refrigerant);
 
@@ -118,6 +120,8 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
                      "customers.company, customers.id AS company_id, circuits.refrigerant";
     if (by_field)
         fields += ", circuits.field";
+    if (!service_company_uuid.isEmpty())
+        inspections_query.addFilter("circuits.service_company_uuid = ?", service_company_uuid);
     if (!filter_refrigerant.isEmpty())
         inspections_query.addFilter("circuits.refrigerant = ?", filter_refrigerant);
     ListOfVariantMaps inspections(inspections_query.listAll(fields));
@@ -129,6 +133,8 @@ ReportData::ReportData(int since, const QString &filter_refrigerant, bool by_fie
              "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
+    if (!service_company_uuid.isEmpty())
+        repairs_query.parents().insert("service_company_uuid", service_company_uuid);
     if (!filter_refrigerant.isEmpty())
         repairs_query.parents().insert("refrigerant", filter_refrigerant);
     inspections << repairs_query.listAll(fields);

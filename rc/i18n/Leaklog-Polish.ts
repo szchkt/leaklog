@@ -731,6 +731,10 @@
         <source>Refrigerant amount precharged:</source>
         <translation>Napełnienie początkowe:</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Firma serwisowa:</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -2815,14 +2819,6 @@
         <translation>Ctrl+Shift+O</translation>
     </message>
     <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Edytuj informacje o firmie serwisowej...</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Edytuj informacje o firmie serwisowej</translation>
-    </message>
-    <message>
         <source>Add Repair...</source>
         <translation>Dodaj naprawę...</translation>
     </message>
@@ -3542,7 +3538,7 @@ Aby usunąć tabelę &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Czy napewno chcesz usunąć wybrane ostrzeżenie?
-Aby usunąc ostrzeżenie &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+Aby usunąć ostrzeżenie &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Remove warning %1</source>
@@ -3564,7 +3560,7 @@ Aby usunąc ostrzeżenie &quot;%1&quot; naciśnij USUŃ i potwierdź:</translati
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Czy napewno chcesz usunąć wybranego kontrolera?
-Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Remove inspector %1</source>
@@ -3842,7 +3838,7 @@ Aby usunąc kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation
         <source>Are you sure you want to remove the selected assembly record type?
 To remove all data about the record &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Czy napewno chcesz usunąć wybrany typ książki serwisowej?
-Aby usunąc wszystkie dane pozycji &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+Aby usunąć wszystkie dane pozycji &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Remove assembly record type %1</source>
@@ -3908,7 +3904,7 @@ Aby usunąć wszystkie dane kategorii elementu &quot;%1&quot; naciśnij USUŃ i 
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Czy napewno chcesz usunąć wybrany typ jednostki obiegu?
-Aby usunąc wszystkie dane typu &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+Aby usunąć wszystkie dane typu &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Remove circuit unit type %1</source>
@@ -4485,6 +4481,52 @@ dla ID osoby i firmy</translation>
         <source>Keep ID</source>
         <translation>Zachowaj ID</translation>
     </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Edytuj firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Edytuj firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Dodaj firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Dodaj firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Usuń firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Usuń firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Remove service company - Leaklog</source>
+        <translation>Usuń firmę serwisową - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected service company.</source>
+        <translation>Nie można usunąc wybranej firmy serwisowej.</translation>
+    </message>
+    <message>
+        <source>Removing this service company would affect the store.</source>
+        <translation>Usunięcie tej firmy serwisowej miałoby wpływ na magazyn.</translation>
+    </message>
+    <message>
+        <source>Remove service company %1%2</source>
+        <translation>Usuń firmę serwisową %1%2</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the selected service company?
+To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
+        <translation>Czy napewno chcesz usunąć wybraną firmę serwisową?
+Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4638,10 +4680,6 @@ dla ID osoby i firmy</translation>
 <context>
     <name>Permissions</name>
     <message>
-        <source>Edit service company information</source>
-        <translation>Edytuj informacje o firmie serwisowej</translation>
-    </message>
-    <message>
         <source>Add record of refrigerant management</source>
         <translation>Dodaj pozycje zarządzania czynnikiem</translation>
     </message>
@@ -4760,6 +4798,18 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Access assembly record list prices</source>
         <translation>Dostęp do cennika w książce serwisowej</translation>
+    </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Dodaj firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Edytuj firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Usuń firmę serwisową</translation>
     </message>
 </context>
 <context>
@@ -4905,6 +4955,10 @@ dla ID osoby i firmy</translation>
         <source>Batch number</source>
         <translation>Numer serii</translation>
     </message>
+    <message>
+        <source>Service company</source>
+        <translation>Firma serwisowa</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -5020,6 +5074,10 @@ dla ID osoby i firmy</translation>
         <source>Add record of refrigerant management - Leaklog</source>
         <translation>Dodaj pozycję w zarządzaniu czynnikiem - Leaklog</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Firma serwisowa:</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5117,6 +5175,14 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Refrigerant amount total:</source>
         <translation>Całkowita ilość czynnika:</translation>
+    </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Firma serwisowa:</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Firma serwisowa</translation>
     </message>
 </context>
 <context>
@@ -5379,14 +5445,6 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Done</source>
         <translation>Wykonano</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Edytuj informacje o firmie serwisowej</translation>
-    </message>
-    <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Edytuj informacje o firmie serwisowej...</translation>
     </message>
     <message>
         <source>Add record of refrigerant management</source>
@@ -5783,6 +5841,34 @@ dla ID osoby i firmy</translation>
     <message>
         <source>Refrigerant:</source>
         <translation>Czynnik:</translation>
+    </message>
+    <message>
+        <source>Add a new service company</source>
+        <translation>Dodaj nową firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Dodaj firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Service Company:</source>
+        <translation>Firma serwisowa:</translation>
+    </message>
+    <message>
+        <source>Edit the selected service company</source>
+        <translation>Edytuj wybraną firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Edytuj firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Remove the selected service company</source>
+        <translation>Usuń wybraną firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Usuń firmę serwisową...</translation>
     </message>
 </context>
 <context>

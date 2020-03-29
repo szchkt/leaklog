@@ -40,6 +40,7 @@ OperatorReportView::OperatorReportView(ViewTabSettings *settings):
 QString OperatorReportView::renderHTML(bool)
 {
     QString customer_uuid = settings->selectedCustomerUUID();
+    QString service_company_uuid = settings->filterServiceCompanyUUID();
     int year = settings->toolBarStack()->filterSinceValue();
     int month_from = settings->toolBarStack()->filterMonthFromValue();
     int month_until = settings->toolBarStack()->filterMonthUntilValue();
@@ -131,6 +132,9 @@ QString OperatorReportView::renderHTML(bool)
     double refrigerant_amount, refrigerant_amount_begin, refrigerant_amount_end;
 
     MTQuery circuits_query = Circuit::query({{"customer_uuid", customer_uuid}});
+    if (!service_company_uuid.isEmpty()) {
+        circuits_query.parents().insert("service_company_uuid", service_company_uuid);
+    }
     if (!settings->toolBarStack()->isFilterEmpty()) {
         circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }

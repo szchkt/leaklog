@@ -332,7 +332,9 @@
     <addaction name="actionOpen_Backup_Folder"/>
     <addaction name="actionEdit_Refrigerants"/>
     <addaction name="separator"/>
-    <addaction name="actionEdit_service_company_information"/>
+    <addaction name="actionAdd_Service_Company"/>
+    <addaction name="actionEdit_Service_Company"/>
+    <addaction name="actionRemove_Service_Company"/>
     <addaction name="actionAdd_record_of_refrigerant_management"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -1559,12 +1561,12 @@
     <string>Ctrl+Shift+O</string>
    </property>
   </action>
-  <action name="actionEdit_service_company_information">
+  <action name="actionEdit_Service_Company">
    <property name="text">
-    <string>Edit Service Company Information...</string>
+    <string>Edit Service Company...</string>
    </property>
    <property name="statusTip">
-    <string>Edit service company information</string>
+    <string>Edit service company</string>
    </property>
   </action>
   <action name="actionAdd_repair">
@@ -2237,6 +2239,22 @@
    </property>
    <property name="text">
     <string>From Leaklog.org...</string>
+   </property>
+  </action>
+  <action name="actionAdd_Service_Company">
+   <property name="text">
+    <string>Add Service Company...</string>
+   </property>
+   <property name="statusTip">
+    <string>Add service company</string>
+   </property>
+  </action>
+  <action name="actionRemove_Service_Company">
+   <property name="text">
+    <string>Remove Service Company...</string>
+   </property>
+   <property name="statusTip">
+    <string>Remove service company</string>
    </property>
   </action>
  </widget>

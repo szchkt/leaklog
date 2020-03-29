@@ -48,7 +48,7 @@ QString LeakagesByApplicationView::renderHTML(bool)
     units << "&nbsp;" + QApplication::translate("Units", "kg");
     units << "&nbsp;" + QApplication::translate("Units", "%");
 
-    class LeakagesByApplication leakages(true);
+    class LeakagesByApplication leakages(true, settings->filterServiceCompanyUUID());
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: medium;\">" << tr("Leakages by Application") << "</th></tr></table><br>";

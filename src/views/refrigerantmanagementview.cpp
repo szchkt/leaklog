@@ -36,6 +36,8 @@ RefrigerantManagementView::RefrigerantManagementView(ViewTabSettings *settings):
 
 QString RefrigerantManagementView::renderHTML(bool)
 {
+    QString service_company_uuid = settings->filterServiceCompanyUUID();
+    MTDictionary service_companies = service_company_uuid.isEmpty() ? listServiceCompanies() : MTDictionary();
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
@@ -47,9 +49,12 @@ QString RefrigerantManagementView::renderHTML(bool)
     writeServiceCompany(out);
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"15\" style=\"font-size: medium;\">";
+    out << "<tr><th colspan=\"16\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
+    if (service_company_uuid.isEmpty()) {
+        out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:service_company_uuid\">" << tr("Service company") << "</a></th>";
+    }
     out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Batch number") << "</th>";
@@ -76,6 +81,8 @@ QString RefrigerantManagementView::renderHTML(bool)
     }
     out << "</tr>";
     MTQuery records = RefrigerantRecord::query();
+    if (!service_company_uuid.isEmpty())
+        records.parents().insert("service_company_uuid", service_company_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
         records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
     }
@@ -95,6 +102,9 @@ QString RefrigerantManagementView::renderHTML(bool)
         out << "<tr onclick=\"window.location = 'refrigerantrecord:" << query.stringValue("uuid") << "/edit'\" style=\"cursor: pointer;\">";
         out << (show_notes && !notes.isEmpty() ? "<td rowspan=\"2\" style=\"vertical-align: top;\">" : "<td>");
         out << settings->mainWindowSettings().formatDateTime(date) << "</td>";
+        if (service_company_uuid.isEmpty()) {
+            out << "<td>" << escapeString(service_companies.value(query.stringValue("service_company_uuid"))) << "</td>";
+        }
         for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
             if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {

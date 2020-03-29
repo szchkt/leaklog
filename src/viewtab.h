@@ -94,6 +94,11 @@ public:
 
     QString appendDefaultOrderToColumn(const QString &column) const;
 
+    bool isServiceCompanySelected() const;
+    QString filterServiceCompanyUUID() const;
+    QString selectedServiceCompanyUUID() const;
+    void setSelectedServiceCompanyUUID(const QString &service_company_uuid);
+
 public slots:
     void setView(View::ViewID view, const QString &table = QString());
     void setView(int view, const QString &table = QString());

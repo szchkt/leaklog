@@ -27,6 +27,8 @@
 #include "toolbarstack.h"
 #include "htmlbuilder.h"
 
+#include <QUuid>
+
 using namespace Global;
 
 CustomersView::CustomersView(ViewTabSettings *settings):
@@ -55,9 +57,9 @@ static void addCustomerHeaderCell(const QString &key, const QString &customer_uu
     addCustomerHeaderCell(key, Customer::attributes().value(key), customer_uuid, row);
 }
 
-void CustomersView::writeCustomersTable(MTTextStream &out, const QString &customer_id)
+void CustomersView::writeCustomersTable(MTTextStream &out, const QString &customer_uuid)
 {
-    HTMLTable *table = writeCustomersTable(customer_id);
+    HTMLTable *table = writeCustomersTable(customer_uuid);
     out << table->html();
     delete table;
 }
@@ -74,6 +76,10 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     if (!customer_uuid.isEmpty()) {
         all_customers.parents().insert("uuid", customer_uuid);
     } else {
+        QString service_company_uuid = settings->filterServiceCompanyUUID();
+        if (!QUuid(service_company_uuid).isNull()) {
+            all_customers.addJoin(QString("JOIN (SELECT customer_uuid, COUNT(uuid) AS serviced_circuit_count FROM circuits WHERE service_company_uuid = '%1' GROUP BY customer_uuid) AS serviced_circuits ON customers.uuid = serviced_circuits.customer_uuid AND serviced_circuit_count > 0").arg(service_company_uuid));
+        }
         if (!settings->toolBarStack()->isFilterEmpty()) {
             all_customers.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
         }

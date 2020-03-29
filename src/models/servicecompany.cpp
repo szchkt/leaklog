@@ -24,8 +24,8 @@
 
 #include <QApplication>
 
-ServiceCompany::ServiceCompany(const QString &uuid):
-    DBRecord(tableName(), uuid.isEmpty() ? MTSqlQuery("SELECT uuid FROM service_companies ORDER BY uuid LIMIT 1").nextValue().toString() : uuid)
+ServiceCompany::ServiceCompany(const QString &uuid, const QVariantMap &savedValues):
+    DBRecord(tableName(), uuid.isNull() ? MTSqlQuery("SELECT uuid FROM service_companies ORDER BY uuid LIMIT 1").nextValue().toString() : uuid, savedValues)
 {}
 
 void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)

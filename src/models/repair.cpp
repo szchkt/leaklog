@@ -36,6 +36,7 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Repair"));
+    md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked())
         date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));

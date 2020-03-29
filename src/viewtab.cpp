@@ -96,6 +96,7 @@ ViewTab::ViewTab(QWidget *parent):
     QObject::connect(ui->trw_navigation, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
                      this, SLOT(viewChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
+    QObject::connect(parentWindow(), SIGNAL(serviceCompaniesChanged()), ui->toolbarstack, SLOT(loadServiceCompanies()));
     QObject::connect(this, SIGNAL(viewChanged(View::ViewID)),
                      ui->toolbarstack, SLOT(viewChanged(View::ViewID)));
 
@@ -599,6 +600,26 @@ QString ViewTab::appendDefaultOrderToColumn(const QString &column) const
     return parentWindow()->appendDefaultOrderToColumn(column);
 }
 
+bool ViewTab::isServiceCompanySelected() const
+{
+    return ui->toolbarstack->isServiceCompanySelected();
+}
+
+QString ViewTab::filterServiceCompanyUUID() const
+{
+    return ui->toolbarstack->filterServiceCompanyUUID();
+}
+
+QString ViewTab::selectedServiceCompanyUUID() const
+{
+    return ui->toolbarstack->selectedServiceCompanyUUID();
+}
+
+void ViewTab::setSelectedServiceCompanyUUID(const QString &service_company_uuid)
+{
+    ui->toolbarstack->setSelectedServiceCompanyUUID(service_company_uuid);
+}
+
 void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     if (current == previous)
@@ -705,7 +726,7 @@ void ViewTab::executeLink(Link *link)
 
     case LinkParser::Store:
         if (link->action() == Link::Edit)
-            parentWindow()->editServiceCompany();
+            parentWindow()->editServiceCompany(link->idValue("servicecompany"));
         else
             setView(View::Store);
         break;

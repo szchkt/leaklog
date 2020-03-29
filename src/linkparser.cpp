@@ -28,6 +28,8 @@ LinkParser::LinkParser()
 {
     root_entity = new LinkEntity(false);
 
+    root_entity->addRoute("servicecompany", Store);
+
     LinkEntity *customer_entity = root_entity->addRoute("customer", Customer);
     root_entity->addRoute("allrepairs", AllRepairs, false);
     root_entity->addRoute("repair", Repair);

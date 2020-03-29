@@ -731,6 +731,10 @@
         <source>Refrigerant amount precharged:</source>
         <translation>Predplnené množstvo chladiva:</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Servisná organizácia:</translation>
+    </message>
 </context>
 <context>
     <name>CircuitUnitType</name>
@@ -3655,14 +3659,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Vzdialenú databázu...</translation>
     </message>
     <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Upraviť informácie o servisnej organizácii...</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
-    </message>
-    <message>
         <source>Add Repair...</source>
         <translation>Pridať opravu...</translation>
     </message>
@@ -4489,6 +4485,52 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Keep ID</source>
         <translation>Ponechať IČ</translation>
     </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Upraviť servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Upraviť servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Pridať servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Pridať servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Odstrániť servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Odstrániť servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Remove service company - Leaklog</source>
+        <translation>Odstrániť servisnú organizáciu - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected service company.</source>
+        <translation>Nie je možné odstrániť vybranú servisnú organizáciu.</translation>
+    </message>
+    <message>
+        <source>Removing this service company would affect the store.</source>
+        <translation>Odstránenie tejto servisnej organizácie by ovplyvnilo sklad.</translation>
+    </message>
+    <message>
+        <source>Remove service company %1%2</source>
+        <translation>Odstrániť servisnú organizáciu %1%2</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the selected service company?
+To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
+        <translation>Naozaj chcete odstrániť vybranú servisnú organizáciu?
+Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4723,10 +4765,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Pristupovať k cenníkovým cenám na montážnych listoch</translation>
     </message>
     <message>
-        <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
-    </message>
-    <message>
         <source>Edit record of refrigerant management</source>
         <translation>Upraviť záznam o nakladaní s chladivom</translation>
     </message>
@@ -4765,6 +4803,18 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Decommission circuit</source>
         <translation>Vyradiť okruh</translation>
+    </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Pridať servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Upraviť servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Odstrániť servisnú organizáciu</translation>
     </message>
 </context>
 <context>
@@ -4910,6 +4960,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Batch number</source>
         <translation>Číslo šarže</translation>
     </message>
+    <message>
+        <source>Service company</source>
+        <translation>Servisná organizácia</translation>
+    </message>
 </context>
 <context>
     <name>RefrigerantRecord</name>
@@ -5025,6 +5079,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <source>Add record of refrigerant management - Leaklog</source>
         <translation>Pridať záznam o nakladaní s chladivom - Leaklog</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Servisná organizácia:</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5122,6 +5180,14 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Refrigerant amount total:</source>
         <translation>Celkové množstvo chladiva:</translation>
+    </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Servisná organizácia:</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Servisná organizácia</translation>
     </message>
 </context>
 <context>
@@ -5526,14 +5592,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>Dokončiť</translation>
     </message>
     <message>
-        <source>Edit service company information</source>
-        <translation>Upraviť informácie o servisnej organizácii</translation>
-    </message>
-    <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Upraviť informácie o servisnej organizácii...</translation>
-    </message>
-    <message>
         <source>Add Record of Refrigerant Management...</source>
         <translation>Pridať záznam o nakladaní s chladivom...</translation>
     </message>
@@ -5788,6 +5846,34 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Refrigerant:</source>
         <translation>Chladivo:</translation>
+    </message>
+    <message>
+        <source>Add a new service company</source>
+        <translation>Pridať novú servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Pridať servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Service Company:</source>
+        <translation>Servisná organizácia:</translation>
+    </message>
+    <message>
+        <source>Edit the selected service company</source>
+        <translation>Upraviť vybranú servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Upraviť servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Remove the selected service company</source>
+        <translation>Odstrániť vybranú servisnú organizáciu</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Odstrániť servisnú organizáciu...</translation>
     </message>
 </context>
 <context>

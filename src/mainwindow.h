@@ -87,6 +87,7 @@ public:
 
 signals:
     void databaseModified();
+    void serviceCompaniesChanged();
     void tablesChanged(const MTDictionary &);
     void tableAdded(int index, const QString &uuid, const QString &name);
     void tableRemoved(const QString &uuid);
@@ -99,7 +100,9 @@ public slots:
 
     void editRefrigerants();
 
-    void editServiceCompany();
+    void addServiceCompany();
+    void editServiceCompany(const QString &uuid = QString());
+    void removeServiceCompany();
     void addRefrigerantRecord();
     void editRefrigerantRecord(const QString &uuid);
 
@@ -271,6 +274,7 @@ private:
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid = QString());
     bool isRecordLocked(const QString &);
+    void loadServiceCompanies();
     void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());
     void addVariable(bool);
     void moveTableVariable(bool);

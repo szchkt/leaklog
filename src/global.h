@@ -103,6 +103,7 @@ namespace Global {
     // List
     QStringList listRefrigerants(bool include_user_refrigerants = true);
     QSet<QString> refrigerantSet(bool include_user_refrigerants = true);
+    MTDictionary listServiceCompanies();
     MTDictionary listInspectors();
     MTDictionary listAssemblyRecordItemCategories(bool = false);
     MTDictionary listAssemblyRecordTypes();

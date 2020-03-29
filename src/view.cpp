@@ -87,7 +87,7 @@ QString View::ellipsis(const MTVariant &text, bool force)
 
 HTMLTable *View::writeServiceCompany(HTMLTable *table)
 {
-    ServiceCompany serv_company;
+    ServiceCompany serv_company(settings->selectedServiceCompanyUUID());
     if (!table) table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"");
     table->addClass("service_company");
     HTMLTableRow *_tr = table->addRow();
@@ -100,7 +100,7 @@ HTMLTable *View::writeServiceCompany(HTMLTable *table)
         }
     }
     _td = _tr->addHeaderCell("colspan=\"6\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
-    *(_td->link("servicecompany:" + serv_company.companyID() + "/edit")) << Global::escapeString(serv_company.name());
+    *(_td->link("servicecompany:" + serv_company.uuid() + "/edit")) << Global::escapeString(serv_company.name());
     _tr = table->addRow();
     for (int n = 0; n < ServiceCompany::attributes().count(); ++n) {
         if (ServiceCompany::attributes().key(n) == "name")

@@ -275,7 +275,9 @@ MainWindow::MainWindow():
     QObject::connect(actionAutosave, SIGNAL(triggered()), this, SLOT(configureAutosave()));
     QObject::connect(actionOpen_Backup_Folder, SIGNAL(triggered()), this, SLOT(openBackupDirectory()));
     QObject::connect(actionEdit_Refrigerants, SIGNAL(triggered()), this, SLOT(editRefrigerants()));
-    QObject::connect(actionEdit_service_company_information, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
+    QObject::connect(actionAdd_Service_Company, SIGNAL(triggered()), this, SLOT(addServiceCompany()));
+    QObject::connect(actionEdit_Service_Company, SIGNAL(triggered()), this, SLOT(editServiceCompany()));
+    QObject::connect(actionRemove_Service_Company, SIGNAL(triggered()), this, SLOT(removeServiceCompany()));
     QObject::connect(actionAdd_record_of_refrigerant_management, SIGNAL(triggered()), this, SLOT(addRefrigerantRecord()));
     QObject::connect(actionAdd_customer, SIGNAL(triggered()), this, SLOT(addCustomer()));
     QObject::connect(actionEdit_customer, SIGNAL(triggered()), this, SLOT(editCustomer()));
@@ -670,7 +672,7 @@ void MainWindow::printLabel(bool detailed)
         attributes.unite(inspector.list("certificate_number, person"));
     }
 
-    ServiceCompany service_company;
+    ServiceCompany service_company(m_tab->selectedServiceCompanyUUID());
     if (service_company.exists()) {
         attributes.unite(service_company.list("id, name, address, mail, phone"));
         attributes.insert("id", attributes.value("id").toString());
@@ -948,7 +950,9 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
     actionOpen_Backup_Folder->setEnabled(enable && !isDatabaseRemote());
     actionEdit_Refrigerants->setEnabled(enable);
 
-    actionEdit_service_company_information->setEnabled(enable);
+    actionAdd_Service_Company->setEnabled(enable);
+    actionEdit_Service_Company->setEnabled(enable);
+    actionRemove_Service_Company->setEnabled(enable);
     actionAdd_record_of_refrigerant_management->setEnabled(enable);
 
     actionAdd_customer->setEnabled(enable);
@@ -1034,6 +1038,7 @@ void MainWindow::timeFormatChanged(QAction *action)
 
 void MainWindow::enableTools()
 {
+    bool can_remove_service_company = m_tab && m_tab->toolBarStack()->canRemoveServiceCompany();
     bool customer_selected = m_tab && m_tab->isCustomerSelected();
     bool circuit_selected = m_tab && m_tab->isCircuitSelected();
     bool inspection_selected = m_tab && m_tab->isInspectionSelected();
@@ -1044,6 +1049,8 @@ void MainWindow::enableTools()
     actionClose_Tab->setEnabled(tabw_main->count() > 1);
 
     actionSync->setEnabled(m_tab);
+
+    actionRemove_Service_Company->setEnabled(can_remove_service_company);
 
     actionEdit_customer->setEnabled(customer_selected);
     actionDuplicate_customer->setEnabled(customer_selected);

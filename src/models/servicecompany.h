@@ -29,7 +29,7 @@ class ServiceCompany : public DBRecord
     Q_OBJECT
 
 public:
-    ServiceCompany(const QString &uuid = QString());
+    ServiceCompany(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
 

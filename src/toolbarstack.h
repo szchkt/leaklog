@@ -40,6 +40,7 @@ public:
     // Widgets
     void enableTools();
 
+    QString filterServiceCompanyUUID() const { return chb_service_company->isChecked() && cb_service_company->count() > 1 ? selectedServiceCompanyUUID() : QString(); }
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
     inline bool isTableForAllCircuitsExceptDecommissionedChecked() const { return isTableForAllCircuitsChecked() && chb_table_except_decommissioned_before->isChecked(); }
     inline QDate minimumDecommissioningDateForTableOfAllCircuits() const { return de_table_except_decommissioned_before->date(); }
@@ -63,6 +64,11 @@ public:
     bool isCO2EquivalentChecked() const { return chb_CO2_equivalent->isChecked(); }
     bool isMin5tCO2EquivalentChecked() const { return chb_CO2_equivalent->isChecked() ? chb_min_5tCO2->isChecked() : chb_min_3kg->isChecked(); }
 
+    bool isServiceCompanySelected() const { return !cb_service_company->currentData().isNull(); }
+    QString selectedServiceCompanyUUID() const { return cb_service_company->currentData().toString(); }
+    void setSelectedServiceCompanyUUID(const QString &service_company_uuid);
+    bool canRemoveServiceCompany() const;
+
     // Reporting
     void setReportDataGroupBoxVisible(bool visible);
     inline QToolButton *autofillButton() const { return tbtn_autofill; }
@@ -71,6 +77,8 @@ public:
     inline QProgressBar *reportDataProgressBar() const { return progressbar_loadprogress; }
 
 public slots:
+    void loadServiceCompanies();
+
     void clearInspector();
     void clearCustomer();
     void clearCircuit();
@@ -92,6 +100,7 @@ private slots:
     void emitFilterChanged();
     void monthFromChanged(int);
     void monthUntilChanged(int);
+    void serviceCompanyChanged();
 
 signals:
     void filterChanged();

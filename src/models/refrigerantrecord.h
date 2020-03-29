@@ -32,6 +32,8 @@ public:
     void initEditDialogue(EditDialogueWidgets *);
     bool checkValues(QWidget * = 0);
 
+    inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
+    inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
     inline QString date() { return stringValue("date"); }
     inline QString partner() { return stringValue("partner"); }
     inline QString partnerID() { return stringValue("partner_id"); }

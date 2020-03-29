@@ -27,16 +27,23 @@ using namespace Global;
 
 const QString LeakagesByApplication::Key::All("All");
 
-LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
+LeakagesByApplication::LeakagesByApplication(bool weighted_averages, const QString &service_company_uuid):
     QObject(), min_year(9999), max_year(0)
 {
     tables << variableNames().value("refr_add_am") << tr("Amount of refrigerant in circuits") << tr("Percentage of leakage by application");
 
     Q_ASSERT(tables.count() == TableCount);
 
-    MTSqlQuery inspections("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
+    QString inspections_qu("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
                            " FROM inspections LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
                            " WHERE inspections.inspection_type <> 1");
+    if (!service_company_uuid.isEmpty())
+        inspections_qu += " AND circuits.service_company_uuid = :service_company_uuid";
+    MTSqlQuery inspections;
+    inspections.prepare(inspections_qu);
+    if (!service_company_uuid.isEmpty())
+        inspections.bindValue(":service_company_uuid", service_company_uuid);
+    inspections.exec();
 
     int current_year = QDate::currentDate().year();
 
@@ -65,7 +72,14 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages):
 
     QVariantMap nominal_inspection_parents = {{"inspection_type", Inspection::NominalInspection}};
 
-    MTSqlQuery circuits("SELECT uuid, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits");
+    QString circuits_query = "SELECT uuid, refrigerant, field, refrigerant_amount, commissioning, decommissioning, disused FROM circuits";
+    if (!service_company_uuid.isEmpty())
+        circuits_query += " WHERE service_company_uuid = :service_company_uuid";
+    MTSqlQuery circuits;
+    circuits.prepare(circuits_query);
+    if (!service_company_uuid.isEmpty())
+        circuits.bindValue(":service_company_uuid", service_company_uuid);
+    circuits.exec();
 
     while (circuits.next()) {
         QString circuit_uuid = circuits.stringValue("uuid");

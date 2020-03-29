@@ -846,7 +846,9 @@ class Permissions
 {
 public:
     Permissions() {
-        dict.insert("edit_service_company", QApplication::translate("Permissions", "Edit service company information"));
+        dict.insert("add_service_company", QApplication::translate("Permissions", "Add service company"));
+        dict.insert("edit_service_company", QApplication::translate("Permissions", "Edit service company"));
+        dict.insert("remove_service_company", QApplication::translate("Permissions", "Remove service company"));
         dict.insert("add_refrigerant_management", QApplication::translate("Permissions", "Add record of refrigerant management"));
         dict.insert("edit_refrigerant_management", QApplication::translate("Permissions", "Edit record of refrigerant management"));
         dict.insert("add_customer", QApplication::translate("Permissions", "Add customer"));
@@ -1158,6 +1160,15 @@ QSet<QString> Global::refrigerantSet(bool include_user_refrigerants)
 {
     QStringList refrigerants = listRefrigerants(include_user_refrigerants);
     return QSet<QString>(refrigerants.begin(), refrigerants.end());
+}
+
+MTDictionary Global::listServiceCompanies()
+{
+    MTDictionary service_companies;
+    ServiceCompany::query().each("name", [&service_companies](ServiceCompany &company) {
+        service_companies.insert(company.uuid(), company.name());
+    });
+    return service_companies;
 }
 
 MTDictionary Global::listInspectors()

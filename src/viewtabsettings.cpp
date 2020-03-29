@@ -29,6 +29,8 @@ ViewTabSettings::ViewTabSettings()
 
 void ViewTabSettings::saveSettings(QSettings &settings) const
 {
+    if (isServiceCompanySelected())
+        settings.setValue("selected_service_company_uuid", selectedServiceCompanyUUID());
     if (isCustomerSelected())
         settings.setValue("selected_customer_uuid", _customer_uuid);
     if (isCircuitSelected())
@@ -57,6 +59,7 @@ void ViewTabSettings::saveSettings(QSettings &settings) const
 
 void ViewTabSettings::restoreSettings(QSettings &settings)
 {
+    setSelectedServiceCompanyUUID(settings.value("selected_service_company_uuid").toString());
     _customer_uuid = settings.value("selected_customer_uuid").toString();
     _circuit_uuid = settings.value("selected_circuit_uuid").toString();
     _inspection_uuid = settings.value("selected_inspection_uuid").toString();
@@ -113,9 +116,6 @@ void ViewTabSettings::loadCustomer(const QString &customer_uuid, bool refresh)
 {
     if (customer_uuid.isEmpty()) { return; }
     setSelectedCustomerUUID(customer_uuid);
-    clearSelectedCircuit();
-    clearSelectedCompressor();
-    clearSelectedInspection();
     enableAllTools();
     if (refresh) {
         setView(View::Circuits);

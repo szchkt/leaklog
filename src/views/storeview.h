@@ -24,6 +24,8 @@
 
 #include <QSet>
 
+class ServiceCompany;
+
 class StoreView : public View
 {
     Q_OBJECT
@@ -36,6 +38,9 @@ public:
     QString title() const;
 
     void toggleYear(int year);
+
+protected:
+    void writeServiceCompany(ServiceCompany &serv_company, QString &html, MTTextStream &out);
 
 private:
     QSet<int> years_expanded;

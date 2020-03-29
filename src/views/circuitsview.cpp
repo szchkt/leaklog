@@ -85,6 +85,10 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     if (!all_circuits) {
         circuits_query.parents().insert("uuid", circuit_uuid);
     } else {
+        QString service_company_uuid = settings->filterServiceCompanyUUID();
+        if (!service_company_uuid.isEmpty()) {
+            circuits_query.parents().insert("service_company_uuid", service_company_uuid);
+        }
         if (!settings->toolBarStack()->isFilterEmpty()) {
             circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
         }

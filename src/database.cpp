@@ -58,6 +58,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QUuid>
 
 #include <limits>
 
@@ -274,6 +275,13 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
             query.exec("DROP INDEX IF EXISTS index_journal_source_uuid_entry_id");
             query.exec("DELETE FROM journal WHERE id NOT IN (SELECT MIN(id) FROM journal GROUP BY source_uuid, entry_id)");
             query.exec(unique_index + "index_journal_source_uuid_version_entry_id ON journal (source_uuid ASC, version ASC, entry_id ASC)");
+
+            QString service_company_uuid = MTSqlQuery("SELECT uuid FROM service_companies ORDER BY uuid LIMIT 1", database).nextValue().toString();
+            if (!QUuid(service_company_uuid).isNull()) {
+                query.exec(QString("UPDATE circuits SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
+                query.exec(QString("UPDATE repairs SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
+                query.exec(QString("UPDATE refrigerant_management SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
+            }
         }
 
         if (save_on_upgrade && !transaction && v > 0) {
@@ -716,18 +724,12 @@ void MainWindow::openDatabase(QSqlDatabase &db, const QString &connection_string
 
 void MainWindow::loadDatabase(bool reload)
 {
-    if (reload) {
-        trw_variables->clear();
+    loadServiceCompanies();
 
-        cb_table_edit->clear();
-
-        lw_warnings->clear();
-
-        lw_styles->clear();
-    }
-
+    trw_variables->clear();
     loadVariables(trw_variables);
 
+    cb_table_edit->clear();
     MTDictionary tables;
 
     MTSqlQuery query("SELECT uuid, name FROM tables ORDER BY position ASC, name ASC");
@@ -738,6 +740,7 @@ void MainWindow::loadDatabase(bool reload)
 
     emit tablesChanged(tables);
 
+    lw_warnings->clear();
     Warnings warnings;
     while (warnings.next()) {
         QListWidgetItem *item = new QListWidgetItem;
@@ -746,6 +749,7 @@ void MainWindow::loadDatabase(bool reload)
         lw_warnings->addItem(item);
     }
 
+    lw_styles->clear();
     ListOfVariantMaps styles = Style::query().listAll("uuid, name");
     for (int i = 0; i < styles.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem;
@@ -807,7 +811,7 @@ void MainWindow::saveDatabase(bool compact, bool update_ui)
 
     if (update_ui) {
         setWindowTitleWithRepresentedFilename(db.databaseName());
-        refreshView();
+        loadDatabase(true);
     }
 }
 
@@ -1217,17 +1221,82 @@ void MainWindow::editRefrigerants()
     refreshView();
 }
 
-void MainWindow::editServiceCompany()
+void MainWindow::loadServiceCompanies()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
-    if (!isOperationPermitted("edit_service_company")) { return; }
-    ServiceCompany record;
-    UndoCommand command(m_undo_stack, tr("Edit service company information"));
+
+    emit serviceCompaniesChanged();
+}
+
+void MainWindow::addServiceCompany()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!isOperationPermitted("add_service_company")) { return; }
+    ServiceCompany record("");
+    UndoCommand command(m_undo_stack, tr("Add service company"));
     EditDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
+        loadServiceCompanies();
         refreshView();
     }
+}
+
+void MainWindow::editServiceCompany(const QString &uuid)
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (uuid.isEmpty() && !m_tab->isServiceCompanySelected()) { return; }
+    if (!isOperationPermitted("edit_service_company")) { return; }
+    ServiceCompany record(uuid.isEmpty() ? m_tab->selectedServiceCompanyUUID() : uuid);
+    UndoCommand command(m_undo_stack, tr("Edit service company"));
+    EditDialogue md(&record, m_undo_stack, this);
+    if (md.exec() == QDialog::Accepted) {
+        setDatabaseModified(true);
+        loadServiceCompanies();
+        refreshView();
+    }
+}
+
+void MainWindow::removeServiceCompany()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!m_tab->isServiceCompanySelected()) { return; }
+    if (!isOperationPermitted("remove_service_company")) { return; }
+
+    if (Circuit::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists() ||
+        Repair::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists() ||
+        RefrigerantRecord::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists()) {
+        QMessageBox message(this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        message.setIcon(QMessageBox::Warning);
+        message.setWindowTitle(tr("Remove service company - Leaklog"));
+        message.setText(tr("You cannot remove the selected service company."));
+        message.setInformativeText(tr("Removing this service company would affect the store."));
+        message.addButton(tr("OK"), QMessageBox::AcceptRole);
+        message.exec();
+        return;
+    }
+
+    ServiceCompany record(m_tab->selectedServiceCompanyUUID());
+
+    if (RemoveDialogue::confirm(this, tr("Remove service company - Leaklog"),
+                                tr("Are you sure you want to remove the selected service company?\nTo remove all data about the service company \"%1\" type REMOVE and confirm:")
+                                .arg(record.name())) != QDialog::Accepted)
+        return;
+
+    QString name = record.name();
+    UndoCommand command(m_undo_stack, tr("Remove service company %1%2")
+                        .arg(record.companyID())
+                        .arg(name.isEmpty() ? QString() : QString(" (%1)").arg(name)));
+    m_undo_stack->savepoint();
+
+    record.remove();
+
+    loadServiceCompanies();
+    enableTools();
+    setDatabaseModified(true);
+    refreshView();
 }
 
 void MainWindow::addRefrigerantRecord()
@@ -1241,8 +1310,14 @@ void MainWindow::editRefrigerantRecord(const QString &uuid)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     RefrigerantRecord record(uuid);
-    if (record.exists() && isRecordLocked(record.date())) { return; }
+    bool exists = record.exists();
+    if (exists && isRecordLocked(record.date())) { return; }
     if (!isOperationPermitted("edit_refrigerant_management", record.updatedBy())) { return; }
+    if (!exists) {
+        if (m_tab->isServiceCompanySelected()) {
+            record.setValue("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+        }
+    }
     UndoCommand command(m_undo_stack, uuid.isEmpty()
                         ? tr("Add record of refrigerant management")
                         : tr("Edit record of refrigerant management %1").arg(m_settings.formatDateTime(record.date())));
@@ -1437,6 +1512,9 @@ void MainWindow::addCircuit()
     if (!isOperationPermitted("add_circuit")) { return; }
     Circuit record;
     record.setCustomerUUID(m_tab->selectedCustomerUUID());
+    if (m_tab->isServiceCompanySelected()) {
+        record.setValue("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+    }
     UndoCommand command(m_undo_stack, tr("Add circuit"));
     EditCircuitDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {
@@ -2078,6 +2156,9 @@ void MainWindow::addRepair()
     }
     if (m_tab->isInspectorSelected()) {
         record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
+    }
+    if (m_tab->isServiceCompanySelected()) {
+        record.setValue("service_company_uuid", m_tab->selectedServiceCompanyUUID());
     }
     UndoCommand command(m_undo_stack, tr("Add repair"));
     EditDialogue md(&record, m_undo_stack, this);

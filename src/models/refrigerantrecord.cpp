@@ -34,9 +34,14 @@ RefrigerantRecord::RefrigerantRecord(const QString &uuid):
 
 void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
 {
+    md->setMaximumRowCount(20);
+
     MTDictionary refrigerants(listRefrigerants());
 
     md->setWindowTitle(tr("Record of Refrigerant Management"));
+
+    md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
+
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked()) {
         date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));

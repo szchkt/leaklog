@@ -36,6 +36,8 @@ public:
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
     inline QString inspectorUUID() { return stringValue("inspector_uuid"); }
     inline void setInspectorUUID(const QString &value) { setValue("inspector_uuid", value); }
+    inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
+    inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
     inline QString date() { return stringValue("date"); }
     inline void setDate(const QString &value) { setValue("date", value); }
     inline QString customer() { return stringValue("customer"); }

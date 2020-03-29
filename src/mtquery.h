@@ -72,7 +72,11 @@ public:
     MTRecordQuery(const MTQuery &other): MTQuery(other) {}
 
     void each(std::function<void(T &)> f) const {
-        MTSqlQuery query = select();
+        each(QString(), f);
+    }
+
+    void each(const QString &order_by, std::function<void(T &)> f) const {
+        MTSqlQuery query = select("*", order_by);
         query.exec();
         QSqlRecord query_record = query.record();
         while (query.next()) {

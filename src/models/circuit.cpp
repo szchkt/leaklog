@@ -34,6 +34,8 @@ Circuit::Circuit(const QString &uuid, const QVariantMap &savedValues):
 
 void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
+    md->setMaximumRowCount(15);
+
     MTDictionary refrigerants(listRefrigerants());
 
     Customer customer(customerUUID());
@@ -43,6 +45,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
         setValue("year", QDate::currentDate().year());
     }
 
+    md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
     QString id = stringValue("id");
     MDLineEdit *id_edit = new MDLineEdit("id", tr("ID:"), md->widget(), id, 99999);
     md->addInputWidget(id_edit);
@@ -86,7 +89,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     QObject::connect(disused, SIGNAL(toggled(bool)), decommissioning, SLOT(setEnabled(bool)));
     md->addInputWidget(decommissioning);
     MDPlainTextEdit *reason = new MDPlainTextEdit("decommissioning_reason", tr("Reason:"), md->widget(), reasonForDecommissioning());
-    reason->setRowSpan(2);
+    reason->setRowSpan(3);
     reason->setEnabled(disused->currentIndex());
     QObject::connect(disused, SIGNAL(toggled(bool)), reason, SLOT(setEnabled(bool)));
     md->addInputWidget(reason);

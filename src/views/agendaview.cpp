@@ -39,6 +39,7 @@ AgendaView::AgendaView(ViewTabSettings *settings):
 
 QString AgendaView::renderHTML(bool)
 {
+    QString service_company_uuid = settings->filterServiceCompanyUUID();
     bool CO2_equivalent = settings->toolBarStack()->isCO2EquivalentChecked();
 
     QString html; MTTextStream out(&html);
@@ -57,6 +58,9 @@ QString AgendaView::renderHTML(bool)
     MultiMapOfVariantMaps customers(customers_query.mapAll("uuid", "id, company"));
 
     MTQuery circuits_query = Circuit::query({{"disused", Circuit::Commissioned}});
+    if (!service_company_uuid.isEmpty()) {
+        circuits_query.parents().insert("service_company_uuid", service_company_uuid);
+    }
     if (filter) {
         if (filter_customers) {
             circuits_query.addFilter(QString("customer_uuid IN (SELECT uuid FROM customers WHERE %1%2 LIKE ?)")

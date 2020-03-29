@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2214</width>
-    <height>403</height>
+    <width>2161</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -569,7 +569,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="tbtn_edit_service_company">
+          <widget class="QToolButton" name="tbtn_add_service_company">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -577,10 +577,23 @@
             </sizepolicy>
            </property>
            <property name="statusTip">
-            <string>Edit service company information</string>
+            <string>Add a new service company</string>
            </property>
            <property name="text">
-            <string>Edit Service Company Information...</string>
+            <string>Add Service Company...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../rc/resources.qrc">
+             <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
            </property>
           </widget>
          </item>
@@ -862,6 +875,112 @@
            <property name="icon">
             <iconset resource="../rc/resources.qrc">
              <normaloff>:/images/images/add16.png</normaloff>:/images/images/add16.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_service_company" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_71">
+         <property name="topMargin">
+          <number>4</number>
+         </property>
+         <property name="bottomMargin">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="chb_service_company">
+           <property name="text">
+            <string>Service Company:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lbl_service_company">
+           <property name="text">
+            <string>Service Company:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="cb_service_company"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_41">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_edit_service_company">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="statusTip">
+            <string>Edit the selected service company</string>
+           </property>
+           <property name="text">
+            <string>Edit Service Company...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../rc/resources.qrc">
+             <normaloff>:/images/images/edit.png</normaloff>:/images/images/edit.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbtn_remove_service_company">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="statusTip">
+            <string>Remove the selected service company</string>
+           </property>
+           <property name="text">
+            <string>Remove Service Company...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../rc/resources.qrc">
+             <normaloff>:/images/images/remove16.png</normaloff>:/images/images/remove16.png</iconset>
            </property>
            <property name="iconSize">
             <size>

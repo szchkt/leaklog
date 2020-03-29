@@ -49,6 +49,8 @@ public:
 
     inline QString customerUUID() { return stringValue("customer_uuid"); }
     inline void setCustomerUUID(const QString &value) { setValue("customer_uuid", value); }
+    inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
+    inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
     inline QString externalUUID() { return stringValue("external_uuid"); }
     inline void setExternalUUID(const QString &value) { setValue("external_uuid", value); }
     inline bool isStarred() { return intValue("starred"); }

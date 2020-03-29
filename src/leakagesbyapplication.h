@@ -60,7 +60,7 @@ public:
         TableCount
     };
 
-    LeakagesByApplication(bool weighted_averages = false);
+    LeakagesByApplication(bool weighted_averages = false, const QString &service_company_uuid = QString());
 
     inline int startYear() const { return min_year; }
     inline int endYear() const { return max_year; }

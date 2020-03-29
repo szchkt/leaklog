@@ -60,6 +60,8 @@ ToolBarStack::ToolBarStack(QWidget *parent):
     QObject::connect(le_filter, SIGNAL(returnPressed()), this, SIGNAL(filterChanged()));
     QObject::connect(cb_filter_column, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
     QObject::connect(cb_filter_type, SIGNAL(currentIndexChanged(int)), this, SLOT(emitFilterChanged()));
+    QObject::connect(chb_service_company, SIGNAL(toggled(bool)), this, SLOT(serviceCompanyChanged()));
+    QObject::connect(cb_service_company, SIGNAL(currentIndexChanged(int)), this, SLOT(serviceCompanyChanged()));
 
     QObject::connect(btn_clear_inspector, SIGNAL(clicked()), this, SLOT(clearInspector()));
     QObject::connect(btn_clear_customer, SIGNAL(clicked()), this, SLOT(clearCustomer()));
@@ -82,7 +84,9 @@ void ToolBarStack::setSettings(ViewTabSettings *settings)
 void ToolBarStack::connectSlots(QObject *receiver)
 {
     QObject::connect(this, SIGNAL(filterChanged()), receiver, SLOT(refreshView()));
+    QObject::connect(tbtn_add_service_company, SIGNAL(clicked()), receiver, SLOT(addServiceCompany()));
     QObject::connect(tbtn_edit_service_company, SIGNAL(clicked()), receiver, SLOT(editServiceCompany()));
+    QObject::connect(tbtn_remove_service_company, SIGNAL(clicked()), receiver, SLOT(removeServiceCompany()));
     QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRefrigerantRecord()));
     QObject::connect(tbtn_add_inspector, SIGNAL(clicked()), receiver, SLOT(addInspector()));
     QObject::connect(tbtn_edit_inspector, SIGNAL(clicked()), receiver, SLOT(editInspector()));
@@ -185,7 +189,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
     tbtn_add_inspector->setVisible(view == View::Inspectors);
     tbtn_add_record_of_refrigerant_management->setVisible(view == View::Store || view == View::RefrigerantManagement);
     tbtn_add_repair->setVisible(view == View::Repairs);
-    tbtn_edit_service_company->setVisible(view == View::Store);
+    tbtn_add_service_company->setVisible(view == View::Store);
 
     enableTools();
 
@@ -396,6 +400,16 @@ void ToolBarStack::monthUntilChanged(int value)
 
 void ToolBarStack::enableTools()
 {
+    widget_service_company->setVisible(_view == View::Store ||
+                                       (cb_service_company->count() > 1 &&
+                                        (_view == View::RefrigerantManagement ||
+                                         _view == View::LeakagesByApplication ||
+                                         _view == View::Agenda ||
+                                         _view == View::Customers ||
+                                         _view == View::Repairs ||
+                                         _view == View::Circuits ||
+                                         _view == View::OperatorReport)));
+
     if (_settings->isInspectorSelected()) {
         Inspector inspector(_settings->selectedInspectorUUID());
 
@@ -526,6 +540,8 @@ void ToolBarStack::enableTools()
     widget_circuit_unit_type->setVisible(_view == View::CircuitUnitTypes
                                          && _settings->isCircuitUnitTypeSelected());
 
+    tbtn_edit_service_company->setEnabled(_settings->isServiceCompanySelected());
+    tbtn_remove_service_company->setEnabled(canRemoveServiceCompany());
     tbtn_edit_inspector->setEnabled(_settings->isInspectorSelected());
     tbtn_remove_inspector->setEnabled(_settings->isInspectorSelected());
     tbtn_edit_customer->setEnabled(_settings->isCustomerSelected());
@@ -569,6 +585,48 @@ void ToolBarStack::enableStarredOnly()
     if (!enabled) {
         tbtn_star->setChecked(false);
     }
+}
+
+void ToolBarStack::setSelectedServiceCompanyUUID(const QString &service_company_uuid)
+{
+    if (!cb_service_company->count())
+        loadServiceCompanies();
+    int index = cb_service_company->findData(service_company_uuid);
+    if (index >= 0)
+        cb_service_company->setCurrentIndex(index);
+}
+
+bool ToolBarStack::canRemoveServiceCompany() const
+{
+    return _settings->isServiceCompanySelected() && cb_service_company->count() > 1;
+}
+
+void ToolBarStack::loadServiceCompanies()
+{
+    QString service_company_uuid = cb_service_company->currentData().toString();
+
+    cb_service_company->clear();
+
+    int index = 0;
+
+    ServiceCompany::query().each("name", [this, &index, &service_company_uuid](ServiceCompany &company) {
+        if (company.uuid() == service_company_uuid)
+            index = cb_service_company->count();
+        cb_service_company->addItem(company.name(), company.uuid());
+    });
+
+    int count = cb_service_company->count();
+    if (count)
+        cb_service_company->setCurrentIndex(index);
+
+    chb_service_company->setVisible(count > 1);
+    lbl_service_company->setVisible(count <= 1);
+}
+
+void ToolBarStack::serviceCompanyChanged()
+{
+    _settings->enableAllTools();
+    _settings->refreshView();
 }
 
 void ToolBarStack::clearInspector()

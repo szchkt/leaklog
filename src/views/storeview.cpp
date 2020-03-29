@@ -34,13 +34,11 @@ StoreView::StoreView(ViewTabSettings *settings):
 {
 }
 
-QString StoreView::renderHTML(bool)
+void StoreView::writeServiceCompany(ServiceCompany &serv_company, QString &html, MTTextStream &out)
 {
-    QString html; MTTextStream out(&html);
-    ServiceCompany serv_company;
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr style=\"background-color: #DFDFDF;\"><td colspan=\"2\" style=\"font-size: large; width:100%; text-align: center;\"><b>";
-    out << "<a href=\"servicecompany:" << serv_company.companyID() << "/edit\">";
+    out << "<a href=\"servicecompany:" << serv_company.uuid() << "/edit\">";
     out << tr("Service Company") << "</a></b></td></tr>";
     out << "<tr><td width=\"50%\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     int num_valid = 0;
@@ -61,6 +59,22 @@ QString StoreView::renderHTML(bool)
     }
     out << "</td></tr></table>";
     out << "</table>";
+}
+
+QString StoreView::renderHTML(bool)
+{
+    QString html; MTTextStream out(&html);
+
+    QString service_company_uuid = settings->filterServiceCompanyUUID();
+    if (service_company_uuid.isEmpty()) {
+        ServiceCompany::query().each("name", [this, &html, &out](ServiceCompany &serv_company) {
+            writeServiceCompany(serv_company, html, out);
+        });
+    } else {
+        ServiceCompany serv_company(service_company_uuid);
+        writeServiceCompany(serv_company, html, out);
+    }
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
     out << tr("Store") << "</b></td></tr>";
@@ -109,7 +123,7 @@ QString StoreView::renderHTML(bool)
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     }
     out << "</tr>";
-    ReportData data(settings->toolBarStack()->filterSinceValue(), settings->toolBarStack()->selectedRefrigerant(), by_field);
+    ReportData data(service_company_uuid, settings->toolBarStack()->filterSinceValue(), settings->toolBarStack()->selectedRefrigerant(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerants();
     list_refrigerants.insert(0, "");

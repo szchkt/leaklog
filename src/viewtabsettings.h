@@ -78,6 +78,11 @@ public:
     void restoreSettings(QSettings &settings);
     void validateSelection();
 
+    virtual bool isServiceCompanySelected() const = 0;
+    virtual QString filterServiceCompanyUUID() const = 0;
+    virtual QString selectedServiceCompanyUUID() const = 0;
+    virtual void setSelectedServiceCompanyUUID(const QString &service_company_uuid) = 0;
+
     inline bool isCustomerSelected() const { return !_customer_uuid.isEmpty(); }
     inline QString selectedCustomerUUID() const { return _customer_uuid; }
     void setSelectedCustomerUUID(const QString &customer_uuid) { clearSelectedCircuit(); _customer_uuid = customer_uuid; }
