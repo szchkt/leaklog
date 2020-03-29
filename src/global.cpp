@@ -1159,7 +1159,11 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
 QSet<QString> Global::refrigerantSet(bool include_user_refrigerants)
 {
     QStringList refrigerants = listRefrigerants(include_user_refrigerants);
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    return QSet<QString>::fromList(refrigerants);
+#else
     return QSet<QString>(refrigerants.begin(), refrigerants.end());
+#endif
 }
 
 MTDictionary Global::listServiceCompanies()

@@ -3546,7 +3546,11 @@ void MainWindow::importData()
         trw[0] = id->newInspections();
         trw[1] = id->modifiedInspections();
         QSet<QString> inspections_compressors_fields = InspectionCompressor::columns().columnNameSet();
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        inspections_compressors_fields.unite(QSet<QString>::fromList(compressor_variable_names));
+#else
         inspections_compressors_fields.unite(QSet<QString>(compressor_variable_names.begin(), compressor_variable_names.end()));
+#endif
         for (int w = 0; w < 2; ++w) {
             for (int i = 0, j = 0; i < trw[w]->topLevelItemCount(); ++i) {
                 QTreeWidgetItem *item = trw[w]->topLevelItem(i);

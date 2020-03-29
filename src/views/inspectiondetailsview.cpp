@@ -102,7 +102,11 @@ QString InspectionDetailsView::renderHTML(bool)
         cell = header_row->addHeaderCell("width=\"50%\"");
         if (tables.isValid()) {
             table_vars = tables.stringValue("variables").split(";");
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+            all_variables.subtract(QSet<QString>::fromList(table_vars));
+#else
             all_variables.subtract(QSet<QString>(table_vars.begin(), table_vars.end()));
+#endif
             *cell << tables.stringValue("name");
         }
         else {
