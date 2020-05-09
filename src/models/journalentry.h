@@ -29,7 +29,7 @@ private:
 
 public:
     enum {
-        Version = 0,
+        Version = 1,
     };
 
     enum Operation {
