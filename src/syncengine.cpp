@@ -462,8 +462,9 @@ bool SyncEngine::applyJournalEntries(const QJsonArray &journal_entries, const QJ
         }
 
         MTSqlQuery query;
-        query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid, column_id, date_created) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO journal (source_uuid, version, entry_id, operation_id, table_id, record_uuid, column_id, date_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         query.addBindValue(source_uuid);
+        query.addBindValue(version);
         query.addBindValue(entry_id);
         query.addBindValue(operation_id);
         query.addBindValue(table_id);
