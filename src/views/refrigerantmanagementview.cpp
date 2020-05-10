@@ -37,7 +37,8 @@ RefrigerantManagementView::RefrigerantManagementView(ViewTabSettings *settings):
 QString RefrigerantManagementView::renderHTML(bool)
 {
     QString service_company_uuid = settings->filterServiceCompanyUUID();
-    MTDictionary service_companies = service_company_uuid.isEmpty() ? listServiceCompanies() : MTDictionary();
+    MTDictionary service_companies = listServiceCompanies();
+    bool show_service_company = service_companies.count() > 1;
     int since = settings->toolBarStack()->filterSinceValue();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
@@ -52,7 +53,7 @@ QString RefrigerantManagementView::renderHTML(bool)
     out << "<tr><th colspan=\"16\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
-    if (service_company_uuid.isEmpty()) {
+    if (show_service_company) {
         out << "<th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:service_company_uuid\">" << tr("Service company") << "</a></th>";
     }
     out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
@@ -102,7 +103,7 @@ QString RefrigerantManagementView::renderHTML(bool)
         out << "<tr onclick=\"window.location = 'refrigerantrecord:" << query.stringValue("uuid") << "/edit'\" style=\"cursor: pointer;\">";
         out << (show_notes && !notes.isEmpty() ? "<td rowspan=\"2\" style=\"vertical-align: top;\">" : "<td>");
         out << settings->mainWindowSettings().formatDateTime(date) << "</td>";
-        if (service_company_uuid.isEmpty()) {
+        if (show_service_company) {
             out << "<td>" << escapeString(service_companies.value(query.stringValue("service_company_uuid"))) << "</td>";
         }
         for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {

@@ -37,7 +37,8 @@ RepairsView::RepairsView(ViewTabSettings *settings):
 QString RepairsView::renderHTML(bool)
 {
     QString service_company_uuid = settings->filterServiceCompanyUUID();
-    MTDictionary service_companies = service_company_uuid.isEmpty() ? listServiceCompanies() : MTDictionary();
+    MTDictionary service_companies = listServiceCompanies();
+    bool show_service_company = service_companies.count() > 1;
     QString customer_uuid = settings->selectedCustomerUUID();
     QString highlighted_uuid = settings->selectedRepairUUID();
     int year = settings->toolBarStack()->filterSinceValue();
@@ -73,7 +74,7 @@ QString RepairsView::renderHTML(bool)
         out << "<th><a href=\"allrepairs:/order_by:" << key << "\">" << title << "</a></th>";
     };
     th("date", QApplication::translate("Repair", "Date"));
-    if (service_company_uuid.isEmpty())
+    if (show_service_company)
         th("service_company_uuid", QApplication::translate("Repair", "Service company"));
     th("customer", QApplication::translate("Repair", "Customer"));
     th("device", QApplication::translate("Repair", "Device"));
@@ -98,7 +99,7 @@ QString RepairsView::renderHTML(bool)
         if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
         out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
-        if (service_company_uuid.isEmpty())
+        if (show_service_company)
             out << "<td>" << escapeString(service_companies.value(repairs.stringValue("service_company_uuid"))) << "</td>";
         out << "<td>" << escapeString(repairs.stringValue("customer")) << "</td>";
         out << "<td>" << escapeString(repairs.stringValue("device")) << "</td>";
