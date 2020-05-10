@@ -2046,6 +2046,10 @@
         <source>Country of issue</source>
         <translation>Země vydání</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Servisní organizace:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>

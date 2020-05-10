@@ -2038,6 +2038,10 @@
         <source>Country of issue</source>
         <translation>Krajina vydania</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Servisná organizácia:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>

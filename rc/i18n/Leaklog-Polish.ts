@@ -2038,6 +2038,10 @@
         <source>Country of issue</source>
         <translation>Kraj wydania</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Firma serwisowa:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
