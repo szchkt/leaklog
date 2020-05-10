@@ -281,6 +281,7 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                 query.exec(QString("UPDATE circuits SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
                 query.exec(QString("UPDATE repairs SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
                 query.exec(QString("UPDATE refrigerant_management SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
+                query.exec(QString("UPDATE inspectors SET service_company_uuid = '%1' WHERE service_company_uuid IS NULL").arg(service_company_uuid));
             }
         }
 
@@ -1265,7 +1266,8 @@ void MainWindow::removeServiceCompany()
 
     if (Circuit::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists() ||
         Repair::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists() ||
-        RefrigerantRecord::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists()) {
+        RefrigerantRecord::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists() ||
+        Inspector::query({{"service_company_uuid", m_tab->selectedServiceCompanyUUID()}}).exists()) {
         QMessageBox message(this);
         message.setWindowModality(Qt::WindowModal);
         message.setWindowFlags(message.windowFlags() | Qt::Sheet);
@@ -2679,6 +2681,9 @@ void MainWindow::addInspector()
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!isOperationPermitted("add_inspector")) { return; }
     Inspector record;
+    if (m_tab->isServiceCompanySelected()) {
+        record.setValue("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+    }
     UndoCommand command(m_undo_stack, tr("Add inspector"));
     EditInspectorDialogue md(&record, m_undo_stack, this);
     if (md.exec() == QDialog::Accepted) {

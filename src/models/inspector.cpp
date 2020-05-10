@@ -25,6 +25,8 @@
 
 #include <QApplication>
 
+using namespace Global;
+
 Inspector::Inspector(const QString &uuid):
     DBRecord(tableName(), uuid)
 {}
@@ -34,6 +36,7 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     QString currency = DBInfo::valueForKey("currency", "EUR");
 
     md->setWindowTitle(tr("Inspector"));
+    md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
     md->addInputWidget(new MDLineEdit("certificate_number", tr("Certificate number:"), md->widget(), certificateNumber()));
     md->addInputWidget(new MDComboBox("certificate_country", tr("Country of issue:"), md->widget(), certificateCountry(), Global::countries()));
     md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), personName()));
@@ -47,41 +50,6 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(iw);
 }
 
-QString Inspector::certificateNumber()
-{
-    return stringValue("certificate_number");
-}
-
-QString Inspector::certificateCountry()
-{
-    return stringValue("certificate_country");
-}
-
-QString Inspector::personName()
-{
-    return stringValue("person");
-}
-
-QString Inspector::mail()
-{
-    return stringValue("mail");
-}
-
-QString Inspector::phone()
-{
-    return stringValue("phone");
-}
-
-double Inspector::listPrice()
-{
-    return doubleValue("list_price");
-}
-
-double Inspector::acquisitionPrice()
-{
-    return doubleValue("acquisition_price");
-}
-
 QString Inspector::tableName()
 {
     return "inspectors";
@@ -92,6 +60,7 @@ class InspectorColumns
 public:
     InspectorColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
+        columns << Column("service_company_uuid", "UUID");
         columns << Column("certificate_number", "TEXT");
         columns << Column("certificate_country", "TEXT");
         columns << Column("person", "TEXT");

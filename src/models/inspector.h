@@ -31,13 +31,15 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
-    QString certificateNumber();
-    QString certificateCountry();
-    QString personName();
-    QString mail();
-    QString phone();
-    double listPrice();
-    double acquisitionPrice();
+    inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
+    inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
+    inline QString certificateNumber() { return stringValue("certificate_number"); }
+    inline QString certificateCountry() { return stringValue("certificate_country"); }
+    inline QString personName() { return stringValue("person"); }
+    inline QString mail() { return stringValue("mail"); }
+    inline QString phone() { return stringValue("phone"); }
+    inline double listPrice() { return doubleValue("list_price"); }
+    inline double acquisitionPrice() { return doubleValue("acquisition_price"); }
 
     static QString tableName();
     static inline MTRecordQuery<Inspector> query(const QVariantMap &parents = QVariantMap()) { return MTRecordQuery<Inspector>(tableName(), parents); }
