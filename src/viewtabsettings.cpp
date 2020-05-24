@@ -29,6 +29,7 @@ ViewTabSettings::ViewTabSettings()
 
 void ViewTabSettings::saveSettings(QSettings &settings) const
 {
+    settings.setValue("filter_service_company", isFilterServiceCompanyChecked());
     if (isServiceCompanySelected())
         settings.setValue("selected_service_company_uuid", selectedServiceCompanyUUID());
     if (isCustomerSelected())
@@ -59,6 +60,7 @@ void ViewTabSettings::saveSettings(QSettings &settings) const
 
 void ViewTabSettings::restoreSettings(QSettings &settings)
 {
+    setFilterServiceCompanyChecked(settings.value("filter_service_company").toBool());
     setSelectedServiceCompanyUUID(settings.value("selected_service_company_uuid").toString());
     _customer_uuid = settings.value("selected_customer_uuid").toString();
     _circuit_uuid = settings.value("selected_circuit_uuid").toString();

@@ -94,8 +94,10 @@ public:
 
     QString appendDefaultOrderToColumn(const QString &column) const;
 
-    bool isServiceCompanySelected() const;
     QString filterServiceCompanyUUID() const;
+    bool isFilterServiceCompanyChecked() const;
+    void setFilterServiceCompanyChecked(bool checked);
+    bool isServiceCompanySelected() const;
     QString selectedServiceCompanyUUID() const;
     void setSelectedServiceCompanyUUID(const QString &service_company_uuid);
 

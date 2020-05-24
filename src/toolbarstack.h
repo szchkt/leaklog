@@ -41,6 +41,8 @@ public:
     void enableTools();
 
     QString filterServiceCompanyUUID() const { return chb_service_company->isChecked() && cb_service_company->count() > 1 ? selectedServiceCompanyUUID() : QString(); }
+    inline bool isFilterServiceCompanyChecked() const { return chb_service_company->isChecked(); }
+    inline void setFilterServiceCompanyChecked(bool checked) { chb_service_company->setChecked(checked); }
     inline bool isTableForAllCircuitsChecked() const { return chb_table_all_circuits->isChecked(); }
     inline bool isTableForAllCircuitsExceptDecommissionedChecked() const { return isTableForAllCircuitsChecked() && chb_table_except_decommissioned_before->isChecked(); }
     inline QDate minimumDecommissioningDateForTableOfAllCircuits() const { return de_table_except_decommissioned_before->date(); }

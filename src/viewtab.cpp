@@ -600,14 +600,24 @@ QString ViewTab::appendDefaultOrderToColumn(const QString &column) const
     return parentWindow()->appendDefaultOrderToColumn(column);
 }
 
-bool ViewTab::isServiceCompanySelected() const
-{
-    return ui->toolbarstack->isServiceCompanySelected();
-}
-
 QString ViewTab::filterServiceCompanyUUID() const
 {
     return ui->toolbarstack->filterServiceCompanyUUID();
+}
+
+bool ViewTab::isFilterServiceCompanyChecked() const
+{
+    return ui->toolbarstack->isFilterServiceCompanyChecked();
+}
+
+void ViewTab::setFilterServiceCompanyChecked(bool checked)
+{
+    ui->toolbarstack->setFilterServiceCompanyChecked(checked);
+}
+
+bool ViewTab::isServiceCompanySelected() const
+{
+    return ui->toolbarstack->isServiceCompanySelected();
 }
 
 QString ViewTab::selectedServiceCompanyUUID() const

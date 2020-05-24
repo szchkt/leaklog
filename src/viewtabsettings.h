@@ -78,8 +78,10 @@ public:
     void restoreSettings(QSettings &settings);
     void validateSelection();
 
-    virtual bool isServiceCompanySelected() const = 0;
     virtual QString filterServiceCompanyUUID() const = 0;
+    virtual bool isFilterServiceCompanyChecked() const = 0;
+    virtual void setFilterServiceCompanyChecked(bool checked) = 0;
+    virtual bool isServiceCompanySelected() const = 0;
     virtual QString selectedServiceCompanyUUID() const = 0;
     virtual void setSelectedServiceCompanyUUID(const QString &service_company_uuid) = 0;
 
