@@ -47,11 +47,17 @@ QString InspectorsView::renderHTML(bool)
 
 HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid, const QString &inspector_uuid)
 {
+    QString service_company_uuid = settings->filterServiceCompanyUUID();
+    MTDictionary service_companies = listServiceCompanies();
+    bool show_service_company = service_companies.count() > 1;
     MTQuery inspectors_query = Inspector::query();
     if (!inspector_uuid.isEmpty()) {
         inspectors_query.parents().insert("uuid", inspector_uuid);
-    } else if (!settings->toolBarStack()->isFilterEmpty()) {
-        inspectors_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+    } else {
+        if (!settings->toolBarStack()->isFilterEmpty())
+            inspectors_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        if (!service_company_uuid.isEmpty())
+            inspectors_query.parents().insert("service_company_uuid", service_company_uuid);
     }
     ListOfVariantMaps inspectors(inspectors_query.listAll("*,"
        " (SELECT COUNT(date) FROM inspections WHERE inspector_uuid = inspectors.uuid) AS inspections_count,"
@@ -63,6 +69,10 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid,
 
     _tr = new HTMLTableRow;
     int thead_colspan = 2;
+    if (show_service_company) {
+        *(_tr->addHeaderCell()) << tr("Service company");
+        thead_colspan++;
+    }
     for (int n = 0; n < Inspector::attributes().count(); ++n) {
         *(_tr->addHeaderCell()) << Inspector::attributes().value(n);
         thead_colspan++;
@@ -83,6 +93,9 @@ HTMLTable *InspectorsView::writeInspectorsTable(const QString &highlighted_uuid,
             tr_attr.append(" style=\"cursor: pointer;\"");
         }
         _tr = table->addRow(tr_attr);
+        if (show_service_company) {
+            *(_tr->addCell()) << escapeString(service_companies.value(inspectors.at(i).value("service_company_uuid").toString()));
+        }
         *(_tr->addCell("onmouseover=\"Tip('" + tr("View inspector activity") + "')\" onmouseout=\"UnTip()\"")
                 ->link("inspectorreport:" + uuid)) << inspectors.at(i).value("certificate_number").toString();
         for (int n = 1; n < Inspector::attributes().count(); ++n) {

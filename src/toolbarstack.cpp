@@ -405,6 +405,7 @@ void ToolBarStack::enableTools()
                                         (_view == View::RefrigerantManagement ||
                                          _view == View::LeakagesByApplication ||
                                          _view == View::Agenda ||
+                                         _view == View::Inspectors ||
                                          _view == View::Customers ||
                                          _view == View::Repairs ||
                                          _view == View::Circuits ||

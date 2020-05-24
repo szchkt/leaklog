@@ -2132,6 +2132,10 @@
         <source>Inspectors</source>
         <translation>Certifikované osoby</translation>
     </message>
+    <message>
+        <source>Service company</source>
+        <translation>Servisní organizace</translation>
+    </message>
 </context>
 <context>
     <name>LanguageNames</name>

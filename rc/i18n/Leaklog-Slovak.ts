@@ -2124,6 +2124,10 @@
         <source>Inspectors</source>
         <translation>Kontrolóri</translation>
     </message>
+    <message>
+        <source>Service company</source>
+        <translation>Servisná organizácia</translation>
+    </message>
 </context>
 <context>
     <name>LanguageNames</name>
