@@ -944,6 +944,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R1150", 3);
         GWP.insert("R12", 10600);
         GWP.insert("R123", 120);
+        GWP.insert("R1233zd", 1);
         GWP.insert("R1234yf", 4);
         GWP.insert("R1234ze", 7);
         GWP.insert("R124", 620);
@@ -1017,6 +1018,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R449A", 1397);
         GWP.insert("R450A", 547);
         GWP.insert("R452A", 2141);
+        GWP.insert("R452B", 698);
         GWP.insert("R454C", 148);
         GWP.insert("R500", 7850);
         GWP.insert("R501", 3920);
@@ -1131,6 +1133,7 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         << "R449A"
         << "R450A"
         << "R452A"
+        << "R452B"
         << "R454C"
         << "R500"
         << "R501"
@@ -1144,6 +1147,7 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         << "R717"
         << "R744"
         << "R1150"
+        << "R1233zd"
         << "R1234yf"
         << "R1234ze"
         << "SF6";
