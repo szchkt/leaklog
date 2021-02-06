@@ -1481,26 +1481,6 @@
         <translation>Książka serwisowa</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Nazwa</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation>Wartość</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Cena zakupu</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cennik</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Rabat</translation>
-    </message>
-    <message>
         <source>Assembly record number already in use</source>
         <translation>Numer książki serwisowej jest w użyciu</translation>
     </message>
@@ -3627,14 +3607,6 @@ Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translatio
         <translation>Klienci</translation>
     </message>
     <message>
-        <source>Company</source>
-        <translation>Firma</translation>
-    </message>
-    <message>
-        <source>Phone</source>
-        <translation>Telefon</translation>
-    </message>
-    <message>
         <source>Street</source>
         <translation>Ulica</translation>
     </message>
@@ -3667,10 +3639,6 @@ Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translatio
         <translation>NIP klienta</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Nazwa</translation>
-    </message>
-    <message>
         <source>Place of operation</source>
         <translation>Miejsce operacji</translation>
     </message>
@@ -3695,30 +3663,6 @@ Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translatio
         <translation>Numer seryjny</translation>
     </message>
     <message>
-        <source>Refrigerant amount</source>
-        <translation>Ilość czynnika</translation>
-    </message>
-    <message>
-        <source>Oil amount</source>
-        <translation>Wartość oleju</translation>
-    </message>
-    <message>
-        <source>Run-time per day</source>
-        <translation>Dzienny czas pracy</translation>
-    </message>
-    <message>
-        <source>Rate of utilisation</source>
-        <translation>Wskaźnik zużycia</translation>
-    </message>
-    <message>
-        <source>Hermetically sealed</source>
-        <translation>Hermetycznie zamknięte</translation>
-    </message>
-    <message>
-        <source>Fixed leakage detector installed</source>
-        <translation>Zainstalowano detektor wycieku</translation>
-    </message>
-    <message>
         <source>Year of purchase</source>
         <translation>Rok zakupu</translation>
     </message>
@@ -3739,80 +3683,16 @@ Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translatio
         <translation>Czynnik</translation>
     </message>
     <message>
-        <source>Compressor name</source>
-        <translation>Nazwa sprężarki</translation>
-    </message>
-    <message>
-        <source>Unit type ID</source>
-        <translation>ID typu jednostki</translation>
-    </message>
-    <message>
-        <source>Unit serial number</source>
-        <translation>Numer seryjny jednostki</translation>
-    </message>
-    <message>
         <source>Circuit unit types</source>
         <translation>Typ jednostki obiegu</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Cena zakupu</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cennik</translation>
-    </message>
-    <message>
-        <source>Location</source>
-        <translation>Lokalizacja</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Przepustowość</translation>
     </message>
     <message>
         <source>Output unit</source>
         <translation>Jednostka przepustowości</translation>
     </message>
     <message>
-        <source>Output at t0/tc</source>
-        <translation>Przepustowość na t0/tc</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Notatki</translation>
-    </message>
-    <message>
-        <source>Assembly record item types</source>
-        <translation>Typy elementu książki serwisowej</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Rabat</translation>
-    </message>
-    <message>
-        <source>EAN code</source>
-        <translation>Kod EAN</translation>
-    </message>
-    <message>
-        <source>Data type</source>
-        <translation>Typ bazy</translation>
-    </message>
-    <message>
-        <source>integer</source>
-        <translation>liczba całkowita</translation>
-    </message>
-    <message>
-        <source>boolean</source>
-        <translation>logiczny</translation>
-    </message>
-    <message>
-        <source>Automatically add to assembly record</source>
-        <translation>Automatycznie dodaj do listy montażowej</translation>
-    </message>
-    <message>
-        <source>Category ID</source>
-        <translation>Kategorie ID</translation>
     </message>
     <message>
         <source>Import CSV %1</source>
@@ -4334,24 +4214,8 @@ dla ID osoby i firmy</translation>
         <translation>ID</translation>
     </message>
     <message>
-        <source>Status</source>
-        <translation>Status</translation>
-    </message>
-    <message>
         <source>Leaked in Store</source>
         <translation>Wyciek w magazynie</translation>
-    </message>
-    <message>
-        <source>decimal</source>
-        <translation>liczba dziesiętna</translation>
-    </message>
-    <message>
-        <source>short text</source>
-        <translation>krótki tekst</translation>
-    </message>
-    <message>
-        <source>long text</source>
-        <translation>długi tekst</translation>
     </message>
     <message>
         <source>Exclude from Agenda only</source>
@@ -4881,14 +4745,6 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <translation>Bez typu</translation>
     </message>
     <message>
-        <source>Integer</source>
-        <translation>Liczba całkowita</translation>
-    </message>
-    <message>
-        <source>Boolean</source>
-        <translation>Tak/Nie</translation>
-    </message>
-    <message>
         <source>Default</source>
         <translation>Domyślne</translation>
     </message>
@@ -4903,18 +4759,6 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>New charge</source>
         <translation>Nowe napełnienie</translation>
-    </message>
-    <message>
-        <source>Decimal Number</source>
-        <translation>Liczba dziesiętna</translation>
-    </message>
-    <message>
-        <source>Short Text</source>
-        <translation>Krótki tekst</translation>
-    </message>
-    <message>
-        <source>Long Text</source>
-        <translation>Długi tekst</translation>
     </message>
 </context>
 <context>

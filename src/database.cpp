@@ -3692,13 +3692,14 @@ void MainWindow::importCSV()
 
     QList<ImportDialogueTable *> tables;
     ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("Company"), "company", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("E-mail"), "mail", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Phone"), "phone", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Customer", "ID"), "id", ImportDialogueTableColumn::ID);
+    table->addColumn(QApplication::translate("Customer", "Company"), "company", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Customer", "E-mail"), "mail", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Customer", "Phone"), "phone", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Street"), "street", ImportDialogueTableColumn::AddressStreet);
     table->addColumn(tr("City"), "city", ImportDialogueTableColumn::AddressCity);
     table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
+    table->addColumn(tr("Notes"), "notes", ImportDialogueTableColumn::Text);
     tables.append(table);
 
     table = table->addChildTableTemplate(tr("Contact persons"), "persons", "customer_uuid");
@@ -3708,72 +3709,76 @@ void MainWindow::importCSV()
 
     ImportDialogueTable *circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
     circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "customers", "id");
-    circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
-    circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Device"), "device", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
-    circuits_table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
-    circuits_table->addColumn(tr("Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
-    ImportDialogueTableColumn *col = circuits_table->addColumn(tr("Status"), "disused", ImportDialogueTableColumn::Select);
-    col->addSelectValue(QString::number(Circuit::Commissioned), QApplication::translate("Circuit", "Commissioned"));
-    col->addSelectValue(QString::number(Circuit::ExcludedFromAgenda), QApplication::translate("Circuit", "Excluded from Agenda"));
-    col->addSelectValue(QString::number(Circuit::Decommissioned), QApplication::translate("Circuit", "Decommissioned"));
-    circuits_table->addColumn(tr("Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
-    circuits_table->addColumn(tr("Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
-    circuits_table->addColumn(tr("Year of purchase"), "year", ImportDialogueTableColumn::Integer);
-    circuits_table->addColumn(tr("Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
-    col = circuits_table->addColumn(tr("Field of application"), "field", ImportDialogueTableColumn::Select);
+    circuits_table->addColumn(QApplication::translate("Circuit", "ID"), "id", ImportDialogueTableColumn::Integer);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Circuit name"), "name", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Place of operation"), "operation", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Building"), "building", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Device"), "device", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Type"), "type", ImportDialogueTableColumn::Text);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Serial number"), "sn", ImportDialogueTableColumn::Text);
+    ImportDialogueTableColumn *col = circuits_table->addColumn(QApplication::translate("Circuit", "Field of application"), "field", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("field") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("field::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
         col->addSelectValue(attributeValues().value(n).toLower(), string_value);
     }
-    col = circuits_table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
+    col = circuits_table->addColumn(QApplication::translate("Circuit", "Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
+    foreach (string_value, refrigerants)
+        col->addSelectValue(string_value.toLower(), string_value);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    col = circuits_table->addColumn(QApplication::translate("Circuit", "Oil"), "oil", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
         col->addSelectValue(attributeValues().value(n).toLower(), string_value);
     }
-    col = circuits_table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
-    foreach (string_value, refrigerants)
-        col->addSelectValue(string_value.toLower(), string_value);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Hermetically sealed"), "hermetic", ImportDialogueTableColumn::Boolean);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Fixed leakage detector installed"), "leak_detector", ImportDialogueTableColumn::Boolean);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Year of purchase"), "year", ImportDialogueTableColumn::Integer);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Date of commissioning"), "commissioning", ImportDialogueTableColumn::Date);
+    col = circuits_table->addColumn(QApplication::translate("Circuit", "Status"), "disused", ImportDialogueTableColumn::Select);
+    col->addSelectValue(QString::number(Circuit::Commissioned), QApplication::translate("Circuit", "Commissioned"));
+    col->addSelectValue(QString::number(Circuit::ExcludedFromAgenda), QApplication::translate("Circuit", "Excluded from Agenda"));
+    col->addSelectValue(QString::number(Circuit::Decommissioned), QApplication::translate("Circuit", "Decommissioned"));
+    circuits_table->addColumn(QApplication::translate("Circuit", "Run-time per day"), "runtime", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(QApplication::translate("Circuit", "Rate of utilisation"), "utilisation", ImportDialogueTableColumn::Numeric);
+    circuits_table->addColumn(tr("Notes"), "notes", ImportDialogueTableColumn::Text);
     tables.append(circuits_table);
 
     table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", "circuit_uuid");
-    table->addColumn(tr("Compressor name"), "name", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Compressor", "Compressor name"), "name", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Compressor", "Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Compressor", "Type"), "type", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("Compressor", "Serial number"), "sn", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
-    table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("List price"), "list_price", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
-    col = table->addColumn(tr("Oil"), "oil", ImportDialogueTableColumn::Select);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Type"), "type", ImportDialogueTableColumn::Text);
+    col = table->addColumn(QApplication::translate("CircuitUnitType", "Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
+    foreach (string_value, refrigerants)
+        col->addSelectValue(string_value.toLower(), string_value);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
+    col = table->addColumn(QApplication::translate("CircuitUnitType", "Oil"), "oil", ImportDialogueTableColumn::Select);
     for (int n = attributeValues().indexOfKey("oil") + 1; n < attributeValues().count() && attributeValues().key(n).startsWith("oil::"); ++n) {
         string_value = attributeValues().key(n).mid(attributeValues().key(n).lastIndexOf(':') + 1);
         col->addSelectValue(string_value, string_value);
         col->addSelectValue(attributeValues().value(n).toLower(), string_value);
     }
-    col = table->addColumn(tr("Refrigerant"), "refrigerant", ImportDialogueTableColumn::Select);
-    foreach (string_value, refrigerants)
-        col->addSelectValue(string_value.toLower(), string_value);
-    col = table->addColumn(tr("Location"), "location", ImportDialogueTableColumn::Select);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
+    table->addColumn(QApplication::translate("CircuitUnitType", "List price"), "list_price", ImportDialogueTableColumn::Numeric);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Discount"), "discount", ImportDialogueTableColumn::Numeric);
+    col = table->addColumn(QApplication::translate("CircuitUnitType", "Location"), "location", ImportDialogueTableColumn::Select);
     col->addSelectValue("external", QString::number(CircuitUnitType::External));
     col->addSelectValue("internal", QString::number(CircuitUnitType::Internal));
-    table->addColumn(tr("Output"), "output", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Output unit"), "output_unit", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Output at t0/tc"), "output_t0_tc", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Notes"), "notes", ImportDialogueTableColumn::Text);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Output"), "output", ImportDialogueTableColumn::Numeric);
+    col = table->addColumn(tr("Output unit"), "output_unit", ImportDialogueTableColumn::Select);
+    col->addSelectValue("kW", "kW");
+    col->addSelectValue("m3", "m3");
+    table->addColumn(QApplication::translate("CircuitUnitType", "Output at t0/tc"), "output_t0_tc", ImportDialogueTableColumn::Numeric);
+    table->addColumn(QApplication::translate("CircuitUnitType", "Notes"), "notes", ImportDialogueTableColumn::Text);
     tables.append(table);
 
     ImportCsvDialogue id(path, tables, this);

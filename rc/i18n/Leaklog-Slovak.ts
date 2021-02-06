@@ -1481,26 +1481,6 @@
         <translation>Montážny list</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Názov</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation>Hodnota</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cenníková cena</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Zľava</translation>
-    </message>
-    <message>
         <source>Assembly record number already in use</source>
         <translation>Číslo montážneho listu sa už používa</translation>
     </message>
@@ -2377,14 +2357,6 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
         <translation>Zákazníci</translation>
     </message>
     <message>
-        <source>Company</source>
-        <translation>Firma</translation>
-    </message>
-    <message>
-        <source>Phone</source>
-        <translation>Telefón</translation>
-    </message>
-    <message>
         <source>Street</source>
         <translation>Ulica</translation>
     </message>
@@ -2421,10 +2393,6 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
         <translation>IČO zákazníka</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Názov</translation>
-    </message>
-    <message>
         <source>Place of operation</source>
         <translation>Miesto prevádzky</translation>
     </message>
@@ -2447,30 +2415,6 @@ Na odstránenie všetkých údajov o zákazníkovi „%1“ napíšte ODSTRÁNI�
     <message>
         <source>Serial number</source>
         <translation>Sériové číslo</translation>
-    </message>
-    <message>
-        <source>Refrigerant amount</source>
-        <translation>Množstvo chladiva</translation>
-    </message>
-    <message>
-        <source>Oil amount</source>
-        <translation>Množstvo oleja</translation>
-    </message>
-    <message>
-        <source>Run-time per day</source>
-        <translation>Denná pracovná doba</translation>
-    </message>
-    <message>
-        <source>Rate of utilisation</source>
-        <translation>Stupeň zaťaženia</translation>
-    </message>
-    <message>
-        <source>Hermetically sealed</source>
-        <translation>Hermeticky uzavretý</translation>
-    </message>
-    <message>
-        <source>Fixed leakage detector installed</source>
-        <translation>Zabudovaný detektor únikov</translation>
     </message>
     <message>
         <source>Year of purchase</source>
@@ -2503,44 +2447,12 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
         <translation>Jednotky okruhu</translation>
     </message>
     <message>
-        <source>Unit type ID</source>
-        <translation>IČ typu jednotky</translation>
-    </message>
-    <message>
-        <source>Unit serial number</source>
-        <translation>Sériové číslo jednotky</translation>
-    </message>
-    <message>
         <source>Circuit unit types</source>
         <translation>Typy jednotiek okruhov</translation>
     </message>
     <message>
-        <source>Category ID</source>
-        <translation>IČ kategórie</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Obstarávacia cena</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Cenníková cena</translation>
-    </message>
-    <message>
-        <source>Location</source>
-        <translation>Poloha</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Výkon</translation>
-    </message>
-    <message>
         <source>Output unit</source>
         <translation>Jednotka výkonu</translation>
-    </message>
-    <message>
-        <source>Output at t0/tc</source>
-        <translation>Výkon pri t0/tk</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -2553,30 +2465,6 @@ Na odstránenie vzhľadu „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translatio
     <message>
         <source>This record was created by another user. Operation not permitted.</source>
         <translation>Tento záznam bol vytvorený iným používateľom. Operácia nepovolená.</translation>
-    </message>
-    <message>
-        <source>Assembly record item types</source>
-        <translation>Typy položiek montážneho listu</translation>
-    </message>
-    <message>
-        <source>EAN code</source>
-        <translation>EAN kód</translation>
-    </message>
-    <message>
-        <source>Data type</source>
-        <translation>Údajový typ</translation>
-    </message>
-    <message>
-        <source>integer</source>
-        <translation>celé číslo</translation>
-    </message>
-    <message>
-        <source>boolean</source>
-        <translation>áno/nie</translation>
-    </message>
-    <message>
-        <source>Automatically add to assembly record</source>
-        <translation>Automaticky pridať do montážneho listu</translation>
     </message>
     <message>
         <source>Failed to import %1 of %2 records.</source>
@@ -3425,10 +3313,6 @@ Nariadenia (ES) č. 842/2006 a zákona
         <translation>Okruh</translation>
     </message>
     <message>
-        <source>Discount</source>
-        <translation>Zľava</translation>
-    </message>
-    <message>
         <source>Remove repair - Leaklog</source>
         <translation>Odstrániť opravu - Leaklog</translation>
     </message>
@@ -3757,10 +3641,6 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
     <message>
         <source>Compressors</source>
         <translation>Kompresory</translation>
-    </message>
-    <message>
-        <source>Compressor name</source>
-        <translation>Názov kompresora</translation>
     </message>
     <message>
         <source>&amp;Download Update</source>
@@ -4338,24 +4218,8 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
         <translation>ID</translation>
     </message>
     <message>
-        <source>Status</source>
-        <translation>Stav</translation>
-    </message>
-    <message>
         <source>Leaked in Store</source>
         <translation>Únik na sklade</translation>
-    </message>
-    <message>
-        <source>decimal</source>
-        <translation>desatinné číslo</translation>
-    </message>
-    <message>
-        <source>short text</source>
-        <translation>krátky text</translation>
-    </message>
-    <message>
-        <source>long text</source>
-        <translation>dlhý text</translation>
     </message>
     <message>
         <source>Exclude from Agenda only</source>
@@ -4886,14 +4750,6 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <translation>Žiadny typ</translation>
     </message>
     <message>
-        <source>Integer</source>
-        <translation>Celé číslo</translation>
-    </message>
-    <message>
-        <source>Boolean</source>
-        <translation>Áno/Nie</translation>
-    </message>
-    <message>
         <source>Default</source>
         <translation>Východzí</translation>
     </message>
@@ -4908,18 +4764,6 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>New charge</source>
         <translation>Nová náplň</translation>
-    </message>
-    <message>
-        <source>Decimal Number</source>
-        <translation>Desatinné číslo</translation>
-    </message>
-    <message>
-        <source>Short Text</source>
-        <translation>Krátky text</translation>
-    </message>
-    <message>
-        <source>Long Text</source>
-        <translation>Dlhý text</translation>
     </message>
 </context>
 <context>

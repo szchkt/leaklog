@@ -1257,11 +1257,11 @@ MTDictionary Global::listAllVariables()
 MTDictionary Global::listDataTypes()
 {
     MTDictionary dict;
-    dict.insert(QString::number(Global::Integer), QObject::tr("Integer"));
-    dict.insert(QString::number(Global::Numeric), QObject::tr("Decimal Number"));
-    dict.insert(QString::number(Global::String), QObject::tr("Short Text"));
-    dict.insert(QString::number(Global::Text), QObject::tr("Long Text"));
-    dict.insert(QString::number(Global::Boolean), QObject::tr("Boolean"));
+    dict.insert(QString::number(Global::Integer), QApplication::translate("VariableTypes", "Integer"));
+    dict.insert(QString::number(Global::Numeric), QApplication::translate("VariableTypes", "Decimal Number"));
+    dict.insert(QString::number(Global::String), QApplication::translate("VariableTypes", "Short Text"));
+    dict.insert(QString::number(Global::Text), QApplication::translate("VariableTypes", "Long Text"));
+    dict.insert(QString::number(Global::Boolean), QApplication::translate("VariableTypes", "Boolean"));
     return dict;
 }
 
