@@ -419,7 +419,7 @@ void ToolBarStack::enableTools()
         if (!inspector.personName().isEmpty())
             description << QString("<b>%1</b>").arg(escapeString(inspector.personName()));
 
-        lbl_inspector->setText(tr("Inspector: %1").arg(description.join(", ")));
+        lbl_inspector->setText(tr("Inspector: %1").arg(description.join(",&nbsp;")));
     }
     widget_inspector->setVisible((_view == View::Inspectors || _view == View::InspectorDetails || _view == View::OperatorReport) && _settings->isInspectorSelected());
 
@@ -435,7 +435,7 @@ void ToolBarStack::enableTools()
         if (!address.isEmpty())
             description << address.toHtml();
 
-        lbl_customer->setText(tr("Customer: %1").arg(description.join(", ")));
+        lbl_customer->setText(tr("Customer: %1").arg(description.join(",&nbsp;")));
     }
     widget_customer->setVisible((_view == View::Customers ||
                                  _view == View::Circuits ||
@@ -475,7 +475,7 @@ void ToolBarStack::enableTools()
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(circuit.value("refrigerant").toString());
 
-        lbl_circuit->setText(tr("Circuit: %1").arg(description.join(", ")));
+        lbl_circuit->setText(tr("Circuit: %1").arg(description.join(",&nbsp;")));
     }
     widget_circuit->setVisible((_view == View::Circuits ||
                                 _view == View::Inspections ||
@@ -536,7 +536,7 @@ void ToolBarStack::enableTools()
                        .arg(QApplication::translate("Units", "kg"))
                        .arg(unit_type.stringValue("refrigerant"));
 
-        lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(description.join(", ")));
+        lbl_circuit_unit_type->setText(tr("Circuit Unit Type: %1").arg(description.join(",&nbsp;")));
     }
     widget_circuit_unit_type->setVisible(_view == View::CircuitUnitTypes
                                          && _settings->isCircuitUnitTypeSelected());
