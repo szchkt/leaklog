@@ -3692,8 +3692,7 @@ void MainWindow::importCSV()
 
     QList<ImportDialogueTable *> tables;
     ImportDialogueTable *table = new ImportDialogueTable(tr("Customers"), "customers");
-    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Text);
+    table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Company"), "company", ImportDialogueTableColumn::Text);
     table->addColumn(tr("E-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Phone"), "phone", ImportDialogueTableColumn::Text);
@@ -3702,14 +3701,14 @@ void MainWindow::importCSV()
     table->addColumn(tr("Postal code"), "postal_code", ImportDialogueTableColumn::AddressPostalCode);
     tables.append(table);
 
-    table = table->addChildTableTemplate(tr("Contact persons"), "persons", {"uuid", "customer_uuid"});
+    table = table->addChildTableTemplate(tr("Contact persons"), "persons", "customer_uuid");
     table->addColumn(tr("Contact person name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person e-mail"), "mail", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Contact person phone"), "phone", ImportDialogueTableColumn::Text);
 
     ImportDialogueTable *circuits_table = new ImportDialogueTable(tr("Circuits"), "circuits");
+    circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "customers", "id");
     circuits_table->addColumn(tr("ID"), "id", ImportDialogueTableColumn::Integer);
-    circuits_table->addForeignKeyColumn(tr("Customer ID"), "customer_uuid", "customers");
     circuits_table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Place of operation"), "operation", ImportDialogueTableColumn::Text);
     circuits_table->addColumn(tr("Building"), "building", ImportDialogueTableColumn::Text);
@@ -3746,18 +3745,16 @@ void MainWindow::importCSV()
         col->addSelectValue(string_value.toLower(), string_value);
     tables.append(circuits_table);
 
-    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", {"uuid", "circuit_uuid"});
+    table = circuits_table->addChildTableTemplate(tr("Compressors"), "compressors", "circuit_uuid");
     table->addColumn(tr("Compressor name"), "name", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Manufacturer"), "manufacturer", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
 
-    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", {"uuid", "circuit_uuid"});
-    table->addForeignKeyColumn(tr("Unit type ID"), "unit_type_uuid", "circuit_unit_types");
+    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", "circuit_uuid");
     table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
 
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
-    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
     table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
@@ -3780,24 +3777,6 @@ void MainWindow::importCSV()
     table->addColumn(tr("Output unit"), "output_unit", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Output at t0/tc"), "output_t0_tc", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Notes"), "notes", ImportDialogueTableColumn::Text);
-    tables.append(table);
-
-    table = new ImportDialogueTable(tr("Assembly record item types"), "assembly_record_item_types");
-    table->addColumn(tr("ID"), "uuid", ImportDialogueTableColumn::ID);
-    table->addColumn(tr("Name"), "name", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Unit"), "unit", ImportDialogueTableColumn::Text);
-    table->addColumn(tr("Acquisition price"), "acquisition_price", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("List price"), "list_price", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("Discount"), "discount", ImportDialogueTableColumn::Numeric);
-    table->addColumn(tr("EAN code"), "ean", ImportDialogueTableColumn::Text);
-    col = table->addColumn(tr("Data type"), "value_data_type", ImportDialogueTableColumn::Select);
-    col->addSelectValue(tr("integer"), QString::number(Global::Integer));
-    col->addSelectValue(tr("decimal"), QString::number(Global::Numeric));
-    col->addSelectValue(tr("short text"), QString::number(Global::String));
-    col->addSelectValue(tr("long text"), QString::number(Global::Text));
-    col->addSelectValue(tr("boolean"), QString::number(Global::Boolean));
-    table->addColumn(tr("Automatically add to assembly record"), "auto_show", ImportDialogueTableColumn::Boolean);
-    table->addForeignKeyColumn(tr("Category ID"), "ar_item_category_uuid", "assembly_record_item_categories");
     tables.append(table);
 
     ImportCsvDialogue id(path, tables, this);

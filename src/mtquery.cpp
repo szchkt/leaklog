@@ -103,7 +103,7 @@ MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int l
 QVariantMap MTQuery::list(const QString &fields, const QString &order_by) const
 {
     QVariantMap list;
-    MTSqlQuery query = select(fields, order_by);
+    MTSqlQuery query = select(fields, order_by, 1);
     query.exec();
     QSqlRecord record = query.record();
     if (!query.next()) { return list; }

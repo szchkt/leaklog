@@ -70,16 +70,15 @@ public:
     const QString &id() { return t_id; }
 
     ImportDialogueTableColumn *addColumn(const QString &, const QString &, int);
-    ImportDialogueTableColumn *addForeignKeyColumn(const QString &, const QString &, const QString &);
+    ImportDialogueTableColumn *addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_table, const QString &foreign_key_column);
     void addColumn(ImportDialogueTableColumn *);
-    ImportDialogueTableTemplate *addChildTableTemplate(const QString &, const QString &, const MTDictionary &);
+    ImportDialogueTableTemplate *addChildTableTemplate(const QString &name, const QString &id, const QString &parent_column);
     ImportDialogueTable *addChildTable(int);
 
-    void addParentColumn(const QString &, const QString &);
-    void setParentColumns(const MTDictionary &other) { this->parent_columns = other; }
+    void setParentColumn(const QString &other) { this->parent_column = other; }
     void setColumns(const QList<ImportDialogueTableColumn *> &columns) { this->columns = columns; }
 
-    bool save(ImportDialogueTableRow *, QVariantMap = QVariantMap());
+    bool save(ImportDialogueTableRow *row, const QString &parent_uuid = QString());
 
     int count() { return columns.count(); }
     ImportDialogueTableColumn *at(int i) { return columns.at(i); }
@@ -95,7 +94,7 @@ protected:
     QString t_id;
 
     QList<ImportDialogueTableColumn *> columns;
-    MTDictionary parent_columns;
+    QString parent_column;
     QList<ImportDialogueTable *> child_tables;
     QList<ImportDialogueTableTemplate *> child_templates;
 };
@@ -117,35 +116,41 @@ public:
         ForeignKey
     };
 
-    ImportDialogueTableColumn(const QString &c_name, const QString &c_id, int c_type) {
+    ImportDialogueTableColumn(const QString &c_name, const QString &c_id, Type c_type) {
         this->c_name = c_name; this->c_id = c_id; this->c_type = c_type;
     }
     ImportDialogueTableColumn(ImportDialogueTableColumn *other) {
         this->c_name = other->name(); this->c_id = other->id();
         this->c_type = other->type(); this->select_vals = other->selectValues();
         this->foreign_key_table = other->foreignKeyTable();
+        this->foreign_key_column = other->foreignKeyColumn();
     }
 
     const QString &name() { return c_name; }
     const QString &id() { return c_id; }
-    int type() { return c_type; }
+    Type type() { return c_type; }
 
     void addSelectValue(const QString &key, const QString &value) { select_vals.insert(key, value); }
     const QString selectValue(const QString &key) { return select_vals.value(key, key); }
     const QMap<QString, QString> &selectValues() { return select_vals; }
 
-    void setForeignKeyTable(const QString &table) { this->foreign_key_table = table; }
+    void setForeignKey(const QString &table, const QString &column) {
+        this->foreign_key_table = table;
+        this->foreign_key_column = column;
+    }
     const QString &foreignKeyTable() { return foreign_key_table; }
+    const QString &foreignKeyColumn() { return foreign_key_column; }
 
 private:
     QString c_name;
     QString c_id;
 
     QString foreign_key_table;
+    QString foreign_key_column;
 
     QMap<QString, QString> select_vals;
 
-    int c_type;
+    Type c_type;
 };
 
 class ImportDialogueTableRow

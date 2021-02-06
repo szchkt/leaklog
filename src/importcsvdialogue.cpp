@@ -271,16 +271,16 @@ ImportDialogueTable::~ImportDialogueTable()
 
 ImportDialogueTableColumn *ImportDialogueTable::addColumn(const QString &name, const QString &id, int type)
 {
-    ImportDialogueTableColumn *col = new ImportDialogueTableColumn(name, id, type);
+    ImportDialogueTableColumn *col = new ImportDialogueTableColumn(name, id, (ImportDialogueTableColumn::Type)type);
     columns.append(col);
 
     return col;
 }
 
-ImportDialogueTableColumn *ImportDialogueTable::addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_table)
+ImportDialogueTableColumn *ImportDialogueTable::addForeignKeyColumn(const QString &name, const QString &id, const QString &foreign_key_table, const QString &foreign_key_column)
 {
     ImportDialogueTableColumn *col = addColumn(name, id, ImportDialogueTableColumn::ForeignKey);
-    col->setForeignKeyTable(foreign_key_table);
+    col->setForeignKey(foreign_key_table, foreign_key_column);
     return col;
 }
 
@@ -289,10 +289,10 @@ void ImportDialogueTable::addColumn(ImportDialogueTableColumn *column)
     columns.append(column);
 }
 
-ImportDialogueTableTemplate *ImportDialogueTable::addChildTableTemplate(const QString &name, const QString &id, const MTDictionary &parent_cols)
+ImportDialogueTableTemplate *ImportDialogueTable::addChildTableTemplate(const QString &name, const QString &id, const QString &parent_column)
 {
     ImportDialogueTableTemplate *table = new ImportDialogueTableTemplate(name, id);
-    table->setParentColumns(parent_cols);
+    table->setParentColumn(parent_column);
 
     child_templates.append(table);
 
@@ -310,23 +310,11 @@ ImportDialogueTable *ImportDialogueTable::addChildTable(int i)
     return table;
 }
 
-void ImportDialogueTable::addParentColumn(const QString &child, const QString &parent)
-{
-    parent_columns.setValue(child, parent);
-}
-
-bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_set)
+bool ImportDialogueTable::save(ImportDialogueTableRow *row, const QString &parent_uuid)
 {
     QVariantMap set;
-    QString string_value;
     bool ok = true;
-    int int_value;
-    double numeric_value;
-    QDate date_value;
-    QString id_column;
-
     MTAddress address;
-    MTRecord *frecord;
 
     bool all_empty = true;
 
@@ -337,69 +325,81 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
         else all_empty = false;
 
         switch (columns.at(i)->type()) {
-        case ImportDialogueTableColumn::ID:
-            id_column = columns.at(i)->id();
+        case ImportDialogueTableColumn::ID: {
             set.insert(columns.at(i)->id(), row->value(columns.at(i)));
-            break;
-
-        case ImportDialogueTableColumn::ForeignKey:
-            if (!ok) break;
-            frecord = new MTRecord(columns.at(i)->foreignKeyTable(), row->value(columns.at(i)).toString());
-            if (!frecord->exists()) {
-                ok = false;
-                break;
+            QVariantMap record = MTQuery(id(), {
+                {columns.at(i)->id(), row->value(columns.at(i))}
+            }).list("uuid", "uuid");
+            if (!record.isEmpty()) {
+                set.insert("uuid", record.value("uuid"));
             }
-            set.insert(columns.at(i)->id(), row->value(columns.at(i)));
-            delete frecord;
             break;
+        }
 
-        case ImportDialogueTableColumn::Integer:
-            int_value = row->value(columns.at(i)).toInt(&ok);
+        case ImportDialogueTableColumn::ForeignKey: {
+            QVariantMap record = MTQuery(columns.at(i)->foreignKeyTable(), {
+                {columns.at(i)->foreignKeyColumn(), row->value(columns.at(i))}
+            }).list("uuid", "uuid");
+            if (record.isEmpty()) {
+                ok = false;
+            } else {
+                set.insert(columns.at(i)->id(), record.value("uuid"));
+            }
+            break;
+        }
+
+        case ImportDialogueTableColumn::Integer: {
+            bool ok = true;
+            int int_value = row->value(columns.at(i)).toInt(&ok);
             if (ok)
                 set.insert(columns.at(i)->id(), int_value);
-            else
-                ok = true;
             break;
+        }
 
         case ImportDialogueTableColumn::Text:
             set.insert(columns.at(i)->id(), row->value(columns.at(i)));
             break;
 
-        case ImportDialogueTableColumn::Numeric:
-            string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
+        case ImportDialogueTableColumn::Numeric: {
+            QString string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
             if (string_value.contains(',') && !string_value.contains('.'))
                 string_value.replace(',', '.');
             while (string_value.count('.') > 1)
                 string_value.remove(string_value.indexOf('.'), 1);
-            numeric_value = string_value.toDouble(&ok);
+            bool ok = true;
+            double numeric_value = string_value.toDouble(&ok);
             if (ok)
                 set.insert(columns.at(i)->id(), numeric_value);
-            else
-                ok = true;
             break;
+        }
 
-        case ImportDialogueTableColumn::Boolean:
-            string_value = row->value(columns.at(i)).toString().toLower().simplified().remove(' ');
-            int_value = ((string_value.toInt(&ok) && ok) || (!ok &&
-                            (string_value == QObject::tr("Yes").toLower() ||
-                         string_value == "yes" || string_value == "true")));
+        case ImportDialogueTableColumn::Boolean: {
+            QString string_value = row->value(columns.at(i)).toString().toLower().simplified().remove(' ');
+            bool ok = true;
+            int int_value = !!string_value.toInt(&ok);
+            if (!ok) {
+                int_value = (string_value == QObject::tr("Yes").toLower() ||
+                             string_value == "yes" || string_value == "true");
+            }
             set.insert(columns.at(i)->id(), int_value);
-            ok = true;
             break;
+        }
 
-        case ImportDialogueTableColumn::Date:
-            string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
-            date_value = QDate::fromString(string_value, DATE_FORMAT);
+        case ImportDialogueTableColumn::Date: {
+            QString string_value = row->value(columns.at(i)).toString().simplified().remove(' ');
+            QDate date_value = QDate::fromString(string_value, DATE_FORMAT);
             if (!date_value.isValid())
                 date_value = QDate::fromString(string_value, "d.M.yyyy");
             if (date_value.isValid())
                 set.insert(columns.at(i)->id(), date_value.toString(DATE_FORMAT));
             break;
+        }
 
-        case ImportDialogueTableColumn::Select:
-            string_value = row->value(columns.at(i)).toString().toLower().simplified();
+        case ImportDialogueTableColumn::Select: {
+            QString string_value = row->value(columns.at(i)).toString().toLower().simplified();
             set.insert(columns.at(i)->id(), columns.at(i)->selectValue(row->value(columns.at(i)).toString()));
             break;
+        }
 
         case ImportDialogueTableColumn::AddressCity:
             address.setCity(row->value(columns.at(i)).toString());
@@ -412,16 +412,17 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
         case ImportDialogueTableColumn::AddressPostalCode:
             address.setPostalCode(row->value(columns.at(i)).toString());
             break;
-
-        default:
-            break;
         }
     }
 
     if (all_empty) return ok;
 
-    for (int i = 0; i < parent_columns.count(); ++i) {
-        set.insert(parent_columns.value(i), parent_set.value(parent_columns.key(i)));
+    if (!parent_column.isEmpty()) {
+        if (parent_uuid.isEmpty()) {
+            ok = false;
+        } else {
+            set.insert(parent_column, parent_uuid);
+        }
     }
 
     if (!address.city().isEmpty() || !address.street().isEmpty() || !address.postalCode().isEmpty()) {
@@ -432,7 +433,7 @@ bool ImportDialogueTable::save(ImportDialogueTableRow *row, QVariantMap parent_s
     ok = ok && record.update(set);
 
     for (int i = 0; i < child_tables.count(); ++i) {
-        ok = ok && child_tables.at(i)->save(row, set);
+        ok = ok && child_tables.at(i)->save(row, record.uuid());
     }
 
     return ok;
@@ -454,7 +455,7 @@ ImportDialogueTable *ImportDialogueTableTemplate::table()
     for (int i = 0; i < columns.count(); ++i) {
         table->addColumn(new ImportDialogueTableColumn(columns.at(i)));
     }
-    table->setParentColumns(parent_columns);
+    table->setParentColumn(parent_column);
 
     return table;
 }
