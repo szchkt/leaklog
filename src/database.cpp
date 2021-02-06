@@ -3751,9 +3751,6 @@ void MainWindow::importCSV()
     table->addColumn(tr("Type"), "type", ImportDialogueTableColumn::Text);
     table->addColumn(tr("Serial number"), "sn", ImportDialogueTableColumn::Text);
 
-    table = circuits_table->addChildTableTemplate(tr("Circuit units"), "circuit_units", "circuit_uuid");
-    table->addColumn(tr("Unit serial number"), "sn", ImportDialogueTableColumn::Text);
-
     table = new ImportDialogueTable(tr("Circuit unit types"), "circuit_unit_types");
     table->addColumn(tr("Refrigerant amount"), "refrigerant_amount", ImportDialogueTableColumn::Numeric);
     table->addColumn(tr("Oil amount"), "oil_amount", ImportDialogueTableColumn::Numeric);
