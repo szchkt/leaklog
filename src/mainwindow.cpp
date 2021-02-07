@@ -684,13 +684,13 @@ void MainWindow::printLabel(bool detailed)
     QPrintDialog dialogue(&printer, this);
     dialogue.setWindowTitle(tr("Print label"));
     if (dialogue.exec() != QDialog::Accepted) return;
-    printer.setOrientation(QPrinter::Portrait);
+    printer.setPageOrientation(QPageLayout::Portrait);
     printer.setFullPage(true);
 
     QPainter painter;
     painter.begin(&printer);
     painter.setRenderHint(QPainter::Antialiasing);
-    QRect rect = printer.pageRect();
+    QRect rect = printer.pageLayout().paintRectPixels(printer.resolution());
     int margin = rect.width() / 33;
     int w = (rect.width() - 4 * margin) / 2;
     int h = (rect.height() - 8 * margin) / 4;

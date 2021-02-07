@@ -31,6 +31,15 @@ public:
 
     void initEditDialogue(EditDialogueWidgets *);
 
+    inline QStringList listValue(const QString &field) {
+        return stringValue(field)
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+            .split(';', QString::SkipEmptyParts);
+#else
+            .split(';', Qt::SkipEmptyParts);
+#endif
+    }
+
     inline QString name() { return stringValue("name"); }
     inline void setName(const QString &value) { setValue("name", value); }
     inline int position() { return intValue("position"); }
@@ -39,13 +48,13 @@ public:
     inline void setHighlightNominal(bool value) { setValue("highlight_nominal", (int)value); }
     inline int scope() { return intValue("scope"); }
     inline void setScope(int value) { setValue("scope", value); }
-    inline QStringList variables() { return stringValue("variables").split(';', QString::SkipEmptyParts); }
+    inline QStringList variables() { return listValue("variables"); }
     inline void setVariables(const QStringList &value) { setValue("variables", value.join(';')); }
     inline void setVariables(const QString &value) { setValue("variables", value); }
-    inline QStringList summedVariables() { return stringValue("sum").split(';', QString::SkipEmptyParts); }
+    inline QStringList summedVariables() { return listValue("sum"); }
     inline void setSummedVariables(const QStringList &value) { setValue("sum", value.join(';')); }
     inline void setSummedVariables(const QString &value) { setValue("sum", value); }
-    inline QStringList averagedVariables() { return stringValue("avg").split(';', QString::SkipEmptyParts); }
+    inline QStringList averagedVariables() { return listValue("avg"); }
     inline void setAveragedVariables(const QStringList &value) { setValue("avg", value.join(';')); }
     inline void setAveragedVariables(const QString &value) { setValue("avg", value); }
 

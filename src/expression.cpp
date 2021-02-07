@@ -62,7 +62,12 @@ fparser(new FunctionParser)
 
     std::string vars;
     if (fparser->ParseAndDeduceVariables(exp.toStdString(), vars) < 0) {
-        var_names = QSharedPointer<QStringList>(new QStringList(QString::fromStdString(vars).split(',', QString::SkipEmptyParts)));
+        var_names = QSharedPointer<QStringList>(new QStringList(QString::fromStdString(vars)
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+                                                                .split(',', QString::SkipEmptyParts)));
+#else
+                                                                .split(',', Qt::SkipEmptyParts)));
+#endif
     }
 }
 

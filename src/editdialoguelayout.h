@@ -33,8 +33,8 @@ public:
     EditDialogueLayout(QList<MDAbstractInputWidget *> *, QGridLayout *);
 
     virtual void layout();
-    void addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = 0);
-    void addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0);
+    void addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment());
+    void addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment());
 
 protected:
     QGridLayout *md_grid_main;

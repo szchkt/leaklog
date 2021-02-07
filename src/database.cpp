@@ -2600,7 +2600,7 @@ void MainWindow::moveTableVariable(bool up)
 
     QString uuid = cb_table_edit->currentData().toString();
     Table table(uuid);
-    QStringList variables = table.stringValue("variables").split(";", QString::SkipEmptyParts);
+    QStringList variables = table.variables();
     QString variable = variables.takeAt(i);
     if (up) {
         if (i != 0) { i--; } else { i = variables.count(); }

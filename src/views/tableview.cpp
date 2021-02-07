@@ -414,7 +414,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
         if (!table_record.value(foot_functions.key(f)).toString().isEmpty()) {
             row = tfoot->addRow("class=\"border_top border_bottom\"");
             *(row->addHeaderCell()) << foot_functions.value(f);
-            QStringList f_vars = table_record.value(foot_functions.key(f)).toString().split(";", QString::SkipEmptyParts);
+            QStringList f_vars = table_record.listValue(foot_functions.key(f));
             for (int i = 0; i < table_vars.count(); ++i) {
                 variable = var_evaluation.variable(table_vars.at(i));
                 if (!variable) continue;

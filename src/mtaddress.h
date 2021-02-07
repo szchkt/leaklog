@@ -65,9 +65,9 @@ protected:
     void init();
 
 public:
-    MTAddressEdit(QWidget *parent = 0, Qt::WindowFlags f = 0):
+    MTAddressEdit(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags()):
     QFrame(parent, f) { init(); }
-    MTAddressEdit(const MTAddress &address, QWidget *parent = 0, Qt::WindowFlags f = 0):
+    MTAddressEdit(const MTAddress &address, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags()):
     QFrame(parent, f) { init(); setAddress(address); }
 
     void setAddress(const MTAddress &address);

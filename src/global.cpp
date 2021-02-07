@@ -254,7 +254,11 @@ void Global::addColumn(const QString &column, const QString &table, const QSqlDa
 
     QString c = column;
     c.remove("PRIMARY KEY");
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     QStringList col = c.split(' ', QString::SkipEmptyParts);
+#else
+    QStringList col = c.split(' ', Qt::SkipEmptyParts);
+#endif
     if (!col.count())
         return;
 

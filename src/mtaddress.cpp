@@ -61,7 +61,11 @@ QString MTAddress::toHtml(MTAddress::AddressFormat format) const
 
 void MTAddress::initWithAddress(const QString &address) {
     clear();
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     QStringList list = address.split('\n', QString::SkipEmptyParts);
+#else
+    QStringList list = address.split('\n', Qt::SkipEmptyParts);
+#endif
     for (QStringList::const_iterator i = list.constBegin(); i != list.constEnd(); ++i) {
         if (i->startsWith("Street:", Qt::CaseInsensitive)) { setStreet(i->mid(7)); }
         else if (i->startsWith("City:", Qt::CaseInsensitive)) { setCity(i->mid(5)); }
