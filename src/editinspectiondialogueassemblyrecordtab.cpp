@@ -67,14 +67,14 @@ void EditInspectionDialogueAssemblyRecordTab::init()
     layout->addLayout(form_grid);
 
     groups_layout = new EditDialogueGroupsLayout(this);
-    groups_layout->addHeaderItem(-1, "name", tr("Name"), Global::String);
-    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", tr("Value"), Global::String);
+    groups_layout->addHeaderItem(-1, "name", QApplication::translate("AssemblyRecordItemCategory", "Name"), Global::String);
+    groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowValue, "value", QApplication::translate("AssemblyRecordItem", "Value"), Global::String);
     if (DBInfo::isOperationPermitted("access_assembly_record_acquisition_price") > 0)
-        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", tr("Acquisition price"), Global::Numeric);
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowAcquisitionPrice, "acquisition_price", QApplication::translate("AssemblyRecordItem", "Acquisition price"), Global::Numeric);
     if (DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0)
-        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", tr("List price"), Global::Numeric);
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowListPrice, "list_price", QApplication::translate("AssemblyRecordItem", "List price"), Global::Numeric);
     if (DBInfo::isOperationPermitted("access_assembly_record_list_price") > 0)
-        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", tr("Discount"), Global::Numeric);
+        groups_layout->addHeaderItem(AssemblyRecordItemCategory::ShowDiscount, "discount", QApplication::translate("AssemblyRecordItemType", "Discount"), Global::Numeric);
     layout->addWidget(groups_layout);
 
     loadItemInputWidgets(true);
