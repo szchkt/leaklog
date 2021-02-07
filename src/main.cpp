@@ -22,6 +22,9 @@
 
 #include <QSettings>
 #include <QTranslator>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+#include <QWebEngineUrlScheme>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +32,11 @@ int main(int argc, char *argv[])
     QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue");
     QFont::insertSubstitution(".SF NS Text", "Lucida Grande");
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    QWebEngineUrlScheme::registerScheme(QWebEngineUrlScheme("dbfile"));
+    QWebEngineUrlScheme::registerScheme(QWebEngineUrlScheme("view"));
 #endif
 
     MTApplication app(argc, argv);
