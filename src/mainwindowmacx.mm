@@ -40,8 +40,13 @@ int Global::macVersion()
     if (!version) {
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         NSDictionary *systemVersion = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
-        NSArray *productVersion = [[systemVersion objectForKey:@"ProductVersion"] componentsSeparatedByString:@"."];
-        version = [[productVersion objectAtIndex:1] intValue] + Q_MV_OSX(10, 0);
+        NSArray<NSString *> *productVersion = [systemVersion[@"ProductVersion"] componentsSeparatedByString:@"."];
+        int majorVersion = productVersion.firstObject.intValue;
+        if (majorVersion == 10) {
+            version = productVersion[1].intValue + 2;
+        } else {
+            version = majorVersion + 7;
+        }
         [pool release];
     }
     return version;
