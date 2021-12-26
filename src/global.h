@@ -31,6 +31,9 @@ class QDir;
 class QColor;
 
 namespace Global {
+#ifdef Q_OS_WIN32
+    int winVersion();
+#endif
 #ifdef Q_OS_MAC
     int macVersion();
 #endif

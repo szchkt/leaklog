@@ -82,9 +82,13 @@ void MTSqlQuery::printLastError() const
         QFile file(desktop.absoluteFilePath("Leaklog-errors.log"));
         file.open(QIODevice::Append | QIODevice::Text);
         QTextStream output(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        output.setEncoding(QStringConverter::Utf8);
+#else
         output.setCodec("UTF-8");
-        output << lastQuery() << endl;
-        output << error.text() << endl;
+#endif
+        output << lastQuery() << Qt::endl;
+        output << error.text() << Qt::endl;
         file.close();
 #endif
     }

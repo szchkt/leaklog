@@ -257,6 +257,10 @@ win32 {
     RCC_DIR        = build/win32
 }
 
+win32-msvc:greaterThan(QT_MAJOR_VERSION, 5) {
+    QMAKE_LFLAGS  += /ENTRY:mainCRTStartup
+}
+
 win32-g++ {
     LIBS          += C:\MinGW\lib\libgdi32.a
 }
@@ -278,7 +282,9 @@ macx {
     QMAKE_LFLAGS   += -stdlib=libc++
 }
 
-win32-msvc* {
+win32-msvc:greaterThan(QMAKE_MSC_VER, 1929) {
+    QMAKE_CXXFLAGS += /std:c++17
+} else:win32-msvc {
     QMAKE_CXXFLAGS += /std:c++14
 } else {
     QMAKE_CXXFLAGS += -std=c++0x

@@ -1618,7 +1618,7 @@ void MainWindow::checkForUpdates(bool silent)
               .arg(LEAKLOG_PREVIEW_VERSION)
               .arg(tr("en_GB"))
 #ifdef Q_OS_WIN32
-              .arg('W').arg(QSysInfo::WindowsVersion)
+              .arg('W').arg(winVersion())
 #elif defined Q_OS_MAC
               .arg('M').arg(macVersion())
 #else

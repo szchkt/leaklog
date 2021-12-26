@@ -44,8 +44,10 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(LEAKLOG_VERSION);
 
 #ifdef Q_OS_WIN32
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
         QApplication::setStyle("windowsxp");
+#endif
 #endif
 
     QSettings settings("SZCHKT", "Leaklog");

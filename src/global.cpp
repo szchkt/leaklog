@@ -42,13 +42,36 @@
 
 #ifdef Q_OS_WIN32
 
+int Global::winVersion()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QString version = QSysInfo::productVersion();
+    switch (version.split('.').first().toInt()) {
+        case 10:
+            return 0x00c0;
+        case 11:
+            return 0x00d0;
+    }
+    return 0x00f0;
+#else
+    return QSysInfo::WindowsVersion;
+#endif
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+
 #include <windows.h>
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 
+#endif
+
 double Global::scaleFactor(bool refresh)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return 1.0;
+#else
     static double scale = 0.0;
     if (scale == 0.0 || refresh) {
         HDC hdc = GetDC(NULL);
@@ -60,6 +83,7 @@ double Global::scaleFactor(bool refresh)
         }
     }
     return scale;
+#endif
 }
 
 #else // !defined(Q_OS_WIN32)
@@ -103,8 +127,10 @@ QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 QString Global::rightTriangle()
 {
 #ifdef Q_OS_WIN32
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (QSysInfo::WindowsVersion < QSysInfo::WV_6_0)
         return ">";
+#endif
 #endif
     return QString::fromUtf8("\342\226\270");
 }
