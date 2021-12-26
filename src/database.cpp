@@ -2482,14 +2482,10 @@ void MainWindow::addTableVariable()
     d.setWindowTitle(tr("Add existing variable - Leaklog"));
     d.setMinimumSize(QSize(300, 350));
         QVBoxLayout *vl = new QVBoxLayout(&d);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        vl->setMargin(6);
-#endif
+        vl->setContentsMargins(12, 12, 12, 12);
         vl->setSpacing(6);
             QHBoxLayout *hl = new QHBoxLayout;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            hl->setMargin(0);
-#endif
+            hl->setContentsMargins(0, 0, 0, 0);
             hl->setSpacing(6);
                 QLabel *lbl = new QLabel(tr("Search:"), &d);
                 SearchLineEdit *sle = new SearchLineEdit(&d);

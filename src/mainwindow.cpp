@@ -1454,9 +1454,7 @@ void MainWindow::changeLanguage()
     w_lang->setWindowTitle(tr("Change language - Leaklog"));
 #endif
     QGridLayout *glayout_lang = new QGridLayout(w_lang);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    glayout_lang->setMargin(6);
-#endif
+    glayout_lang->setContentsMargins(12, 12, 12, 12);
     glayout_lang->setSpacing(6);
     QLabel *lbl_lang = new QLabel(w_lang);
     lbl_lang->setText(tr("Select your preferred language"));
