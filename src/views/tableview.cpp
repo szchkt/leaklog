@@ -427,7 +427,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                         if (subvariable->type() != "float" && subvariable->type() != "int") is_in_foot = false;
                         cell = row->addCell();
                         cell->addClass(variable->colBg());
-                        bool value_contains_sum = subvariable->value().contains(QRegExp("\\bsum\\b"));
+                        bool value_contains_sum = subvariable->value().contains(QRegularExpression("\\bsum\\b"));
                         if (is_in_foot) {
                             double value = 0.0; int num_ins = 0;
                             if (subvariable->value().isEmpty()) {
@@ -456,7 +456,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
                     if (variable->type() != "float" && variable->type() != "int") is_in_foot = false;
                     cell = row->addCell();
                     cell->addClass(variable->colBg());
-                    bool value_contains_sum = variable->value().contains(QRegExp("\\bsum\\b"));
+                    bool value_contains_sum = variable->value().contains(QRegularExpression("\\bsum\\b"));
                     if (is_in_foot) {
                         double value = 0.0; int num_ins = 0;
                         if (variable->value().isEmpty()) {

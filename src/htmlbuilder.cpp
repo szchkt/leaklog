@@ -22,6 +22,7 @@
 #include "defs.h"
 #include "mtvariant.h"
 
+#include <QLocale>
 #include <QTextStream>
 
 #include <cmath>

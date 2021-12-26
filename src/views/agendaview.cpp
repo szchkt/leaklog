@@ -154,7 +154,11 @@ QString AgendaView::renderHTML(bool)
     out << "<th>" << QApplication::translate("Circuit", "Name") << "</th>";
     out << "</tr>";
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QMultiMapIterator<QString, QList<QVariant> > i(next_inspections_map);
+#else
     QMapIterator<QString, QList<QVariant> > i(next_inspections_map);
+#endif
     while (i.hasNext()) { i.next();
         QString customer_uuid = i.value().value(0).toString();
         QString circuit_uuid = i.value().value(1).toString();

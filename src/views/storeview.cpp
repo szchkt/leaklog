@@ -159,7 +159,11 @@ QString StoreView::renderHTML(bool)
     QString link;
     QMap<QString, QVector<double> *>::const_iterator sums_iterator;
     QVector<double> *sum_list = NULL;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QMultiMapIterator<QString, QVector<QString> > i(data.entries_map);
+#else
     QMapIterator<QString, QVector<QString> > i(data.entries_map);
+#endif
     i.toBack();
     while (i.hasPrevious()) { i.previous();
         year = i.key().left(4).toInt();

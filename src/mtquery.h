@@ -24,7 +24,6 @@
 #include "mtdictionary.h"
 #include "mtsqlquery.h"
 
-#include <QVariant>
 #include <QSqlRecord>
 
 #include <functional>
@@ -122,8 +121,8 @@ public:
         return records;
     }
 
-    QMap<QVariant, T> map(const QString &key) const {
-        QMap<QVariant, T> result;
+    QMap<QString, T> map(const QString &key) const {
+        QMap<QString, T> result;
         MTSqlQuery query = select();
         query.exec();
         QSqlRecord record = query.record();
@@ -132,7 +131,7 @@ public:
             for (int i = 0; i < record.count(); ++i) {
                 values.insert(record.fieldName(i), query.value(i));
             }
-            result.insert(values.value(key), T(values.value("uuid").toString(), values));
+            result.insert(values.value(key).toString(), T(values.value("uuid").toString(), values));
         }
         return result;
     }

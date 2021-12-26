@@ -22,11 +22,9 @@
 
 #include "defs.h"
 
+#include <QPair>
 #include <QSqlDatabase>
 #include <QStringList>
-
-template <class T1, class T2>
-struct QPair;
 
 class MTDictionary;
 class QDir;

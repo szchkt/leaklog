@@ -57,7 +57,11 @@ QString View::viewTemplate(const QString &view_template)
         )";
         QFile file;
         QTextStream in(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
         in.setCodec("UTF-8");
+#endif
         file.setFileName(QString(":/html/%1.html").arg(view_template));
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         view_templates.insert(view_template, in.readAll().arg(style));

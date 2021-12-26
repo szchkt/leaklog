@@ -22,6 +22,8 @@
 
 #include "tabbededitdialogue.h"
 
+#include <QVariantMap>
+
 class EditCircuitDialogueNotesTab : public EditDialogueTab
 {
     Q_OBJECT

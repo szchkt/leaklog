@@ -23,6 +23,8 @@
 #include "defs.h"
 #include "mtvariant.h"
 
+#include <QIODevice>
+#include <QLocale>
 #include <QTextStream>
 
 #include <cmath>

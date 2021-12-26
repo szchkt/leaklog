@@ -584,11 +584,11 @@ static QDate dateForFileName(const QString &file_name)
         return QDate();
 
     QString year = components.at(components.count() - 3);
-    year.remove(QRegExp("[^0-9]+"));
+    year.remove(QRegularExpression("[^0-9]+"));
     QString month = components.at(components.count() - 2);
-    month.remove(QRegExp("[^0-9]+"));
+    month.remove(QRegularExpression("[^0-9]+"));
     QString day = components.at(components.count() - 1);
-    day.remove(QRegExp("[^0-9]+"));
+    day.remove(QRegularExpression("[^0-9]+"));
 
     return QDate(year.toInt(), month.toInt(), day.toInt());
 }
@@ -2482,9 +2482,15 @@ void MainWindow::addTableVariable()
     d.setWindowTitle(tr("Add existing variable - Leaklog"));
     d.setMinimumSize(QSize(300, 350));
         QVBoxLayout *vl = new QVBoxLayout(&d);
-        vl->setMargin(6); vl->setSpacing(6);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        vl->setMargin(6);
+#endif
+        vl->setSpacing(6);
             QHBoxLayout *hl = new QHBoxLayout;
-            hl->setMargin(0); hl->setSpacing(6);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            hl->setMargin(0);
+#endif
+            hl->setSpacing(6);
                 QLabel *lbl = new QLabel(tr("Search:"), &d);
                 SearchLineEdit *sle = new SearchLineEdit(&d);
             hl->addWidget(lbl);

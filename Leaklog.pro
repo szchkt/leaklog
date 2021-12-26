@@ -233,7 +233,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/viewtabsettings.cpp \
                  src/warnings.cpp
 
-QT                += widgets network webengine webenginewidgets sql printsupport
+QT                += widgets network webenginewidgets sql printsupport
 CONFIG            += c++11
 
 # fparser

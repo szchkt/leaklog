@@ -381,7 +381,11 @@ bool Global::journalDeletion(int table_id, const QString &record_uuid, const QSq
 
 QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+#else
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+#endif
     QByteArray hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Md5);
     QString backup_path = QString("Backups/%1").arg(QString(hash.toHex()));
     if (dir.mkpath(backup_path) && dir.cd(backup_path)) {

@@ -29,7 +29,7 @@ QSyntaxHighlighter(parent)
         keywordPatterns << QString("\\b%1\\b").arg(used_ids.at(i));
     }
     foreach (QString pattern, keywordPatterns) {
-        rule.pattern = QRegExp(pattern);
+        rule.pattern = QRegularExpression(pattern);
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
@@ -38,12 +38,12 @@ QSyntaxHighlighter(parent)
 void Highlighter::highlightBlock(const QString &text)
 {
     foreach (HighlightingRule rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = text.indexOf(expression);
-        while (index >= 0) {
-            int length = expression.matchedLength();
+        QRegularExpressionMatch match = rule.pattern.match(text);
+        while (match.hasMatch()) {
+            int index = match.capturedStart(0);
+            int length = match.capturedLength();
             setFormat(index, length, rule.format);
-            index = text.indexOf(expression, index + length);
+            match = rule.pattern.match(text, index + length);
         }
     }
 }

@@ -20,8 +20,15 @@
 #ifndef MTWEBPAGE_H
 #define MTWEBPAGE_H
 
+#include <QtGlobal>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QWebEnginePage>
+#include <QWebEngineProfile>
+#else
 #include <QtWebEngineWidgets/QWebEnginePage>
 #include <QtWebEngineWidgets/QWebEngineProfile>
+#endif
 
 class MTWebPage : public QWebEnginePage
 {

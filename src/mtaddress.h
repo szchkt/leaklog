@@ -22,7 +22,6 @@
 
 #include <QFrame>
 
-class QStringList;
 class QLabel;
 class QLineEdit;
 

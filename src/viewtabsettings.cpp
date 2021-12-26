@@ -167,7 +167,7 @@ void ViewTabSettings::loadRepair(const QString &repair_uuid, bool refresh)
 
 void ViewTabSettings::loadInspector(const QString &inspector_uuid, bool refresh)
 {
-    if (inspector_uuid < 0) { return; }
+    if (inspector_uuid.isEmpty()) { return; }
     setSelectedInspectorUUID(inspector_uuid);
     enableAllTools();
     if (refresh) {
@@ -229,7 +229,7 @@ void ViewTabSettings::loadAssemblyRecord(const QString &inspection_uuid, bool re
 
 void ViewTabSettings::loadCircuitUnitType(const QString &circuit_unit_type_uuid, bool refresh)
 {
-    if (circuit_unit_type_uuid < 0) { return; }
+    if (circuit_unit_type_uuid.isEmpty()) { return; }
     setSelectedCircuitUnitTypeUUID(circuit_unit_type_uuid);
     enableAllTools();
     if (refresh) {

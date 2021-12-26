@@ -26,7 +26,7 @@
 #include "circuit.h"
 #include "inspection.h"
 
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 
 #include <cmath>
@@ -58,7 +58,7 @@ fparser(new FunctionParser)
     fparser->AddFunctionWrapper("p_to_t_vap", PressureToTemperatureFunction(RefProp::Vapour), 1);
 
     QString exp = expression;
-    exp.replace(QRegExp("\\bsum\\s*\\(\\s*"), "(__sum_");
+    exp.replace(QRegularExpression("\\bsum\\s*\\(\\s*"), "(__sum_");
 
     std::string vars;
     if (fparser->ParseAndDeduceVariables(exp.toStdString(), vars) < 0) {

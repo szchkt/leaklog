@@ -26,12 +26,8 @@
 
 void MainWindow::macInitUI()
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (QSysInfo::MacintoshVersion > Q_MV_OSX(10, 6)) {
-        NSView *view = (NSView *)winId();
-        [[view window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    }
-#endif
+    NSView *view = (NSView *)winId();
+    view.window.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
 }
 
 int Global::macVersion()

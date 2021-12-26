@@ -34,7 +34,7 @@ QValidator::State CompanyIDValidator::validate(QString &input, int &) const
     if (input.isEmpty())
         return QValidator::Acceptable;
 
-    if (input.contains(QRegExp("[^0-9]")))
+    if (input.contains(QRegularExpression("[^0-9]")))
         return QValidator::Invalid;
 
     if (_format == Global::CompanyIDFormatNIP) {
@@ -59,7 +59,7 @@ QValidator::State CompanyIDValidator::validate(QString &input, int &) const
 void CompanyIDValidator::fixup(QString &input) const
 {
     if (!input.isEmpty()) {
-        input.remove(QRegExp("[^0-9]+"));
+        input.remove(QRegularExpression("[^0-9]+"));
         input = formatCompanyID(input);
     }
 }

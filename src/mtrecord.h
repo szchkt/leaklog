@@ -48,7 +48,13 @@ public:
     void duplicate();
     void setValue(const QString &field, const QVariant &value);
     inline QVariantMap values() {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        auto values = savedValues();
+        values.insert(currentValues());
+        return values;
+#else
         return savedValues().unite(currentValues());
+#endif
     }
     inline QVariantMap currentValues() const {
         return r_current_values;

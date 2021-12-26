@@ -28,8 +28,8 @@ void ReportData::addToStore(QMap<int, QMap<QString, double> > &store, QList<int>
 {
     if (!years.contains(year)) {
         years << year;
-        qSort(years);
-        QList<int>::const_iterator pos = qBinaryFind(years, year);
+        std::sort(years.begin(), years.end());
+        QList<int>::const_iterator pos = std::lower_bound(years.constBegin(), years.constEnd(), year);
         if (pos != years.constBegin()) {
             pos--;
             store.insert(year, store.value(*pos));

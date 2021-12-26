@@ -32,6 +32,7 @@
 #include "undostack.h"
 #include "viewtab.h"
 
+#include <QActionGroup>
 #include <QSettings>
 #include <QTranslator>
 #include <QNetworkAccessManager>
@@ -325,7 +326,7 @@ MainWindow::MainWindow():
     QObject::connect(lw_recent_docs, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showRecentDatabaseContextMenu(const QPoint &)));
     QObject::connect(trw_variables, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(editVariable()));
     QObject::connect(trw_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
-    QObject::connect(cb_table_edit, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(loadTable(const QString &)));
+    QObject::connect(cb_table_edit, SIGNAL(currentTextChanged(const QString &)), this, SLOT(loadTable(const QString &)));
     QObject::connect(trw_table_variables, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
     QObject::connect(lw_warnings, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editWarning()));
     QObject::connect(lw_warnings, SIGNAL(itemSelectionChanged()), this, SLOT(enableTools()));
@@ -451,6 +452,7 @@ void MainWindow::printPreview()
 
 void MainWindow::printPreview(QPrinter *printer)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool printing = true;
     m_tab->webView()->page()->print(printer, [&printing](bool) {
         printing = false;
@@ -458,6 +460,7 @@ void MainWindow::printPreview(QPrinter *printer)
     while (printing) {
         QApplication::processEvents();
     }
+#endif
 }
 
 void MainWindow::print()
@@ -476,9 +479,11 @@ void MainWindow::print()
 
 void MainWindow::print(QPrinter *printer)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     m_tab->webView()->page()->print(printer, [printer](bool) {
         delete printer;
     });
+#endif
 }
 
 QString MainWindow::fileNameForCurrentView()
@@ -548,26 +553,45 @@ void MainWindow::exportHTML()
     if (html.contains("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream in(&default_css); in.setCodec("UTF-8");
+        QTextStream in(&default_css);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
+        in.setCodec("UTF-8");
+#endif
         html.replace("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
         default_css.close();
     }
     if (html.contains("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />")) {
         QFile colours_css(":/html/colours.css");
         colours_css.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream in(&colours_css); in.setCodec("UTF-8");
+        QTextStream in(&colours_css);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
+        in.setCodec("UTF-8");
+#endif
         html.replace("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
         colours_css.close();
     }
     if (html.contains("<script type=\"text/javascript\" src=\"application.js\"></script>")) {
         QFile application_js(":/html/application.js");
         application_js.open(QIODevice::ReadOnly | QIODevice::Text);
-        QTextStream in(&application_js); in.setCodec("UTF-8");
+        QTextStream in(&application_js);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
+        in.setCodec("UTF-8");
+#endif
         html.replace("<script type=\"text/javascript\" src=\"application.js\"></script>", QString("<script type=\"text/javascript\">\n<!--\n%1\n-->\n</script>").arg(in.readAll()));
         application_js.close();
     }
     QTextStream out(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    out.setEncoding(QStringConverter::Utf8);
+#else
     out.setCodec("UTF-8");
+#endif
     out << html;
     file.close();
 }
@@ -628,8 +652,14 @@ void MainWindow::printLabel(bool detailed)
     if (detailed) {
         Customer customer(m_tab->selectedCustomerUUID());
         Circuit circuit(m_tab->selectedCircuitUUID());
-        attributes.unite(circuit.list("id, refrigerant, " + circuitRefrigerantAmountQuery()
-                                      + ", hermetic, leak_detector, inspection_interval"));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        attributes.insert(
+#else
+        attributes.unite(
+#endif
+            circuit.list("id, refrigerant, " + circuitRefrigerantAmountQuery()
+                         + ", hermetic, leak_detector, inspection_interval")
+        );
         attributes.insert("circuit_id", customer.companyID() + "." + attributes.value("id").toString().rightJustified(5, '0'));
 
         MTSqlQuery query;
@@ -669,12 +699,20 @@ void MainWindow::printLabel(bool detailed)
 
     Inspector inspector(selected_inspector_uuid);
     if (inspector.exists()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        attributes.insert(inspector.list("certificate_number, person"));
+#else
         attributes.unite(inspector.list("certificate_number, person"));
+#endif
     }
 
     ServiceCompany service_company(m_tab->selectedServiceCompanyUUID());
     if (service_company.exists()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        attributes.insert(service_company.list("id, name, address, mail, phone"));
+#else
         attributes.unite(service_company.list("id, name, address, mail, phone"));
+#endif
         attributes.insert("id", attributes.value("id").toString());
     }
 
@@ -1416,7 +1454,10 @@ void MainWindow::changeLanguage()
     w_lang->setWindowTitle(tr("Change language - Leaklog"));
 #endif
     QGridLayout *glayout_lang = new QGridLayout(w_lang);
-    glayout_lang->setMargin(6); glayout_lang->setSpacing(6);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    glayout_lang->setMargin(6);
+#endif
+    glayout_lang->setSpacing(6);
     QLabel *lbl_lang = new QLabel(w_lang);
     lbl_lang->setText(tr("Select your preferred language"));
     glayout_lang->addWidget(lbl_lang, 0, 0);

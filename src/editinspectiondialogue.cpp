@@ -177,7 +177,7 @@ void EditInspectionDialogueImagesTab::save(const QString &inspection_uuid)
         file.save();
     }
 
-    QMapIterator<QVariant, InspectionFile> i(files);
+    QMapIterator<QString, InspectionFile> i(files);
     while (i.hasNext()) { i.next();
         i.value().remove();
     }

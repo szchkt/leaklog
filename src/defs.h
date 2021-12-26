@@ -49,24 +49,17 @@
 
 #define UNIT_SEPARATOR QChar(31)
 
-class QString;
-class QVariant;
-template<class Key, class T>
-class QMap;
-template<class Key, class T>
-class QMapIterator;
-template<class Key, class T>
-class QMultiMap;
-template<class T>
-class QList;
+#include <QMap>
+#include <QMultiMap>
+#include <QString>
+#include <QVariant>
+#include <QVariantMap>
 
-typedef QMap<QString, QVariant> QVariantMap;
 typedef QMapIterator<QString, QVariant> QVariantMapIterator;
 typedef QList<QVariantMap> ListOfVariantMaps;
 typedef QMap<QString, QVariantMap> MapOfVariantMaps;
 typedef QMultiMap<QString, QVariantMap> MultiMapOfVariantMaps;
 
-#include <QtGlobal>
 #include <QDebug>
 
 #endif // DEFS_H
