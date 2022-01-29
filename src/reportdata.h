@@ -48,7 +48,8 @@ namespace FIELD_IDS {
         TRANSPORT = 32,
         HP = 64,
         INDUSTRIAL = 512,
-        DOMESTIC = 2048
+        DOMESTIC = 2048,
+        ORC = 4096,
     };
 }
 
