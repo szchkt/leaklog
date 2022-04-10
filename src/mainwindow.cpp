@@ -79,6 +79,9 @@ MainWindow::MainWindow():
     if (tr("LTR") == "RTL")
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    setUnifiedTitleAndToolBarOnMac(true);
+#endif
 
     scaleFactorChanged();
 
