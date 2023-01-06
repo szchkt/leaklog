@@ -1575,6 +1575,10 @@
         <source>Domestic refrigeration</source>
         <translation>Domáce chladenie</translation>
     </message>
+    <message>
+        <source>ORC</source>
+        <translation>ORC</translation>
+    </message>
 </context>
 <context>
     <name>ImportCsvDialogue</name>
