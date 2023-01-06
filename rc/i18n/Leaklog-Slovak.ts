@@ -5045,6 +5045,14 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Service company</source>
         <translation>Servisná organizácia</translation>
     </message>
+    <message>
+        <source>Commissioning</source>
+        <translation>Uvedenie do prevádzky</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>RepairsView</name>

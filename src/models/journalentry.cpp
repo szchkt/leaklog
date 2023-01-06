@@ -265,6 +265,8 @@ public:
         column_names.insert(161, "decommissioning_reason");
         // Version 1
         column_names.insert(162, "service_company_uuid");
+        // Version 2
+        column_names.insert(163, "repair_type");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -288,7 +290,18 @@ QString JournalEntry::columnNameForID(int id, const QString &default_value)
 
 int JournalEntry::versionForColumnID(int column_id)
 {
+    if (column_id >= 163)
+        return 2;
     if (column_id >= 162)
         return 1;
     return 0;
+}
+
+bool JournalEntry::shouldJournalUpdateOnInsertionForColumnID(int column_id, const QVariant &value)
+{
+    switch (column_id) {
+        case 163:
+            return value.toInt() != 0;
+    }
+    return column_id >= 162;
 }

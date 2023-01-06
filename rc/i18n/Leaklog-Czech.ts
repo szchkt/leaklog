@@ -5052,6 +5052,14 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <source>Service company</source>
         <translation>Servisní organizace</translation>
     </message>
+    <message>
+        <source>Commissioning</source>
+        <translation>Uvedení do provozu</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>RepairsView</name>

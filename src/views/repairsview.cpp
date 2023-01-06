@@ -94,11 +94,16 @@ QString RepairsView::renderHTML(bool)
     while (repairs.next()) {
         QString uuid = repairs.stringValue("uuid");
         QString date = repairs.stringValue("date");
+        Repair::Type repair_type = (Repair::Type)repairs.intValue("repair_type");
         if (date.split(".").first().toInt() < year) continue;
         out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("repair:" + uuid);
         if (highlighted_uuid == uuid)
             out << " class=\"selected\"";
-        out << " style=\"cursor: pointer;\"><td>" << settings->mainWindowSettings().formatDateTime(date) << "</td>";
+        out << " style=\"cursor: pointer;\"><td>";
+        if (repair_type == Repair::NominalRepair) { out << "<b>"; }
+        out << settings->mainWindowSettings().formatDateTime(date);
+        if (repair_type == Repair::NominalRepair) { out << "</b>"; }
+        out << "</td>";
         if (show_service_company)
             out << "<td>" << escapeString(service_companies.value(repairs.stringValue("service_company_uuid"))) << "</td>";
         out << "<td>" << escapeString(repairs.stringValue("customer")) << "</td>";

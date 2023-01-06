@@ -5040,6 +5040,14 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Service company</source>
         <translation>Firma serwisowa</translation>
     </message>
+    <message>
+        <source>Commissioning</source>
+        <translation>Uruchomienie</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Typ:</translation>
+    </message>
 </context>
 <context>
     <name>RepairsView</name>

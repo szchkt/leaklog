@@ -225,7 +225,7 @@ bool MTRecord::save(bool add_columns)
             QVariantMapIterator i(r_current_values);
             while (i.hasNext()) { i.next();
                 int column_id = JournalEntry::columnIDForName(i.key());
-                if (JournalEntry::versionForColumnID(column_id) && !journalUpdate(table_id, journal_uuid, column_id))
+                if (JournalEntry::shouldJournalUpdateOnInsertionForColumnID(column_id, i.value()) && !journalUpdate(table_id, journal_uuid, column_id))
                     return false;
             }
         }

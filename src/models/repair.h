@@ -27,6 +27,11 @@ class Repair : public DBRecord
     Q_OBJECT
 
 public:
+    enum Type {
+        RegularRepair = 0,
+        NominalRepair = 1,
+    };
+
     Repair(const QString &uuid = QString(), const QVariantMap &savedValues = QVariantMap());
 
     void initEditDialogue(EditDialogueWidgets *);
@@ -38,6 +43,8 @@ public:
     inline void setInspectorUUID(const QString &value) { setValue("inspector_uuid", value); }
     inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
     inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
+    inline Type type() { return (Type)intValue("repair_type"); }
+    inline void setType(Type value) { setValue("repair_type", (int)value); }
     inline QString date() { return stringValue("date"); }
     inline void setDate(const QString &value) { setValue("date", value); }
     inline QString customer() { return stringValue("customer"); }

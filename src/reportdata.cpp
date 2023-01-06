@@ -129,7 +129,7 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
     MTQuery repairs_query = Repair::query();
     repairs_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     fields = "COALESCE(customers.company, repairs.customer) AS company, customers.id AS company_id, "
-             "repairs.customer_uuid, repairs.uuid, repairs.date, "
+             "repairs.customer_uuid, repairs.uuid, repairs.date, repairs.repair_type AS inspection_type, "
              "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
@@ -170,6 +170,7 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
 
         QVariant new_charge = 0.0;
         if (inspection.value("inspection_type").toInt() == Inspection::NominalInspection) {
+            // Includes Repair::NominalRepair
             new_charge = refr_add_am;
             refr_add_am = 0.0;
         }

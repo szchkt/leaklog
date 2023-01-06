@@ -37,23 +37,40 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
 
     md->setWindowTitle(tr("Repair"));
     md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
+
+    MTDictionary types;
+    types.insert(QString::number(NominalRepair), tr("Commissioning"));
+    types.insert(QString::number(RegularRepair), tr("Repair"));
+    MDComboBox *cb_nominal = new MDComboBox("repair_type", tr("Type:"), md->widget(), QString::number(type()), types);
+    md->addInputWidget(cb_nominal);
+
     MDDateTimeEdit *date_edit = new MDDateTimeEdit("date", tr("Date:"), md->widget(), date());
     if (DBInfo::isDatabaseLocked())
         date_edit->setMinimumDate(QDate::fromString(DBInfo::lockDate(), DATE_FORMAT));
     md->addInputWidget(date_edit);
+
     MDLineEdit *customer_edit = new MDLineEdit("customer", tr("Customer:"), md->widget(), customer());
     if (!customerUUID().isEmpty())
         customer_edit->setEnabled(false);
     md->addInputWidget(customer_edit);
+
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+
     MDComboBox *repairman = new MDComboBox("inspector_uuid", tr("Inspector:"), md->widget(), inspectorUUID(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));
     md->addInputWidget(repairman);
+
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), arno()));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount total:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg")));
+
+    MDDoubleSpinBox *iw = new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg"));
+    iw->label()->setDefaultText(QApplication::translate("Variables", "New charge:"));
+    iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
+    iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+    md->addInputWidget(iw);
+
     md->addInputWidget(new MDDoubleSpinBox("refr_reco", tr("Refrigerant recovery:"), md->widget(), -999999999.9, 999999999.9, refrigerantRecovery(), QApplication::translate("Units", "kg")));
 }
 
@@ -81,6 +98,7 @@ public:
         columns << Column("customer_uuid", "UUID");
         columns << Column("inspector_uuid", "UUID");
         columns << Column("service_company_uuid", "UUID");
+        columns << Column("repair_type", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("date", "TEXT");
         columns << Column("customer", "TEXT");
         columns << Column("device", "TEXT");

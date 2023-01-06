@@ -29,7 +29,7 @@ private:
 
 public:
     enum {
-        Version = 1,
+        Version = 2,
     };
 
     enum Operation {
@@ -47,6 +47,7 @@ public:
     static int columnIDForName(const QString &name);
     static QString columnNameForID(int id, const QString &default_value = QString());
     static int versionForColumnID(int column_id);
+    static bool shouldJournalUpdateOnInsertionForColumnID(int column_id, const QVariant &value);
 };
 
 #endif // JOURNALENTRY_H
