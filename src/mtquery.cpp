@@ -64,9 +64,18 @@ bool MTQuery::exists() const
 MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int limit) const
 {
     bool is_remote = isDatabaseRemote();
-    QString select = "SELECT " + fields + " FROM " + r_table;
-    if (!r_joins.isEmpty())
-        select.append(" " + r_joins.join(" "));
+    QString select = "SELECT " + fields;
+    foreach (auto join, r_joins) {
+        if (!join.second.isEmpty()) {
+            select.append(", " + join.second);
+        }
+    }
+    select.append(" FROM " + r_table);
+    foreach (auto join, r_joins) {
+        if (!join.first.isEmpty()) {
+            select.append(" " + join.first);
+        }
+    }
     if (r_parents.count() || r_filter.count() || !r_predicate.isEmpty()) { select.append(" WHERE "); }
     for (auto i = r_parents.constBegin(); i != r_parents.constEnd(); ++i) {
         if (i != r_parents.constBegin()) { select.append(" AND "); }

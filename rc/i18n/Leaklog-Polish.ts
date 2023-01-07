@@ -1910,6 +1910,10 @@
         <source>Unknown Inspection Type</source>
         <translation>Nieznany typ kontroli</translation>
     </message>
+    <message>
+        <source>Customer: %2 %1 Inspection</source>
+        <translation>Klient: %2 %1 Kontrola</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -4402,6 +4406,10 @@ dla ID osoby i firmy</translation>
 To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Czy napewno chcesz usunąć wybraną firmę serwisową?
 Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
+    </message>
+    <message>
+        <source>Select circuits - Leaklog</source>
+        <translation>Wybierz obiegi - Leaklog</translation>
     </message>
 </context>
 <context>

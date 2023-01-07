@@ -34,12 +34,15 @@ class EditInspectionDialogue : public TabbedEditDialogue
     Q_OBJECT
 
 public:
-    EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent = NULL, const QString &duplicate_from = QString());
+    EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent = NULL, const QString &duplicate_from = QString(), const QStringList &circuit_uuids = QStringList());
     virtual ~EditInspectionDialogue();
+
+    virtual void save();
 
 protected:
     bool saveOther();
 
+    QStringList circuit_uuids;
     EditInspectionDialogueCompressors *compressors;
     QSplitter *splitter;
 };

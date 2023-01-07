@@ -33,8 +33,9 @@
 #include <QSplitter>
 #include <QSettings>
 
-EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent, const QString &duplicate_from)
+EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *undo_stack, QWidget *parent, const QString &duplicate_from, const QStringList &circuit_uuids)
     : TabbedEditDialogue(record, undo_stack, parent, false),
+      circuit_uuids(circuit_uuids),
       compressors(NULL)
 {
     md_grid_main->setHorizontalSpacing(9);
@@ -75,7 +76,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
     gl_rmds->addWidget(notes->widget(), 2, 1);
     gl_rmds->setRowStretch(2, 1);
 
-    if (!(((Inspection *) record)->scope() & Variable::Compressor)) {
+    if (!record->circuitUUID().isEmpty() && !(((Inspection *)record)->scope() & Variable::Compressor)) {
         QString id = duplicate_from.isEmpty() ? md_record->uuid() : duplicate_from;
         compressors = new EditInspectionDialogueCompressors(record->customerUUID(), record->circuitUUID(), id, !duplicate_from.isEmpty(), this);
         compressors->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
@@ -83,12 +84,14 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
         tabs.append(compressors);
     }
 
-    addTab(new EditInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *) inputWidget("arno"),
-                                                       (MDComboBox *) inputWidget("ar_type_uuid"),
-                                                       new EditInspectionDialogueAccess(this),
-                                                       record->customerUUID(),
-                                                       record->circuitUUID()));
-    addTab(new EditInspectionDialogueImagesTab(record->uuid()));
+    if (!record->circuitUUID().isEmpty()) {
+        addTab(new EditInspectionDialogueAssemblyRecordTab(0, (MDLineEdit *)inputWidget("arno"),
+                                                           (MDComboBox *)inputWidget("ar_type_uuid"),
+                                                           new EditInspectionDialogueAccess(this),
+                                                           record->customerUUID(),
+                                                           record->circuitUUID()));
+        addTab(new EditInspectionDialogueImagesTab(record->uuid()));
+    }
 
     splitter->setSizes(QList<int>() << 1000 << 1 << 200);
 
@@ -104,6 +107,23 @@ EditInspectionDialogue::~EditInspectionDialogue()
     settings.setValue("inspection_dialogue/size", size() / Global::scaleFactor());
     QString splitter_state_key = QString("inspection_dialogue/splitter_state%1").arg(compressors ? "" : "_no_compressors");
     settings.setValue(splitter_state_key, splitter->saveState());
+}
+
+void EditInspectionDialogue::save()
+{
+    Inspection *inspection = (Inspection *)md_record;
+    if (inspection->circuitUUID().isEmpty()) {
+        foreach (auto circuit_uuid, circuit_uuids) {
+            Inspection copy(*inspection);
+            copy.setCircuitUUID(circuit_uuid);
+            md_record = &copy;
+            EditDialogue::save(false);
+        }
+        md_record = inspection;
+        accept();
+    } else {
+        TabbedEditDialogue::save();
+    }
 }
 
 EditInspectionDialogueImagesTab::EditInspectionDialogueImagesTab(const QString &inspection_uuid)

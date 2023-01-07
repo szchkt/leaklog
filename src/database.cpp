@@ -1943,20 +1943,122 @@ void MainWindow::starCircuit(const QString &customer_uuid, const QString &uuid)
     setDatabaseModified(true);
 }
 
+QStringList MainWindow::selectCircuits()
+{
+    if (!QSqlDatabase::database().isOpen()) { return QStringList(); }
+    if (!m_tab->isCustomerSelected()) { return QStringList(); }
+
+    QDialog d(this);
+    d.setWindowTitle(tr("Select circuits - Leaklog"));
+
+    QGridLayout *grid = new QGridLayout(&d);
+
+    QTreeWidget *tree = new QTreeWidget(&d);
+    tree->setColumnCount(4);
+    tree->setIndentation(0);
+    tree->setSelectionMode(QAbstractItemView::NoSelection);
+    tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    tree->setHeaderLabels({
+        QApplication::translate("Circuit", "ID"),
+        QApplication::translate("Circuit", "Circuit name"),
+        QApplication::translate("AgendaView", "Last inspection"),
+        QApplication::translate("AgendaView", "Next inspection"),
+    });
+    tree->setMinimumSize(500, 300);
+    grid->addWidget(tree, 0, 0);
+
+    QDialogButtonBox *bb = new QDialogButtonBox(&d);
+    bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    bb->button(QDialogButtonBox::Ok)->setText(tr("Add Inspection..."));
+    bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+    QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+    QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
+    grid->addWidget(bb, 1, 0);
+
+    bool CO2_equivalent = m_tab->toolBarStack()->isCO2EquivalentChecked();
+    QString current_date = QDate::currentDate().toString(DATE_FORMAT);
+
+    auto circuits = Circuit::query({
+        {"customer_uuid", m_tab->selectedCustomerUUID()},
+        {"disused", QString::number(Circuit::Commissioned)}
+    });
+    circuits.addFields(circuitRefrigerantAmountQuery());
+    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
+                     " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
+                     " WHERE circuit_uuid = i.circuit_uuid AND outside_interval = 0 ORDER BY date DESC LIMIT 1)"
+                     " FROM inspections AS i WHERE outside_interval = 0 GROUP BY circuit_uuid)) AS ins"
+                     " ON ins.circuit_uuid = circuits.uuid",
+                     "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection_date");
+    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
+                     " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
+                     " WHERE circuit_uuid = i.circuit_uuid ORDER BY date DESC LIMIT 1)"
+                     " FROM inspections AS i GROUP BY circuit_uuid)) AS all_ins"
+                     " ON all_ins.circuit_uuid = circuits.uuid",
+                     "COALESCE(all_ins.date, circuits.commissioning) AS last_inspection_date");
+
+    circuits.each("id", [=](Circuit &circuit) {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree);
+
+        item->setCheckState(0, Qt::Unchecked);
+        item->setData(0, Qt::UserRole, circuit.uuid());
+        item->setText(0, circuit.circuitID());
+        item->setText(1, circuit.circuitName());
+        item->setText(2, m_settings.formatDateTime(circuit.stringValue("last_inspection_date")));
+
+        QString last_regular_inspection_date = circuit.stringValue("last_regular_inspection_date");
+        if (!last_regular_inspection_date.isEmpty()) {
+            int inspection_interval = Warnings::circuitInspectionInterval(circuit.refrigerant(), circuit.refrigerantAmount(), CO2_equivalent,
+                                                                          circuit.hermetic(), circuit.leakDetectorInstalled(),
+                                                                          circuit.inspectionInterval());
+            if (inspection_interval) {
+                QString next_regular_inspection_date = QDate::fromString(last_regular_inspection_date.split("-").first(), DATE_FORMAT)
+                    .addDays(inspection_interval).toString(DATE_FORMAT);
+                if (next_regular_inspection_date <= current_date) {
+                    item->setCheckState(0, Qt::Checked);
+                }
+                item->setText(3, m_settings.formatDate(next_regular_inspection_date));
+            }
+        }
+    });
+
+    if (d.exec() != QDialog::Accepted)
+        return QStringList();
+
+    QStringList uuids;
+    for (int i = 0; i < tree->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = tree->topLevelItem(i);
+        if (item->checkState(0) == Qt::Checked) {
+            uuids << item->data(0, Qt::UserRole).toString();
+        }
+    }
+    return uuids;
+}
+
 void MainWindow::addInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
-    if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
+    QStringList circuit_uuids;
     Inspection record;
     record.setValue("customer_uuid", m_tab->selectedCustomerUUID());
-    record.setValue("circuit_uuid", m_tab->selectedCircuitUUID());
+    if (m_tab->isCircuitSelected()) {
+        record.setValue("circuit_uuid", m_tab->selectedCircuitUUID());
+    } else {
+        circuit_uuids = selectCircuits();
+        switch (circuit_uuids.size()) {
+            case 0:
+                return;
+            case 1:
+                record.setValue("circuit_uuid", circuit_uuids.takeFirst());
+                break;
+        }
+    }
     if (m_tab->isInspectorSelected()) {
         record.setValue("inspector_uuid", m_tab->selectedInspectorUUID());
     }
     UndoCommand command(m_undo_stack, tr("Add inspection"));
-    EditInspectionDialogue md(&record, m_undo_stack, this);
+    EditInspectionDialogue md(&record, m_undo_stack, this, QString(), circuit_uuids);
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         m_tab->loadInspection(record.uuid(), true);

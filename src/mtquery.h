@@ -39,7 +39,8 @@ public:
     void addFilter(const QString &column, const QString &filter);
     inline QString table() const { return r_table; }
     void setTable(const QString &table) { r_table = table; }
-    void addJoin(const QString &join) { r_joins << join; }
+    void addJoin(const QString &join, const QString &select = QString()) { r_joins << QPair<QString, QString>(join, select); }
+    void addFields(const QString &select) { r_joins << QPair<QString, QString>(QString(), select); }
     inline QVariantMap &parents() { return r_parents; }
     inline const QVariantMap &parents() const { return r_parents; }
     inline QVariant parent(const QString &field) const { return r_parents.value(field); }
@@ -56,7 +57,7 @@ public:
 
 private:
     QString r_table;
-    QStringList r_joins;
+    QList<QPair<QString, QString>> r_joins;
     QVariantMap r_parents;
     QString r_predicate;
     MTDictionary r_filter;

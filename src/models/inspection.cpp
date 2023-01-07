@@ -147,24 +147,34 @@ void Inspection::initEditDialogue(EditDialogueWidgets *md)
     Customer customer_record(customer());
     Circuit circuit_record(circuit());
 
-    md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle())
-                       .arg(customer_record.companyName().isEmpty() ? customer_record.companyID() : customer_record.companyName())
-                       .arg(circuit_record.circuitName().isEmpty() ? circuit_record.circuitID() : circuit_record.circuitName()));
+    if (circuit_record.uuid().isEmpty()) {
+        md->setWindowTitle(tr("Customer: %2 %1 Inspection").arg(rightTriangle())
+                           .arg(customer_record.companyName().isEmpty() ? customer_record.companyID() : customer_record.companyName()));
+    } else {
+        md->setWindowTitle(tr("Customer: %2 %1 Circuit: %3 %1 Inspection").arg(rightTriangle())
+                           .arg(customer_record.companyName().isEmpty() ? customer_record.companyID() : customer_record.companyName())
+                           .arg(circuit_record.circuitName().isEmpty() ? circuit_record.circuitID() : circuit_record.circuitName()));
+    }
     md->setMaximumRowCount(10);
 
     bool has_inspection = false;
     bool nominal_found = false;
-    MTSqlQuery inspections_query;
-    inspections_query.prepare("SELECT inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND uuid <> :uuid"));
-    inspections_query.bindValue(":circuit_uuid", circuit_record.uuid());
-    if (!uuid().isEmpty())
-        inspections_query.bindValue(":uuid", uuid());
-    if (inspections_query.exec()) {
-        while (inspections_query.next()) {
-            has_inspection = true;
-            if (inspections_query.value(0).toInt() == Inspection::NominalInspection) {
-                nominal_found = true;
-                break;
+    if (circuit_record.uuid().isEmpty()) {
+        // Do not default to nominal inspection
+        has_inspection = true;
+    } else {
+        MTSqlQuery inspections_query;
+        inspections_query.prepare("SELECT inspection_type FROM inspections WHERE circuit_uuid = :circuit_uuid" + QString(uuid().isEmpty() ? "" : " AND uuid <> :uuid"));
+        inspections_query.bindValue(":circuit_uuid", circuit_record.uuid());
+        if (!uuid().isEmpty())
+            inspections_query.bindValue(":uuid", uuid());
+        if (inspections_query.exec()) {
+            while (inspections_query.next()) {
+                has_inspection = true;
+                if (inspections_query.value(0).toInt() == Inspection::NominalInspection) {
+                    nominal_found = true;
+                    break;
+                }
             }
         }
     }

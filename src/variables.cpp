@@ -269,6 +269,9 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                 md->addInputWidget(iw);
             }
         } else if (var_id == "ar_type_uuid") {
+            if (inspection && inspection->circuitUUID().isEmpty()) {
+                continue;
+            }
             iw = new MDComboBox(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), listAssemblyRecordTypes(), col_bg);
             iw->setRowSpan(0);
@@ -289,6 +292,9 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             }
             md->addInputWidget(iw);
         } else if (var_type == "string") {
+            if (var_id == "arno" && inspection && inspection->circuitUUID().isEmpty()) {
+                continue;
+            }
             iw = new MDLineEdit(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {

@@ -1910,6 +1910,10 @@
         <source>Unknown Inspection Type</source>
         <translation>Neznámy typ kontroly</translation>
     </message>
+    <message>
+        <source>Customer: %2 %1 Inspection</source>
+        <translation>Zákazník: %2 %1 Kontrola</translation>
+    </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
@@ -4406,6 +4410,10 @@ Na odstránenie všetkých údajov o oprave „%1“ napíšte ODSTRÁNIŤ a pot
 To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Naozaj chcete odstrániť vybranú servisnú organizáciu?
 Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte ODSTRÁNIŤ a potvrďte:</translation>
+    </message>
+    <message>
+        <source>Select circuits - Leaklog</source>
+        <translation>Vybrať okruhy - Leaklog</translation>
     </message>
 </context>
 <context>

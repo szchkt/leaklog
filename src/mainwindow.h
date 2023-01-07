@@ -273,6 +273,7 @@ private:
     void saveDatabase(bool compact = false, bool update_ui = true);
     bool isOperationPermitted(const QString &, const QString & = QString());
     bool canRemoveCircuit(const QString &customer_uuid, const QString &circuit_uuid = QString());
+    QStringList selectCircuits();
     bool isRecordLocked(const QString &);
     void loadServiceCompanies();
     void loadVariables(QTreeWidget *, QSqlDatabase = QSqlDatabase::database());

@@ -185,7 +185,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
     tbtn_add_circuit->setVisible(view == View::Circuits);
     tbtn_add_circuit_unit_type->setVisible(view == View::CircuitUnitTypes);
     tbtn_add_customer->setVisible(view == View::Customers);
-    tbtn_add_inspection->setVisible(view == View::Inspections);
+    tbtn_add_inspection->setVisible(view == View::Circuits || view == View::Inspections);
     tbtn_add_inspector->setVisible(view == View::Inspectors);
     tbtn_add_record_of_refrigerant_management->setVisible(view == View::Store || view == View::RefrigerantManagement);
     tbtn_add_repair->setVisible(view == View::Repairs);
