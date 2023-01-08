@@ -28,6 +28,10 @@
 #include <QSqlRecord>
 #include <QSqlError>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+#define endl Qt::endl
+#endif
+
 MTSqlQuery::MTSqlQuery(QSqlResult *result):
     QSqlQuery(result)
 {}
@@ -87,8 +91,8 @@ void MTSqlQuery::printLastError() const
 #else
         output.setCodec("UTF-8");
 #endif
-        output << lastQuery() << Qt::endl;
-        output << error.text() << Qt::endl;
+        output << lastQuery() << endl;
+        output << error.text() << endl;
         file.close();
 #endif
     }
