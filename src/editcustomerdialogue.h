@@ -40,9 +40,11 @@ public:
     void addToEditDialogue(EditDialogueWidgets &);
 
 private slots:
-    void operatorChoiceChanged(int);
+    void operatorChoiceChanged(QAbstractButton *);
 
 private:
+    void operatorChoiceChanged(int);
+
     QButtonGroup *operator_choice;
     QList<MDAbstractInputWidget *> input_widgets;
 };

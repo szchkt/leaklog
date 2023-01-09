@@ -45,7 +45,7 @@ OperatorInputWidget::OperatorInputWidget(const QVariantMap &attributes, QWidget 
     operator_choice->addButton(other, 2);
     grid->addWidget(other, grid->rowCount(), 0, 1, 2);
 
-    QObject::connect(operator_choice, SIGNAL(buttonClicked(int)), this, SLOT(operatorChoiceChanged(int)));
+    QObject::connect(operator_choice, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(operatorChoiceChanged(QAbstractButton *)));
 
     input_widgets << new MDCompanyIDEdit("operator_id", QApplication::translate("Customer", "ID:"), this, attributes.value("operator_id").toString());
     input_widgets << new MDLineEdit("operator_company", QApplication::translate("Customer", "Company:"), this, attributes.value("operator_company").toString());
@@ -101,6 +101,11 @@ void OperatorInputWidget::addToEditDialogue(EditDialogueWidgets &md)
 
     foreach (MDAbstractInputWidget *widget, input_widgets)
         md.addInputWidget(widget);
+}
+
+void OperatorInputWidget::operatorChoiceChanged(QAbstractButton *button)
+{
+    operatorChoiceChanged(operator_choice->id(button));
 }
 
 void OperatorInputWidget::operatorChoiceChanged(int id)
