@@ -47,6 +47,7 @@
 #include "global.h"
 
 #include <QBuffer>
+#include <QDesktopServices>
 #include <QWebEngineProfile>
 #include <QWebEngineUrlRequestJob>
 
@@ -671,6 +672,9 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 
 void ViewTab::executeLink(const QUrl &url)
 {
+    if (url.scheme().startsWith("http")) {
+        QDesktopServices::openUrl(url);
+    }
     Link *link = linkParser().parse(url.toString());
     if (link) {
         executeLink(link);

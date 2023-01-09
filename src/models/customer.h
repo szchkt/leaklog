@@ -54,6 +54,10 @@ public:
     inline void setMail(const QString &value) { setValue("mail", value); }
     inline QString phone() { return stringValue("phone"); }
     inline void setPhone(const QString &value) { setValue("phone", value); }
+    inline QString websiteURL() { return stringValue("website_url"); }
+    inline void setWebsiteURL(const QString &value) { setValue("website_url", value); }
+    inline QString mapsURL() { return stringValue("maps_url"); }
+    inline void setMapsURL(const QString &value) { setValue("maps_url", value); }
     inline OperatorType operatorType() { return (OperatorType)intValue("operator_type"); }
     inline void setOperatorType(OperatorType value) { setValue("operator_type", value); }
     inline QString operatorCompanyID() { return stringValue("operator_id"); }

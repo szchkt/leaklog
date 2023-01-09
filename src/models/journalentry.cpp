@@ -267,6 +267,8 @@ public:
         column_names.insert(162, "service_company_uuid");
         // Version 2
         column_names.insert(163, "repair_type");
+        column_names.insert(164, "website_url");
+        column_names.insert(165, "maps_url");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -302,6 +304,9 @@ bool JournalEntry::shouldJournalUpdateOnInsertionForColumnID(int column_id, cons
     switch (column_id) {
         case 163:
             return value.toInt() != 0;
+        case 164:
+        case 165:
+            return !value.toString().isEmpty();
     }
     return column_id >= 162;
 }

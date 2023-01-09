@@ -103,7 +103,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     if (customer_uuid.isEmpty())
         table->addClass("highlight");
 
-    int thead_colspan = 7;
+    int thead_colspan = 9;
     HTMLTableRow *row = NULL;
 
     if (customer_uuid.isEmpty() || customer_details_visible) {
@@ -114,6 +114,8 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
         addCustomerHeaderCell("address", customer_uuid, row);
         addCustomerHeaderCell("mail", customer_uuid, row);
         addCustomerHeaderCell("phone", customer_uuid, row);
+        addCustomerHeaderCell("website_url", customer_uuid, row);
+        addCustomerHeaderCell("maps_url", customer_uuid, row);
         addCustomerHeaderCell("circuits_count", tr("Number of circuits"), customer_uuid, row);
         addCustomerHeaderCell("inspections_count", tr("Total number of inspections"), customer_uuid, row);
         if (show_date_updated) {
@@ -174,6 +176,8 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
             QString mail = escapeString(list.at(i).value("mail"));
             *(row->addCell()) << "<a href=\"mailto:" << mail << "\">" << mail << "</a>";
             *(row->addCell()) << escapeString(list.at(i).value("phone"));
+            *(row->addCell()) << formatURL(list.at(i).value("website_url").toString());
+            *(row->addCell()) << formatURL(list.at(i).value("maps_url").toString());
             *(row->addCell()) << list.at(i).value("circuits_count").toString();
             *(row->addCell()) << list.at(i).value("inspections_count").toString();
             if (show_date_updated)

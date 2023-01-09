@@ -1181,6 +1181,22 @@
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
+    <message>
+        <source>Website:</source>
+        <translation>Strona internetowa:</translation>
+    </message>
+    <message>
+        <source>Link to maps:</source>
+        <translation>Link do map:</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Strona internetowa</translation>
+    </message>
+    <message>
+        <source>Link to maps</source>
+        <translation>Link do map</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>

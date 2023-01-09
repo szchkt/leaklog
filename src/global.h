@@ -40,6 +40,7 @@ namespace Global {
     double scaleFactor(bool refresh = false);
     QString escapeString(const QVariant &, bool = false, bool = false);
     QString escapeString(QString, bool = false, bool = false);
+    QString formatURL(const QString &);
     QString elideRight(const QString &, int);
     QString upArrow();
     QString downArrow();

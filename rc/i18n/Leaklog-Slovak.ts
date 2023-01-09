@@ -1181,6 +1181,22 @@
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Website:</source>
+        <translation>Webová stránka:</translation>
+    </message>
+    <message>
+        <source>Link to maps:</source>
+        <translation>Odkaz na mapy:</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Webová stránka</translation>
+    </message>
+    <message>
+        <source>Link to maps</source>
+        <translation>Odkaz na mapy</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>

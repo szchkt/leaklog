@@ -33,6 +33,7 @@
 #include <QDate>
 #include <QNetworkRequest>
 #include <QPair>
+#include <QRegularExpression>
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
@@ -110,6 +111,17 @@ QString Global::escapeString(QString s, bool escape_backslash, bool insert_lineb
     s.replace(">", "&gt;");
     if (insert_linebreaks) s.replace("\n", "<br>");
     return s;
+}
+
+QString Global::formatURL(const QString &string)
+{
+    QUrl url = QUrl::fromUserInput(string);
+    if (url.isValid()) {
+        return QString("<a href=\"%1\">%2</a>")
+            .arg(escapeString(url.toString()))
+            .arg(escapeString(url.host().remove(QRegularExpression("^www\."))));
+    }
+    return escapeString(string);
 }
 
 QString Global::elideRight(const QString &s, int n)

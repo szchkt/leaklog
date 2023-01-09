@@ -38,6 +38,8 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), stringValue("address")));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    md->addInputWidget(new MDLineEdit("website_url", tr("Website:"), md->widget(), websiteURL()));
+    md->addInputWidget(new MDLineEdit("maps_url", tr("Link to maps:"), md->widget(), mapsURL()));
     MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());
     md->addInputWidget(notes);
     (new OperatorInputWidget(values(), md->widget()))->addToEditDialogue(*md);
@@ -110,6 +112,8 @@ public:
         columns << Column("address", "TEXT");
         columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
+        columns << Column("website_url", "TEXT");
+        columns << Column("maps_url", "TEXT");
         columns << Column("operator_type", "SMALLINT NOT NULL DEFAULT 0");
         columns << Column("operator_id", "TEXT");
         columns << Column("operator_company", "TEXT");
@@ -139,6 +143,8 @@ public:
         dict.insert("address", QApplication::translate("Customer", "Address"));
         dict.insert("mail", QApplication::translate("Customer", "E-mail"));
         dict.insert("phone", QApplication::translate("Customer", "Phone"));
+        dict.insert("website_url", QApplication::translate("Customer", "Website"));
+        dict.insert("maps_url", QApplication::translate("Customer", "Link to maps"));
         dict.insert("operator_id", QApplication::translate("Customer", "Operator ID"));
         dict.insert("operator_company", QApplication::translate("Customer", "Operator"));
         dict.insert("operator_address", QApplication::translate("Customer", "Operator address"));
