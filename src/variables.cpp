@@ -232,6 +232,8 @@ void Variables::initSubvariable(const QString &parent, int scope, const QString 
 void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantMap &attributes, Inspection *inspection,
                                         const QDateTime &date, MDComboBox *cb_nominal)
 {
+    bool hasCircuitUUID = !inspection || !inspection->circuitUUID().isEmpty();
+
     while (next()) {
         QString var_type = type();
 
@@ -269,7 +271,7 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                 md->addInputWidget(iw);
             }
         } else if (var_id == "ar_type_uuid") {
-            if (inspection && inspection->circuitUUID().isEmpty()) {
+            if (!hasCircuitUUID) {
                 continue;
             }
             iw = new MDComboBox(var_id, var_name, md->widget(),
@@ -292,13 +294,10 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             }
             md->addInputWidget(iw);
         } else if (var_type == "string") {
-            if (var_id == "arno" && inspection && inspection->circuitUUID().isEmpty()) {
-                continue;
-            }
             iw = new MDLineEdit(var_id, var_name, md->widget(),
                                 attributes.value(var_id).toString(), 0, col_bg);
             if (var_id == "arno") {
-                if (inspection && inspection->uuid().isEmpty()) {
+                if (inspection && inspection->uuid().isEmpty() && !inspection->circuitUUID().isEmpty()) {
                     MTQuery other_inspections = Inspection::query({{"circuit_uuid", inspection->circuitUUID()}});
                     other_inspections.addFilter("date", date.toString("yyyy.MM.dd%"));
                     int count = other_inspections.list("COUNT(date) AS count", QString()).value("count").toInt();
@@ -308,7 +307,9 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
                                         .arg(date.toString("yyMMdd"))
                                         .arg(count ? QString("-%1").arg(count + 1) : ""));
                 }
-                iw->setRowSpan(0);
+                if (hasCircuitUUID) {
+                    iw->setRowSpan(0);
+                }
             }
             md->addInputWidget(iw);
         } else if (var_type == "text") {
