@@ -1983,13 +1983,13 @@ QStringList MainWindow::selectCircuits()
         {"disused", QString::number(Circuit::Commissioned)}
     });
     circuits.addFields(circuitRefrigerantAmountQuery());
-    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
+    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, date FROM inspections"
                      " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
                      " WHERE circuit_uuid = i.circuit_uuid AND outside_interval = 0 ORDER BY date DESC LIMIT 1)"
                      " FROM inspections AS i WHERE outside_interval = 0 GROUP BY circuit_uuid)) AS ins"
                      " ON ins.circuit_uuid = circuits.uuid",
                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection_date");
-    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date FROM inspections"
+    circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, date FROM inspections"
                      " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
                      " WHERE circuit_uuid = i.circuit_uuid ORDER BY date DESC LIMIT 1)"
                      " FROM inspections AS i GROUP BY circuit_uuid)) AS all_ins"
