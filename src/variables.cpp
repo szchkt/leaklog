@@ -279,10 +279,16 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw->setRowSpan(0);
             md->addInputWidget(iw);
         } else if (var_type == "int") {
+            if (!hasCircuitUUID) {
+                continue;
+            }
             iw = new MDSpinBox(var_id, var_name, md->widget(), -999999999, 999999999,
                                attributes.value(var_id).toInt(), unit(), col_bg);
             md->addInputWidget(iw);
         } else if (var_type == "float") {
+            if (!hasCircuitUUID) {
+                continue;
+            }
             iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
                                              attributes.value(var_id), unit(), col_bg);
             if (var_id == "refr_add_am") {
