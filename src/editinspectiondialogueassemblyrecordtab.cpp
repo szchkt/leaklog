@@ -103,14 +103,15 @@ void EditInspectionDialogueAssemblyRecordTab::recordTypeChanged()
         name_format.replace("hour", QString("%1").arg(current_date.time().hour(), 2, 10, QChar('0')));
         name_format.replace("minute", QString("%1").arg(current_date.time().minute(), 2, 10, QChar('0')));
 
-        name_format.replace("customer_id", customer_uuid);
-        name_format.replace("circuit_id", circuit_uuid);
-
-        if (name_format.contains("customer_name")) {
-            name_format.replace("customer_name", Customer(customer_uuid).companyName());
+        if (name_format.contains("customer_id") || name_format.contains("customer_name")) {
+            Customer customer(customer_uuid);
+            name_format.replace("customer_id", customer.companyID());
+            name_format.replace("customer_name", customer.companyName());
         }
-        if (name_format.contains("circuit_name")) {
-            name_format.replace("circuit_name", Circuit(circuit_uuid).circuitName());
+        if (name_format.contains("circuit_id") || name_format.contains("circuit_name")) {
+            Circuit circuit(circuit_uuid);
+            name_format.replace("circuit_id", circuit.circuitID());
+            name_format.replace("circuit_name", circuit.circuitName());
         }
         arno_w->setText(name_format);
     }
