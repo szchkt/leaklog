@@ -455,15 +455,20 @@ void MainWindow::printPreview()
 
 void MainWindow::printPreview(QPrinter *printer)
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool printing = true;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     m_tab->webView()->page()->print(printer, [&printing](bool) {
+#else
+    m_tab->webView()->print(printer);
+    QObject *context = new QObject(this);
+    connect(m_tab->webView(), &QWebEngineView::printFinished, context, [context, &printing](bool) {
+        delete context;
+#endif
         printing = false;
     });
     while (printing) {
         QApplication::processEvents();
     }
-#endif
 }
 
 void MainWindow::print()
@@ -484,9 +489,14 @@ void MainWindow::print(QPrinter *printer)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     m_tab->webView()->page()->print(printer, [printer](bool) {
+#else
+    m_tab->webView()->print(printer);
+    QObject *context = new QObject(this);
+    connect(m_tab->webView(), &QWebEngineView::printFinished, context, [context, printer](bool) {
+        delete context;
+#endif
         delete printer;
     });
-#endif
 }
 
 QString MainWindow::fileNameForCurrentView()
