@@ -1210,7 +1210,7 @@
     <name>CustomersView</name>
     <message>
         <source>Number of circuits</source>
-        <translation>B roj krugova</translation>
+        <translation>Broj krugova</translation>
     </message>
     <message>
         <source>Total number of inspections</source>
@@ -1856,7 +1856,7 @@
     </message>
     <message>
         <source>Are you sure you want to add another?</source>
-        <translation>Da li si siguran da želiš dodati drugu?</translation>
+        <translation>Da li ste sigurni da želite dodati drugu?</translation>
     </message>
     <message>
         <source>&amp;Add Another Nominal Inspection</source>
@@ -2369,8 +2369,8 @@
     <message>
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Da li ste sigurni da želite ukloniti korisnika?
-Da biste uklonili korisnika „%1“ napište REMOVE i potvrdite:</translation>
+        <translation>Da li ste sigurni da želite da uklonite korisnika?
+Da biste uklonili korisnika „%1“ napište UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>This record is older than the current record in your database</source>
@@ -2475,8 +2475,8 @@ Da biste uklonili korisnika „%1“ napište REMOVE i potvrdite:</translation>
     <message>
         <source>Are you sure you want to remove the selected style?
 To remove the style &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Da li si siguran da želiš ukloniti izgled?
-Da bi uklonio izgled „%1“ napiši REMOVE i potvrdi:</translation>
+        <translation>Da li ste sigurni da želite da uklonite izgled?
+Da biste uklonili izgled „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Circuit units</source>
@@ -2518,7 +2518,7 @@ Da bi uklonio izgled „%1“ napiši REMOVE i potvrdi:</translation>
         <source>Are you sure you want to remove the selected assembly record type?
 To remove all data about the record &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite instalacioni zapis?
-Da biste uklonili instalacioni zapis „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste uklonili instalacioni zapis „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Remove assembly record item type - Leaklog</source>
@@ -2528,7 +2528,7 @@ Da biste uklonili instalacioni zapis „%1“ napišite REMOVE i potvrdite:</tra
         <source>Are you sure you want to remove the selected assembly record item type?
 To remove all data about the record item &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite tip stavke instalacionog zapisa?
-Da biste uklonili tip stavke instalacionog zapisa „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste uklonili tip stavke instalacionog zapisa „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Remove assembly record item category - Leaklog</source>
@@ -2538,7 +2538,7 @@ Da biste uklonili tip stavke instalacionog zapisa „%1“ napišite REMOVE i po
         <source>Are you sure you want to remove the selected assembly record item category?
 To remove all data about the item category &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigutni da želite da uklonite kategoriju stavke instalacionog zapisa?
-Da biste uklonili kategoriju  stavke instalacionog zapisa „%1“ napište REMOVE i potvrdite:</translation>
+Da biste uklonili kategoriju  stavke instalacionog zapisa „%1“ napište UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Remove circuit unit type - Leaklog</source>
@@ -2548,7 +2548,7 @@ Da biste uklonili kategoriju  stavke instalacionog zapisa „%1“ napište REMO
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigutni da želite da uklonite tip jedinice kruga?
-Da biste uklonili tip jedinice kruga „%1“ napišite REMOVE a potvrdite:</translation>
+Da biste uklonili tip jedinice kruga „%1“ napišite UKLONITI a potvrdite:</translation>
     </message>
     <message>
         <source>ID</source>
@@ -2662,7 +2662,7 @@ Da biste uklonili tip jedinice kruga „%1“ napišite REMOVE a potvrdite:</tra
         <source>Are you sure you want to remove the selected circuit?
 To remove all data about the circuit &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite krug?
-Da biste uklonili krug „%1“ napišite REMOVE a potvrdite:</translation>
+Da biste uklonili krug „%1“ napišite UKLONITI a potvrdite:</translation>
     </message>
     <message>
         <source>Remove inspection - Leaklog</source>
@@ -2672,7 +2672,7 @@ Da biste uklonili krug „%1“ napišite REMOVE a potvrdite:</translation>
         <source>Are you sure you want to remove the selected inspection?
 To remove all data about the inspection &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite kontrolu?
-Da biste uklonili sve podatke o kontroli „%1“ napišite REMOVE a potvrdite:</translation>
+Da biste uklonili sve podatke o kontroli „%1“ napišite UKLONITI a potvrdite:</translation>
     </message>
     <message>
         <source>Remove variable - Leaklog</source>
@@ -2682,7 +2682,7 @@ Da biste uklonili sve podatke o kontroli „%1“ napišite REMOVE a potvrdite:<
         <source>Are you sure you want to remove the selected variable?
 To remove the variable &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite promenljivu?
-Da biste uklonili promenljivu „%1“ napišite REMOVE a potvrdite:</translation>
+Da biste uklonili promenljivu „%1“ napišite UKLONITI a potvrdite:</translation>
     </message>
     <message>
         <source>Remove table - Leaklog</source>
@@ -2692,7 +2692,7 @@ Da biste uklonili promenljivu „%1“ napišite REMOVE a potvrdite:</translatio
         <source>Are you sure you want to remove the selected table?
 To remove the table &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite tabelu?
-Da biste uklonili tabelu „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste uklonili tabelu „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Add existing variable - Leaklog</source>
@@ -2730,7 +2730,7 @@ Da biste uklonili tabelu „%1“ napišite REMOVE i potvrdite:</translation>
         <source>Are you sure you want to remove the selected warning?
 To remove the warning &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite upozorenje?
-Da biste uklonili upozorenje „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Tables</source>
@@ -3136,7 +3136,7 @@ Da biste uklonili upozorenje „%1“ napišite REMOVE i potvrdite:</translation
         <source>Are you sure you want to remove the selected inspector?
 To remove all data about the inspector &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite kontrolora?
-Da biste ukloniti kontrolora „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste ukloniti kontrolora „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -3355,7 +3355,7 @@ gasovima sa efektom staklene bašte</translation>
         <source>Are you sure you want to remove the selected repair?
 To remove all data about the repair &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite popravku?
-Da biste uklonili popravku „%1“ napišite REMOVE i potvrdite:</translation>
+Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Show icons only</source>
@@ -3687,7 +3687,7 @@ Da biste uklonili popravku „%1“ napišite REMOVE i potvrdite:</translation>
     </message>
     <message>
         <source>en_GB</source>
-        <translation>sk_SK</translation>
+        <translation>sr_RS</translation>
     </message>
     <message>
         <source>Decommission All Circuits...</source>
@@ -4435,8 +4435,8 @@ Da biste uklonili popravku „%1“ napišite REMOVE i potvrdite:</translation>
     <message>
         <source>Are you sure you want to remove the selected service company?
 To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Da li si siguran da žećiš da ukloniš servisnu kompaniju?
-Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</translation>
+        <translation>Da li ste sigurni da želite da uklonite servisnu kompaniju?
+Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Select circuits - Leaklog</source>
@@ -4979,7 +4979,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</tran
     <name>RemoveDialogue</name>
     <message>
         <source>REMOVE</source>
-        <translation>REMOVE</translation>
+        <translation>UKLONITI</translation>
     </message>
 </context>
 <context>
@@ -5293,7 +5293,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</tran
     <message>
         <source>Table of Inspections: %1</source>
         <comment>View Title</comment>
-        <translation>Taela kontrole: %1</translation>
+        <translation>Tabela kontrole: %1</translation>
     </message>
     <message>
         <source>All compressors</source>
@@ -5744,7 +5744,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</tran
     </message>
     <message>
         <source>Refrigerant:</source>
-        <translation>Rashledno sredstvo:</translation>
+        <translation>Rashladno sredstvo:</translation>
     </message>
     <message>
         <source>Add a new service company</source>
@@ -5881,7 +5881,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</tran
     </message>
     <message>
         <source>Temperature EV</source>
-        <translation>Temperatura pe EV</translation>
+        <translation>Temperatura pre EV</translation>
     </message>
     <message>
         <source>Temperature evap. out</source>
@@ -5937,7 +5937,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište REMOVE i potvrdite:</tran
     </message>
     <message>
         <source>Safety switch</source>
-        <translation>Pigurnosni presostat</translation>
+        <translation>Sigurnosni presostat</translation>
     </message>
     <message>
         <source>Remedies</source>
