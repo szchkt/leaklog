@@ -709,7 +709,7 @@
     </message>
     <message>
         <source>Reason:</source>
-        <translation>razlog:</translation>
+        <translation>Razlog:</translation>
     </message>
     <message>
         <source>Date excluded</source>
@@ -887,7 +887,7 @@
     <name>CircuitUnitTypesView</name>
     <message>
         <source>Circuit Unit Types</source>
-        <translation>Tipovi jedinice kruga</translation>
+        <translation>Tipovi jedinica kruga</translation>
     </message>
 </context>
 <context>
@@ -1163,7 +1163,7 @@
     </message>
     <message>
         <source>Operator ID</source>
-        <translation>Id Operatera</translation>
+        <translation>ID operatera</translation>
     </message>
     <message>
         <source>Operator</source>
@@ -1171,15 +1171,15 @@
     </message>
     <message>
         <source>Operator address</source>
-        <translation>Adresa Operatera</translation>
+        <translation>Adresa operatera</translation>
     </message>
     <message>
         <source>Operator e-mail</source>
-        <translation>E-mail Operatera</translation>
+        <translation>E-mail operatera</translation>
     </message>
     <message>
         <source>Operator phone</source>
-        <translation>Telefon Operatera</translation>
+        <translation>Telefon operatera</translation>
     </message>
     <message>
         <source>Notes:</source>
@@ -1648,7 +1648,7 @@
     </message>
     <message>
         <source>Central European (Windows 1250)</source>
-        <translation>Central European (Windows 1250)</translation>
+        <translation>Centralnoevropski (Windows 1250)</translation>
     </message>
     <message>
         <source>System default</source>
@@ -1660,7 +1660,7 @@
     </message>
     <message>
         <source>Semicolon</source>
-        <translation>tačka zarez</translation>
+        <translation>Tačka zarez</translation>
     </message>
     <message>
         <source>Tab</source>
@@ -2484,7 +2484,7 @@ Da biste uklonili izgled „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Circuit unit types</source>
-        <translation>Tipovi jedinice kruga</translation>
+        <translation>Tipovi jedinica kruga</translation>
     </message>
     <message>
         <source>Output unit</source>
@@ -2510,8 +2510,8 @@ Da biste uklonili izgled „%1“ napišite UKLONITI i potvrdite:</translation>
         <source>Successfully imported %n record(s).</source>
         <translation>
             <numerusform>%n zapis je uspešno uvezen.</numerusform>
-            <numerusform>%n zapisi su uspešno uvezeni.</numerusform>
-            <numerusform>%n zapisi su uspešno uvezeni.</numerusform>
+            <numerusform>%n zapisa su uspešno uvezena.</numerusform>
+            <numerusform>%n zapisa su uspešno uvezena.</numerusform>
         </translation>
     </message>
     <message>
@@ -3523,7 +3523,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Print Preview...</source>
-        <translation>pregled štampe...</translation>
+        <translation>Pregled štampe...</translation>
     </message>
     <message>
         <source>Another Database...</source>
@@ -6001,7 +6001,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Refrigerant recovery</source>
-        <translation>rekuperacija</translation>
+        <translation>Rekuperacija</translation>
     </message>
     <message>
         <source>Inspector</source>
