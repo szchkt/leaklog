@@ -282,6 +282,10 @@ macx {
     QMAKE_LFLAGS   += -stdlib=libc++
 }
 
+macx:greaterThan(QT_MAJOR_VERSION, 5):CONFIG(release) {
+    QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
+}
+
 win32-msvc:greaterThan(QMAKE_MSC_VER, 1929) {
     QMAKE_CXXFLAGS += /std:c++17
 } else:win32-msvc {
