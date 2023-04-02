@@ -61,6 +61,10 @@
         <translation>Polský překlad: %1</translation>
     </message>
     <message>
+        <source>Serbian translation: %1</source>
+        <translation>Srbský překlad: %1</translation>
+    </message>
+    <message>
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1, pod licencí GNU GPL</translation>
     </message>
@@ -1097,6 +1101,10 @@
     <message>
         <source>United Kingdom</source>
         <translation>Spojené království</translation>
+    </message>
+    <message>
+        <source>Serbia</source>
+        <translation>Srbsko</translation>
     </message>
 </context>
 <context>
@@ -2154,6 +2162,10 @@
     <message>
         <source>Czech</source>
         <translation>Čeština</translation>
+    </message>
+    <message>
+        <source>Serbian</source>
+        <translation>Srbština</translation>
     </message>
 </context>
 <context>

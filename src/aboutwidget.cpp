@@ -81,6 +81,7 @@ void AboutWidget::showAcknowledgements(bool show)
 
         *(body->paragraph()) << tr("Czech translation: %1").arg(QString("%1 <i>(<a href=\"http://www.chlazeni.cz\">chlazeni.cz</a>)</i>").arg(tr("Czech Association for Cooling and Air Conditioning Technology")));
         *(body->paragraph()) << tr("Polish translation: %1").arg("PROZON Fundacja Ochrony Klimatu <i>(<a href=\"http://prozon.org.pl\">prozon.org.pl</a>)</i>");
+        *(body->paragraph()) << tr("Serbian translation: %1").arg("Srđan Đokić");
 
         *(body->subHeading()) << tr("Contributors");
 

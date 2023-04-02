@@ -14,5 +14,9 @@
         <source>Czech</source>
         <translation>Čeština</translation>
     </message>
+    <message>
+        <source>Serbian</source>
+        <translation>Srpski</translation>
+    </message>
 </context>
 </TS>

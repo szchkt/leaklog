@@ -17,6 +17,7 @@ the percentage of leakage.
 * Czech (thanks to the *[Czech Association for Cooling and Air Conditioning Technology][chlazeni]*)
 * English
 * Polish (thanks to *[PROZON Fundacja Ochrony Klimatu][PROZON]*)
+* Serbian (thanks to Srđan Đokić)
 * Slovak
 
 [chlazeni]: http://www.chlazeni.cz

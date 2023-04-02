@@ -60,6 +60,10 @@
         <translation>Polskie tłumaczenie: %1</translation>
     </message>
     <message>
+        <source>Serbian translation: %1</source>
+        <translation>Serbskie tłumaczenie: %1</translation>
+    </message>
+    <message>
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1 na licencji GNU GPL</translation>
     </message>
@@ -1093,6 +1097,10 @@
     <message>
         <source>United Kingdom</source>
         <translation>Wielka Brytania</translation>
+    </message>
+    <message>
+        <source>Serbia</source>
+        <translation>Serbia</translation>
     </message>
 </context>
 <context>
@@ -2146,6 +2154,10 @@
     <message>
         <source>Czech</source>
         <translation>Czeski</translation>
+    </message>
+    <message>
+        <source>Serbian</source>
+        <translation>Serbski</translation>
     </message>
 </context>
 <context>
