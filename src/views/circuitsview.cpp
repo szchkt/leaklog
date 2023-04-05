@@ -327,7 +327,7 @@ void CircuitsView::writeCircuitRow(const QVariantMap &circuit, const QString &cu
     HTMLTableRow *_tr = table->addRow(tr_attr);
     HTMLTableCell *_td = _tr->addCell();
     if (columns.star) {
-        *_td << QString("<span class=\"screen_only\"><a href=\"customer:%1/circuit:%2/star\" class=\"no_underline\">%3</a>&nbsp;</span>")
+        *_td << QString("<span class=\"screen_only\"><a href=\"customer:%1/circuit:%2/star\" onclick=\"window.event.stopPropagation()\" class=\"no_underline\">%3</a>&nbsp;</span>")
             .arg(customer_uuid).arg(uuid)
             .arg(QChar(circuit.value("starred").toInt() ? 0x2605 : 0x2606));
     }

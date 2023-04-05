@@ -167,7 +167,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
             }
             row = table->addRow(row_attrs);
             *(row->addCell())
-                << QString("<span class=\"screen_only\"><a href=\"customer:%1/star\" class=\"no_underline\">%2</a>&nbsp;</span>")
+                << QString("<span class=\"screen_only\"><a href=\"customer:%1/star\" onclick=\"window.event.stopPropagation()\" class=\"no_underline\">%2</a>&nbsp;</span>")
                     .arg(uuid)
                     .arg(QChar(list.at(i).value("starred").toInt() ? 0x2605 : 0x2606))
                 << toolTipLink("customer", list.at(i).value("id").toString(), uuid);
