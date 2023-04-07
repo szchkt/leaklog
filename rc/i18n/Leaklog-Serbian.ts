@@ -45,11 +45,11 @@
     </message>
     <message>
         <source>%1, licensed under the GNU LGPL</source>
-        <translation>%1, pod licenciou GNU LGPL</translation>
+        <translation>%1, pod licencom GNU LGPL</translation>
     </message>
     <message>
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
-        <translation>http://www.gpl.sk/v2/</translation>
+        <translation>http://www.gnu.org/licenses/gpl-2.0.html</translation>
     </message>
     <message>
         <source>Translation</source>
@@ -65,7 +65,7 @@
     </message>
     <message>
         <source>%1, licensed under the GNU GPL</source>
-        <translation>%1, pod licenciou GNU GPL</translation>
+        <translation>%1, pod licencom GNU GPL</translation>
     </message>
     <message>
         <source>Czech translation: %1</source>
@@ -127,7 +127,7 @@
     </message>
     <message>
         <source>Type</source>
-        <translation>Tit</translation>
+        <translation>Tip</translation>
     </message>
     <message>
         <source>Refrigerant</source>
@@ -362,7 +362,7 @@
     </message>
     <message>
         <source>Total</source>
-        <translation>Ukuono</translation>
+        <translation>Ukupno</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -497,7 +497,7 @@
     </message>
     <message>
         <source>Circuit name:</source>
-        <translation>Nazov kruga:</translation>
+        <translation>Naziv kruga:</translation>
     </message>
     <message>
         <source>Place of operation:</source>
@@ -848,7 +848,7 @@
     </message>
     <message>
         <source>List price</source>
-        <translation>Cenonik</translation>
+        <translation>Cenovnik</translation>
     </message>
     <message>
         <source>Discount</source>
@@ -1048,7 +1048,7 @@
     </message>
     <message>
         <source>Latvia</source>
-        <translation>Latvija</translation>
+        <translation>Letonija</translation>
     </message>
     <message>
         <source>Lithuania</source>
@@ -1056,7 +1056,7 @@
     </message>
     <message>
         <source>Luxembourg</source>
-        <translation>Luxemburg</translation>
+        <translation>Luksemburg</translation>
     </message>
     <message>
         <source>Malta</source>
@@ -2352,7 +2352,7 @@
     </message>
     <message>
         <source>For more information, contact your administrator.</source>
-        <translation>Za više informacija kontaktirajte svog administratora</translation>
+        <translation>Za više informacija kontaktirajte svog administratora.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2370,7 +2370,7 @@
         <source>Are you sure you want to remove the selected customer?
 To remove all data about the customer &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite korisnika?
-Da biste uklonili korisnika „%1“ napište UKLONITI i potvrdite:</translation>
+Da biste uklonili korisnika „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>This record is older than the current record in your database</source>
@@ -2386,7 +2386,7 @@ Da biste uklonili korisnika „%1“ napište UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>CSV files (*.csv);;All files (*.*)</source>
-        <translation>CSV datoteke (*.csv);;Sve datoteke (*.*)</translation>
+        <translation>CSV datoteke (*.csv);;Sva dokumenta (*.*)</translation>
     </message>
     <message>
         <source>Customers</source>
@@ -2537,8 +2537,8 @@ Da biste uklonili tip stavke instalacionog zapisa „%1“ napišite UKLONITI i 
     <message>
         <source>Are you sure you want to remove the selected assembly record item category?
 To remove all data about the item category &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Da li ste sigutni da želite da uklonite kategoriju stavke instalacionog zapisa?
-Da biste uklonili kategoriju  stavke instalacionog zapisa „%1“ napište UKLONITI i potvrdite:</translation>
+        <translation>Da li ste sigurni da želite da uklonite kategoriju stavke instalacionog zapisa?
+Da biste uklonili kategoriju stavke instalacionog zapisa „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Remove circuit unit type - Leaklog</source>
@@ -2547,7 +2547,7 @@ Da biste uklonili kategoriju  stavke instalacionog zapisa „%1“ napište UKLO
     <message>
         <source>Are you sure you want to remove the selected circuit unit type?
 To remove all data about the unit type &quot;%1&quot; type REMOVE and confirm:</source>
-        <translation>Da li ste sigutni da želite da uklonite tip jedinice kruga?
+        <translation>Da li ste sigurni da želite da uklonite tip jedinice kruga?
 Da biste uklonili tip jedinice kruga „%1“ napišite UKLONITI a potvrdite:</translation>
     </message>
     <message>
@@ -2798,7 +2798,7 @@ Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translati
     </message>
     <message>
         <source>Close the database</source>
-        <translation>Zatvorei bazu podataka</translation>
+        <translation>Zatvori bazu podataka</translation>
     </message>
     <message>
         <source>Add a new customer</source>
@@ -3014,7 +3014,7 @@ Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translati
     </message>
     <message>
         <source>Leaklog Databases (*.lklg);;All files (*.*)</source>
-        <translation>Baze podataka programa Leaklog (*.lklg);;Všetky súbory (*.*)</translation>
+        <translation>Baze podataka programa Leaklog (*.lklg);;Sva dokumenta (*.*)</translation>
     </message>
     <message>
         <source>Save database - Leaklog</source>
@@ -3022,7 +3022,7 @@ Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translati
     </message>
     <message>
         <source>Close database - Leaklog</source>
-        <translation>Zatvori bazu podataka  - Leaklog</translation>
+        <translation>Zatvori bazu podataka - Leaklog</translation>
     </message>
     <message>
         <source>Remove subvariable - Leaklog</source>
@@ -3042,7 +3042,7 @@ Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translati
     </message>
     <message>
         <source>Foot</source>
-        <translation>Foot</translation>
+        <translation>Podnožje</translation>
     </message>
     <message>
         <source>Add</source>
@@ -3086,7 +3086,7 @@ Da biste uklonili upozorenje „%1“ napišite UKLONITI i potvrdite:</translati
     </message>
     <message>
         <source>Compact</source>
-        <translation>Stlačiť</translation>
+        <translation>Kompaktiraj</translation>
     </message>
     <message>
         <source>Failed to check for updates.</source>
@@ -3217,7 +3217,8 @@ Da biste ukloniti kontrolora „%1“ napišite UKLONITI i potvrdite:</translati
     <message>
         <source>Registry number of
 person and company ID</source>
-        <translation>Registracioni broj osobe i ID kompanije</translation>
+        <translation>Registracioni broj osobe
+i ID kompanije</translation>
     </message>
     <message>
         <source>Open containing folder</source>
@@ -3247,8 +3248,8 @@ person and company ID</source>
         <source>Refrigerant leakage inspection
 in accordance with Regulation (EC)
 No. 842/2006</source>
-        <translation>Kontrola curenja
-u skladu sa Uredbom o postupanju sa fluorovanim
+        <translation>Kontrola curenja u skladu
+sa Uredbom o postupanju sa fluorovanim
 gasovima sa efektom staklene bašte</translation>
     </message>
     <message>
@@ -3293,11 +3294,11 @@ gasovima sa efektom staklene bašte</translation>
     </message>
     <message>
         <source>Unlock database - Leaklog</source>
-        <translation>Otljučaj bazu podataka - Leaklog</translation>
+        <translation>Otključaj bazu podataka - Leaklog</translation>
     </message>
     <message>
         <source>Wrong password.</source>
-        <translation>Pogrečna šifra.</translation>
+        <translation>Pogrešna lozinka.</translation>
     </message>
     <message>
         <source>Ctrl+L</source>
@@ -3309,11 +3310,11 @@ gasovima sa efektom staklene bašte</translation>
     </message>
     <message>
         <source>Enter password for %1@%2:</source>
-        <translation>Upiši šifru za %1@%2:</translation>
+        <translation>Unesite lozinku za %1@%2:</translation>
     </message>
     <message>
         <source>Driver:</source>
-        <translation>Driver:</translation>
+        <translation>Drajver:</translation>
     </message>
     <message>
         <source>Server:</source>
@@ -3325,7 +3326,7 @@ gasovima sa efektom staklene bašte</translation>
     </message>
     <message>
         <source>Default</source>
-        <translation>Default</translation>
+        <translation>Podrazumevano</translation>
     </message>
     <message>
         <source>Database name:</source>
@@ -3333,11 +3334,11 @@ gasovima sa efektom staklene bašte</translation>
     </message>
     <message>
         <source>User name:</source>
-        <translation>User name:</translation>
+        <translation>Korisničko ime:</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation>Šifra:</translation>
+        <translation>Lozinka:</translation>
     </message>
     <message>
         <source>Ctrl+Shift+O</source>
@@ -3607,7 +3608,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>PDF (Portrait)...</source>
-        <translation>PDF (protret)...</translation>
+        <translation>PDF (portret)...</translation>
     </message>
     <message>
         <source>HTML Webpage...</source>
@@ -3703,7 +3704,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Decommission</source>
-        <translation>Odbacivanje</translation>
+        <translation>Odbaci</translation>
     </message>
     <message>
         <source>Duplicate and Decommission Circuit...</source>
@@ -3743,11 +3744,11 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>The database has been upgraded to work with this version of Leaklog. It is recommended that you save the changes now.</source>
-        <translation>Baza podataka je ažurirana za rad sa sa ovom verzijom Leaklog-a.. Preporučeno je čuvanje izmena.</translation>
+        <translation>Baza podataka je ažurirana za rad sa ovom verzijom programa Leaklog. Preporučeno je čuvanje izmena.</translation>
     </message>
     <message>
         <source>Once saved, you will not be able to use this database with previous versions of Leaklog. Do you want to save the changes?</source>
-        <translation>Once saved, you will not be able to use this database with previous versions of Leaklog. Do you want to save the changes?</translation>
+        <translation>Jednom sačuvano, nećete moći da koristite ovu bazu podataka sa prethodnim verzijama programa Leaklog. Da li želite da sačuvate promene?</translation>
     </message>
     <message>
         <source>&amp;Later</source>
@@ -3855,7 +3856,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Duplicate and decommission circuit %1 (%2)</source>
-        <translation>Dupliraj odba;en krug %1 (%2)</translation>
+        <translation>Dupliraj i odbaci krug %1 (%2)</translation>
     </message>
     <message>
         <source>Remove circuit %1 (%2)</source>
@@ -3867,15 +3868,15 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Edit inspection %1 (%2, circuit %3)</source>
-        <translation>Uredi kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Uredi kontrolu %1 (%2, krug %3)</translation>
     </message>
     <message>
         <source>Duplicate inspection %1 (%2, circuit %3)</source>
-        <translation>Dupliraj kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Dupliraj kontrolu %1 (%2, krug %3)</translation>
     </message>
     <message>
         <source>Remove inspection %1 (%2, circuit %3)</source>
-        <translation>Ukloni kontrolu %1 (%2, okruh %3)</translation>
+        <translation>Ukloni kontrolu %1 (%2, krug %3)</translation>
     </message>
     <message>
         <source>Add repair</source>
@@ -3919,7 +3920,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Remove variable %1 (%2) from table %3</source>
-        <translation>OUkloni promenljivuú %1 (%2) iy tabele %3</translation>
+        <translation>Ukloni promenljivu %1 (%2) iz tabele %3</translation>
     </message>
     <message>
         <source>Move variable %1 (%2) up in table %3</source>
@@ -3931,15 +3932,15 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Add warning</source>
-        <translation>Dodaj upoyorenje</translation>
+        <translation>Dodaj upozorenje</translation>
     </message>
     <message>
         <source>Edit warning %1</source>
-        <translation>Uredi upoyorenje %1</translation>
+        <translation>Uredi upozorenje %1</translation>
     </message>
     <message>
         <source>Remove warning %1</source>
-        <translation>Ukloni upoyorenje %1</translation>
+        <translation>Ukloni upozorenje %1</translation>
     </message>
     <message>
         <source>Add inspector</source>
@@ -3947,7 +3948,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Edit inspector %1</source>
-        <translation>Uredi kontrolrra %1</translation>
+        <translation>Uredi kontrolora %1</translation>
     </message>
     <message>
         <source>Remove inspector %1</source>
@@ -3955,7 +3956,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Import database %1</source>
-        <translation>Uveyi bayu podataka %1</translation>
+        <translation>Uvezi bazu podataka %1</translation>
     </message>
     <message>
         <source>Import CSV %1</source>
@@ -3967,7 +3968,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Edit assembly record type %1</source>
-        <translation>uredi tip instalacionog zapisa %1</translation>
+        <translation>Uredi tip instalacionog zapisa %1</translation>
     </message>
     <message>
         <source>Remove assembly record type %1</source>
@@ -4075,15 +4076,15 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Auto Save...</source>
-        <translation>Automatatsko snimanje...</translation>
+        <translation>Automatsko snimanje...</translation>
     </message>
     <message>
         <source>Configure automatic saving for this database</source>
-        <translation>Konfiguriši automatsko snimanje za ovu bazu podatakau</translation>
+        <translation>Konfiguriši automatsko snimanje za ovu bazu podataka</translation>
     </message>
     <message>
         <source>Database modified - Leaklog</source>
-        <translation>Baza odataka uređena - Leaklog</translation>
+        <translation>Baza podataka uređena - Leaklog</translation>
     </message>
     <message>
         <source>Configure Auto Save - Leaklog</source>
@@ -4103,7 +4104,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Save all changes after 10 minutes of inactivity</source>
-        <translation>Snimi sbe promene nakon 10 minuta nakon neaktivnosti</translation>
+        <translation>Snimi sve promene nakon 10 minuta neaktivnosti</translation>
     </message>
     <message>
         <source>Ask to save changes after 10 minutes of inactivity</source>
@@ -4119,7 +4120,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>View the online documentation</source>
-        <translation>Pogledaj onlajn dokumentacijuu</translation>
+        <translation>Pogledaj onlajn dokumentaciju</translation>
     </message>
     <message>
         <source>What&apos;s New</source>
@@ -4147,7 +4148,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Move circuit:</source>
-        <translation>Prebvci krug:</translation>
+        <translation>Prebaci krug:</translation>
     </message>
     <message>
         <source>To customer:</source>
@@ -4171,7 +4172,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
-        <translation>NEMOJTE UREĐIVATI OVU KONTROLU: Ako možete da pročitate ovu poruku, koristite stariju verziju Leakloga od one koja je korišćena za kreiranje ove inspekcije. Promene napravljene u ovoj kontrolineće biti vidljive u novijim verzijama Leakloga.</translation>
+        <translation>NEMOJTE UREĐIVATI OVU KONTROLU: Ako možete da pročitate ovu poruku, koristite stariju verziju programa Leaklog od one koja je korišćena za kreiranje ove inspekcije. Promene napravljene u ovoj kontroli neće biti vidljive u novijim verzijama programa Leaklog.</translation>
     </message>
     <message>
         <source>Skip Inspection...</source>
@@ -4241,7 +4242,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Detector installed</source>
-        <translation>Instaliran fiksni detekror curenja</translation>
+        <translation>Instaliran fiksni detektor curenja</translation>
     </message>
     <message>
         <source>No detector installed</source>
@@ -4286,7 +4287,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Edit refrigerants - Leaklog</source>
-        <translation>Uredi rashladna sredstva. - Leaklog</translation>
+        <translation>Uredi rashladna sredstva - Leaklog</translation>
     </message>
     <message>
         <source>Refrigerants</source>
@@ -4294,7 +4295,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Sync...</source>
-        <translation>Sinhronizovanje...</translation>
+        <translation>Sinhronizuj...</translation>
     </message>
     <message>
         <source>Log In</source>
@@ -4302,23 +4303,23 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Sync database - Leaklog</source>
-        <translation>Sinhronizaija baze podataka - Leaklog</translation>
+        <translation>Sinhronizacija baze podataka - Leaklog</translation>
     </message>
     <message>
         <source>Do you want to sync this database with Leaklog.org?</source>
-        <translation>Da li želiš da sinhronizuješ podatke sa serverom Leaklog.org?</translation>
+        <translation>Da li želite da sinhronizujete ovu bazu podataka sa serverom Leaklog.org?</translation>
     </message>
     <message>
         <source>&amp;Sync</source>
-        <translation>&amp;Sinhronizacija</translation>
+        <translation>&amp;Sinhronizuj</translation>
     </message>
     <message>
         <source>Do &amp;Not Sync</source>
-        <translation>&amp;Not Sync</translation>
+        <translation>&amp;Nemoj sinhronizovati</translation>
     </message>
     <message>
         <source>Sync</source>
-        <translation>Sinhronizacija</translation>
+        <translation>Sinhronizuj</translation>
     </message>
     <message>
         <source>Sync - Leaklog</source>
@@ -4334,7 +4335,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Enter your szchkt.org username and password:</source>
-        <translation>Enter your szchkt.org username and password:</translation>
+        <translation>Unesite svoje korisničko ime i lozinku za szchkt.org:</translation>
     </message>
     <message>
         <source>Register</source>
@@ -4346,7 +4347,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Failed to log in.</source>
-        <translation>Nuspečno logovanje.</translation>
+        <translation>Neuspešno logovanje.</translation>
     </message>
     <message>
         <source>Try Again</source>
@@ -4354,15 +4355,15 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>https://github.com/szchkt/leaklog/wiki</source>
-        <translation>https://github.com/szchkt/leaklog/wiki/Dokumentácia</translation>
+        <translation>https://github.com/szchkt/leaklog/wiki</translation>
     </message>
     <message>
         <source>https://github.com/szchkt/leaklog/releases</source>
-        <translation>https://github.com/szchkt/leaklog/wiki/Zoznam-zmien</translation>
+        <translation>https://github.com/szchkt/leaklog/releases</translation>
     </message>
     <message>
         <source>From Leaklog.org...</source>
-        <translation>Leaklog.org...</translation>
+        <translation>Sa Leaklog.org...</translation>
     </message>
     <message>
         <source>Download database from Leaklog.org</source>
@@ -4382,11 +4383,11 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
     </message>
     <message>
         <source>Failed to connect to Leaklog.org.</source>
-        <translation>Neuspešna koneksiva sa Leaklog.org.</translation>
+        <translation>Neuspešno povezivanje sa Leaklog.org.</translation>
     </message>
     <message>
         <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
-        <translation>Korišćenjem ovog servisa &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;podmienkami služby&lt;/a&gt;.</translation>
+        <translation>Korišćenjem ovog servisa prihvatate &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;uslove korišćenja&lt;/a&gt;.</translation>
     </message>
     <message>
         <source>Keep ID</source>
@@ -4436,7 +4437,7 @@ Da biste uklonili popravku „%1“ napišite UKLONITI i potvrdite:</translation
         <source>Are you sure you want to remove the selected service company?
 To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
         <translation>Da li ste sigurni da želite da uklonite servisnu kompaniju?
-Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</translation>
+Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Select circuits - Leaklog</source>
@@ -4490,7 +4491,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>AB (Alkylbenzene oil)</source>
-        <translation>AB (Alkylbenzénový olej)</translation>
+        <translation>AB (Alkilbenzol ulje)</translation>
     </message>
     <message>
         <source>POE (Polyolester oil)</source>
@@ -4517,16 +4518,15 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     <name>OperatorReportView</name>
     <message>
         <source>Operator Report: %1</source>
-        <translation>Izveštaj Operatera: %1&lt;br&gt;
-&lt;small&gt;Uredba o postupanju sa fluorovanim gasovima sa efektom staklene bašte.&lt;/small&gt;</translation>
+        <translation>Izveštaj operatera: %1</translation>
     </message>
     <message>
         <source>Owner information</source>
-        <translation>Informaciije o vlasniku</translation>
+        <translation>Informacije o vlasniku</translation>
     </message>
     <message>
         <source>Operator information</source>
-        <translation>Informacije o Operateru</translation>
+        <translation>Informacije o operateru</translation>
     </message>
     <message>
         <source>Circuit information</source>
@@ -4579,7 +4579,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Operator Report</source>
-        <translation>Izveštaj Operatera</translation>
+        <translation>Izveštaj operatera</translation>
     </message>
 </context>
 <context>
@@ -4649,7 +4649,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Add variable</source>
-        <translation>Sodaj promenljivu</translation>
+        <translation>Dodaj promenljivu</translation>
     </message>
     <message>
         <source>Remove variable</source>
@@ -4693,11 +4693,11 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Edit repair</source>
-        <translation>Uredi popravkuu</translation>
+        <translation>Uredi popravku</translation>
     </message>
     <message>
         <source>Edit inspector</source>
-        <translation>Uredikontrolora</translation>
+        <translation>Uredi kontrolora</translation>
     </message>
     <message>
         <source>Edit table</source>
@@ -4713,7 +4713,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Decommission circuit</source>
-        <translation>Iskljuši krug iz upotrebeh</translation>
+        <translation>Isključi krug iz upotrebe</translation>
     </message>
     <message>
         <source>Add service company</source>
@@ -4841,7 +4841,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dstum izmene</translation>
+        <translation>Datum izmene</translation>
     </message>
     <message>
         <source>Author</source>
@@ -4912,7 +4912,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Refrigerant</source>
-        <translation>Rashladno sredstvoo</translation>
+        <translation>Rashladno sredstvo</translation>
     </message>
     <message>
         <source>Purchased (new)</source>
@@ -5042,7 +5042,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Assembly record No.</source>
-        <translation>Broj instalacionog zapisaL</translation>
+        <translation>Broj instalacionog zapisa</translation>
     </message>
     <message>
         <source>Date</source>
@@ -5121,7 +5121,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>all</source>
-        <translation>Sve</translation>
+        <translation>sve</translation>
     </message>
 </context>
 <context>
@@ -5253,7 +5253,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     <name>TabbedEditDialogue</name>
     <message>
         <source>Basic information</source>
-        <translation>ZOsnovne informacije</translation>
+        <translation>Osnovne informacije</translation>
     </message>
 </context>
 <context>
@@ -5480,7 +5480,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Autofill</source>
-        <translation>Autopopunjavanje</translation>
+        <translation>Popuni</translation>
     </message>
     <message>
         <source>Finish reporting data</source>
@@ -5532,7 +5532,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Edit the selected repair</source>
-        <translation>Uredi izabranu poprakvu</translation>
+        <translation>Uredi izabranu popravku</translation>
     </message>
     <message>
         <source>Edit Repair...</source>
@@ -5612,7 +5612,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Edit the selected assembly record item type</source>
-        <translation>Uredi izabrani tip stvake instalacionog zapisa</translation>
+        <translation>Uredi izabrani tip stavke instalacionog zapisa</translation>
     </message>
     <message>
         <source>Edit Item Type...</source>
@@ -5772,7 +5772,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Remove Service Company...</source>
-        <translation>Ukloni servicnu kompaniju...</translation>
+        <translation>Ukloni servisnu kompaniju...</translation>
     </message>
 </context>
 <context>
@@ -5845,7 +5845,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>evap.</source>
-        <translation>evap.</translation>
+        <translation>ispar.</translation>
     </message>
     <message>
         <source>comp.</source>
@@ -5861,11 +5861,11 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>evap. in</source>
-        <translation>evap. in.</translation>
+        <translation>ispar. ul.</translation>
     </message>
     <message>
         <source>cond. in</source>
-        <translation>kond. in.</translation>
+        <translation>kond. ul.</translation>
     </message>
     <message>
         <source>Pressure condensing</source>
@@ -5885,19 +5885,19 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Temperature evap. out</source>
-        <translation>Temperatura evap. out</translation>
+        <translation>Temperatura ispar. iz.</translation>
     </message>
     <message>
         <source>Temperature comp. in</source>
-        <translation>Temperatura comp. in</translation>
+        <translation>Temperatura komp. ul.</translation>
     </message>
     <message>
         <source>Temperature discharge</source>
-        <translation>Temperatura discharge</translation>
+        <translation>Temperatura pražnjenja</translation>
     </message>
     <message>
         <source>Comp. el. power input</source>
-        <translation>Comp. el. power input</translation>
+        <translation>El. snaga kompresora</translation>
     </message>
     <message>
         <source>Electric current</source>
@@ -5989,7 +5989,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Refrigerant addition</source>
-        <translation>Dodavanje rash.sredstva</translation>
+        <translation>Dodavanje rash. sredstva</translation>
     </message>
     <message>
         <source>Annual leakage</source>
@@ -6084,7 +6084,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Scope:</source>
-        <translation>Scope:</translation>
+        <translation>Obim:</translation>
     </message>
     <message>
         <source>Inspection</source>
@@ -6111,7 +6111,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     <name>VariableTypes</name>
     <message>
         <source>Integer</source>
-        <translation>Integer</translation>
+        <translation>Ceo broj</translation>
     </message>
     <message>
         <source>Boolean</source>
@@ -6131,7 +6131,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Long Text</source>
-        <translation>Dugašak tekst</translation>
+        <translation>Dugačak tekst</translation>
     </message>
     <message>
         <source>UUID</source>
@@ -6181,7 +6181,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Basic Logbook</source>
-        <translation>Osnovni Logbook</translation>
+        <translation>Osnovni dnevnik</translation>
     </message>
     <message>
         <source>Repairs</source>
@@ -6189,7 +6189,7 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>Detailed Logbook</source>
-        <translation>Detaljni Logbook</translation>
+        <translation>Detaljni dnevnik</translation>
     </message>
     <message>
         <source>Circuits</source>
@@ -6264,11 +6264,11 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>days</source>
-        <translation>dani</translation>
+        <translation>dana</translation>
     </message>
     <message>
         <source>Scope:</source>
-        <translation>Scope:</translation>
+        <translation>Obim:</translation>
     </message>
     <message>
         <source>Inspection</source>
@@ -6307,15 +6307,15 @@ Da biste uklonili servisnu kompaniju „%1“ napište UKLONITI i potvrdite:</tr
     </message>
     <message>
         <source>above 100 kg, after 2011</source>
-        <translation>više od100 kg, od 2011</translation>
+        <translation>više od 100 kg, od 2011</translation>
     </message>
     <message>
         <source>Refrigerant leakage</source>
-        <translation>Curenje freona </translation>
+        <translation>Curenje freona</translation>
     </message>
     <message>
         <source>Compressor valve leakage</source>
-        <translation>Curenje na ventilo kompreosta</translation>
+        <translation>Curenje na ventilo kompresora</translation>
     </message>
     <message>
         <source>Liquid-line restriction</source>
