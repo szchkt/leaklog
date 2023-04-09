@@ -76,6 +76,10 @@
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Svaz chladicí a klimatizační techniky</translation>
     </message>
+    <message>
+        <source>Association of HVAC technicians of Serbia</source>
+        <translation>Svaz klimatizačních techniků Srbska</translation>
+    </message>
 </context>
 <context>
     <name>AgendaView</name>
