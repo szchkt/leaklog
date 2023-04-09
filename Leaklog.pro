@@ -282,6 +282,11 @@ macx {
     QMAKE_LFLAGS   += -stdlib=libc++
 }
 
+# Qt 6.5+
+macx:greaterThan(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 4) {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
+}
+
 macx:greaterThan(QT_MAJOR_VERSION, 5):CONFIG(release) {
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 }
