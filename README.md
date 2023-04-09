@@ -17,10 +17,12 @@ the percentage of leakage.
 * Czech (thanks to the *[Czech Association for Cooling and Air Conditioning Technology][chlazeni]*)
 * English
 * Polish (thanks to *[PROZON Fundacja Ochrony Klimatu][PROZON]*)
+* Serbian (thanks to *Srđan Đokić, [Association of HVAC technicians of Serbia][unija]*)
 * Slovak
 
 [chlazeni]: http://www.chlazeni.cz
 [PROZON]: http://prozon.org.pl
+[unija]: https://unijaserviseraklima.rs
 
 Installation
 ------------

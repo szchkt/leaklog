@@ -60,6 +60,10 @@
         <translation>Poľský preklad: %1</translation>
     </message>
     <message>
+        <source>Serbian translation: %1</source>
+        <translation>Srbský preklad: %1</translation>
+    </message>
+    <message>
         <source>%1, licensed under the GNU GPL</source>
         <translation>%1, pod licenciou GNU GPL</translation>
     </message>
@@ -70,6 +74,10 @@
     <message>
         <source>Czech Association for Cooling and Air Conditioning Technology</source>
         <translation>Český zväz chladiacej a klimatizačnej techniky</translation>
+    </message>
+    <message>
+        <source>Association of HVAC technicians of Serbia</source>
+        <translation>Zväz klimatizačných technikov Srbska</translation>
     </message>
 </context>
 <context>
@@ -1093,6 +1101,10 @@
     <message>
         <source>United Kingdom</source>
         <translation>Spojené kráľovstvo</translation>
+    </message>
+    <message>
+        <source>Serbia</source>
+        <translation>Srbsko</translation>
     </message>
 </context>
 <context>
@@ -2146,6 +2158,10 @@
     <message>
         <source>Czech</source>
         <translation>Čeština</translation>
+    </message>
+    <message>
+        <source>Serbian</source>
+        <translation>Srbčina</translation>
     </message>
 </context>
 <context>

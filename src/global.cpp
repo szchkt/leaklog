@@ -946,6 +946,9 @@ class Countries
 {
 public:
     Countries() {
+        QSettings settings("SZCHKT", "Leaklog");
+        QString lang = settings.value("lang").toString();
+
         dict.insert("", "");
         dict.insert("AT", QApplication::translate("Countries", "Austria"));
         dict.insert("BE", QApplication::translate("Countries", "Belgium"));
@@ -970,6 +973,9 @@ public:
         dict.insert("PL", QApplication::translate("Countries", "Poland"));
         dict.insert("PT", QApplication::translate("Countries", "Portugal"));
         dict.insert("RO", QApplication::translate("Countries", "Romania"));
+        if (lang == "Serbian") {
+            dict.insert("RS", QApplication::translate("Countries", "Serbia"));
+        }
         dict.insert("SI", QApplication::translate("Countries", "Slovenia"));
         dict.insert("SK", QApplication::translate("Countries", "Slovakia"));
         dict.insert("ES", QApplication::translate("Countries", "Spain"));
