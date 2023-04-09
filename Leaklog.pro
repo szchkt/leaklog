@@ -296,7 +296,7 @@ win32-msvc:greaterThan(QMAKE_MSC_VER, 1929) {
 } else:win32-msvc {
     QMAKE_CXXFLAGS += /std:c++14
 } else {
-    QMAKE_CXXFLAGS += -std=c++0x
+    QMAKE_CXXFLAGS += -std=c++17
 }
 
 unix {
