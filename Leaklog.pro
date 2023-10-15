@@ -274,6 +274,7 @@ macx {
     icons.files    = rc/images/lklg.icns
     QMAKE_BUNDLE_DATA += icons
     CONFIG        += x86_64
+    CONFIG        += sdk_no_version_check
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
     QMAKE_CC       = clang
     QMAKE_CXX      = clang++
