@@ -236,6 +236,11 @@ SOURCES       += src/aboutwidget.cpp \
 QT                += widgets network webenginewidgets sql printsupport
 CONFIG            += c++11
 
+# Qt 6.3+
+greaterThan(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 2) {
+    QT            += pdf
+}
+
 # fparser
 HEADERS           += include/fparser/fparser_gmpint.hh include/fparser/fparser_mpfr.hh include/fparser/fparser.hh include/fparser/fpconfig.hh
 HEADERS           += include/fparser/extrasrc/fpaux.hh include/fparser/extrasrc/fptypes.hh

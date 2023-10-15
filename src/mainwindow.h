@@ -187,7 +187,6 @@ private slots:
     void openDocumentation();
     void openReleaseNotes();
     void printPreview();
-    void printPreview(QPrinter *printer);
     void print();
     void print(QPrinter *printer);
     void exportPDFPortrait();

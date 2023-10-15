@@ -33,6 +33,7 @@
 #include "viewtab.h"
 
 #include <QActionGroup>
+#include <QBuffer>
 #include <QSettings>
 #include <QTranslator>
 #include <QNetworkAccessManager>
@@ -58,6 +59,10 @@
 #include <QDateEdit>
 #include <QCalendarWidget>
 #include <QDesktopServices>
+
+#if __has_include(<QPdfDocument>)
+#include <QPdfDocument>
+#endif
 
 #include <cmath>
 
@@ -449,55 +454,70 @@ void MainWindow::showIconsOnly(bool show)
 
 void MainWindow::printPreview()
 {
-    QPrintPreviewDialog d(this);
-    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(printPreview(QPrinter *)));
-    d.exec();
-}
-
-void MainWindow::printPreview(QPrinter *printer)
-{
-    bool printing = true;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    m_tab->webView()->page()->print(printer, [&printing](bool) {
+#ifdef Q_OS_WIN32
+    // QPrinter::HighResolution crashes on Windows
+    QPrinter printer;
 #else
-    m_tab->webView()->print(printer);
-    QObject *context = new QObject(this);
-    connect(m_tab->webView(), &QWebEngineView::printFinished, context, [context, &printing](bool) {
-        delete context;
+    QPrinter printer(QPrinter::HighResolution);
 #endif
-        printing = false;
-    });
-    while (printing) {
-        QApplication::processEvents();
-    }
+    printer.setPageSize(QPageSize(QPageSize::A4));
+    QPrintPreviewDialog d(&printer, this);
+    QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(print(QPrinter *)));
+    d.exec();
 }
 
 void MainWindow::print()
 {
 #ifdef Q_OS_WIN32
     // QPrinter::HighResolution crashes on Windows
-    QPrinter *printer = new QPrinter;
+    QPrinter printer;
 #else
-    QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+    QPrinter printer(QPrinter::HighResolution);
 #endif
-    QPrintDialog d(printer, this);
+    printer.setPageSize(QPageSize(QPageSize::A4));
+    QPrintDialog d(&printer, this);
     d.setWindowTitle(tr("Print"));
     if (d.exec() != QDialog::Accepted) { return; }
-    print(printer);
+    print(&printer);
 }
 
 void MainWindow::print(QPrinter *printer)
 {
+    bool printing = true;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    m_tab->webView()->page()->print(printer, [printer](bool) {
+    m_tab->webView()->page()->print(printer, [&printing](bool) {
+        printing = false;
+    });
+#elif __has_include(<QPdfDocument>)
+    QPageLayout pageLayout = printer->pageLayout();
+    m_tab->webView()->page()->printToPdf([printer, pageLayout, &printing](const QByteArray &pdf) {
+        QByteArray copy = pdf;
+        QBuffer buffer(&copy);
+        buffer.open(QIODevice::ReadOnly);
+        QPdfDocument document;
+        document.load(&buffer);
+        QRect fullRect = pageLayout.fullRectPixels(printer->resolution());
+        QRect paintRect = pageLayout.paintRectPixels(printer->resolution());
+        QRect targetRect = QRect(QPoint(0, 0), paintRect.size());
+        QPainter painter(printer);
+        for (int i = 0; i < document.pageCount(); ++i) {
+            if (i && !printer->newPage())
+                break;
+            painter.drawImage(targetRect, document.render(i, fullRect.size()), paintRect);
+        }
+        printing = false;
+    }, QPageLayout(pageLayout.pageSize(), pageLayout.orientation(), QMarginsF(10, 10, 10, 10), QPageLayout::Millimeter));
 #else
     m_tab->webView()->print(printer);
     QObject *context = new QObject(this);
-    connect(m_tab->webView(), &QWebEngineView::printFinished, context, [context, printer](bool) {
+    connect(m_tab->webView(), &QWebEngineView::printFinished, context, [context, &printing](bool) {
         delete context;
-#endif
-        delete printer;
+        printing = false;
     });
+#endif
+    while (printing) {
+        QApplication::processEvents();
+    }
 }
 
 QString MainWindow::fileNameForCurrentView()
