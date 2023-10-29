@@ -454,12 +454,7 @@ void MainWindow::showIconsOnly(bool show)
 
 void MainWindow::printPreview()
 {
-#ifdef Q_OS_WIN32
-    // QPrinter::HighResolution crashes on Windows
-    QPrinter printer;
-#else
     QPrinter printer(QPrinter::HighResolution);
-#endif
     printer.setPageSize(QPageSize(QPageSize::A4));
     QPrintPreviewDialog d(&printer, this);
     QObject::connect(&d, SIGNAL(paintRequested(QPrinter *)), this, SLOT(print(QPrinter *)));
@@ -468,12 +463,7 @@ void MainWindow::printPreview()
 
 void MainWindow::print()
 {
-#ifdef Q_OS_WIN32
-    // QPrinter::HighResolution crashes on Windows
-    QPrinter printer;
-#else
     QPrinter printer(QPrinter::HighResolution);
-#endif
     printer.setPageSize(QPageSize(QPageSize::A4));
     QPrintDialog d(&printer, this);
     d.setWindowTitle(tr("Print"));
