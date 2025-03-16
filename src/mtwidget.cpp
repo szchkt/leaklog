@@ -1,6 +1,6 @@
 /*******************************************************************
  This file is part of Leaklog
- Copyright (C) 2008-2023 Matus & Michal Tomlein
+ Copyright (C) 2008-2025 Matus & Michal Tomlein
 
  Leaklog is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public Licence
