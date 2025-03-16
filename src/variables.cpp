@@ -157,16 +157,16 @@ void Variables::initVariables()
     initVariable("noise_vibr_comp", Variable::Compressor, "", "", false, 0.0, "");
     initVariable("comp_runtime", Variable::Compressor, QApplication::translate("Units", "hours"), "", false, 0.0, "");
 
-    initVariable("dir_leak_chk", Variable::Inspection, "green");
-    initSubvariable("dir_leak_chk", Variable::Inspection, "green", "el_detect", "", "", false, 0.0);
-    initSubvariable("dir_leak_chk", Variable::Inspection, "green", "uv_detect", "", "", false, 0.0);
-    initSubvariable("dir_leak_chk", Variable::Inspection, "green", "bbl_detect", "", "", false, 0.0);
+    initVariable("dir_leak_chk", Variable::Inspection, "paleturquoise");
+    initSubvariable("dir_leak_chk", Variable::Inspection, "paleturquoise", "el_detect", "", "", false, 0.0);
+    initSubvariable("dir_leak_chk", Variable::Inspection, "paleturquoise", "uv_detect", "", "", false, 0.0);
+    initSubvariable("dir_leak_chk", Variable::Inspection, "paleturquoise", "bbl_detect", "", "", false, 0.0);
 
     initVariable("refr_add", Variable::Inspection, "yellow");
     initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am", QApplication::translate("Units", "kg"), "", false, 0.0);
     initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am_recy", QApplication::translate("Units", "kg"), "", false, 0.0);
     initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am_rege", QApplication::translate("Units", "kg"), "", false, 0.0);
-    initVariable("refr_reco", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable("refr_reco", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "honeydew");
     initVariable("refr_add_per", Variable::Inspection, QApplication::translate("Units", "%"), "100*(sum(refr_add_am)+sum(refr_add_am_recy)+sum(refr_add_am_rege)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
     initVariable("oil_leak_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "");
