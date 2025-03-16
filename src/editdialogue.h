@@ -43,6 +43,8 @@ public:
 
     QWidget *widget() { return this; }
 
+    QWidget *parentWidget() { return QDialog::parentWidget(); }
+
 protected slots:
     virtual void save();
     bool save(bool);

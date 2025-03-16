@@ -73,7 +73,7 @@ void AboutWidget::showAcknowledgements(bool show)
         p->newLine();
         *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
 
-        *(body->paragraph()) << tr("Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
+        *(body->paragraph()) << tr("Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
     } else {
         HTMLParentElement *body = html_doc.body();
 

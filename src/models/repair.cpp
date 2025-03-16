@@ -65,8 +65,20 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("arno", tr("Assembly record No.:"), md->widget(), arno()));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount total:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
 
-    MDDoubleSpinBox *iw = new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition:"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg"));
-    iw->label()->setDefaultText(QApplication::translate("Variables", "New charge:"));
+    MDDoubleSpinBox *iw = new MDDoubleSpinBox("refr_add_am", tr("Refrigerant addition (new):"), md->widget(), -999999999.9, 999999999.9, refrigerantAddition(), QApplication::translate("Units", "kg"));
+    iw->label()->setDefaultText(QApplication::translate("Variables", "New charge (new):"));
+    iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
+    iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+    md->addInputWidget(iw);
+
+    iw = new MDDoubleSpinBox("refr_add_am_recy", tr("Refrigerant addition (recycled):"), md->widget(), -999999999.9, 999999999.9, refrigerantAdditionRecycled(), QApplication::translate("Units", "kg"));
+    iw->label()->setDefaultText(QApplication::translate("Variables", "New charge (recycled):"));
+    iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
+    iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+    md->addInputWidget(iw);
+
+    iw = new MDDoubleSpinBox("refr_add_am_rege", tr("Refrigerant addition (reclaimed):"), md->widget(), -999999999.9, 999999999.9, refrigerantAdditionReclaimed(), QApplication::translate("Units", "kg"));
+    iw->label()->setDefaultText(QApplication::translate("Variables", "New charge (reclaimed):"));
     iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
     iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
     md->addInputWidget(iw);
@@ -106,6 +118,8 @@ public:
         columns << Column("refrigerant", "TEXT");
         columns << Column("refrigerant_amount", "NUMERIC");
         columns << Column("refr_add_am", "NUMERIC");
+        columns << Column("refr_add_am_recy", "NUMERIC");
+        columns << Column("refr_add_am_rege", "NUMERIC");
         columns << Column("refr_reco", "NUMERIC");
         columns << Column("arno", "TEXT");
         columns << Column("date_updated", "TEXT");
@@ -131,7 +145,9 @@ public:
         dict.insert("field", QApplication::translate("Repair", "Field of application"));
         dict.insert("refrigerant", QApplication::translate("Repair", "Refrigerant"));
         dict.insert("refrigerant_amount", QApplication::translate("Repair", "Refrigerant amount"));
-        dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
+        dict.insert("refr_add_am", QApplication::translate("Repair", "Refrigerant addition (new)"));
+        dict.insert("refr_add_am_recy", QApplication::translate("Repair", "Refrigerant addition (recycled)"));
+        dict.insert("refr_add_am_rege", QApplication::translate("Repair", "Refrigerant addition (reclaimed)"));
         dict.insert("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
         dict.insert("inspector_uuid", QApplication::translate("Repair", "Inspector"));
         dict.insert("arno", QApplication::translate("Repair", "Assembly record No."));

@@ -57,6 +57,8 @@ public:
     virtual bool isShowDateUpdatedChecked() const = 0;
     virtual bool isShowOwnerChecked() const = 0;
     virtual bool isShowNotesChecked() const = 0;
+    virtual bool isShowReclaimedChecked() const = 0;
+    virtual bool isShowDisposedOfChecked() const = 0;
     virtual bool isShowLeakedChecked() const = 0;
     virtual bool isShowPlaceOfOperationChecked() const = 0;
     virtual bool isShowBuildingChecked() const = 0;

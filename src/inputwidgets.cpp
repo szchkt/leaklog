@@ -83,6 +83,14 @@ MDAbstractInputWidget::MDAbstractInputWidget(const QString &id, QWidget *widget)
     skip_save = false;
 }
 
+MTLabeledWidget *MDAbstractInputWidget::groupLabel()
+{
+    if (!iw_group_label) {
+        iw_group_label = new MTLabel(QString(), NULL);
+    }
+    return iw_group_label;
+}
+
 MainWindow *MDAbstractInputWidget::parentWindow() const
 {
     QWidget *parent_widget = iw_widget->parentWidget();

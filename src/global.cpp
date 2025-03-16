@@ -468,8 +468,11 @@ bool Global::isOwnerPermissionApplicable(const QString &permission)
 QString Global::circuitRefrigerantAmountQuery(const QString &return_as)
 {
     return "(COALESCE(circuits.refrigerant_amount, 0)"
-            " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0) - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
-            " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.inspection_type = 1)) AS " + return_as;
+           " + (SELECT COALESCE(SUM(inspections.refr_add_am), 0)"
+           " + COALESCE(SUM(inspections.refr_add_am_recy), 0)"
+           " + COALESCE(SUM(inspections.refr_add_am_rege), 0)"
+           " - COALESCE(SUM(inspections.refr_reco), 0) FROM inspections"
+           " WHERE inspections.circuit_uuid = circuits.uuid AND inspections.inspection_type = 1)) AS " + return_as;
 }
 
 QString Global::compareValues(double value1, double value2, double tolerance, const QString &)
@@ -670,7 +673,10 @@ public:
         dict.insert("el_detect", QApplication::translate("VariableNames", "Electronic detection"));
         dict.insert("uv_detect", QApplication::translate("VariableNames", "UV detection"));
         dict.insert("bbl_detect", QApplication::translate("VariableNames", "Bubble detection"));
-        dict.insert("refr_add_am", QApplication::translate("VariableNames", "Refrigerant addition"));
+        dict.insert("refr_add", QApplication::translate("VariableNames", "Refrigerant addition"));
+        dict.insert("refr_add_am", QApplication::translate("VariableNames", "New"));
+        dict.insert("refr_add_am_recy", QApplication::translate("VariableNames", "Recycled"));
+        dict.insert("refr_add_am_rege", QApplication::translate("VariableNames", "Reclaimed"));
         dict.insert("refr_add_per", QApplication::translate("VariableNames", "Annual leakage"));
         dict.insert("refr_reco", QApplication::translate("VariableNames", "Refrigerant recovery"));
         dict.insert("inspector_uuid", QApplication::translate("VariableNames", "Inspector"));
@@ -733,6 +739,8 @@ public:
         dict.insert("uv_detect", "bool");
         dict.insert("bbl_detect", "bool");
         dict.insert("refr_add_am", "float");
+        dict.insert("refr_add_am_recy", "float");
+        dict.insert("refr_add_am_rege", "float");
         dict.insert("refr_add_per", "float");
         dict.insert("refr_reco", "float");
         dict.insert("inspector_uuid", "uuid");

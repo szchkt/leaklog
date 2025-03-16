@@ -77,6 +77,8 @@ public:
     bool isShowDateUpdatedChecked() const;
     bool isShowOwnerChecked() const;
     bool isShowNotesChecked() const;
+    bool isShowReclaimedChecked() const;
+    bool isShowDisposedOfChecked() const;
     bool isShowLeakedChecked() const;
     bool isShowPlaceOfOperationChecked() const;
     bool isShowBuildingChecked() const;

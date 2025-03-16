@@ -4,8 +4,8 @@
 <context>
     <name>AboutWidget</name>
     <message>
-        <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog je sistem kontrole curenja zasnovan na Uredbi EU br. 842/2006. On prati nalaze i parametre direktnih i indirektnih provera curenja koristeći dnevnik. Rezultat je istorija provera, razvoj parametara i njihovo poređenje sa nominalnim i izračunavanje količine i procenta curenja.</translation>
+        <source>Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
+        <translation>Leaklog je sistem kontrole curenja zasnovan na Uredbi EU br. 2024/573. On prati nalaze i parametre direktnih i indirektnih provera curenja koristeći dnevnik. Rezultat je istorija provera, razvoj parametara i njihovo poređenje sa nominalnim i izračunavanje količine i procenta curenja.</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
@@ -3250,8 +3250,8 @@ i ID kompanije</translation>
     </message>
     <message>
         <source>Refrigerant leakage inspection
-in accordance with Regulation (EC)
-No. 842/2006</source>
+in accordance with Regulation (EU)
+No. 2024/573</source>
         <translation>Kontrola curenja u skladu
 sa Uredbom o postupanju sa fluorovanim
 gasovima sa efektom staklene bašte</translation>
@@ -4447,6 +4447,14 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Select circuits - Leaklog</source>
         <translation>Odaberite krugove - Leaklog</translation>
     </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerisano</translation>
+    </message>
+    <message>
+        <source>Disposed of</source>
+        <translation>Otpisano</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4833,7 +4841,7 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     </message>
     <message>
         <source>Reclaimed</source>
-        <translation>Obnovljeno</translation>
+        <translation>Regenerisano</translation>
     </message>
     <message>
         <source>Disposed of</source>
@@ -4888,7 +4896,7 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     </message>
     <message>
         <source>Reclaimed:</source>
-        <translation>Obnovljeno:</translation>
+        <translation>Regenerisano:</translation>
     </message>
     <message>
         <source>Disposed of:</source>
@@ -4936,7 +4944,7 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     </message>
     <message>
         <source>Reclaimed</source>
-        <translation>Obnovljeno</translation>
+        <translation>Regenerisano</translation>
     </message>
     <message>
         <source>Disposed of</source>
@@ -4978,6 +4986,22 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Service company:</source>
         <translation>Servisna kompanija:</translation>
     </message>
+    <message>
+        <source>Purchased (reclaimed):</source>
+        <translation>Kupljeno (regenerisano):</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed):</source>
+        <translation>Prodato (regenerisano):</translation>
+    </message>
+    <message>
+        <source>Purchased (reclaimed)</source>
+        <translation>Kupljeno (regenerisano)</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed)</source>
+        <translation>Prodato (regenerisano)</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5015,10 +5039,6 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Assembly record No.:</source>
         <translation>Broj instalacionog zapisa:</translation>
-    </message>
-    <message>
-        <source>Refrigerant addition:</source>
-        <translation>Dodavanje rashladnog sredstva:</translation>
     </message>
     <message>
         <source>Refrigerant recovery:</source>
@@ -5091,6 +5111,42 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Type:</source>
         <translation>Tip:</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new):</source>
+        <translation>Dodavanje rashladnog sredstva (novo):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled):</source>
+        <translation>Dodavanje rashladnog sredstva (reciklirano):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed):</source>
+        <translation>Dodavanje rashladnog sredstva (regenerisano):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new)</source>
+        <translation>Dodavanje rashladnog sredstva (novo)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled)</source>
+        <translation>Dodavanje rashladnog sredstva (reciklirano)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed)</source>
+        <translation>Dodavanje rashladnog sredstva (regenerisano)</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>Novo</translation>
+    </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Reciklirano</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerisano</translation>
     </message>
 </context>
 <context>
@@ -5219,11 +5275,15 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     </message>
     <message>
         <source>Reclaimed</source>
-        <translation>Obnovljeno</translation>
+        <translation>Regenerisano</translation>
     </message>
     <message>
         <source>Disposed of</source>
         <translation>Otpisano</translation>
+    </message>
+    <message>
+        <source>Reclaimed in store</source>
+        <translation>Regenerisano u skladištu</translation>
     </message>
 </context>
 <context>
@@ -6047,6 +6107,14 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Notes</source>
         <translation>Beleške</translation>
     </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Reciklirano</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerisano</translation>
+    </message>
 </context>
 <context>
     <name>VariableRecord</name>
@@ -6145,8 +6213,24 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
 <context>
     <name>Variables</name>
     <message>
-        <source>New charge:</source>
-        <translation>Novo punjenje:</translation>
+        <source>New charge (new):</source>
+        <translation>Novo punjenje (novo):</translation>
+    </message>
+    <message>
+        <source>New charge (recycled):</source>
+        <translation>Novo punjenje (reciklirano):</translation>
+    </message>
+    <message>
+        <source>New charge (reclaimed):</source>
+        <translation>Novo punjenje (regenerisano):</translation>
+    </message>
+    <message>
+        <source>New charge</source>
+        <translation>Novo punjenje</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition</source>
+        <translation>Dodavanje rashladnog sredstva</translation>
     </message>
 </context>
 <context>

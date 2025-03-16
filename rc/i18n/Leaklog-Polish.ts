@@ -16,8 +16,8 @@
         <translation>O Qt</translation>
     </message>
     <message>
-        <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog jest systemem kontroli wycieków, opartym na rozporządzeniu UE nr. 842/2006. Śledzi ustalenia i parametry kontroli szczelności bezpośrednich i pośrednich za pomocą dziennika. Wynikiem jest historia kontroli  opracowaniej parametrów i ich porównanie z nominalnymi i obliczenia wartości i procentu wycieku.  </translation>
+        <source>Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
+        <translation>Leaklog jest systemem kontroli wycieków, opartym na rozporządzeniu UE nr. 2024/573. Śledzi ustalenia i parametry kontroli szczelności bezpośrednich i pośrednich za pomocą dziennika. Wynikiem jest historia kontroli  opracowaniej parametrów i ich porównanie z nominalnymi i obliczenia wartości i procentu wycieku.  </translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
@@ -3962,11 +3962,11 @@ Aby usunąć styl &quot;%1&quot; naciśnij USUŃ i potwierdź:</translation>
     </message>
     <message>
         <source>Refrigerant leakage inspection
-in accordance with Regulation (EC)
-No. 842/2006</source>
+in accordance with Regulation (EU)
+No. 2024/573</source>
         <translation>Kontrola wycieku czynnika
 w odniesieniu do Regulacji
-Nr 842/2006</translation>
+Nr 2024/573</translation>
     </message>
     <message>
         <source>once a year*</source>
@@ -4442,6 +4442,14 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Select circuits - Leaklog</source>
         <translation>Wybierz obiegi - Leaklog</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Zregenerowany</translation>
+    </message>
+    <message>
+        <source>Disposed of</source>
+        <translation>Zutylizowany</translation>
     </message>
 </context>
 <context>
@@ -4974,6 +4982,22 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Service company:</source>
         <translation>Firma serwisowa:</translation>
     </message>
+    <message>
+        <source>Purchased (reclaimed):</source>
+        <translation>Zakup (zregenerowany):</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed):</source>
+        <translation>Sprzedany (zregenerowany):</translation>
+    </message>
+    <message>
+        <source>Purchased (reclaimed)</source>
+        <translation>Zakup (zregenerowany)</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed)</source>
+        <translation>Sprzedany (zregenerowany)</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5011,10 +5035,6 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Assembly record No.:</source>
         <translation>Książka serwisowa nr.:</translation>
-    </message>
-    <message>
-        <source>Refrigerant addition:</source>
-        <translation>Dopełnienie czynnika:</translation>
     </message>
     <message>
         <source>Refrigerant recovery:</source>
@@ -5087,6 +5107,42 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Type:</source>
         <translation>Typ:</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new):</source>
+        <translation>Dopełnienie czynnika (nowy):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled):</source>
+        <translation>Dopełnienie czynnika (recyklingowi):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed):</source>
+        <translation>Dopełnienie czynnika (zregenerowany):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new)</source>
+        <translation>Dopełnienie czynnika (nowy)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled)</source>
+        <translation>Dopełnienie czynnika (recyklingowi)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed)</source>
+        <translation>Dopełnienie czynnika (zregenerowany)</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>Nowy</translation>
+    </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Recyklingowi</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Zregenerowany</translation>
     </message>
 </context>
 <context>
@@ -5220,6 +5276,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Disposed of</source>
         <translation>Zutylizowane</translation>
+    </message>
+    <message>
+        <source>Reclaimed in store</source>
+        <translation>Zregenerowany w magazynie</translation>
     </message>
 </context>
 <context>
@@ -6043,6 +6103,14 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Notes</source>
         <translation>Notatki</translation>
     </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Recyklingowi</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Zregenerowany</translation>
+    </message>
 </context>
 <context>
     <name>VariableRecord</name>
@@ -6141,8 +6209,24 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
 <context>
     <name>Variables</name>
     <message>
-        <source>New charge:</source>
-        <translation>Nowe napełnienie:</translation>
+        <source>New charge (new):</source>
+        <translation>Nowe napełnienie (nowy):</translation>
+    </message>
+    <message>
+        <source>New charge (recycled):</source>
+        <translation>Nowe napełnienie (recyklingowi):</translation>
+    </message>
+    <message>
+        <source>New charge (reclaimed):</source>
+        <translation>Nowe napełnienie (zregenerowany):</translation>
+    </message>
+    <message>
+        <source>New charge</source>
+        <translation>Nowe napełnienie</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition</source>
+        <translation>Dopełnienie czynnika</translation>
     </message>
 </context>
 <context>

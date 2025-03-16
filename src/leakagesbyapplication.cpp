@@ -34,7 +34,11 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages, const QStri
 
     Q_ASSERT(tables.count() == TableCount);
 
-    QString inspections_qu("SELECT circuits.refrigerant, circuits.field, inspections.refr_add_am, inspections.date"
+    QString inspections_qu("SELECT circuits.refrigerant, circuits.field,"
+                           " COALESCE(inspections.refr_add_am, 0)"
+                           " + COALESCE(inspections.refr_add_am_recy, 0)"
+                           " + COALESCE(inspections.refr_add_am_rege, 0) AS refr_add_am,"
+                           " inspections.date"
                            " FROM inspections LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid"
                            " WHERE inspections.inspection_type <> 1");
     if (!service_company_uuid.isEmpty())
@@ -106,7 +110,7 @@ LeakagesByApplication::LeakagesByApplication(bool weighted_averages, const QStri
 
         nominal_inspection_parents.insert("circuit_uuid", circuit_uuid);
         ListOfVariantMaps nominal_inspections = Inspection::query(nominal_inspection_parents)
-                .listAll("date, refr_add_am, refr_reco", "date ASC");
+                .listAll("date, (COALESCE(refr_add_am, 0) + COALESCE(refr_add_am_recy, 0) + COALESCE(refr_add_am_rege, 0)) AS refr_add_am, refr_reco", "date ASC");
 
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             int nominal_inspection_year = nominal_inspection.value("date", "9999").toString().left(4).toInt();

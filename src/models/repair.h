@@ -59,6 +59,10 @@ public:
     inline void setRefrigerantAmount(double value) { setValue("refrigerant_amount", value); }
     inline double refrigerantAddition() { return doubleValue("refr_add_am"); }
     inline void setRefrigerantAddition(double value) { setValue("refr_add_am", value); }
+    inline double refrigerantAdditionRecycled() { return doubleValue("refr_add_am_recy"); }
+    inline void setRefrigerantAdditionRecycled(double value) { setValue("refr_add_am_recy", value); }
+    inline double refrigerantAdditionReclaimed() { return doubleValue("refr_add_am_rege"); }
+    inline void setRefrigerantAdditionReclaimed(double value) { setValue("refr_add_am_rege", value); }
     inline double refrigerantRecovery() { return doubleValue("refr_reco"); }
     inline void setRefrigerantRecovery(double value) { setValue("refr_reco", value); }
     inline QString arno() { return stringValue("arno"); }

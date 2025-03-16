@@ -94,7 +94,7 @@ void VariableEvaluation::EvaluationContext::init()
 
 QString VariableEvaluation::EvaluationContext::variableName(Variable *var, bool is_nominal) const
 {
-    if (is_nominal && var->id() == "refr_add_am")
+    if (is_nominal && var->id() == "refr_add")
         return QObject::tr("New charge");
 
     return var->name();

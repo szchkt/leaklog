@@ -42,8 +42,10 @@ public:
     inline void setBatchNumber(const QString &value) { setValue("batch_number", value); }
     inline double purchased() { return doubleValue("purchased"); }
     inline double purchasedRecovered() { return doubleValue("purchased_reco"); }
+    inline double purchasedReclaimed() { return doubleValue("purchased_rege"); }
     inline double sold() { return doubleValue("sold"); }
     inline double soldRecovered() { return doubleValue("sold_reco"); }
+    inline double soldReclaimed() { return doubleValue("sold_rege"); }
     inline double regenerated() { return doubleValue("refr_rege"); }
     inline double disposedOf() { return doubleValue("refr_disp"); }
     inline double leaked() { return doubleValue("leaked"); }

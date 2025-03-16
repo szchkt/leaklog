@@ -76,7 +76,9 @@ QString AgendaView::renderHTML(bool)
                            " WHERE circuit_uuid = i.circuit_uuid AND outside_interval = 0 ORDER BY date DESC LIMIT 1)"
                            " FROM inspections AS i WHERE outside_interval = 0 GROUP BY circuit_uuid)) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
-    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date, inspection_type, refr_add_am FROM inspections"
+    circuits_query.addJoin("LEFT JOIN (SELECT circuit_uuid, uuid, date, inspection_type,"
+                           " (COALESCE(refr_add_am, 0) + COALESCE(refr_add_am_recy, 0) + COALESCE(refr_add_am_rege, 0)) AS refr_add_am"
+                           " FROM inspections"
                            " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"
                            " WHERE circuit_uuid = i.circuit_uuid ORDER BY date DESC LIMIT 1)"
                            " FROM inspections AS i GROUP BY circuit_uuid)) AS all_ins"

@@ -269,6 +269,11 @@ public:
         column_names.insert(163, "repair_type");
         column_names.insert(164, "website_url");
         column_names.insert(165, "maps_url");
+        // Version 3
+        column_names.insert(166, "purchased_rege");
+        column_names.insert(167, "sold_rege");
+        column_names.insert(168, "refr_add_am_recy");
+        column_names.insert(169, "refr_add_am_rege");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -292,6 +297,8 @@ QString JournalEntry::columnNameForID(int id, const QString &default_value)
 
 int JournalEntry::versionForColumnID(int column_id)
 {
+    if (column_id >= 166)
+        return 3;
     if (column_id >= 163)
         return 2;
     if (column_id >= 162)
@@ -307,6 +314,11 @@ bool JournalEntry::shouldJournalUpdateOnInsertionForColumnID(int column_id, cons
         case 164:
         case 165:
             return !value.toString().isEmpty();
+        case 166:
+        case 167:
+        case 168:
+        case 169:
+            return value.toDouble() != 0.0;
     }
     return column_id >= 162;
 }

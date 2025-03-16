@@ -83,6 +83,7 @@ QString StoreView::renderHTML(bool)
     out << "<th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
     out << "<th>" << tr("Recovered in store") << "</th>";
+    out << "<th>" << tr("Reclaimed in store") << "</th>";
     bool show_leaked = settings->isShowLeakedChecked();
     if (show_leaked)
         out << "<th>" << tr("Leaked in store") << "</th>";
@@ -100,13 +101,17 @@ QString StoreView::renderHTML(bool)
     bool show_partner = settings->toolBarStack()->isShowBusinessPartnerChecked();
     if (show_partner)
         out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
-    out << "<th rowspan=\"2\">" << QApplication::translate("VariableNames", "New charge") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Added") << "</th>";
+    out << "<th colspan=\"3\">" << tr("Purchased") << "</th>";
+    out << "<th colspan=\"3\">" << tr("Sold") << "</th>";
+    out << "<th colspan=\"3\">" << QApplication::translate("VariableNames", "New charge") << "</th>";
+    out << "<th colspan=\"3\">" << tr("Added") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
+    bool show_reclaimed = settings->isShowReclaimedChecked();
+    if (show_reclaimed)
+        out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
+    bool show_disposed_of = settings->isShowDisposedOfChecked();
+    if (show_disposed_of)
+        out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     if (show_leaked)
         out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     out << "</tr><tr style=\"background-color: #FBFBFB;\">";
@@ -116,8 +121,16 @@ QString StoreView::renderHTML(bool)
     }
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Reclaimed") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
     out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Reclaimed") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Recycled") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Reclaimed") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Recycled") << "</td>";
+    out << "<td>" << QApplication::translate("VariableNames", "Reclaimed") << "</td>";
     if (show_leaked) {
         out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
@@ -130,6 +143,7 @@ QString StoreView::renderHTML(bool)
     QString refrigerant;
     QMap<QString, double> store_map;
     QMap<QString, double> store_recovered_map;
+    QMap<QString, double> store_reclaimed_map;
     QMap<QString, double> store_leaked_map;
     QList<int>::const_iterator y = data.store_years.constEnd();
     while (y != data.store_years.constBegin()) {
@@ -137,15 +151,17 @@ QString StoreView::renderHTML(bool)
         if (*y < settings->toolBarStack()->filterSinceValue()) break;
         store_map = data.store.value(*y);
         store_recovered_map = data.store_recovered.value(*y);
+        store_reclaimed_map = data.store_reclaimed.value(*y);
         store_leaked_map = data.store_leaked.value(*y);
         store_out << "<tr><th rowspan=\"" << store_map.size() << "\">" << *y << "</th>";
         for (int i = 0, n = 0; i < list_refrigerants.count(); ++i) {
             refrigerant = list_refrigerants.at(i);
-            if (store_map.contains(refrigerant) || store_recovered_map.contains(refrigerant) || store_leaked_map.contains(refrigerant)) {
+            if (store_map.contains(refrigerant) || store_recovered_map.contains(refrigerant) || store_reclaimed_map.contains(refrigerant) || store_leaked_map.contains(refrigerant)) {
                 if (n) { store_out << "<tr>"; }
                 store_out << "<td>" << refrigerant << "</td>";
                 store_out << "<td>" << store_map.value(refrigerant) << "</td>";
                 store_out << "<td>" << store_recovered_map.value(refrigerant) << "</td>";
+                store_out << "<td>" << store_reclaimed_map.value(refrigerant) << "</td>";
                 if (show_leaked)
                     store_out << "<td>" << store_leaked_map.value(refrigerant) << "</td>";
                 store_out << "</tr>";
@@ -186,8 +202,18 @@ QString StoreView::renderHTML(bool)
                     if (show_partner)
                         out << "<th>&nbsp;</th><th>&nbsp;</th>";
                     for (int n = 0; n < sum_list->count(); ++n) {
-                        if (!show_leaked && (n == SUMS::LEAKED || n == SUMS::LEAKED_RECO))
-                            continue;
+                        switch (n) {
+                        case SUMS::REFR_REGE:
+                            if (!show_reclaimed) continue;
+                            break;
+                        case SUMS::REFR_DISP:
+                            if (!show_disposed_of) continue;
+                            break;
+                        case SUMS::LEAKED:
+                        case SUMS::LEAKED_RECO:
+                            if (!show_leaked) continue;
+                            break;
+                        }
                         out << "<th>";
                         if (sum_list->at(n)) out << sum_list->at(n);
                         out << "</th>";
@@ -223,8 +249,18 @@ QString StoreView::renderHTML(bool)
                 out << "<td>" << escapeString(i.value().at(3)) << "</td>";
             }
             for (int n = 4; n < i.value().count(); ++n) {
-                if (!show_leaked && (n == ENTRIES::LEAKED || n == ENTRIES::LEAKED_RECO))
-                    continue;
+                switch (n) {
+                case ENTRIES::REFR_REGE:
+                    if (!show_reclaimed) continue;
+                    break;
+                case ENTRIES::REFR_DISP:
+                    if (!show_disposed_of) continue;
+                    break;
+                case ENTRIES::LEAKED:
+                case ENTRIES::LEAKED_RECO:
+                    if (!show_leaked) continue;
+                    break;
+                }
                 out << "<td";
                 if (bf) out << " style=\"font-weight: bold;\"";
                 else if (it) out << " style=\"font-style: italic;\"";

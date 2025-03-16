@@ -27,16 +27,22 @@
 namespace ENTRIES {
     enum ENTRIES {
         LINK = 0, REFRIGERANT, COMPANY, COMPANY_ID,
-        PURCHASED, PURCHASED_RECO, SOLD, SOLD_RECO, NEW_CHARGE,
-        REFR_ADD_AM, REFR_RECO, REFR_REGE, REFR_DISP,
+        PURCHASED, PURCHASED_RECO, PURCHASED_REGE,
+        SOLD, SOLD_RECO, SOLD_REGE,
+        NEW_CHARGE, NEW_CHARGE_RECY, NEW_CHARGE_REGE,
+        REFR_ADD_AM, REFR_ADD_AM_RECY, REFR_ADD_AM_REGE,
+        REFR_RECO, REFR_REGE, REFR_DISP,
         LEAKED, LEAKED_RECO, COUNT
     };
 }
 
 namespace SUMS {
     enum SUMS {
-        PURCHASED = 0, PURCHASED_RECO, SOLD, SOLD_RECO, NEW_CHARGE,
-        REFR_ADD_AM, REFR_RECO, REFR_REGE, REFR_DISP,
+        PURCHASED = 0, PURCHASED_RECO, PURCHASED_REGE,
+        SOLD, SOLD_RECO, SOLD_REGE,
+        NEW_CHARGE, NEW_CHARGE_RECY, NEW_CHARGE_REGE,
+        REFR_ADD_AM, REFR_ADD_AM_RECY, REFR_ADD_AM_REGE,
+        REFR_RECO, REFR_REGE, REFR_DISP,
         LEAKED, LEAKED_RECO, COUNT
     };
 }
@@ -66,6 +72,7 @@ public:
 
     QMap<int, QMap<QString, double> > store; QList<int> store_years;
     QMap<int, QMap<QString, double> > store_recovered; QList<int> store_recovered_years;
+    QMap<int, QMap<QString, double> > store_reclaimed; QList<int> store_reclaimed_years;
     QMap<int, QMap<QString, double> > store_leaked; QList<int> store_leaked_years;
     QMultiMap<QString, QVector<QString> > entries_map;
     QMap<QString, QVector<double> *> sums_map;

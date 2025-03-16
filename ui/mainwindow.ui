@@ -362,6 +362,8 @@
      <addaction name="separator"/>
      <addaction name="actionShow_Notes"/>
      <addaction name="separator"/>
+     <addaction name="actionShow_Reclaimed"/>
+     <addaction name="actionShow_Disposed_of"/>
      <addaction name="actionShow_Leaked"/>
      <addaction name="separator"/>
      <addaction name="actionShow_Place_of_operation"/>
@@ -2255,6 +2257,22 @@
    </property>
    <property name="statusTip">
     <string>Remove service company</string>
+   </property>
+  </action>
+  <action name="actionShow_Reclaimed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Reclaimed</string>
+   </property>
+  </action>
+  <action name="actionShow_Disposed_of">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Disposed of</string>
    </property>
   </action>
  </widget>

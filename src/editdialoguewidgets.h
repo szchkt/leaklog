@@ -44,6 +44,8 @@ public:
 
     virtual QWidget *widget() = 0;
 
+    virtual QWidget *parentWidget() = 0;
+
     void setMaximumRowCount(int rows_in_column) { md_rows_in_column = rows_in_column; }
 
 protected:

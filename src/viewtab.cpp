@@ -526,6 +526,16 @@ bool ViewTab::isShowNotesChecked() const
     return parentWindow()->isShowNotesChecked();
 }
 
+bool ViewTab::isShowReclaimedChecked() const
+{
+    return parentWindow()->isShowReclaimedChecked();
+}
+
+bool ViewTab::isShowDisposedOfChecked() const
+{
+    return parentWindow()->isShowDisposedOfChecked();
+}
+
 bool ViewTab::isShowLeakedChecked() const
 {
     return parentWindow()->isShowLeakedChecked();

@@ -81,8 +81,8 @@ QString InspectionsView::renderHTML(bool)
     if (order_by.isEmpty())
         order_by = "date";
     ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, outside_interval, risks, rmds, arno, inspector_uuid, "
-                                                              "person_uuid, refr_add_am, refr_reco, date_updated, updated_by, "
-                                                              "inspection_type, inspection_type_data, "
+                                                              "person_uuid, refr_add_am, refr_add_am_recy, refr_add_am_rege, refr_reco, "
+                                                              "date_updated, updated_by, inspection_type, inspection_type_data, "
                                                               "(SELECT COUNT(uuid) FROM inspections_files WHERE inspection_uuid = inspections.uuid) AS file_count",
                                                               settings->appendDefaultOrderToColumn(order_by));
     if (year) {
@@ -98,21 +98,26 @@ QString InspectionsView::renderHTML(bool)
     persons_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     MultiMapOfVariantMaps persons(persons_query.mapAll("persons.uuid", "customer_uuid, name, company"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"11\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"12\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";
     out << tr("Inspections and Repairs") << "</a></th></tr>";
-    out << "<tr><th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date\">" << tr("Date") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am\">" << variableNames().value("refr_add_am") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_reco\">" << variableNames().value("refr_reco") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:inspector_uuid\">" << variableNames().value("inspector_uuid") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:person_uuid\">" << variableNames().value("person_uuid") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:risks\">" << variableNames().value("risks") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
-    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:arno\">" << variableNames().value("arno") << "</a></th>";
+    out << "<tr><th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date\">" << tr("Date") << "</a></th>";
+    out << "<th colspan=\"3\">" << variableNames().value("refr_add") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_reco\">" << variableNames().value("refr_reco") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:inspector_uuid\">" << variableNames().value("inspector_uuid") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:person_uuid\">" << variableNames().value("person_uuid") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:risks\">" << variableNames().value("risks") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
+    out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:arno\">" << variableNames().value("arno") << "</a></th>";
     if (show_date_updated)
-        out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
+        out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
     if (show_owner)
-        out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
+        out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:updated_by\">" << tr("Author") << "</a></th>";
+    out << "</tr>";
+    out << "<tr>";
+    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am\">" << variableNames().value("refr_add_am") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am_recy\">" << variableNames().value("refr_add_am_recy") << "</a></th>";
+    out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am_rege\">" << variableNames().value("refr_add_am_rege") << "</a></th>";
     out << "</tr>";
 
     if (most_recent_first)
@@ -129,7 +134,7 @@ QString InspectionsView::renderHTML(bool)
             QString description = Inspection::descriptionForInspectionType(inspection_type, inspections.at(i).value("inspection_type_data").toString());
 
             if (!description.isEmpty()) {
-                out << QString("<tr><td>%1</td><td colspan=\"10\">%2</td></tr>")
+                out << QString("<tr><td>%1</td><td colspan=\"11\">%2</td></tr>")
                     .arg(toolTipLink("customer/circuit/inspection", date,
                                      customer_uuid, circuit_uuid, uuid, ToolTipLinkItemRemove))
                     .arg(escapeString(description));
@@ -157,6 +162,8 @@ QString InspectionsView::renderHTML(bool)
         }
         out << "</td>";
         out << "<td>" << inspections.at(i).value("refr_add_am").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_add_am_recy").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
+        out << "<td>" << inspections.at(i).value("refr_add_am_rege").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         out << "<td>" << inspections.at(i).value("refr_reco").toDouble() << "&nbsp;" << QApplication::translate("Units", "kg") << "</td>";
         auto inspector_uuid = inspections.at(i).value("inspector_uuid").toString();
         auto inspector = inspectors.value(inspector_uuid);
@@ -205,7 +212,7 @@ void InspectionsView::writeCircuitDecommissioningReason(MTTextStream &out, const
 {
     Circuit circuit(circuit_uuid);
     if (circuit.status() != Circuit::Commissioned && !circuit.reasonForDecommissioning().isEmpty()) {
-        out << QString("<tr><td>%1</td><td colspan=\"10\">%2</td></tr>")
+        out << QString("<tr><td>%1</td><td colspan=\"11\">%2</td></tr>")
             .arg(settings->mainWindowSettings().formatDate(circuit.stringValue("decommissioning")))
             .arg(escapeString(circuit.stringValue("decommissioning_reason")));
     }

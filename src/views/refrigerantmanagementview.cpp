@@ -43,14 +43,18 @@ QString RefrigerantManagementView::renderHTML(bool)
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
     bool show_notes = settings->isShowNotesChecked();
+    bool show_reclaimed = settings->isShowReclaimedChecked();
+    bool show_disposed_of = settings->isShowDisposedOfChecked();
     bool show_leaked = settings->isShowLeakedChecked();
 
     QString html; MTTextStream out(&html);
 
     writeServiceCompany(out);
 
+    int column_count = 18;
+
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"16\" style=\"font-size: medium;\">";
+    out << "<tr><th colspan=\"" << column_count << "\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
     if (show_service_company) {
@@ -59,10 +63,12 @@ QString RefrigerantManagementView::renderHTML(bool)
     out << "<th colspan=\"2\">" << QApplication::translate("RefrigerantRecord", "Business partner") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Batch number") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Purchased") << "</th>";
-    out << "<th colspan=\"2\">" << tr("Sold") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
-    out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
+    out << "<th colspan=\"3\">" << tr("Purchased") << "</th>";
+    out << "<th colspan=\"3\">" << tr("Sold") << "</th>";
+    if (show_reclaimed)
+        out << "<th rowspan=\"2\">" << tr("Reclaimed") << "</th>";
+    if (show_disposed_of)
+        out << "<th rowspan=\"2\">" << tr("Disposed of") << "</th>";
     if (show_leaked)
         out << "<th colspan=\"2\">" << tr("Leaked in store") << "</th>";
     if (show_date_updated)
@@ -74,8 +80,10 @@ QString RefrigerantManagementView::renderHTML(bool)
     out << "<th>" << QApplication::translate("Customer", "ID") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Reclaimed") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Reclaimed") << "</th>";
     if (show_leaked) {
         out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
         out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
@@ -108,12 +116,20 @@ QString RefrigerantManagementView::renderHTML(bool)
         }
         for (int n = 1; n < RefrigerantRecord::attributes().count() - 1; ++n) {
             QString key = RefrigerantRecord::attributes().key(n);
-            if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
-                out << "<td>" << query.doubleValue(key) << "</td>";
+            if (key == "refr_rege") {
+                if (show_reclaimed) {
+                    out << "<td>" << query.doubleValue(key) << "</td>";
+                }
+            } else if (key == "refr_disp") {
+                if (show_disposed_of) {
+                    out << "<td>" << query.doubleValue(key) << "</td>";
+                }
             } else if (key.startsWith("leaked")) {
                 if (show_leaked) {
                     out << "<td>" << query.doubleValue(key) << "</td>";
                 }
+            } else if (key.startsWith("purchased") || key.startsWith("sold") || key.startsWith("refr_")) {
+                out << "<td>" << query.doubleValue(key) << "</td>";
             } else {
                 out << "<td>" << MTVariant(query.value(key)) << "</td>";
             }
@@ -126,7 +142,7 @@ QString RefrigerantManagementView::renderHTML(bool)
 
         if (show_notes && !notes.isEmpty()) {
             out << "<tr onclick=\"window.location = 'refrigerantrecord:" << date << "/edit'\" style=\"cursor: pointer;\">";
-            out << "<td colspan=\"14\">" << escapeString(notes, false, true) << "</td></tr>";
+            out << "<td colspan=\"" << column_count - 1 << "\">" << escapeString(notes, false, true) << "</td></tr>";
         }
     }
     out << "</table>";

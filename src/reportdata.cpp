@@ -56,8 +56,10 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
         QString refrigerant = refr_man.value("refrigerant").toString();
         QVariant purchased = refr_man.value("purchased");
         QVariant purchased_reco = refr_man.value("purchased_reco");
+        QVariant purchased_rege = refr_man.value("purchased_rege");
         QVariant sold = refr_man.value("sold");
         QVariant sold_reco = refr_man.value("sold_reco");
+        QVariant sold_rege = refr_man.value("sold_rege");
         QVariant refr_rege = refr_man.value("refr_rege");
         QVariant refr_disp = refr_man.value("refr_disp");
         QVariant leaked = refr_man.value("leaked");
@@ -68,6 +70,7 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
 
         addToStore(store, store_years, year, refrigerant, purchased.toDouble() - sold.toDouble() - leaked.toDouble());
         addToStore(store_recovered, store_recovered_years, year, refrigerant, purchased_reco.toDouble() - sold_reco.toDouble() - refr_rege.toDouble() - refr_disp.toDouble() - leaked_reco.toDouble());
+        addToStore(store_reclaimed, store_reclaimed_years, year, refrigerant, purchased_rege.toDouble() - sold_rege.toDouble() + refr_rege.toDouble());
         addToStore(store_leaked, store_leaked_years, year, refrigerant, leaked.toDouble() + leaked_reco.toDouble());
 
         if (year < since) { continue; }
@@ -79,8 +82,10 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
         entries_list[ENTRIES::REFRIGERANT] = refrigerant;
         entries_list[ENTRIES::PURCHASED] = purchased.toString();
         entries_list[ENTRIES::PURCHASED_RECO] = purchased_reco.toString();
+        entries_list[ENTRIES::PURCHASED_REGE] = purchased_rege.toString();
         entries_list[ENTRIES::SOLD] = sold.toString();
         entries_list[ENTRIES::SOLD_RECO] = sold_reco.toString();
+        entries_list[ENTRIES::SOLD_REGE] = sold_rege.toString();
         entries_list[ENTRIES::REFR_REGE] = refr_rege.toString();
         entries_list[ENTRIES::REFR_DISP] = refr_disp.toString();
         entries_list[ENTRIES::LEAKED] = leaked.toString();
@@ -104,8 +109,10 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
 
         (*sum_list)[SUMS::PURCHASED] += purchased.toDouble();
         (*sum_list)[SUMS::PURCHASED_RECO] += purchased_reco.toDouble();
+        (*sum_list)[SUMS::PURCHASED_REGE] += purchased_rege.toDouble();
         (*sum_list)[SUMS::SOLD] += sold.toDouble();
         (*sum_list)[SUMS::SOLD_RECO] += sold_reco.toDouble();
+        (*sum_list)[SUMS::SOLD_REGE] += sold_rege.toDouble();
         (*sum_list)[SUMS::REFR_REGE] += refr_rege.toDouble();
         (*sum_list)[SUMS::REFR_DISP] += refr_disp.toDouble();
         (*sum_list)[SUMS::LEAKED] += leaked.toDouble();
@@ -115,8 +122,8 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
     MTQuery inspections_query = Inspection::query();
     inspections_query.addJoin("LEFT JOIN customers ON inspections.customer_uuid = customers.uuid");
     inspections_query.addJoin("LEFT JOIN circuits ON inspections.circuit_uuid = circuits.uuid");
-    QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, "
-                     "inspections.inspection_type, inspections.refr_add_am, inspections.refr_reco, "
+    QString fields = "inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid, inspections.date, inspections.inspection_type, "
+                     "inspections.refr_add_am, inspections.refr_add_am_recy, inspections.refr_add_am_rege, inspections.refr_reco, "
                      "customers.company, customers.id AS company_id, circuits.refrigerant";
     if (by_field)
         fields += ", circuits.field";
@@ -130,7 +137,7 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
     repairs_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     fields = "COALESCE(customers.company, repairs.customer) AS company, customers.id AS company_id, "
              "repairs.customer_uuid, repairs.uuid, repairs.date, repairs.repair_type AS inspection_type, "
-             "repairs.refrigerant, repairs.refr_add_am, repairs.refr_reco";
+             "repairs.refrigerant, repairs.refr_add_am, repairs.refr_add_am_recy, repairs.refr_add_am_rege, repairs.refr_reco";
     if (by_field)
         fields += ", repairs.field";
     if (!service_company_uuid.isEmpty())
@@ -141,8 +148,12 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
 
     foreach (const QVariantMap &inspection, inspections) {
         QVariant refr_add_am = inspection.value("refr_add_am");
+        QVariant refr_add_am_recy = inspection.value("refr_add_am_recy");
+        QVariant refr_add_am_rege = inspection.value("refr_add_am_rege");
         QVariant refr_reco = inspection.value("refr_reco");
         if (refr_add_am.toDouble() == 0.0 &&
+            refr_add_am_recy.toDouble() == 0.0 &&
+            refr_add_am_rege.toDouble() == 0.0 &&
             refr_reco.toDouble() == 0.0) continue;
 
         QString uuid = inspection.value("uuid").toString();
@@ -161,22 +172,26 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
         }
 
         addToStore(store, store_years, year, refrigerant, - refr_add_am.toDouble());
-        addToStore(store_recovered, store_recovered_years, year, refrigerant, refr_reco.toDouble());
+        addToStore(store_recovered, store_recovered_years, year, refrigerant, refr_reco.toDouble() - refr_add_am_recy.toDouble());
+        addToStore(store_reclaimed, store_reclaimed_years, year, refrigerant, - refr_add_am_rege.toDouble());
 
         if (year < since) { continue; }
 
         entries_list[ENTRIES::COMPANY] = inspection.value("company").toString();
         entries_list[ENTRIES::COMPANY_ID] = inspection.value("company_id").toString();
 
-        QVariant new_charge = 0.0;
-        if (inspection.value("inspection_type").toInt() == Inspection::NominalInspection) {
-            // Includes Repair::NominalRepair
-            new_charge = refr_add_am;
-            refr_add_am = 0.0;
-        }
+        // Includes Repair::NominalRepair
+        bool is_nominal = inspection.value("inspection_type").toInt() == Inspection::NominalInspection;
 
-        entries_list[ENTRIES::NEW_CHARGE] = new_charge.toString();
-        entries_list[ENTRIES::REFR_ADD_AM] = refr_add_am.toString();
+        if (is_nominal) {
+            entries_list[ENTRIES::NEW_CHARGE] = refr_add_am.toString();
+            entries_list[ENTRIES::NEW_CHARGE_RECY] = refr_add_am_recy.toString();
+            entries_list[ENTRIES::NEW_CHARGE_REGE] = refr_add_am_rege.toString();
+        } else {
+            entries_list[ENTRIES::REFR_ADD_AM] = refr_add_am.toString();
+            entries_list[ENTRIES::REFR_ADD_AM_RECY] = refr_add_am_recy.toString();
+            entries_list[ENTRIES::REFR_ADD_AM_REGE] = refr_add_am_rege.toString();
+        }
         entries_list[ENTRIES::REFR_RECO] = refr_reco.toString();
 
         if (by_field) {
@@ -201,8 +216,15 @@ ReportData::ReportData(const QString &service_company_uuid, int since, const QSt
             sum_list = sums_map.value(year_refrigerant);
         }
 
-        (*sum_list)[SUMS::NEW_CHARGE] += new_charge.toDouble();
-        (*sum_list)[SUMS::REFR_ADD_AM] += refr_add_am.toDouble();
+        if (is_nominal) {
+            (*sum_list)[SUMS::NEW_CHARGE] += refr_add_am.toDouble();
+            (*sum_list)[SUMS::NEW_CHARGE_RECY] += refr_add_am_recy.toDouble();
+            (*sum_list)[SUMS::NEW_CHARGE_REGE] += refr_add_am_rege.toDouble();
+        } else {
+            (*sum_list)[SUMS::REFR_ADD_AM] += refr_add_am.toDouble();
+            (*sum_list)[SUMS::REFR_ADD_AM_RECY] += refr_add_am_recy.toDouble();
+            (*sum_list)[SUMS::REFR_ADD_AM_REGE] += refr_add_am_rege.toDouble();
+        }
         (*sum_list)[SUMS::REFR_RECO] += refr_reco.toDouble();
     }
 }

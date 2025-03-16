@@ -4,8 +4,8 @@
 <context>
     <name>AboutWidget</name>
     <message>
-        <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog je systém kontroly únikov založený na nariadení EU č. 842/2006. Usporiadava nálezy a parametre priamych a nepriamych kontrol únikov v záznamníku. Výsledkom je história kontrol, vývoj parametrov a ich porovnanie s nominálnymi a výpočet množstva a percenta úniku.</translation>
+        <source>Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
+        <translation>Leaklog je systém kontroly únikov založený na nariadení EÚ č. 2024/573. Usporiadava nálezy a parametre priamych a nepriamych kontrol únikov v záznamníku. Výsledkom je história kontrol, vývoj parametrov a ich porovnanie s nominálnymi a výpočet množstva a percenta úniku.</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
@@ -3250,10 +3250,10 @@ osoby a IČO firmy</translation>
     </message>
     <message>
         <source>Refrigerant leakage inspection
-in accordance with Regulation (EC)
-No. 842/2006</source>
+in accordance with Regulation (EU)
+No. 2024/573</source>
         <translation>Kontrola úniku chladiva podľa
-Nariadenia (ES) č. 842/2006 a zákona
+Nariadenia (EÚ) č. 2024/573 a zákona
 č. 286/2009 Z.z. a vyhl. 314/2009 Z.z.</translation>
     </message>
     <message>
@@ -4447,6 +4447,14 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Select circuits - Leaklog</source>
         <translation>Vybrať okruhy - Leaklog</translation>
     </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerované</translation>
+    </message>
+    <message>
+        <source>Disposed of</source>
+        <translation>Zničené</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4979,6 +4987,22 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Service company:</source>
         <translation>Servisná organizácia:</translation>
     </message>
+    <message>
+        <source>Purchased (reclaimed):</source>
+        <translation>Kúpené (regenerované):</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed):</source>
+        <translation>Predané (regenerované):</translation>
+    </message>
+    <message>
+        <source>Purchased (reclaimed)</source>
+        <translation>Kúpené (regenerované)</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed)</source>
+        <translation>Predané (regenerované)</translation>
+    </message>
 </context>
 <context>
     <name>RemoveDialogue</name>
@@ -5016,10 +5040,6 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Assembly record No.:</source>
         <translation>Číslo ML:</translation>
-    </message>
-    <message>
-        <source>Refrigerant addition:</source>
-        <translation>Doplnenie chladiva:</translation>
     </message>
     <message>
         <source>Refrigerant recovery:</source>
@@ -5092,6 +5112,42 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Type:</source>
         <translation>Typ:</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new):</source>
+        <translation>Doplnenie chladiva (nové):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled):</source>
+        <translation>Doplnenie chladiva (recyklované):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed):</source>
+        <translation>Doplnenie chladiva (regenerované):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new)</source>
+        <translation>Doplnenie chladiva (nové)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled)</source>
+        <translation>Doplnenie chladiva (recyklované)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed)</source>
+        <translation>Doplnenie chladiva (regenerované)</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>Nové</translation>
+    </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Recyklované</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerované</translation>
     </message>
 </context>
 <context>
@@ -5225,6 +5281,10 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Disposed of</source>
         <translation>Zničené</translation>
+    </message>
+    <message>
+        <source>Reclaimed in store</source>
+        <translation>Regenerované na sklade</translation>
     </message>
 </context>
 <context>
@@ -6048,6 +6108,14 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Recyklované</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerované</translation>
+    </message>
 </context>
 <context>
     <name>VariableRecord</name>
@@ -6146,8 +6214,24 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
 <context>
     <name>Variables</name>
     <message>
-        <source>New charge:</source>
-        <translation>Nová náplň:</translation>
+        <source>New charge (new):</source>
+        <translation>Nová náplň (nové):</translation>
+    </message>
+    <message>
+        <source>New charge (recycled):</source>
+        <translation>Nová náplň (recyklované):</translation>
+    </message>
+    <message>
+        <source>New charge (reclaimed):</source>
+        <translation>Nová náplň (regenerované):</translation>
+    </message>
+    <message>
+        <source>New charge</source>
+        <translation>Nová náplň</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition</source>
+        <translation>Doplnenie chladiva</translation>
     </message>
 </context>
 <context>

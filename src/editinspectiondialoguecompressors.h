@@ -65,6 +65,8 @@ public:
 
     QWidget *widget() { return this; }
 
+    QWidget *parentWidget() { return QWidget::parentWidget(); }
+
 private:
     InspectionCompressor inspection_compressor;
 };

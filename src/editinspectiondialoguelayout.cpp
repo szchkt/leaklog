@@ -62,6 +62,7 @@ void EditInspectionDialogueLayout::layout()
         addWidget(tree, 0, 2 * c, 1, 2);
     }
 
+    QString refr_add_id = Global::createUUIDv5(DBInfo::databaseUUID(), "refr_add");
     QVector<QList<QWidget *> > widgets(num_cols);
 
     for (int i = 0; i < md_inputwidgets->count(); ++i) {
@@ -75,12 +76,17 @@ void EditInspectionDialogueLayout::layout()
             item->setData(0, UniformRowColourTreeWidget::BackgroundColourRole, QColor(widget->colour()));
 
         QString group_id = widget->groupId();
-        int tree = !group_id.isEmpty();
+        int tree = !group_id.isEmpty() && widget->groupId() != refr_add_id;
 
-        if (tree) {
+        if (!group_id.isEmpty()) {
             QTreeWidgetItem *group = group_items.value(group_id);
             if (!group) {
-                group = new QTreeWidgetItem(trees.at(1), QStringList() << groups->value(group_id));
+                if (widget->hasGroupLabel()) {
+                    group = new QTreeWidgetItem(trees.at(tree));
+                    trees.at(tree)->setItemWidget(group, 0, widget->groupLabel()->widget());
+                } else {
+                    group = new QTreeWidgetItem(trees.at(tree), QStringList() << groups->value(group_id));
+                }
                 group->setExpanded(true);
                 group->setFirstColumnSpanned(true);
                 group_items.insert(group_id, group);

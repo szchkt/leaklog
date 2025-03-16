@@ -267,6 +267,8 @@ MainWindow::MainWindow():
     QObject::connect(actionShow_date_updated, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_owner, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Notes, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_Reclaimed, SIGNAL(triggered()), this, SLOT(refreshView()));
+    QObject::connect(actionShow_Disposed_of, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Leaked, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Place_of_operation, SIGNAL(triggered()), this, SLOT(refreshView()));
     QObject::connect(actionShow_Building, SIGNAL(triggered()), this, SLOT(refreshView()));
@@ -832,7 +834,7 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
     painter.drawText(m + x + (w / 3), y + title_h + (h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("person").toString());
     font.setBold(false); painter.setFont(font);
 
-    drawText(painter, m + x + (w / 2), m + y, w / 2 - dm, title_h - dm, Qt::AlignCenter, tr("Refrigerant leakage inspection\nin accordance with Regulation (EC)\nNo. 842/2006"));
+    drawText(painter, m + x + (w / 2), m + y, w / 2 - dm, title_h - dm, Qt::AlignCenter, tr("Refrigerant leakage inspection\nin accordance with Regulation (EU)\nNo. 2024/573"));
 
     painter.drawText(m + x, y + title_h + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter,
                      detailed ? attributes.value("circuit_id").toString()
@@ -1413,6 +1415,8 @@ void MainWindow::loadSettings()
     actionShow_date_updated->setChecked(settings.value("columns/date_updated", false).toBool());
     actionShow_owner->setChecked(settings.value("columns/owner", false).toBool());
     actionShow_Notes->setChecked(settings.value("columns/notes", true).toBool());
+    actionShow_Reclaimed->setChecked(settings.value("columns/reclaimed", false).toBool());
+    actionShow_Disposed_of->setChecked(settings.value("columns/disposed_of", false).toBool());
     actionShow_Leaked->setChecked(settings.value("columns/leaked", false).toBool());
     actionShow_Place_of_operation->setChecked(settings.value("columns/operation", false).toBool());
     actionShow_Building->setChecked(settings.value("columns/building", false).toBool());
@@ -1452,6 +1456,8 @@ void MainWindow::saveSettings()
     settings.setValue("columns/date_updated", actionShow_date_updated->isChecked());
     settings.setValue("columns/owner", actionShow_owner->isChecked());
     settings.setValue("columns/notes", actionShow_Notes->isChecked());
+    settings.setValue("columns/reclaimed", actionShow_Reclaimed->isChecked());
+    settings.setValue("columns/disposed_of", actionShow_Disposed_of->isChecked());
     settings.setValue("columns/leaked", actionShow_Leaked->isChecked());
     settings.setValue("columns/operation", actionShow_Place_of_operation->isChecked());
     settings.setValue("columns/building", actionShow_Building->isChecked());

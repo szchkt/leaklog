@@ -318,8 +318,8 @@ void MainWindow::initTables(bool transaction)
 { // (SCOPE)
     bool update_tables = false;
     int tables_version = DBInfo::valueForKey("tables_version").toInt();
-    if (tables_version < 2) {
-        DBInfo::setValueForKey("tables_version", "2");
+    if (tables_version < 3) {
+        DBInfo::setValueForKey("tables_version", "3");
         update_tables = true;
     }
 
@@ -328,8 +328,8 @@ void MainWindow::initTables(bool transaction)
         leakages.setName(tr("Leakages"));
         leakages.setPosition(-90);
         leakages.setHighlightNominal(false);
-        leakages.setVariables("vis_aur_chk;dir_leak_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am;inspector_uuid;person_uuid;risks;rmds;arno");
-        leakages.setSummedVariables("vis_aur_chk;refr_add_am;refr_add_per;refr_reco;oil_leak_am");
+        leakages.setVariables("vis_aur_chk;dir_leak_chk;refr_add;refr_add_per;refr_reco;oil_leak_am;inspector_uuid;person_uuid;risks;rmds;arno");
+        leakages.setSummedVariables("vis_aur_chk;refr_add;refr_add_per;refr_reco;oil_leak_am");
         leakages.setScope(Variable::Inspection);
         leakages.save();
     }
@@ -1119,6 +1119,8 @@ bool MainWindow::canRemoveCircuit(const QString &customer_uuid, const QString &c
     MTSqlQuery query;
     query.prepare(QString("SELECT date FROM inspections"
                           " WHERE %1 AND ((refr_add_am IS NOT NULL AND CAST(refr_add_am AS NUMERIC) <> 0)"
+                          " OR (refr_add_am_recy IS NOT NULL AND CAST(refr_add_am_recy AS NUMERIC) <> 0)"
+                          " OR (refr_add_am_rege IS NOT NULL AND CAST(refr_add_am_rege AS NUMERIC) <> 0)"
                           " OR (refr_reco IS NOT NULL AND CAST(refr_reco AS NUMERIC) <> 0)) LIMIT 1")
                   .arg(circuit_uuid.isEmpty() ? "customer_uuid = :customer_uuid" : "customer_uuid = :customer_uuid AND circuit_uuid = :circuit_uuid"));
     query.bindValue(":customer_uuid", customer_uuid);

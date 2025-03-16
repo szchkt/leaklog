@@ -162,9 +162,12 @@ void Variables::initVariables()
     initSubvariable("dir_leak_chk", Variable::Inspection, "green", "uv_detect", "", "", false, 0.0);
     initSubvariable("dir_leak_chk", Variable::Inspection, "green", "bbl_detect", "", "", false, 0.0);
 
-    initVariable("refr_add_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
+    initVariable("refr_add", Variable::Inspection, "yellow");
+    initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am", QApplication::translate("Units", "kg"), "", false, 0.0);
+    initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am_recy", QApplication::translate("Units", "kg"), "", false, 0.0);
+    initSubvariable("refr_add", Variable::Inspection, "yellow", "refr_add_am_rege", QApplication::translate("Units", "kg"), "", false, 0.0);
     initVariable("refr_reco", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "yellow");
-    initVariable("refr_add_per", Variable::Inspection, QApplication::translate("Units", "%"), "100*(sum(refr_add_am)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
+    initVariable("refr_add_per", Variable::Inspection, QApplication::translate("Units", "%"), "100*(sum(refr_add_am)+sum(refr_add_am_recy)+sum(refr_add_am_rege)-sum(refr_reco))/refrigerant_amount", false, 0.0, "yellow");
 
     initVariable("oil_leak_am", Variable::Inspection, QApplication::translate("Units", "kg"), "", false, 0.0, "");
 
@@ -292,10 +295,11 @@ void Variables::initEditDialogueWidgets(EditDialogueWidgets *md, const QVariantM
             iw = new MDNullableDoubleSpinBox(var_id, var_name, md->widget(), -999999999.9, 999999999.9,
                                              attributes.value(var_id), unit(), col_bg);
             if (var_id == "refr_add_am") {
-                iw->label()->setDefaultText(QApplication::translate("Variables", "New charge:"));
+                iw->groupLabel()->setDefaultText(QApplication::translate("Variables", "New charge"));
+                iw->groupLabel()->setAlternativeText(QApplication::translate("Variables", "Refrigerant addition"));
                 if (cb_nominal) {
-                    iw->label()->toggleAlternativeText(cb_nominal->currentIndex());
-                    iw->label()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
+                    iw->groupLabel()->toggleAlternativeText(cb_nominal->currentIndex());
+                    iw->groupLabel()->addConnection(cb_nominal, SIGNAL(toggled(bool)), SLOT(toggleAlternativeText(bool)));
                 }
             }
             md->addInputWidget(iw);

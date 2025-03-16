@@ -133,6 +133,8 @@ public:
 
     inline QString id() const { return iw_id; }
     inline void setId(const QString &id) { iw_id = id; }
+    inline bool hasGroupLabel() const { return iw_group_label != NULL; }
+    MTLabeledWidget *groupLabel();
     inline MTLabeledWidget *label() const { return iw_label; }
     inline QWidget *widget() const { return iw_widget; }
 
@@ -164,6 +166,7 @@ private:
     int row_span;
     bool skip_save;
     QString iw_id;
+    MTLabeledWidget *iw_group_label;
     QWidget *iw_widget;
     QString iw_group_id;
     QString iw_colour;

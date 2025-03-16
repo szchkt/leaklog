@@ -71,7 +71,7 @@ QString RepairsView::renderHTML(bool)
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
     out << "<tr><th colspan=\"15\" style=\"font-size: medium;\">" << tr("Repairs") << "</th></tr><tr>";
     auto th = [&out](const QString &key, const QString &title) {
-        out << "<th><a href=\"allrepairs:/order_by:" << key << "\">" << title << "</a></th>";
+        out << "<th rowspan=\"2\"><a href=\"allrepairs:/order_by:" << key << "\">" << title << "</a></th>";
     };
     th("date", QApplication::translate("Repair", "Date"));
     if (show_service_company)
@@ -81,7 +81,7 @@ QString RepairsView::renderHTML(bool)
     th("field", QApplication::translate("Repair", "Field of application"));
     th("refrigerant", QApplication::translate("Repair", "Refrigerant"));
     th("refrigerant_amount", QApplication::translate("Repair", "Refrigerant amount"));
-    th("refr_add_am", QApplication::translate("Repair", "Refrigerant addition"));
+    out << "<th colspan=\"3\">" << QApplication::translate("Repair", "Refrigerant addition") << "</th>";
     th("refr_reco", QApplication::translate("Repair", "Refrigerant recovery"));
     th("inspector_uuid", QApplication::translate("Repair", "Inspector"));
     th("arno", QApplication::translate("Repair", "Assembly record No."));
@@ -89,6 +89,11 @@ QString RepairsView::renderHTML(bool)
         th("date_updated", tr("Date Updated"));
     if (show_owner)
         th("updated_by", tr("Author"));
+    out << "</tr>";
+    out << "<tr>";
+    out << "<th><a href=\"allrepairs:/order_by:refr_add_am\">" << QApplication::translate("Repair", "New") << "</a></th>";
+    out << "<th><a href=\"allrepairs:/order_by:refr_add_am_recy\">" << QApplication::translate("Repair", "Recycled") << "</a></th>";
+    out << "<th><a href=\"allrepairs:/order_by:refr_add_am_rege\">" << QApplication::translate("Repair", "Reclaimed") << "</a></th>";
     out << "</tr>";
     MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
     while (repairs.next()) {
@@ -113,6 +118,8 @@ QString RepairsView::renderHTML(bool)
         out << "<td>" << escapeString(repairs.stringValue("refrigerant")) << "</td>";
         out << "<td>" << repairs.doubleValue("refrigerant_amount") << "</td>";
         out << "<td>" << repairs.doubleValue("refr_add_am") << "</td>";
+        out << "<td>" << repairs.doubleValue("refr_add_am_recy") << "</td>";
+        out << "<td>" << repairs.doubleValue("refr_add_am_rege") << "</td>";
         out << "<td>" << repairs.doubleValue("refr_reco") << "</td>";
         out << "<td>" << escapeString(inspectors.value(repairs.stringValue("inspector_uuid")).value("person").toString()) << "</td>";
         out << "<td>" << escapeString(repairs.stringValue("arno")) << "</td>";

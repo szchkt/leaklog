@@ -21,6 +21,7 @@
 
 #include "inputwidgets.h"
 #include "editdialoguewidgets.h"
+#include "mainwindow.h"
 #include "partnerwidgets.h"
 #include "global.h"
 
@@ -56,10 +57,16 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("batch_number", tr("Batch number:"), md->widget(), batchNumber()));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, purchased(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("purchased_reco", tr("Purchased (recovered):"), md->widget(), 0.0, 999999999.9, purchasedRecovered(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("purchased_rege", tr("Purchased (reclaimed):"), md->widget(), 0.0, 999999999.9, purchasedReclaimed(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("sold", tr("Sold (new):"), md->widget(), 0.0, 999999999.9, sold(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDDoubleSpinBox("sold_reco", tr("Sold (recovered):"), md->widget(), 0.0, 999999999.9, soldRecovered(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, regenerated(), QApplication::translate("Units", "kg")));
-    md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, disposedOf(), QApplication::translate("Units", "kg")));
+    md->addInputWidget(new MDDoubleSpinBox("sold_rege", tr("Sold (reclaimed):"), md->widget(), 0.0, 999999999.9, soldReclaimed(), QApplication::translate("Units", "kg")));
+    if (regenerated() != 0.0 || static_cast<MainWindow *>(md->parentWidget())->isShowReclaimedChecked()) {
+        md->addInputWidget(new MDDoubleSpinBox("refr_rege", tr("Reclaimed:"), md->widget(), 0.0, 999999999.9, regenerated(), QApplication::translate("Units", "kg")));
+    }
+    if (disposedOf() != 0.0 || static_cast<MainWindow *>(md->parentWidget())->isShowDisposedOfChecked()) {
+        md->addInputWidget(new MDDoubleSpinBox("refr_disp", tr("Disposed of:"), md->widget(), 0.0, 999999999.9, disposedOf(), QApplication::translate("Units", "kg")));
+    }
     if (leaked() != 0.0 || leakedRecovered() != 0.0) {
         md->addInputWidget(new MDDoubleSpinBox("leaked", tr("Leaked (new):"), md->widget(), 0.0, 999999999.9, leaked(), QApplication::translate("Units", "kg")));
         md->addInputWidget(new MDDoubleSpinBox("leaked_reco", tr("Leaked (recovered):"), md->widget(), 0.0, 999999999.9, leakedRecovered(), QApplication::translate("Units", "kg")));
@@ -93,8 +100,10 @@ public:
         columns << Column("batch_number", "TEXT");
         columns << Column("purchased", "NUMERIC");
         columns << Column("purchased_reco", "NUMERIC");
+        columns << Column("purchased_rege", "NUMERIC");
         columns << Column("sold", "NUMERIC");
         columns << Column("sold_reco", "NUMERIC");
+        columns << Column("sold_rege", "NUMERIC");
         columns << Column("refr_rege", "NUMERIC");
         columns << Column("refr_disp", "NUMERIC");
         columns << Column("leaked", "NUMERIC");
@@ -124,8 +133,10 @@ public:
         dict.insert("batch_number", QApplication::translate("RefrigerantRecord", "Batch number"));
         dict.insert("purchased", QApplication::translate("RefrigerantRecord", "Purchased (new)"));
         dict.insert("purchased_reco", QApplication::translate("RefrigerantRecord", "Purchased (recovered)"));
+        dict.insert("purchased_rege", QApplication::translate("RefrigerantRecord", "Purchased (reclaimed)"));
         dict.insert("sold", QApplication::translate("RefrigerantRecord", "Sold (new)"));
         dict.insert("sold_reco", QApplication::translate("RefrigerantRecord", "Sold (recovered)"));
+        dict.insert("sold_rege", QApplication::translate("RefrigerantRecord", "Sold (reclaimed)"));
         dict.insert("refr_rege", QApplication::translate("RefrigerantRecord", "Reclaimed"));
         dict.insert("refr_disp", QApplication::translate("RefrigerantRecord", "Disposed of"));
         dict.insert("leaked", QApplication::translate("RefrigerantRecord", "Leaked (new)"));

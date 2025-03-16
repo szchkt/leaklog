@@ -68,6 +68,8 @@ public:
     inline bool isShowDateUpdatedChecked() const { return actionShow_date_updated->isChecked(); }
     inline bool isShowOwnerChecked() const { return actionShow_owner->isChecked(); }
     inline bool isShowNotesChecked() const { return actionShow_Notes->isChecked(); }
+    inline bool isShowReclaimedChecked() const { return actionShow_Reclaimed->isChecked(); }
+    inline bool isShowDisposedOfChecked() const { return actionShow_Disposed_of->isChecked(); }
     inline bool isShowLeakedChecked() const { return actionShow_Leaked->isChecked(); }
     inline bool isShowPlaceOfOperationChecked() const { return actionShow_Place_of_operation->isChecked(); }
     inline bool isShowBuildingChecked() const { return actionShow_Building->isChecked(); }
