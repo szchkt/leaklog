@@ -20,8 +20,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define LEAKLOG_VERSION "2.3.0"
-#define F_LEAKLOG_VERSION 2.0300
+#define LEAKLOG_VERSION "2.3.1"
+#define F_LEAKLOG_VERSION 2.0301
 #define LEAKLOG_PREVIEW_VERSION 0
 #define DB_VERSION "2.1"
 #define F_DB_VERSION 2.1
