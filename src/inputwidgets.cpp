@@ -78,6 +78,7 @@ void MTLabeledWidget::toggleAlternativeText(bool alt)
 MDAbstractInputWidget::MDAbstractInputWidget(const QString &id, QWidget *widget)
 {
     iw_id = id;
+    iw_group_label = NULL;
     iw_widget = widget;
     row_span = 1;
     skip_save = false;
