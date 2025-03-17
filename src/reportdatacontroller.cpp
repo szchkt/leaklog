@@ -150,8 +150,10 @@ void ReportDataController::reportData(int year)
     MTDictionary refr_man_fieldnames;
     refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED), "purchased");
     refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED_RECO), "purchased_reco");
+    refr_man_fieldnames.insert(QString::number(SUMS::PURCHASED_REGE), "purchased_rege");
     refr_man_fieldnames.insert(QString::number(SUMS::SOLD), "sold");
     refr_man_fieldnames.insert(QString::number(SUMS::SOLD_RECO), "sold_reco");
+    refr_man_fieldnames.insert(QString::number(SUMS::SOLD_REGE), "sold_rege");
     refr_man_fieldnames.insert(QString::number(SUMS::REFR_REGE), "refr_rege");
     refr_man_fieldnames.insert(QString::number(SUMS::REFR_DISP), "refr_disp");
     refr_man_fieldnames.insert(QString::number(SUMS::LEAKED), "leaked");
@@ -159,7 +161,11 @@ void ReportDataController::reportData(int year)
 
     MTDictionary refr_use_fieldnames;
     refr_use_fieldnames.insert(QString::number(SUMS::NEW_CHARGE), "new_charge");
+    refr_use_fieldnames.insert(QString::number(SUMS::NEW_CHARGE_RECY), "new_charge_recy");
+    refr_use_fieldnames.insert(QString::number(SUMS::NEW_CHARGE_REGE), "new_charge_rege");
     refr_use_fieldnames.insert(QString::number(SUMS::REFR_ADD_AM), "refr_add_am");
+    refr_use_fieldnames.insert(QString::number(SUMS::REFR_ADD_AM_RECY), "refr_add_am_recy");
+    refr_use_fieldnames.insert(QString::number(SUMS::REFR_ADD_AM_REGE), "refr_add_am_rege");
     refr_use_fieldnames.insert(QString::number(SUMS::REFR_RECO), "refr_reco");
 
     if (sums_iterator != data.sums_map.constEnd()) {
