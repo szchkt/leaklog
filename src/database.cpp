@@ -1329,6 +1329,7 @@ void MainWindow::editRefrigerantRecord(const QString &uuid)
     if (md.exec() == QDialog::Accepted) {
         if (record.purchased() <= 0.0 && record.purchasedRecovered() <= 0.0 &&
             record.sold() <= 0.0 && record.soldRecovered() <= 0.0 &&
+            record.purchasedReclaimed() <= 0.0 && record.soldReclaimed() <= 0.0 &&
             record.regenerated() <= 0.0 && record.disposedOf() <= 0.0 &&
             record.leaked() <= 0.0 && record.leakedRecovered() <= 0.0) {
             record.remove();
