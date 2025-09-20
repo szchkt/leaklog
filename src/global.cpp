@@ -1016,6 +1016,7 @@ double Global::refrigerantGWP(const QString &refrigerant)
         GWP.insert("R1234ze", 7);
         GWP.insert("R124", 620);
         GWP.insert("R125", 3500);
+        GWP.insert("R1270", 2);
         GWP.insert("R134", 1100);
         GWP.insert("R134a", 1430);
         GWP.insert("R141b", 700);
@@ -1140,6 +1141,7 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         << "R123"
         << "R124"
         << "R125"
+        << "R1270"
         << "R134"
         << "R134a"
         << "R141b"
