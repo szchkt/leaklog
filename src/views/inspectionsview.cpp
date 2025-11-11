@@ -55,6 +55,7 @@ QString InspectionsView::renderHTML(bool)
     QString circuit_uuid = settings->selectedCircuitUUID();
     bool show_date_updated = settings->isShowDateUpdatedChecked();
     bool show_owner = settings->isShowOwnerChecked();
+    bool show_notes = settings->isShowNotesChecked();
     bool most_recent_first = settings->isShowMostRecentFirstChecked();
 
     QString html; MTTextStream out(&html);
@@ -80,7 +81,7 @@ QString InspectionsView::renderHTML(bool)
     QString order_by = settings->mainWindowSettings().orderByForView((LinkParser::Customer << Link::MaxViewBits) | LinkParser::Circuit);
     if (order_by.isEmpty())
         order_by = "date";
-    ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, outside_interval, risks, rmds, arno, inspector_uuid, "
+    ListOfVariantMaps inspections = inspections_query.listAll("uuid, date, outside_interval, risks, rmds, notes, arno, inspector_uuid, "
                                                               "person_uuid, refr_add_am, refr_add_am_recy, refr_add_am_rege, refr_reco, "
                                                               "date_updated, updated_by, inspection_type, inspection_type_data, "
                                                               "(SELECT COUNT(uuid) FROM inspections_files WHERE inspection_uuid = inspections.uuid) AS file_count",
@@ -98,7 +99,7 @@ QString InspectionsView::renderHTML(bool)
     persons_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     MultiMapOfVariantMaps persons(persons_query.mapAll("persons.uuid", "customer_uuid, name, company"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"12\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
+    out << "<tr><th colspan=\"13\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";
     out << tr("Inspections and Repairs") << "</a></th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date\">" << tr("Date") << "</a></th>";
@@ -108,6 +109,8 @@ QString InspectionsView::renderHTML(bool)
     out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:person_uuid\">" << variableNames().value("person_uuid") << "</a></th>";
     out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:risks\">" << variableNames().value("risks") << "</a></th>";
     out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:rmds\">" << variableNames().value("rmds") << "</a></th>";
+    if (show_notes)
+        out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:notes\">" << variableNames().value("notes") << "</a></th>";
     out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:arno\">" << variableNames().value("arno") << "</a></th>";
     if (show_date_updated)
         out << "<th rowspan=\"2\"><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:date_updated\">" << tr("Date Updated") << "</a></th>";
@@ -191,6 +194,15 @@ QString InspectionsView::renderHTML(bool)
             out << "')\" onmouseout=\"UnTip()\">" << ellipsis(rmds, true) << "</td>";
         } else {
             out << "<td></td>";
+        }
+        if (show_notes) {
+            QString notes = inspections.at(i).value("notes").toString();
+            if (!notes.isEmpty()) {
+                out << "<td class=\"wrap\" onmouseover=\"Tip('" << escapeString(escapeString(notes), true, true);
+                out << "')\" onmouseout=\"UnTip()\">" << ellipsis(notes, true) << "</td>";
+            } else {
+                out << "<td></td>";
+            }
         }
         out << "<td>" << MTVariant(inspections.at(i).value("arno")) << "</td>";
         if (show_date_updated)
