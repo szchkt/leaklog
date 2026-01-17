@@ -91,28 +91,32 @@ QString OperatorReportView::renderHTML(bool)
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
-    out << "<tr><th colspan=\"" << (8 + show_circuit_name + CO2_equivalent) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
+    out << "<tr><th colspan=\"" << (10 + show_circuit_name + CO2_equivalent) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
-    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "ID") << "</th>";
+    out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "ID") << "</th>";
     if (show_circuit_name) {
-        out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Name") << "</th>";
+        out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "Name") << "</th>";
     }
-    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
+    out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "Refrigerant") << "</th>";
     if (CO2_equivalent)
-        out << "<th rowspan=\"2\">" << QApplication::translate("MainWindow", "GWP") << "</th>";
-    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
+        out << "<th rowspan=\"3\">" << QApplication::translate("MainWindow", "GWP") << "</th>";
+    out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "Field of application") << "</th>";
     QString unit = CO2_equivalent ? QApplication::translate("Units", "t of CO\342\202\202 equivalent") : QApplication::translate("Units", "kg");
-    out << "<th colspan=\"4\">" << QString("%1 (%2)").arg(QApplication::translate("Circuit", "Refrigerant amount")).arg(unit) << "</th>";
-    out << "<th rowspan=\"2\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
+    out << "<th colspan=\"6\">" << QString("%1 (%2)").arg(QApplication::translate("Circuit", "Refrigerant amount")).arg(unit) << "</th>";
+    out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "Place of operation") << "</th>";
     out << "</tr><tr>";
-    out << "<th>" << ((month_from > 1 || month_until < 12) ?
+    out << "<th rowspan=\"2\">" << ((month_from > 1 || month_until < 12) ?
                           tr("At the beginning of the period") :
                           tr("At the beginning of the year")) << "</th>";
-    out << "<th>" << tr("Added") << "</th>";
-    out << "<th>" << tr("Recovered") << "</th>";
-    out << "<th>" << ((month_from > 1 || month_until < 12) ?
+    out << "<th colspan=\"3\">" << tr("Added") << "</th>";
+    out << "<th rowspan=\"2\">" << tr("Recovered") << "</th>";
+    out << "<th rowspan=\"2\">" << ((month_from > 1 || month_until < 12) ?
                           tr("At the end of the period") :
                           tr("At the end of the year")) << "</th>";
+    out << "</tr><tr>";
+    out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Recycled") << "</th>";
+    out << "<th>" << QApplication::translate("VariableNames", "Reclaimed") << "</th>";
     out << "</tr>";
 
     MTQuery inspections = Inspection::query();
@@ -149,7 +153,7 @@ QString OperatorReportView::renderHTML(bool)
         QString circuit_id = circuits.stringValue("id");
 
         inspections.parents().insert("circuit_uuid", circuit_uuid);
-        sums = inspections.sumAll("refr_add_am, refr_reco");
+        sums = inspections.sumAll("refr_add_am, refr_add_am_recy, refr_add_am_rege, refr_reco");
 
         commissioning_date = circuits.stringValue("commissioning").left(7);
         if (commissioning_date >= date_until)
@@ -168,14 +172,18 @@ QString OperatorReportView::renderHTML(bool)
             refrigerant_amount_begin += refrigerant_amount;
 
         nominal_inspection_parents.insert("circuit_uuid", circuit_uuid);
-        nominal_inspections = Inspection::query(nominal_inspection_parents).listAll("date, refr_add_am, refr_reco", "date ASC");
+        nominal_inspections = Inspection::query(nominal_inspection_parents).listAll("date, refr_add_am, refr_add_am_recy, refr_add_am_rege, refr_reco", "date ASC");
         foreach (const QVariantMap &nominal_inspection, nominal_inspections) {
             nominal_inspection_date = nominal_inspection.value("date", "9999").toString().left(7);
             if (nominal_inspection_date < date_from)
                 refrigerant_amount_begin += nominal_inspection.value("refr_add_am", 0.0).toDouble()
+                        + nominal_inspection.value("refr_add_am_recy", 0.0).toDouble()
+                        + nominal_inspection.value("refr_add_am_rege", 0.0).toDouble()
                         - nominal_inspection.value("refr_reco", 0.0).toDouble();
             if (nominal_inspection_date < date_until)
                 refrigerant_amount_end += nominal_inspection.value("refr_add_am", 0.0).toDouble()
+                        + nominal_inspection.value("refr_add_am_recy", 0.0).toDouble()
+                        + nominal_inspection.value("refr_add_am_rege", 0.0).toDouble()
                         - nominal_inspection.value("refr_reco", 0.0).toDouble();
         }
 
@@ -205,6 +213,8 @@ QString OperatorReportView::renderHTML(bool)
         out << "<td>" << fieldsOfApplication().value(field, field) << "</td>";
         out << "<td>" << refrigerant_amount_begin * multiplier << "</td>";
         out << "<td>" << sums.value("refr_add_am").toDouble() * multiplier << "</td>";
+        out << "<td>" << sums.value("refr_add_am_recy").toDouble() * multiplier << "</td>";
+        out << "<td>" << sums.value("refr_add_am_rege").toDouble() * multiplier << "</td>";
         out << "<td>" << sums.value("refr_reco").toDouble() * multiplier << "</td>";
         out << "<td>" << refrigerant_amount_end * multiplier << "</td>";
         out << "<td>" << MTVariant(circuits.value("operation")) << "</td>";
