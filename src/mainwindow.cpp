@@ -726,9 +726,9 @@ void MainWindow::printLabel(bool detailed)
     Inspector inspector(selected_inspector_uuid);
     if (inspector.exists()) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        attributes.insert(inspector.list("certificate_number, person"));
+        attributes.insert(inspector.list("certificate_number, person, mail AS inspector_mail, phone AS inspector_phone"));
 #else
-        attributes.unite(inspector.list("certificate_number, person"));
+        attributes.unite(inspector.list("certificate_number, person, mail AS inspector_mail, phone AS inspector_phone"));
 #endif
     }
 
@@ -850,9 +850,15 @@ void MainWindow::paintLabel(const QVariantMap &attributes, QPainter &painter, in
 
     painter.drawText(m + x + (w / 3), m + y + title_h + (h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Certified person"));
     painter.drawText(m + x + (w / 3), m + y + title_h + (2 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("Telephone"));
-    painter.drawText(m + x + (w / 3), y + title_h + (2 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("phone").toString());
+    QString phone = attributes.value("inspector_phone").toString();
+    if (phone.isEmpty())
+        phone = attributes.value("phone").toString();
+    painter.drawText(m + x + (w / 3), y + title_h + (2 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, phone);
     painter.drawText(m + x + (w / 3), m + y + title_h + (3 * h / 7), w / 3 - dm, h / 14 - m, Qt::AlignCenter, tr("E-mail"));
-    painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, attributes.value("mail").toString());
+    QString mail = attributes.value("inspector_mail").toString();
+    if (mail.isEmpty())
+        mail = attributes.value("mail").toString();
+    painter.drawText(m + x + (w / 3), y + title_h + (3 * h / 7) + h / 14, w / 3 - dm, h / 14 - m, Qt::AlignCenter, mail);
     drawText(painter, m + x + (w / 3), m + y + title_h + (4 * h / 7), w / 3 - dm, h / 7 - dm, Qt::AlignCenter, tr("Registry number of\nperson and company ID"));
 
     int r = (w / 3 - dm) / 2;
