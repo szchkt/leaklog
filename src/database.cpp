@@ -3567,6 +3567,7 @@ void MainWindow::importData()
                         if (fields.contains(record.fieldName(f)))
                             set.insert(record.fieldName(f), query.value(f));
                     }
+                    set.insert("service_company_uuid", m_tab->selectedServiceCompanyUUID());
                     Circuit(circuit_uuid).update(set);
                 }
 
@@ -3681,9 +3682,9 @@ void MainWindow::importData()
                             set.insert(record.fieldName(f), query.value(f));
                         }
                     }
+                    Inspection(inspection_uuid).update(set, j == 0);
+                    j++;
                 }
-                Inspection(inspection_uuid).update(set, j == 0);
-                j++;
 
                 for (int c = 0; c < item->childCount(); ++c) {
                     set.clear();
@@ -3722,8 +3723,9 @@ void MainWindow::importData()
                         if (fields.contains(record.fieldName(f)))
                             set.insert(record.fieldName(f), query.value(f));
                     }
+                    set.insert("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+                    Repair(repair_uuid).update(set);
                 }
-                Repair(repair_uuid).update(set);
             }
         }
 
@@ -3745,8 +3747,9 @@ void MainWindow::importData()
                         if (fields.contains(record.fieldName(f)))
                             set.insert(record.fieldName(f), query.value(f));
                     }
+                    set.insert("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+                    RefrigerantRecord(record_uuid).update(set);
                 }
-                RefrigerantRecord(record_uuid).update(set);
             }
         }
 
@@ -3768,8 +3771,9 @@ void MainWindow::importData()
                         if (fields.contains(record.fieldName(f)))
                             set.insert(record.fieldName(f), query.value(f));
                     }
+                    set.insert("service_company_uuid", m_tab->selectedServiceCompanyUUID());
+                    Inspector(inspector_uuid).update(set);
                 }
-                Inspector(inspector_uuid).update(set);
             }
         }
         setDatabaseModified(true);
