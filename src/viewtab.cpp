@@ -992,6 +992,7 @@ void ViewTab::setDefaultWebPage()
     QObject::connect(page, SIGNAL(linkClicked(QUrl)), this, SLOT(executeLink(QUrl)));
     QObject::connect(page, SIGNAL(scrollPositionChanged(QPointF)), this, SLOT(scrollPositionChanged(QPointF)));
     QObject::connect(page, SIGNAL(loadFinished(bool)), this, SLOT(restoreScrollPosition(bool)));
+    QObject::connect(page, SIGNAL(loadFinished(bool)), parentWindow(), SLOT(find()));
 }
 
 void ViewTab::reportData()
