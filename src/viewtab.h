@@ -129,6 +129,9 @@ private slots:
     void executeLink(const QUrl &);
     void executeLink(Link *link);
 
+    void scrollPositionChanged(const QPointF &position);
+    void restoreScrollPosition(bool success);
+
 private:
     void createViewItems();
     void formatGroupItem(QTreeWidgetItem *item);
@@ -140,7 +143,9 @@ private:
     ViewUrlSchemeHandler *view_handler;
     QTreeWidgetItem *group_tables;
     QTreeWidgetItem *view_items[View::ViewCount];
+    QPointF scroll_positions[View::ViewCount];
     bool needs_refresh;
+    bool scroll_position_restore_pending;
 };
 
 #endif // VIEWTAB_H

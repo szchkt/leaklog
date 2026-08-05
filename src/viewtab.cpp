@@ -87,7 +87,8 @@ void ViewUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
 ViewTab::ViewTab(QWidget *parent):
     MTWidget(parent),
     ui(new Ui::ViewTab),
-    needs_refresh(false)
+    needs_refresh(false),
+    scroll_position_restore_pending(false)
 {
     ui->setupUi(this);
 
@@ -431,6 +432,9 @@ void ViewTab::setView(View::ViewID view, const QString &table_uuid)
     if (view < 0 || view >= View::ViewCount)
         view = View::Store;
 
+    scroll_positions[view] = QPointF();
+    scroll_position_restore_pending = false;
+
     if (view_items[view]) {
         if (ui->trw_navigation->currentItem() == view_items[view]) {
             refreshView();
@@ -674,10 +678,17 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     }
     emit tabTextChanged(this, tabText);
 
-    if (parentWindow()->currentTab() == this)
+    if (parentWindow()->currentTab() == this) {
+        if (previous && previous->parent()) {
+            View::ViewID previous_view = (View::ViewID)previous->data(0, Qt::UserRole).toInt();
+            if (previous_view >= 0 && previous_view < View::ViewCount)
+                scroll_positions[previous_view] = ui->wv_main->page()->scrollPosition();
+        }
+        scroll_position_restore_pending = true;
         ui->wv_main->setUrl(QUrl(QString("view://v%1").arg(view)));
-    else
+    } else {
         setNeedsRefresh();
+    }
 }
 
 void ViewTab::executeLink(const QUrl &url)
@@ -944,6 +955,30 @@ void ViewTab::executeLink(Link *link)
     }
 }
 
+void ViewTab::scrollPositionChanged(const QPointF &position)
+{
+    View::ViewID view = currentView();
+    if (!scroll_position_restore_pending && view >= 0 && view < View::ViewCount)
+        scroll_positions[view] = position;
+}
+
+void ViewTab::restoreScrollPosition(bool success)
+{
+    if (!scroll_position_restore_pending || !success)
+        return;
+
+    scroll_position_restore_pending = false;
+
+    View::ViewID view = currentView();
+    if (view < 0 || view >= View::ViewCount)
+        return;
+
+    QPointF position = scroll_positions[view];
+    ui->wv_main->page()->runJavaScript(QString("window.scrollTo(%1, %2);")
+                                       .arg(position.x())
+                                       .arg(position.y()));
+}
+
 void ViewTab::setDefaultWebPage()
 {
     MTWebPage *page = new MTWebPage(ui->wv_main);
@@ -954,7 +989,9 @@ void ViewTab::setDefaultWebPage()
     page->profile()->installUrlSchemeHandler(QString("dbfile").toUtf8(), new DBFileUrlSchemeHandler);
     page->profile()->installUrlSchemeHandler(QString("view").toUtf8(), view_handler);
 
-    QObject::connect(page, SIGNAL(linkClicked(const QUrl &)), this, SLOT(executeLink(const QUrl &)));
+    QObject::connect(page, SIGNAL(linkClicked(QUrl)), this, SLOT(executeLink(QUrl)));
+    QObject::connect(page, SIGNAL(scrollPositionChanged(QPointF)), this, SLOT(scrollPositionChanged(QPointF)));
+    QObject::connect(page, SIGNAL(loadFinished(bool)), this, SLOT(restoreScrollPosition(bool)));
 }
 
 void ViewTab::reportData()
