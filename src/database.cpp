@@ -1957,17 +1957,18 @@ QStringList MainWindow::selectCircuits()
     QGridLayout *grid = new QGridLayout(&d);
 
     QTreeWidget *tree = new QTreeWidget(&d);
-    tree->setColumnCount(4);
+    tree->setColumnCount(5);
     tree->setIndentation(0);
     tree->setSelectionMode(QAbstractItemView::NoSelection);
     tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     tree->setHeaderLabels({
         QApplication::translate("Circuit", "ID"),
         QApplication::translate("Circuit", "Circuit name"),
+        QApplication::translate("Circuit", "Place of operation"),
         QApplication::translate("AgendaView", "Last inspection"),
         QApplication::translate("AgendaView", "Next inspection"),
     });
-    tree->setMinimumSize(500, 300);
+    tree->setMinimumSize(580, 300);
     grid->addWidget(tree, 0, 0);
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
@@ -2011,7 +2012,8 @@ QStringList MainWindow::selectCircuits()
         item->setData(1, Qt::UserRole, isStarred);
         item->setText(0, QString("%1 %2").arg(QChar(isStarred ? 0x2605 : 0x2606)).arg(circuit.circuitID()));
         item->setText(1, circuit.circuitName());
-        item->setText(2, m_settings.formatDateTime(circuit.stringValue("last_inspection_date")));
+        item->setText(2, circuit.placeOfOperation());
+        item->setText(3, m_settings.formatDateTime(circuit.stringValue("last_inspection_date")));
 
         QString last_regular_inspection_date = circuit.stringValue("last_regular_inspection_date");
         if (!last_regular_inspection_date.isEmpty()) {
@@ -2024,7 +2026,7 @@ QStringList MainWindow::selectCircuits()
                 if (next_regular_inspection_date <= current_date) {
                     item->setCheckState(0, Qt::Checked);
                 }
-                item->setText(3, m_settings.formatDate(next_regular_inspection_date));
+                item->setText(4, m_settings.formatDate(next_regular_inspection_date));
             }
         }
     });
