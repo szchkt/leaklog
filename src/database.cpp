@@ -1978,6 +1978,8 @@ QStringList MainWindow::selectCircuits()
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
     grid->addWidget(bb, 1, 0);
 
+    QPushButton *btn_select_starred = bb->addButton(QString(QChar(0x2605)), QDialogButtonBox::ResetRole);
+
     bool CO2_equivalent = m_tab->toolBarStack()->isCO2EquivalentChecked();
     QString current_date = QDate::currentDate().toString(DATE_FORMAT);
 
@@ -2002,9 +2004,12 @@ QStringList MainWindow::selectCircuits()
     circuits.each("id", [=](Circuit &circuit) {
         QTreeWidgetItem *item = new QTreeWidgetItem(tree);
 
+        bool isStarred = circuit.isStarred();
+
         item->setCheckState(0, Qt::Unchecked);
         item->setData(0, Qt::UserRole, circuit.uuid());
-        item->setText(0, circuit.circuitID());
+        item->setData(1, Qt::UserRole, isStarred);
+        item->setText(0, QString("%1 %2").arg(QChar(isStarred ? 0x2605 : 0x2606)).arg(circuit.circuitID()));
         item->setText(1, circuit.circuitName());
         item->setText(2, m_settings.formatDateTime(circuit.stringValue("last_inspection_date")));
 
@@ -2021,6 +2026,13 @@ QStringList MainWindow::selectCircuits()
                 }
                 item->setText(3, m_settings.formatDate(next_regular_inspection_date));
             }
+        }
+    });
+
+    QObject::connect(btn_select_starred, &QPushButton::clicked, [tree]() {
+        for (int i = 0; i < tree->topLevelItemCount(); ++i) {
+            QTreeWidgetItem *item = tree->topLevelItem(i);
+            item->setCheckState(0, item->data(1, Qt::UserRole).toBool() ? Qt::Checked : Qt::Unchecked);
         }
     });
 
