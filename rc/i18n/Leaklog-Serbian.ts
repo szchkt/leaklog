@@ -617,7 +617,7 @@
     </message>
     <message>
         <source>Year of purchase</source>
-        <translation>Datum kupovine</translation>
+        <translation>Godina kupovine</translation>
     </message>
     <message>
         <source>Date of commissioning</source>
@@ -1238,7 +1238,7 @@
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Kontakt osoba</translation>
+        <translation>Kontakt osobe</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -2508,7 +2508,7 @@ Da biste uklonili izgled „%1“ napišite UKLONITI i potvrdite:</translation>
     </message>
     <message>
         <source>Failed to import %1 of %2 records.</source>
-        <translation>Neuspešan uvoz %1 z %2 zapisa.</translation>
+        <translation>Neuspešan uvoz %1 od %2 zapisa.</translation>
     </message>
     <message numerus="yes">
         <source>Successfully imported %n record(s).</source>
@@ -6415,7 +6415,7 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     </message>
     <message>
         <source>Compressor valve leakage</source>
-        <translation>Curenje na ventilo kompresora</translation>
+        <translation>Curenje na ventilu kompresora</translation>
     </message>
     <message>
         <source>Liquid-line restriction</source>

@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog jest systemem kontroli wycieków, opartym na rozporządzeniu UE nr. 2024/573. Śledzi ustalenia i parametry kontroli szczelności bezpośrednich i pośrednich za pomocą dziennika. Wynikiem jest historia kontroli  opracowaniej parametrów i ich porównanie z nominalnymi i obliczenia wartości i procentu wycieku.  </translation>
+        <translation>Leaklog jest systemem kontroli wycieków opartym na rozporządzeniu (UE) 2024/573. Za pomocą dziennika rejestruje wyniki i parametry bezpośrednich i pośrednich kontroli szczelności. Rezultatem jest historia kontroli, zmiany parametrów, ich porównanie z wartościami nominalnymi oraz obliczenie ilości i procentu wycieku.</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
@@ -37,11 +37,11 @@
     </message>
     <message>
         <source>Contributors</source>
-        <translation>Dostawcy</translation>
+        <translation>Współtwórcy</translation>
     </message>
     <message>
         <source>Leaklog uses</source>
-        <translation>Leaklog zastosowanie</translation>
+        <translation>Leaklog korzysta z</translation>
     </message>
     <message>
         <source>%1, licensed under the GNU LGPL</source>
@@ -331,7 +331,7 @@
     </message>
     <message>
         <source>Discount</source>
-        <translation></translation>
+        <translation>Rabat</translation>
     </message>
     <message>
         <source>EAN code</source>
@@ -1238,7 +1238,7 @@
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Osoba kontaktowa</translation>
+        <translation>Osoby kontaktowe</translation>
     </message>
     <message>
         <source>Phone</source>
@@ -1444,7 +1444,7 @@
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Osoba kontaktowa</translation>
+        <translation>Osoby kontaktowe</translation>
     </message>
     <message>
         <source>E-mail</source>
@@ -1485,7 +1485,7 @@
     </message>
     <message>
         <source>Remove</source>
-        <translation>Cofnij</translation>
+        <translation>Usuń</translation>
     </message>
 </context>
 <context>
@@ -2012,7 +2012,7 @@
     </message>
     <message>
         <source>Acquisition price:</source>
-        <translation>Koszt pracy:</translation>
+        <translation>Cena zakupu:</translation>
     </message>
     <message>
         <source>List price:</source>
@@ -2436,7 +2436,7 @@
     </message>
     <message>
         <source>Warnings</source>
-        <translation>Ostrzeżenie</translation>
+        <translation>Ostrzeżenia</translation>
     </message>
     <message>
         <source>Create a new warning</source>
@@ -3660,7 +3660,7 @@ Aby usunąć kontrolera &quot;%1&quot; naciśnij USUŃ i potwierdź:</translatio
     </message>
     <message>
         <source>Contact persons</source>
-        <translation>Osoba kontaktowa</translation>
+        <translation>Osoby kontaktowe</translation>
     </message>
     <message>
         <source>Contact person name</source>
@@ -5126,7 +5126,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Refrigerant addition (recycled):</source>
-        <translation>Dopełnienie czynnika (recyklingowi):</translation>
+        <translation>Dopełnienie czynnika (z recyklingu):</translation>
     </message>
     <message>
         <source>Refrigerant addition (reclaimed):</source>
@@ -5138,7 +5138,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Refrigerant addition (recycled)</source>
-        <translation>Dopełnienie czynnika (recyklingowi)</translation>
+        <translation>Dopełnienie czynnika (z recyklingu)</translation>
     </message>
     <message>
         <source>Refrigerant addition (reclaimed)</source>
@@ -5150,7 +5150,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Recycled</source>
-        <translation>Recyklingowi</translation>
+        <translation>Z recyklingu</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -5652,7 +5652,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Choose a column to filter by</source>
-        <translation>Wybierz kolumne do filtrowania</translation>
+        <translation>Wybierz kolumnę, według której chcesz filtrować</translation>
     </message>
     <message>
         <source>Select a filter type</source>
@@ -5668,19 +5668,19 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>starts with:</source>
-        <translation>zaczyna z:</translation>
+        <translation>zaczyna się od:</translation>
     </message>
     <message>
         <source>ends with:</source>
-        <translation>kończy z:</translation>
+        <translation>kończy się na:</translation>
     </message>
     <message>
         <source>Type a word to filter by</source>
-        <translation>Wpisz słowo do filtrowania przez</translation>
+        <translation>Wpisz słowo, według którego chcesz filtrować</translation>
     </message>
     <message>
         <source>By Field of Application</source>
-        <translation>Przez zakres stosowania</translation>
+        <translation>Według obszaru zastosowania</translation>
     </message>
     <message>
         <source>All Circuits</source>
@@ -5768,11 +5768,11 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Assembly Record Item Category: %1</source>
-        <translation>Kategorie elementu książki serwisowej:%1</translation>
+        <translation>Kategoria elementu książki serwisowej: %1</translation>
     </message>
     <message>
         <source>Assembly Record Item Type: %1</source>
-        <translation>Element typu książki serwisowej:%1</translation>
+        <translation>Typ elementu książki serwisowej: %1</translation>
     </message>
     <message>
         <source>Circuit Unit Type: %1</source>
@@ -6117,7 +6117,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Recycled</source>
-        <translation>Recyklingowi</translation>
+        <translation>Z recyklingu</translation>
     </message>
     <message>
         <source>Reclaimed</source>
@@ -6226,7 +6226,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>New charge (recycled):</source>
-        <translation>Nowe napełnienie (recyklingowi):</translation>
+        <translation>Nowe napełnienie (z recyklingu):</translation>
     </message>
     <message>
         <source>New charge (reclaimed):</source>

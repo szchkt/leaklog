@@ -209,7 +209,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -236,7 +236,7 @@
     </message>
     <message>
         <source>Show list price</source>
-        <translation>Zobrazi cenníkovou cenu</translation>
+        <translation>Zobrazit cenníkovou cenu</translation>
     </message>
     <message>
         <source>Show discount</source>
@@ -319,7 +319,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -354,7 +354,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -570,7 +570,7 @@
     </message>
     <message>
         <source>Fixed leakage detector installed</source>
-        <translation>Nainstalovaný detekční systém úníků</translation>
+        <translation>Nainstalovaný detekční systém úniků</translation>
     </message>
     <message>
         <source>Run-time per day:</source>
@@ -851,7 +851,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -2094,7 +2094,7 @@
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>List price</source>
@@ -2520,8 +2520,8 @@ Pro odstranění vzhledu „%1“ napište ODSTRANIT a potvrďte:</translation>
     <message numerus="yes">
         <source>Successfully imported %n record(s).</source>
         <translation>
-            <numerusform>%n záznam úspešně importován.</numerusform>
-            <numerusform>%n záznamy úspešně importovány.</numerusform>
+            <numerusform>%n záznam úspěšně importován.</numerusform>
+            <numerusform>%n záznamy úspěšně importovány.</numerusform>
             <numerusform>%n záznamů úspěšně importováno.</numerusform>
         </translation>
     </message>
@@ -3375,7 +3375,7 @@ Pro odstranění všech údajů o opravě „%1“ napište ODSTRANIT a potvrďt
     </message>
     <message>
         <source>Tolerance</source>
-        <translation>Tolerancie</translation>
+        <translation>Tolerance</translation>
     </message>
     <message>
         <source>Refrigerant management</source>
@@ -5503,7 +5503,7 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     </message>
     <message>
         <source>Show total on assembly record</source>
-        <translation>Zobrazit cenníkovou cenu na montážním listě</translation>
+        <translation>Zobrazit celkovou cenu na montážním listě</translation>
     </message>
     <message>
         <source>Total</source>
@@ -5515,7 +5515,7 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     </message>
     <message>
         <source>Acquisition price</source>
-        <translation>Pořízovací cena</translation>
+        <translation>Pořizovací cena</translation>
     </message>
     <message>
         <source>Choose a column to filter by</source>
