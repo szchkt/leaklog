@@ -1974,7 +1974,7 @@ void MainWindow::starCircuit(const QString &customer_uuid, const QString &uuid)
     setDatabaseModified(true);
 }
 
-QStringList MainWindow::selectCircuits()
+QStringList MainWindow::selectCircuits(const QString &title)
 {
     if (!QSqlDatabase::database().isOpen()) { return QStringList(); }
     if (!m_tab->isCustomerSelected()) { return QStringList(); }
@@ -2001,7 +2001,7 @@ QStringList MainWindow::selectCircuits()
 
     QDialogButtonBox *bb = new QDialogButtonBox(&d);
     bb->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    bb->button(QDialogButtonBox::Ok)->setText(tr("Add Inspection..."));
+    bb->button(QDialogButtonBox::Ok)->setText(title);
     bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
     QObject::connect(bb, SIGNAL(rejected()), &d, SLOT(reject()));
@@ -2090,7 +2090,7 @@ void MainWindow::addInspection()
     if (m_tab->isCircuitSelected()) {
         record.setValue("circuit_uuid", m_tab->selectedCircuitUUID());
     } else {
-        circuit_uuids = selectCircuits();
+        circuit_uuids = selectCircuits(tr("Add Inspection..."));
         switch (circuit_uuids.size()) {
             case 0:
                 return;
@@ -2194,12 +2194,24 @@ void MainWindow::skipInspection()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }
     if (!m_tab->isCustomerSelected()) { return; }
-    if (!m_tab->isCircuitSelected()) { return; }
     if (!isOperationPermitted("add_inspection")) { return; }
+
+    QStringList circuit_uuids;
+    if (m_tab->isCircuitSelected()) {
+        circuit_uuids << m_tab->selectedCircuitUUID();
+    } else {
+        circuit_uuids = selectCircuits(tr("Skip Inspection..."));
+        if (circuit_uuids.isEmpty()) { return; }
+    }
 
     QDateTime next_regular_inspection_date = QDateTime::currentDateTime();
 
-    MTQuery circuit_record = Circuit::query({{"uuid", m_tab->selectedCircuitUUID()}});
+    MTQuery circuit_record = Circuit::query();
+    if (circuit_uuids.size() == 1) {
+        circuit_record.parents().insert("uuid", circuit_uuids.first());
+    } else {
+        circuit_record.setPredicate(QString("uuid IN ('%1')").arg(circuit_uuids.join("', '")));
+    }
     circuit_record.addJoin("LEFT JOIN (SELECT circuit_uuid, MAX(date) AS date FROM inspections"
                            " WHERE outside_interval = 0 GROUP BY circuit_uuid) AS ins"
                            " ON ins.circuit_uuid = circuits.uuid");
@@ -2207,7 +2219,7 @@ void MainWindow::skipInspection()
                                                      "COALESCE(ins.date, circuits.commissioning) AS last_regular_inspection, "
                                                      "circuits.refrigerant, " + circuitRefrigerantAmountQuery());
     circuit_query.exec();
-    if (circuit_query.next()) {
+    while (circuit_query.next()) {
         int inspection_interval = Warnings::circuitInspectionInterval(circuit_query.stringValue("refrigerant"),
                                                                       circuit_query.doubleValue("refrigerant_amount"),
                                                                       m_tab->toolBarStack()->isCO2EquivalentChecked(),
@@ -2217,13 +2229,18 @@ void MainWindow::skipInspection()
         if (inspection_interval) {
             QString last_regular_inspection_date = circuit_query.stringValue("last_regular_inspection");
             if (!last_regular_inspection_date.isEmpty()) {
-                next_regular_inspection_date = QDateTime::fromString(last_regular_inspection_date.split("-").first(),
-                                                                     DATE_FORMAT).addDays(inspection_interval);
+                QDateTime date = QDateTime::fromString(last_regular_inspection_date.split("-").first(),
+                                                       DATE_FORMAT).addDays(inspection_interval);
+                if (next_regular_inspection_date > date)
+                    next_regular_inspection_date = date;
             }
         }
     }
 
-    Circuit circuit(m_tab->selectedCircuitUUID());
+    QStringList circuit_ids;
+    foreach (auto circuit_uuid, circuit_uuids) {
+        circuit_ids << Circuit(circuit_uuid).circuitID();
+    }
 
     QDialog d(this);
     d.setWindowTitle(tr("Skip inspection - Leaklog"));
@@ -2233,7 +2250,9 @@ void MainWindow::skipInspection()
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     gl->addWidget(lbl, 0, 0);
 
-    gl->addWidget(new QLabel(circuit.circuitID(), &d), 0, 1);
+    lbl = new QLabel(circuit_ids.join(", "), &d);
+    lbl->setWordWrap(true);
+    gl->addWidget(lbl, 0, 1);
 
     lbl = new QLabel(tr("Date of skipped inspection:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -2273,22 +2292,24 @@ void MainWindow::skipInspection()
     Customer customer(m_tab->selectedCustomerUUID());
     QString company_name = customer.companyName();
     UndoCommand command(m_undo_stack, tr("Skip inspection of circuit %1 (%2)")
-                        .arg(circuit.circuitID())
+                        .arg(circuit_ids.join(", "))
                         .arg(company_name.isEmpty() ? customer.companyID() : company_name));
     m_undo_stack->savepoint();
 
-    QVariantMap inspection;
-    inspection.insert("customer_uuid", m_tab->selectedCustomerUUID());
-    inspection.insert("circuit_uuid", m_tab->selectedCircuitUUID());
-    inspection.insert("date", inspection_date);
-    inspection.insert("inspection_type", Inspection::SkippedInspection);
-    inspection.insert("outside_interval", 0);
-    QStringList data;
-    data << reason->text().remove(UNIT_SEPARATOR);
-    inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
-    inspection.insert("rmds", reason->text().append("\n\n")
-                      .append(tr("DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.")));
-    Inspection().update(inspection);
+    foreach (auto circuit_uuid, circuit_uuids) {
+        QVariantMap inspection;
+        inspection.insert("customer_uuid", m_tab->selectedCustomerUUID());
+        inspection.insert("circuit_uuid", circuit_uuid);
+        inspection.insert("date", inspection_date);
+        inspection.insert("inspection_type", Inspection::SkippedInspection);
+        inspection.insert("outside_interval", 0);
+        QStringList data;
+        data << reason->text().remove(UNIT_SEPARATOR);
+        inspection.insert("inspection_type_data", data.join(UNIT_SEPARATOR));
+        inspection.insert("rmds", reason->text().append("\n\n")
+                          .append(tr("DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.")));
+        Inspection().update(inspection);
+    }
 
     setDatabaseModified(true);
     m_tab->setView(View::Inspections);

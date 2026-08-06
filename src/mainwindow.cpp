@@ -1141,7 +1141,7 @@ void MainWindow::enableTools()
     actionEdit_inspection->setEnabled(inspection_selected);
     actionDuplicate_inspection->setEnabled(inspection_selected);
     actionRemove_inspection->setEnabled(inspection_selected);
-    actionSkip_Inspection->setEnabled(circuit_selected);
+    actionSkip_Inspection->setEnabled(customer_selected);
 
     actionEdit_repair->setEnabled(repair_selected);
     actionDuplicate_repair->setEnabled(repair_selected);

@@ -82,7 +82,7 @@ MTSqlQuery MTQuery::select(const QString &fields, const QString &order_by, int l
         select.append(i.key() + " = :" + i.key());
     }
     for (int i = 0; i < r_filter.count(); ++i) {
-        if (r_parents.count() || i) { select.append(" AND "); }
+        if (i || r_parents.count()) { select.append(" AND "); }
         if (r_filter.key(i).contains('?'))
             select.append(r_filter.key(i).replace('?', QString(":_filter%1").arg(i)));
         else
