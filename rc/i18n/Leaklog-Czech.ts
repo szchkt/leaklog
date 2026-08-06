@@ -4462,6 +4462,18 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <source>Disposed of</source>
         <translation>Znehodnocené</translation>
     </message>
+    <message>
+        <source>Unstar All Circuits</source>
+        <translation>Odebrat hvězdičku všem okruhům</translation>
+    </message>
+    <message>
+        <source>Unstar all of the selected customer&apos;s circuits</source>
+        <translation>Odebrat hvězdičku všem okruhům vybraného zákazníka</translation>
+    </message>
+    <message>
+        <source>Unstar all circuits of customer %1%2</source>
+        <translation>Odebrat hvězdičku všem okruhům zákazníka %1%2</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

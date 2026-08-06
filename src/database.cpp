@@ -1510,6 +1510,34 @@ void MainWindow::decommissionAllCircuits()
     refreshView();
 }
 
+void MainWindow::unstarAllCircuits()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!m_tab->isCustomerSelected()) { return; }
+
+    Customer customer(m_tab->selectedCustomerUUID());
+    auto circuits = customer.circuits().where("starred <> 0");
+    if (circuits.isEmpty()) { return; }
+
+    foreach (auto circuit, circuits) {
+        if (!isOperationPermitted("edit_circuit", circuit.updatedBy())) { return; }
+    }
+
+    QString company_name = customer.companyName();
+    UndoCommand command(m_undo_stack, tr("Unstar all circuits of customer %1%2")
+                        .arg(customer.companyID())
+                        .arg(company_name.isEmpty() ? QString() : QString(" (%1)").arg(company_name)));
+    m_undo_stack->savepoint();
+
+    foreach (auto circuit, circuits) {
+        circuit.setStarred(false);
+        circuit.save();
+    }
+
+    setDatabaseModified(true);
+    refreshView();
+}
+
 void MainWindow::addCircuit()
 {
     if (!QSqlDatabase::database().isOpen()) { return; }

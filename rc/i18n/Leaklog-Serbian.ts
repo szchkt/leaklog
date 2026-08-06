@@ -4455,6 +4455,18 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Disposed of</source>
         <translation>Otpisano</translation>
     </message>
+    <message>
+        <source>Unstar All Circuits</source>
+        <translation>Ukloni zvezdicu sa svih krugova</translation>
+    </message>
+    <message>
+        <source>Unstar all of the selected customer&apos;s circuits</source>
+        <translation>Ukloni zvezdicu sa svih krugova izabranog korisnika</translation>
+    </message>
+    <message>
+        <source>Unstar all circuits of customer %1%2</source>
+        <translation>Ukloni zvezdicu sa svih krugova korisnika %1%2</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

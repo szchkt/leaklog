@@ -278,6 +278,7 @@
     <addaction name="actionRemove_customer"/>
     <addaction name="separator"/>
     <addaction name="actionDecommission_all_circuits"/>
+    <addaction name="actionUnstar_all_circuits"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1842,6 +1843,17 @@
    </property>
    <property name="statusTip">
     <string>Decommission all of the selected customer's circuits</string>
+   </property>
+  </action>
+  <action name="actionUnstar_all_circuits">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Unstar All Circuits</string>
+   </property>
+   <property name="statusTip">
+    <string>Unstar all of the selected customer's circuits</string>
    </property>
   </action>
   <action name="actionDuplicate_and_decommission_circuit">

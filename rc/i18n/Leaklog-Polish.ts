@@ -4451,6 +4451,18 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Disposed of</source>
         <translation>Zutylizowany</translation>
     </message>
+    <message>
+        <source>Unstar All Circuits</source>
+        <translation>Usuń oznaczenie gwiazdką ze wszystkich obiegów</translation>
+    </message>
+    <message>
+        <source>Unstar all of the selected customer&apos;s circuits</source>
+        <translation>Usuń oznaczenie gwiazdką ze wszystkich obiegów wybranego klienta</translation>
+    </message>
+    <message>
+        <source>Unstar all circuits of customer %1%2</source>
+        <translation>Usuń oznaczenie gwiazdką ze wszystkich obiegów klienta %1%2</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>

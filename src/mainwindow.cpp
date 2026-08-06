@@ -296,6 +296,7 @@ MainWindow::MainWindow():
     QObject::connect(actionDuplicate_customer, SIGNAL(triggered()), this, SLOT(duplicateCustomer()));
     QObject::connect(actionRemove_customer, SIGNAL(triggered()), this, SLOT(removeCustomer()));
     QObject::connect(actionDecommission_all_circuits, SIGNAL(triggered()), this, SLOT(decommissionAllCircuits()));
+    QObject::connect(actionUnstar_all_circuits, SIGNAL(triggered()), this, SLOT(unstarAllCircuits()));
     QObject::connect(actionAdd_circuit, SIGNAL(triggered()), this, SLOT(addCircuit()));
     QObject::connect(actionEdit_circuit, SIGNAL(triggered()), this, SLOT(editCircuit()));
     QObject::connect(actionDuplicate_circuit, SIGNAL(triggered()), this, SLOT(duplicateCircuit()));
@@ -1040,6 +1041,7 @@ void MainWindow::setAllEnabled(bool enable, bool everything)
         actionDuplicate_and_decommission_circuit->setEnabled(enable);
         actionMove_Circuit_to_Another_Customer->setEnabled(enable);
         actionRemove_circuit->setEnabled(enable);
+        actionUnstar_all_circuits->setEnabled(enable);
     // menuInspection
         actionAdd_inspection->setEnabled(enable);
         actionEdit_inspection->setEnabled(enable);
@@ -1126,6 +1128,7 @@ void MainWindow::enableTools()
     actionDuplicate_customer->setEnabled(customer_selected);
     actionRemove_customer->setEnabled(customer_selected);
     actionDecommission_all_circuits->setEnabled(customer_selected);
+    actionUnstar_all_circuits->setEnabled(customer_selected);
 
     actionAdd_circuit->setEnabled(customer_selected);
     actionEdit_circuit->setEnabled(circuit_selected);

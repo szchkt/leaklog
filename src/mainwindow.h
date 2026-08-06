@@ -115,6 +115,7 @@ public slots:
     void starCustomer(const QString &uuid);
 
     void decommissionAllCircuits();
+    void unstarAllCircuits();
     void addCircuit();
     void editCircuit();
     void duplicateCircuit();

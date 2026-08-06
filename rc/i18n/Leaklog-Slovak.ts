@@ -4455,6 +4455,18 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Disposed of</source>
         <translation>Zničené</translation>
     </message>
+    <message>
+        <source>Unstar All Circuits</source>
+        <translation>Odstrániť hviezdičku zo všetkých okruhov</translation>
+    </message>
+    <message>
+        <source>Unstar all of the selected customer&apos;s circuits</source>
+        <translation>Odstrániť hviezdičku zo všetkých okruhov vybraného zákazníka</translation>
+    </message>
+    <message>
+        <source>Unstar all circuits of customer %1%2</source>
+        <translation>Odstrániť hviezdičku zo všetkých okruhov zákazníka %1%2</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
